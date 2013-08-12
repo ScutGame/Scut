@@ -1,0 +1,13 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<config>
+  <!--Python安装类库路径-->
+  <lib path="D:\Python\Lib" />
+  <route-list>
+    <!--配置Action路由
+      action：映射的Action代码
+      path：指定执行的脚本路径
+      ignoreAuthorize:是否不需要登录授权，true：不需要登录授权
+      <route action="404" path="Action\action404.py"/>
+    -->
+  </route-list>
+</config>
