@@ -1,0 +1,21 @@
+--        ##Description##（ID=##ID##）
+function Action##ID##(Scene,isLoading ##Parameter##)
+
+   	NdWriter:writeString("ActionId",##ID##)
+   	##Fixed##
+	NdExecRequest(Scene, nil,isLoading)
+end
+
+function _##ID##Callback(pNdScene, lpExternalData)
+   
+    local DataTabel=nil
+    if ZyReader:getResult() == eNdNetSuccess then
+        DataTabel={}
+##Judge##
+       
+    else          
+          local box = ZyMessageBoxEx:new()
+	      box:doPrompt(pNdScene, nil, ZyReader:readErrorMsg(),RexueString.IDS_OK)
+    end
+    return DataTabel
+end
