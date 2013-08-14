@@ -1,0 +1,80 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using ZyGames.Framework.Game.Lang;
+using ZyGames.Framework.Game.Runtime;
+using ZyGames.Framework.Game.Service;
+
+namespace ZyGames.Framework.Game.Contract.Action
+{
+    public abstract class RegisterAction : BaseStruct
+    {
+        protected string UserName;
+        protected byte Sex;
+        protected string HeadID;
+        protected string RetailID;
+        protected string Pid;
+        protected MobileType MobileType;
+        protected short ScreenX;
+        protected short ScreenY;
+        protected short ReqAppVersion;
+        protected int GameID;
+        protected int ServerID;
+        protected string DeviceID;
+        public int GuideId { get; set; }
+
+        protected RegisterAction(short aActionId, HttpGet httpGet)
+            : base(aActionId, httpGet)
+        {
+        }
+
+        public override void BuildPacket()
+        {
+            PushIntoStack(GuideId);
+        }
+
+        public override bool GetUrlElement()
+        {
+            if (httpGet.GetString("UserName", ref UserName) &&
+                httpGet.GetByte("Sex", ref Sex) &&
+                httpGet.GetString("HeadID", ref HeadID) &&
+                httpGet.GetString("RetailID", ref RetailID) &&
+                httpGet.GetString("Pid", ref Pid, 1, int.MaxValue) &&
+                httpGet.GetEnum("MobileType", ref MobileType)
+                )
+            {
+                UserName = UserName.Trim();
+                httpGet.GetWord("ScreenX", ref ScreenX);
+                httpGet.GetWord("ScreenY", ref ScreenY);
+                httpGet.GetWord("ClientAppVersion", ref ReqAppVersion);
+                httpGet.GetString("DeviceID", ref DeviceID);
+                httpGet.GetInt("GameID", ref GameID);
+                httpGet.GetInt("ServerID", ref ServerID);
+                return GetActionParam();
+            }
+            return false;
+        }
+
+        public override bool CheckAction()
+        {
+            if (!GameEnvironment.IsRunning)
+            {
+                ErrorCode = LanguageHelper.GetLang().ErrorCode;
+                ErrorInfo = LanguageHelper.GetLang().ServerLoading;
+                return false;
+            }
+            if (UserId <= 0)
+            {
+                ErrorCode = LanguageHelper.GetLang().ErrorCode;
+                ErrorInfo = LanguageHelper.GetLang().UrlElement;
+                return false;
+            }
+
+            return true;
+        }
+        
+        protected abstract bool GetActionParam();
+
+    }
+}
