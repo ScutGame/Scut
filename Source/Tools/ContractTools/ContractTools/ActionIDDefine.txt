@@ -1,0 +1,14 @@
+﻿using System;
+using System.Data;
+
+namespace ##Namespace##
+{
+   
+    /// <summary>
+    /// ActionID定义描述
+    /// </summary>
+    public class ActionIDDefine
+    {
+        ##FieldList##
+    }
+}

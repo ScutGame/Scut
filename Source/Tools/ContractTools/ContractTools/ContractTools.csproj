@@ -1,0 +1,222 @@
+﻿<Project ToolsVersion="3.5" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>9.0.21022</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{2881EE42-B058-46A2-A495-77A3AD6BE8FF}</ProjectGuid>
+    <ProjectTypeGuids>{349c5851-65df-11da-9384-00065b846f21};{fae04ec0-301f-11d3-bf4b-00c04f79efbc}</ProjectTypeGuids>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>ZyGames.ContractTools</RootNamespace>
+    <AssemblyName>ContractTools</AssemblyName>
+    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="StructService1.3, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\通用DLL\StructService1.3.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Core">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Data.DataSetExtensions">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Web.Extensions">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Xml.Linq">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Web" />
+    <Reference Include="System.Xml" />
+    <Reference Include="System.Configuration" />
+    <Reference Include="System.Web.Services" />
+    <Reference Include="System.EnterpriseServices" />
+    <Reference Include="System.Web.Mobile" />
+    <Reference Include="ZyGames.Core, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\通用DLL\ZyGames.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="ZyGames.Framework.RPC, Version=3.5.0.5, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\FrameworkPublish\Unstable\3.5\Core\Rpc_V0.5\ZyGames.Framework.RPC.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Web.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="AddContract.aspx.cs">
+      <DependentUpon>AddContract.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="AddContract.aspx.designer.cs">
+      <DependentUpon>AddContract.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="addenum.aspx.cs">
+      <DependentUpon>addenum.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="addenum.aspx.designer.cs">
+      <DependentUpon>addenum.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="AddParamInfo.aspx.cs">
+      <DependentUpon>AddParamInfo.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="AddParamInfo.aspx.designer.cs">
+      <DependentUpon>AddParamInfo.aspx</DependentUpon>
+    </Compile>
+    <Content Include="AddContract.aspx" />
+    <Content Include="addenum.aspx" />
+    <Content Include="AddParamInfo.aspx" />
+    <Content Include="ClientConfigInfo.aspx" />
+    <Content Include="ContractList.aspx" />
+    <Content Include="CustomerModel.txt" />
+    <Content Include="flashpeak.css" />
+    <Content Include="index.aspx" />
+    <Content Include="js\jquery-1.10.2.min.js" />
+    <Content Include="model.txt" />
+    <Content Include="pythonmodel.txt" />
+    <Content Include="Search.aspx" />
+    <Content Include="SolutionsList.aspx" />
+    <Content Include="UnitTest.aspx" />
+    <Content Include="UpParamInfo.aspx" />
+    <Content Include="SolutionAdd.aspx" />
+    <Content Include="ActionIDDefine.txt" />
+    <Content Include="AgreementList.aspx" />
+    <Content Include="AgreementAdd.aspx" />
+    <Compile Include="ClientConfigInfo.aspx.cs">
+      <DependentUpon>ClientConfigInfo.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="ClientConfigInfo.aspx.designer.cs">
+      <DependentUpon>ClientConfigInfo.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="ContractList.aspx.cs">
+      <DependentUpon>ContractList.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="ContractList.aspx.designer.cs">
+      <DependentUpon>ContractList.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="index.aspx.cs">
+      <DependentUpon>index.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="index.aspx.designer.cs">
+      <DependentUpon>index.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Mainfun.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Search.aspx.cs">
+      <DependentUpon>Search.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Search.aspx.designer.cs">
+      <DependentUpon>Search.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="SolutionsList.aspx.cs">
+      <DependentUpon>SolutionsList.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="SolutionsList.aspx.designer.cs">
+      <DependentUpon>SolutionsList.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="UnitTest.aspx.cs">
+      <DependentUpon>UnitTest.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="UnitTest.aspx.designer.cs">
+      <DependentUpon>UnitTest.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="UpParamInfo.aspx.cs">
+      <DependentUpon>UpParamInfo.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="UpParamInfo.aspx.designer.cs">
+      <DependentUpon>UpParamInfo.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="SolutionAdd.aspx.cs">
+      <DependentUpon>SolutionAdd.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="SolutionAdd.aspx.designer.cs">
+      <DependentUpon>SolutionAdd.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="AgreementList.aspx.cs">
+      <DependentUpon>AgreementList.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="AgreementList.aspx.designer.cs">
+      <DependentUpon>AgreementList.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="AgreementAdd.aspx.cs">
+      <DependentUpon>AgreementAdd.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="AgreementAdd.aspx.designer.cs">
+      <DependentUpon>AgreementAdd.aspx</DependentUpon>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\BLL\BLL.csproj">
+      <Project>{23033BD6-6888-4E71-B688-CB197A689635}</Project>
+      <Name>BLL</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\model\Model.csproj">
+      <Project>{C495B70E-922F-438E-98DC-318311A3C499}</Project>
+      <Name>Model</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="App_Data\" />
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <Import Project="$(MSBuildExtensionsPath)\Microsoft\VisualStudio\v9.0\WebApplications\Microsoft.WebApplication.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+  <ProjectExtensions>
+    <VisualStudio>
+      <FlavorProperties GUID="{349c5851-65df-11da-9384-00065b846f21}">
+        <WebProjectProperties>
+          <UseIIS>False</UseIIS>
+          <AutoAssignPort>True</AutoAssignPort>
+          <DevelopmentServerPort>38047</DevelopmentServerPort>
+          <DevelopmentServerVPath>/</DevelopmentServerVPath>
+          <IISUrl>
+          </IISUrl>
+          <NTLMAuthentication>False</NTLMAuthentication>
+          <SaveServerSettingsInUserFile>False</SaveServerSettingsInUserFile>
+        </WebProjectProperties>
+      </FlavorProperties>
+    </VisualStudio>
+  </ProjectExtensions>
+</Project>

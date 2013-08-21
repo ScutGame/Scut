@@ -1,0 +1,37 @@
+﻿using System;
+using System.Data;
+##RefNamespace##
+
+namespace ##Namespace##
+{
+   
+    /// <summary>
+    /// ##Description##
+    /// </summary>
+    public class Action##ID## : BaseAction
+    {
+        ##Field##
+
+        public Action##ID##(HttpGet httpGet)
+            : base(ActionIDDefine.Cst_Action##ID##, httpGet)
+        {
+            
+        }
+
+        public override void BuildPacket()
+        {
+##johc##
+        }
+
+        public override bool GetUrlElement()
+        {
+##Judge##
+            return false;
+        }
+
+        public override bool TakeAction()
+        {
+            return true;
+        }
+    }
+}
