@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Configuration;
 using System.Data;
 using System.Drawing;
 using System.Linq;
@@ -11,6 +12,8 @@ using LuaInterface;
 using Scut.Client.Net;
 using Scut.Client.Runtime;
 using ZyGames.Framework.Common;
+using ZyGames.Framework.Common.Configuration;
+using ZyGames.Framework.Common.Security;
 using ZyGames.Framework.RPC.IO;
 using ZyGames.Framework.RPC.Sockets;
 
@@ -18,7 +21,7 @@ namespace ScutClientSimulator
 {
     public partial class Main : Form
     {
-        private ResponseLog _responseLog = new ResponseLog(100);
+        private ResponseLog _responseLog = new ResponseLog(1000);
         private Thread _watchThread;
         private UserToken _token = new UserToken();
 
@@ -28,13 +31,8 @@ namespace ScutClientSimulator
             rtxtResponse.ReadOnly = true;
             LuaRuntime.GetContext().RegisterFunc("LogWriteLine", _responseLog, _responseLog.GetType().GetMethod("WriteLine"));
             LuaRuntime.GetContext().RegisterFunc("LogWriteTable", _responseLog, _responseLog.GetType().GetMethod("WriteTable"));
-
+            InitConfig();
             TcpRequest.Instance().ReceiveCompleted += OnReceiveCompleted;
-            _token.Pid = "z633140";
-            _token.Pwd = "%25A9%25F0%2506m%2508%25D9%25EB%2528O%25BDYR9%25AA%2583%25D0";
-            _token.DeviceID = "00-00-00-00-01";
-            _token.MobileType = 4;
-            _token.RetailID = "0000";
 
             _watchThread = new Thread(obj =>
             {
@@ -45,6 +43,35 @@ namespace ScutClientSimulator
                     Thread.Sleep(100);
                 }
             });
+        }
+
+        private void InitConfig()
+        {
+            txtHost.Text = ConfigUtils.GetSetting("User.Host");
+            txtPort.Text = ConfigUtils.GetSetting("User.Port");
+            txtAction.Text = ConfigUtils.GetSetting("User.ActionId");
+            txtGameType.Text = ConfigUtils.GetSetting("User.GameType");
+            txtServerID.Text = ConfigUtils.GetSetting("User.ServerID");
+            txtRetailID.Text = ConfigUtils.GetSetting("User.RetailID");
+            txtPid.Text = ConfigUtils.GetSetting("User.Pid");
+            txtPwd.Text = ConfigUtils.GetSetting("User.Pwd");
+            _token.DeviceID = ConfigUtils.GetSetting("User.DeviceID", "00-00-00-00-01");
+            _token.MobileType = ConfigUtils.GetSetting("User.MobileType", "5").ToInt();
+        }
+
+        private void SetConfig(string host, int port, int actionId, UserToken token, string pwd)
+        {
+            ConfigurationUtils.GetInstance().updateSeeting("User.Host", host);
+            ConfigurationUtils.GetInstance().updateSeeting("User.Port", port.ToString());
+            ConfigurationUtils.GetInstance().updateSeeting("User.ActionId", actionId.ToString());
+            ConfigurationUtils.GetInstance().updateSeeting("User.GameType", token.GameType.ToString());
+            ConfigurationUtils.GetInstance().updateSeeting("User.ServerID", token.ServerID.ToString());
+            ConfigurationUtils.GetInstance().updateSeeting("User.RetailID", token.RetailID);
+            ConfigurationUtils.GetInstance().updateSeeting("User.Pid", token.Pid);
+            ConfigurationUtils.GetInstance().updateSeeting("User.Pwd", pwd);
+            ConfigurationUtils.GetInstance().updateSeeting("User.DeviceID", token.DeviceID);
+            ConfigurationUtils.GetInstance().updateSeeting("User.MobileType", token.MobileType.ToString());
+            ConfigurationUtils.GetInstance().save();
         }
 
         private void Main_Load(object sender, EventArgs e)
@@ -59,8 +86,14 @@ namespace ScutClientSimulator
                 string host = txtHost.Text;
                 int port = txtPort.Text.ToInt();
                 int actionId = txtAction.Text.ToInt();
+                string pwd = txtPwd.Text.Trim();
                 _token.GameType = txtGameType.Text.ToInt();
                 _token.ServerID = txtServerID.Text.ToInt();
+                _token.RetailID = txtRetailID.Text.Trim();
+                _token.Pid = txtPid.Text.Trim();
+                _token.Pwd = EncodePwdAndUrlEncode(pwd);
+                SetConfig(host, port, actionId, _token, pwd);
+
                 string funName = string.Format("Action{0}", actionId);
                 ScutWriter.getInstance().writeHead(_token.Sid, _token.Uid.ToInt());
                 ScutWriter.getInstance().writeInt32("ActionId", actionId);
@@ -80,6 +113,12 @@ namespace ScutClientSimulator
             {
                 ResponseReflesh();
             }
+        }
+
+        private string EncodePwdAndUrlEncode(string pwd)
+        {
+            pwd = new DESAlgorithmNew().EncodePwd(pwd, ConfigUtils.GetSetting("User.Password.EncodeKey"));
+            return System.Web.HttpUtility.UrlEncode(pwd);
         }
 
         private void OnReceiveCompleted(SocketClient sender, byte[] data)

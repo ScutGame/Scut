@@ -45,6 +45,7 @@
       <HintPath>..\..\..\FrameworkPublish\Release\4.0\Lua\LuaInterface.dll</HintPath>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.configuration" />
     <Reference Include="System.Core" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Web" />
@@ -75,6 +76,7 @@
     <Compile Include="Net\UserToken.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Runtime\ConfigurationUtils.cs" />
     <Compile Include="Runtime\LuaContext.cs" />
     <Compile Include="Runtime\LuaRuntime.cs" />
   </ItemGroup>

@@ -33,18 +33,24 @@
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.btnClearLog = new System.Windows.Forms.Button();
             this.btnRequest = new System.Windows.Forms.Button();
+            this.txtServerID = new System.Windows.Forms.TextBox();
+            this.txtGameType = new System.Windows.Forms.TextBox();
             this.txtPort = new System.Windows.Forms.TextBox();
+            this.label5 = new System.Windows.Forms.Label();
             this.txtAction = new System.Windows.Forms.TextBox();
+            this.label4 = new System.Windows.Forms.Label();
             this.txtHost = new System.Windows.Forms.TextBox();
             this.label2 = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
             this.rtxtResponse = new System.Windows.Forms.RichTextBox();
-            this.label4 = new System.Windows.Forms.Label();
-            this.txtGameType = new System.Windows.Forms.TextBox();
-            this.label5 = new System.Windows.Forms.Label();
-            this.txtServerID = new System.Windows.Forms.TextBox();
+            this.txtPid = new System.Windows.Forms.TextBox();
+            this.label6 = new System.Windows.Forms.Label();
+            this.label7 = new System.Windows.Forms.Label();
+            this.txtPwd = new System.Windows.Forms.TextBox();
+            this.label8 = new System.Windows.Forms.Label();
+            this.txtRetailID = new System.Windows.Forms.TextBox();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
@@ -81,10 +87,16 @@
             // 
             // groupBox1
             // 
+            this.groupBox1.Controls.Add(this.txtPwd);
+            this.groupBox1.Controls.Add(this.label7);
+            this.groupBox1.Controls.Add(this.txtPid);
+            this.groupBox1.Controls.Add(this.label6);
             this.groupBox1.Controls.Add(this.btnClearLog);
             this.groupBox1.Controls.Add(this.btnRequest);
+            this.groupBox1.Controls.Add(this.txtRetailID);
             this.groupBox1.Controls.Add(this.txtServerID);
             this.groupBox1.Controls.Add(this.txtGameType);
+            this.groupBox1.Controls.Add(this.label8);
             this.groupBox1.Controls.Add(this.txtPort);
             this.groupBox1.Controls.Add(this.label5);
             this.groupBox1.Controls.Add(this.txtAction);
@@ -96,30 +108,46 @@
             this.groupBox1.Dock = System.Windows.Forms.DockStyle.Top;
             this.groupBox1.Location = new System.Drawing.Point(3, 0);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(397, 142);
+            this.groupBox1.Size = new System.Drawing.Size(397, 192);
             this.groupBox1.TabIndex = 0;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Socket请求";
             // 
             // btnClearLog
             // 
-            this.btnClearLog.Location = new System.Drawing.Point(300, 99);
+            this.btnClearLog.Location = new System.Drawing.Point(300, 151);
             this.btnClearLog.Name = "btnClearLog";
             this.btnClearLog.Size = new System.Drawing.Size(84, 23);
-            this.btnClearLog.TabIndex = 7;
+            this.btnClearLog.TabIndex = 10;
             this.btnClearLog.Text = "清空输出";
             this.btnClearLog.UseVisualStyleBackColor = true;
             this.btnClearLog.Click += new System.EventHandler(this.btnClearLog_Click);
             // 
             // btnRequest
             // 
-            this.btnRequest.Location = new System.Drawing.Point(71, 99);
+            this.btnRequest.Location = new System.Drawing.Point(71, 151);
             this.btnRequest.Name = "btnRequest";
             this.btnRequest.Size = new System.Drawing.Size(84, 23);
-            this.btnRequest.TabIndex = 6;
+            this.btnRequest.TabIndex = 9;
             this.btnRequest.Text = "发送请求";
             this.btnRequest.UseVisualStyleBackColor = true;
             this.btnRequest.Click += new System.EventHandler(this.btnLuaRunPath_Click);
+            // 
+            // txtServerID
+            // 
+            this.txtServerID.Location = new System.Drawing.Point(329, 56);
+            this.txtServerID.Name = "txtServerID";
+            this.txtServerID.Size = new System.Drawing.Size(55, 21);
+            this.txtServerID.TabIndex = 5;
+            this.txtServerID.Text = "0";
+            // 
+            // txtGameType
+            // 
+            this.txtGameType.Location = new System.Drawing.Point(212, 56);
+            this.txtGameType.Name = "txtGameType";
+            this.txtGameType.Size = new System.Drawing.Size(55, 21);
+            this.txtGameType.TabIndex = 4;
+            this.txtGameType.Text = "0";
             // 
             // txtPort
             // 
@@ -129,6 +157,15 @@
             this.txtPort.TabIndex = 2;
             this.txtPort.Text = "0";
             // 
+            // label5
+            // 
+            this.label5.AutoSize = true;
+            this.label5.Location = new System.Drawing.Point(281, 61);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(53, 12);
+            this.label5.TabIndex = 0;
+            this.label5.Text = "分服ID：";
+            // 
             // txtAction
             // 
             this.txtAction.Location = new System.Drawing.Point(71, 56);
@@ -136,6 +173,15 @@
             this.txtAction.Size = new System.Drawing.Size(55, 21);
             this.txtAction.TabIndex = 3;
             this.txtAction.Text = "0";
+            // 
+            // label4
+            // 
+            this.label4.AutoSize = true;
+            this.label4.Location = new System.Drawing.Point(159, 61);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(53, 12);
+            this.label4.TabIndex = 0;
+            this.label4.Text = "游戏ID：";
             // 
             // txtHost
             // 
@@ -195,39 +241,55 @@
             this.rtxtResponse.Text = "";
             this.rtxtResponse.WordWrap = false;
             // 
-            // label4
+            // txtPid
             // 
-            this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(159, 61);
-            this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(53, 12);
-            this.label4.TabIndex = 0;
-            this.label4.Text = "游戏ID：";
+            this.txtPid.Location = new System.Drawing.Point(71, 88);
+            this.txtPid.Name = "txtPid";
+            this.txtPid.Size = new System.Drawing.Size(196, 21);
+            this.txtPid.TabIndex = 6;
             // 
-            // txtGameType
+            // label6
             // 
-            this.txtGameType.Location = new System.Drawing.Point(212, 56);
-            this.txtGameType.Name = "txtGameType";
-            this.txtGameType.Size = new System.Drawing.Size(55, 21);
-            this.txtGameType.TabIndex = 4;
-            this.txtGameType.Text = "0";
+            this.label6.AutoSize = true;
+            this.label6.Location = new System.Drawing.Point(7, 91);
+            this.label6.Name = "label6";
+            this.label6.Size = new System.Drawing.Size(53, 12);
+            this.label6.TabIndex = 8;
+            this.label6.Text = "通行证：";
             // 
-            // label5
+            // label7
             // 
-            this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(281, 61);
-            this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(53, 12);
-            this.label5.TabIndex = 0;
-            this.label5.Text = "分服ID：";
+            this.label7.AutoSize = true;
+            this.label7.Location = new System.Drawing.Point(7, 124);
+            this.label7.Name = "label7";
+            this.label7.Size = new System.Drawing.Size(41, 12);
+            this.label7.TabIndex = 8;
+            this.label7.Text = "密码：";
             // 
-            // txtServerID
+            // txtPwd
             // 
-            this.txtServerID.Location = new System.Drawing.Point(329, 56);
-            this.txtServerID.Name = "txtServerID";
-            this.txtServerID.Size = new System.Drawing.Size(55, 21);
-            this.txtServerID.TabIndex = 5;
-            this.txtServerID.Text = "0";
+            this.txtPwd.Location = new System.Drawing.Point(71, 121);
+            this.txtPwd.Name = "txtPwd";
+            this.txtPwd.PasswordChar = '*';
+            this.txtPwd.Size = new System.Drawing.Size(196, 21);
+            this.txtPwd.TabIndex = 8;
+            // 
+            // label8
+            // 
+            this.label8.AutoSize = true;
+            this.label8.Location = new System.Drawing.Point(281, 93);
+            this.label8.Name = "label8";
+            this.label8.Size = new System.Drawing.Size(53, 12);
+            this.label8.TabIndex = 0;
+            this.label8.Text = "渠道号：";
+            // 
+            // txtRetailID
+            // 
+            this.txtRetailID.Location = new System.Drawing.Point(329, 88);
+            this.txtRetailID.Name = "txtRetailID";
+            this.txtRetailID.Size = new System.Drawing.Size(55, 21);
+            this.txtRetailID.TabIndex = 7;
+            this.txtRetailID.Text = "0000";
             // 
             // Main
             // 
@@ -271,5 +333,11 @@
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.TextBox txtServerID;
         private System.Windows.Forms.Label label5;
+        private System.Windows.Forms.TextBox txtPwd;
+        private System.Windows.Forms.Label label7;
+        private System.Windows.Forms.TextBox txtPid;
+        private System.Windows.Forms.Label label6;
+        private System.Windows.Forms.TextBox txtRetailID;
+        private System.Windows.Forms.Label label8;
     }
 }
