@@ -37,7 +37,7 @@
     </Reference>
     <Reference Include="StructService2.0, Version=2.0.1.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\通用DLL\1.1\StructService2.0.dll</HintPath>
+      <HintPath>..\..\..\..\Lib\Plugin\StructService2.0.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.configuration" />
@@ -57,19 +57,19 @@
     <Reference Include="System.Xml" />
     <Reference Include="ZyGames.Core, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\通用DLL\ZyGames.Core.dll</HintPath>
+      <HintPath>..\..\..\..\Lib\Plugin\ZyGames.Core.dll</HintPath>
     </Reference>
     <Reference Include="ZyGames.SimpleManager.DataAccess, Version=1.0.1.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\通用DLL\SimpleManagerProject\ZyGames.SimpleManager.DataAccess.dll</HintPath>
+      <HintPath>..\..\..\..\Lib\Plugin\ZyGames.SimpleManager.DataAccess.dll</HintPath>
     </Reference>
     <Reference Include="ZyGames.SimpleManager.Model, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\通用DLL\SimpleManagerProject\ZyGames.SimpleManager.Model.dll</HintPath>
+      <HintPath>..\..\..\..\Lib\Plugin\ZyGames.SimpleManager.Model.dll</HintPath>
     </Reference>
-    <Reference Include="ZyGames.SimpleManager.Service, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="ZyGames.SimpleManager.Service, Version=1.0.0.1, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\通用DLL\SimpleManagerProject\ZyGames.SimpleManager.Service.dll</HintPath>
+      <HintPath>..\..\..\..\Lib\Plugin\ZyGames.SimpleManager.Service.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>

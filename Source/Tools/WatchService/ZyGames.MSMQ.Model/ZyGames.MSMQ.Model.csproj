@@ -46,7 +46,7 @@
     <Reference Include="System.Xml" />
     <Reference Include="ZyGames.Core, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\通用DLL\ZyGames.Core.dll</HintPath>
+      <HintPath>..\..\..\..\Lib\Plugin\ZyGames.Core.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>

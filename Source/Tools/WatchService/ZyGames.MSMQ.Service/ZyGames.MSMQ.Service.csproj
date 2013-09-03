@@ -31,9 +31,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="StructService2.0, Version=2.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="StructService2.0, Version=2.0.1.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\通用DLL\1.1\StructService2.0.dll</HintPath>
+      <HintPath>..\..\..\..\Lib\Plugin\StructService2.0.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.configuration" />
@@ -51,11 +51,11 @@
     <Reference Include="System.Xml" />
     <Reference Include="ZyGames.Base.Common, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\通用DLL\ZyGamesBase\ZyGames.Base.Common.dll</HintPath>
+      <HintPath>..\..\..\..\Lib\Plugin\ZyGames.Base.Common.dll</HintPath>
     </Reference>
     <Reference Include="ZyGames.Core, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\通用DLL\ZyGames.Core.dll</HintPath>
+      <HintPath>..\..\..\..\Lib\Plugin\ZyGames.Core.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
