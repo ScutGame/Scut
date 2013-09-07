@@ -11,6 +11,11 @@ namespace ZyGames.Framework.RPC.Wcf
         /// 
         /// </summary>
         Success,
+        
+        /// <summary>
+        /// 
+        /// </summary>
+        Closed,
         /// <summary>
         /// 未能找到服务
         /// </summary>

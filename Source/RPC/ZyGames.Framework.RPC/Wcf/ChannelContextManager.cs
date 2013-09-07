@@ -17,7 +17,7 @@ namespace ZyGames.Framework.RPC.Wcf
     /// <summary>
     /// 服务连接池管理
     /// </summary>
-    public class ChannelContextManager
+    public class ChannelContextManager : IDisposable
     {
         private static ChannelContextManager _instance;
 
@@ -37,14 +37,28 @@ namespace ZyGames.Framework.RPC.Wcf
             _instance = new ChannelContextManager();
         }
 
-        private readonly ConcurrentDictionary<string, ChannelContext> _pools;
-        private int _identityId;
+        private ChannelContext _context;
 
         private ChannelContextManager()
         {
-            _pools = new ConcurrentDictionary<string, ChannelContext>();
+
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        internal void Init()
+        {
+            _context = new ChannelContext();
+            if (OnRequested != null)
+                _context.OnRequested += new RequestHandle(OnRequested);
+            if (OnCallRemote != null)
+                _context.OnCallRemote += new CallRemoteHandle(OnCallRemote);
+            if (OnClosing != null)
+                _context.OnClosed += new ClosingHandle(OnClosing);
+            if (OnSocketClosed != null)
+                _context.OnSocketClosed += new ClosingHandle(OnSocketClosed);
+        }
         /// <summary>
         /// 开始处理请求
         /// </summary>
@@ -73,16 +87,17 @@ namespace ZyGames.Framework.RPC.Wcf
         {
             get
             {
-                return _identityId;
+                return _context.IdentityId;
             }
         }
-
-        private string _currentSessionId;
+        /// <summary>
+        /// 
+        /// </summary>
         public string CurrentSessionId
         {
             get
             {
-                return _currentSessionId;
+                return _context.SessionId;
             }
         }
         /// <summary>
@@ -92,7 +107,7 @@ namespace ZyGames.Framework.RPC.Wcf
         {
             get
             {
-                return GetChannel(_currentSessionId);
+                return _context;
             }
         }
 
@@ -101,25 +116,21 @@ namespace ZyGames.Framework.RPC.Wcf
         /// </summary>
         public void Bind(int identityId = 0)
         {
-            _identityId = identityId;
-            lock (_instance)
+            OperationContext opContext = OperationContext.Current;
+            if (opContext != null)
             {
-                OperationContext opContext = OperationContext.Current;
-                if (opContext != null)
+#if DEBUG
+                    //todo test
+                    Console.WriteLine("{0}>>bind Sid:{1}", DateTime.Now.ToLongTimeString(), opContext.SessionId);
+#endif
+                opContext.Channel.Closing += ChannelClosing;
+                opContext.Channel.Faulted += ChannelClosing;
+
+                if (_context.SessionId != opContext.SessionId)
                 {
-                    _currentSessionId = opContext.SessionId;
-                    if (!ContainsKey(_currentSessionId))
-                    {
-                        opContext.Channel.Closing += ChannelClosing;
-                        opContext.Channel.Faulted += ChannelClosing;
-                        var channelContext = new ChannelContext(_currentSessionId, identityId, opContext);
-                        channelContext.OnRequested += new RequestHandle(OnRequested);
-                        channelContext.OnCallRemote += new CallRemoteHandle(OnCallRemote);
-                        channelContext.OnClosed += new ClosingHandle(OnClosing);
-                        channelContext.OnSocketClosed += new ClosingHandle(OnSocketClosed);
-                        PutIntoPool(_currentSessionId, channelContext);
-                    }
+                    _context.Operation = opContext;
                 }
+                _context.IsClosed = false;
             }
         }
 
@@ -141,8 +152,7 @@ namespace ZyGames.Framework.RPC.Wcf
         /// <param name="buffer"></param>
         public bool Notify(string sessionId, string param, byte[] buffer)
         {
-            var context = GetChannel(sessionId);
-            return NotifyChannelReceive(context, param, buffer);
+            return NotifyChannelReceive(_context, param, buffer);
         }
 
         /// <summary>
@@ -150,55 +160,33 @@ namespace ZyGames.Framework.RPC.Wcf
         /// </summary>
         /// <param name="param"></param>
         /// <param name="buffer"></param>
+        [Obsolete("method is removed", true)]
         public void NotifyAll(string param, byte[] buffer)
         {
-            NotifyAll(x => true, param, buffer);
+            //NotifyAll(x => true, param, buffer);
         }
 
-        /// <summary>
-        /// 以身份标识获取匹配的上下文通道
-        /// </summary>
-        /// <param name="match">匹配多个连接通道</param>
-        /// <param name="param">发下参数</param>
-        /// <param name="buffer"></param>
-        public void NotifyAll(Predicate<string> match, string param, byte[] buffer)
-        {
-            var list = GetChannel(match);
-            foreach (var context in list)
-            {
-                if (context != null)
-                {
-                    NotifyChannelReceive(context, param, buffer);
-                }
-            }
-        }
 
         private bool NotifyChannelReceive(ChannelContext context, string param, byte[] buffer)
         {
-            if (context != null)
+            //并发 
+            lock (_instance)
             {
-                var callback = context.GetCallback();
-                if (callback == null)
+                if (context != null && context.IsConnect)
                 {
-                    return false;
-                }
-                //并发 
-                lock (_instance)
-                {
-                    string sessionId = context.SessionId;
                     try
                     {
-                        callback.Receive(param, buffer);
-                        if (context.IsClosed)
+                        var callback = context.GetCallback();
+                        if (callback == null)
                         {
-                            callback.Close();
+                            return false;
                         }
+                        callback.Receive(param, buffer);
                         return true;
                     }
                     catch (Exception ex)
                     {
                         context.IsClosed = true;
-                        Remove(sessionId);
                         TraceLog.WriteError("Notify:{0} {1}", param, ex);
                     }
                 }
@@ -208,50 +196,11 @@ namespace ZyGames.Framework.RPC.Wcf
 
 
         /// <summary>
-        /// 移除
+        /// 释放资源
         /// </summary>
-        /// <param name="sessionId"></param>
-        public bool Remove(string sessionId)
+        public void Dispose()
         {
-            ChannelContext context;
-            if (_pools.TryRemove(sessionId, out context))
-            {
-                context.Dispose();
-                return true;
-            }
-            return false;
-        }
-
-        /// <summary>
-        /// 清除
-        /// </summary>
-        public void Clear()
-        {
-            Foreach((key, channel) =>
-            {
-                if (channel != null)
-                {
-                    channel.Dispose();
-                }
-                return true;
-            });
-            _pools.Clear();
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="func"></param>
-        public void Foreach(Func<string, ChannelContext, bool> func)
-        {
-            var e = _pools.GetEnumerator();
-            while (e.MoveNext())
-            {
-                if (!func(e.Current.Key, e.Current.Value))
-                {
-                    break;
-                }
-            }
+            _context.Dispose();
         }
 
         /// <summary>
@@ -268,90 +217,28 @@ namespace ZyGames.Framework.RPC.Wcf
                 {
                     return;
                 }
-                Foreach((sessionId, channel) =>
+                if (_context != null && _context.GetCallback() == callback && !_context.IsClosed)
                 {
-                    if (channel != null && channel.GetCallback() == callback)
+                    _context.IsClosed = true;
+                    try
                     {
-                        channel.IsClosed = true;
-                        try
+                        if (OnClosing != null)
                         {
-                            if (OnClosing != null)
-                            {
-                                //业务层通知
-                                OnClosing(channel, channel.RemoteAddress);
-                            }
+                            //业务层通知
+                            OnClosing(_context, _context.RemoteAddress);
                         }
-                        catch (Exception er)
-                        {
-                            TraceLog.WriteError("Business notify closing error:{0}", er);
-                        }
-                        TraceLog.ReleaseWrite("WcfChannel:{0} is closed.", sessionId);
-                        return false;
                     }
-                    return true;
-                });
+                    catch (Exception er)
+                    {
+                        TraceLog.WriteError("Business notify closing error:{0}", er);
+                    }
+                }
 
             }
             catch (Exception ex)
             {
                 TraceLog.WriteError("ChannelClosing:{0}", ex);
             }
-        }
-
-        private bool ContainsKey(string sessionId)
-        {
-            return _pools.ContainsKey(sessionId);
-        }
-
-        private void PutIntoPool(string sessionId, ChannelContext context)
-        {
-            ChannelContext oldValue;
-            if (_pools.TryGetValue(sessionId, out oldValue))
-            {
-                _pools.TryUpdate(sessionId, context, oldValue);
-            }
-            else
-            {
-                _pools.TryAdd(sessionId, context);
-            }
-        }
-
-
-        /// <summary>
-        /// 获取当前上下文通道
-        /// </summary>
-        /// <param name="sessionId"></param>
-        /// <exception cref="NullReferenceException"></exception>
-        private ChannelContext GetChannel(string sessionId)
-        {
-            ChannelContext context;
-            if (_pools.TryGetValue(sessionId, out context))
-            {
-                return context;
-            }
-            return null;
-        }
-
-        /// <summary>
-        /// 以身份标识获取匹配的上下文通道
-        /// </summary>
-        /// <param name="match"></param>
-        /// <returns></returns>
-        private List<ChannelContext> GetChannel(Predicate<string> match)
-        {
-            List<ChannelContext> list = new List<ChannelContext>();
-            Foreach((sessionId, channel) =>
-            {
-                if (channel != null)
-                {
-                    if (match(sessionId))
-                    {
-                        list.Add(channel);
-                    }
-                }
-                return true;
-            });
-            return list;
         }
 
     }

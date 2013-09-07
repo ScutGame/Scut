@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Management.Instrumentation;
 using System.Net;
 using System.Net.Sockets;
 using System.ServiceModel;
@@ -18,29 +19,20 @@ namespace ZyGames.Framework.RPC.Wcf
     public class WcfServiceProxy : IDisposable
     {
         private ServiceHost _serviceHost;
-        private string _ipAddress;
-        private int _port;
-        private string _serviceUrl;
+        private BindingBehaviorSetting _setting;
 
-
+        /// <summary>
+        /// 
+        /// </summary>
         public WcfServiceProxy()
         {
-            _ipAddress = "";
-            _serviceUrl = "";
         }
         /// <summary>
         /// 
         /// </summary>
-        public string IPAddress
+        public WcfServiceProxy(BindingBehaviorSetting setting)
         {
-            get { return _ipAddress; }
-        }
-        /// <summary>
-        /// 
-        /// </summary>
-        public int Port
-        {
-            get { return _port; }
+            _setting = setting;
         }
 
         /// <summary>
@@ -48,86 +40,42 @@ namespace ZyGames.Framework.RPC.Wcf
         /// </summary>
         public string ServiceUrl
         {
-            get { return _serviceUrl; }
+            get { return _setting.Url; }
         }
-
+        /// <summary>
+        /// Wcf配置
+        /// </summary>
+        public BindingBehaviorSetting Setting
+        {
+            get { return _setting; }
+            set { _setting = value; }
+        }
+        /// <summary>
+        /// 
+        /// </summary>
         public event EventHandler ClosedHandle;
 
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="port"></param>
-        /// <param name="connectTimeout"></param>
-        /// <param name="inactivityTimeout"></param>
-        /// <param name="connectionCount"></param>
-        public void Listen(int port, int connectTimeout = 10, int inactivityTimeout = 30, int connectionCount = 100)
+        public void Listen()
         {
-            Listen(port, new TimeSpan(0, 0, connectTimeout), TimeSpan.MaxValue, new TimeSpan(0, 0, inactivityTimeout), connectionCount);
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="port"></param>
-        /// <param name="connectTimeout">建立连接和传送数据的超时间</param>
-        /// <param name="receiveTimeout">保持连接的情况下，空闲超时触发Closing事件</param>
-        /// <param name="inactivityTimeout">连接断开的情况下，空闲超时触发Faulted事件,要小于receiveTimeout时间间隔</param>
-        /// <param name="connectionCount">并发连接数</param>
-        public void Listen(int port, TimeSpan connectTimeout, TimeSpan receiveTimeout, TimeSpan inactivityTimeout, int connectionCount = 100)
-        {
-            IPAddress[] addressList = Dns.GetHostEntry(Environment.MachineName).AddressList;
-            string localIp = "127.0.0.1";
-            foreach (IPAddress ip in addressList)
+            if (_setting == null)
             {
-                if (ip.AddressFamily == AddressFamily.InterNetwork)
-                {
-                    localIp = ip.ToString();
-                    break;
-                }
+                throw new InstanceNotFoundException("The setting is empty.");
             }
-            Listen(localIp, port, connectTimeout, receiveTimeout, inactivityTimeout, connectionCount);
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="ip"></param>
-        /// <param name="port"></param>
-        /// <param name="connectTimeout"></param>
-        /// <param name="inactivityTimeout"></param>
-        /// <param name="connectionCount"></param>
-        public void Listen(string ip, int port, int connectTimeout = 10, int inactivityTimeout = 30, int connectionCount = 100)
-        {
-            Listen(ip, port, new TimeSpan(0, 0, connectTimeout), TimeSpan.MaxValue, new TimeSpan(0, 0, inactivityTimeout), connectionCount);
-
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="ip"></param>
-        /// <param name="port"></param>
-        /// <param name="connectTimeout">建立连接和传送数据的超时间</param>
-        /// <param name="receiveTimeout">保持连接的情况下，空闲超时触发Closing事件</param>
-        /// <param name="inactivityTimeout">连接断开的情况下，空闲超时触发Faulted事件,要小于receiveTimeout时间间隔</param>
-        /// <param name="connectionCount">并发连接数</param>
-        public void Listen(string ip, int port, TimeSpan connectTimeout, TimeSpan receiveTimeout, TimeSpan inactivityTimeout, int connectionCount)
-        {
-            _ipAddress = ip;
-            _port = port;
-            _serviceUrl = string.Format("net.tcp://{0}:{1}/WcfService", ip, port);
-            Uri baseAddress = new Uri(_serviceUrl);
+            ChannelContextManager.Current.Init();
+            Uri baseAddress = new Uri(_setting.Url);
             _serviceHost = new ServiceHost(typeof(WcfService), baseAddress);
             //Set binding
             NetTcpBinding binding = new NetTcpBinding();
             binding.ReliableSession.Enabled = true;
-            binding.ReliableSession.InactivityTimeout = inactivityTimeout;
+            binding.ReliableSession.InactivityTimeout = _setting.InactivityTimeout;
             binding.Security.Mode = SecurityMode.None;
-            binding.OpenTimeout = connectTimeout;
-            binding.SendTimeout = connectTimeout;
-            binding.OpenTimeout = connectTimeout;
-            binding.CloseTimeout = connectTimeout;
-            binding.ReceiveTimeout = receiveTimeout;
+            binding.OpenTimeout = _setting.ConnectTimeout;
+            binding.CloseTimeout = _setting.ConnectTimeout;
+            binding.SendTimeout = _setting.SendTimeout;
+            binding.ReceiveTimeout = _setting.ReceiveTimeout;
             //Add endpoints
             var contract = ContractDescription.GetContract(typeof(IWcfService));
             ServiceEndpoint endpoint = new ServiceEndpoint(contract, binding, new EndpointAddress(baseAddress));
@@ -136,9 +84,9 @@ namespace ZyGames.Framework.RPC.Wcf
             ServiceMetadataBehavior behavior = new ServiceMetadataBehavior();
             _serviceHost.Description.Behaviors.Add(behavior);
             var throttling = new ServiceThrottlingBehavior();
-            throttling.MaxConcurrentCalls = connectionCount;
-            throttling.MaxConcurrentInstances = connectionCount;
-            throttling.MaxConcurrentSessions = connectionCount;
+            throttling.MaxConcurrentCalls = _setting.MaxConcurrentCalls;
+            throttling.MaxConcurrentInstances = _setting.MaxConcurrentInstances;
+            throttling.MaxConcurrentSessions = _setting.MaxConcurrentSessions;
             _serviceHost.Description.Behaviors.Add(throttling);
 
             _serviceHost.Closing += OnServiceClosing;
@@ -154,25 +102,13 @@ namespace ZyGames.Framework.RPC.Wcf
                 {
                     ClosedHandle(sender, e);
                 }
-                ChannelContextManager.Current.Foreach((identity, channel) =>
+                TraceLog.ReleaseWrite("WcfChannel:{0} callback is closed.", ChannelContextManager.Current.IdentityId);
+                var callback = ChannelContextManager.Current.CurrentChannel.GetCallback();
+                if (callback != null)
                 {
-                    try
-                    {
-                        if (channel != null)
-                        {
-                            TraceLog.ReleaseWrite("WcfChannel:{0} callback is closed.", identity);
-                            var callback = channel.GetCallback();
-                            if (callback != null)
-                            {
-                                callback.Close();
-                            }
-                        }
-                    }
-                    catch
-                    {
-                    }
-                    return true;
-                });
+                    callback.Closing();
+                }
+
             }
             catch (Exception ex)
             {

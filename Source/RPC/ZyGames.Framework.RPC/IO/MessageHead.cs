@@ -83,13 +83,13 @@ namespace ZyGames.Framework.RPC.IO
         public int PacketLength
         {
             get;
-            set;
+            internal set;
         }
 
         /// <summary>
         /// Gzip压缩包的长度
         /// </summary>
-        public int GzipLength { get; set; }
+        public int GzipLength { get; internal set; }
 
         /// <summary>
         /// 消息体总字节
@@ -97,7 +97,7 @@ namespace ZyGames.Framework.RPC.IO
         public int TotalLength
         {
             get;
-            set;
+            internal set;
         }
         /// <summary>
         /// Push:固定下发0,R-R:下发请求的MsgId
@@ -141,7 +141,7 @@ namespace ZyGames.Framework.RPC.IO
         }
 
         /// <summary>
-        /// 是否Gzip压缩
+        /// 是否包括Gzip压缩头部长度信息
         /// </summary>
         public bool HasGzip { get; set; }
 

@@ -20,6 +20,6 @@ namespace ZyGames.Framework.RPC.Wcf
         /// 通知关闭
         /// </summary>
         [OperationContract(IsOneWay = true)]
-        void Close();
+        void Closing();
     }
 }

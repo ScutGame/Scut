@@ -41,7 +41,7 @@ namespace ZyGames.Framework.RPC.Wcf
 
         public event EventHandler OnClosed;
 
-        public void Close()
+        public void Closing()
         {
             if (OnClosed != null)
             {

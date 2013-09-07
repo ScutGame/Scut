@@ -23,6 +23,16 @@ namespace ZyGames.Framework.RPC.Sockets
         private readonly int _socketTimeout;
         private CacheListener _sessioinListen;
         private AutoResetEvent[] resetEvent;
+        private SocketAsyncEventArgs acceptEventArg;
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public event Action<SocketAsyncEventArgs> ConnectBefore;
+        /// <summary>
+        /// 
+        /// </summary>
+        public event Action<SocketAsyncEventArgs> ConnectAfter;
 
         /// <summary>
         /// 连接关闭事件
@@ -53,17 +63,24 @@ namespace ZyGames.Framework.RPC.Sockets
                     var list = SocketSessionPool.Current.ToList();
                     foreach (var socketArgs in list)
                     {
-                        var session = socketArgs.UserToken as SocketSession;
-                        if (session == null || session.AccessTime > DateTime.Now.AddSeconds(-_socketTimeout))
+                        try
                         {
-                            continue;
+                            var session = socketArgs.UserToken as SocketSession;
+                            if (session == null || session.AccessTime > DateTime.Now.AddSeconds(-_socketTimeout))
+                            {
+                                continue;
+                            }
+                            if (socketArgs.BytesTransferred == 0 && socketArgs.SocketError != SocketError.Success)
+                            {
+                                session.OnNotifyClosed();
+                                SocketSessionPool.Current.Remove(socketArgs);
+                                readWritePool.ReleaseSAEAToPush(socketArgs);
+                                TraceLog.ReleaseWrite("Clear disposed socket connection {0}", session.RemoteAddress);
+                            }
                         }
-                        if (socketArgs.BytesTransferred == 0 && socketArgs.SocketError != SocketError.Success)
+                        catch (Exception e)
                         {
-                            TraceLog.ReleaseWrite("Clear expired socket connection {0}", session.RemoteAddress);
-                            session.OnClosed();
-                            SocketSessionPool.Current.Remove(socketArgs);
-                            readWritePool.ReleaseSAEAToPush(socketArgs);
+                            TraceLog.WriteError("SocketSessionPool disposed SAEA object error:{0}", e);
                         }
                     }
                     TraceLog.ReleaseWrite("Clear expired socket connection end...");
@@ -171,7 +188,7 @@ namespace ZyGames.Framework.RPC.Sockets
                 TraceLog.ReleaseWrite("The socket-server {0}:{1} is listenning", localEndPoint.Address, localEndPoint.Port);
                 // Post accepts on the listening socket.);
 
-                var acceptEventArg = new SocketAsyncEventArgs();
+                acceptEventArg = new SocketAsyncEventArgs();
                 acceptEventArg.Completed += OnAcceptCompleted;
                 StartAccept(acceptEventArg);
                 return true;
@@ -242,9 +259,10 @@ namespace ZyGames.Framework.RPC.Sockets
                         }
                         else
                         {
-                            session.OnClosed();
-                            SocketSessionPool.Current.Remove(handle);
-                            readWritePool.ReleaseSAEAToPush(handle);
+                            session.OnNotifyClosed();
+                            //注释原因：自动定时回收
+                            //SocketSessionPool.Current.Remove(handle);
+                            //readWritePool.ReleaseSAEAToPush(handle);
                             if (faildHandle != null)
                             {
                                 faildHandle(session);
@@ -286,20 +304,33 @@ namespace ZyGames.Framework.RPC.Sockets
 
         private void OnAcceptCompleted(object sender, SocketAsyncEventArgs e)
         {
-            ProcessAccept(e);
+            try
+            {
+                ProcessAccept(e);
+            }
+            catch (Exception ex)
+            {
+                TraceLog.WriteError("OnAccept error:{0}", ex);
+            }
         }
 
         private void ProcessAccept(SocketAsyncEventArgs acceptEventArg)
         {
-            Socket clientSocket = acceptEventArg.AcceptSocket;
-            if (!clientSocket.Connected)
-            {
-                return;
-            }
             try
             {
                 WaitHandle.WaitAll(resetEvent);
                 resetEvent[0].Set();
+                if (ConnectBefore != null)
+                {
+                    ConnectBefore(acceptEventArg);
+                }
+                Socket clientSocket = acceptEventArg.AcceptSocket;
+                if (clientSocket == null)
+                {
+                    acceptEventArg.AcceptSocket = null;
+                    StartAccept(acceptEventArg);
+                    return;
+                }
                 SocketAsyncEventArgs readEventArgs = readWritePool.Pop();
                 if (readEventArgs != null)
                 {
@@ -333,6 +364,10 @@ namespace ZyGames.Framework.RPC.Sockets
                 TraceLog.WriteError("Listener error:{0}", ex.ToString());
             }
 
+            if (ConnectAfter != null)
+            {
+                ConnectAfter(acceptEventArg);
+            }
             // Accept the next connection request.
             acceptEventArg.AcceptSocket = null;
             StartAccept(acceptEventArg);

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.Text;
 using System.Threading;
 
@@ -17,6 +18,10 @@ namespace ZyGames.Framework.RPC.IO
         private const int ShortSize = 2;
         private const int ByteSize = 1;
         private const int BoolSize = 1;
+        /// <summary>
+        /// 启用Gzip压缩的最小字节
+        /// </summary>
+        private const int EnableGzipMinByte = 1024;
         private ConcurrentQueue<byte> _buffers;
         private ConcurrentQueue<object> _waitWriteBuffers = new ConcurrentQueue<object>();
         private int _offset;
@@ -28,19 +33,28 @@ namespace ZyGames.Framework.RPC.IO
         /// </summary>
         private int _currRecordSize;
 
+        /// <summary>
+        /// 
+        /// </summary>
         public MessageStructure()
         {
+            EnableGzip = true;
             _buffers = new ConcurrentQueue<byte>();
         }
         /// <summary>
         /// 
         /// </summary>
         /// <param name="buffer"></param>
-        public MessageStructure(byte[] buffer)
+        public MessageStructure(IEnumerable<byte> buffer)
         {
+            EnableGzip = true;
             _buffers = new ConcurrentQueue<byte>(buffer);
         }
 
+        /// <summary>
+        /// 开启Gzip压缩
+        /// </summary>
+        public bool EnableGzip { get; set; }
         /// <summary>
         /// 缓冲数据大小
         /// </summary>
@@ -182,7 +196,28 @@ namespace ZyGames.Framework.RPC.IO
         }
 
         /// <summary>
-        /// 读取缓冲数据
+        /// 获取缓冲区字节数据，不移除
+        /// </summary>
+        /// <param name="count"></param>
+        /// <returns></returns>
+        public byte[] PeekByte(int count)
+        {
+            byte[] data = new byte[count];
+            int index = 0;
+            foreach (var buffer in _buffers)
+            {
+                data[index] = buffer;
+                index++;
+                if (index >= count)
+                {
+                    break;
+                }
+            }
+            return data;
+        }
+
+        /// <summary>
+        /// 读取缓冲区从偏移量开始到结束的字节流
         /// </summary>
         /// <returns></returns>
         public byte[] ReadBuffer()
@@ -210,12 +245,12 @@ namespace ZyGames.Framework.RPC.IO
         }
 
         /// <summary>
-        /// 读取头部数据
+        /// 读取消息头
         /// </summary>
         /// <returns></returns>
         public MessageHead ReadHead()
         {
-            MessageHead head = new MessageHead(); 
+            MessageHead head = new MessageHead();
             head.PacketLength = Length;
             head.TotalLength = ReadInt();
             head.ErrorCode = ReadInt();
@@ -227,7 +262,7 @@ namespace ZyGames.Framework.RPC.IO
         }
 
         /// <summary>
-        /// Gzip压缩
+        /// 读取消息头，如果有Gzip压缩时自动解压字节流
         /// </summary>
         /// <returns></returns>
         public MessageHead ReadHeadGzip()
@@ -236,6 +271,13 @@ namespace ZyGames.Framework.RPC.IO
             head.HasGzip = true;
             head.PacketLength = Length;
             head.GzipLength = ReadInt();
+            if (CheckGzipBuffer())
+            {
+                byte[] gzipData = ReadBuffer();
+                //格式500+gzip( 1000+ XXXXXX)
+                byte[] deZipData = GzipUtils.DeCompress(gzipData, 0, gzipData.Length);
+                WriteByte(deZipData);
+            }
             head.TotalLength = ReadInt();
             head.ErrorCode = ReadInt();
             head.MsgId = ReadInt();
@@ -245,22 +287,41 @@ namespace ZyGames.Framework.RPC.IO
             return head;
         }
 
+        /// <summary>
+        /// 检查是否有压缩数据
+        /// </summary>
+        /// <returns></returns>
+        private bool CheckGzipBuffer()
+        {
+            byte[] data = PeekByte(IntSize);
+            return data[0] == 0x1f && data[1] == 0x8b && data[2] == 0x08 && data[3] == 0x00;
+        }
+
         #endregion ReadByte end
 
         #region WriteByte
-
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="value"></param>
         public void WriteByte(bool value)
         {
             byte[] bytes = BitConverter.GetBytes(value);//1
             WriteByte(bytes);
         }
-
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="value"></param>
         public void WriteByte(float value)
         {
             byte[] bytes = BitConverter.GetBytes(value);//4
             WriteByte(bytes);
         }
-
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="value"></param>
         public void WriteByte(double value)
         {
             byte[] bytes = BitConverter.GetBytes(value);//8
@@ -407,25 +468,62 @@ namespace ZyGames.Framework.RPC.IO
         }
 
         /// <summary>
+        /// 写入启用Gzip压缩的字节流
+        /// </summary>
+        /// <param name="buffer">未压缩的字节流</param>
+        public void WriteGzipBuffer(byte[] buffer)
+        {
+            int orgStackSize = BitConverter.ToInt32(buffer, 0);
+            if (EnableGzip && orgStackSize > EnableGzipMinByte)
+            {
+                WriteGzipConmpressBuffer(buffer);
+            }
+            else
+            {
+                WriteByte(orgStackSize);
+                WriteByte(buffer);
+            }
+        }
+        /// <summary>
         /// 将缓冲队列写入缓冲区
         /// </summary>
         /// <param name="head"></param>
         public void WriteBuffer(MessageHead head)
         {
             int stackSize = GetHeadByteSize(head);
-            stackSize += GetStackByteSize();
-            if (head.HasGzip)
+            stackSize += GetStackByteSize();//包括了头部长度大小
+            head.TotalLength = stackSize;
+            bool result = false;
+            if (head.HasGzip && (!EnableGzip || (EnableGzip && stackSize <= EnableGzipMinByte)))
             {
-                if (head.GzipLength == 0)
-                {
-                    head.GzipLength = stackSize;
-                }
+                result = true;
+                head.GzipLength = stackSize;
                 WriteByte(head.GzipLength);
             }
-            //输出总字节长度
+            //输出总字节长度,公式: stackSize = len(头) + len(内容) + 4(int)
             WriteByte(stackSize);
             WriteHeadBufer(head);
             WriteStackToBuffer();
+            //判断是否有启用Gzip
+            if (head.HasGzip && EnableGzip && !result && stackSize > EnableGzipMinByte)
+            {
+                byte[] orgData = ReadBuffer();
+                head.GzipLength = WriteGzipConmpressBuffer(orgData);
+            }
+            head.PacketLength = Length;
+        }
+
+        /// <summary>
+        /// 写入Gzip压缩的Buffer，返回压缩后的长度
+        /// </summary>
+        /// <returns></returns>
+        private int WriteGzipConmpressBuffer(byte[] orgData)
+        {
+            byte[] buffer = GzipUtils.EnCompress(orgData, 0, orgData.Length);
+            int gzipLength = buffer.Length;
+            WriteByte(gzipLength);//分包时通过此长度计算来组包
+            WriteByte(buffer);
+            return gzipLength;
         }
 
         private void PushObjIntoQueue(object value)

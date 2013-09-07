@@ -19,6 +19,11 @@ namespace ZyGames.Framework.RPC.Wcf
         [OperationContract(IsOneWay = false, IsInitiating = true, IsTerminating = false)]
         void Bind(int identityId);
 
+        [OperationContract(AsyncPattern = true)]
+        IAsyncResult BeginBind(int identityId, AsyncCallback callback, object asyncState);
+
+        void EndBind(IAsyncResult result);
+
         /// <summary>
         /// 服务端接收客户端上发的消息，参数需要验证
         /// </summary>
@@ -29,6 +34,11 @@ namespace ZyGames.Framework.RPC.Wcf
         byte[] Request(string param, string remoteAddress);
 
 
+        [OperationContract(AsyncPattern = true)]
+        IAsyncResult BeginRequest(string param, string remoteAddress, AsyncCallback callback, object asyncState);
+
+        byte[] EndRequest(IAsyncResult result);
+
         /// <summary>
         /// 提供程序内部之间通信，参数不需要验证
         /// </summary>
@@ -38,6 +48,12 @@ namespace ZyGames.Framework.RPC.Wcf
         /// <returns></returns>
         [OperationContract(IsOneWay = false, IsInitiating = true, IsTerminating = false)]
         byte[] CallRemote(string route, string param, string remoteAddress);
+
+
+        [OperationContract(AsyncPattern = true)]
+        IAsyncResult BeginCallRemote(string route, string param, string remoteAddress, AsyncCallback callback, object asyncState);
+
+        byte[] EndCallRemote(IAsyncResult result);
 
         /// <summary>
         /// 关闭

@@ -13,7 +13,7 @@ namespace ZyGames.Framework.RPC.Wcf
     /// 实例使用Single，共享一个
     /// 并发使用Mutiple, 支持多线程访问(一定要加锁)
     /// </summary>
-    [ServiceBehavior(InstanceContextMode = InstanceContextMode.Single, ConcurrencyMode = ConcurrencyMode.Multiple)]
+    [ServiceBehavior(InstanceContextMode = InstanceContextMode.PerSession, ConcurrencyMode = ConcurrencyMode.Multiple)]
     internal class WcfService : IWcfService
     {
         /// <summary>
@@ -32,6 +32,16 @@ namespace ZyGames.Framework.RPC.Wcf
             ChannelContextManager.Current.Bind(identityId);
         }
 
+        public IAsyncResult BeginBind(int identityId, AsyncCallback callback, object asyncState)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void EndBind(IAsyncResult result)
+        {
+            throw new NotImplementedException();
+        }
+
         /// <summary>
         /// 
         /// </summary>
@@ -46,6 +56,16 @@ namespace ZyGames.Framework.RPC.Wcf
                 return channel.Request(param, remoteAddress);
             }
             return null;
+        }
+
+        public IAsyncResult BeginRequest(string param, string remoteAddress, AsyncCallback callback, object asyncState)
+        {
+            return ChannelContextManager.Current.CurrentChannel.BeginRequest(param, remoteAddress, callback, asyncState);
+        }
+
+        public byte[] EndRequest(IAsyncResult result)
+        {
+            return ChannelContextManager.Current.CurrentChannel.EndRequest(result);
         }
 
         /// <summary>
@@ -63,6 +83,16 @@ namespace ZyGames.Framework.RPC.Wcf
                 return channel.CallRemote(route, param, remoteAddress);
             }
             return null;
+        }
+
+        public IAsyncResult BeginCallRemote(string route, string param, string remoteAddress, AsyncCallback callback, object asyncState)
+        {
+            return ChannelContextManager.Current.CurrentChannel.BeginCallRemote(route, param, remoteAddress, callback, asyncState);
+        }
+
+        public byte[] EndCallRemote(IAsyncResult result)
+        {
+            return ChannelContextManager.Current.CurrentChannel.EndCallRemote(result);
         }
 
         /// <summary>

@@ -10,6 +10,13 @@ namespace ZyGames.Framework.RPC.Sockets
     /// </summary>
     public interface ISocketReceiver
     {
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="session"></param>
+        /// <param name="buffer"></param>
+        /// <returns></returns>
         byte[] Receive(SocketSession session, byte[] buffer);
+
     }
 }

@@ -45,8 +45,9 @@ namespace ZyGames.Framework.RPC.Sockets
         /// <param name="args"></param>
         internal void FreeBuffer(SocketAsyncEventArgs args)
         {
-            _freeIndexPool.Push(args.Offset);
+            int offset = args.Offset;
             args.SetBuffer(null, 0, 0);
+            _freeIndexPool.Push(offset);
         }
 
         /// <summary>

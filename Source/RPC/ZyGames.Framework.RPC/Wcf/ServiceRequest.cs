@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.ServiceModel;
 using System.Text;
@@ -17,7 +18,7 @@ namespace ZyGames.Framework.RPC.Wcf
         /// <summary>
         /// 发送请求
         /// </summary>
-        public static RequestError Request(RequestSettings setting, out byte[] buffer)
+        public static bool Request(RequestSettings setting, out byte[] buffer)
         {
             return DoCall(setting, out buffer);
         }
@@ -25,67 +26,44 @@ namespace ZyGames.Framework.RPC.Wcf
         /// <summary>
         /// 远端调用
         /// </summary>
-        public static RequestError CallRemote(RequestSettings setting, out byte[] buffer)
+        public static bool CallRemote(RequestSettings setting, out byte[] buffer)
         {
             return DoCall(setting, out buffer, true);
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        public static void ResetChannel(RequestSettings setting)
+        {
+            GetWcfClient(setting).ResetChannel();
+        }
 
-        private static RequestError DoCall(RequestSettings setting, out byte[] buffer, bool isRoute = false)
+        private static bool DoCall(RequestSettings setting, out byte[] buffer, bool isRoute = false)
         {
             buffer = new byte[0];
-            WcfServiceClient wcfClient = null;
-            try
-            {
-                wcfClient = WcfServiceClientManager.Current.Get(setting.GameId, setting.ServerId);
-                if (wcfClient == null)
-                {
-                    return RequestError.NotFindService;
-                }
+            WcfServiceClient wcfClient = GetWcfClient(setting);
 
-                int resetTime = 2; //重置一次
-                for (int i = 0; i < resetTime; i++)
-                {
-                    try
-                    {
-                        if (wcfClient.Connected || wcfClient.Connect())
-                        {
-                            bool result = false;
-                            if (isRoute)
-                            {
-                                result = wcfClient.TryCallRemote(setting.RouteName, setting.ParamString, setting.RemoteAddress, out buffer);
-                            }
-                            else
-                            {
-                                result = wcfClient.TryRequest(setting.ParamString, setting.RemoteAddress, out buffer);
-                            }
-                            if (result)
-                            {
-                                return RequestError.Success;
-                            }
-                            wcfClient.ResetChannel();
-                        }
-                    }
-                    catch (CommunicationObjectFaultedException fault)
-                    {
-                        if (i > 0)
-                        {
-                            TraceLog.WriteError("Request:{0}", fault);
-                        }
-                        wcfClient.ResetChannel();
-                    }
-                    catch (Exception ex)
-                    {
-                        wcfClient.ResetChannel();
-                    }
-                }
-                return RequestError.UnableConnect;
-            }
-            catch (Exception ex)
+            if (wcfClient.Connect())
             {
-                TraceLog.WriteError("ServiceRequest error:{0}", ex);
-                return RequestError.Unknown;
+                if (isRoute)
+                {
+                    return wcfClient.TryCallRemote(setting.RouteName, setting.ParamString, setting.RemoteAddress, out buffer);
+                }
+                return wcfClient.TryRequest(setting.ParamString, setting.RemoteAddress, out buffer);
+
             }
+            return false;
+        }
+
+        private static WcfServiceClient GetWcfClient(RequestSettings setting)
+        {
+            WcfServiceClient wcfClient = WcfServiceClientManager.Current.Get(setting.GameId, setting.ServerId);
+            if (wcfClient == null)
+            {
+                throw new KeyNotFoundException(string.Format("Not found setting for game:{0} server:{1}", setting.GameId, setting.ServerId));
+            }
+            return wcfClient;
         }
     }
 }

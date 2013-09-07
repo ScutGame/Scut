@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Concurrent;
+using System.Diagnostics;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
+using System.Threading;
 using ZyGames.Framework.Common.Log;
 using ZyGames.Framework.RPC.IO;
 
@@ -13,6 +15,7 @@ namespace ZyGames.Framework.RPC.Sockets
     /// </summary>
     public sealed class SocketSession : IDisposable
     {
+        private Stopwatch _watch = new Stopwatch();
         private BufferPacket _receivePacket;
         private BufferPacket _sendPacket;
         private IPEndPoint _remoteAdrress;
@@ -52,6 +55,23 @@ namespace ZyGames.Framework.RPC.Sockets
             }
         }
 
+        /// <summary>
+        /// 开启观察运行时间
+        /// </summary>
+        public void StartWatchTime()
+        {
+            _watch.Start();
+        }
+
+        /// <summary>
+        /// 停止观察运行时间
+        /// </summary>
+        public TimeSpan StopWatchTime()
+        {
+            _watch.Stop();
+            return _watch.Elapsed;
+        }
+
         internal void InitAsyncEventSend(BufferManager bufferManager)
         {
             sendSEAVObject = new SocketAsyncEventArgs();
@@ -82,16 +102,39 @@ namespace ZyGames.Framework.RPC.Sockets
 
         private void ProcessSend(SocketAsyncEventArgs e)
         {
-            SocketSession session = e.UserToken as SocketSession;
-            if (e.SocketError == SocketError.Success)
+            if (e.BytesTransferred > 0)
             {
-                //处理上一次传送字节长度
-                session.SendPacket.SetRemainingByteCount(e.BytesTransferred);
-                if (session.SendPacket.RemainingByteCount > 0)
+                SocketSession session = e.UserToken as SocketSession;
+                if (e.SocketError == SocketError.Success)
                 {
-                    DoStartSend(e);
+                    //处理上一次传送字节长度
+                    session.SendPacket.SetRemainingByteCount(e.BytesTransferred);
+                    if (session.SendPacket.RemainingByteCount > 0)
+                    {
+                        DoStartSend(e);
+                    }
+                }
+                else
+                {
+                    OnSendError(e);
                 }
             }
+            else
+            {
+                OnSendClose(e);
+            }
+        }
+
+        private void OnSendClose(SocketAsyncEventArgs e)
+        {
+            //todo test
+            Console.WriteLine("OnSendClose");
+        }
+
+        private void OnSendError(SocketAsyncEventArgs e)
+        {
+            //todo test
+            Console.WriteLine("OnSendError");
         }
 
         internal void StartSend()
@@ -107,13 +150,51 @@ namespace ZyGames.Framework.RPC.Sockets
             {
                 return;
             }
-            sendArgs.SetBuffer(session.bufferOffsetSend, buffer.Length);
-            Buffer.BlockCopy(buffer, 0, sendArgs.Buffer, session.bufferOffsetSend, buffer.Length);
+            InternalSend(sendArgs, new ArraySegment<byte>(buffer));
+        }
 
-            if (!sendArgs.AcceptSocket.SendAsync(sendArgs))
+
+        private void InternalSend(SocketAsyncEventArgs e, ArraySegment<byte> segment)
+        {
+            if (InternalTrySend(e, segment))
+                return;
+
+            var spinWait = new SpinWait();
+
+            while (e.SocketError == SocketError.Success && e.BytesTransferred > 0)
             {
-                ProcessSend(sendArgs);
+                spinWait.SpinOnce();
+
+                if (InternalTrySend(e, segment))
+                    return;
             }
+        }
+
+        private bool InternalTrySend(SocketAsyncEventArgs e, ArraySegment<byte> segment)
+        {
+            if (!TrySend(e, segment))
+                return false;
+            return true;
+        }
+
+        private bool TrySend(SocketAsyncEventArgs e, ArraySegment<byte> segment)
+        {
+            if (e.SocketError != SocketError.Success)
+                return false;
+            SocketSession session = e.UserToken as SocketSession;
+
+#if DEBUG
+            //todo test
+            Console.WriteLine("准备传送{0}:{1}byte", session.RemoteAddress, segment.Count);
+#endif
+            e.SetBuffer(session.bufferOffsetSend, segment.Count);
+            Buffer.BlockCopy(segment.Array, 0, e.Buffer, session.bufferOffsetSend, segment.Count);
+
+            if (!e.AcceptSocket.SendAsync(e))
+            {
+                ProcessSend(e);
+            }
+            return true;
         }
 
         /// <summary>
@@ -172,6 +253,11 @@ namespace ZyGames.Framework.RPC.Sockets
             get { return _remoteAdrress; }
         }
 
+        public bool Connected
+        {
+            get { return sendSEAVObject.BytesTransferred > 0; }
+        }
+
         /// <summary>
         /// 客户端连接Socket对象
         /// </summary>
@@ -184,9 +270,9 @@ namespace ZyGames.Framework.RPC.Sockets
         }
 
         /// <summary>
-        /// 关闭
+        /// 通知上层处理关闭事件
         /// </summary>
-        public void OnClosed()
+        public void OnNotifyClosed()
         {
             if (OnClosing != null)
             {

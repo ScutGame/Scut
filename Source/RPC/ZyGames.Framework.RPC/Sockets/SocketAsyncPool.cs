@@ -166,20 +166,22 @@ namespace ZyGames.Framework.RPC.Sockets
                 if (session != null)
                 {
                     session.DisConnection();
-                    //if (session.sendSEAVObject != null)
-                    //{
-                    //    var seavObject = session.sendSEAVObject;
-                    //    _bufferManager.FreeBuffer(seavObject);
-                    //    Interlocked.Decrement(ref _currentUseNum);
-                    //    seavObject.AcceptSocket = null;
-                    //    seavObject.UserToken = null;
-                    //    _pool.Push(seavObject);
-                    //}
-                    TraceLog.ReleaseWrite("Clear {0} socket connection", remoteAddress);
+                }
+                if (item.AcceptSocket != null && item.AcceptSocket.Connected)
+                {
+                    try
+                    {
+                        item.AcceptSocket.Shutdown(SocketShutdown.Both);
+                        item.AcceptSocket.Close();
+                    }
+                    catch (Exception)
+                    {
+                    }
                 }
                 item.AcceptSocket = null;
                 item.UserToken = null;
                 _pool.Push(item);
+                TraceLog.ReleaseWrite("The {0} socket has be connected.", remoteAddress);
             }
         }
 
@@ -212,29 +214,36 @@ namespace ZyGames.Framework.RPC.Sockets
         private void ProcessSend(SocketAsyncEventArgs sendArgs)
         {
             SocketSession session = sendArgs.UserToken as SocketSession;
-            if (sendArgs.SocketError == SocketError.Success)
+            if (sendArgs.BytesTransferred > 0)
             {
-                //处理上一次传送字节长度
-                session.SendPacket.SetRemainingByteCount(sendArgs.BytesTransferred);
+                if (sendArgs.SocketError == SocketError.Success)
+                {
+                    //处理上一次传送字节长度
+                    session.SendPacket.SetRemainingByteCount(sendArgs.BytesTransferred);
 #if DEBUG
-                //todo trace
+    //todo trace
                 Console.WriteLine("{0}->传送字节长度:{1}/{2}", 
                     DateTime.Now.ToLongTimeString(), 
                     sendArgs.BytesTransferred, 
                     session.SendPacket.RemainingByteCount);
 #endif
-                if (session.SendPacket.RemainingByteCount <= 0)
-                {
-                    StartReceive(sendArgs);
+                    if (session.SendPacket.RemainingByteCount <= 0)
+                    {
+                        StartReceive(sendArgs);
+                    }
+                    else
+                    {
+                        StartSend(sendArgs);
+                    }
                 }
                 else
                 {
-                    StartSend(sendArgs);
+                    ProcessError(sendArgs);
                 }
             }
             else
             {
-                ProcessError(sendArgs);
+                CloseClientSocket(sendArgs);
             }
         }
 
@@ -318,8 +327,8 @@ namespace ZyGames.Framework.RPC.Sockets
                             if (hasNext)
                             {
                                 //处理接收数据
-                                _receiveHandle(session, buffer);
-                                //_receiveHandle.BeginInvoke(session, buffer,result => _receiveHandle.EndInvoke(result), _receiveHandle);
+                                //_receiveHandle(session, buffer);
+                                _receiveHandle.BeginInvoke(session, buffer, ReceiveCallback, session);
                             }
 
                         } while (hasNext);
@@ -333,9 +342,7 @@ namespace ZyGames.Framework.RPC.Sockets
                     }
                     if (session.SendPacket.RemainingByteCount > 0)
                     {
-                        //todo change
                         StartSend(receiveArgs);
-                        //session.StartSend();
                     }
                     else
                     {
@@ -367,6 +374,32 @@ namespace ZyGames.Framework.RPC.Sockets
             }
         }
 
+        private void ReceiveCallback(IAsyncResult ar)
+        {
+            var session = ar.AsyncState as SocketSession;
+            try
+            {
+                if (session != null)
+                {
+                    session.StartSend();
+                    var ts = session.StopWatchTime();
+                    string param = "";
+                    MessageHead head = session.UserData as MessageHead;
+                    if (head != null)
+                    {
+                        param = string.Format("Action:{0},MsgId:{1},Error:{2}-{3}",
+                            head.Action, head.MsgId, head.ErrorCode, head.ErrorInfo);
+                    }
+                    TraceLog.WriteComplement("{0}参数:{1}运行结果:{2}ms", session.RemoteAddress, param, ts.TotalMilliseconds);
+                }
+            }
+            catch (Exception er)
+            {
+                TraceLog.WriteError("AsyncReceive error:{0}", er);
+            }
+            _receiveHandle.EndInvoke(ar);
+        }
+
         //同步处理请求响应接收
         private void OnSyncReceive(SocketSession session, byte[] buffer)
         {
@@ -374,6 +407,7 @@ namespace ZyGames.Framework.RPC.Sockets
             {
                 if (_receiver != null)
                 {
+                    session.StartWatchTime();
                     session.PutInSendQueue(_receiver.Receive(session, buffer));
                 }
             }
@@ -386,16 +420,24 @@ namespace ZyGames.Framework.RPC.Sockets
         private void ProcessError(SocketAsyncEventArgs e)
         {
             SocketSession session = e.UserToken as SocketSession;
+            string host = "Unknown";
             if (session != null)
             {
                 IPEndPoint localEp = session.RemoteEndPoint;
-                TraceLog.WriteError("{0}:{1} error:{2}", localEp.Address, localEp.Port, e.SocketError);
+                host = string.Format("{0}:{1}", localEp.Address, localEp.Port);
             }
-            else
+            else if (e.AcceptSocket != null)
             {
-                TraceLog.WriteError("Process error:{0}", e.SocketError);
+                host = e.AcceptSocket.RemoteEndPoint.ToString();
             }
-            CloseClientSocket(session, e);
+            TraceLog.WriteError("SocketAsyncPool {0} op {1} error:{2}-{3}", host, e.LastOperation, (int)e.SocketError, e.SocketError);
+
+            if (session != null)
+            {
+                session.OnNotifyClosed();
+            }
+            SocketSessionPool.Current.Remove(e);
+            ReleaseSAEAToPush(e);
         }
 
         private void CloseClientSocket(SocketAsyncEventArgs e)
@@ -410,7 +452,7 @@ namespace ZyGames.Framework.RPC.Sockets
             TraceLog.ReleaseWrite("Socket client {0} is closed.", remoteAddress);
             if (session != null)
             {
-                session.OnClosed();
+                session.OnNotifyClosed();
             }
             SocketSessionPool.Current.Remove(asyncEventArgs);
             ReleaseSAEAToPush(asyncEventArgs);

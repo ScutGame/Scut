@@ -68,7 +68,7 @@ namespace ZyGames.Framework.RPC.Wcf
         /// </summary>
         public bool Connected
         {
-            get { return _connected; }
+            get { return _channelFactory.State == CommunicationState.Opened; }
         }
         /// <summary>
         /// 连接是否出错
@@ -90,16 +90,8 @@ namespace ZyGames.Framework.RPC.Wcf
         }
 
         private TimeSpan _inactivityTimeout;
-        public TimeSpan InactivityTimeout
-        {
-            get { return _inactivityTimeout; }
-        }
 
         private TimeSpan _receiveTimeout;
-        public TimeSpan ReceiveTimeout
-        {
-            get { return _receiveTimeout; }
-        }
 
         /// <summary>
         /// 
@@ -126,10 +118,14 @@ namespace ZyGames.Framework.RPC.Wcf
         /// <param name="inactivityTimeout">连接断开的情况下，空闲超时触发Faulted事件,要小于receiveTimeout时间间隔</param>
         public void Bind(string ip, int port, Action<string, byte[]> receivedCallback, int connectTimeout, TimeSpan receiveTimeout, int inactivityTimeout)
         {
+            var setting = new BindingBehaviorSetting(ip, port);
             _connectTimeout = new TimeSpan(0, 0, connectTimeout);
             _receiveTimeout = receiveTimeout;
             _inactivityTimeout = new TimeSpan(0, 0, inactivityTimeout);
-            Binding binding = CreateBinding(BindingType.NetTcpBinding, _connectTimeout, receiveTimeout, _inactivityTimeout);
+            setting.ConnectTimeout = _connectTimeout;
+            setting.ReceiveTimeout = _receiveTimeout;
+            setting.InactivityTimeout = _inactivityTimeout;
+            Binding binding = CreateBinding(BindingType.NetTcpBinding, setting);
             Bind(ip, port, binding, receivedCallback);
         }
 
@@ -165,7 +161,8 @@ namespace ZyGames.Framework.RPC.Wcf
 
         private DuplexChannelFactory<IWcfService> BuildChannel()
         {
-            var channelFactory = new DuplexChannelFactory<IWcfService>(new InstanceContext(_callbackHandle), _binding, _address);
+            var ic = new InstanceContext(_callbackHandle);
+            var channelFactory = new DuplexChannelFactory<IWcfService>(ic, _binding, _address);
             channelFactory.Closing += ChannelClosing;
             channelFactory.Faulted += ChannelFaulted;
             return channelFactory;
@@ -184,6 +181,7 @@ namespace ZyGames.Framework.RPC.Wcf
                 _channelFactory = BuildChannel();
             }
             _serviceChannel = _channelFactory.CreateChannel();
+
         }
 
         /// <summary>
@@ -252,15 +250,14 @@ namespace ZyGames.Framework.RPC.Wcf
             }
             return false;
         }
+
         /// <summary>
         /// 
         /// </summary>
         /// <param name="bindingType"></param>
-        /// <param name="connectTimeout">建立连接和传送数据的超时间</param>
-        /// <param name="receiveTimeout">保持连接的情况下，空闲超时触发Closing事件</param>
-        /// <param name="inactivityTimeout">连接断开的情况下，空闲超时触发Faulted事件,要小于receiveTimeout时间间隔</param>
+        /// <param name="setting"></param>
         /// <returns></returns>
-        public Binding CreateBinding(BindingType bindingType, TimeSpan connectTimeout, TimeSpan receiveTimeout, TimeSpan inactivityTimeout)
+        public Binding CreateBinding(BindingType bindingType, BindingBehaviorSetting setting)
         {
             Binding bindinginstance = null;
             switch (bindingType)
@@ -284,12 +281,12 @@ namespace ZyGames.Framework.RPC.Wcf
                     NetTcpBinding wsTcp = new NetTcpBinding();
                     wsTcp.MaxReceivedMessageSize = MaxReceivedSize;
                     wsTcp.ReliableSession.Enabled = true;
-                    wsTcp.ReliableSession.InactivityTimeout = inactivityTimeout;
+                    wsTcp.ReliableSession.InactivityTimeout = setting.InactivityTimeout;
                     wsTcp.Security.Mode = SecurityMode.None;
-                    wsTcp.SendTimeout = connectTimeout;
-                    wsTcp.OpenTimeout = connectTimeout;
-                    wsTcp.CloseTimeout = connectTimeout;
-                    wsTcp.ReceiveTimeout = receiveTimeout;
+                    wsTcp.OpenTimeout = setting.ConnectTimeout;
+                    wsTcp.CloseTimeout = setting.ConnectTimeout;
+                    wsTcp.SendTimeout = setting.SendTimeout;
+                    wsTcp.ReceiveTimeout = setting.ReceiveTimeout;
                     bindinginstance = wsTcp;
                     break;
                 case BindingType.WsDualHttpBinding:

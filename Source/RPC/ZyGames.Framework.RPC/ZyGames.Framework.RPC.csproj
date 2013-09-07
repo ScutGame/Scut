@@ -32,8 +32,15 @@
     <DocumentationFile>bin\Release\ZyGames.Framework.RPC.XML</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Newtonsoft.Json">
+      <HintPath>..\..\..\Lib\Plugin\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="NLog, Version=2.0.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\Lib\Plugin\NLog.dll</HintPath>
+    </Reference>
     <Reference Include="protobuf-net">
-      <HintPath>..\..\..\..\FrameworkPublish\Release\4.0\Redis\protobuf-net.dll</HintPath>
+      <HintPath>..\..\..\Lib\Plugin\Redis\protobuf-net.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -46,10 +53,11 @@
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
     <Reference Include="ZyGames.Framework.Common">
-      <HintPath>..\..\..\..\FrameworkPublish\Unstable\4.0\Core\V5.1\ZyGames.Framework.Common.dll</HintPath>
+      <HintPath>..\..\..\Lib\Framework\V5.1\ZyGames.Framework.Common.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="IO\GzipUtils.cs" />
     <Compile Include="Sockets\BufferManager.cs" />
     <Compile Include="IO\BufferReader.cs" />
     <Compile Include="IO\BufferUtils.cs" />
@@ -75,6 +83,7 @@
     <Compile Include="Wcf\IWcfService.cs" />
     <Compile Include="Wcf\RequestSettings.cs" />
     <Compile Include="Wcf\ServiceRequest.cs" />
+    <Compile Include="Wcf\BindingBehaviorSetting.cs" />
     <Compile Include="Wcf\WcfCallback.cs" />
     <Compile Include="Wcf\RequestError.cs" />
     <Compile Include="Wcf\WcfServiceClientManager.cs" />

@@ -28,6 +28,14 @@ namespace ZyGames.Framework.RPC.Sockets
         public Socket Socket { get { return _socket; } }
 
         /// <summary>
+        /// 用户数据
+        /// </summary>
+        public object UserToken
+        {
+            get;
+            set;
+        }
+        /// <summary>
         /// 数据包长度
         /// </summary>
         public int BuffLength { get; set; }
@@ -148,18 +156,24 @@ namespace ZyGames.Framework.RPC.Sockets
 
         private void DoReceive()
         {
-            byte[] buffer = new byte[BuffLength];
-            int count = _socket.Receive(buffer, 0, buffer.Length, SocketFlags.None, out socketError);
-            byte[] data = new byte[count];
-            Array.Copy(buffer, 0, data, 0, data.Length);
-            DoReceiveCallback(data);
+            while (true)
+            {
+                byte[] buffer = new byte[BuffLength];
+                int count = _socket.Receive(buffer, 0, buffer.Length, SocketFlags.None, out socketError);
+                byte[] data = new byte[count];
+                Array.Copy(buffer, 0, data, 0, data.Length);
+                if (!HasWaitReceiveData(data))
+                {
+                    break;
+                }
+            }
         }
 
         /// <summary>
         /// 接收数据处理
         /// </summary>
         /// <param name="data"></param>
-        private void DoReceiveCallback(byte[] data)
+        private bool HasWaitReceiveData(byte[] data)
         {
             _revPacket.InsertByteArray(data);
             if (_revPacket.HasCompleteBytes)
@@ -180,6 +194,7 @@ namespace ZyGames.Framework.RPC.Sockets
 
                 } while (hasNext);
             }
+            return _revPacket.RemainingByteCount > 0;
         }
 
         private void BeginReceive()
@@ -209,7 +224,7 @@ namespace ZyGames.Framework.RPC.Sockets
                 byte[] buffer = reault.AsyncState as byte[];
                 byte[] data = new byte[cout];
                 Array.Copy(buffer, 0, data, 0, data.Length);
-                DoReceiveCallback(data);
+                HasWaitReceiveData(data);
                 BeginReceive();
             }
             else

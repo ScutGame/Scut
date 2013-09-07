@@ -11,16 +11,11 @@ namespace ZyGames.Framework.RPC.Wcf
     /// </summary>
     public class ChannelContext : IDisposable
     {
-        private readonly string _sessionId;
         private int _identityId;
-        private readonly OperationContext _context;
+        internal OperationContext Operation;
 
-        internal ChannelContext(string sessionId, int identityId, OperationContext context)
+        internal ChannelContext()
         {
-            _sessionId = sessionId;
-            _identityId = identityId;
-            _context = context;
-            RemoteAddress = _context.Channel != null ? _context.Channel.RemoteAddress.ToString() : "";
         }
 
         /// <summary>
@@ -28,7 +23,7 @@ namespace ZyGames.Framework.RPC.Wcf
         /// </summary>
         public string SessionId
         {
-            get { return _sessionId; }
+            get { return Operation != null ? Operation.SessionId : ""; }
         }
 
         /// <summary>
@@ -37,27 +32,48 @@ namespace ZyGames.Framework.RPC.Wcf
         public int IdentityId
         {
             get { return _identityId; }
+            set { _identityId = value; }
         }
 
         /// <summary>
         /// 
         /// </summary>
-        public string RemoteAddress { get; set; }
+        public string RemoteAddress
+        {
+            get
+            {
+                return Operation != null
+                    ? IdentityId + ":" + Operation.SessionId
+                    : IdentityId.ToString();
+            }
+        }
 
         /// <summary>
         /// 下发通知
         /// </summary>
         public IWcfCallback GetCallback()
         {
-            return _context.GetCallbackChannel<IWcfCallback>();
+            return Operation.GetCallbackChannel<IWcfCallback>();
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        public bool IsConnect
+        {
+            get
+            {
+                return Operation != null &&
+                    Operation.Channel != null &&
+                    Operation.Channel.State == CommunicationState.Opened;
+            }
+        }
         /// <summary>
         /// 当前通道
         /// </summary>
         public IContextChannel Channel
         {
-            get { return _context.Channel; }
+            get { return Operation != null ? Operation.Channel : null; }
         }
 
         /// <summary>
@@ -92,7 +108,32 @@ namespace ZyGames.Framework.RPC.Wcf
         /// <param name="remoteAddress"></param>
         public byte[] Request(string param, string remoteAddress)
         {
+            IsClosed = false;
             return OnRequested(this, param, remoteAddress);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="param"></param>
+        /// <param name="remoteAddress"></param>
+        /// <param name="callback"></param>
+        /// <param name="asyncState"></param>
+        /// <returns></returns>
+        public IAsyncResult BeginRequest(string param, string remoteAddress, AsyncCallback callback, object asyncState)
+        {
+            IsClosed = false;
+            return OnRequested.BeginInvoke(this, param, remoteAddress, callback, asyncState);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="result"></param>
+        /// <returns></returns>
+        public byte[] EndRequest(IAsyncResult result)
+        {
+            return OnRequested.EndInvoke(result);
         }
 
         /// <summary>
@@ -104,7 +145,33 @@ namespace ZyGames.Framework.RPC.Wcf
         /// <returns></returns>
         public byte[] CallRemote(string route, string param, string remoteAddress)
         {
+            IsClosed = false;
             return OnCallRemote(this, route, param, remoteAddress);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="route"></param>
+        /// <param name="param"></param>
+        /// <param name="remoteAddress"></param>
+        /// <param name="callback"></param>
+        /// <param name="asyncState"></param>
+        /// <returns></returns>
+        public IAsyncResult BeginCallRemote(string route, string param, string remoteAddress, AsyncCallback callback, object asyncState)
+        {
+            IsClosed = false;
+            return OnCallRemote.BeginInvoke(this, route, param, remoteAddress, callback, asyncState);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="result"></param>
+        /// <returns></returns>
+        public byte[] EndCallRemote(IAsyncResult result)
+        {
+            return OnCallRemote.EndInvoke(result);
         }
 
         /// <summary>
@@ -113,14 +180,6 @@ namespace ZyGames.Framework.RPC.Wcf
         public void SocketClose(string remoteAddress)
         {
             OnSocketClosed(this, remoteAddress);
-        }
-
-        /// <summary>
-        /// Wcf连接关闭
-        /// </summary>
-        public void Close(string remoteAddress)
-        {
-            OnClosed(this, remoteAddress);
         }
 
         /// <summary>
