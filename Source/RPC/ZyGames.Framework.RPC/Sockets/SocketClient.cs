@@ -62,7 +62,7 @@ namespace ZyGames.Framework.RPC.Sockets
             _host = host;
             _prot = prot;
             BuffLength = bufferSize;
-            _revPacket = new BufferPacket(bufferSize);
+            _revPacket = new BufferPacket();
             _socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
         }
 
@@ -182,7 +182,7 @@ namespace ZyGames.Framework.RPC.Sockets
                 bool hasNext = false;
                 do
                 {
-                    hasNext = _revPacket.TryGetData(out buffer);
+                    hasNext = _revPacket.CheckCompletePacket(out buffer);
                     if (hasNext)
                     {
                         //处理接收数据

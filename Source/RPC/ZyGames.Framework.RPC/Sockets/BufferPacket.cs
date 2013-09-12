@@ -1,61 +1,120 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+using System.Collections.Concurrent;
 using System.Threading;
+using ZyGames.Framework.Common.Log;
 
 namespace ZyGames.Framework.RPC.Sockets
 {
     /// <summary>
     /// 缓冲区包
     /// </summary>
-    public class BufferPacket
+    internal class BufferPacket
     {
-        private readonly List<byte> _byteList;
+        private ConcurrentQueue<byte> _messageQueue;
+        private byte[] _byteArrayForPrefix;
+        private int _prefixBytesDone;
         private const int PrexfixCount = 4;
-
-        /// <summary>
-        /// 
-        /// </summary>
-        public BufferPacket(int bufferSize = 4096)
-        {
-            _byteList = new List<byte>(bufferSize);
-        }
-
         private int _offset;
+        /// <summary>
+        /// 完成包大小
+        /// </summary>
+        private int _messageLength;
+
+        /// <summary>
+        /// 消息被传送的字节数
+        /// </summary>
+        private int _messageBytesDone;
 
         /// <summary>
         /// 
         /// </summary>
-        public int Offset
+        public BufferPacket()
         {
-            get { return _offset; }
+            Init();
         }
 
         /// <summary>
         /// 
         /// </summary>
-        public void Reset()
+        public void Init()
         {
-            Interlocked.Exchange(ref RemainingByteCount, 0);
-            Interlocked.Exchange(ref _offset, 0);
+            _offset = 0;
+            _prefixBytesDone = 0;
+            _messageBytesDone = 0;
+            _byteArrayForPrefix = new byte[PrexfixCount];
+            for (int i = 0; i < _byteArrayForPrefix.Length; i++)
+            {
+                _byteArrayForPrefix[i] = 0;
+            }
+            _messageQueue = new ConcurrentQueue<byte>();
         }
-        /// <summary>
-        /// 
-        /// </summary>
-        public void Clear()
+
+        public int Length
         {
-            _byteList.Clear();
+            get { return _prefixBytesDone + _messageQueue.Count; }
         }
+
         /// <summary>
         /// 
         /// </summary>
         /// <param name="data"></param>
         public void InsertByteArray(byte[] data)
         {
-            lock (_byteList)
+            PushToQueue(data);
+            ProcessPrefixBytes();
+        }
+
+
+        private void PushToQueue(byte[] data)
+        {
+            foreach (var b in data)
             {
-                Interlocked.Exchange(ref RemainingByteCount, RemainingByteCount + data.Length);
-                _byteList.AddRange(data);
+                _messageQueue.Enqueue(b);
+            }
+        }
+
+        private byte[] ReadPrefixBytes()
+        {
+            byte[] buffer = new byte[PrexfixCount];
+            for (int i = 0; i < buffer.Length; i++)
+            {
+                byte value;
+                if (_messageQueue.TryDequeue(out value))
+                {
+                    buffer[i] = value;
+                }
+            }
+            return buffer;
+        }
+
+        private void ProcessPrefixBytes()
+        {
+            if (_prefixBytesDone == PrexfixCount || RemainingByteCount < PrexfixCount)
+            {
+                return;
+            }
+
+            byte[] data = ReadPrefixBytes();
+            int remainingBytesToProcess = data.Length;
+            //设置消息包头长度
+            if (remainingBytesToProcess >= PrexfixCount - _prefixBytesDone)
+            {
+                for (int i = 0; i < PrexfixCount - _prefixBytesDone; i++)
+                {
+                    _byteArrayForPrefix[_prefixBytesDone + i] = data[i];
+                }
+                remainingBytesToProcess = remainingBytesToProcess - PrexfixCount + _prefixBytesDone;
+                _prefixBytesDone = PrexfixCount;
+                _messageLength = BitConverter.ToInt32(_byteArrayForPrefix, 0);
+            }
+            else
+            {
+                for (int i = 0; i < data.Length; i++)
+                {
+                    _byteArrayForPrefix[_prefixBytesDone + i] = data[i];
+                }
+                _prefixBytesDone += remainingBytesToProcess;
+                remainingBytesToProcess = 0;
             }
         }
 
@@ -67,116 +126,112 @@ namespace ZyGames.Framework.RPC.Sockets
         {
             get
             {
-                int prexfixBytesCount = GetPrefixByteCount();
-                return prexfixBytesCount > -1 && prexfixBytesCount <= _byteList.Count - Offset;
+                return _messageQueue.Count >= _messageLength;
             }
         }
 
         /// <summary>
         /// 剩余字节数
         /// </summary>
-        internal int RemainingByteCount;
+        internal int RemainingByteCount
+        {
+            get
+            {
+                return _messageQueue.Count;
+            }
+        }
+
+        public int MessageByteDone
+        {
+            get { return _messageBytesDone; }
+        }
 
         /// <summary>
-        /// 设置扣除剩余字节数
+        /// 设置处理的字节数
         /// </summary>
         /// <param name="count"></param>
-        public void SetRemainingByteCount(int count)
+        public void SetDoneByteCount(int count)
         {
-            Interlocked.Exchange(ref _offset, _offset + count);
-            Interlocked.Exchange(ref RemainingByteCount, RemainingByteCount - count);
+            _messageBytesDone += count;
         }
+
         /// <summary>
-        /// 读取一块缓冲区
+        /// 读取一块缓冲区,增加偏移量，不区分完成包格式
         /// </summary>
         /// <returns></returns>
         internal byte[] ReadBlockData(int bufferSize)
         {
-            lock (_byteList)
+            int readLength = bufferSize <= Length ? bufferSize : Length;
+            if (readLength <= 0)
             {
-                byte[] data = new byte[0];
-                int count = RemainingByteCount;
-                if (count <= 0)
-                {
-                    return data;
-                }
-                if (count <= bufferSize)
-                {
-                    data = new byte[count];
-                }
-                else
-                {
-                    data = new byte[bufferSize];
-                }
-                if (Offset < _byteList.Count && data.Length > 0)
-                {
-                    _byteList.CopyTo(Offset, data, 0, data.Length);
-                }
-                //Interlocked.Exchange(ref _offset, _offset + count);
-                //Interlocked.Exchange(ref RemainingByteCount, RemainingByteCount - data.Length);
-                return data;
+                return new byte[0];
             }
+            int readBytesCount = 0;
+            byte[] buffer = new byte[readLength];
+            //读取头部
+            if (readBytesCount < _prefixBytesDone)
+            {
+                Buffer.BlockCopy(_byteArrayForPrefix, 0, buffer, 0, _prefixBytesDone);
+                readBytesCount += _prefixBytesDone;
+                _prefixBytesDone = 0;
+            }
+            while (readBytesCount < buffer.Length)
+            {
+                byte value;
+                if (_messageQueue.TryDequeue(out value))
+                {
+                    buffer[readBytesCount] = value;
+                    readBytesCount++;
+                }
+            }
+            return buffer;
+
         }
 
         /// <summary>
-        /// 获取指定长度数据
+        /// 检查是否有完整的包，包格式: 包长度（int占4字节长度） + 包内容 
         /// </summary>
         /// <returns></returns>
-        public bool TryGetData(out byte[] data)
+        public bool CheckCompletePacket(out byte[] buffer)
         {
-            data = null;
-            if (_byteList.Count < PrexfixCount)
-                return false;
-
-            int res = GetPrefixByteCount();
-            if (res <= 0)
+            buffer = null;
+            try
             {
-                ResetBuffer();
-                return false;
-            }
-
-            if (res > (_byteList.Count - Offset))
-                return false;
-            res += PrexfixCount;
-            data = new byte[res];
-
-            _byteList.CopyTo(Offset, data, 0, data.Length);
-            Interlocked.Exchange(ref _offset, _offset + res);
-            //Interlocked.Exchange(ref RemainingByteCount, RemainingByteCount - data.Length);
-
-            if (Offset == _byteList.Count)
-            {
-                ResetBuffer();
-            }
-            return true;
-        }
-
-        /// <summary>
-        /// 获得包的大小
-        /// </summary>
-        /// <returns></returns>
-        private int GetPrefixByteCount()
-        {
-            int res = 0;
-            for (int i = 0; i < PrexfixCount; i++)
-            {
-                if (Offset + i < _byteList.Count)
+                if (!HasCompleteBytes)
                 {
-                    int temp = ((int)_byteList[Offset + i]) & 0xff;
-                    temp <<= i * 8;
-                    res = temp + res;
+                    return false;
                 }
+                int readBytesCount = 0;
+                buffer = new byte[_prefixBytesDone + _messageLength];
+                //读取头部
+                if (readBytesCount < _prefixBytesDone)
+                {
+                    Buffer.BlockCopy(_byteArrayForPrefix, 0, buffer, 0, _prefixBytesDone);
+                    readBytesCount += _prefixBytesDone;
+                    _prefixBytesDone = 0;
+                }
+
+                while (readBytesCount < buffer.Length)
+                {
+                    byte value;
+                    if (_messageQueue.TryDequeue(out value))
+                    {
+                        buffer[readBytesCount] = value;
+                        readBytesCount++;
+                    }
+                }
+
+                //重新计算下个包
+                ProcessPrefixBytes();
+                return true;
             }
-            return res;
+            catch (Exception ex)
+            {
+                TraceLog.WriteError("CheckCompletePacket packetLength:{0},remainingByte:{1},doneByte:{2}\r\nerror:{3}", Length, RemainingByteCount, _messageBytesDone, ex);
+                return false;
+            }
         }
 
-        private void ResetBuffer()
-        {
-            lock (_byteList)
-            {
-                Reset();
-                _byteList.Clear();
-            }
-        }
+
     }
 }

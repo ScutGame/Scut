@@ -11,47 +11,166 @@ using ZyGames.Framework.Common.Timing;
 
 namespace ZyGames.Framework.RPC.Sockets
 {
-    public delegate void SocketClosingHandle(string remoteAddress);
-
     /// <summary>
     /// Socke监听器
     /// </summary>
     public class SocketListener : IDisposable
     {
+        private SocketSettings _settings;
         private Socket _listenSocket;
-        private SocketAsyncPool readWritePool;
-        private readonly int _socketTimeout;
+        private SocketAsyncPool _readWritePool;
+        private SocketSessionPool _sessionPool;
         private CacheListener _sessioinListen;
-        private AutoResetEvent[] resetEvent;
-        private SocketAsyncEventArgs acceptEventArg;
+        private readonly AutoResetEvent[] _resetEvent;
+        private SocketAsyncEventArgs _acceptEventArg;
+        private BufferManager _bufferManager;
+        private SocketAsyncEventArgsProxy _saeaProxy;
 
         /// <summary>
         /// 
         /// </summary>
-        public event Action<SocketAsyncEventArgs> ConnectBefore;
-        /// <summary>
-        /// 
-        /// </summary>
-        public event Action<SocketAsyncEventArgs> ConnectAfter;
-
-        /// <summary>
-        /// 连接关闭事件
-        /// </summary>
-        public event SocketClosingHandle OnClosing;
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="readWritePool"></param>
-        /// <param name="connectTimeout">Socket连接超时（秒）</param>
-        public SocketListener(SocketAsyncPool readWritePool, int connectTimeout)
+        public SocketListener(SocketSettings settings)
         {
-            this.readWritePool = readWritePool;
-            _socketTimeout = connectTimeout;
+            _settings = settings;
             _sessioinListen = new CacheListener("__SOCKET_SESSION_POOL", 5, OnRemoveSession);
+            _resetEvent = new AutoResetEvent[1];
+            _resetEvent[0] = new AutoResetEvent(false);
 
-            resetEvent = new System.Threading.AutoResetEvent[1];
-            resetEvent[0] = new System.Threading.AutoResetEvent(false);
+            _sessionPool = new SocketSessionPool();
+            _readWritePool = new SocketAsyncPool(_settings.NumOfSaeaForRecSend);
+            int numSize = settings.NumOfSaeaForRecSend * settings.BufferSize;
+            _bufferManager = new BufferManager(numSize, settings.BufferSize);
+            _saeaProxy = new SocketAsyncEventArgsProxy(settings.BufferSize);
+            _saeaProxy.ReceiveCompleted += OnReceiveCompleted;
+            _saeaProxy.SendCompleted += OnSendCompleted;
+            _saeaProxy.SendingHandle += OnSocketSending;
+            _saeaProxy.ClosedHandle += e => OnSocketClosing(null, e);
+
+            Init();
+        }
+
+        private void Init()
+        {
+            _bufferManager.InitBuffer();
+            SocketAsyncEventArgs saea;
+            for (int i = 0; i < _settings.NumOfSaeaForRecSend; i++)
+            {
+                saea = _saeaProxy.CreateNewSaea();
+                _bufferManager.SetBuffer(saea);
+                saea.UserToken = new SocketSession(saea.Offset);
+                _readWritePool.Push(saea);
+            }
+        }
+        /// <summary>
+        /// 
+        /// </summary>
+        public event Action<SocketAsyncEventArgs> ConnectCompleted;
+        /// <summary>
+        /// 
+        /// </summary>
+        public event Action<object, EndPoint> SocketClosing;
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public event Action<string, byte[]> ReceiveCompleted;
+        /// <summary>
+        /// 
+        /// </summary>
+        public event Action<string, byte[]> ReceiveTimeout;
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public event Action<string, string, int, int> SocketSending;
+
+        private void OnReceiveCompleted(SocketSession token, byte[] data)
+        {
+            if (_settings.EnableReceiveTimeout)
+            {
+                token.UserData = data;
+                token.EnableTimeout(OnReceiveTimeout, token, _settings.ReceiveTimeout);
+            }
+            token.Refresh();
+            if (ReceiveCompleted != null)
+            {
+                ReceiveCompleted(token.RemoteAddress, data);
+            }
+        }
+
+        private void OnReceiveTimeout(object state)
+        {
+            try
+            {
+                SocketSession token = state as SocketSession;
+                if (token != null)
+                {
+                    ReceiveTimeout.BeginInvoke(token.RemoteAddress, token.UserData as byte[], ReceiveTimeoutEnd, token);
+                }
+            }
+            catch (Exception ex)
+            {
+                TraceLog.WriteError("OnReceiveTimeout error:{0}", ex);
+            }
+        }
+
+        private void ReceiveTimeoutEnd(IAsyncResult ar)
+        {
+            try
+            {
+                SocketSession token = ar as SocketSession;
+                if (token != null && token.EnableTimeoutState)
+                {
+                    token.UserData = null;
+                    token.CloseTimeout();
+                }
+            }
+            catch { }
+        }
+
+        private void OnSocketSending(SocketAsyncEventArgs e)
+        {
+            if (SocketSending != null)
+            {
+                var session = e.UserToken as SocketSession;
+                SocketSending.BeginInvoke(session.LocalAddress, session.RemoteAddress, session.SendPacket.MessageByteDone, session.SendPacket.RemainingByteCount, null, null);
+            }
+        }
+
+        private void OnSendCompleted(SocketAsyncEventArgs e)
+        {
+            try
+            {
+                SocketSession token = e.UserToken as SocketSession;
+                if (token != null && token.EnableTimeoutState)
+                {
+                    token.UserData = null;
+                    token.CloseTimeout();
+                }
+            }
+            catch { }
+            _readWritePool.Push(e);
+        }
+
+        private void OnSocketClosing(object sender, SocketAsyncEventArgs e)
+        {
+            var session = e.UserToken as SocketSession;
+            if (session != null)
+            {
+                session.Clear();
+            }
+            _sessionPool.Remove(e);
+            _readWritePool.Push(e);
+            if (SocketClosing != null)
+            {
+                try
+                {
+                    var remoteEndPoint = e.AcceptSocket.RemoteEndPoint;
+                    SocketClosing.BeginInvoke(sender, remoteEndPoint, null, null);
+                }
+                catch { }
+            }
+            _saeaProxy.CloseConnect(e);
         }
 
         private void OnRemoveSession(string key, object value, CacheItemRemovedReason reason)
@@ -60,21 +179,20 @@ namespace ZyGames.Framework.RPC.Sockets
             {
                 if (reason == CacheItemRemovedReason.Expired)
                 {
-                    var list = SocketSessionPool.Current.ToList();
-                    foreach (var socketArgs in list)
+                    var er = _sessionPool.GetEnumerator();
+                    while (er.MoveNext())
                     {
                         try
                         {
+                            var socketArgs = er.Current.Value;
                             var session = socketArgs.UserToken as SocketSession;
-                            if (session == null || session.AccessTime > DateTime.Now.AddSeconds(-_socketTimeout))
+                            if (session == null || session.AccessTime > DateTime.Now.AddSeconds(-_settings.ContinuedTimeout))
                             {
                                 continue;
                             }
                             if (socketArgs.BytesTransferred == 0 && socketArgs.SocketError != SocketError.Success)
                             {
-                                session.OnNotifyClosed();
-                                SocketSessionPool.Current.Remove(socketArgs);
-                                readWritePool.ReleaseSAEAToPush(socketArgs);
+                                OnSocketClosing(null, socketArgs);
                                 TraceLog.ReleaseWrite("Clear disposed socket connection {0}", session.RemoteAddress);
                             }
                         }
@@ -91,117 +209,65 @@ namespace ZyGames.Framework.RPC.Sockets
                 TraceLog.WriteError("SocketSessionPool expired error:{0}", ex);
             }
         }
-
-        public void Start()
-        {
-            resetEvent[0].Set();
-
-        }
-
-        public void Stop()
-        {
-            resetEvent[0].Reset();
-        }
-
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="port"></param>
-        /// <param name="backlog"></param>
-        /// <returns></returns>
-        public bool Listen(int port, int backlog)
+        public void Start()
         {
-            string host = Environment.MachineName;
-            return Listen(host, port, backlog);
+            _resetEvent[0].Set();
         }
-
         /// <summary>
-        /// 监听连接
+        /// 
         /// </summary>
-        /// <param name="host"></param>
-        /// <param name="port"></param>
-        /// <param name="backlog"></param>
-        /// <returns></returns>
-        public bool Listen(string host, int port, int backlog)
+        public void Stop()
         {
-            IPHostEntry hostEntry = null;
-            try
-            {
-                hostEntry = Dns.GetHostEntry(host);
-            }
-            catch (Exception ex)
-            {
-                throw new Exception(string.Format("Host:\"{0}\" {1}", host, ex.Message));
-            }
-            IPAddress[] addressList = hostEntry.AddressList;
-            if (addressList.Length > 0)
-            {
-                IPAddress address = null;
-                //优先使用IP4
-                foreach (var ipAddress in addressList)
-                {
-                    if (ipAddress.AddressFamily == AddressFamily.InterNetwork)
-                    {
-                        address = ipAddress;
-                        break;
-                    }
-                }
-                if (address == null)
-                {
-                    address = addressList[addressList.Length - 1];
-                }
-                IPEndPoint localEndPoint = new IPEndPoint(address, port);
-                return Listen(localEndPoint, backlog);
-            }
-            return false;
+            _resetEvent[0].Reset();
         }
 
         /// <summary>
         /// 监听
         /// </summary>
-        /// <param name="localEndPoint"></param>
-        /// <param name="backlog"></param>
         /// <returns></returns>
-        public bool Listen(IPEndPoint localEndPoint, int backlog)
+        public bool Listen()
         {
             Start();
             _sessioinListen.Start();
-            _listenSocket = new Socket(localEndPoint.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
+            _listenSocket = new Socket(_settings.LocalEndPoint.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
             try
             {
-                _listenSocket.ReceiveBufferSize = readWritePool.BufferSize;
-                _listenSocket.SendBufferSize = readWritePool.BufferSize;
+                _listenSocket.ReceiveBufferSize = _settings.BufferSize;
+                _listenSocket.SendBufferSize = _settings.BufferSize;
 
-                if (localEndPoint.AddressFamily == AddressFamily.InterNetworkV6)
+                if (_settings.LocalEndPoint.AddressFamily == AddressFamily.InterNetworkV6)
                 {
                     // Set dual-mode (IPv4 & IPv6) for the socket listener.
                     _listenSocket.SetSocketOption(SocketOptionLevel.IPv6, (SocketOptionName)27, false);
-                    _listenSocket.Bind(new IPEndPoint(IPAddress.IPv6Any, localEndPoint.Port));
+                    _listenSocket.Bind(new IPEndPoint(IPAddress.IPv6Any, _settings.LocalEndPoint.Port));
                 }
                 else
                 {
-                    _listenSocket.Bind(localEndPoint);
+                    _listenSocket.Bind(_settings.LocalEndPoint);
                 }
 
                 // Start the server.
-                _listenSocket.Listen(backlog);
-                TraceLog.ReleaseWrite("The socket-server {0}:{1} is listenning", localEndPoint.Address, localEndPoint.Port);
+                _listenSocket.Listen(_settings.Backlog);
+                TraceLog.ReleaseWrite("The socket-server {0}:{1} is listenning", _settings.LocalEndPoint.Address, _settings.LocalEndPoint.Port);
                 // Post accepts on the listening socket.);
 
-                acceptEventArg = new SocketAsyncEventArgs();
-                acceptEventArg.Completed += OnAcceptCompleted;
-                StartAccept(acceptEventArg);
+                _acceptEventArg = new SocketAsyncEventArgs();
+                _acceptEventArg.Completed += OnAcceptCompleted;
+                StartAccept(_acceptEventArg);
                 return true;
             }
             catch (SocketException sex)
             {
                 TraceLog.WriteError("The socket-server {0}:{1} listen error:{2}-{3}",
-                                    localEndPoint.Address, localEndPoint.Port, sex.SocketErrorCode, sex);
+                                    _settings.LocalEndPoint.Address, _settings.LocalEndPoint.Port, sex.SocketErrorCode, sex);
             }
             catch (Exception ex)
             {
                 TraceLog.WriteError("The socket-server {0}:{1} error:{2}",
-                                    localEndPoint.Address, localEndPoint.Port, ex);
+                                    _settings.LocalEndPoint.Address, _settings.LocalEndPoint.Port, ex);
             }
             return false;
         }
@@ -209,79 +275,52 @@ namespace ZyGames.Framework.RPC.Sockets
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="buffer"></param>
-        /// <param name="successHandle"></param>
-        public void NotifyAll(byte[] buffer, Action<SocketSession> successHandle)
+        public bool CheckConnected(string remoteAddress)
         {
-            Notify(m => true, buffer, successHandle);
+            var client = _sessionPool.Find(remoteAddress);
+            return client != null && client.AcceptSocket.Connected;
         }
 
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="math"></param>
+        /// <param name="remoteAddress"></param>
         /// <param name="buffer"></param>
-        /// <param name="successHandle"></param>
-        public void Notify(Predicate<SocketSession> math, byte[] buffer, Action<SocketSession> successHandle)
+        public bool PushSend(string remoteAddress, byte[] buffer)
         {
-            Notify(math, buffer, successHandle, null);
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="math"></param>
-        /// <param name="buffer"></param>
-        /// <param name="successHandle"></param>
-        /// <param name="faildHandle"></param>
-        /// <param name="errorHandle"></param>
-        public void Notify(Predicate<SocketSession> math, byte[] buffer, Action<SocketSession> successHandle, Action<SocketSession> faildHandle, Action<Exception> errorHandle = null)
-        {
-            var clientList = SocketSessionPool.Current.ToList();
-            foreach (var handle in clientList)
+            SocketAsyncEventArgs saeaClient = _sessionPool.Find(remoteAddress);
+            if (saeaClient == null ||
+                saeaClient.AcceptSocket == null ||
+                !saeaClient.AcceptSocket.Connected)
             {
-                try
-                {
-                    if (handle == null) continue;
-
-                    var session = handle.UserToken as SocketSession;
-                    if (session != null && session.Connection != null && session.Connection.Connected && math(session))
-                    {
-                        if (handle.BytesTransferred > 0 && handle.SocketError == SocketError.Success)
-                        {
-                            session.PutInSendQueue(buffer);
-                            //readWritePool.StartNewSend(handle);
-                            session.StartSend();
-                            if (successHandle != null)
-                            {
-                                successHandle(session);
-                            }
-                        }
-                        else
-                        {
-                            session.OnNotifyClosed();
-                            //注释原因：自动定时回收
-                            //SocketSessionPool.Current.Remove(handle);
-                            //readWritePool.ReleaseSAEAToPush(handle);
-                            if (faildHandle != null)
-                            {
-                                faildHandle(session);
-                            }
-                        }
-                    }
-                }
-                catch (Exception ex)
-                {
-                    if (errorHandle != null)
-                    {
-                        errorHandle(ex);
-                    }
-                    TraceLog.WriteError("Socket notify:{0}", ex);
-                }
+                return false;
             }
+            var e = _readWritePool.Pop();
+            e.AcceptSocket = saeaClient.AcceptSocket;
+            if (saeaClient.UserToken is SocketSession)
+            {
+                ((SocketSession)saeaClient.UserToken).Refresh();
+            }
+            SocketSession token = (SocketSession)e.UserToken;
+            token.LocalEndPoint = saeaClient.AcceptSocket.LocalEndPoint;
+            token.RemoteEndPoint = saeaClient.AcceptSocket.RemoteEndPoint;
+            token.Refresh();
+
+            return TryPushSend(e, buffer);
         }
 
-
+        private bool TryPushSend(SocketAsyncEventArgs e, byte[] buffer)
+        {
+            var session = e.UserToken as SocketSession;
+            session.SendPacket.InsertByteArray(buffer);
+            if (e.SocketError == SocketError.Success)
+            {
+                _saeaProxy.DoStartSend(e);
+                return true;
+            }
+            //OnSocketClosing(buffer, e);
+            return false;
+        }
         /// <summary>
         /// 关闭
         /// </summary>
@@ -290,7 +329,11 @@ namespace ZyGames.Framework.RPC.Sockets
             _sessioinListen.Stop();
             if (_listenSocket != null)
             {
-                _listenSocket.Close();
+                try
+                {
+                    _listenSocket.Disconnect(true);
+                }
+                catch { }
             }
         }
 
@@ -318,12 +361,8 @@ namespace ZyGames.Framework.RPC.Sockets
         {
             try
             {
-                WaitHandle.WaitAll(resetEvent);
-                resetEvent[0].Set();
-                if (ConnectBefore != null)
-                {
-                    ConnectBefore(acceptEventArg);
-                }
+                WaitHandle.WaitAll(_resetEvent);
+                _resetEvent[0].Set();
                 Socket clientSocket = acceptEventArg.AcceptSocket;
                 if (clientSocket == null)
                 {
@@ -331,42 +370,32 @@ namespace ZyGames.Framework.RPC.Sockets
                     StartAccept(acceptEventArg);
                     return;
                 }
-                SocketAsyncEventArgs readEventArgs = readWritePool.Pop();
-                if (readEventArgs != null)
-                {
-                    readEventArgs.AcceptSocket = acceptEventArg.AcceptSocket;
-                    int revOffset = readEventArgs.Offset;
-                    int sendOffset = revOffset + readWritePool.BufferSize;
-                    SocketSession session = new SocketSession(readEventArgs, revOffset, sendOffset, readWritePool.BufferSize);
-                    session.InitAsyncEventSend(readWritePool.Buffers);
-                    session.OnClosing += OnClosing;
-                    readEventArgs.UserToken = session;
+                SocketAsyncEventArgs receiveEventArgs = _readWritePool.Pop();
+                receiveEventArgs.AcceptSocket = acceptEventArg.AcceptSocket;
+                SocketSession token = (SocketSession)receiveEventArgs.UserToken;
+                token.LocalEndPoint = acceptEventArg.AcceptSocket.LocalEndPoint;
+                token.RemoteEndPoint = acceptEventArg.AcceptSocket.RemoteEndPoint;
 
 #if DEBUG
-                    Console.WriteLine("{0}>>connect:{1},saeapos:{2},offset:{3}", DateTime.Now.ToLongTimeString(),
-                        readEventArgs.AcceptSocket.RemoteEndPoint, revOffset, sendOffset);
+                Console.WriteLine("{0}>>{1} connect success", DateTime.Now.ToLongTimeString(), token.RemoteAddress);
 #endif
-                    SocketSessionPool.Current.Add(readEventArgs);
-                    readWritePool.StartReceive(readEventArgs);
-                }
-                else
-                {
-                    TraceLog.WriteError("There are no more available socket connection to allocate, lastsize:{0},usesize:{1},max:{2}", readWritePool.Capacity, readWritePool.UseCapacity, readWritePool.MaxCapacity);
-                }
+                _sessionPool.Put(receiveEventArgs);
+                _saeaProxy.StartReceive(receiveEventArgs);
+
             }
             catch (SocketException ex)
             {
                 SocketSession token = acceptEventArg.UserToken as SocketSession;
-                TraceLog.WriteError("Listener Error when processing data received from {0}:\r\n{1}", token.Connection.RemoteEndPoint, ex.ToString());
+                TraceLog.WriteError("Listener Error when processing data received from {0}:\r\n{1}", token.RemoteAddress, ex);
             }
             catch (Exception ex)
             {
                 TraceLog.WriteError("Listener error:{0}", ex.ToString());
             }
 
-            if (ConnectAfter != null)
+            if (ConnectCompleted != null)
             {
-                ConnectAfter(acceptEventArg);
+                ConnectCompleted(acceptEventArg);
             }
             // Accept the next connection request.
             acceptEventArg.AcceptSocket = null;
@@ -389,23 +418,25 @@ namespace ZyGames.Framework.RPC.Sockets
             if (disposing)
             {
                 _sessioinListen.Stop();
-                _sessioinListen = null;
+                _acceptEventArg = null;
+                _bufferManager = null;
+                _readWritePool.Dispose();
+                _readWritePool = null;
+                _sessionPool = null;
+                _saeaProxy = null;
+                _settings = null;
+                if (_listenSocket != null)
+                {
+                    try
+                    {
+                        _listenSocket.Close();
+                    }
+                    catch { }
+                }
                 //清理托管对象
                 GC.SuppressFinalize(this);
             }
             //清理非托管对象
-            if (_listenSocket != null)
-            {
-                try
-                {
-                    IDisposable disposable = _listenSocket;
-                    disposable.Dispose();
-                    _listenSocket = null;
-                }
-                catch (Exception)
-                {
-                }
-            }
         }
         /// <summary>
         /// 

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Concurrent;
 using System.Net.Sockets;
 
 namespace ZyGames.Framework.RPC.Sockets
@@ -7,28 +8,16 @@ namespace ZyGames.Framework.RPC.Sockets
     /// <summary>
     /// Socket会话管理
     /// </summary>
-    public sealed class SocketSessionPool
+    internal class SocketSessionPool
     {
-        private static SocketSessionPool _currentPool;
+        private ConcurrentDictionary<string, SocketAsyncEventArgs> _pools;
 
         /// <summary>
         /// 
         /// </summary>
-        public static SocketSessionPool Current
+        public SocketSessionPool()
         {
-            get { return _currentPool; }
-        }
-
-        static SocketSessionPool()
-        {
-            _currentPool = new SocketSessionPool();
-        }
-        
-        private List<SocketAsyncEventArgs> _pools;
-
-        private SocketSessionPool()
-        {
-            _pools = new List<SocketAsyncEventArgs>();
+            _pools = new ConcurrentDictionary<string, SocketAsyncEventArgs>();
         }
 
         /// <summary>
@@ -41,47 +30,64 @@ namespace ZyGames.Framework.RPC.Sockets
                 return _pools.Count;
             }
         }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="remoteAddress"></param>
+        /// <returns></returns>
+        public SocketAsyncEventArgs Find(string remoteAddress)
+        {
+            SocketAsyncEventArgs saea;
+            if (_pools.TryGetValue(remoteAddress, out saea))
+            {
+                return saea;
+            }
+            return null;
+        }
 
         /// <summary>
         /// 
         /// </summary>
         /// <returns></returns>
-        public List<SocketAsyncEventArgs> ToList()
+        public IEnumerator<KeyValuePair<string, SocketAsyncEventArgs>> GetEnumerator()
         {
-            lock (_pools)
+            return _pools.GetEnumerator();
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="eventArgs"></param>
+        public bool Put(SocketAsyncEventArgs eventArgs)
+        {
+            var session = eventArgs.UserToken as SocketSession;
+            if (session != null)
             {
-                var list = new List<SocketAsyncEventArgs>();
-                var er = _pools.GetEnumerator();
-                while (er.MoveNext())
+                string key = session.RemoteAddress;
+                SocketAsyncEventArgs oldval;
+                if (_pools.TryGetValue(key, out oldval))
                 {
-                    list.Add(er.Current);
+                    _pools.TryUpdate(key, eventArgs, oldval);
                 }
-                return list;
+                return _pools.TryAdd(key, eventArgs);
             }
+            return false;
         }
 
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="session"></param>
-        public void Add(SocketAsyncEventArgs session)
+        /// <param name="eventArgs"></param>
+        public bool Remove(SocketAsyncEventArgs eventArgs)
         {
-            lock (_pools)
+            var session = eventArgs.UserToken as SocketSession;
+            if (session != null)
             {
-                _pools.Add(session);
+                string key = session.RemoteAddress;
+                SocketAsyncEventArgs oldval;
+                return _pools.TryRemove(key, out oldval);
             }
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="session"></param>
-        public void Remove(SocketAsyncEventArgs session)
-        {
-            lock (_pools)
-            {
-                _pools.Remove(session);
-            }
+            return false;
         }
 
 

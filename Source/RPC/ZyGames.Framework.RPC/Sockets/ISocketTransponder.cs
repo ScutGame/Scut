@@ -6,9 +6,9 @@ using System.Text;
 namespace ZyGames.Framework.RPC.Sockets
 {
     /// <summary>
-    /// Socket接收器
+    /// Socket分发器接口
     /// </summary>
-    public interface ISocketReceiver
+    public interface ISocketTransponder
     {
         /// <summary>
         /// 
@@ -16,7 +16,13 @@ namespace ZyGames.Framework.RPC.Sockets
         /// <param name="remoteAddress"></param>
         /// <param name="buffer"></param>
         /// <returns></returns>
-        byte[] Receive(string remoteAddress, byte[] buffer);
+        void Receive(string remoteAddress, byte[] buffer);
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="remoteAddress"></param>
+        /// <param name="buffer"></param>
+        void Send(string remoteAddress, byte[] buffer);
     }
 }

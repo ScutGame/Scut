@@ -5,6 +5,9 @@ using System.Text;
 
 namespace ZyGames.Framework.RPC.IO
 {
+    /// <summary>
+    /// 
+    /// </summary>
     public static class BufferUtils
     {
         /// <summary>
@@ -35,11 +38,21 @@ namespace ZyGames.Framework.RPC.IO
         }
 
         /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="data"></param>
+        /// <returns></returns>
+        static public Byte[] GetBytes(Int16 data)
+        {
+            return BitConverter.GetBytes(data);
+        }
+
+        /// <summary>
         /// 将一个32位整形转换成一个BYTE[]4字节
         /// </summary>
         /// <param name="data"></param>
         /// <returns></returns>
-        static public Byte[] GetSocketBytes(Int32 data)
+        static public Byte[] GetBytes(Int32 data)
         {
             return BitConverter.GetBytes(data);
         }
@@ -49,7 +62,17 @@ namespace ZyGames.Framework.RPC.IO
         /// </summary>
         /// <param name="data"></param>
         /// <returns></returns>
-        static public Byte[] GetSocketBytes(UInt64 data)
+        static public Byte[] GetBytes(UInt64 data)
+        {
+            return BitConverter.GetBytes(data);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="data"></param>
+        /// <returns></returns>
+        static public Byte[] GetBytes(bool data)
         {
             return BitConverter.GetBytes(data);
         }
@@ -59,7 +82,7 @@ namespace ZyGames.Framework.RPC.IO
         /// </summary>
         /// <param name="data"></param>
         /// <returns></returns>
-        static public Byte[] GetSocketBytes(Char data)
+        static public Byte[] GetBytes(Char data)
         {
             Byte[] bytes = new Byte[] { (Byte)data };
             return bytes;
@@ -70,10 +93,10 @@ namespace ZyGames.Framework.RPC.IO
         /// </summary>
         /// <param name="data"></param>
         /// <returns></returns>
-        static public Byte[] GetSocketBytes(Byte[] data)
+        static public Byte[] AppendHeadBytes(Byte[] data)
         {
             return MergeBytes(
-                GetSocketBytes(data.Length),
+                GetBytes(data.Length),
                 data
                 );
         }
@@ -83,12 +106,12 @@ namespace ZyGames.Framework.RPC.IO
         /// </summary>
         /// <param name="data"></param>
         /// <returns></returns>
-        static public Byte[] GetSocketBytes(String data)
+        static public Byte[] GetBytes(String data)
         {
-            Byte[] bytes = Encoding.Unicode.GetBytes(data);
+            Byte[] bytes = Encoding.UTF8.GetBytes(data);
 
             return MergeBytes(
-                GetSocketBytes(bytes.Length),
+                GetBytes(bytes.Length),
                 bytes
                 );
         }
@@ -98,9 +121,9 @@ namespace ZyGames.Framework.RPC.IO
         /// </summary>
         /// <param name="data"></param>
         /// <returns></returns>
-        static public Byte[] GetSocketBytes(DateTime data)
+        static public Byte[] GetBytes(DateTime data)
         {
-            return GetSocketBytes(data.ToString());
+            return GetBytes(data.ToString());
         }
     }
 }

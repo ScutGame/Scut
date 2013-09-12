@@ -13,7 +13,7 @@ namespace ZyGames.Framework.RPC.Sockets
     {
         private Byte[] _buffer;
         private readonly Int32 _bufferSize;
-        private readonly long _numSize;
+        private readonly int _numSize;
         private Int32 _currentIndex;
         private Stack<Int32> _freeIndexPool;
 
@@ -22,14 +22,14 @@ namespace ZyGames.Framework.RPC.Sockets
         /// </summary>
         /// <param name="numSize">缓存区的总大小</param>
         /// <param name="bufferSize">缓冲区大小</param>
-        public BufferManager(long numSize, int bufferSize)
+        public BufferManager(int numSize, int bufferSize)
         {
             this._numSize = numSize;
             this._bufferSize = bufferSize;
 
         }
 
-        public void Init()
+        public void InitBuffer()
         {
             _buffer = new byte[_numSize];
             _freeIndexPool = new Stack<int>((int)(_numSize / _bufferSize));

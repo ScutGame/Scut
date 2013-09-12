@@ -383,14 +383,29 @@ namespace ZyGames.Framework.RPC.IO
         }
 
         /// <summary>
-        /// 写入字节
+        /// 
         /// </summary>
         /// <param name="buffer"></param>
         public void WriteByte(byte[] buffer)
         {
-            foreach (var b in buffer)
+            WriteByte(buffer, 0, buffer.Length);
+        }
+
+        /// <summary>
+        /// 写入字节
+        /// </summary>
+        /// <param name="buffer"></param>
+        /// <param name="offset"></param>
+        /// <param name="count"></param>
+        public void WriteByte(byte[] buffer, int offset, int count)
+        {
+            if(buffer.Length < count)
             {
-                _buffers.Enqueue(b);
+                throw new ArgumentOutOfRangeException("count","buffer size outof range");
+            }
+            for (int i = offset; i < count; i++)
+            {
+                _buffers.Enqueue(buffer[i]);
             }
         }
         /// <summary>

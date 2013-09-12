@@ -1,7 +1,15 @@
 namespace ZyGames.Framework.RPC.IO
 {
+    /// <summary>
+    /// 
+    /// </summary>
     public enum MessageError
     {
+        /// <summary>
+        /// 
+        /// </summary>
+        NotFound = 404,
+
         /// <summary>
         /// 系统错误
         /// </summary>

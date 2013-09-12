@@ -32,15 +32,12 @@
     <DocumentationFile>bin\Release\ZyGames.Framework.RPC.XML</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Newtonsoft.Json">
-      <HintPath>..\..\..\Lib\Plugin\Newtonsoft.Json.dll</HintPath>
-    </Reference>
     <Reference Include="NLog, Version=2.0.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\Lib\Plugin\NLog.dll</HintPath>
+      <HintPath>..\..\..\..\FrameworkPublish\Release\4.0\NLog.dll</HintPath>
     </Reference>
     <Reference Include="protobuf-net">
-      <HintPath>..\..\..\Lib\Plugin\Redis\protobuf-net.dll</HintPath>
+      <HintPath>..\..\..\..\FrameworkPublish\Release\4.0\Redis\protobuf-net.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -53,11 +50,13 @@
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
     <Reference Include="ZyGames.Framework.Common">
-      <HintPath>..\..\..\Lib\Framework\V5.1\ZyGames.Framework.Common.dll</HintPath>
+      <HintPath>..\..\..\..\FrameworkPublish\Unstable\4.0\Core\V5.1\ZyGames.Framework.Common.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="IO\GzipUtils.cs" />
+    <Compile Include="IO\PacketMsgType.cs" />
+    <Compile Include="IO\ConnectType.cs" />
     <Compile Include="Sockets\BufferManager.cs" />
     <Compile Include="IO\BufferReader.cs" />
     <Compile Include="IO\BufferUtils.cs" />
@@ -67,16 +66,21 @@
     <Compile Include="IO\SignUtils.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Sockets\BufferPacket.cs" />
-    <Compile Include="Sockets\ISocketReceiver.cs" />
     <Compile Include="IO\MessageHead.cs" />
     <Compile Include="IO\ParamGeter.cs" />
-    <Compile Include="Sockets\SocketConnection.cs" />
+    <Compile Include="IO\PacketHead.cs" />
+    <Compile Include="IO\PacketMessage.cs" />
+    <Compile Include="Sockets\ISocketReceiver.cs" />
+    <Compile Include="Sockets\ISocketTransponder.cs" />
+    <Compile Include="Sockets\SocketAsyncClient.cs" />
+    <Compile Include="Sockets\SocketAsyncEventArgsProxy.cs" />
     <Compile Include="Sockets\SocketSessionPool.cs" />
     <Compile Include="Sockets\SocketAsyncPool.cs" />
     <Compile Include="IO\MessageStructure.cs" />
     <Compile Include="Sockets\SocketClient.cs" />
     <Compile Include="Sockets\SocketListener.cs" />
     <Compile Include="Sockets\SocketSession.cs" />
+    <Compile Include="Sockets\SocketSettings.cs" />
     <Compile Include="Wcf\BindingType.cs" />
     <Compile Include="Wcf\ChannelContext.cs" />
     <Compile Include="Wcf\IWcfCallback.cs" />
@@ -91,6 +95,9 @@
     <Compile Include="Wcf\WcfServiceClient.cs" />
     <Compile Include="Wcf\ChannelContextManager.cs" />
     <Compile Include="Wcf\WcfServiceProxy.cs" />
+    <Compile Include="Web\HttpConnection.cs" />
+    <Compile Include="Web\HttpListenerProxy.cs" />
+    <Compile Include="Web\HttpSettings.cs" />
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
