@@ -12,7 +12,7 @@ namespace ZyGames.Framework.Game.Service
     /// </summary>
     public abstract class GameStruct
     {
-        private static int ActionTimeOut = 500;
+        public static int ActionTimeOut = 500;
 
         static GameStruct()
         {
@@ -42,11 +42,6 @@ namespace ZyGames.Framework.Game.Service
             /// </summary>
             Fail
         }
-        /// <summary>
-        /// 接口监视
-        /// </summary>
-        private Stopwatch _stopwatch = new Stopwatch();
-
         /// <summary>
         /// 接口访问开始时间
         /// </summary>
@@ -216,12 +211,6 @@ namespace ZyGames.Framework.Game.Service
 
         private void WatchAction()
         {
-            _stopwatch.Stop();
-            if (_stopwatch.ElapsedMilliseconds > ActionTimeOut)
-            {
-                TraceLog.WriteError(string.Format("Action{2}接口访问时间{0}ms超过设定超时时间({1}ms)", _stopwatch.ElapsedMilliseconds, ActionTimeOut, actionId));
-            }
-
         }
 
         //protected void InitAction(System.Web.HttpResponse m_Response)
@@ -243,7 +232,6 @@ namespace ZyGames.Framework.Game.Service
         protected void InitAction()
         {
             this.iVisitBeginTime = DateTime.Now;
-            _stopwatch.Start();
         }
 
         /// <summary>

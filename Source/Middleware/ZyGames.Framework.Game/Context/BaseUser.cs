@@ -51,6 +51,13 @@ namespace ZyGames.Framework.Game.Context
                 return MathUtils.DiffDate(OnlineDate).TotalHours > OnlineHourInterval;
             }
         }
+
+
+        /// <summary>
+        /// 请求连接的类型
+        /// </summary>
+        public int ConnectType { get; set; }
+
         /// <summary>
         /// 远端IP
         /// </summary>

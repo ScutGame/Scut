@@ -18,6 +18,8 @@ namespace ZyGames.Framework.Game.Lang
         public virtual string UrlNoParam { get { return "Parameter name: {0} does not exist"; } }
         public virtual string UrlParamOutRange { get { return "Parameter name: {0} is out of range [{1} - {2}]"; } }
 
+        public string RequestTimeout { get { return "Request timeout!"; } }
+        public string ServerMaintain { get { return "Server is down for maintenance!"; } }
         public virtual string ServerLoading { get { return "The server is restarted, please wait..."; } }
         public string PasswordError { get { return "You enter the account or password is incorrect!"; } }
         public string AcountIsLocked { get { return "The account has been locked, Login failed!"; } }

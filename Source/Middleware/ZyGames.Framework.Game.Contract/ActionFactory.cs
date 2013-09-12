@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.IO;
 using System.Net;
 using System.Net.Sockets;
@@ -90,6 +91,7 @@ namespace ZyGames.Framework.Game.Contract
         /// <summary>
         /// 主动发送消息至客户端
         /// </summary>
+        [Obsolete("", true)]
         public static void SendToClient<T>(List<T> userList, MessageHead head, MessageStructure socketBuffer, Action<string> successHandle) where T : BaseUser
         {
             StringBuilder param = new StringBuilder();
@@ -124,6 +126,7 @@ namespace ZyGames.Framework.Game.Contract
         /// <param name="userList"></param>
         /// <param name="actionId"></param>
         /// <param name="successHandle"></param>
+        [Obsolete("", true)]
         public static void SendToClient<T>(List<T> userList, int actionId, Action<HttpGet> successHandle) where T : BaseUser
         {
             SendToClient(userList, actionId, null, successHandle);
@@ -136,6 +139,7 @@ namespace ZyGames.Framework.Game.Contract
         /// <param name="actionId">下发的数据Action接口</param>
         /// <param name="parameters">参数，相当于客户上传的请求参数</param>
         /// <param name="successHandle">下发成功回调方法，如：g=>{  //do  }</param>
+        [Obsolete("", true)]
         public static void SendToClient<T>(List<T> userList, int actionId, Parameters parameters, Action<HttpGet> successHandle) where T : BaseUser
         {
             StringBuilder shareParam = new StringBuilder();
@@ -154,39 +158,9 @@ namespace ZyGames.Framework.Game.Contract
                     {
                         continue;
                     }
-                    T baseUser = user;
-                    string serverHost = string.Format("{0}:{1}", ActionConfig.Current.IpAddress, ActionConfig.Current.Port);
-                    string param = string.Format("MsgId={0}&St={1}&Sid={2}&Uid={3}&ActionID={4}&GameType={5}&ServerID={6}{7}",
-                        0,
-                        "st",
-                        baseUser.GetSessionId(),
-                        baseUser.GetUserId(),
-                        actionId,
-                        GameEnvironment.ProductCode,
-                        GameEnvironment.ProductServerId,
-                        shareParam.ToString());
-                    var httpGet = new HttpGet(param, serverHost);
-                    BaseStruct baseStruct = FindRoute(ActionConfig.Current.TypeName, httpGet, actionId);
-                    SocketGameResponse response = new SocketGameResponse();
-                    baseStruct.UserFactory = uid => { return baseUser; };
-                    baseStruct.SetPush();
-                    baseStruct.DoInit();
-                    using (baseStruct.RequestLock())
-                    {
-                        if (!baseStruct.GetError() &&
-                            baseStruct.ReadUrlElement() &&
-                            baseStruct.DoAction() &&
-                            !baseStruct.GetError())
-                        {
-                            baseStruct.BuildPacket();
-                            baseStruct.WriteAction(response);
-                        }
-                        else
-                        {
-                            baseStruct.WriteErrorAction(response);
-                        }
-                    }
-                    if (ChannelContextManager.Current.Notify(user.RemoteAddress, response.ReadByte()))
+                    HttpGet httpGet;
+                    byte[] sendData = GetActionResponse(actionId, user, shareParam.ToString(), out httpGet);
+                    if (ChannelContextManager.Current.Notify(user.RemoteAddress, sendData))
                     {
                         if (successHandle != null)
                         {
@@ -201,6 +175,7 @@ namespace ZyGames.Framework.Game.Contract
                 }
             }
         }
+
         /// <summary>
         /// 
         /// </summary>
@@ -254,8 +229,16 @@ namespace ZyGames.Framework.Game.Contract
                 {
                     if (httpGet.GetInt("ActionID", ref actionID))
                     {
+                        Stopwatch stopwatch = new Stopwatch();
+                        stopwatch.Start();
                         BaseStruct action = FindRoute(typeName, httpGet, actionID);
                         Process(action, httpGet, response, userFactory);
+                        stopwatch.Stop();
+
+                        if (stopwatch.ElapsedMilliseconds > GameStruct.ActionTimeOut)
+                        {
+                            TraceLog.WriteError(string.Format("Action{2}接口访问时间{0}ms超过设定超时时间({1}ms)", stopwatch.ElapsedMilliseconds, GameStruct.ActionTimeOut, actionID));
+                        }
                         if (action != null)
                         {
                             return;
@@ -270,7 +253,7 @@ namespace ZyGames.Framework.Game.Contract
             }
             catch (Exception ex)
             {
-                TraceLog.WriteError("Action request error:{0}\r\nparam:{}", ex, httpGet.ParamString);
+                TraceLog.WriteError("Action request error:{0}\r\nparam:{1}", ex, httpGet.ParamString);
             }
             RequestError(response, actionID, 10000, errorInfo);
         }
@@ -288,6 +271,44 @@ namespace ZyGames.Framework.Game.Contract
             MessageStructure sb = new MessageStructure();
             sb.WriteBuffer(head);
             response.BinaryWrite(sb.ReadBuffer());
+        }
+
+        /// <summary>
+        /// 获取Action处理的输出字节流
+        /// </summary>
+        /// <returns></returns>
+        public static byte[] GetActionResponse(int actionId, BaseUser baseUser, string parameters, out HttpGet httpGet)
+        {
+            string serverHost = string.Format("{0}:{1}", ActionConfig.Current.IpAddress, ActionConfig.Current.Port);
+            string param = string.Format("MsgId={0}&St={1}&Sid={2}&Uid={3}&ActionID={4}{5}",
+                0,
+                "st",
+                baseUser.GetSessionId(),
+                baseUser.GetUserId(),
+                actionId,
+                parameters);
+            httpGet = new HttpGet(param, serverHost);
+            BaseStruct baseStruct = FindRoute(ActionConfig.Current.TypeName, httpGet, actionId);
+            SocketGameResponse response = new SocketGameResponse();
+            baseStruct.UserFactory = uid => { return baseUser; };
+            baseStruct.SetPush();
+            baseStruct.DoInit();
+            using (baseStruct.RequestLock())
+            {
+                if (!baseStruct.GetError() &&
+                    baseStruct.ReadUrlElement() &&
+                    baseStruct.DoAction() &&
+                    !baseStruct.GetError())
+                {
+                    baseStruct.BuildPacket();
+                    baseStruct.WriteAction(response);
+                }
+                else
+                {
+                    baseStruct.WriteErrorAction(response);
+                }
+            }
+            return response.ReadByte();
         }
         /// <summary>
         /// 
@@ -317,7 +338,7 @@ namespace ZyGames.Framework.Game.Contract
             }
         }
 
-        private static BaseStruct FindRoute(string typeExpression, HttpGet httpGet, int actionID)
+        internal static BaseStruct FindRoute(string typeExpression, HttpGet httpGet, int actionID)
         {
             string typeName = string.Format(typeExpression, actionID);
             ScriptRoute scriptRoute = new ScriptRoute(actionID);

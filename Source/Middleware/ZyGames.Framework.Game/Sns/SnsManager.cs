@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using ZyGames.Framework.Common.Security;
-using ZyGames.Framework.Game.Runtime;
 
 namespace ZyGames.Framework.Game.Sns
 {
@@ -29,7 +28,7 @@ namespace ZyGames.Framework.Game.Sns
                 SnsPassport passport = new SnsPassport();
                 string password = passport.GetRandomPwd();
                 list.Add(passport.GetRegPassport());
-                list.Add(CryptoHelper.DES_Encrypt(password, GameEnvironment.ProductDesEnKey));
+                list.Add(CryptoHelper.DES_Encrypt(password, config.DES_KEY));
             }
 
             return list.ToArray();

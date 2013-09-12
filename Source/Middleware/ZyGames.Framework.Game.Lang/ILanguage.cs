@@ -44,10 +44,19 @@
         string UrlParamOutRange { get; }
 
         /// <summary>
+        /// 服务器正在维护
+        /// </summary>
+        string ServerMaintain { get; }
+
+        /// <summary>
         /// 服务器正在重启中，请稍候...
         /// </summary>
         string ServerLoading { get; }
 
+        /// <summary>
+        /// 请求超时
+        /// </summary>
+        string RequestTimeout { get; }
         /// <summary>
         /// 您输入的账号或密码不正确
         /// </summary>

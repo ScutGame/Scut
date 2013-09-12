@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Net.Sockets;
+using System.ServiceModel;
 using System.Web;
 using ZyGames.Framework.Common;
 using ZyGames.Framework.Common.Configuration;
@@ -50,19 +52,54 @@ namespace ZyGames.Framework.Game.Contract
             ParamString = httpGet.ParamString;
             RemoteAddress = httpGet.RemoteAddress;
         }
-
+        /// <summary>
+        /// 
+        /// </summary>
         public void Request()
         {
             ReadParam();
             RequestSettings settings = new RequestSettings(GameId, ServerId, RemoteAddress, ParamString);
 
             byte[] sendBuffer = new byte[0];
-            RequestError error = ServiceRequest.Request(settings, out sendBuffer);
+            RequestError error = RequestError.Success;
+            try
+            {
+                ServiceRequest.Request(settings, out sendBuffer);
+            }
+            catch (CommunicationObjectFaultedException fault)
+            {
+                TraceLog.WriteError("The wcfclient request faulted:{0}", fault);
+                error = RequestError.Closed;
+                ServiceRequest.ResetChannel(settings);
+            }
+            catch (Exception ex)
+            {
+                if (ex.InnerException is SocketException)
+                {
+                    var sex = ex.InnerException as SocketException;
+                    TraceLog.WriteError("The wcfclient request connect:{0}-{1}", sex.SocketErrorCode, sex);
+                    if (sex.SocketErrorCode == SocketError.TimedOut)
+                    {
+                        error = RequestError.Timeout;
+                    }
+                    else
+                    {
+                        error = RequestError.UnableConnect;
+                    }
+                }
+                else
+                {
+                    TraceLog.WriteError("The wcfclient request error:{0}", ex);
+                    error = RequestError.Unknown;
+                }
+                ServiceRequest.ResetChannel(settings);
+            }
             switch (error)
             {
                 case RequestError.Success:
                     WriteBuffer(sendBuffer);
                     break;
+                case RequestError.Closed:
                 case RequestError.NotFindService:
                     WriteNotFindError();
                     break;
@@ -76,7 +113,7 @@ namespace ZyGames.Framework.Game.Contract
                     WriteUnknownError();
                     break;
                 default:
-                    throw new ArgumentOutOfRangeException();
+                    throw new ArgumentOutOfRangeException("RequestError", error, "Not process RequestError enum.");
             }
         }
 

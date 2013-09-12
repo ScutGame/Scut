@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -39,6 +39,7 @@
     <Reference Include="System" />
     <Reference Include="System.configuration" />
     <Reference Include="System.Core" />
+    <Reference Include="System.ServiceModel" />
     <Reference Include="System.Web" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
@@ -54,7 +55,7 @@
       <HintPath>..\..\..\..\FrameworkPublish\Unstable\4.0\Core\V5.1\ZyGames.Framework.Plugin.dll</HintPath>
     </Reference>
     <Reference Include="ZyGames.Framework.RPC">
-      <HintPath>..\..\..\..\FrameworkPublish\Unstable\4.0\Core\Rpc_V1.0\ZyGames.Framework.RPC.dll</HintPath>
+      <HintPath>..\..\..\..\FrameworkPublish\Unstable\4.0\Core\Game_V3.0\ZyGames.Framework.RPC.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -74,6 +75,7 @@
     <Compile Include="Action\ScriptAction.cs" />
     <Compile Include="Action\Sdk91PayAction.cs" />
     <Compile Include="Action\ReAccessTokenAction.cs" />
+    <Compile Include="GameSocketHost.cs" />
     <Compile Include="HttpServiceRequest.cs" />
     <Compile Include="Page\RankingPage.cs">
       <SubType>ASPXCodeBehind</SubType>

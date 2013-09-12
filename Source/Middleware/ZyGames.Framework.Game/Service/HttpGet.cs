@@ -522,7 +522,22 @@ namespace ZyGames.Framework.Game.Service
         /// <returns></returns>
         public bool CheckSign()
         {
-            return true;
+            string sign = "";
+            if (GetString("sign", ref sign))
+            {
+                if (_requestParam != null)
+                {
+                    string attachParam = _requestParam + "44CAC8ED53714BF18D60C5C7B6296000";
+                    string key = FormsAuthentication.HashPasswordForStoringInConfigFile(attachParam, "MD5");
+                    if (!string.IsNullOrEmpty(key) && key.ToLower() == sign)
+                    {
+                        return true;
+                    }
+                    TraceLog.WriteError("sign1:{0}=sign2:{1}", sign, key.ToLower());
+                }
+            }
+
+            return false;
         }
 
 

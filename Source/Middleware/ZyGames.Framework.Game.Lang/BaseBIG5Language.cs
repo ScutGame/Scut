@@ -18,7 +18,11 @@ namespace ZyGames.Framework.Game.Lang
         public virtual string UrlNoParam { get { return "參數名:{0}不存在"; } }
         public virtual string UrlParamOutRange { get { return "參數名:{0}超出範圍[{1}-{2}]"; } }
 
+        public string ServerMaintain { get { return "服務器正在維護！"; } }
         public virtual string ServerLoading { get { return "服務器正在重啟中，請稍候..."; } }
+
+        public string RequestTimeout { get { return "請求響應超時！"; } }
+
         public string PasswordError { get { return "您輸入的帳號或密碼不正確!"; } }
         public string LoadDataError { get { return "載入數據失敗!"; } }
         public string AcountIsLocked { get { return "該賬號已被封禁，登錄失敗！"; } }

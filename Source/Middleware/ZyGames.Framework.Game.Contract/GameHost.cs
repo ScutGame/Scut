@@ -59,11 +59,6 @@ namespace ZyGames.Framework.Game.Contract
         }
 
         protected WcfServiceProxy ServiceProxy;
-        protected string IpAddress;
-        protected int Port;
-        protected TimeSpan ConnectTimeout;
-        protected TimeSpan ReceiveTimeout;
-        protected TimeSpan InactivityTimeout;
 
         /// <summary>
         /// 
@@ -79,33 +74,33 @@ namespace ZyGames.Framework.Game.Contract
         /// </summary>
         public void Bind()
         {
-            string ip = ActionFactory.ActionConfig.Current.IpAddress;
+            string host = ActionFactory.ActionConfig.Current.IpAddress;
             int port = ActionFactory.ActionConfig.Current.Port;
-            Bind(ip, port);
+            Bind(host, port);
         }
 
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="ip"></param>
+        /// <param name="host"></param>
         /// <param name="port"></param>
         /// <param name="connectTimeout"></param>
         /// <param name="inactivityTimeout"></param>
-        public void Bind(string ip, int port, int connectTimeout = 10, int inactivityTimeout = 5)
+        public void Bind(string host, int port, int connectTimeout = 10, int inactivityTimeout = 10)
         {
-            Bind(ip, port, new TimeSpan(0, 0, connectTimeout), TimeSpan.MaxValue, new TimeSpan(0, 0, inactivityTimeout));
+            Bind(host, port, new TimeSpan(0, 0, connectTimeout), TimeSpan.MaxValue, new TimeSpan(0, 0, inactivityTimeout));
         }
 
         /// <summary>
         /// 
         /// </summary>
-        public void Bind(string ip, int port, TimeSpan connectTimeout, TimeSpan receiveTimeout, TimeSpan inactivityTimeout)
+        public void Bind(string host, int port, TimeSpan connectTimeout, TimeSpan receiveTimeout, TimeSpan inactivityTimeout)
         {
-            IpAddress = ip;
-            Port = port;
-            ConnectTimeout = connectTimeout;
-            ReceiveTimeout = receiveTimeout;
-            InactivityTimeout = inactivityTimeout;
+            ServiceProxy.Setting = new BindingBehaviorSetting(host, port);
+            ServiceProxy.Setting.InactivityTimeout = inactivityTimeout;
+            ServiceProxy.Setting.ConnectTimeout = connectTimeout;
+            ServiceProxy.Setting.ReceiveTimeout = receiveTimeout;
+
             ChannelContextManager.Current.OnRequested += new RequestHandle(OnRequestComplated);
             ChannelContextManager.Current.OnCallRemote += new CallRemoteHandle(OnCallRemoteComplated);
             ChannelContextManager.Current.OnClosing += new ClosingHandle(OnClosed);
@@ -129,22 +124,15 @@ namespace ZyGames.Framework.Game.Contract
         public void Listen()
         {
             DoListen();
+            ServiceProxy.Listen();
             ListenAfter();
         }
 
         /// <summary>
-        /// 
+        /// 监听启动之前处理
         /// </summary>
         protected virtual void DoListen()
         {
-            if (string.IsNullOrEmpty(IpAddress))
-            {
-                ServiceProxy.Listen(Port);
-            }
-            else
-            {
-                ServiceProxy.Listen(IpAddress, Port);
-            }
         }
 
         /// <summary>
@@ -152,7 +140,7 @@ namespace ZyGames.Framework.Game.Contract
         /// </summary>
         protected virtual void ListenAfter()
         {
-            Console.WriteLine("Game server {0} has been started, is listening ...", ServiceProxy.ServiceUrl);
+            Console.WriteLine("Game server {0} has been started, is listening ...", ServiceProxy.Setting.Url);
         }
 
         protected abstract void OnRequested(HttpGet httpGet, IGameResponse response);

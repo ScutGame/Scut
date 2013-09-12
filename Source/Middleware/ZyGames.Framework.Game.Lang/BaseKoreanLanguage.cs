@@ -18,6 +18,8 @@ namespace ZyGames.Framework.Game.Lang
         public virtual string UrlNoParam { get { return "매개 변수 이름 : {0}이 존재하지 않습니다"; } }
         public virtual string UrlParamOutRange { get { return "매개 변수 이름 : {0} 범위를 벗어난 경우 [{1} - {2}]"; } }
 
+        public string RequestTimeout { get { return "요청 시간 초과!"; } }
+        public string ServerMaintain { get { return "서버가 유지 보수를 위해 다운!"; } }
         public virtual string ServerLoading { get { return "서버가 다시 시작됩니다 기다려주십시오 ..."; } }
         public virtual string PasswordError { get { return "당신은 계정을 입력 또는 암호가 올바르지 않습니다!"; } }
         public virtual string AcountIsLocked { get { return "계정이 잠겼습니다, ​​로그인 실패!"; } }

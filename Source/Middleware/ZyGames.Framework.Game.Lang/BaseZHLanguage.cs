@@ -20,6 +20,8 @@ namespace ZyGames.Framework.Game.Lang
         public virtual string UrlNoParam { get { return "参数名:{0}不存在"; } }
         public virtual string UrlParamOutRange { get { return "参数名:{0}超出范围[{1}-{2}]"; } }
 
+        public string RequestTimeout { get { return "请求响应超时！"; } }
+        public string ServerMaintain { get { return "服务器正在维护！"; } }
         public virtual string ServerLoading { get { return "服务器正在重启中，请稍后..."; } }
         public string PasswordError { get { return "您输入的账号或密码不正确!"; } }
         public string LoadDataError { get { return "数据加载失败!"; } }
