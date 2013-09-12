@@ -1,7 +1,10 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Globalization;
+using System.Net.Sockets;
+using System.ServiceModel;
 using System.Text;
 using System.Web;
 using System.Web.Security;
@@ -17,6 +20,7 @@ namespace ZyGames.Framework.Game.SocketServer
     /// <summary>
     /// 
     /// </summary>
+    [Obsolete]
     internal class TcpSocketReceiver : ISocketReceiver
     {
         private static bool EnableError;
@@ -54,17 +58,18 @@ namespace ZyGames.Framework.Game.SocketServer
         /// <param name="session"></param>
         /// <param name="buffer"></param>
         /// <returns></returns>
-        public byte[] Receive(SocketSession session, byte[] buffer)
+        public byte[] Receive(string session, byte[] buffer)
         {
+            Stopwatch watch = new Stopwatch();
+            watch.Start();
             BufferReader reader = new BufferReader(buffer);
             string routeName = "";
-            string paramString;
-            if (!reader.ReadPacketString(out paramString))
-            {
-                paramString = new MessageStructure(buffer).ReadEndAsString();
-            }
+            string paramString = reader.ReadPacketString();
+
+#if DEBUG
             //todo trace
             TraceLog.ReleaseWrite("Tcp param:{0}", paramString);
+#endif
             bool isRoute = false;
             if (!string.IsNullOrEmpty(paramString) && paramString.StartsWith("route:", StringComparison.CurrentCultureIgnoreCase))
             {
@@ -87,70 +92,110 @@ namespace ZyGames.Framework.Game.SocketServer
             var paramGeter = new ParamGeter(paramString);
             string remoteAddress = session.RemoteAddress;
             MessageHead head = ParseMessageHead(paramGeter);
+            head.HasGzip = true;
+            session.UserData = head;
+            MessageStructure ms = new MessageStructure();
 #if DEBUG
-            Console.WriteLine("Tcp param:MsgId:{0},ActionId:{1},ip:{2}", head.MsgId, head.Action, remoteAddress);
+            Console.WriteLine("{0}>>请求参数:MsgId:{1},ActionId:{2},ip:{3}", DateTime.Now.ToLongTimeString(),
+                head.MsgId, head.Action, remoteAddress);
+
 #endif
             var settings = ParseRequestSettings(paramGeter, remoteAddress);
             settings.ParamString = paramString;
             settings.RouteName = routeName;
 
             byte[] sendBuffer = new byte[0];
-            RequestError error;
-            if (isRoute)
+            RequestError error = RequestError.Success;
+            try
             {
-                if (CheckCallAccessLimit(remoteAddress))
+                if (isRoute)
                 {
-                    error = RequestError.Unknown;
-                    head.ErrorInfo = ErrorCallAccessLimit;
+                    if (CheckCallAccessLimit(remoteAddress))
+                    {
+                        error = RequestError.Unknown;
+                        head.ErrorInfo = ErrorCallAccessLimit;
+                    }
+                    else
+                    {
+                        ServiceRequest.CallRemote(settings, out sendBuffer);
+                    }
                 }
                 else
                 {
-                    error = ServiceRequest.CallRemote(settings, out sendBuffer);
+                    ServiceRequest.Request(settings, out sendBuffer);
                 }
             }
-            else
+            catch (CommunicationObjectFaultedException fault)
             {
-                error = ServiceRequest.Request(settings, out sendBuffer);
+                TraceLog.WriteError("The wcfclient request faulted:{0}", fault);
+                error = RequestError.Closed;
+                ServiceRequest.ResetChannel(settings);
             }
+            catch (Exception ex)
+            {
+                if (ex.InnerException is SocketException)
+                {
+                    var sex = ex.InnerException as SocketException;
+                    TraceLog.WriteError("The wcfclient request connect:{0}-{1}", sex.SocketErrorCode, sex);
+                    if (sex.SocketErrorCode == SocketError.TimedOut)
+                    {
+                        error = RequestError.Timeout;
+                    }
+                    else
+                    {
+                        error = RequestError.UnableConnect;
+                    }
+                }
+                else
+                {
+                    TraceLog.WriteError("The wcfclient request error:{0}", ex);
+                    error = RequestError.Unknown;
+                }
+                ServiceRequest.ResetChannel(settings);
+            }
+            watch.Stop();
             switch (error)
             {
                 case RequestError.Success:
-                    string msg = string.Format("[{0}]请求响应{1}:route={8},MsgId={2},St={3},Action-{4},error:{5}-{6},bytes:{7}",
-                                               DateTime.Now.ToString("HH:mm:ss"),
+                    ms.WriteGzipBuffer(sendBuffer);
+
+                    string msg = string.Format("[{0}]请求响应{1}:route={8},MsgId={2},St={3},Action-{4},error:{5}-{6},bytes:{7},响应时间:{9}ms\r\n",
+                                               DateTime.Now.ToLongTimeString(),
                                                session.RemoteAddress,
                                                head.MsgId,
                                                head.St,
                                                head.Action,
                                                head.ErrorCode,
                                                head.ErrorInfo,
-                                               head.TotalLength + 4,
-                                               routeName);
+                                               sendBuffer.Length,
+                                               routeName,
+                                               (int)watch.Elapsed.TotalMilliseconds);
                     TraceLog.ReleaseWrite(msg);
+#if DEBUG
+#endif
                     Console.WriteLine(msg);
+
                     break;
+                case RequestError.Closed:
                 case RequestError.NotFindService:
                     head.ErrorInfo = ErrorNotFind;
-                    sendBuffer = DoWriteError(head);
+                    DoWriteError(ms, head);
                     break;
                 case RequestError.UnableConnect:
                     head.ErrorInfo = ErrorConnected;
-                    sendBuffer = DoWriteError(head);
+                    DoWriteError(ms, head);
                     break;
                 case RequestError.Timeout:
                     head.ErrorInfo = ErrorTimeout;
-                    sendBuffer = DoWriteError(head);
+                    DoWriteError(ms, head);
                     break;
                 case RequestError.Unknown:
-                    sendBuffer = DoWriteError(head);
+                    DoWriteError(ms, head);
                     break;
                 default:
-                    throw new ArgumentOutOfRangeException();
+                    throw new ArgumentOutOfRangeException("RequestError", error, "Not process RequestError enum.");
             }
-            //增加一层包大小
-            MessageStructure ds = new MessageStructure();
-            ds.WriteByte(sendBuffer.Length);//用于Gig压缩后的包大小
-            ds.WriteByte(sendBuffer);
-            sendBuffer = ds.ReadBuffer();
+            sendBuffer = ms.ReadBuffer();
             return sendBuffer;
         }
 
@@ -209,14 +254,17 @@ namespace ZyGames.Framework.Game.SocketServer
                      _accessLimitIp.Contains(network));
         }
 
-        private byte[] DoWriteError(MessageHead head)
+        private void DoWriteError(MessageStructure ms, MessageHead head)
         {
             head.ErrorCode = (int)MessageError.SystemError;
             head.ClientVersion = 1;
-            TraceLog.WriteError("Request wcf server error:{0}", head.ErrorInfo);
-            var ms = new MessageStructure();
+            string msg = string.Format("Request action:{0} wcfserver error:{1}-{2},MsgId:{3}",
+                                       head.Action, head.ErrorCode, head.ErrorInfo, head.MsgId);
+            TraceLog.WriteError(msg);
+#if DEBUG
+            Console.WriteLine(msg);
+#endif
             ms.WriteBuffer(head);
-            return ms.ReadBuffer();
         }
 
     }

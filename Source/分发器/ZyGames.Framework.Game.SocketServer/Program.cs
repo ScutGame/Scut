@@ -1,44 +1,51 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Net.Sockets;
 using ZyGames.Framework.Common;
 using ZyGames.Framework.Common.Configuration;
 using ZyGames.Framework.Common.Log;
+using ZyGames.Framework.Game.SocketServer.Net;
 using ZyGames.Framework.RPC.IO;
 using ZyGames.Framework.RPC.Sockets;
 using ZyGames.Framework.RPC.Wcf;
+using ZyGames.Framework.RPC.Web;
 
 namespace ZyGames.Framework.Game.SocketServer
 {
     class Program
     {
-        private static SocketListener _socketListener;
-
         static void Main(string[] args)
         {
+            ListenerProxy gameListener = null;
+            ListenerProxy clientListener = null;
+            HttpListenerProxy httpListener = null;
             try
             {
-                string path = AppDomain.CurrentDomain.SetupInformation.ApplicationBase;
-                WcfServiceClientManager.Current.InitConfig(path, OnSendTo);
-                string host = ConfigUtils.GetSetting("SocketServer.Host");
-                int port = ConfigUtils.GetSetting("SocketServer.Port").ToInt();
-                int backlog = ConfigUtils.GetSetting("SocketServer.Backlog").ToInt();
-                int connectTimeout = ConfigUtils.GetSetting("SocketServer.ConnectTimeout", "600").ToInt();
-                int bufferSize = ConfigUtils.GetSetting("SocketServer.BufferSize").ToInt();
-                int minAsyncPool = ConfigUtils.GetSetting("SocketServer.MinAsyncPool").ToInt();
-                int maxAsyncPool = ConfigUtils.GetSetting("SocketServer.MaxAsyncPool").ToInt();
-                ISocketReceiver receiver = new TcpSocketReceiver();
-                SocketAsyncPool pool = new SocketAsyncPool(minAsyncPool, maxAsyncPool, bufferSize, receiver);
-                _socketListener = new SocketListener(pool, connectTimeout);
-                if (!string.IsNullOrEmpty(host))
-                {
-                    _socketListener.Listen(host, port, backlog);
-                }
-                else
-                {
-                    _socketListener.Listen(port, backlog);
-                }
-                _socketListener.OnClosing += new SocketClosingHandle(OnSocketClosed);
-                Console.WriteLine("【Socket服务器-{0}】分发请求监听中...", port);
+                var gameTran = new GameTransponder();
+                var clientTran = new HttpTransponder();
+                clientTran.ReceiveCompleted += gameTran.Send;
+                clientTran.SocketClosing += gameTran.OnTcpClientClosed;
+                gameTran.ReceiveCompleted += clientTran.Send;
+
+                ConnectSetting gameSetting = LoadGameSetting();
+                ConnectSetting clientSetting = LoadClientSetting();
+                HttpSettings httpSetting = LoadHttpSetting();
+                gameListener = new ListenerProxy(gameTran, gameSetting);
+                clientListener = new ListenerProxy(clientTran, clientSetting);
+                httpListener = new HttpListenerProxy(httpSetting);
+                httpListener.RequestCompleted += clientTran.Request;
+                httpListener.RequestTimeout += clientTran.RequestTimeout;
+                clientTran.ResponseCompleted += httpListener.PushSend;
+
+                gameListener.Listen();
+                Console.WriteLine("【游戏服监听端口:{0}】正在监听中...", gameSetting.Port);
+
+                clientListener.Listen();
+                Console.WriteLine("【客户端监听端口:{0}】正在监听中...", clientSetting.Port);
+
+                httpListener.Listen();
+                Console.WriteLine("【Http监听端口:{0}:{1}/{2}】正在监听中...", httpSetting.HostAddress, httpSetting.Port, httpSetting.GameAppName);
+
                 Console.ReadLine();
             }
             catch (Exception ex)
@@ -47,67 +54,58 @@ namespace ZyGames.Framework.Game.SocketServer
             }
             finally
             {
-                if (_socketListener != null)
+                if (clientListener != null)
                 {
-                    _socketListener.Close();
+                    clientListener.Dispose();
                 }
-                WcfServiceClientManager.Dispose();
-            }
-        }
 
-        private static void OnSocketClosed(string remoteaddress)
-        {
-            try
-            {
-
-            }
-            catch (Exception ex)
-            {
+                if (gameListener != null)
+                {
+                    gameListener.Dispose();
+                }
+                if (httpListener != null)
+                {
+                    httpListener.Dispose();
+                }
 
             }
         }
 
-        private static void OnSendTo(string param, byte[] buffer)
+        private static HttpSettings LoadHttpSetting()
         {
-            string curr = DateTime.Now.ToLongTimeString();
-            string msg = string.Format("[{0}]开始Push数据到{1},{2}byte", curr, param, buffer.Length);
+            string preKey = "HttpListener";
+            var setting = new HttpSettings();
+            setting.HostAddress = ConfigUtils.GetSetting(preKey + ".Host");
+            setting.Port = ConfigUtils.GetSetting(preKey + ".Port", "80").ToInt();
+            setting.GameAppName = ConfigUtils.GetSetting(preKey + ".GameAppName");
+            setting.RequestTimeout = ConfigUtils.GetSetting(preKey + ".RequestTimeout", "120000").ToInt();
+            return setting;
+        }
 
-            MessageStructure ms = new MessageStructure(buffer);
-            var head = ms.ReadHead();
-            if (head == null || _socketListener == null)
-            {
-                TraceLog.WriteError("Send to:{0} head is null.", param);
-                return;
-            }
-            param = param ?? "";
-            string[] addressList = param.Split(',');
-            if (addressList.Length == 0)
-            {
-                Console.WriteLine("Socket send address is empty.");
-            }
-            msg += string.Format(",action:{0},error:{1}-{2}", head.Action, head.ErrorCode, head.ErrorInfo);
-            Console.WriteLine(msg);
-            TraceLog.ReleaseWrite(msg);
-            //增加一层包大小
-            MessageStructure ds = new MessageStructure();
-            ds.WriteByte(buffer.Length);//用于Gig压缩后的包大小
-            ds.WriteByte(buffer);
-            buffer = ds.ReadBuffer();
+        private static ConnectSetting LoadClientSetting()
+        {
+            return LoadSetting("ClientListener");
+        }
 
-            HashSet<string> addressSet = new HashSet<string>(addressList);
-            _socketListener.Notify(s => addressSet.Contains(s.RemoteAddress), buffer,
-                s =>
-                {
-                    Console.WriteLine("[{0}]Socket发送成功:{1}!", DateTime.Now.ToString("HH:mm:ss"), s.RemoteAddress);
-                },
-                fail =>
-                {
-                    Console.WriteLine("[{0}]Socket发送失败或连接关闭:{1}", DateTime.Now.ToString("HH:mm:ss"), fail.RemoteAddress);
-                },
-                error =>
-                {
-                    Console.WriteLine("[{0}]Socket发送异常:{1}", DateTime.Now.ToString("HH:mm:ss"), error);
-                });
+
+        private static ConnectSetting LoadGameSetting()
+        {
+            return LoadSetting("GameListener");
+        }
+
+        private static ConnectSetting LoadSetting(string preKey)
+        {
+            var setting = new ConnectSetting();
+            setting.Host = ConfigUtils.GetSetting(preKey + ".Host");
+            setting.Port = ConfigUtils.GetSetting(preKey + ".Port").ToInt();
+            setting.Backlog = ConfigUtils.GetSetting(preKey + ".Backlog", "10").ToInt();
+            setting.ConnectTimeout = ConfigUtils.GetSetting(preKey + ".ContinuedTimeout", "60").ToInt();
+            setting.BufferSize = ConfigUtils.GetSetting(preKey + ".BufferSize", "1024").ToInt();
+            setting.MinPoolSize = ConfigUtils.GetSetting(preKey + ".MinConnectNum", "10").ToInt();
+            setting.MaxPoolSize = ConfigUtils.GetSetting(preKey + ".MaxConnectNum", "1000").ToInt();
+            setting.EnableReceiveTimeout = ConfigUtils.GetSetting(preKey + ".EnableReceiveTimeout", "false").ToBool();
+            setting.ReceiveTimeout = ConfigUtils.GetSetting(preKey + ".ReceiveTimeout", "30000").ToInt();
+            return setting;
         }
     }
 }
