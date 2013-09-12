@@ -1,0 +1,15 @@
+.progressbar{
+	border:1px solid #D3D3D3;
+	border-radius:5px;
+	overflow:hidden;
+}
+.progressbar-text{
+	text-align:center;
+	color:#3F3F3F;
+	position:absolute;
+}
+.progressbar-value{
+	background-color:#eee;
+	border-radius:5px;
+	width:0;
+}

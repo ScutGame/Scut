@@ -1,0 +1,1 @@
+﻿<%@ Page Language="C#" AutoEventWireup="true" CodeBehind="ActionService.aspx.cs" Inherits="ZyGames.OA.Share.ActionService" ValidateRequest="false" %>

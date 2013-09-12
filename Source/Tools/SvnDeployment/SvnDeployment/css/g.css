@@ -1,0 +1,124 @@
+﻿body {
+    font-family:helvetica,tahoma,verdana,sans-serif,宋体;
+    padding:0;
+    font-size:13px;
+    margin:0;
+}
+
+a
+{
+	color: #000;
+}
+
+img
+{
+	border-width: 0px;
+}
+
+p.Left
+{
+	text-align: left;
+}
+
+p.title
+{
+	font-size: 16px;
+	color: #000;
+}
+
+div.Header
+{
+	font-size: 12px;
+	padding: 2px;
+	margin: 0px 4px 4px 4px;
+	border-width: thin;
+	border-color: #E0E0FF;
+	text-align: left;
+	border-bottom-style: solid;
+}
+
+div.Content
+{
+	margin: auto;
+}
+
+div.Footer
+{
+	font-size: 12px;
+	bottom: 0px;
+	right: 0px;
+	margin-bottom: 8px;
+	text-align: center;
+	position: absolute;
+}
+
+div.FixedWidth600
+{
+	margin: auto;
+	width: 600px;
+}
+
+div.FixedWidth480
+{
+	margin: auto;
+	width: 480px;
+}
+
+div.FixedWidth440
+{
+	margin: auto;
+	width: 440px;
+}
+
+div.FixedWidth320
+{
+	margin: auto;
+	width: 320px;
+}
+
+div.Left
+{
+	margin: auto;
+	text-align: left;
+}
+
+table.e
+{
+	margin: auto;
+	text-align: left;
+}
+
+td.e
+{
+	padding-top: 10px;
+	padding-bottom: 10px;
+	padding-left: 6px;
+	padding-right: 6px;
+}
+
+td.Red
+{
+	padding-top: 10px;
+	padding-bottom: 10px;
+	padding-left: 6px;
+	padding-right: 6px;
+	text-align: center;
+	color: #FF0000;
+}
+
+iframe
+{
+	border-style: none;
+	padding: 0px;
+	margin: 0px;
+}
+
+span.Small
+{
+	font-size: 12px;
+}
+
+span.Left
+{
+	text-align: left;
+}
