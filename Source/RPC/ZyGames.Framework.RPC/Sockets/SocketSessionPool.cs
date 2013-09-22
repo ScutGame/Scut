@@ -10,14 +10,14 @@ namespace ZyGames.Framework.RPC.Sockets
     /// </summary>
     internal class SocketSessionPool
     {
-        private ConcurrentDictionary<string, SocketAsyncEventArgs> _pools;
+        private ConcurrentDictionary<Guid, SocketObject> _pools;
 
         /// <summary>
         /// 
         /// </summary>
         public SocketSessionPool()
         {
-            _pools = new ConcurrentDictionary<string, SocketAsyncEventArgs>();
+            _pools = new ConcurrentDictionary<Guid, SocketObject>();
         }
 
         /// <summary>
@@ -33,12 +33,12 @@ namespace ZyGames.Framework.RPC.Sockets
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="remoteAddress"></param>
+        /// <param name="sessionId"></param>
         /// <returns></returns>
-        public SocketAsyncEventArgs Find(string remoteAddress)
+        public SocketObject Find(Guid sessionId)
         {
-            SocketAsyncEventArgs saea;
-            if (_pools.TryGetValue(remoteAddress, out saea))
+            SocketObject saea;
+            if (_pools.TryGetValue(sessionId, out saea))
             {
                 return saea;
             }
@@ -49,7 +49,7 @@ namespace ZyGames.Framework.RPC.Sockets
         /// 
         /// </summary>
         /// <returns></returns>
-        public IEnumerator<KeyValuePair<string, SocketAsyncEventArgs>> GetEnumerator()
+        public IEnumerator<KeyValuePair<Guid, SocketObject>> GetEnumerator()
         {
             return _pools.GetEnumerator();
         }
@@ -57,37 +57,25 @@ namespace ZyGames.Framework.RPC.Sockets
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="eventArgs"></param>
-        public bool Put(SocketAsyncEventArgs eventArgs)
+        /// <param name="socketObject"></param>
+        public bool Put(SocketObject socketObject)
         {
-            var session = eventArgs.UserToken as SocketSession;
-            if (session != null)
+            SocketObject oldval;
+            if (_pools.TryGetValue(socketObject.SessionId, out oldval))
             {
-                string key = session.RemoteAddress;
-                SocketAsyncEventArgs oldval;
-                if (_pools.TryGetValue(key, out oldval))
-                {
-                    _pools.TryUpdate(key, eventArgs, oldval);
-                }
-                return _pools.TryAdd(key, eventArgs);
+                _pools.TryUpdate(socketObject.SessionId, socketObject, oldval);
             }
-            return false;
+            return _pools.TryAdd(socketObject.SessionId, socketObject);
         }
 
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="eventArgs"></param>
-        public bool Remove(SocketAsyncEventArgs eventArgs)
+        /// <param name="socketObject"></param>
+        public bool Remove(SocketObject socketObject)
         {
-            var session = eventArgs.UserToken as SocketSession;
-            if (session != null)
-            {
-                string key = session.RemoteAddress;
-                SocketAsyncEventArgs oldval;
-                return _pools.TryRemove(key, out oldval);
-            }
-            return false;
+            SocketObject oldval;
+            return _pools.TryRemove(socketObject.SessionId, out oldval);
         }
 
 

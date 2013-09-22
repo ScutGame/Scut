@@ -5,16 +5,21 @@ using System.Net.Sockets;
 using System.Text;
 using System.Threading;
 using ZyGames.Framework.Common.Log;
+using ZyGames.Framework.RPC.IO;
 
 namespace ZyGames.Framework.RPC.Sockets
 {
     internal class SocketAsyncEventArgsProxy
     {
         private readonly int _bufferSize;
+        private PrefixHandler _prefixHandler;
+        private MessageHandler _messageHandler;
 
         internal SocketAsyncEventArgsProxy(int bufferSize)
         {
             _bufferSize = bufferSize;
+            _prefixHandler = new PrefixHandler();
+            _messageHandler = new MessageHandler();
         }
 
         public int BufferSize
@@ -22,10 +27,9 @@ namespace ZyGames.Framework.RPC.Sockets
             get { return _bufferSize; }
         }
 
-        public Action<SocketSession, byte[]> ReceiveCompleted;
+        public SocketProcessEvent ReceiveCompleted;
         public Action<SocketAsyncEventArgs> SendCompleted;
         public Action<SocketAsyncEventArgs> ClosedHandle;
-        public Action<SocketAsyncEventArgs> SendingHandle;
 
         public SocketAsyncEventArgs CreateNewSaea()
         {
@@ -38,6 +42,9 @@ namespace ZyGames.Framework.RPC.Sockets
         {
             try
             {
+                DataToken ioDataToken = (DataToken)e.UserToken;
+                ioDataToken.Socket.LastAccessTime = DateTime.Now;
+
                 switch (e.LastOperation)
                 {
                     case SocketAsyncOperation.Receive:
@@ -60,20 +67,18 @@ namespace ZyGames.Framework.RPC.Sockets
         /// 
         /// </summary>
         /// <param name="e"></param>
-        public void DoStartSend(SocketAsyncEventArgs e)
+        /// <param name="data"></param>
+        public void Send(SocketAsyncEventArgs e, byte[] data)
         {
-            SocketSession session = e.UserToken as SocketSession;
-            byte[] buffer = session.SendPacket.ReadBlockData(_bufferSize);
-            if (buffer.Length == 0)
-            {
-                return;
-            }
-            DoInternalSend(e, new ArraySegment<byte>(buffer));
+            DataToken session = e.UserToken as DataToken;
+            session.byteArrayForMessage = data;
+            session.messageLength = data.Length;
+            DoInternalSend(e);
         }
 
-        private void DoInternalSend(SocketAsyncEventArgs e, ArraySegment<byte> segment)
+        private void DoInternalSend(SocketAsyncEventArgs e)
         {
-            if (TryProcessSend(e, segment))
+            if (StartProcessSend(e))
             {
                 return;
             }
@@ -82,60 +87,69 @@ namespace ZyGames.Framework.RPC.Sockets
             {
                 spinWait.SpinOnce();
 
-                if (TryProcessSend(e, segment))
+                if (StartProcessSend(e))
                 {
                     return;
                 }
             }
         }
 
-        private bool TryProcessSend(SocketAsyncEventArgs e, ArraySegment<byte> segment)
+        private bool StartProcessSend(SocketAsyncEventArgs e)
         {
-            if (e.SocketError != SocketError.Success)
+            try
             {
-                return false;
-            }
-            SocketSession session = e.UserToken as SocketSession;
-            e.SetBuffer(session.BufferOffset, segment.Count);
-            Buffer.BlockCopy(segment.Array, 0, e.Buffer, session.BufferOffset, segment.Count);
+                DataToken session = e.UserToken as DataToken;
+                if (session.messageLength - session.messageBytesDone <= _bufferSize)
+                {
+                    e.SetBuffer(session.bufferOffset, session.messageLength - session.messageBytesDone);
+                    Buffer.BlockCopy(session.byteArrayForMessage, session.messageBytesDone, e.Buffer, session.bufferOffset, session.messageLength - session.messageBytesDone);
+                }
+                else
+                {
+                    e.SetBuffer(session.bufferOffset, _bufferSize);
+                    Buffer.BlockCopy(session.byteArrayForMessage, session.messageBytesDone, e.Buffer, session.bufferOffset, _bufferSize);
+                }
 
-            if (!e.AcceptSocket.SendAsync(e))
-            {
-                ProcessSend(e);
+                bool willRaiseEvent = true;
+                willRaiseEvent = e.AcceptSocket.SendAsync(e);
+                if (!willRaiseEvent)
+                {
+                    ProcessSend(e);
+                }
+                return true;
             }
-            return true;
+            catch (Exception ex)
+            {
+                TraceLog.WriteError("TryProcessSend:{0}", ex);
+            }
+            return false;
         }
 
         private void ProcessSend(SocketAsyncEventArgs e)
         {
-            if (e.BytesTransferred > 0)
+            DataToken session = (DataToken)e.UserToken;
+            if (e.SocketError == SocketError.Success)
             {
-                SocketSession session = e.UserToken as SocketSession;
-                if (e.SocketError == SocketError.Success)
+                session.messageBytesDone += e.BytesTransferred;
+
+                if (session.messageBytesDone != session.messageLength)
                 {
-                    //处理上一次传送字节长度
-                    session.SendPacket.SetDoneByteCount(e.BytesTransferred);
-                    if (SendingHandle!=null)
-                    {
-                        SendingHandle.BeginInvoke(e,null,null);
-                    }
-                    if (session.SendPacket.RemainingByteCount > 0)
-                    {
-                        DoStartSend(e);
-                    }
-                    else
-                    {
-                        OnSendCompleted(e);
-                    }
+                    DoInternalSend(e);
                 }
                 else
                 {
-                    ProcessSocketError(e);
+                    session.Reset(true);
+                    // 触发数据发送成功事件
+                    if (SendCompleted != null)
+                    {
+                        SendCompleted.BeginInvoke(e, null, null);
+                    }
                 }
             }
             else
             {
-                CloseClientSocket(e);
+                session.Reset(true);
+                ProcessSocketError(e);
             }
         }
 
@@ -145,65 +159,68 @@ namespace ZyGames.Framework.RPC.Sockets
         /// <param name="e"></param>
         private void ProcessReceive(SocketAsyncEventArgs e)
         {
+            DataToken session = e.UserToken as DataToken;
             if (e.BytesTransferred > 0)
             {
-                SocketSession session = e.UserToken as SocketSession;
                 if (e.SocketError == SocketError.Success)
                 {
                     //是否有已接收但未处理的数据
-                    byte[] data = new byte[e.BytesTransferred];
-                    Buffer.BlockCopy(e.Buffer, session.BufferOffset, data, 0, data.Length);
-                    session.ReceivePacket.InsertByteArray(data);
-
-                    //session.ReceiveBuffer(e);
-                    if (session.ReceivePacket.HasCompleteBytes)
+                    int remainingBytesToProcess = e.BytesTransferred;
+                    do
                     {
-                        byte[] buffer;
-                        bool hasNext = false;
-                        do
+                        if (session.prefixBytesDone < 4)
                         {
-                            hasNext = session.ReceivePacket.CheckCompletePacket(out buffer);
-                            if (hasNext)
+                            remainingBytesToProcess = _prefixHandler.HandlePrefix(e, session, remainingBytesToProcess);
+                            if (remainingBytesToProcess == 0)
                             {
-                                //处理接收数据
-                                if (ReceiveCompleted != null)
-                                {
-                                    ReceiveCompleted.BeginInvoke(session, buffer, null, null);
-                                }
+                                session.bufferSkip = 0;
+                                StartReceive(e);
+                                return;
                             }
+                        }
 
-                        } while (hasNext);
+                        remainingBytesToProcess = _messageHandler.HandleMessage(e, session, remainingBytesToProcess);
 
+                        if (session.IsMessageReady)
+                        {
+                            // 触发收到消息事件
+                            if (ReceiveCompleted != null)
+                            {
+                                byte[] data = session.byteArrayForMessage;
+                                ReceiveCompleted.BeginInvoke(new SocketProcessEventArgs() { Socket = session.Socket, Data = data }, null, null);
+                            }
+                            if (remainingBytesToProcess != 0)
+                                session.Reset(false);
+                        }
                     }
+                    while (remainingBytesToProcess != 0);
+
+                    if (session.prefixBytesDone == 4 && session.IsMessageReady)
+                        session.Reset(true);
+                    session.bufferSkip = 0;
                     StartReceive(e);
                 }
                 else
                 {
+                    session.Reset(true);
                     ProcessSocketError(e);
                 }
             }
             else
             {
+                session.Reset(true);
                 CloseClientSocket(e);
             }
         }
 
         internal void StartReceive(SocketAsyncEventArgs receiveArgs)
         {
-            SocketSession session = receiveArgs.UserToken as SocketSession;
-            receiveArgs.SetBuffer(session.BufferOffset, BufferSize);
+            DataToken session = receiveArgs.UserToken as DataToken;
+            receiveArgs.SetBuffer(session.bufferOffset, BufferSize);
 
             if (!receiveArgs.AcceptSocket.ReceiveAsync(receiveArgs))
             {
                 ProcessReceive(receiveArgs);
-            }
-        }
-
-        private void OnSendCompleted(SocketAsyncEventArgs e)
-        {
-            if (SendCompleted != null)
-            {
-                SendCompleted(e);
             }
         }
 
@@ -222,24 +239,12 @@ namespace ZyGames.Framework.RPC.Sockets
 
         internal void Disconnect(SocketAsyncEventArgs e)
         {
-            try
-            {
-                e.AcceptSocket.Shutdown(SocketShutdown.Both);
-                e.AcceptSocket.Disconnect(true);
-            }
-            catch (SocketException) { }
-            catch (ObjectDisposedException) { }
+            ((DataToken)e.UserToken).Socket.Disconnect();
         }
 
         internal void CloseConnect(SocketAsyncEventArgs e)
         {
-            try
-            {
-                e.AcceptSocket.Shutdown(SocketShutdown.Both);
-                e.AcceptSocket.Close();
-            }
-            catch (SocketException) { }
-            catch (ObjectDisposedException) { }
+            ((DataToken)e.UserToken).Socket.Close();
         }
     }
 }

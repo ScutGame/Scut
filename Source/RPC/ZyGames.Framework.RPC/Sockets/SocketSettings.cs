@@ -61,7 +61,7 @@ namespace ZyGames.Framework.RPC.Sockets
             NumOfSaeaForRecSend = maxConnection * 2;
             BufferSize = bufferSize;
             Backlog = backlog;
-            ContinuedTimeout = 30;
+            ContinuedTimeout = 300;
         }
         /// <summary>
         /// 
