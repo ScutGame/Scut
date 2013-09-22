@@ -54,12 +54,13 @@ namespace ZyGames.Framework.Game.Context
 
 
         /// <summary>
-        /// 请求连接的类型
+        /// 远端SessionId
         /// </summary>
-        public int ConnectType { get; set; }
+        [JsonIgnore]
+        public Guid SocketSid { get; set; }
 
         /// <summary>
-        /// 远端IP
+        /// 
         /// </summary>
         [JsonIgnore]
         public string RemoteAddress { get; set; }

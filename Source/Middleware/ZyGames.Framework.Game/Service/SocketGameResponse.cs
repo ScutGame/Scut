@@ -9,14 +9,14 @@ namespace ZyGames.Framework.Game.Service
     /// </summary>
     public class SocketGameResponse : IGameResponse
     {
-        private ConcurrentQueue<byte> _buffers;
+        private ConcurrentQueue<byte[]> _buffers;
 
         /// <summary>
         /// 
         /// </summary>
         public SocketGameResponse()
         {
-            _buffers = new ConcurrentQueue<byte>();
+            _buffers = new ConcurrentQueue<byte[]>();
         }
         /// <summary>
         /// 
@@ -44,21 +44,18 @@ namespace ZyGames.Framework.Game.Service
             var buffer = new List<byte>();
             while (_buffers.Count > 0)
             {
-                byte b;
+                byte[] b;
                 if (_buffers.TryDequeue(out b))
                 {
-                    buffer.Add(b);
+                    buffer.AddRange(b);
                 }
             }
             return buffer.ToArray();
         }
 
-        private void DoWrite(IEnumerable<byte> buffer)
+        private void DoWrite(byte[] buffer)
         {
-            foreach (var b in buffer)
-            {
-                _buffers.Enqueue(b);
-            }
+            _buffers.Enqueue(buffer);
         }
 
     }

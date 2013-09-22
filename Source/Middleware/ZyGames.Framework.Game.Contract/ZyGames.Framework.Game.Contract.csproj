@@ -63,7 +63,6 @@
       <Link>GlobalAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="ActionFactory.cs" />
-    <Compile Include="GameHost.cs" />
     <Compile Include="Action\AndroidPayAction.cs" />
     <Compile Include="Action\AppStoreDetailAction.cs" />
     <Compile Include="Action\AppStorePayAction.cs" />
@@ -75,6 +74,7 @@
     <Compile Include="Action\ScriptAction.cs" />
     <Compile Include="Action\Sdk91PayAction.cs" />
     <Compile Include="Action\ReAccessTokenAction.cs" />
+    <Compile Include="GameHostSetting.cs" />
     <Compile Include="GameSocketHost.cs" />
     <Compile Include="HttpServiceRequest.cs" />
     <Compile Include="Page\RankingPage.cs">
