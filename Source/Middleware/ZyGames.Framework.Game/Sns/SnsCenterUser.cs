@@ -6,6 +6,7 @@ using ZyGames.Framework.Common;
 using ZyGames.Framework.Common.Log;
 using ZyGames.Framework.Common.Security;
 using ZyGames.Framework.Data.Sql;
+using ZyGames.Framework.Game.Runtime;
 
 namespace ZyGames.Framework.Game.Sns
 {
@@ -124,7 +125,7 @@ namespace ZyGames.Framework.Game.Sns
             {
                 if (pwdType == PwdType.MD5)
                 {
-                    password = CryptoHelper.DES_Decrypt(password, config.DES_KEY);
+                    password = CryptoHelper.DES_Decrypt(password, GameEnvironment.ProductDesEnKey);
                     password = PasswordEncryptMd5(password);
                 }
                 sGetSql += "where PassportId=@aPassportId and PassportPwd=@PassportPwd";
@@ -135,7 +136,7 @@ namespace ZyGames.Framework.Game.Sns
             {
                 if (pwdType == PwdType.MD5)
                 {
-                    password = CryptoHelper.DES_Decrypt(password, config.DES_KEY);
+                    password = CryptoHelper.DES_Decrypt(password, GameEnvironment.ProductDesEnKey);
                     if (password.Length != 32)
                     {
                         //判断是否已经MD5加密
@@ -241,7 +242,7 @@ namespace ZyGames.Framework.Game.Sns
             //自动获取通行证
             SnsPassport passport = new SnsPassport();
             this._PassportId = passport.GetRegPassport();
-            this._PassportPwd = CryptoHelper.DES_Encrypt(passport.GetRandomPwd(), config.DES_KEY);
+            this._PassportPwd = CryptoHelper.DES_Encrypt(passport.GetRandomPwd(), GameEnvironment.ProductDesEnKey);
             return false;
         }
 
@@ -294,7 +295,7 @@ namespace ZyGames.Framework.Game.Sns
                     string password = Convert.ToString(aReader["PassportPwd"]);
                     if (pwdType == PwdType.MD5)
                     {
-                        password = CryptoHelper.DES_Encrypt(password, config.DES_KEY);
+                        password = CryptoHelper.DES_Encrypt(password, GameEnvironment.ProductDesEnKey);
                     }
 
                     SnsCenterUser user = new SnsCenterUser(Convert.ToString(aReader["PassportId"]), password, deviceID);
@@ -313,7 +314,7 @@ namespace ZyGames.Framework.Game.Sns
                 return 0;
             }
             //md5加密
-            string password = CryptoHelper.DES_Decrypt(_PassportPwd, config.DES_KEY);
+            string password = CryptoHelper.DES_Decrypt(_PassportPwd, GameEnvironment.ProductDesEnKey);
             password = PasswordEncryptMd5(password);
             string sInsertSql = string.Empty;
 
@@ -377,7 +378,7 @@ namespace ZyGames.Framework.Game.Sns
             try
             {
                 //md5加密
-                string password = CryptoHelper.DES_Decrypt(_PassportPwd, config.DES_KEY);
+                string password = CryptoHelper.DES_Decrypt(_PassportPwd, GameEnvironment.ProductDesEnKey);
                 password = PasswordEncryptMd5(password);
                 string sInsertSql = string.Empty;
                 SqlParameter[] paramsUpdate = new SqlParameter[5];

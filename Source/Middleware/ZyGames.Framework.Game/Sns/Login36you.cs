@@ -2,6 +2,7 @@
 using System.Web;
 using ZyGames.Framework.Common.Log;
 using ZyGames.Framework.Common.Security;
+using ZyGames.Framework.Game.Runtime;
 
 namespace ZyGames.Framework.Game.Sns
 {
@@ -10,8 +11,6 @@ namespace ZyGames.Framework.Game.Sns
     /// </summary>
     public class Login36you : ILogin
     {
-        private const string DES_KEY = "5^1-34E!";
-
         public Login36you(string passportID, string password, string deviceID)
         {
             this.PassportID = passportID;
@@ -58,7 +57,7 @@ namespace ZyGames.Framework.Game.Sns
             if (userList.Length == 2)
             {
                 PassportID = userList[0];
-                Password = CryptoHelper.DES_Decrypt(userList[1], DES_KEY);
+                Password = CryptoHelper.DES_Decrypt(userList[1], GameEnvironment.ProductDesEnKey);
             }
             return PassportID;
         }
@@ -68,8 +67,8 @@ namespace ZyGames.Framework.Game.Sns
             try
             {
                 string pwd = Password;
-                pwd = new DESAlgorithmNew().DecodePwd(pwd, "n7=7=7dk");
-                pwd = CryptoHelper.DES_Encrypt(pwd, DES_KEY);
+                pwd = new DESAlgorithmNew().DecodePwd(pwd, GameEnvironment.ClientDesDeKey);
+                pwd = CryptoHelper.DES_Encrypt(pwd, GameEnvironment.ProductDesEnKey);
                 Password = pwd;
             }
             catch (Exception ex)

@@ -7,6 +7,7 @@ using System.Web;
 using ZyGames.Framework.Common.Log;
 using ZyGames.Framework.Common.Security;
 using ZyGames.Framework.Common.Serialization;
+using ZyGames.Framework.Game.Runtime;
 using ZyGames.Framework.Game.Sns.Section;
 
 namespace ZyGames.Framework.Game.Sns
@@ -24,7 +25,7 @@ namespace ZyGames.Framework.Game.Sns
         public LoginDanLe(string retailID, string retailUser, string password, string passportId)
         {
             this._retailID = retailID;
-            this.Password = new DESAlgorithmNew().DecodePwd(password, "n7=7=7dk");
+            this.Password = new DESAlgorithmNew().DecodePwd(password, GameEnvironment.ClientDesDeKey);
             this.username = HttpUtility.UrlEncode(retailUser, Encoding.UTF8).ToUpper();
             _mid = passportId.Equals("0") ? string.Empty : passportId;
         }

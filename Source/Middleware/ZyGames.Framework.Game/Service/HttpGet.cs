@@ -4,6 +4,7 @@ using System.Collections.Specialized;
 using System.Text;
 using System.Web;
 using System.Web.Security;
+using ZyGames.Framework.Common.Configuration;
 using ZyGames.Framework.Common.Log;
 using ZyGames.Framework.Game.Lang;
 
@@ -15,7 +16,7 @@ namespace ZyGames.Framework.Game.Service
     /// </summary>
     public class HttpGet
     {
-
+        private static string SignKey = ConfigUtils.GetSetting("Product.SignKey");
         private string _requestParam = string.Empty;
         private StringBuilder _error = new StringBuilder();
         private NameValueCollection _param;
@@ -479,18 +480,21 @@ namespace ZyGames.Framework.Game.Service
         /// <returns></returns>
         public bool CheckSign()
         {
+            if(string.IsNullOrEmpty(SignKey))
+            {
+                return true;
+            }
             string sign = "";
             if (GetString("sign", ref sign))
             {
                 if (_requestParam != null)
                 {
-                    string attachParam = _requestParam + "44CAC8ED53714BF18D60C5C7B6296000";
+                    string attachParam = _requestParam + SignKey;
                     string key = FormsAuthentication.HashPasswordForStoringInConfigFile(attachParam, "MD5");
                     if (!string.IsNullOrEmpty(key) && key.ToLower() == sign)
                     {
                         return true;
                     }
-                    //TraceLog.WriteError("sign1:{0}=sign2:{1}", sign, key.ToLower());
                 }
             }
 

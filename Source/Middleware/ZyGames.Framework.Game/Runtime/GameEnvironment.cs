@@ -25,6 +25,8 @@ namespace ZyGames.Framework.Game.Runtime
 
         static GameEnvironment()
         {
+            ProductDesEnKey = "BF3856AD";
+            ClientDesDeKey = "SC3U9T8G";
             ProductCode = ConfigUtils.GetSetting("Product.Code").ToInt();
             ProductName = ConfigUtils.GetSetting("Product.Name");
             ProductServerId = ConfigUtils.GetSetting("Product.ServerId").ToInt();
@@ -50,6 +52,17 @@ namespace ZyGames.Framework.Game.Runtime
             get;
             private set;
         }
+
+        /// <summary>
+        /// 帐户密码的8位长度Des加密密钥
+        /// </summary>
+        public static string ProductDesEnKey { get; set; }
+
+        /// <summary>
+        /// 客户端的8位长度Des解密密钥
+        /// </summary>
+        public static string ClientDesDeKey { get; set; }
+
         /// <summary>
         /// 全局缓存生命周期
         /// </summary>
@@ -74,6 +87,9 @@ namespace ZyGames.Framework.Game.Runtime
         /// </summary>
         public static int ProductServerId { get; set; }
 
+        /// <summary>
+        /// 
+        /// </summary>
         public static bool IsRunning
         {
             get { return _isRunning == 1; }
