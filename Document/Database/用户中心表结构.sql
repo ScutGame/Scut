@@ -1,3 +1,29 @@
+/*
+参数:
+$dbpath 数据库存储路径
+*/
+
+/*=========================================================================================*/
+CREATE DATABASE [snscenter] 
+ON  PRIMARY ( NAME = N'snscenter', FILENAME = N'$(dbpath)/snscenter.mdf' , SIZE = 3072KB , FILEGROWTH = 1024KB )
+ LOG ON ( NAME = N'snscenter_log', FILENAME = N'$(dbpath)/snscenter_log.ldf' , SIZE = 1024KB , FILEGROWTH = 10%)
+GO
+
+use snscenter
+GO
+--权限
+IF NOT EXISTS (SELECT * FROM sys.database_principals WHERE name = N'game_user')
+	CREATE USER game_user FOR LOGIN game_user WITH DEFAULT_SCHEMA=[dbo]
+GO
+EXEC sp_addrolemember N'db_datareader', N'game_user'
+EXEC sp_addrolemember N'db_datawriter', N'game_user'
+EXEC sp_addrolemember N'db_ddladmin', N'game_user'
+GO
+
+
+
+--创建表
+/*=========================================================================================*/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
