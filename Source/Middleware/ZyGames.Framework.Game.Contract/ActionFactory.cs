@@ -89,94 +89,6 @@ namespace ZyGames.Framework.Game.Contract
         }
 
         /// <summary>
-        /// 主动发送消息至客户端
-        /// </summary>
-        [Obsolete("", true)]
-        public static void SendToClient<T>(List<T> userList, MessageHead head, MessageStructure socketBuffer, Action<string> successHandle) where T : BaseUser
-        {
-            StringBuilder param = new StringBuilder();
-            foreach (var user in userList)
-            {
-                if (user == default(T))
-                {
-                    continue;
-                }
-                if (param.Length > 0)
-                {
-                    param.Append(",");
-                }
-                param.Append(user.RemoteAddress);
-            }
-            socketBuffer.WriteBuffer(head);
-            string remoteAddress = param.ToString();
-            if (ChannelContextManager.Current.Notify(remoteAddress, socketBuffer.ReadBuffer()))
-            {
-                if (successHandle != null)
-                {
-                    successHandle(remoteAddress);
-                }
-                //TraceLog.ReleaseWrite("Notify to {0} message successfully.\r\nTcp:{1}", head.Action, remoteAddress);
-            }
-        }
-
-        /// <summary>
-        /// 主动发送指定Action消息至客户端
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="userList"></param>
-        /// <param name="actionId"></param>
-        /// <param name="successHandle"></param>
-        [Obsolete("", true)]
-        public static void SendToClient<T>(List<T> userList, int actionId, Action<HttpGet> successHandle) where T : BaseUser
-        {
-            SendToClient(userList, actionId, null, successHandle);
-        }
-        /// <summary>
-        /// 主动发送指定Action消息至客户端
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="userList">需要下发给哪些玩家</param>
-        /// <param name="actionId">下发的数据Action接口</param>
-        /// <param name="parameters">参数，相当于客户上传的请求参数</param>
-        /// <param name="successHandle">下发成功回调方法，如：g=>{  //do  }</param>
-        [Obsolete("", true)]
-        public static void SendToClient<T>(List<T> userList, int actionId, Parameters parameters, Action<HttpGet> successHandle) where T : BaseUser
-        {
-            StringBuilder shareParam = new StringBuilder();
-            if (parameters != null)
-            {
-                foreach (var parameter in parameters)
-                {
-                    shareParam.AppendFormat("&{0}={1}", parameter.Key, parameter.Value);
-                }
-            }
-            foreach (var user in userList)
-            {
-                try
-                {
-                    if (user == default(T))
-                    {
-                        continue;
-                    }
-                    HttpGet httpGet;
-                    byte[] sendData = GetActionResponse(actionId, user, shareParam.ToString(), out httpGet);
-                    if (ChannelContextManager.Current.Notify(user.RemoteAddress, sendData))
-                    {
-                        if (successHandle != null)
-                        {
-                            successHandle(httpGet);
-                        }
-                        //TraceLog.ReleaseWrite("Notify to {0} message successfully.\r\nTcp:{1} Param:{2}", actionId, user.RemoteAddress, param);
-                    }
-                }
-                catch (Exception ex)
-                {
-                    TraceLog.WriteError("SendToClient error:{0}", ex);
-                }
-            }
-        }
-
-        /// <summary>
         /// 
         /// </summary>
         /// <param name="userFactory"></param>
@@ -229,16 +141,8 @@ namespace ZyGames.Framework.Game.Contract
                 {
                     if (httpGet.GetInt("ActionID", ref actionID))
                     {
-                        Stopwatch stopwatch = new Stopwatch();
-                        stopwatch.Start();
                         BaseStruct action = FindRoute(typeName, httpGet, actionID);
                         Process(action, httpGet, response, userFactory);
-                        stopwatch.Stop();
-
-                        if (stopwatch.ElapsedMilliseconds > GameStruct.ActionTimeOut)
-                        {
-                            TraceLog.WriteError(string.Format("Action{2}接口访问时间{0}ms超过设定超时时间({1}ms)", stopwatch.ElapsedMilliseconds, GameStruct.ActionTimeOut, actionID));
-                        }
                         if (action != null)
                         {
                             return;
@@ -287,7 +191,7 @@ namespace ZyGames.Framework.Game.Contract
                 baseUser.GetUserId(),
                 actionId,
                 parameters);
-            httpGet = new HttpGet(param, serverHost);
+            httpGet = new HttpGet(param, baseUser.SocketSid, baseUser.RemoteAddress);
             BaseStruct baseStruct = FindRoute(ActionConfig.Current.TypeName, httpGet, actionId);
             SocketGameResponse response = new SocketGameResponse();
             baseStruct.UserFactory = uid => { return baseUser; };

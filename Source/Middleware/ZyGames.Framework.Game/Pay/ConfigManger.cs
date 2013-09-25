@@ -1,13 +1,13 @@
 ﻿using ZyGames.Framework.Common.Configuration;
 using ZyGames.Framework.Common.Security;
+using ZyGames.Framework.Game.Runtime;
 
 namespace ZyGames.Framework.Game.Pay
 {
     internal class ConfigManger
     {
         private static string _connectionString = string.Empty;
-        public static readonly string DES_KEY = "5^1-34E!";
-
+        
         public static string connectionString
         {
             get
@@ -24,7 +24,7 @@ namespace ZyGames.Framework.Game.Pay
                         userInfo = ConfigUtils.GetSetting("PayDB_Acount");
                         if (!string.IsNullOrEmpty(userInfo))
                         {
-                            userInfo = CryptoHelper.DES_Decrypt(userInfo, DES_KEY);
+                            userInfo = CryptoHelper.DES_Decrypt(userInfo, GameEnvironment.ProductDesEnKey);
                         }
                     }
                     catch

@@ -32,7 +32,15 @@ namespace ZyGames.Framework.RPC.Sockets
         {
             _pool.Push(e);
         }
-
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="e"></param>
+        /// <returns></returns>
+        public bool TryPop(out SocketAsyncEventArgs e)
+        {
+            return _pool.TryPop(out e);
+        }
         /// <summary>
         /// 取出SocketAsyncEventArgs对象
         /// </summary>
@@ -40,7 +48,7 @@ namespace ZyGames.Framework.RPC.Sockets
         public SocketAsyncEventArgs Pop()
         {
             SocketAsyncEventArgs e;
-            if (_pool.TryPop(out e))
+            if (TryPop(out e))
             {
                 return e;
             }
@@ -49,13 +57,11 @@ namespace ZyGames.Framework.RPC.Sockets
 
         public void Dispose()
         {
-            SocketAsyncEventArgs[] data = new SocketAsyncEventArgs[_pool.Count];
-            _pool.TryPopRange(data, 0, _pool.Count);
-            foreach (var e in data)
+            SocketAsyncEventArgs e;
+            while (_pool.TryPop(out e))
             {
                 e.Dispose();
             }
-            _pool = null;
         }
     }
 }

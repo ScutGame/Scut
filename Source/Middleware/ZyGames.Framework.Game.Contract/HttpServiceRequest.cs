@@ -35,7 +35,7 @@ namespace ZyGames.Framework.Game.Contract
         private HttpGameResponse response;
         private MessageStructure _buffer;
         private string ParamString;
-        private string RemoteAddress;
+        private Guid SessionId;
         private int GameId;
         private int ServerId;
         private int ActionId;
@@ -50,7 +50,7 @@ namespace ZyGames.Framework.Game.Contract
             httpGet = new HttpGet(context.Request);
             response = new HttpGameResponse(context.Response);
             ParamString = httpGet.ParamString;
-            RemoteAddress = httpGet.RemoteAddress;
+            SessionId = httpGet.SessionId;
         }
         /// <summary>
         /// 
@@ -58,7 +58,7 @@ namespace ZyGames.Framework.Game.Contract
         public void Request()
         {
             ReadParam();
-            RequestSettings settings = new RequestSettings(GameId, ServerId, RemoteAddress, ParamString);
+            RequestSettings settings = new RequestSettings(GameId, ServerId, "", ParamString);
 
             byte[] sendBuffer = new byte[0];
             RequestError error = RequestError.Success;

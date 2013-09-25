@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using ZyGames.Framework.RPC.IO;
 
 namespace ZyGames.Framework.RPC.Sockets
 {
@@ -13,16 +14,14 @@ namespace ZyGames.Framework.RPC.Sockets
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="remoteAddress"></param>
-        /// <param name="buffer"></param>
         /// <returns></returns>
-        void Receive(string remoteAddress, byte[] buffer);
+        void Receive(SocketProcessEventArgs e);
 
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="remoteAddress"></param>
-        /// <param name="buffer"></param>
-        void Send(string remoteAddress, byte[] buffer);
+        /// <param name="socket"></param>
+        /// <param name="packet"></param>
+        void Send(SocketObject socket, PacketData packet);
     }
 }

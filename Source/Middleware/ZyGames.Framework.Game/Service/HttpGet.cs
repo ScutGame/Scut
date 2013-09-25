@@ -1,8 +1,10 @@
 ﻿using System;
-using System.Collections;
+using System.Linq;
+using System.Collections.Specialized;
 using System.Text;
 using System.Web;
 using System.Web.Security;
+using ZyGames.Framework.Common.Configuration;
 using ZyGames.Framework.Common.Log;
 using ZyGames.Framework.Game.Lang;
 
@@ -14,72 +16,47 @@ namespace ZyGames.Framework.Game.Service
     /// </summary>
     public class HttpGet
     {
-        class myCultureComparer : IEqualityComparer
-        {
-            public CaseInsensitiveComparer myComparer;
-
-            public myCultureComparer()
-            {
-                myComparer = CaseInsensitiveComparer.DefaultInvariant;
-            }
-
-            public new bool Equals(object x, object y)
-            {
-                if (myComparer.Compare(x, y) == 0)
-                {
-                    return true;
-                }
-                else
-                {
-                    return false;
-                }
-            }
-
-            public int GetHashCode(object obj)
-            {
-                // Compare the hash code for the lowercase versions of the strings.
-                return obj.ToString().ToLower().GetHashCode();
-            }
-        }
-
-
-        private Hashtable hashtable = new Hashtable(3, (float).8, new myCultureComparer());
+        private static string SignKey = ConfigUtils.GetSetting("Product.SignKey");
         private string _requestParam = string.Empty;
         private StringBuilder _error = new StringBuilder();
+        private NameValueCollection _param;
 
         /// <summary>
         /// 构造函数
         /// </summary>
         public HttpGet(HttpRequest request)
         {
-            _remoteAddress = request.UserHostAddress;
-            if (request["d"] != null)
-            {
-                _paramString = request["d"];
-                InitData(_paramString);
-            }
+            _paramString = request["d"];
+            InitData(_paramString);
         }
 
         /// <summary>
         /// 
         /// </summary>
         /// <param name="param">自定义参数字串</param>
+        /// <param name="sessionId"></param>
         /// <param name="remoteAddress"></param>
-        public HttpGet(string param, string remoteAddress)
+        public HttpGet(string param, Guid sessionId, string remoteAddress)
         {
             _paramString = param;
-            _remoteAddress = remoteAddress;
+            _sessionId = sessionId;
+            RemoteAddress = remoteAddress;
             InitData(_paramString);
         }
 
-        private string _remoteAddress;
+        /// <summary>
+        /// 
+        /// </summary>
+        public string RemoteAddress { get;private set; }
+
+        private Guid _sessionId;
 
         /// <summary>
         /// 远端地址
         /// </summary>
-        public string RemoteAddress
+        public Guid SessionId
         {
-            get { return _remoteAddress; }
+            get { return _sessionId; }
         }
 
         private string _paramString;
@@ -94,33 +71,14 @@ namespace ZyGames.Framework.Game.Service
 
         private void InitData(string d)
         {
-            lock (hashtable.SyncRoot)
+            int index = d.LastIndexOf("&sign=");
+            if (index != -1)
             {
-                int index = d.LastIndexOf("&sign=");
-                if (index != -1)
-                {
-                    _requestParam = d.Substring(0, index);
-                }
-                string[] splitresult = d.Split(new char[] { '&' });
-                foreach (string result in splitresult)
-                {
-                    string[] equalsplitresult = result.Split(new char[] { '=' });
-                    if (equalsplitresult.Length == 2)
-                    {
-                        string key = equalsplitresult[0];
-                        string value = HttpUtility.UrlDecode(equalsplitresult[1], Encoding.UTF8);
-                        if (hashtable.ContainsKey(key))
-                        {
-                            hashtable[key] = value;
-                        }
-                        else
-                        {
-                            hashtable.Add(key, value);
-                        }
-                    }
-                }
+                _requestParam = d.Substring(0, index);
             }
+            _param = HttpUtility.ParseQueryString(d);
         }
+
         private const int ZeroNum = 0;
 
         /// <summary>
@@ -308,7 +266,7 @@ namespace ZyGames.Framework.Game.Service
         /// <returns></returns>
         internal bool ContainsKey(string name)
         {
-            return hashtable.ContainsKey(name);
+            return _param.AllKeys.Contains(name, StringComparer.InvariantCultureIgnoreCase);
         }
 
         /// <summary>
@@ -318,7 +276,7 @@ namespace ZyGames.Framework.Game.Service
         /// <returns></returns>
         public bool Contains(string param)
         {
-            if (hashtable.ContainsKey(param))
+            if (_param.AllKeys.Contains(param, StringComparer.InvariantCultureIgnoreCase))
             {
                 return true;
             }
@@ -347,9 +305,9 @@ namespace ZyGames.Framework.Game.Service
         public bool GetInt(string aName, ref Int32 rValue, Int32 minValue, Int32 maxValue)
         {
             bool result = false;
-            if (hashtable.ContainsKey(aName))
+            if (_param.AllKeys.Contains(aName, StringComparer.InvariantCultureIgnoreCase))
             {
-                result = Int32.TryParse(hashtable[aName].ToString(), out rValue);
+                result = Int32.TryParse(_param[aName], out rValue);
                 if (result)
                 {
                     result = rValue >= minValue && rValue <= maxValue;
@@ -387,9 +345,9 @@ namespace ZyGames.Framework.Game.Service
         public bool GetWord(string aName, ref Int16 rValue, Int16 minValue, Int16 maxValue)
         {
             bool result = false;
-            if (hashtable.ContainsKey(aName))
+            if (_param.AllKeys.Contains(aName, StringComparer.InvariantCultureIgnoreCase))
             {
-                result = Int16.TryParse(hashtable[aName].ToString(), out rValue);
+                result = Int16.TryParse(_param[aName], out rValue);
                 if (result)
                 {
                     result = rValue >= minValue && rValue <= maxValue;
@@ -427,9 +385,9 @@ namespace ZyGames.Framework.Game.Service
         public bool GetByte(string aName, ref Byte rValue, Byte minValue, Byte maxValue)
         {
             bool result = false;
-            if (hashtable.ContainsKey(aName))
+            if (_param.AllKeys.Contains(aName, StringComparer.InvariantCultureIgnoreCase))
             {
-                result = Byte.TryParse(hashtable[aName].ToString(), out rValue);
+                result = Byte.TryParse(_param[aName], out rValue);
                 if (result)
                 {
                     result = rValue >= minValue && rValue <= maxValue;
@@ -470,9 +428,9 @@ namespace ZyGames.Framework.Game.Service
         public bool GetString(string aName, ref String rValue, int minValue, int maxValue, bool ignoreError = false)
         {
             bool result = false;
-            if (hashtable.ContainsKey(aName))
+            if (_param.AllKeys.Contains(aName, StringComparer.InvariantCultureIgnoreCase))
             {
-                rValue = hashtable[aName].ToString().Trim();
+                rValue = _param[aName].Trim();
                 result = rValue.Length >= minValue && (maxValue < 0 || rValue.Length <= maxValue);
                 if (!result && !ignoreError)
                 {
@@ -496,12 +454,12 @@ namespace ZyGames.Framework.Game.Service
         public bool GetEnum<T>(string aName, ref T rValue) where T : struct
         {
             bool result = false;
-            if (hashtable.ContainsKey(aName))
+            if (_param.AllKeys.Contains(aName, StringComparer.InvariantCultureIgnoreCase))
             {
                 result = true;
                 try
                 {
-                    rValue = (T)Enum.Parse(typeof(T), hashtable[aName].ToString().Trim());
+                    rValue = (T)Enum.Parse(typeof(T), _param[aName].Trim());
                 }
                 catch
                 {
@@ -522,18 +480,21 @@ namespace ZyGames.Framework.Game.Service
         /// <returns></returns>
         public bool CheckSign()
         {
+            if(string.IsNullOrEmpty(SignKey))
+            {
+                return true;
+            }
             string sign = "";
             if (GetString("sign", ref sign))
             {
                 if (_requestParam != null)
                 {
-                    string attachParam = _requestParam + "44CAC8ED53714BF18D60C5C7B6296000";
+                    string attachParam = _requestParam + SignKey;
                     string key = FormsAuthentication.HashPasswordForStoringInConfigFile(attachParam, "MD5");
                     if (!string.IsNullOrEmpty(key) && key.ToLower() == sign)
                     {
                         return true;
                     }
-                    TraceLog.WriteError("sign1:{0}=sign2:{1}", sign, key.ToLower());
                 }
             }
 

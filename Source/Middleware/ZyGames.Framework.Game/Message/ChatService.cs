@@ -84,7 +84,42 @@ namespace ZyGames.Framework.Game.Message
             });
             return msgList;
         }
-
+        public List<ChatMessage> PublicReceive()
+        {
+            var msgList = GetChatMessages();
+            msgList.QuickSort((x, y) =>
+            {
+                if (x == null && y == null) return 0;
+                if (x != null && y == null) return 1;
+                if (x == null) return -1;
+                int result = x.SendDate.CompareTo(y.SendDate);
+                if (result == 0)
+                {
+                    result = x.Version.CompareTo(y.Version);
+                }
+                return result;
+            });
+            return msgList;
+        }
+        public List<ChatMessage> UserReceive(int userId)
+        {
+            List<ChatMessage> list = new List<ChatMessage>();
+            var whisperMessages = _whisperCacheSet.GetMessage(userId);
+            list.AddRange(whisperMessages);
+            list.QuickSort((x, y) =>
+            {
+                if (x == null && y == null) return 0;
+                if (x != null && y == null) return 1;
+                if (x == null) return -1;
+                int result = x.SendDate.CompareTo(y.SendDate);
+                if (result == 0)
+                {
+                    result = x.Version.CompareTo(y.Version);
+                }
+                return result;
+            });
+            return list;
+        }
         protected List<ChatMessage> GetChatMessages()
         {
             var msgList = new List<ChatMessage>();

@@ -8,8 +8,8 @@ using System.Runtime.InteropServices;
 //      Build Number
 //      Revision
 //
-[assembly: AssemblyVersion("2.6.1.0")]
-[assembly: AssemblyFileVersion("2.6.1.0")]
+[assembly: AssemblyVersion("3.0.1.0")]
+[assembly: AssemblyFileVersion("3.0.1.0")]
 [assembly: AssemblyCompany("Scut.GameEngine")]
 [assembly: AssemblyProduct("Scut.GameEngine")]
 [assembly: AssemblyCopyright("Copyright © Scut game engine 2010-2013")]

@@ -3,6 +3,7 @@ using System.IO;
 using System.Web;
 using ZyGames.Framework.Common.Configuration;
 using ZyGames.Framework.Common.Security;
+using ZyGames.Framework.Game.Runtime;
 
 namespace ZyGames.Framework.Game.Sns
 {
@@ -14,6 +15,7 @@ namespace ZyGames.Framework.Game.Sns
         {
             get
             {
+                string DES_KEY = GameEnvironment.ProductDesEnKey;
                 if (_connectionString == string.Empty)
                 {
                     string cString = ConfigUtils.GetSetting("Snscenter_ConnectionString");
@@ -48,6 +50,5 @@ namespace ZyGames.Framework.Game.Sns
             }
         }
 
-        public static readonly string DES_KEY = "5^1-34E!";
     }
 }
