@@ -34,14 +34,13 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Newtonsoft.Json">
-      <HintPath>..\..\..\..\FrameworkPublish\Release\4.0\Newtonsoft.Json.dll</HintPath>
+      <HintPath>..\..\..\Release\3.1\Lib\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="NLog">
-      <HintPath>..\..\..\..\FrameworkPublish\Release\4.0\NLog.dll</HintPath>
+      <HintPath>..\..\..\Release\3.1\Lib\NLog.dll</HintPath>
     </Reference>
-    <Reference Include="protobuf-net, Version=2.0.0.594, Culture=neutral, PublicKeyToken=257b51d87d2e4d67, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\FrameworkPublish\Release\4.0\Redis\protobuf-net.dll</HintPath>
+    <Reference Include="protobuf-net">
+      <HintPath>..\..\..\Release\3.1\Lib\protobuf-net.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.configuration" />
@@ -53,17 +52,17 @@
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
     <Reference Include="ZyGames.Framework">
-      <HintPath>..\..\..\..\FrameworkPublish\Unstable\4.0\Core\V5.1\ZyGames.Framework.dll</HintPath>
+      <HintPath>..\..\..\Release\3.1\Lib\ZyGames.Framework.dll</HintPath>
     </Reference>
     <Reference Include="ZyGames.Framework.Common">
-      <HintPath>..\..\..\..\FrameworkPublish\Unstable\4.0\Core\V5.1\ZyGames.Framework.Common.dll</HintPath>
+      <HintPath>..\..\..\Release\3.1\Lib\ZyGames.Framework.Common.dll</HintPath>
     </Reference>
     <Reference Include="ZyGames.Framework.Plugin">
-      <HintPath>..\..\..\..\FrameworkPublish\Unstable\4.0\Core\V5.1\ZyGames.Framework.Plugin.dll</HintPath>
+      <HintPath>..\..\..\Release\3.1\Lib\ZyGames.Framework.Plugin.dll</HintPath>
     </Reference>
     <Reference Include="ZyGames.Framework.RPC, Version=1.5.0.122, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\FrameworkPublish\Unstable\4.0\Core\Game_V3.0\ZyGames.Framework.RPC.dll</HintPath>
+      <HintPath>..\..\..\Release\3.1\Lib\ZyGames.Framework.RPC.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>

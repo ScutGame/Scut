@@ -35,25 +35,25 @@
   <ItemGroup>
     <Reference Include="IronPython, Version=2.6.30207.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\FrameworkPublish\Release\4.0\Python\IronPython.dll</HintPath>
+      <HintPath>..\..\..\Release\3.1\Lib\Python\IronPython.dll</HintPath>
     </Reference>
     <Reference Include="IronPython.Modules">
-      <HintPath>..\..\..\..\FrameworkPublish\Release\4.0\Python\IronPython.Modules.dll</HintPath>
+      <HintPath>..\..\..\Release\3.1\Lib\Python\IronPython.Modules.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="Microsoft.Dynamic, Version=1.0.30207.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\FrameworkPublish\Release\4.0\Python\Microsoft.Dynamic.dll</HintPath>
+      <HintPath>..\..\..\Release\3.1\Lib\Python\Microsoft.Dynamic.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.Scripting, Version=1.0.30207.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\FrameworkPublish\Release\4.0\Python\Microsoft.Scripting.dll</HintPath>
+      <HintPath>..\..\..\Release\3.1\Lib\Python\Microsoft.Scripting.dll</HintPath>
     </Reference>
     <Reference Include="Newtonsoft.Json">
-      <HintPath>..\..\..\..\FrameworkPublish\Release\4.0\Newtonsoft.Json.dll</HintPath>
+      <HintPath>..\..\..\Release\3.1\Lib\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="protobuf-net">
-      <HintPath>..\..\..\..\FrameworkPublish\Release\4.0\Redis\protobuf-net.dll</HintPath>
+      <HintPath>..\..\..\Release\3.1\Lib\protobuf-net.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.configuration" />
@@ -64,16 +64,16 @@
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
     <Reference Include="ZyGames.Framework">
-      <HintPath>..\..\..\..\FrameworkPublish\Unstable\4.0\Core\V5.1\ZyGames.Framework.dll</HintPath>
+      <HintPath>..\..\..\Release\3.1\Lib\ZyGames.Framework.dll</HintPath>
     </Reference>
     <Reference Include="ZyGames.Framework.Common">
-      <HintPath>..\..\..\..\FrameworkPublish\Unstable\4.0\Core\V5.1\ZyGames.Framework.Common.dll</HintPath>
+      <HintPath>..\..\..\Release\3.1\Lib\ZyGames.Framework.Common.dll</HintPath>
     </Reference>
     <Reference Include="ZyGames.Framework.Plugin">
-      <HintPath>..\..\..\..\FrameworkPublish\Unstable\4.0\Core\V5.1\ZyGames.Framework.Plugin.dll</HintPath>
+      <HintPath>..\..\..\Release\3.1\Lib\ZyGames.Framework.Plugin.dll</HintPath>
     </Reference>
     <Reference Include="ZyGames.Framework.RPC">
-      <HintPath>..\..\..\..\FrameworkPublish\Unstable\4.0\Core\Game_V3.0\ZyGames.Framework.RPC.dll</HintPath>
+      <HintPath>..\..\..\Release\3.1\Lib\ZyGames.Framework.RPC.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
