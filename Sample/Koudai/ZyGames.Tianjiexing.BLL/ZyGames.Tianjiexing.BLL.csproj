@@ -525,17 +525,6 @@
     <Compile Include="AppGameHost.cs" />
     <Compile Include="Task\FightCombatTask.cs" />
     <Compile Include="Task\GiffPackTask.cs" />
-    <Compile Include="WebService\BaseDataGetter.cs" />
-    <Compile Include="WebService\BaseDataProcesser.cs" />
-    <Compile Include="WebService\JsonGrid.cs" />
-    <Compile Include="WebService\JsonParameter.cs" />
-    <Compile Include="WebService\OATianjiexingService.cs" />
-    <Compile Include="WebService\UserCacheProcesser.cs" />
-    <Compile Include="WebService\UserPrizeGetter.cs" />
-    <Compile Include="WebService\UserPrizeProcesser.cs" />
-    <Compile Include="WebService\UserProcesser.cs" />
-    <Compile Include="WebService\LetterKeyWordProcesser.cs" />
-    <Compile Include="WebService\PythonScriptGetter.cs" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Action\Action1444.cs" />
@@ -562,9 +551,7 @@
       <Name>ZyGames.Tianjiexing.Model</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="BLL\" />
-  </ItemGroup>
+  <ItemGroup />
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
     <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
