@@ -134,24 +134,29 @@ namespace ZyGames.Framework.Game.Service
         /// <param name="_curNewDate"></param>
         public void InsertDB(DateTime _curNewDate)
         {
-            /*if (TotalCount > 0)
-            {
-               string sInsertSql = " insert into ActionLog(actionId, totalNum, SucNum, FailNum, DateValue, CountTime)values(@aActionid, @aTotalNum, @aSucNum, @aFailNum, @aDateValue, @aCurTime)";
+            /****************************************************************************
+Copyright (c) 2013-2015 scutgame.com
 
-                SqlParameter[] paramsAction = new SqlParameter[6];
-                paramsAction[0] = SqlParamHelper.MakeInParam("@aActionid", SqlDbType.Int, 0, actionId);
-                paramsAction[1] = SqlParamHelper.MakeInParam("@aTotalNum", SqlDbType.Int, 0, TotalCount);
-                paramsAction[2] = SqlParamHelper.MakeInParam("@aSucNum", SqlDbType.Int, 0, this.SucCount);
-                paramsAction[3] = SqlParamHelper.MakeInParam("@aFailNum", SqlDbType.Int, 0, this.FailCount);
-                paramsAction[4] = SqlParamHelper.MakeInParam("@aDateValue", SqlDbType.DateTime, 0, this.curDate);
-                paramsAction[5] = SqlParamHelper.MakeInParam("@aCurTime", SqlDbType.DateTime, 0, DateTime.Now);
+http://www.scutgame.com
 
-                ActionMsmq.ActionMSMQ.Instance().SendSqlCmd(CommandType.Text, sInsertSql, paramsAction);
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
 
-             
-                SucCount = 0;
-                FailCount = 0;
-            }*/
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+THE SOFTWARE.
+****************************************************************************/
             this.lastDbTime = DateTime.Now;
             curDate = _curNewDate;
         }

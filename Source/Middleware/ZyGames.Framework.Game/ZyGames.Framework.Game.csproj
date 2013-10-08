@@ -33,31 +33,27 @@
     <DocumentationFile>bin\Release\ZyGames.Framework.Game.xml</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="IronPython, Version=2.7.0.40, Culture=neutral, PublicKeyToken=7f709c5b713576e1, processorArchitecture=MSIL">
+    <Reference Include="IronPython, Version=2.6.30207.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\Lib\Plugin\Python\IronPython.dll</HintPath>
+      <HintPath>..\..\..\..\FrameworkPublish\Release\4.0\Python\IronPython.dll</HintPath>
     </Reference>
-    <Reference Include="IronPython.Modules, Version=2.7.0.40, Culture=neutral, PublicKeyToken=7f709c5b713576e1, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\Lib\Plugin\Python\IronPython.Modules.dll</HintPath>
+    <Reference Include="IronPython.Modules">
+      <HintPath>..\..\..\..\FrameworkPublish\Release\4.0\Python\IronPython.Modules.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.CSharp" />
-    <Reference Include="Microsoft.Scripting, Version=1.1.0.20, Culture=neutral, PublicKeyToken=7f709c5b713576e1, processorArchitecture=MSIL">
+    <Reference Include="Microsoft.Dynamic, Version=1.0.30207.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\Lib\Plugin\Python\Microsoft.Scripting.dll</HintPath>
+      <HintPath>..\..\..\..\FrameworkPublish\Release\4.0\Python\Microsoft.Dynamic.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Scripting, Version=1.0.30207.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\FrameworkPublish\Release\4.0\Python\Microsoft.Scripting.dll</HintPath>
     </Reference>
     <Reference Include="Newtonsoft.Json">
-      <HintPath>..\..\..\Lib\Plugin\Newtonsoft.Json.dll</HintPath>
-    </Reference>
-    <Reference Include="NLog, Version=2.0.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\Lib\Plugin\NLog.dll</HintPath>
+      <HintPath>..\..\..\..\FrameworkPublish\Release\4.0\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="protobuf-net">
-      <HintPath>..\..\..\Lib\Plugin\Redis\protobuf-net.dll</HintPath>
-    </Reference>
-    <Reference Include="ServiceStack.Common">
-      <HintPath>..\..\..\Lib\Plugin\Redis\ServiceStack.Common.dll</HintPath>
+      <HintPath>..\..\..\..\FrameworkPublish\Release\4.0\Redis\protobuf-net.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.configuration" />
@@ -68,13 +64,16 @@
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
     <Reference Include="ZyGames.Framework">
-      <HintPath>..\..\..\Lib\Framework\V5.1\ZyGames.Framework.dll</HintPath>
+      <HintPath>..\..\..\..\FrameworkPublish\Unstable\4.0\Core\V5.1\ZyGames.Framework.dll</HintPath>
     </Reference>
     <Reference Include="ZyGames.Framework.Common">
-      <HintPath>..\..\..\Lib\Framework\V5.1\ZyGames.Framework.Common.dll</HintPath>
+      <HintPath>..\..\..\..\FrameworkPublish\Unstable\4.0\Core\V5.1\ZyGames.Framework.Common.dll</HintPath>
     </Reference>
     <Reference Include="ZyGames.Framework.Plugin">
-      <HintPath>..\..\..\Lib\Framework\V5.1\ZyGames.Framework.Plugin.dll</HintPath>
+      <HintPath>..\..\..\..\FrameworkPublish\Unstable\4.0\Core\V5.1\ZyGames.Framework.Plugin.dll</HintPath>
+    </Reference>
+    <Reference Include="ZyGames.Framework.RPC">
+      <HintPath>..\..\..\..\FrameworkPublish\Unstable\4.0\Core\Game_V3.0\ZyGames.Framework.RPC.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -131,6 +130,7 @@
     <Compile Include="Configuration\ZyGameBaseBllSection.cs" />
     <Compile Include="Configuration\ZyGameBaseConfigManager.cs" />
     <Compile Include="Context\BaseUser.cs" />
+    <Compile Include="Context\EncryptionManager.cs" />
     <Compile Include="Context\GameContext.cs" />
     <Compile Include="Context\HttpRequestManager.cs" />
     <Compile Include="Message\BroadcastService.cs" />
@@ -157,18 +157,26 @@
     <Compile Include="Service\HttpGameResponse.cs" />
     <Compile Include="Service\LoginStatus.cs" />
     <Compile Include="Service\ScriptRoute.cs" />
-    <Compile Include="Sns\AbstractLogin.cs" />
     <Compile Include="Service\SocketGameResponse.cs" />
+    <Compile Include="Sns\AbstractLogin.cs" />
+    <Compile Include="Sns\LoginDanLeV2.cs" />
+    <Compile Include="Sns\LoginGFan.cs" />
     <Compile Include="Sns\Section\Channel360Collection.cs" />
     <Compile Include="Sns\Section\Channel360Element.cs" />
     <Compile Include="Sns\Section\Channel91Element.cs" />
     <Compile Include="Sns\Section\Channel91Collection.cs" />
+    <Compile Include="Sns\Section\ChannelDanleV2Collection.cs" />
+    <Compile Include="Sns\Section\ChannelDanleV2Element.cs" />
+    <Compile Include="Sns\Section\ChannelGFanCollection.cs" />
+    <Compile Include="Sns\Section\ChannelGFanElement.cs" />
     <Compile Include="Sns\Section\SdkChannelSection.cs" />
     <Compile Include="Sns\Section\SdkSectionFactory.cs" />
     <Compile Include="Sns\Section\Section360Element.cs" />
     <Compile Include="Sns\Section\Section91Element.cs" />
     <Compile Include="Sns\Section\ChannelUCCollection.cs" />
     <Compile Include="Sns\Section\ChannelUCElement.cs" />
+    <Compile Include="Sns\Section\SectionDanleV2Element.cs" />
+    <Compile Include="Sns\Section\SectionGFanElement.cs" />
     <Compile Include="Sns\Section\SectionUCElement.cs" />
     <Compile Include="Sns\Section\ChannelDanleCollection.cs" />
     <Compile Include="Sns\Section\ChannelDanleElement.cs" />
@@ -177,6 +185,10 @@
     <Compile Include="Sns\Section\Channel10086Element.cs" />
     <Compile Include="Sns\Section\Section10086Element.cs" />
     <Compile Include="Sns\Login360_V2.cs" />
+    <Compile Include="Sns\LoginMIUI.cs" />
+    <Compile Include="Sns\Section\ChannelMIUICollection.cs" />
+    <Compile Include="Sns\Section\ChannelMIUIElement.cs" />
+    <Compile Include="Sns\Section\SectionMIUIElement.cs" />
     <Compile Include="Task\ITaskItem.cs" />
     <Compile Include="Model\IGeneral.cs" />
     <Compile Include="Message\NoticeMessage.cs" />

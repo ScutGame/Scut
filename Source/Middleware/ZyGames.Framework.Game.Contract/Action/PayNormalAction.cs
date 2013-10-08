@@ -143,8 +143,29 @@ namespace ZyGames.Framework.Game.Contract.Action
             {
                 try
                 {
-                    /*<?xml version="1.0" encoding="UTF-8"?><Trusted2ServQueryResp><MsgType>Trusted2ServQueryResp</MsgType><Version>1.0.0</Version><ReturnCode>0</ReturnCode><OrderID>11130328134954177292</OrderID><PayCode>30000274178906</PayCode><StartDate>20130328134954</StartDate><TotalPrice>0.00</TotalPrice><ChannelID></ChannelID></Trusted2ServQueryResp>
-                    */
+                    /****************************************************************************
+Copyright (c) 2013-2015 scutgame.com
+
+http://www.scutgame.com
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+THE SOFTWARE.
+****************************************************************************/
                     var doc = request.ToXml(stream);
                     TraceLog.ReleaseWriteFatal("10068 order:{0} response:{1}", orderInfo.OrderNO, doc.InnerXml);
                     var returnCode = doc.SelectSingleNode("Trusted2ServQueryResp/ReturnCode");

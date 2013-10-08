@@ -91,61 +91,53 @@ namespace ZyGames.Framework.Game.Cache
             }
             return true;
         }
-        /*private static void DoCacheDispose(string key, object value, CacheItemRemovedReason reason)
-        {
-            if (reason == CacheItemRemovedReason.Expired)
-            {
-                var cacheSet = new BroadcastCacheSet();
-                var messageQueue = cacheSet.GetCache();
-                while (messageQueue != null && messageQueue.Count > 0)
-                {
-                    var msg = messageQueue.Peek();
-                    if (msg != null && MathUtils.DiffDate(msg.SendDate).TotalSeconds > Timeout)
-                    {
-                        messageQueue.Dequeue();
-                    }
-                    else
-                    {
-                        break;
-                    }
-                }
-            }
-        }*/
+        /****************************************************************************
+Copyright (c) 2013-2015 scutgame.com
 
-        /*public BroadcastCacheSet()
-        {
-        }
+http://www.scutgame.com
 
-        protected override bool InitCache()
-        {
-            var cacheData = GetCacheObject() ?? CreateCacheStruct();
-            AddCache(cacheData);
-            return true;
-        }
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
 
-        public NoticeMessage[] GetBroadcast()
-        {
-            var cacheData = GetCache();
-            NoticeMessage[] messages;
-            cacheData.CopyTo(out messages, 0);
-            return messages;
-        }
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
 
-        public void Send(NoticeMessage message)
-        {
-            var cacheData = GetCache();
-            cacheData.Enqueue(message);
-        }
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+THE SOFTWARE.
+****************************************************************************/
 
-        protected TQueue<NoticeMessage> GetCache()
-        {
-            return (TQueue<NoticeMessage>)GetCacheObject();
-        }
+        /****************************************************************************
+Copyright (c) 2013-2015 scutgame.com
 
-        protected override TCollection<NoticeMessage> CreateCacheStruct()
-        {
-            return new TQueue<NoticeMessage>(MessageMaxCount);
-        }*/
+http://www.scutgame.com
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+THE SOFTWARE.
+****************************************************************************/
 
     }
 }

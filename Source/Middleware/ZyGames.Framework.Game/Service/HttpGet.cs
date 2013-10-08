@@ -1,4 +1,28 @@
-﻿using System;
+﻿/****************************************************************************
+Copyright (c) 2013-2015 scutgame.com
+
+http://www.scutgame.com
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+THE SOFTWARE.
+****************************************************************************/
+using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Collections.Specialized;
 using System.Text;
@@ -19,7 +43,7 @@ namespace ZyGames.Framework.Game.Service
         private static string SignKey = ConfigUtils.GetSetting("Product.SignKey");
         private string _requestParam = string.Empty;
         private StringBuilder _error = new StringBuilder();
-        private NameValueCollection _param;
+        private Dictionary<string, string> _param;
 
         /// <summary>
         /// 构造函数
@@ -36,7 +60,7 @@ namespace ZyGames.Framework.Game.Service
         /// <param name="param">自定义参数字串</param>
         /// <param name="sessionId"></param>
         /// <param name="remoteAddress"></param>
-        public HttpGet(string param, Guid sessionId, string remoteAddress)
+        public HttpGet(string param, string sessionId, string remoteAddress)
         {
             _paramString = param;
             _sessionId = sessionId;
@@ -44,17 +68,43 @@ namespace ZyGames.Framework.Game.Service
             InitData(_paramString);
         }
 
+
+        public HttpGet(Dictionary<string, string> param, string sessionId, string remoteAddress, Action<object, int> callback, object state)
+        {
+            _param = param;
+            _requestParam = _param.ContainsKey("sign") ? _param["sign"] : "";
+            _sessionId = sessionId;
+            RemoteAddress = remoteAddress;
+            Callback = callback;
+            _state = state;
+        }
+
         /// <summary>
         /// 
         /// </summary>
-        public string RemoteAddress { get;private set; }
+        private Action<object, int> Callback;
 
-        private Guid _sessionId;
+        private readonly object _state;
+
+        public void LoginSuccessCallback(int userId)
+        {
+            if(Callback!=null)
+            {
+                Callback(_state, userId);
+            }
+        }
 
         /// <summary>
-        /// 远端地址
+        /// 
         /// </summary>
-        public Guid SessionId
+        public string RemoteAddress { get; private set; }
+
+        private string _sessionId;
+
+        /// <summary>
+        /// 远端SessionId
+        /// </summary>
+        public string SessionId
         {
             get { return _sessionId; }
         }
@@ -76,7 +126,12 @@ namespace ZyGames.Framework.Game.Service
             {
                 _requestParam = d.Substring(0, index);
             }
-            _param = HttpUtility.ParseQueryString(d);
+            var temp = HttpUtility.ParseQueryString(d);
+
+            foreach (var key in temp.AllKeys)
+            {
+                _param[key] = temp[key];
+            }
         }
 
         private const int ZeroNum = 0;
@@ -266,7 +321,7 @@ namespace ZyGames.Framework.Game.Service
         /// <returns></returns>
         internal bool ContainsKey(string name)
         {
-            return _param.AllKeys.Contains(name, StringComparer.InvariantCultureIgnoreCase);
+            return _param.ContainsKey(name);
         }
 
         /// <summary>
@@ -276,7 +331,7 @@ namespace ZyGames.Framework.Game.Service
         /// <returns></returns>
         public bool Contains(string param)
         {
-            if (_param.AllKeys.Contains(param, StringComparer.InvariantCultureIgnoreCase))
+            if (_param.ContainsKey(param))
             {
                 return true;
             }
@@ -305,7 +360,7 @@ namespace ZyGames.Framework.Game.Service
         public bool GetInt(string aName, ref Int32 rValue, Int32 minValue, Int32 maxValue)
         {
             bool result = false;
-            if (_param.AllKeys.Contains(aName, StringComparer.InvariantCultureIgnoreCase))
+            if (_param.ContainsKey(aName))
             {
                 result = Int32.TryParse(_param[aName], out rValue);
                 if (result)
@@ -345,7 +400,7 @@ namespace ZyGames.Framework.Game.Service
         public bool GetWord(string aName, ref Int16 rValue, Int16 minValue, Int16 maxValue)
         {
             bool result = false;
-            if (_param.AllKeys.Contains(aName, StringComparer.InvariantCultureIgnoreCase))
+            if (_param.ContainsKey(aName))
             {
                 result = Int16.TryParse(_param[aName], out rValue);
                 if (result)
@@ -385,7 +440,7 @@ namespace ZyGames.Framework.Game.Service
         public bool GetByte(string aName, ref Byte rValue, Byte minValue, Byte maxValue)
         {
             bool result = false;
-            if (_param.AllKeys.Contains(aName, StringComparer.InvariantCultureIgnoreCase))
+            if (_param.ContainsKey(aName))
             {
                 result = Byte.TryParse(_param[aName], out rValue);
                 if (result)
@@ -428,7 +483,7 @@ namespace ZyGames.Framework.Game.Service
         public bool GetString(string aName, ref String rValue, int minValue, int maxValue, bool ignoreError = false)
         {
             bool result = false;
-            if (_param.AllKeys.Contains(aName, StringComparer.InvariantCultureIgnoreCase))
+            if (_param.ContainsKey(aName))
             {
                 rValue = _param[aName].Trim();
                 result = rValue.Length >= minValue && (maxValue < 0 || rValue.Length <= maxValue);
@@ -454,7 +509,7 @@ namespace ZyGames.Framework.Game.Service
         public bool GetEnum<T>(string aName, ref T rValue) where T : struct
         {
             bool result = false;
-            if (_param.AllKeys.Contains(aName, StringComparer.InvariantCultureIgnoreCase))
+            if (_param.ContainsKey(aName))
             {
                 result = true;
                 try
@@ -480,25 +535,27 @@ namespace ZyGames.Framework.Game.Service
         /// <returns></returns>
         public bool CheckSign()
         {
-            if(string.IsNullOrEmpty(SignKey))
+            if (string.IsNullOrEmpty(SignKey))
             {
                 return true;
             }
-            string sign = "";
-            if (GetString("sign", ref sign))
-            {
-                if (_requestParam != null)
-                {
-                    string attachParam = _requestParam + SignKey;
-                    string key = FormsAuthentication.HashPasswordForStoringInConfigFile(attachParam, "MD5");
-                    if (!string.IsNullOrEmpty(key) && key.ToLower() == sign)
-                    {
-                        return true;
-                    }
-                }
-            }
+            return true;
 
-            return false;
+            //string sign = "";
+            //if (GetString("sign", ref sign))
+            //{
+            //    if (_requestParam != null)
+            //    {
+            //        string attachParam = _requestParam + SignKey;
+            //        string key = FormsAuthentication.HashPasswordForStoringInConfigFile(attachParam, "MD5");
+            //        if (!string.IsNullOrEmpty(key) && key.ToLower() == sign)
+            //        {
+            //            return true;
+            //        }
+            //    }
+            //}
+
+            //return false;
         }
 
 
