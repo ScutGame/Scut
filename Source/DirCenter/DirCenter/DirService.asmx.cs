@@ -86,7 +86,7 @@ namespace ZyGames.DirCenter
         }
 
         [WebMethod(Description = "增加游戏新服")]
-        public void AddServer(int gameID, int serverId, string serverName, string serverUrl, string status)
+        public void AddServer(int gameID, int serverId, string serverName, string serverUrl, string status, string intranetAddress)
         {
             CacheServer cacheServer = new CacheServer();
             cacheServer.AddToCache(new ServerInfo()
@@ -95,15 +95,16 @@ namespace ZyGames.DirCenter
                 GameID = gameID,
                 ServerName = serverName,
                 ServerUrl = serverUrl,
-                Status = status
+                Status = status,
+                IntranetAddress = intranetAddress
             });
         }
 
         [WebMethod(Description = "设置服务器")]
-        public void SetServer(int serverID, int gameID, string serverName, string serverUrl, string status, int weight)
+        public void SetServer(int serverID, int gameID, string serverName, string serverUrl, string status, int weight, string intranetAddress)
         {
             CacheServer cacheServer = new CacheServer();
-            cacheServer.SetServer(serverID, gameID, serverName, serverID, serverUrl, status, weight);
+            cacheServer.SetServer(serverID, gameID, serverName, serverID, serverUrl, status, weight, intranetAddress);
         }
 
         [WebMethod(Description = "游戏服务器列表")]
@@ -182,6 +183,13 @@ namespace ZyGames.DirCenter
         {
             CacheServer cacheServer = new CacheServer();
             cacheServer.EnableServer(gameID, serverID, isEnable);
+        }
+
+        [WebMethod(Description = "分服状态")]
+        public void ServerStatus(int gameID, int serverID, int Status)
+        {
+            CacheServer cacheServer = new CacheServer();
+            cacheServer.ServerStatus(gameID, serverID, Status);
         }
 
     }

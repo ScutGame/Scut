@@ -34,6 +34,15 @@ namespace ZyGames.DirCenter.Model
             set;
         }
 
+        /// <summary>
+        /// 内网地址
+        /// </summary>
+        public string IntranetAddress
+        {
+            get;
+            set;
+        }
+
         public string Status
         {
             get;
