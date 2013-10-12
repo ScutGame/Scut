@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -39,10 +39,10 @@
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
     <Reference Include="ZyGames.Framework.Common">
-      <HintPath>..\..\..\Lib\Framework\V5.1\ZyGames.Framework.Common.dll</HintPath>
+      <HintPath>..\..\..\..\Release\3.1\Lib\ZyGames.Framework.Common.dll</HintPath>
     </Reference>
     <Reference Include="ZyGames.Framework.Game.Lang">
-      <HintPath>..\..\..\Lib\Game\V2.6\ZyGames.Framework.Game.Lang.dll</HintPath>
+      <HintPath>..\..\..\..\Release\3.1\Lib\ZyGames.Framework.Game.Lang.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>

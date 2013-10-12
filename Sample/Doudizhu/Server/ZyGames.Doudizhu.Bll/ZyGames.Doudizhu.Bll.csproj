@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -35,8 +35,11 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\FrameworkPublish\Release\4.0\Python\IronPython.dll</HintPath>
     </Reference>
+    <Reference Include="NetLibrary">
+      <HintPath>..\..\..\..\Release\3.1\Lib\NetLibrary.dll</HintPath>
+    </Reference>
     <Reference Include="Newtonsoft.Json">
-      <HintPath>..\..\..\Lib\Plugin\Newtonsoft.Json.dll</HintPath>
+      <HintPath>..\..\..\..\Release\3.1\Lib\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -47,25 +50,25 @@
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
     <Reference Include="ZyGames.Framework">
-      <HintPath>..\..\..\Lib\Framework\V5.1\ZyGames.Framework.dll</HintPath>
+      <HintPath>..\..\..\..\Release\3.1\Lib\ZyGames.Framework.dll</HintPath>
     </Reference>
     <Reference Include="ZyGames.Framework.Common">
-      <HintPath>..\..\..\Lib\Framework\V5.1\ZyGames.Framework.Common.dll</HintPath>
+      <HintPath>..\..\..\..\Release\3.1\Lib\ZyGames.Framework.Common.dll</HintPath>
     </Reference>
     <Reference Include="ZyGames.Framework.Game">
-      <HintPath>..\..\..\Lib\Game\V2.6\ZyGames.Framework.Game.dll</HintPath>
+      <HintPath>..\..\..\..\Release\3.1\Lib\ZyGames.Framework.Game.dll</HintPath>
     </Reference>
     <Reference Include="ZyGames.Framework.Game.Contract">
-      <HintPath>..\..\..\Lib\Game\V2.6\ZyGames.Framework.Game.Contract.dll</HintPath>
+      <HintPath>..\..\..\..\Release\3.1\Lib\ZyGames.Framework.Game.Contract.dll</HintPath>
     </Reference>
     <Reference Include="ZyGames.Framework.Game.Lang">
-      <HintPath>..\..\..\Lib\Game\V2.6\ZyGames.Framework.Game.Lang.dll</HintPath>
+      <HintPath>..\..\..\..\Release\3.1\Lib\ZyGames.Framework.Game.Lang.dll</HintPath>
     </Reference>
     <Reference Include="ZyGames.Framework.Plugin">
-      <HintPath>..\..\..\Lib\Framework\V5.1\ZyGames.Framework.Plugin.dll</HintPath>
+      <HintPath>..\..\..\..\Release\3.1\Lib\ZyGames.Framework.Plugin.dll</HintPath>
     </Reference>
     <Reference Include="ZyGames.Framework.RPC">
-      <HintPath>..\..\..\Lib\Framework\V5.1\ZyGames.Framework.RPC.dll</HintPath>
+      <HintPath>..\..\..\..\Release\3.1\Lib\ZyGames.Framework.RPC.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
