@@ -886,7 +886,7 @@ end;
 
 -------阵法选择点击
 function  choiceClick(pNode)
-	local messageIndex = pNode:getTag()
+	local messageIndex = pNode
 
 	if messageIndex~=mClickTag then
 		----当前选中的阵法列表id 用于启用阵法

@@ -280,7 +280,7 @@ function creatHeadItem(image, tag, actionPath, abilityQuality)
 end
 
 function key_head(pNode)
-	local tag = pNode:getTag()
+	local tag = pNode
 	local UserItemID = skillListInfo.RecordTabel[tag].UserItemID
 	
 	sendAction(1485, UserItemID)
