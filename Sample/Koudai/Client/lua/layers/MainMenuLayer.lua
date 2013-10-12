@@ -150,7 +150,7 @@ end
 --µã»÷Ó¶±øÍ·ÏñÍ¼Æ¬ÏìÓ¦
 function key_hero(pNode, index)
 
-	local tag = pNode:getTag()
+	local tag = pNode
 	--[[
 	if index then
 		tag = index
