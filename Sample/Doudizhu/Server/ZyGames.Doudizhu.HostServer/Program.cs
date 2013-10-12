@@ -1,14 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using ZyGames.Doudizhu.Bll.Logic;
-using ZyGames.Doudizhu.Model;
-using ZyGames.Framework.Common;
-using ZyGames.Framework.Common.Configuration;
+using ZyGames.Doudizhu.Bll;
 using ZyGames.Framework.Common.Log;
-using ZyGames.Framework.Game.Contract;
-using ZyGames.Framework.Game.Script;
-using ZyGames.Framework.Model;
-using ZyGames.Framework.Plugin.PythonScript;
 
 namespace ZyGames.Doudizhu.HostServer
 {
@@ -17,7 +9,21 @@ namespace ZyGames.Doudizhu.HostServer
         [STAThread]
         static void Main(string[] args)
         {
-            GameHost.Start();
+            try
+            {
+                GameHostApp.Current.Start();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                TraceLog.WriteError("HostServer error:{0}", ex);
+            }
+            finally
+            {
+                Console.WriteLine("Press any key to exit the listener!");
+                Console.ReadKey();
+                GameHostApp.Current.Stop();
+            }
         }
     }
 }

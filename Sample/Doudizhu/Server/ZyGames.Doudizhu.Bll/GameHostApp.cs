@@ -25,21 +25,40 @@ using ZyGames.Framework.Game.Contract;
 using ZyGames.Framework.Game.Runtime;
 using ZyGames.Framework.Game.Script;
 using ZyGames.Framework.Game.Service;
+using ZyGames.Framework.NetLibrary;
 using ZyGames.Framework.Plugin.PythonScript;
 using ZyGames.Framework.RPC.IO;
+using ZyGames.Framework.RPC.Sockets;
 using ZyGames.Framework.RPC.Wcf;
 
 namespace ZyGames.Doudizhu.Bll
 {
-    public class GameHostApp : GameHost
+    public class GameHostApp : GameSocketHost
     {
+        private static GameHostApp _instance;
+
+        static GameHostApp()
+        {
+            _instance = new GameHostApp();
+        }
+
+        public static GameHostApp Current
+        {
+            get { return _instance; }
+        }
+
+
+        protected override void OnConnectCompleted(object sender, ConnectionEventArgs e)
+        {
+        }
+
         protected override void OnRequested(HttpGet httpGet, IGameResponse response)
         {
             try
             {
-                var actionId = httpGet.GetString("ActionID").ToInt();
-                var uid = httpGet.GetString("uid");
-                Console.WriteLine("Action{0} from {1} {2}", actionId, httpGet.RemoteAddress, uid);
+                //var actionId = httpGet.GetString("ActionID").ToInt();
+                //var uid = httpGet.GetString("uid");
+                //Console.WriteLine("Action{0} from {1} {2}", actionId, httpGet.RemoteAddress, uid);
                 ActionFactory.Request(httpGet, response, userId => new GameDataCacheSet<GameUser>().FindKey(userId.ToNotNullString()));
 
             }
@@ -49,78 +68,7 @@ namespace ZyGames.Doudizhu.Bll
             }
         }
 
-        /// <summary>
-        /// 在项目PyScript/Remote目录下增加与route参数相应Py文件，且
-        /// </summary>
-        /// <param name="route">包括方法名</param>
-        /// <param name="httpGet"></param>
-        /// <param name="head"></param>
-        /// <param name="structure"></param>
-        protected override void OnCallRemote(string route, HttpGet httpGet, MessageHead head, MessageStructure structure)
-        {
-            try
-            {
-                //todo trace
-                Console.WriteLine("{0}>>route:{1},param:{2}", DateTime.Now.ToLongTimeString(), route, httpGet.ParamString);
-                string[] mapList = route.Split('.');
-                string funcName = "";
-                string routeName = "";
-                if (mapList.Length > 1)
-                {
-                    funcName = mapList[mapList.Length - 1];
-                    routeName = string.Join("/", mapList, 0, mapList.Length - 1);
-                }
-                string routeFile = string.Format("Remote/{0}.py", routeName);
-                PythonContext context;
-                if (PythonScriptManager.Current.TryLoadPython(routeFile, out context))
-                {
-                    var funcHandle = context.GetVariable<Action<HttpGet, MessageHead, MessageStructure>>(funcName);
-                    if (funcHandle != null)
-                    {
-                        funcHandle(httpGet, head, structure);
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                head.ErrorCode = LanguageManager.GetLang().ErrorCode;
-                head.ErrorInfo = LanguageManager.GetLang().ServerBusy;
-                TraceLog.WriteError("{0}", ex);
-            }
-        }
-
-        protected override void DoListen()
-        {
-            var conn = new TimeSpan(0, 0, 0, ConfigUtils.GetSetting("Game.wcf.ConnectTimeout", "10").ToInt());
-            var recv = new TimeSpan(0, 0, 0, ConfigUtils.GetSetting("Game.wcf.ReceiveTimeout", "1800").ToInt());
-            var inacv = new TimeSpan(0, 0, 0, ConfigUtils.GetSetting("Game.wcf.InactivityTimeout", "5").ToInt());
-            int connectCount = ConfigUtils.GetSetting("Game.wcf.ConnectCount", "100").ToInt();
-            ServiceProxy.Setting.ConnectTimeout = conn;
-            ServiceProxy.Setting.ReceiveTimeout = recv;
-            ServiceProxy.Setting.InactivityTimeout = inacv;
-            ServiceProxy.Setting.SetMaxConcurrent(connectCount);
-
-        }
-
-        protected override void OnClosed(ChannelContext context, string remoteaddress)
-        {
-            TraceLog.ReleaseWrite("Client:{0} connect to Wcfservice error,the Wcfservice is closed", remoteaddress);
-            Console.WriteLine("{0}:Client:{1} connect to Wcfservice error,the Wcfservice is closed", DateTime.Now.ToString("HH:mm:ss"), remoteaddress);
-        }
-
-        protected override void OnSocketClosed(ChannelContext context, string remoteaddress)
-        {
-            TraceLog.ReleaseWrite("Client:{0} socket connect is closed", remoteaddress);
-            Console.WriteLine("Client:{0} socket connect is closed", remoteaddress);
-        }
-
-        protected override void OnServiceStop(object sender, EventArgs eventArgs)
-        {
-            TraceLog.ReleaseWrite("WcfService:{0} is closed", ServiceProxy.ServiceUrl);
-            Console.WriteLine("WcfService:{0} is closed", ServiceProxy.ServiceUrl);
-        }
-
-        protected override void DoBindAfter()
+        protected override void OnStartAffer()
         {
             //时间间隔更新库
             int cacheInterval = 600;
@@ -128,9 +76,11 @@ namespace ZyGames.Doudizhu.Bll
             try
             {
                 log = new BaseLog();
+                GameEnvironment.ProductDesEnKey = "5^1-34E!";
+                GameEnvironment.ClientDesDeKey = "n7=7=7dk";
+                var assembly = Assembly.Load("ZyGames.Doudizhu.Model");
                 GameEnvironment.Start(cacheInterval, () =>
                 {
-                    InitProtoBufType();
                     PythonContext pythonContext;
                     PythonScriptManager.Current.TryLoadPython(@"Lib/action.py", out pythonContext);
                     AppstoreClientManager.Current.InitConfig();
@@ -150,7 +100,7 @@ namespace ZyGames.Doudizhu.Bll
                     //    DdzBroadcastService.Send(notice.Content);
                     //}
                     return true;
-                });
+                }, 600, assembly);
 
                 if (log != null)
                 {
@@ -168,6 +118,11 @@ namespace ZyGames.Doudizhu.Bll
                     log.SaveLog(ex);
                 }
             }
+        }
+
+        protected override void OnServiceStop()
+        {
+            GameEnvironment.Stop();
         }
 
         private void LoadUnlineUser()
@@ -201,19 +156,6 @@ namespace ZyGames.Doudizhu.Bll
                 cacheSet.FindKey(userId);
             }
             TraceLog.ReleaseWrite("正在加载玩家结束");
-        }
-
-        private static void InitProtoBufType()
-        {
-            try
-            {
-                var assembly = Assembly.Load("ZyGames.Doudizhu.Model");
-                ProtoBufUtils.LoadProtobufType(assembly);
-            }
-            catch (Exception ex)
-            {
-                throw new ApplicationException("Init protobuf class error", ex);
-            }
         }
 
         /// <summary>
