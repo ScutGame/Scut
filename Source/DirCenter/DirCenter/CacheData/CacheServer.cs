@@ -67,7 +67,7 @@ namespace ZyGames.DirCenter.CacheData
         {
             try
             {
-                string sql = "SELECT [ID],[GameID],[ServerName],[BaseUrl],[ActiveNum],Weight,isEnable,[TargetServer],EnableDate FROM ServerInfo ORDER BY GameID asc, ID asc";
+                string sql = "SELECT [ID],[GameID],[ServerName],[BaseUrl],[ActiveNum],Weight,isEnable,[TargetServer],EnableDate,IntranetAddress FROM ServerInfo ORDER BY GameID asc, ID asc";
                 using (SqlDataReader reader = SqlHelper.ExecuteReader(config.connectionString, CommandType.Text, sql))
                 {
                     var serverDict = new Dictionary<int, ServerList>();
@@ -99,6 +99,7 @@ namespace ZyGames.DirCenter.CacheData
                     Weight = ConvertHelper.ToInt(reader["Weight"]),
                     IsEnable = ConvertHelper.ToBool(reader["isEnable"]),
                     EnableDate = ConvertHelper.ToDateTime(reader["EnableDate"]),
+                    IntranetAddress = Convert.ToString(reader["IntranetAddress"]),
                     Status = string.Empty
                 };
                 if (!string.IsNullOrEmpty(reader["ActiveNum"].ToString()))
@@ -144,6 +145,7 @@ namespace ZyGames.DirCenter.CacheData
                         tempServer.ActiveNum = serverInfo.ActiveNum;
                         tempServer.Status = serverInfo.Status;
                         tempServer.EnableDate = serverInfo.EnableDate;
+                        tempServer.IntranetAddress = serverInfo.IntranetAddress;
 
                         CommandHelper command = new CommandHelper("ServerInfo", EditType.Insert);
                         command.AddParameter("ID", SqlDbType.Int, serverInfo.ID);
@@ -153,6 +155,7 @@ namespace ZyGames.DirCenter.CacheData
                         command.AddParameter("BaseUrl", SqlDbType.VarChar, serverInfo.ServerUrl);
                         command.AddParameter("ActiveNum", SqlDbType.Int, serverInfo.ActiveNum);
                         command.AddParameter("EnableDate", SqlDbType.DateTime, serverInfo.EnableDate);
+                        command.AddParameter("IntranetAddress", SqlDbType.VarChar, serverInfo.IntranetAddress);
                         command.Parser();
 
                         SqlHelper.ExecuteNonQuery(config.connectionString, CommandType.Text, command.Sql, command.Parameters);
@@ -185,13 +188,14 @@ namespace ZyGames.DirCenter.CacheData
             }
         }
 
-        public void SetServer(int serverId, int gameId, string serverName, int TargetServer, string serverUrl, string status, int weight)
+        public void SetServer(int serverId, int gameId, string serverName, int TargetServer, string serverUrl, string status, int weight, string intranetAddress)
         {
             try
             {
                 CommandHelper command = new CommandHelper("ServerInfo", EditType.Update);
                 command.AddParameter("ServerName", SqlDbType.VarChar, serverName);
                 command.AddParameter("BaseUrl", SqlDbType.VarChar, serverUrl);
+                command.AddParameter("IntranetAddress", SqlDbType.VarChar, intranetAddress);
                 command.AddParameter("TargetServer", SqlDbType.Int, TargetServer);
                 if (weight > 0)
                 {
@@ -218,6 +222,7 @@ namespace ZyGames.DirCenter.CacheData
                             cacheServer.ServerName = serverName;
                             cacheServer.ServerUrl = serverUrl;
                             cacheServer.TargetServer = TargetServer;
+                            cacheServer.IntranetAddress = intranetAddress;
                             cacheServer.Status = status;
                             if (weight > 0)
                             {
@@ -368,7 +373,7 @@ namespace ZyGames.DirCenter.CacheData
                         serverDict.Remove(gameID);
                     }
 
-                    string sql = "SELECT [ID],[GameID],[ServerName],[BaseUrl],[ActiveNum],[Weight],isEnable,[TargetServer],EnableDate FROM ServerInfo where GameID=@GameID ORDER BY GameID asc,ID asc";
+                    string sql = "SELECT [ID],[GameID],[ServerName],[BaseUrl],[ActiveNum],[Weight],isEnable,[TargetServer],EnableDate,IntranetAddress FROM ServerInfo where GameID=@GameID ORDER BY GameID asc,ID asc";
                     SqlParameter[] paramList = new[]
                     {
                         SqlParamHelper.MakeInParam("@GameID", SqlDbType.Int, 0, gameID)
@@ -410,6 +415,35 @@ namespace ZyGames.DirCenter.CacheData
                         {
                             ServerInfo cacheServer = serverList[serverId];
                             cacheServer.IsEnable = isEnable;
+                            serverList[serverId] = cacheServer;
+                        }
+                        serverDict[gameId] = serverList;
+                    }
+                    addCache(serverDict);
+                }
+            }
+            catch (Exception ex)
+            {
+                SaveLog(ex);
+            }
+        }
+
+
+        internal void ServerStatus(int gameId, int serverId, int Status)
+        {
+            try
+            {
+               
+                lock (thisLock)
+                {
+                    var serverDict = (Dictionary<int, ServerList>)getCache();
+                    if (serverDict.ContainsKey(gameId))
+                    {
+                        ServerList serverList = serverDict[gameId];
+                        if (serverList.ContainsKey(serverId))
+                        {
+                            ServerInfo cacheServer = serverList[serverId];
+                            cacheServer.Status = Status.ToString();
                             serverList[serverId] = cacheServer;
                         }
                         serverDict[gameId] = serverList;
