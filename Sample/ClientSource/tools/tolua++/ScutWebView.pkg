@@ -1,0 +1,14 @@
+
+
+	class ScutWebView
+	{
+	public:
+		ScutWebView();
+		~ScutWebView(void);
+		//³õÊ¼»¯±à¼­¿ò¿Ø¼þ
+		bool init(char* szUrl, CCRect rcScreenFrame, char* szTitle, char* szNormal, char* szPushDown);
+		void close();
+		void switchUrl(const char* szUrl);
+	};
+
+ 

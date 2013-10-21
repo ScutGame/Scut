@@ -1,0 +1,1 @@
+tolua++.exe -tScutScene -o LuaScutScene.cpp ScutScene.pkg

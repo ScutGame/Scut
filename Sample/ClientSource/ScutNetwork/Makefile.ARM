@@ -1,0 +1,66 @@
+
+############################################################################
+#
+#   Makefile for building : Ndnetwork_Arm.TMK3
+#   Created by TMK3_V2.3, please do not modify.
+#
+#############################################################################
+
+TO_PROJECT_ROOT = ../../PRJ_TG3
+OUTPUT_FILENAME = libNdNetwork.a
+
+include $(TO_PROJECT_ROOT)/MakeInclude/Makefile_Base_StaticLib.ARM
+include $(TO_PROJECT_ROOT)/MakeInclude/Makefile_TOPS_Def.ARM
+
+DEFINES += -DLINUX -D_DEBUG -DNU_DEBUG -D_TRANZDA_VM_ -DSS_SHARED -DND_UPHONE
+INCLUDE_PATH += -I. -I./Res \
+               -I./ -I./Res -I./include -I../NdSystem
+
+OBJECTS_DIR = ./Debug-ARM
+DESTDIR = $(TO_PROJECT_ROOT)/$(BIN_OUTPUT_DIR)
+TARGET = $(DESTDIR)/$(OUTPUT_FILENAME)
+
+DEL_FILE = rm -f
+MKDIR = mkdir -p
+
+first: all
+
+OBJECTS = \
+	$(OBJECTS_DIR)/HttpClient.o \
+	$(OBJECTS_DIR)/HttpClientRequest.o \
+	$(OBJECTS_DIR)/HttpClientResponse.o \
+	$(OBJECTS_DIR)/HttpSession.o \
+	$(OBJECTS_DIR)/stdafx.o
+
+ADD_OBJECTS += 
+
+$(OBJECTS_DIR) :
+	$(MKDIR) $(OBJECTS_DIR)
+
+$(DESTDIR) :
+	$(MKDIR) $(DESTDIR)
+
+all : $(OBJECTS_DIR) $(DESTDIR) $(TARGET)
+
+$(TARGET) : $(OBJECTS)
+	$(LINK) $(LINK_FLAGS) -o $(TARGET) $(SYS_OBJECTS) $(OBJECTS) $(ADD_OBJECTS) $(LIBS) $(SYS_LIBS)
+
+clean : 
+	-$(DEL_FILE) $(OBJECTS)
+	-$(DEL_FILE) $(TARGET)
+
+$(OBJECTS_DIR)/HttpClient.o : ./HttpClient.cpp
+	$(CXX) -c $(CXX_FLAGS) $(INCLUDE_PATH) $(LAST_INCLUDE_PATH) -o $(OBJECTS_DIR)/HttpClient.o ./HttpClient.cpp
+
+$(OBJECTS_DIR)/HttpClientRequest.o : ./HttpClientRequest.cpp
+	$(CXX) -c $(CXX_FLAGS) $(INCLUDE_PATH) $(LAST_INCLUDE_PATH) -o $(OBJECTS_DIR)/HttpClientRequest.o ./HttpClientRequest.cpp
+
+$(OBJECTS_DIR)/HttpClientResponse.o : ./HttpClientResponse.cpp
+	$(CXX) -c $(CXX_FLAGS) $(INCLUDE_PATH) $(LAST_INCLUDE_PATH) -o $(OBJECTS_DIR)/HttpClientResponse.o ./HttpClientResponse.cpp
+
+$(OBJECTS_DIR)/HttpSession.o : ./HttpSession.cpp
+	$(CXX) -c $(CXX_FLAGS) $(INCLUDE_PATH) $(LAST_INCLUDE_PATH) -o $(OBJECTS_DIR)/HttpSession.o ./HttpSession.cpp
+
+$(OBJECTS_DIR)/stdafx.o : ./stdafx.cpp
+	$(CXX) -c $(CXX_FLAGS) $(INCLUDE_PATH) $(LAST_INCLUDE_PATH) -o $(OBJECTS_DIR)/stdafx.o ./stdafx.cpp
+

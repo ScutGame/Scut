@@ -1,0 +1,160 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="uPhone_Debug|Win32">
+      <Configuration>uPhone_Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{F033854B-2409-4F6D-841B-7A617E2D3FEB}</ProjectGuid>
+    <RootNamespace>NdNetwork</RootNamespace>
+    <Keyword>Win32Proj</Keyword>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='uPhone_Debug|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+    <WholeProgramOptimization>false</WholeProgramOptimization>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='uPhone_Debug|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup>
+    <_ProjectFileVersion>10.0.30319.1</_ProjectFileVersion>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(SolutionDir)$(Configuration).win32\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(Platform)$(Configuration)\</IntDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(SolutionDir)$(Configuration).win32\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(Platform)\$(Configuration)\</IntDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='uPhone_Debug|Win32'">$(Configuration)\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='uPhone_Debug|Win32'">$(Configuration)\</IntDir>
+    <CodeAnalysisRuleSet Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">AllRules.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRules Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" />
+    <CodeAnalysisRuleAssemblies Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" />
+    <CodeAnalysisRuleSet Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">AllRules.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRules Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" />
+    <CodeAnalysisRuleAssemblies Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" />
+    <CodeAnalysisRuleSet Condition="'$(Configuration)|$(Platform)'=='uPhone_Debug|Win32'">AllRules.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRules Condition="'$(Configuration)|$(Platform)'=='uPhone_Debug|Win32'" />
+    <CodeAnalysisRuleAssemblies Condition="'$(Configuration)|$(Platform)'=='uPhone_Debug|Win32'" />
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <Optimization>Disabled</Optimization>
+      <AdditionalIncludeDirectories>$(ProjectDir)\..\scripting\lua\tolua;$(ProjectDir)\..\scripting\lua\lua;$(ProjectDir)\..\cocos2dx\script_support;$(ProjectDir)\..\cocos2dx\kazmath\include;$(ProjectDir)\..\cocos2dx\kazmath\include\kazmath;$(ProjectDir)\..\cocos2dx\platform\third_party\win32\OGLES;$(ProjectDir)\..\cocos2dx\platform\third_party\win32\OGLES\GL;$(ProjectDir)\..\cocos2dx\platform\win32;$(ProjectDir)\..\cocos2dx\platform;$(ProjectDir)\..\cocos2dx\include;$(ProjectDir)\..\cocos2dx;$(ProjectDir)\..\cocos2dx\lua\cocos2dx_support;$(ProjectDir)\..\cocos2dx\lua\tolua;$(ProjectDir)\..\cocos2dx\lua\lua;$(ProjectDir)\..\cocos2dx\lua;$(ProjectDir)\..\cocos2dx\platform\third_party\win32\curl;$(ProjectDir)\..\ScutSystem;$(ProjectDir)\..\cocos2d-x\cocos2d-x_for_lua\lua\lua;$(ProjectDir)\..\cocos2d-x\cocos2d-x_for_lua\lua\tolua;$(ProjectDir)\..\ScutSystem\re_lib\;$(ProjectDir)\..\3rdParty\libcurl\include\;$(ProjectDir)\..\3rdParty\libcurl\include\curl;$(ProjectDir)\..\ScutDataLogic\zip_support;$(ProjectDir)\..\cocos2d-x\cocos2d-x_for_lua\cocos2dx\platform\third_party\win32;$(ProjectDir)\..\cocos2d-x\cocos2d-x_for_lua\cocos2dx\platform\third_party\win32\curl;./;./LUA_Export;$(ProjectDir)\..\cocos2d-x\cocos2d-x_for_lua\lua\cocos2dx_support;$(ProjectDir)\..\cocos2d-x\cocos2d-x_for_lua\cocos2dx;$(ProjectDir)\..\cocos2d-x\cocos2d-x_for_lua\cocos2dx\include;$(ProjectDir)\..\cocos2d-x\cocos2d-x_for_lua\cocos2dx\platform\;$(ProjectDir)\..\cocos2d-x\cocos2d-x_for_lua\cocos2dx\platform\third_party\win32\WinOpenGL;$(ProjectDir)\..\cocos2dx\platform\third_party\win32;$(ProjectDir)\..\scripting\lua\cocos2dx_support;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;_DEBUG;_LIB;_CRT_SECURE_NO_WARNINGS;_SCL_SECURE_NO_WARNINGS;SCUT_WIN32;CURL_STATICLIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MinimalRebuild>true</MinimalRebuild>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+      <StructMemberAlignment>4Bytes</StructMemberAlignment>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
+    </ClCompile>
+    <Lib>
+      <OutputFile>%(OutputFile)</OutputFile>
+    </Lib>
+    <PostBuildEvent>
+      <Command>
+      </Command>
+    </PostBuildEvent>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <Optimization>MaxSpeed</Optimization>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <AdditionalIncludeDirectories>$(ProjectDir)\..\cocos2dx\kazmath\include;$(ProjectDir)\..\cocos2dx\platform\third_party\win32\OGLES;$(ProjectDir)\..\cocos2dx\platform\win32;$(ProjectDir)\..\cocos2dx;$(ProjectDir)\..\cocos2dx\include;$(ProjectDir)\..\scripting\lua\cocos2dx_support;$(ProjectDir)\..\cocos2dx\script_support;$(ProjectDir)\..\cocos2dx\lua\cocos2dx_support;$(ProjectDir)\..\scripting\lua\lua;$(ProjectDir)\..\scripting\lua\tolua;$(ProjectDir)\..\cocos2dx\platform\third_party\win32\curl;$(ProjectDir)\..\ScutSystem\;$(ProjectDir)\..\cocos2d-x\cocos2d-x_for_lua\lua\lua;$(ProjectDir)\..\cocos2d-x\cocos2d-x_for_lua\lua\tolua;$(ProjectDir)\..\ScutSystem\re_lib\;$(ProjectDir)\..\3rdParty\libcurl\include\;$(ProjectDir)\..\3rdParty\libcurl\include\curl;$(ProjectDir)\..\ScutDataLogic\zip_support;$(ProjectDir)\..\cocos2d-x\cocos2d-x_for_lua\cocos2dx\platform\third_party\win32;$(ProjectDir)\..\cocos2d-x\cocos2d-x_for_lua\cocos2dx\platform\third_party\win32\curl;./;./LUA_Export;$(ProjectDir)\..\cocos2d-x\cocos2d-x_for_lua\lua\cocos2dx_support;$(ProjectDir)\..\cocos2d-x\cocos2d-x_for_lua\cocos2dx;$(ProjectDir)\..\cocos2d-x\cocos2d-x_for_lua\cocos2dx\include;$(ProjectDir)\..\cocos2d-x\cocos2d-x_for_lua\cocos2dx\platform\;$(ProjectDir)\..\cocos2d-x\cocos2d-x_for_lua\cocos2dx\platform\third_party\win32\WinOpenGL;$(ProjectDir)\..\cocos2dx\platform\third_party\win32;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;NDEBUG;_LIB;_CRT_SECURE_NO_WARNINGS;_SCL_SECURE_NO_WARNINGS;SCUT_WIN32;CURL_STATICLIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <StructMemberAlignment>4Bytes</StructMemberAlignment>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+    </ClCompile>
+    <Lib>
+      <OutputFile>%(OutputFile)</OutputFile>
+    </Lib>
+    <PostBuildEvent>
+      <Command>
+      </Command>
+    </PostBuildEvent>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='uPhone_Debug|Win32'">
+    <ClCompile>
+      <Optimization>Disabled</Optimization>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MinimalRebuild>true</MinimalRebuild>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
+    </ClCompile>
+    <Lib>
+      <OutputFile>$(ProjectDir)\..\lib\$(ProjectName).lib</OutputFile>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="INetStatusNotify.cpp" />
+    <ClCompile Include="LUA_Export\LuaScutNetwork.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="NetClientBase.cpp" />
+    <ClCompile Include="stdafx.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='uPhone_Debug|Win32'">Create</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="TcpClient.cpp" />
+    <ClCompile Include="TcpSceneManager.cpp" />
+    <ClCompile Include="HttpSession.cpp" />
+    <ClCompile Include="HttpClient.cpp" />
+    <ClCompile Include="HttpClientRequest.cpp" />
+    <ClCompile Include="HttpClientResponse.cpp" />
+    <ClCompile Include="LuaHelper.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="INetStatusNotify.h" />
+    <ClInclude Include="NetClientBase.h" />
+    <ClInclude Include="stdafx.h" />
+    <ClInclude Include="targetver.h" />
+    <ClInclude Include="TcpClient.h" />
+    <ClInclude Include="TcpSceneManager.h" />
+    <ClInclude Include="HttpSession.h" />
+    <ClInclude Include="HttpClient.h" />
+    <ClInclude Include="HttpClientRequest.h" />
+    <ClInclude Include="HttpClientResponse.h" />
+    <ClInclude Include="LuaHelper.h" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

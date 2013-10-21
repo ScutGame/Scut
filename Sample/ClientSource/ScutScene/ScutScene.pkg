@@ -1,0 +1,25 @@
+
+
+$#include "ScutScene.h"
+
+
+
+	class ScutScene: CCScene
+	{
+	public:
+		ScutScene(void);
+		virtual ~ScutScene(void);
+		bool init();
+		static ScutScene* node(void);
+		//lua func (lpData);
+		void registerCallback(const char* pszCallback);
+		void execCallback( int nTag, int nNetState, ScutSystem::CStream* lpData, void* lpExternal);
+		void registerOnExit(LUA_FUNCTION pszFunc);
+		void registerOnEnter(LUA_FUNCTION pszFunc);
+
+		//以下两个方法不需要处理
+		static void registerNetErrorFunc(const char* pszCallback);
+		static void registerNetCommonDataFunc(const char* pszCallback);
+		static void registerNetDecodeEnd(const char* pszCallback);
+	};
+

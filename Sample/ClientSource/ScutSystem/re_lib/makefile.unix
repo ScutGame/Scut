@@ -1,0 +1,90 @@
+
+# If you are using GNU g++ then:
+CC = g++
+# otherwise it seems to be:
+#CC = CC
+
+# If you are using SGI C++ compiler version 6 you way want:
+#ENV=-woff 3203
+# If you are using Sun "native" C++ then a special "multi-threading"
+# should be specified (-mt):
+#ENV = -mt
+# otherwise you hopefully want nothing:
+#ENV=
+
+# Things you might want to put in TEST:
+# -DDEBUG		debugging hooks
+# -I.			regexp.h from current directory, not /usr/include
+TEST=-I.
+
+# Things you might want to put in PROF:
+# -Dstatic='/* */'	make everything global so profiler can see it.
+# -p			profiler
+PROF=
+
+
+#CFLAGS= -O $(ENV) $(TEST) $(PROF)
+CFLAGS= -g $(ENV) $(TEST) $(PROF)
+LDFLAGS=
+
+LENV=
+LINTFLAGS=$(LENV) $(TEST) -ha
+
+OBJ=regexp.o regsub.o
+LSRC=regexp.cpp regsub.cpp regerror.cpp
+DTR=README dMakefile regexp.3 regexp.h regexp.cpp regsub.cpp \
+	regerror.cpp \
+	regmagic.h try.cpp timer.cpp tests
+DEST = ..
+
+#all:	r lib
+all:	lib
+
+try:	try.o $(OBJ)
+	$(CC) $(LDFLAGS) try.o $(OBJ) -o try
+
+# Making timer will probably require putting stuff in $(PROF) and then
+# recompiling everything; the following is just the final stage.
+timer:	timer.o $(OBJ)
+	$(CC) $(LDFLAGS) $(PROF) timer.o $(OBJ) -o timer
+
+timer.o:	timer.cpp timer.t.h
+	$(CC) $(CFLAGS) -c timer.cpp -o timer.o
+
+timer.t.h:	tests
+	sed 's/	/","/g;s/\\/&&/g;s/.*/{"&"},/' tests >timer.t.h
+
+# Regression test.
+r:	try tests
+	@echo 'No news is good news...'
+	try <tests
+
+lint:	timer.t.h
+	@echo 'Complaints about multiply-declared regerror() are legit.'
+	lint $(LINTFLAGS) $(LSRC) try.cpp
+	lint $(LINTFLAGS) $(LSRC) timer.cpp
+
+regexp.o:	regexp.cpp regexp.h regmagic.h
+	$(CC) $(CFLAGS) -c regexp.cpp -o regexp.o
+regsub.o:	regsub.cpp regexp.h regmagic.h
+	$(CC) $(CFLAGS) -c regsub.cpp -o regsub.o
+try.o:		try.cpp regexp.h regmagic.h
+	$(CC) $(CFLAGS) -c try.cpp -o try.o
+
+clean:
+	rm -f regexp.o regerror.o regsub.o timer.o try.o \
+		timer.t.h dMakefile dtr try timer libre_lib.a \
+		core mon.out
+
+dtr:	r makedtr $(DTR)
+	makedtr $(DTR) >dtr
+
+dMakefile:	Makefile
+	sed '/^L*ENV=/s/ *-DERRAVAIL//' Makefile >dMakefile
+
+mv:	$(OBJ) regerror.o
+	mv $(OBJ) regerror.o $(DEST)
+
+lib:	regexp.o regsub.o
+	ar q libre_lib.a regexp.o regsub.o
+
