@@ -1773,6 +1773,22 @@
             <param name="message"></param>
             <param name="ex"></param>
         </member>
+        <member name="T:ZyGames.Framework.Common.Build.WeavingEntityTask">
+            <summary>
+            实体属性重构生成
+            </summary>
+        </member>
+        <member name="M:ZyGames.Framework.Common.Build.WeavingEntityTask.Execute">
+            <summary>
+            
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="P:ZyGames.Framework.Common.Build.WeavingEntityTask.FilePattern">
+            <summary>
+            过滤文件类型
+            </summary>
+        </member>
         <member name="T:ZyGames.Framework.Common.Security.BASE64Encoder">
             <summary>
             BASE64Encoder 的摘要说明
@@ -2159,22 +2175,6 @@
             
             </summary>
             <returns></returns>
-        </member>
-        <member name="T:ZyGames.Framework.Common.Build.WeavingEntityTask">
-            <summary>
-            实体属性重构生成
-            </summary>
-        </member>
-        <member name="M:ZyGames.Framework.Common.Build.WeavingEntityTask.Execute">
-            <summary>
-            
-            </summary>
-            <returns></returns>
-        </member>
-        <member name="P:ZyGames.Framework.Common.Build.WeavingEntityTask.FilePattern">
-            <summary>
-            过滤文件类型
-            </summary>
         </member>
     </members>
 </doc>

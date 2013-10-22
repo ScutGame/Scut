@@ -80,7 +80,7 @@
         </member>
         <member name="T:ZyGames.Framework.Game.Service.HttpGameResponse">
             <summary>
-            
+            Http流输出类
             </summary>
         </member>
         <member name="F:ZyGames.Framework.Game.Service.HttpGameResponse._response">
@@ -105,6 +105,17 @@
             
             </summary>
             <param name="buffer"></param>
+        </member>
+        <member name="T:ZyGames.Framework.Game.Service.HttpListentGameResponse">
+            <summary>
+            HttpListent流输出类
+            </summary>
+        </member>
+        <member name="M:ZyGames.Framework.Game.Service.HttpListentGameResponse.#ctor(System.Net.HttpListenerResponse)">
+            <summary>
+            
+            </summary>
+            <param name="response"></param>
         </member>
         <member name="T:ZyGames.Framework.Game.Message.BroadcastService">
             <summary>
@@ -3328,13 +3339,15 @@
             构造函数
             </summary>
         </member>
-        <member name="M:ZyGames.Framework.Game.Service.HttpGet.#ctor(System.String,System.String,System.String)">
+        <member name="M:ZyGames.Framework.Game.Service.HttpGet.#ctor(System.String,System.String,System.String,System.Action{System.Object,System.Int32},System.Object)">
             <summary>
             
             </summary>
             <param name="param">自定义参数字串</param>
             <param name="sessionId"></param>
             <param name="remoteAddress"></param>
+            <param name="callback"></param>
+            <param name="state"></param>
         </member>
         <member name="F:ZyGames.Framework.Game.Service.HttpGet.Callback">
             <summary>
@@ -3546,6 +3559,13 @@
             <summary>
             签名检查
             </summary>
+            <returns></returns>
+        </member>
+        <member name="P:ZyGames.Framework.Game.Service.HttpGet.Item(System.String)">
+            <summary>
+            
+            </summary>
+            <param name="key"></param>
             <returns></returns>
         </member>
         <member name="P:ZyGames.Framework.Game.Service.HttpGet.RemoteAddress">

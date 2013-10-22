@@ -89,6 +89,14 @@
             <param name="userFactory"></param>
             <param name="httpGet"></param>
         </member>
+        <member name="M:ZyGames.Framework.Game.Contract.ActionFactory.RequestError(ZyGames.Framework.Game.Service.IGameResponse,System.Int32,System.String)">
+            <summary>
+            
+            </summary>
+            <param name="response"></param>
+            <param name="actionID"></param>
+            <param name="errorInfo"></param>
+        </member>
         <member name="M:ZyGames.Framework.Game.Contract.ActionFactory.RequestError(ZyGames.Framework.Game.Service.IGameResponse,System.Int32,System.Int32,System.String)">
             <summary>
             
@@ -113,6 +121,11 @@
             <param name="response"></param>
             <param name="userFactory"></param>
         </member>
+        <member name="M:ZyGames.Framework.Game.Contract.GameSocketHost.#ctor">
+            <summary>
+            
+            </summary>
+        </member>
         <member name="M:ZyGames.Framework.Game.Contract.GameSocketHost.CheckAdditionalHead(System.Byte[],System.Guid)">
             <summary>
             检查加头16位ssid
@@ -120,11 +133,6 @@
             <param name="data"></param>
             <param name="ssid"></param>
             <returns></returns>
-        </member>
-        <member name="M:ZyGames.Framework.Game.Contract.GameSocketHost.#ctor">
-            <summary>
-            
-            </summary>
         </member>
         <member name="M:ZyGames.Framework.Game.Contract.GameSocketHost.Start">
             <summary>
