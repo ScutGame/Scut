@@ -34,6 +34,7 @@ GM命令系统<br />
 
 资源
 ----------------
+官网地址：http://www.scutgame.com
 博客园地址：http://www.cnblogs.com/scut/
 
 技术交流QQ群：138266675
