@@ -622,59 +622,59 @@
             <summary>
             序列化成中国标准时间,精确值到秒
             </summary>
-            <param name="entity"></param>
+            <param name="entity">待序列化的对象</param>
             <returns></returns>
         </member>
         <member name="M:ZyGames.Framework.Common.Serialization.JsonUtils.SerializeCustom(System.Object,System.String)">
             <summary>
             序列化成中国标准时间,精确值到秒
             </summary>
-            <param name="entity"></param>
-            <param name="formatDate"></param>
+            <param name="entity">待序列化的对象</param>
+            <param name="formatDate">指定日期格式</param>
             <returns></returns>
         </member>
         <member name="M:ZyGames.Framework.Common.Serialization.JsonUtils.Serialize(System.Object,Newtonsoft.Json.JsonConverter[])">
             <summary>
             序列化
             </summary>
-            <param name="entity"></param>
-            <param name="converters"></param>
+            <param name="entity">待序列化的对象</param>
+            <param name="converters">自定转换的处理</param>
             <returns></returns>
         </member>
         <member name="M:ZyGames.Framework.Common.Serialization.JsonUtils.DeserializeCustom``1(System.String,System.String)">
             <summary>
             自定义日期反序列化
             </summary>
-            <typeparam name="T"></typeparam>
-            <param name="entity"></param>
-            <param name="formatDate"></param>
+            <typeparam name="T">对象类型</typeparam>
+            <param name="entity">待反序列化的对象</param>
+            <param name="formatDate">指定日期格式</param>
             <returns></returns>
         </member>
         <member name="M:ZyGames.Framework.Common.Serialization.JsonUtils.Deserialize``1(System.String,Newtonsoft.Json.JsonConverter[])">
             <summary>
             反序列化
             </summary>
-            <typeparam name="T"></typeparam>
-            <param name="entity"></param>
-            <param name="converters"></param>
+            <typeparam name="T">对象类型</typeparam>
+            <param name="entity">待反序列化的对象</param>
+            <param name="converters">自定转换的处理</param>
             <returns></returns>
         </member>
         <member name="M:ZyGames.Framework.Common.Serialization.JsonUtils.DeserializeCustom(System.String,System.Type,System.String)">
             <summary>
             自定义日期反序列化
             </summary>
-            <param name="entity"></param>
-            <param name="type"></param>
-            <param name="formatDate"></param>
+            <param name="entity">待反序列化的对象</param>
+            <param name="type">对象类型</param>
+            <param name="formatDate">指定日期格式</param>
             <returns></returns>
         </member>
         <member name="M:ZyGames.Framework.Common.Serialization.JsonUtils.Deserialize(System.String,System.Type,Newtonsoft.Json.JsonConverter[])">
             <summary>
             反序列化
             </summary>
-            <param name="entity"></param>
-            <param name="type"></param>
-            <param name="converters"></param>
+            <param name="entity">待反序列化的对象</param>
+            <param name="type">对象类型</param>
+            <param name="converters">自定转换的处理</param>
             <returns></returns>
         </member>
         <member name="T:ZyGames.Framework.Common.Reflect.MemberSet">

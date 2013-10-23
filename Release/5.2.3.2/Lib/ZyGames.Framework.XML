@@ -498,11 +498,6 @@
             变更事件接口
             </summary>
         </member>
-        <member name="M:ZyGames.Framework.Event.IItemChangeEvent.ClearChangeEvent">
-            <summary>
-            清除绑定
-            </summary>
-        </member>
         <member name="M:ZyGames.Framework.Event.IItemChangeEvent.DisableChildNotify">
             <summary>
             禁用子类事件通知
@@ -3246,6 +3241,11 @@
         <member name="P:ZyGames.Framework.Model.EntityFieldAttribute.IsJsonSerialize">
             <summary>
             是否使用Json序列化
+            </summary>
+        </member>
+        <member name="P:ZyGames.Framework.Model.EntityFieldAttribute.JsonDateTimeFormat">
+            <summary>
+            使用Json日期格式化
             </summary>
         </member>
         <member name="P:ZyGames.Framework.Model.EntityFieldAttribute.MinRange">
@@ -7048,6 +7048,11 @@
         <member name="P:ZyGames.Framework.Model.SchemaColumn.IsJson">
             <summary>
             是否使用Json序列化
+            </summary>
+        </member>
+        <member name="P:ZyGames.Framework.Model.SchemaColumn.JsonDateTimeFormat">
+            <summary>
+            使用Json日期格式化
             </summary>
         </member>
         <member name="P:ZyGames.Framework.Model.SchemaColumn.MinRange">
