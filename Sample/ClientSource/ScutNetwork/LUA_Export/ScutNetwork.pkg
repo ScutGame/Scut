@@ -1,0 +1,17 @@
+$#include"../NetClientBase.h"
+$#include"../HttpClient.h"
+$#include"../TcpClient.h"
+$#include"../HttpClientResponse.h"
+$#include"../HttpSession.h"
+
+$pfile "NetClientBase.pkg"
+
+$pfile "HttpClient.pkg"
+
+$pfile "TcpClient.pkg"
+
+$pfile "HttpClientResponse.pkg"
+
+$pfile "HttpSession.pkg"
+
+//$pfile "HttpClientRequest.pkg"

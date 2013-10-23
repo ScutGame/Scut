@@ -1,0 +1,45 @@
+
+namespace ScutNetwork
+{
+	class INetStatusNotify;
+
+	class CHttpClient : public CNetClientBase
+	{
+	public:
+		CHttpClient(CHttpSession *s);
+		virtual ~CHttpClient();		
+	
+		//同步Get与Post
+		int HttpGet(const char *url, CHttpClientResponse &resp);		
+		BOOL HttpPost(const char *url, const void * postData, int nPostDataSize, CHttpClientResponse &resp, bool formflag=false);
+
+		///////////////////////////////异步Get与Post//////////////////////////
+
+		//由于异步处理，因此resp参数必须一直有效
+		int AsyncHttpGet(const char* url, CHttpClientResponse* resp);
+		int AsyncHttpPost(const char* url, const void* postData, int nPostDataSize, CHttpClientResponse* resp, bool bFormFlag = false);
+		
+		virtual int AsyncNetGet(const char* url, CHttpClientResponse* resp);
+
+		////异步情况下，需要设定网络状态通知接口
+		//virtual void SetNetStautsNotify(INetStatusNotify* pNetNotify);
+
+		ENetType GetNetType();
+
+		//头信息与代理服务器设置
+		virtual BOOL AddHeader(const char *name, const char *value);
+
+		void UseHttpProxy(BOOL bUseProxy);
+		void SetHttpProxy(const char *proxyHost, unsigned int proxyPort);
+		void UseHttpsProxy(BOOL bUseProxy);
+		void SetHttpsProxy(const char *proxyHost, unsigned int proxyPort);
+
+		//重设状态
+		virtual void FullReset();
+		virtual void Reset();
+		//CNdString	GetHost();	
+
+		static int GetUrlHost(const char *url, char *host);	
+	};
+
+}

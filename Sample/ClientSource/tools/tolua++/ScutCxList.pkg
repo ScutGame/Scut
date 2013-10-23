@@ -1,0 +1,97 @@
+
+    typedef enum  
+    {
+        LS_WAITING,
+        LS_TRACKINGTOUCH,
+    } LIST_STATE;
+
+    struct ScutCxListItemClickListener
+    {
+        void onClick(int index, ScutCxListItem *item);
+    };
+
+    class ScutCxList : public CCLayerColor
+    {
+    public:
+  
+        virtual ~ScutCxList(void);
+
+    public:
+    static ScutCxList* node(float row_height, ccColor4B bg_color, CCSize size);
+
+	
+        int addListItem(ScutCxListItem *item, bool scroll_to_view);
+        
+	void DeleteChild(ScutCxListItem* child);
+	void DeleteChild(int nIndex);
+			 
+
+
+        ScutCxListItem *getChild(int row_index);
+        void clear(void);
+        
+        void selectChild(int row_index);
+
+        ScutCxListItem *getSelectedChild(void);
+
+        void setLineColor(ccColor3B &color);
+        void setSelectedItemColor(ccColor3B &start_color, ccColor3B &end_color);
+        int getChildCount(void);
+        
+   		
+	void setHorizontal(bool bHorizontal=false);
+	bool isHorizontal_mode();
+	void setRowHeight(float height);
+	void setRowWidth(float width);
+				
+	
+	void setPageTurnEffect(bool bPageTurn);
+	bool getPageTurnEffect();
+				
+	
+	void turnToPage(int nPageIndex);
+				
+	
+	void setRecodeNumPerPage(int nNumber);
+	int  getRecodeNumPerPage();
+	void SetSilence(bool bSilence);
+	
+        float getRowHeight(void);		
+        float getRowWidth(void);
+        
+      	
+				
+	//LUA LOADER 事件回调注册
+	virtual void registerLoadEvent(LUA_FUNCTION fun);
+	virtual void registerUnloadEvent(LUA_FUNCTION fun);
+	void registerUnselectEvent(LUA_FUNCTION fun);
+
+
+     	//嵌套例表裁剪用， 参数坐标为父LIST 的POS 和 SIZE
+       	void SetParentListRect(int nX,int nY,int nW,int nH);
+
+
+	void disableAllCtrlEvent();
+
+
+		
+    public:
+       void onEnter(void);
+       void onExit(void);
+       void registerWithTouchDispatcher(void);
+       bool ccTouchBegan(CCTouch* touch, CCEvent* event);
+       void ccTouchEnded(CCTouch* touch, CCEvent* event);
+       void ccTouchCancelled(CCTouch *touch, CCEvent* event);
+       void ccTouchMoved(CCTouch* touch, CCEvent* event);
+       void destroy(void);
+       void keep(void);
+
+       //void registerItemClickListener(ScutCxListItemClickListener* szfunc);
+       void unregisterItemClickListener(void);
+       
+       virtual void registerItemClickListener(LUA_FUNCTION fun);
+      };
+
+   
+
+

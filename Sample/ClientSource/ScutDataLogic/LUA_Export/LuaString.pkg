@@ -1,0 +1,16 @@
+
+namespace ScutDataLogic
+{
+	class CLuaString
+	{
+	public:
+		CLuaString(std::string strValue);
+		~CLuaString(void);
+		void setString(const char* szValue);
+		const char* getCString();
+		int getSize();
+	};
+	
+}
+
+#endif//LUASTRING_H

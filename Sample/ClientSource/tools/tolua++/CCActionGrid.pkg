@@ -1,0 +1,69 @@
+
+class CCGridAction : public CCActionInterval
+{
+	CCActionInterval* reverse(void);
+
+    CCGridBase* getGrid(void);
+
+    static CCGridAction* create(float duration, CCSize gridSize);
+};
+
+class CCAccelDeccelAmplitude : public CCActionInterval
+{
+	CCActionInterval* reverse(void);
+
+    float getRate(void);
+    void setRate(float fRate);
+
+    static CCAccelDeccelAmplitude* create(CCAction *pAction, float duration);
+};
+
+class CCGrid3DAction : public CCGridAction
+{
+    virtual CCGridBase* getGrid(void);
+    ccVertex3F vertex(const CCPoint& pos);
+    ccVertex3F originalVertex(const CCPoint& pos);
+    void setVertex(const CCPoint& pos, const ccVertex3F& vertex);
+
+    //static CCGrid3DAction* create(float duration, CCSize gridSize);
+};
+
+class CCTiledGrid3DAction : public CCGridAction
+{
+    ccQuad3 tile(CCPoint pos);
+    ccQuad3 originalTile(CCPoint pos);
+    void setTile(CCPoint pos, ccQuad3 coords);
+    CCGridBase* getGrid(void);
+
+    //static CCTiledGrid3DAction* create(float duration, const CCSize& gridSize);
+};
+
+class CCAccelAmplitude : public CCActionInterval
+{
+	CCActionInterval* reverse(void);
+
+    float getRate(void);
+    void setRate(float fRate);
+
+    static CCAccelAmplitude* create(CCAction *pAction, float duration);
+};
+
+class CCDeccelAmplitude : public CCActionInterval
+{
+	CCActionInterval* reverse(void);
+
+    float getRate(void);
+    void setRate(float fRate);
+
+    static CCDeccelAmplitude* create(CCAction *pAction, float duration);
+};
+
+class CCStopGrid : public CCActionInstant
+{
+    static CCStopGrid* create(void);
+};
+
+class CCReuseGrid : public CCActionInstant
+{
+    static CCReuseGrid* create(int times);
+};

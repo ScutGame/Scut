@@ -1,0 +1,50 @@
+$#include"../FileHelper.h"
+$#include"../LuaIni.h"
+$#include"../LuaString.h"
+$pfile "LuaString.pkg"
+
+
+std::string getPath(const char* szPath, bool bOnly2X = false);
+namespace  ScutDataLogic
+{
+	class  CFileHelper
+	{	
+	public:
+		static std::string getPath(const char* szPath, bool bOnly2X = false); 
+		static void setAndroidSDCardDirPath(const char *szPath);
+		static const char* getAndroidSDCardDirPath();
+		static void setAndroidResourcePath(const char* pszPath);
+		static unsigned char* getFileData(const char* pszFileName, const char* pszMode, unsigned long *pSize);
+		static void freeFileData(unsigned char* pFileDataPtr);
+		static bool executeScriptFile(const char * pszFile);
+		static CLuaString encryptPwd(const char* pPwd, const char*key);
+
+		static int getFileState(const char* pszFileName);
+		static bool createDirs(const char* szDir);
+		static bool isDirExists(const char* dir);
+		static bool createDir(const char* dir);
+		static bool isFileExists(const char* szFilePath);
+
+		static std::string getWritablePath(const char* szFileName);		
+
+	};
+	class CLuaIni
+	{
+	public:
+		CLuaIni(void);
+		~CLuaIni(void);
+
+		//相对于资源目录的 完整的路径由里面组合
+		bool Load(const char *filename);
+		bool APLoad(const char *filename);
+		bool Save(const char *filename);
+
+		const char *Get(const char *key, const char *value, const char *def = "error");
+		int GetInt(const char *key, const char *value, const char *def = "0");
+
+		void Set(const char *key, const char *value, const char *set);
+		void SetInt(const char *key, const char *value, int nValue);
+
+	};
+}
+

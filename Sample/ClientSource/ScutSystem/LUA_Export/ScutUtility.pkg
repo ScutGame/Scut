@@ -1,0 +1,13 @@
+namespace ScutSystem
+{
+	class CScutUtility
+	{
+	public:
+		static int DesEncrypt(const char* lpszKey, const char* lpDataIn, std::string& strDataOut);
+		static void StdDesEncrypt(const char* lpszKey, const char* lpDataIn, std::string& strDataOut);
+		static void StdDesDecrypt(const char* lpszKey, const char* lpDataIn, std::string& strDataOut);
+		static unsigned long GetTickCount();
+		
+		std::string CScutUtility::GetNowTime();
+	};
+}
