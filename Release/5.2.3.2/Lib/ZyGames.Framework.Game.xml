@@ -1668,15 +1668,26 @@
             超时1s
             </summary>
         </member>
+        <member name="M:ZyGames.Framework.Game.Context.GameContext.GetInstance(System.String,System.Int32,System.Int32,System.Int32)">
+            <summary>
+            获得当前请求上下文
+            </summary>
+            <param name="ssid"></param>
+            <param name="actionId"></param>
+            <param name="userId"></param>
+            <param name="timeOut"></param>
+            <returns></returns>
+        </member>
         <member name="M:ZyGames.Framework.Game.Context.GameContext.Refresh">
             <summary>
             
             </summary>
         </member>
-        <member name="M:ZyGames.Framework.Game.Context.GameContext.Refresh(System.Int32,System.Int32)">
+        <member name="M:ZyGames.Framework.Game.Context.GameContext.Refresh(System.String,System.Int32,System.Int32)">
             <summary>
             
             </summary>
+            <param name="ssid"></param>
             <param name="actionId"></param>
             <param name="userId"></param>
         </member>
@@ -1695,9 +1706,19 @@
             <typeparam name="T"></typeparam>
             <returns></returns>
         </member>
+        <member name="P:ZyGames.Framework.Game.Context.GameContext.LockTimeOut">
+            <summary>
+            锁超时时间
+            </summary>
+        </member>
         <member name="P:ZyGames.Framework.Game.Context.GameContext.IsRequesting">
             <summary>
             是否正在请求中，避免多次
+            </summary>
+        </member>
+        <member name="P:ZyGames.Framework.Game.Context.GameContext.MonitorLock">
+            <summary>
+            
             </summary>
         </member>
         <member name="P:ZyGames.Framework.Game.Context.GameContext.UserId">
@@ -1706,6 +1727,11 @@
             </summary>
         </member>
         <member name="P:ZyGames.Framework.Game.Context.GameContext.ActionId">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:ZyGames.Framework.Game.Context.GameContext.User">
             <summary>
             
             </summary>
@@ -2758,12 +2784,12 @@
         </member>
         <member name="P:ZyGames.Framework.Game.Service.BaseStruct.UserFactory">
             <summary>
-            
+            User创建工厂
             </summary>
         </member>
         <member name="P:ZyGames.Framework.Game.Service.BaseStruct.Current">
             <summary>
-            
+            当前游戏上下文对象
             </summary>
         </member>
         <member name="P:ZyGames.Framework.Game.Service.BaseStruct.IsRunLoader">
@@ -3354,6 +3380,12 @@
             
             </summary>
         </member>
+        <member name="M:ZyGames.Framework.Game.Service.HttpGet.LoginSuccessCallback(System.Int32)">
+            <summary>
+            
+            </summary>
+            <param name="userId"></param>
+        </member>
         <member name="M:ZyGames.Framework.Game.Service.HttpGet.GetIntValue(System.String)">
             <summary>
             
@@ -3567,6 +3599,11 @@
             </summary>
             <param name="key"></param>
             <returns></returns>
+        </member>
+        <member name="P:ZyGames.Framework.Game.Service.HttpGet.ActionId">
+            <summary>
+            Action编号
+            </summary>
         </member>
         <member name="P:ZyGames.Framework.Game.Service.HttpGet.RemoteAddress">
             <summary>

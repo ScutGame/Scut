@@ -7407,6 +7407,13 @@
             <param name="list"></param>
             <returns></returns>
         </member>
+        <member name="M:ZyGames.Framework.Cache.Generic.PersonalCacheStruct`1.FindGlobal(System.Predicate{`0})">
+            <summary>
+            在整个缓存中查找
+            </summary>
+            <param name="match">查找匹配条件</param>
+            <returns></returns>
+        </member>
         <member name="M:ZyGames.Framework.Cache.Generic.PersonalCacheStruct`1.Foreach(System.Func{System.String,System.String,`0,System.Boolean})">
             <summary>
             遍历数据

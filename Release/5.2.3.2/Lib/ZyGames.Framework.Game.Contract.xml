@@ -50,48 +50,62 @@
         </member>
         <member name="T:ZyGames.Framework.Game.Contract.ActionFactory">
             <summary>
-            
+            Action管理
             </summary>
         </member>
         <member name="M:ZyGames.Framework.Game.Contract.ActionFactory.GetLocalIp">
             <summary>
-            
+            获取本地IP
             </summary>
             <returns></returns>
         </member>
         <member name="M:ZyGames.Framework.Game.Contract.ActionFactory.Request(System.Func{System.Int32,ZyGames.Framework.Game.Context.BaseUser})">
             <summary>
-            
+            请求处理
             </summary>
-            <param name="userFactory"></param>
-        </member>
-        <member name="M:ZyGames.Framework.Game.Contract.ActionFactory.Request(ZyGames.Framework.Game.Service.HttpGet,ZyGames.Framework.Game.Service.IGameResponse,System.Func{System.Int32,ZyGames.Framework.Game.Context.BaseUser})">
-            <summary>
-            
-            </summary>
-            <param name="httpGet"></param>
-            <param name="response"></param>
             <param name="userFactory"></param>
         </member>
         <member name="M:ZyGames.Framework.Game.Contract.ActionFactory.Request(System.String,System.Func{System.Int32,ZyGames.Framework.Game.Context.BaseUser})">
             <summary>
-            
+            请求处理
             </summary>
             <param name="typeName"></param>
             <param name="userFactory"></param>
         </member>
+        <member name="M:ZyGames.Framework.Game.Contract.ActionFactory.Request(ZyGames.Framework.Game.Service.HttpGet,ZyGames.Framework.Game.Service.IGameResponse,System.Func{System.Int32,ZyGames.Framework.Game.Context.BaseUser})">
+            <summary>
+            请求处理
+            </summary>
+            <param name="httpGet"></param>
+            <param name="response"></param>
+            <param name="userFactory"></param>
+        </member>
         <member name="M:ZyGames.Framework.Game.Contract.ActionFactory.Request(System.String,ZyGames.Framework.Game.Service.HttpGet,ZyGames.Framework.Game.Service.IGameResponse,System.Func{System.Int32,ZyGames.Framework.Game.Context.BaseUser})">
             <summary>
-            
+            请求处理
             </summary>
             <param name="typeName"></param>
             <param name="response"></param>
             <param name="userFactory"></param>
             <param name="httpGet"></param>
         </member>
+        <member name="M:ZyGames.Framework.Game.Contract.ActionFactory.RequestScript(System.Func{System.Int32,ZyGames.Framework.Game.Context.BaseUser})">
+            <summary>
+            请求脚本处理
+            </summary>
+            <param name="userFactory">创建user对象工厂</param>
+        </member>
+        <member name="M:ZyGames.Framework.Game.Contract.ActionFactory.RequestScript(ZyGames.Framework.Game.Service.HttpGet,ZyGames.Framework.Game.Service.IGameResponse,System.Func{System.Int32,ZyGames.Framework.Game.Context.BaseUser})">
+            <summary>
+            请求脚本处理
+            </summary>
+            <param name="httpGet">请求参数对象</param>
+            <param name="response">字节输出处理</param>
+            <param name="userFactory">创建user对象工厂,可为Null</param>
+        </member>
         <member name="M:ZyGames.Framework.Game.Contract.ActionFactory.RequestError(ZyGames.Framework.Game.Service.IGameResponse,System.Int32,System.String)">
             <summary>
-            
+            出错处理
             </summary>
             <param name="response"></param>
             <param name="actionID"></param>
@@ -99,7 +113,7 @@
         </member>
         <member name="M:ZyGames.Framework.Game.Contract.ActionFactory.RequestError(ZyGames.Framework.Game.Service.IGameResponse,System.Int32,System.Int32,System.String)">
             <summary>
-            
+            出错处理
             </summary>
             <param name="response"></param>
             <param name="actionID"></param>
@@ -144,19 +158,29 @@
             
             </summary>
         </member>
+        <member name="M:ZyGames.Framework.Game.Contract.GameSocketHost.BroadcastAction``1(System.Int32,System.Collections.Generic.List{``0},ZyGames.Framework.Net.Parameters,System.Action{``0})">
+            <summary>
+            将指定的Action结果广播给指定范围的玩家
+            </summary>
+            <typeparam name="T">BaseUser对象</typeparam>
+            <param name="actionId">指定的Action</param>
+            <param name="userList">指定范围的玩家</param>
+            <param name="parameters">请求参数</param>
+            <param name="successHandle">成功回调</param>
+        </member>
         <member name="M:ZyGames.Framework.Game.Contract.GameSocketHost.SendAsyncAction``1(System.Collections.Generic.List{``0},System.Int32,ZyGames.Framework.Net.Parameters,System.Action{ZyGames.Framework.Game.Service.HttpGet})">
             <summary>
-            
+            给指定范围的每个玩家发送指定的Action结果
             </summary>
-            <typeparam name="T"></typeparam>
-            <param name="userList"></param>
-            <param name="actionId"></param>
-            <param name="parameters"></param>
-            <param name="successHandle"></param>
+            <typeparam name="T">BaseUser对象</typeparam>
+            <param name="userList">指定范围的玩家</param>
+            <param name="actionId">指定的Action</param>
+            <param name="parameters">请求参数</param>
+            <param name="successHandle">成功回调</param>
         </member>
         <member name="M:ZyGames.Framework.Game.Contract.GameSocketHost.SendAsync(System.String,System.Byte[])">
             <summary>
-            
+            发送消息
             </summary>
             <param name="sessionId"></param>
             <param name="data"></param>
