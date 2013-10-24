@@ -70,7 +70,7 @@ function processCommonData(lpScene)
 end
 
 function netDecodeEnd(pScutScene, nTag)
-	ZyLoading.hide(pScutScene, nTag)
+--	ZyLoading.hide(pScutScene, nTag)
 end
 --注册服务器push回调
 CCDirector:sharedDirector():RegisterSocketPushHandler("PushReceiverLayer.PushReceiverCallback");

@@ -92,7 +92,7 @@ function ZyMultiLabel:new(content,width,fontname,fontsize,nYSpace,getAniSpriteFu
 			end
 			--一些属性处理，无设置的定义默认值
 			if color == nil or color == "" then
-				color = 	ZyColor:colorWhite();
+				color = 	ccc3(255,255,255);
 			else
 				color = ZyFont.Split(color,",")
 				color = ccc3(color[1],color[2],color[3]);

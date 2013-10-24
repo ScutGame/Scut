@@ -14,20 +14,12 @@ gClassPool = {};
 
 require("lib.Common");
 require("lib.ZyMessageBoxEx");
-require("lib.ZyMultiLabel");
 require("lib.ZyButton");
 require("lib.ZyImage");
 require("lib.NetHelper");
---require("lib.ZyToast");
---require("lib.PointHelper");
 require("lib.ZyTable");
 require("lib.UIHelper");
---require("lib.ZyTabBar");
 require("lib.ZyFont");
-require("lib.ZyColor");
---require("lib.ZyPageBar");
-require("lib.ZyLinkLable")
---require("lib.Tools");
-require("lib.XmlParser");
+require("lib.ZyMultiLabel")
 require("lib.ZyBit")
 

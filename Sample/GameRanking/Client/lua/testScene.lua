@@ -289,7 +289,7 @@ function netCallback(pZyScene, lpExternalData)
 	if actionID==1001 then
 	    local table =  _1001Callback(pZyScene, lpExternalData);
 	    if table then
-		    bgLayer= UIHelper.createUIBg(nil,nil,ZyColor:colorWhite(),nil,true);--没有背景框
+		    bgLayer= UIHelper.createUIBg(nil,nil,ccc3(255,255,255),nil,true);--没有背景框
 			mScene:addChild(bgLayer);	
 
 	----
