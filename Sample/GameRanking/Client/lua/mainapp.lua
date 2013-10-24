@@ -5,7 +5,6 @@
 -- Date       : 2011-10-15
 -- Description:
 ------------------------------------------------------------------
-
 local strModuleName = "mainapp";
 --CCLuaLog("Module ".. strModuleName.. " loaded.");
 strModuleName = nil;
@@ -19,30 +18,30 @@ local strTmpPkgPath = package.path;
 
 local strSubDirs =
 {
-	"scenes",
-	"layers",
-	"datapool",
-	"config",
-	"action",
-	"lib",
-	"commupdate",
-	"payment",
-	
-	-- 在此添加新的目录
+    "scenes",
+    "layers",
+    "datapool",
+    "config",
+    "action",
+    "lib",
+    "commupdate",
+    "payment",
+    
+    -- 在此添加新的目录
 };
 
 --package.path = string.format("%s/?.lua;%s/lib/?.lua;%s/action/?.lua;%s/common/?.lua;%s/datapool/?.lua;%s/Global/?.lua;%s/layers/?.lua;%s/LuaClass/?.lua;%s/scenes/?.lua;%s/titleMap/?.lua;%s",strRootDir,strRootDir,strRootDir,strRootDir,strRootDir,strRootDir,strRootDir,strRootDir,strRootDir,strRootDir, strTmpPkgPath);
 
 -- 逐个添加子文件夹
 for key, value in ipairs(strSubDirs) do
-	local strOld = strTmpPkgPath;
-	if(1 == key) then
-		strTmpPkgPath = string.format("%s/%s/?.lua%s", strRootDir, value, strOld);
-	else
-		strTmpPkgPath = string.format("%s/%s/?.lua;%s", strRootDir, value, strOld);
-	end
---	CCLuaLog(value.. " added.");
-	strOld = nil;
+    local strOld = strTmpPkgPath;
+    if(1 == key) then
+        strTmpPkgPath = string.format("%s/%s/?.lua%s", strRootDir, value, strOld);
+    else
+        strTmpPkgPath = string.format("%s/%s/?.lua;%s", strRootDir, value, strOld);
+    end
+--  CCLuaLog(value.. " added.");
+    strOld = nil;
 end
 
 package.path = string.format("%s/?.lua;%s", strRootDir, strTmpPkgPath);
@@ -70,7 +69,7 @@ function processCommonData(lpScene)
 end
 
 function netDecodeEnd(pScutScene, nTag)
-	ZyLoading.hide(pScutScene, nTag)
+    ZyLoading.hide(pScutScene, nTag)
 end
 --注册服务器push回调
 CCDirector:sharedDirector():RegisterSocketPushHandler("PushReceiverLayer.PushReceiverCallback");
@@ -86,18 +85,28 @@ CCDirector:sharedDirector():RegisterErrorHandler("err_handler")
 
 --
 function err_handler(str)
-	ZyRequestCounter = ZyRequestCounter + 1
-	ZyWriter:writeString("ActionId",404 );
-	ZyWriter:writeString("ErrorInfo", str)
-	ZyExecRequest(ScutScene, nil,isLoading)
---	ScutDataLogic.CDataRequest:Instance():AsyncExecRequest(ScutScene, ZyWriter:generatePostData(), ZyRequestCounter, nil);
---	ScutDataLogic.CNetWriter:resetData()
+    ZyRequestCounter = ZyRequestCounter + 1
+    ZyWriter:writeString("ActionId",404 );
+    ZyWriter:writeString("ErrorInfo", str)
+    ZyExecRequest(ScutScene, nil,isLoading)
+--  ScutDataLogic.CDataRequest:Instance():AsyncExecRequest(ScutScene, ZyWriter:generatePostData(), ZyRequestCounter, nil);
+--  ScutDataLogic.CNetWriter:resetData()
 end
 
 ------------------------------------------------------------------
 -- ↑↑ 协议解析函数注册 结束 ↑↑
 ------------------------------------------------------------------
 
+-- for CCLuaEngine traceback
+function __G__TRACKBACK__(msg)
+    print("----------------------------------------")
+    print("LUA ERROR: " .. tostring(msg) .. "\n")
+    print(debug.traceback())
+    print("----------------------------------------")
+end
 
-testScene.init()
+local function main()
+    testScene.init()
+end
 
+xpcall(main, __G__TRACKBACK__)

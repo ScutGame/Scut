@@ -81,7 +81,7 @@ int lua_print(lua_State * luastate)
         if (i!=nargs)
             t += "\t";
     }
-    CCLOG("[LUA-print] %s", t.c_str());
+    cocos2d::CCLog("[LUA-print] %s", t.c_str());
 
     return 0;
 }
