@@ -129,16 +129,14 @@ namespace ScutDataLogic
 			strDirPath = "";
 		}
 
-		if (strDirPath.size())//Àµ√˜ «Õº∆¨
+		if (strDirPath.size())
 		{
 			strDirPath += FILE_SEP;
 
-			//ÃÌº”∂‘iPhone @2xµƒ÷ß≥÷
 			float fScale = cocos2d::CCDirector::sharedDirector()->getContentScaleFactor();
 			if (fScale > 1 || !(s_width == 480 && s_height == 320 || s_height == 320&& s_width == 480 || s_width
 					< 480 && s_height <480))
 			{
-				//÷±Ω”◊™ªØ≥…@2xµƒ◊ ‘¥
 				bool bTmx = false;
 				const char* pPos = strstr(szPath, ".jpg");
 				if (pPos == NULL)	//yubo image
@@ -235,7 +233,7 @@ namespace ScutDataLogic
 		{
 			s_strIPhoneBundleID = ScutDataLogic::getBundleID();
 		}
-		//Document ƒø¬º∂‡∏ˆBundleIDƒø¬º
+
 		std::string strRelativePath = s_strIPhoneBundleID;
 		strRelativePath += FILE_SEP;
 		strRelativePath += strDirPath;
@@ -273,7 +271,6 @@ namespace ScutDataLogic
 		}
 		else
 		{
-            //png图片，同时图片没有找到
             if (strFilePath.rfind(".png") != std::string::npos)
             {
                 strTempPath = strFilePath;
@@ -283,7 +280,7 @@ namespace ScutDataLogic
                     return strTempPath;
                 }
             }
-			//ªÒ»°App◊ ‘¥œ¬µƒŒƒº˛¬∑æ∂
+
 			std::string retPath = std::string(appFullPathFromRelativePath(strDirPath.c_str()));
 			if (retPath == strDirPath)
 			{
@@ -331,7 +328,6 @@ namespace ScutDataLogic
 			}
 			else
 			{
-				//png图片，同时图片没有找到
 				if (strFilePath.rfind(".png") != std::string::npos)
 				{
 					strTempPath = strFilePath;
@@ -343,7 +339,7 @@ namespace ScutDataLogic
 				}
 			}
 		}
-		//ƒ¨»œ»√Cocos2d¥¶¿Ì
+
 		return std::string(strDirPath);
 #endif
 
@@ -362,9 +358,7 @@ namespace ScutDataLogic
 		ret =  ret.substr(0, ret.rfind("\\") + 1);
 		ret += strDirPath;
 
-		//pnx图片的处理
 		struct stat st; 
-		//png图片，同时图片没有找到
 		if (ret.rfind(".png") != std::string::npos && stat(ret.c_str(), &st) != 0)
 		{
 			strTempPath = ret;
@@ -395,7 +389,6 @@ namespace ScutDataLogic
 
 	std::string CFileHelper::getResourceDir(const char* pszFileName)
 	{
-		//÷ª”–Õº∆¨≤≈Ω¯––◊ ‘¥ƒø¬ºµƒ≈–∂œ
 		std::string strRet;
 		const char* pPos = strstr(pszFileName, ".jpg");
 		/*if (pPos == NULL)	//yubo image
@@ -659,7 +652,6 @@ namespace ScutDataLogic
 		pBuffer = (unsigned char*)getFileData(pszFile, "rb", &nSize);
 		if (pBuffer)
 		{
-			//‘⁄¥ÀÃÌº”Ω‚√‹ ∑Ω∑®
 			int nTempSize = nSize;
 			//int decryptResult = ScutEncrypt::DecryptData(pBuffer, nSize);
 			unsigned char* pCodes = NULL;
@@ -971,7 +963,6 @@ namespace ScutDataLogic
 					nSize = unzReadCurrentFile(pFile, pBuffer, FileInfo.uncompressed_size);
 					unzCloseCurrentFile(pFile);
 
-					//.net π”√zippackage¿‡Ω¯––—πÀıµƒª∞£¨zlibŒﬁ∑®∂¡»°µΩƒø¬º£¨“Ú¥À“™≈–∂œƒø¬º≤¢«ø÷∆¥¥Ω®
 					if (isDotNetZipPackage)
 					{
 						std::string strSlash = strSaveFilePath;
@@ -1388,7 +1379,6 @@ namespace ScutDataLogic
 					unzCloseCurrentFile(pFile);
 
 					std::string tempPath;
-					//¥¥Ω®ƒø¬º
 					bool bFileName = (strSaveFilePath.find(".") != std::string::npos) ? true : false;
 					if (bFileName)
 					{
