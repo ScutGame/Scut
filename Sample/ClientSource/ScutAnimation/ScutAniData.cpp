@@ -21,42 +21,42 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ****************************************************************************/
-#include "ScutDrawPrimitives.h"
-namespace ScutCxControl
+
+#include "ScutAniData.h"
+#include "Defines.h"
+#include "ScutFrame.h"
+
+namespace ScutAnimation
 {
-	void  ScutLineNode::DrawLine( cocos2d::CCPoint origin, cocos2d::CCPoint destination, float fLineWidth, cocos2d::ccColor4B color)
+	CScutAniData::CScutAniData()
 	{
-		if (fLineWidth > 1.0f)
-		{
-			//glDisable(GL_LINE_SMOOTH);
-		}
-		else
-		{
-			//glEnable(GL_LINE_SMOOTH);
-		}
-		glLineWidth(fLineWidth);
-		//glColor4f(color.r/ 255.f, color.g / 255.f, color.b/ 255.f, color.a / 255.f);
-		ccDrawLine(origin, destination);
-		
-		//glDisable(GL_LINE_SMOOTH);
-		glLineWidth(1.0);
-		//glColor4f(1.0, 1.0, 1.0, 1.0);
+		m_type = 0;
+		m_tContentSize = CCSizeZero;
+		m_anchorX = 0;
+		m_anchorY = 0;
 	}
-
-	ScutLineNode* ScutLineNode::lineWithPoint( cocos2d::CCPoint origin, cocos2d::CCPoint destination , float fLineWidth, cocos2d::ccColor4B color )
+	
+	CScutAniData::~CScutAniData()
 	{
-		ScutLineNode* pNode = new ScutLineNode();
-		pNode->m_fLineWidth	= fLineWidth;
-		pNode->m_originPt	= origin;
-		pNode->m_desPt		= destination;
-		pNode->m_color4b	= color;
-		pNode->autorelease();
-		return pNode;
+		for (vec_frame_it it = this->m_vFrame.begin(); it != this->m_vFrame.end(); it++)
+		{
+			CC_SAFE_DELETE((*it));
+		}
 	}
-
-	void ScutLineNode::draw()
+	
+	int CScutAniData::getFrameCount()
 	{
-		CCNode::draw();
-		DrawLine(m_originPt, m_desPt, m_fLineWidth, m_color4b);
+		return this->m_vFrame.size();
+	}
+	
+	CScutFrame* CScutAniData::getFrameByIndex(int frameIndex)
+	{
+		int frameCount = this->m_vFrame.size();
+		assert(frameIndex > -1 && frameIndex < frameCount);
+		if (frameIndex > -1 && frameIndex < frameCount)
+		{
+			return this->m_vFrame[frameIndex];
+		}
+		return NULL;
 	}
 }

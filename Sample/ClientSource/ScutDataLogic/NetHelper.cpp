@@ -39,7 +39,7 @@ namespace ScutDataLogic
 	unsigned long long CNetWriter::s_userID = 0;
 	std::string CNetWriter::s_strSessionID;
 	std::string CNetWriter::s_strSt;
-	std::string CNetWriter::s_md5Key = "SJJDJF99302JSJLFJSJDF992229JJSDF";
+	std::string CNetWriter::s_md5Key = "44CAC8ED53714BF18D60C5C7B6296000";
 	std::string CNetWriter::s_strUrl;
 	std::string CNetWriter::s_strPostData;
 	std::string CNetWriter::s_strUserData;

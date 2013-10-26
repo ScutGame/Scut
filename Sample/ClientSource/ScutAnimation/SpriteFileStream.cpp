@@ -21,42 +21,49 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ****************************************************************************/
-#include "ScutDrawPrimitives.h"
-namespace ScutCxControl
-{
-	void  ScutLineNode::DrawLine( cocos2d::CCPoint origin, cocos2d::CCPoint destination, float fLineWidth, cocos2d::ccColor4B color)
+
+#include "SpriteFileStream.h"
+
+namespace ScutAnimation {
+	unsigned char CSpriteFileStream::ReadByte()
 	{
-		if (fLineWidth > 1.0f)
-		{
-			//glDisable(GL_LINE_SMOOTH);
-		}
-		else
-		{
-			//glEnable(GL_LINE_SMOOTH);
-		}
-		glLineWidth(fLineWidth);
-		//glColor4f(color.r/ 255.f, color.g / 255.f, color.b/ 255.f, color.a / 255.f);
-		ccDrawLine(origin, destination);
-		
-		//glDisable(GL_LINE_SMOOTH);
-		glLineWidth(1.0);
-		//glColor4f(1.0, 1.0, 1.0, 1.0);
+		unsigned char buffer[1] = {0};
+		this->Read((char*)buffer, sizeof(buffer));
+		return buffer[0];
+	}
+	
+	SHORT CSpriteFileStream::ReadShort()
+	{
+		unsigned char buffer[2] = {0};
+		this->Read((char*)buffer, sizeof(buffer));
+		return SHORT((buffer[0] << 8) + buffer[1]);
+	}
+	
+	INT CSpriteFileStream::ReadInt()
+	{
+		unsigned char buffer[4] = {0};
+		this->Read((char*)buffer, sizeof(buffer));
+		return INT((buffer[0] << 24) + (buffer[1] << 16) + (buffer[2] << 8) + buffer[3]);
 	}
 
-	ScutLineNode* ScutLineNode::lineWithPoint( cocos2d::CCPoint origin, cocos2d::CCPoint destination , float fLineWidth, cocos2d::ccColor4B color )
+	float CSpriteFileStream::ReadFloat()
 	{
-		ScutLineNode* pNode = new ScutLineNode();
-		pNode->m_fLineWidth	= fLineWidth;
-		pNode->m_originPt	= origin;
-		pNode->m_desPt		= destination;
-		pNode->m_color4b	= color;
-		pNode->autorelease();
-		return pNode;
-	}
+		unsigned char buffer[4] = {0};
+		this->Read((char*)buffer, sizeof(buffer));
 
-	void ScutLineNode::draw()
+		char buf[4] = {buffer[3], buffer[2], buffer[1], buffer[0]};
+		return *(float*)buf;
+	}
+	
+	void CSpriteFileStream::ReadUTF(string& str)
 	{
-		CCNode::draw();
-		DrawLine(m_originPt, m_desPt, m_fLineWidth, m_color4b);
+		str.clear();
+		int strLen = this->ReadShort();
+		if (strLen > 0 && strLen < MAX_PATH)
+		{
+			char buffer[MAX_PATH] = {0};
+			this->Read(buffer, strLen);
+			str = buffer;
+		}
 	}
 }

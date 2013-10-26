@@ -1,0 +1,16 @@
+namespace ScutUtility
+{
+	class CLocale
+	{
+	public:		
+		static void setLanguage(const char* pszLanguage);
+		static const char* getLanguage();
+
+		static const char* getImsi();
+		static const char* getImei();
+		//以下接口接适合于Win32测试用。
+		static void setImsi(const char* pszImsi);
+
+		static bool isSDCardExist();
+	};
+}

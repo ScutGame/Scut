@@ -21,42 +21,27 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ****************************************************************************/
-#include "ScutDrawPrimitives.h"
-namespace ScutCxControl
+#pragma once
+#include <string>
+
+namespace ScutUtility
 {
-	void  ScutLineNode::DrawLine( cocos2d::CCPoint origin, cocos2d::CCPoint destination, float fLineWidth, cocos2d::ccColor4B color)
+	class CPlatformProcedure
 	{
-		if (fLineWidth > 1.0f)
-		{
-			//glDisable(GL_LINE_SMOOTH);
-		}
-		else
-		{
-			//glEnable(GL_LINE_SMOOTH);
-		}
-		glLineWidth(fLineWidth);
-		//glColor4f(color.r/ 255.f, color.g / 255.f, color.b/ 255.f, color.a / 255.f);
-		ccDrawLine(origin, destination);
-		
-		//glDisable(GL_LINE_SMOOTH);
-		glLineWidth(1.0);
-		//glColor4f(1.0, 1.0, 1.0, 1.0);
-	}
+	public:
+		CPlatformProcedure(){};
+		~CPlatformProcedure(){};
 
-	ScutLineNode* ScutLineNode::lineWithPoint( cocos2d::CCPoint origin, cocos2d::CCPoint destination , float fLineWidth, cocos2d::ccColor4B color )
-	{
-		ScutLineNode* pNode = new ScutLineNode();
-		pNode->m_fLineWidth	= fLineWidth;
-		pNode->m_originPt	= origin;
-		pNode->m_desPt		= destination;
-		pNode->m_color4b	= color;
-		pNode->autorelease();
-		return pNode;
-	}
+	public:
+		static std::string ProcessDir(const char* pszSrcDir, const char* pszProcessFile, const char* pszDesDir = NULL, bool bOverwrite = false);
 
-	void ScutLineNode::draw()
-	{
-		CCNode::draw();
-		DrawLine(m_originPt, m_desPt, m_fLineWidth, m_color4b);
-	}
+	private:
+#ifdef SCUT_ANDROID
+		static std::string ProcessAndroidDir(const char* pszSrcDir, const char* pszProcessFile, const char* pszDesDir, bool bOverwrite);
+#endif
+
+#ifdef SCUT_IPHONE
+		static std::string ProcessIosDir(const char* pszSrcDir, const char* pszProcessFile);
+#endif
+	};
 }

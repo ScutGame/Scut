@@ -21,42 +21,59 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ****************************************************************************/
-#include "ScutDrawPrimitives.h"
-namespace ScutCxControl
+#pragma once
+#include <map>
+#include <string>
+#include "LuaIni.h"
+
+#define LANPATH_DIR "lan"
+
+namespace ScutUtility
 {
-	void  ScutLineNode::DrawLine( cocos2d::CCPoint origin, cocos2d::CCPoint destination, float fLineWidth, cocos2d::ccColor4B color)
+	/**
+	* @brief 多语言支持
+	* @remarks 通过加载不同ini文件达成多语言的支持
+	*/
+	class CScutLuaLan
 	{
-		if (fLineWidth > 1.0f)
-		{
-			//glDisable(GL_LINE_SMOOTH);
-		}
-		else
-		{
-			//glEnable(GL_LINE_SMOOTH);
-		}
-		glLineWidth(fLineWidth);
-		//glColor4f(color.r/ 255.f, color.g / 255.f, color.b/ 255.f, color.a / 255.f);
-		ccDrawLine(origin, destination);
-		
-		//glDisable(GL_LINE_SMOOTH);
-		glLineWidth(1.0);
-		//glColor4f(1.0, 1.0, 1.0, 1.0);
-	}
+	private:
+		CScutLuaLan(){}
+		~CScutLuaLan(){}
 
-	ScutLineNode* ScutLineNode::lineWithPoint( cocos2d::CCPoint origin, cocos2d::CCPoint destination , float fLineWidth, cocos2d::ccColor4B color )
-	{
-		ScutLineNode* pNode = new ScutLineNode();
-		pNode->m_fLineWidth	= fLineWidth;
-		pNode->m_originPt	= origin;
-		pNode->m_desPt		= destination;
-		pNode->m_color4b	= color;
-		pNode->autorelease();
-		return pNode;
-	}
+	private:
+		typedef struct LAN_INFO{
+			std::string strName;
+			ScutDataLogic::CLuaIni* pIni;
+		}LAN_INFO;
 
-	void ScutLineNode::draw()
+	public:
+		static CScutLuaLan* instance();
+		bool Add(const char* pszLan, const char* pszPath);
+		bool Switch(const char* pszLan);
+		void Remove(const char* pszLan);
+		const char* Get(const char *group, const char *key);
+		void RemoveAll();
+
+	private:
+		void add_node(const char* pszLan, const char* pszPath);
+		void release_ini(const char* pszLan);
+		bool load_ini(const char* pszLan);
+	private:
+		typedef std::map<std::string, LAN_INFO*> LANINFO_MAP;
+		typedef std::pair<std::string, LAN_INFO*> LANINFO_PAIR;
+
+		static CScutLuaLan* m_instance;
+		LANINFO_MAP m_mapLanInfo;
+		std::string m_curLan;
+	};
+
+	class CYBTest
 	{
-		CCNode::draw();
-		DrawLine(m_originPt, m_desPt, m_fLineWidth, m_color4b);
-	}
+	public:
+		CYBTest(){}
+		~CYBTest(){}
+
+	public:
+		static std::string test(const char* lan);
+	};
 }
