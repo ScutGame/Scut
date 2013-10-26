@@ -9,7 +9,7 @@
 ------------------------------------------------------------------
 
 
-require("lib.ZyImage")
+
 
 pWinSize=CCDirector:sharedDirector():getWinSize()
 
