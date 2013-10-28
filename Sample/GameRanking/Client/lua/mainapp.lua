@@ -5,10 +5,14 @@
 -- Date       : 2011-10-15
 -- Description:
 ------------------------------------------------------------------
-local strModuleName = "mainapp";
---CCLuaLog("Module ".. strModuleName.. " loaded.");
-strModuleName = nil;
 
+
+local strModuleName = "mainapp"
+CCLuaLog("Module ".. strModuleName.. " loaded.")
+strModuleName = nil
+
+local function ScutMain()
+---[[
 ------------------------------------------------------------------
 -- ↓↓ 初始化环境变量 开始 ↓↓
 ------------------------------------------------------------------
@@ -46,6 +50,7 @@ end
 
 package.path = string.format("%s/?.lua;%s", strRootDir, strTmpPkgPath);
 strTmpPkgPath = nil;
+
 
 ------------------------------------------------------------------
 -- ↑↑ 初始化环境变量 结束 ↑↑
@@ -96,7 +101,8 @@ end
 ------------------------------------------------------------------
 -- ↑↑ 协议解析函数注册 结束 ↑↑
 ------------------------------------------------------------------
-
+--]]
+end
 -- for CCLuaEngine traceback
 function __G__TRACKBACK__(msg)
     print("----------------------------------------")
@@ -106,6 +112,9 @@ function __G__TRACKBACK__(msg)
 end
 
 local function main()
+    require("config")
+    require("framework.init")
+    ScutMain()
     testScene.init()
 end
 
