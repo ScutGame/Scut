@@ -140,18 +140,11 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\..\..\ScutScene\LuaScutScene.cpp" />
-    <ClCompile Include="..\..\..\..\ScutScene\SceneManager.cpp" />
-    <ClCompile Include="..\..\..\..\ScutScene\ScutScene.cpp" />
     <ClCompile Include="..\Classes\AppDelegate.cpp" />
-    <ClCompile Include="..\Classes\FrameManager.cpp" />
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\..\..\ScutScene\SceneManager.h" />
-    <ClInclude Include="..\..\..\..\ScutScene\ScutScene.h" />
     <ClInclude Include="..\Classes\AppDelegate.h" />
-    <ClInclude Include="..\Classes\FrameManager.h" />
     <ClInclude Include="main.h" />
   </ItemGroup>
   <ItemGroup>

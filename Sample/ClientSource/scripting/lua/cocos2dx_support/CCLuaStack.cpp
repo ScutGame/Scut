@@ -112,7 +112,7 @@ bool CCLuaStack::init(void)
     tolua_Cocos2d_open(m_state);
     toluafix_open(m_state);
 	tolua_ScutDataLogic_open(m_state);
-	tolua_ScutScene_open(m_state);
+	//tolua_ScutScene_open(m_state);
 	tolua_ScutSystem_open(m_state);
     // Register our version of the global "print" function
     const luaL_reg global_functions [] = {
@@ -503,7 +503,7 @@ int nderror_handler(lua_State* L)
 	lua_Debug debug_info;
 	int level = 0;
 	std::string err;
-	char tmp[10];
+	//char tmp[10];
 
 	if(lua_gettop(L) > 0 && lua_isstring(L, -1))
 	{
