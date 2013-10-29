@@ -105,7 +105,7 @@ namespace ScutUtility
 		if (s_strSysLanguage.size() == 0)
 		{
 #ifdef SCUT_IPHONE
-			setLanguage(getIphoneSysLanguage().c_str());
+			setLanguage(ScutUtility::getIphoneSysLanguage().c_str());
 #endif
 
 #ifdef SCUT_ANDROID
