@@ -55,6 +55,10 @@
       <HintPath>..\..\..\..\Release\5.2.3.2\Lib\Microsoft.Scripting.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="MySql.Data, Version=5.2.5.0, Culture=neutral, PublicKeyToken=c5687fc88969c44d, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\Release\5.3.3.3\Lib\MySql.Data.dll</HintPath>
+    </Reference>
     <Reference Include="NetLibrary, Version=3.2.0.28481, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\..\Release\5.2.3.2\Lib\NetLibrary.dll</HintPath>
@@ -84,30 +88,17 @@
     <Reference Include="System.Configuration" />
     <Reference Include="System.Web.Services" />
     <Reference Include="System.EnterpriseServices" />
-    <Reference Include="ZyGames.Framework, Version=5.2.0.33228, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="ZyGames.Framework, Version=5.3.0.27913, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\Release\5.2.3.2\Lib\ZyGames.Framework.dll</HintPath>
+      <HintPath>..\..\..\..\Release\5.3.3.3\Lib\ZyGames.Framework.dll</HintPath>
     </Reference>
-    <Reference Include="ZyGames.Framework.Common">
-      <HintPath>..\..\..\..\Release\5.2.3.2\Lib\ZyGames.Framework.Common.dll</HintPath>
-    </Reference>
-    <Reference Include="ZyGames.Framework.Game">
-      <HintPath>..\..\..\..\Release\5.2.3.2\Lib\ZyGames.Framework.Game.dll</HintPath>
-    </Reference>
-    <Reference Include="ZyGames.Framework.Game.Contract">
-      <HintPath>..\..\..\..\Release\5.2.3.2\Lib\ZyGames.Framework.Game.Contract.dll</HintPath>
-    </Reference>
-    <Reference Include="ZyGames.Framework.Game.Lang, Version=3.2.0.28481, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="ZyGames.Framework.Common, Version=5.3.0.29869, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\Release\5.2.3.2\Lib\ZyGames.Framework.Game.Lang.dll</HintPath>
+      <HintPath>..\..\..\..\Release\5.3.3.3\Lib\ZyGames.Framework.Common.dll</HintPath>
     </Reference>
-    <Reference Include="ZyGames.Framework.Plugin, Version=5.2.0.30171, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="ZyGames.Framework.Game, Version=3.3.0.30999, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\Release\5.2.3.2\Lib\ZyGames.Framework.Plugin.dll</HintPath>
-    </Reference>
-    <Reference Include="ZyGames.Framework.RPC, Version=1.5.0.122, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\Release\5.2.3.2\Lib\ZyGames.Framework.RPC.dll</HintPath>
+      <HintPath>..\..\..\..\Release\5.3.3.3\Lib\ZyGames.Framework.Game.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
