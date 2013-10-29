@@ -1788,6 +1788,14 @@
             <param name="paramName"></param>
             <returns></returns>
         </member>
+        <member name="M:ZyGames.Framework.Data.DbBaseProvider.FormatQueryColumn(System.String,System.String[])">
+            <summary>
+            格式化Select语句中的列名
+            </summary>
+            <param name="splitChat"></param>
+            <param name="columns"></param>
+            <returns></returns>
+        </member>
         <member name="P:ZyGames.Framework.Data.DbBaseProvider.ConnectionString">
             <summary>
             连接数据库字符串
@@ -3983,11 +3991,6 @@
         <member name="P:ZyGames.Framework.Model.EntityTableAttribute.OrderColumn">
             <summary>
             排序列,多个以逗号分隔
-            </summary>
-        </member>
-        <member name="P:ZyGames.Framework.Model.EntityTableAttribute.DelayLoad">
-            <summary>
-            是否推迟加载
             </summary>
         </member>
         <member name="T:ZyGames.Framework.Net.IDataReceiver">
@@ -6523,6 +6526,11 @@
             长度
             </summary>
         </member>
+        <member name="P:ZyGames.Framework.Data.DbColumn.Scale">
+            <summary>
+            decimal类型指精度范围
+            </summary>
+        </member>
         <member name="P:ZyGames.Framework.Data.DbColumn.Isnullable">
             <summary>
             是否可为空
@@ -6530,7 +6538,7 @@
         </member>
         <member name="P:ZyGames.Framework.Data.DbColumn.IsModify">
             <summary>
-            是否可修改
+            是否是修改列，False则新增列
             </summary>
         </member>
         <member name="P:ZyGames.Framework.Data.DbColumn.DbType">
@@ -6692,6 +6700,11 @@
         <member name="P:ZyGames.Framework.Model.SchemaColumn.ColumnLength">
             <summary>
             列的大小长度
+            </summary>
+        </member>
+        <member name="P:ZyGames.Framework.Model.SchemaColumn.ColumnScale">
+            <summary>
+            
             </summary>
         </member>
         <member name="P:ZyGames.Framework.Model.SchemaColumn.Isnullable">
@@ -9207,6 +9220,11 @@
         <member name="P:ZyGames.Framework.Model.EntityFieldAttribute.ColumnLength">
             <summary>
             列的大小长度
+            </summary>
+        </member>
+        <member name="P:ZyGames.Framework.Model.EntityFieldAttribute.ColumnScale">
+            <summary>
+            decimal类型指精度范围
             </summary>
         </member>
         <member name="P:ZyGames.Framework.Model.EntityFieldAttribute.Isnullable">
