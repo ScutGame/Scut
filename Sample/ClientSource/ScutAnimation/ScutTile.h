@@ -21,42 +21,48 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ****************************************************************************/
-#include "ScutDrawPrimitives.h"
-namespace ScutCxControl
+
+#ifndef __SCUT_TILE_H__
+#define __SCUT_TILE_H__
+
+#include "cocos2d.h"
+#include "Defines.h"
+#include "ScutTileTable.h"
+
+USING_NS_CC;
+
+namespace ScutAnimation
 {
-	void  ScutLineNode::DrawLine( cocos2d::CCPoint origin, cocos2d::CCPoint destination, float fLineWidth, cocos2d::ccColor4B color)
+	class CScutTile
 	{
-		if (fLineWidth > 1.0f)
+	public:
+		enum TILE_FLIP
 		{
-			//glDisable(GL_LINE_SMOOTH);
-		}
-		else
-		{
-			//glEnable(GL_LINE_SMOOTH);
-		}
-		glLineWidth(fLineWidth);
-		//glColor4f(color.r/ 255.f, color.g / 255.f, color.b/ 255.f, color.a / 255.f);
-		ccDrawLine(origin, destination);
-		
-		//glDisable(GL_LINE_SMOOTH);
-		glLineWidth(1.0);
-		//glColor4f(1.0, 1.0, 1.0, 1.0);
-	}
+			FLIP_X = 0x01,
+			FLIP_Y = 0x02,
+		};
 
-	ScutLineNode* ScutLineNode::lineWithPoint( cocos2d::CCPoint origin, cocos2d::CCPoint destination , float fLineWidth, cocos2d::ccColor4B color )
-	{
-		ScutLineNode* pNode = new ScutLineNode();
-		pNode->m_fLineWidth	= fLineWidth;
-		pNode->m_originPt	= origin;
-		pNode->m_desPt		= destination;
-		pNode->m_color4b	= color;
-		pNode->autorelease();
-		return pNode;
-	}
+	public:
+		CScutTile(const ScutTileTable& tt);
+		~CScutTile();
+		// 优化措施,预计算图块顶点坐标
+		void caculateTileVertices(float anchorX, float anchorY);
+	
+	private:
+		CCPoint caculateTileObsoluteVertices(float x, float y);
+	public:
+		float m_frameX;
+		float m_frameY;
+		float m_rotation;
+		bool m_flipX;
+		bool m_flipY;
+		float m_scale;
+		const ScutTileTable& m_tt;
+		GLfloat vertices[12];
 
-	void ScutLineNode::draw()
-	{
-		CCNode::draw();
-		DrawLine(m_originPt, m_desPt, m_fLineWidth, m_color4b);
-	}
+		float m_centerX;
+		float m_centerY;
+	};
 }
+
+#endif

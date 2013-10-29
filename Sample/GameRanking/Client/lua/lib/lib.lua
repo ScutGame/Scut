@@ -17,9 +17,6 @@ require("lib.ZyMessageBoxEx");
 require("lib.ZyButton");
 require("lib.ZyImage");
 require("lib.NetHelper");
-require("lib.ZyTable");
 require("lib.UIHelper");
-require("lib.ZyFont");
-require("lib.ZyMultiLabel")
-require("lib.ZyBit")
+
 

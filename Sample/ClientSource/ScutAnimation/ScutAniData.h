@@ -21,42 +21,49 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ****************************************************************************/
-#include "ScutDrawPrimitives.h"
-namespace ScutCxControl
+
+#ifndef __SCUT_ANI_DATA_H__
+#define __SCUT_ANI_DATA_H__
+
+#include "cocos2d.h"
+#include <vector>
+
+using namespace std;
+using namespace cocos2d;
+
+namespace ScutAnimation
 {
-	void  ScutLineNode::DrawLine( cocos2d::CCPoint origin, cocos2d::CCPoint destination, float fLineWidth, cocos2d::ccColor4B color)
+	class CScutFrame;
+	class CScutAniData
 	{
-		if (fLineWidth > 1.0f)
+	public:
+		enum ANI_TYPE
 		{
-			//glDisable(GL_LINE_SMOOTH);
-		}
-		else
-		{
-			//glEnable(GL_LINE_SMOOTH);
-		}
-		glLineWidth(fLineWidth);
-		//glColor4f(color.r/ 255.f, color.g / 255.f, color.b/ 255.f, color.a / 255.f);
-		ccDrawLine(origin, destination);
+			ANI_TYPE_CYCLE,
+			ANI_TYPE_ONCE_END,
+			ANI_TYPE_ONCE_START,
+		};
 		
-		//glDisable(GL_LINE_SMOOTH);
-		glLineWidth(1.0);
-		//glColor4f(1.0, 1.0, 1.0, 1.0);
-	}
+	public:
+		CScutAniData();
+		~CScutAniData();
+		// 获取动画帧数
+		int getFrameCount();
+		// 获取指定帧
+		CScutFrame* getFrameByIndex(int frameIndex);
+		
+	public:
+		int m_type;
+		
+		CCSize m_tContentSize;
 
-	ScutLineNode* ScutLineNode::lineWithPoint( cocos2d::CCPoint origin, cocos2d::CCPoint destination , float fLineWidth, cocos2d::ccColor4B color )
-	{
-		ScutLineNode* pNode = new ScutLineNode();
-		pNode->m_fLineWidth	= fLineWidth;
-		pNode->m_originPt	= origin;
-		pNode->m_desPt		= destination;
-		pNode->m_color4b	= color;
-		pNode->autorelease();
-		return pNode;
-	}
-
-	void ScutLineNode::draw()
-	{
-		CCNode::draw();
-		DrawLine(m_originPt, m_desPt, m_fLineWidth, m_color4b);
-	}
+		float m_anchorX;
+		float m_anchorY;
+	
+		typedef vector<CScutFrame*> vec_frame;
+		typedef vec_frame::iterator vec_frame_it;
+		vec_frame m_vFrame;
+	};
 }
+
+#endif

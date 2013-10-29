@@ -21,42 +21,34 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ****************************************************************************/
-#include "ScutDrawPrimitives.h"
-namespace ScutCxControl
+
+#ifndef LOCALE_H
+#define LOCALE_H
+#include <string>
+namespace ScutUtility
 {
-	void  ScutLineNode::DrawLine( cocos2d::CCPoint origin, cocos2d::CCPoint destination, float fLineWidth, cocos2d::ccColor4B color)
+	class CLocale
 	{
-		if (fLineWidth > 1.0f)
-		{
-			//glDisable(GL_LINE_SMOOTH);
-		}
-		else
-		{
-			//glEnable(GL_LINE_SMOOTH);
-		}
-		glLineWidth(fLineWidth);
-		//glColor4f(color.r/ 255.f, color.g / 255.f, color.b/ 255.f, color.a / 255.f);
-		ccDrawLine(origin, destination);
-		
-		//glDisable(GL_LINE_SMOOTH);
-		glLineWidth(1.0);
-		//glColor4f(1.0, 1.0, 1.0, 1.0);
-	}
+	private:
+		CLocale(void);
+		~CLocale(void);
+	public:		
+		static void setLanguage(const char* pszLanguage);
+		//"zh_CN"  简体 
+		//"zh_TW"  繁体
+		//"ja_JP"  日语
+		//"en_US"  英语 不是以上三种的都识别为英语 
+		static const char* getLanguage();
 
-	ScutLineNode* ScutLineNode::lineWithPoint( cocos2d::CCPoint origin, cocos2d::CCPoint destination , float fLineWidth, cocos2d::ccColor4B color )
-	{
-		ScutLineNode* pNode = new ScutLineNode();
-		pNode->m_fLineWidth	= fLineWidth;
-		pNode->m_originPt	= origin;
-		pNode->m_desPt		= destination;
-		pNode->m_color4b	= color;
-		pNode->autorelease();
-		return pNode;
-	}
-
-	void ScutLineNode::draw()
-	{
-		CCNode::draw();
-		DrawLine(m_originPt, m_desPt, m_fLineWidth, m_color4b);
-	}
+		//dst 缓冲区需大于64字节
+		//iPhone Appstore 需要包含SCUT_IPHONE_APPSTORE宏
+		//iPhone 模拟器需要包含SCUT_IPHONE_SIMULATOR宏
+		static const char* getImsi();
+		static const char* getImei();
+		//以下接口接适合于Win32测试用。
+		static void setImsi(const char* pszImsi);
+		static bool isSDCardExist();
+	};
 }
+
+#endif//LOCALE_H

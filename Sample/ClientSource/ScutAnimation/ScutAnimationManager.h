@@ -21,42 +21,43 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ****************************************************************************/
-#include "ScutDrawPrimitives.h"
-namespace ScutCxControl
+
+#ifndef __SCUT_ANIMATION_MANAGER_H__
+#define __SCUT_ANIMATION_MANAGER_H__
+
+#include <string>
+#include <map>
+
+using std::string;
+using std::map;
+
+namespace ScutAnimation
 {
-	void  ScutLineNode::DrawLine( cocos2d::CCPoint origin, cocos2d::CCPoint destination, float fLineWidth, cocos2d::ccColor4B color)
+	class CScutAniGroup;
+	class CCScutSprite;
+	class CScutAnimationManager
 	{
-		if (fLineWidth > 1.0f)
-		{
-			//glDisable(GL_LINE_SMOOTH);
-		}
-		else
-		{
-			//glEnable(GL_LINE_SMOOTH);
-		}
-		glLineWidth(fLineWidth);
-		//glColor4f(color.r/ 255.f, color.g / 255.f, color.b/ 255.f, color.a / 255.f);
-		ccDrawLine(origin, destination);
+	public:
+		virtual ~CScutAnimationManager();
+		static CScutAnimationManager& GetInstance();
 		
-		//glDisable(GL_LINE_SMOOTH);
-		glLineWidth(1.0);
-		//glColor4f(1.0, 1.0, 1.0, 1.0);
-	}
+	public:
+		// 加载指定的动画组,同时返回动画精灵,默认播放动画组中索引值为0的动画
+		CCScutSprite* LoadSprite(const char* lpszSprName);
+		// 释放指定的动画组
+		void UnLoadSprite(const char* lpszSprName);
+		// 释放内存中所有的动画组
+		void ReleaseAllAniGroup();
 
-	ScutLineNode* ScutLineNode::lineWithPoint( cocos2d::CCPoint origin, cocos2d::CCPoint destination , float fLineWidth, cocos2d::ccColor4B color )
-	{
-		ScutLineNode* pNode = new ScutLineNode();
-		pNode->m_fLineWidth	= fLineWidth;
-		pNode->m_originPt	= origin;
-		pNode->m_desPt		= destination;
-		pNode->m_color4b	= color;
-		pNode->autorelease();
-		return pNode;
-	}
-
-	void ScutLineNode::draw()
-	{
-		CCNode::draw();
-		DrawLine(m_originPt, m_desPt, m_fLineWidth, m_color4b);
-	}
+	private:
+		CScutAnimationManager();
+		
+	private:
+		typedef map<string, CScutAniGroup*> map_ani_group;
+		typedef map_ani_group::iterator map_ani_group_it;
+		
+		map_ani_group m_mapAniGroup;
+	};
 }
+
+#endif

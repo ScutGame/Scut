@@ -62,9 +62,6 @@ function ZyButton:new(picNor, picDown, picDis, title, fontName, fontSize)
 	
 	if addLabel and title then
 		if title then
-			local size = ZyFont.stringSize(title, menuItem:getContentSize().width, fontName, fontSize)
-			--local size = menuItem:getContentSize()
-			--label = CCLabelTTF:create(title, fontName, fontSize,size, kCCTextAlignmentCenter)
 			 label = CCLabelTTF:create(title, fontName, fontSize);
 		end
 		label:setPosition(CCPoint(menuItem:getContentSize().width / 2, menuItem:getContentSize().height / 2))

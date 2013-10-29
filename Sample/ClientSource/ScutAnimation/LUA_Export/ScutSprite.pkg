@@ -1,0 +1,38 @@
+namespace ScutAnimation
+{
+	enum
+	{
+		ANIMATION_START,
+		ANIMATION_PLAYING,
+		ANIMATION_END,
+	};
+	
+	enum REPLACE_INDEX
+	{
+		REPLACE_START,
+		REPLACE_WEAPON = REPLACE_START,
+		REPLACE_COUNT,
+	};
+	
+	class CScutFrame;
+	class CScutAniData;
+	class CScutAniGroup;
+	class CCScutSprite : public CCNode
+	{
+	public:
+		static CCScutSprite *node(CScutAniGroup* aniGroup);
+		static CCScutSprite *CopyFromSprite(CCScutSprite* src);
+		
+		// 设置精灵当前播放的动画
+		void setCurAni(int aniIndex);
+		
+		// 设置帧回调
+		void registerFrameCallback(const char* pszCallback);
+		
+		// 播放或停止动画
+		void play(bool bPlay = true);
+		
+		// 替换指定的动画资源
+		void replace(int replaceIndex, const char* pszFile);
+	};
+	}
