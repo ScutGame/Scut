@@ -458,17 +458,17 @@ void ScutDataLogic::CDataRequest::LuaHandleData(void* pScene, int nTag, int nNet
 	{
 		(*m_pLuaDataHandleCallBack)(pScene, nTag, nNetRet, lpData, lpExternal);
 	}
-	//TODO:之前的处理方式，第一个版本后移除
-	//lua_getglobal(LuaHost::Instance()->GetLuaState(), "OnHandleData");
-	//lua_pushlightuserdata(LuaHost::Instance()->GetLuaState(), this);
-	//lua_pushnumber(LuaHost::Instance()->GetLuaState(), nTag);
-	//lua_pushnumber(LuaHost::Instance()->GetLuaState(), nNetRet);
-	//lua_pushlstring(LuaHost::Instance()->GetLuaState(), (const char*)((CMemoryStream*)&data)->GetMemory(), data.GetSize());
-	//if (lua_pcall(LuaHost::Instance()->GetLuaState(), 4, 0, 0) != 0)
-	//{
-	//	l_error(LuaHost::Instance()->GetLuaState(), "Call lua OnHandlerData failed: %s", lua_tostring(LuaHost::Instance()->GetLuaState(), -1));
-	//}
-	//::lua_pop(LuaHost::Instance()->GetLuaState(), 1);
+	lua_getglobal(LuaHost::Instance()->GetLuaState(), "OnHandleData");
+	lua_pushlightuserdata(LuaHost::Instance()->GetLuaState(), pScene);
+	lua_pushnumber(LuaHost::Instance()->GetLuaState(), nTag);
+	lua_pushnumber(LuaHost::Instance()->GetLuaState(), nNetRet);
+	lua_pushlstring(LuaHost::Instance()->GetLuaState(), (const char*)((CMemoryStream*)lpData)->GetMemory(), ((CMemoryStream*)lpData)->GetSize());
+	lua_pushnumber(LuaHost::Instance()->GetLuaState(), ((CMemoryStream*)lpData)->GetSize());
+	if (lua_pcall(LuaHost::Instance()->GetLuaState(), 5, 0, 0) != 0)
+	{
+		l_error(LuaHost::Instance()->GetLuaState(), "Call lua OnHandlerData failed: %s", lua_tostring(LuaHost::Instance()->GetLuaState(), -1));
+	}
+	lua_pop(LuaHost::Instance()->GetLuaState(), 1);
 }
 
 void ScutDataLogic::CDataRequest::LuaHandlePushData( CStream* lpData )

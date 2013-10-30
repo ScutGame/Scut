@@ -61,16 +61,31 @@ local function ScutMain()
     require("datapool.Image")
     require("testScene")
 
+    function OnHandleData(pScene, nTag, nNetRet, str, size)
+        print(pScene, nTag, nNetRet, str, size)
+        print("size", size)
+        pScene = tolua.cast(pScene, "CCScene")
+        scenes[pScene]:test()
+        scenes[pScene]:execCallback(nTag, nNetRet, str, size)
+    end
+
     ScutScene = {}
 
+    scenes = {}
     function ScutScene:new(o)
         o = o or {}
         if o.root == nil then
             o.root = CCScene:create()
+            print(o.root)
         end
         setmetatable(o, self)
         self.__index = self
+        scenes[o.root] = o
         return o
+    end
+
+    function ScutScene:test()
+        print("test", self.root)
     end
 
     function ScutScene:registerScriptHandler(func)
@@ -86,6 +101,22 @@ local function ScutMain()
     end
 
     function ScutScene:registerNetDecodeEnd()
+    end
+
+    function ScutScene:execCallback(nTag, nNetState, str, size)
+        print(nTag, nNetState, size, str)
+        if 2 == nNetState then
+            print("aisSucceed")
+            local reader = ScutDataLogic.CNetReader:getInstance()
+            local bValue = reader:pushNetStream(str, size)
+            if not bValue then return end
+            print("read successfully")
+            --self:registerNetCommonDataFunc()
+            --self:registerCallback()
+            --netDecodeEnd(self.root, nTag)
+        --else 
+            --self:registerNetErrorFunc()
+        end
     end
 
     math.randomseed(os.time());
