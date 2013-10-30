@@ -61,12 +61,12 @@ local function ScutMain()
     require("datapool.Image")
     require("testScene")
 
-    function OnHandleData(pScene, nTag, nNetRet, str, size)
-        print(pScene, nTag, nNetRet, str, size)
+    function OnHandleData(pScene, nTag, nNetRet, pData, size)
+        print(pScene, nTag, nNetRet, pData, size)
         print("size", size)
         pScene = tolua.cast(pScene, "CCScene")
         scenes[pScene]:test()
-        scenes[pScene]:execCallback(nTag, nNetRet, str, size)
+        scenes[pScene]:execCallback1(nTag, nNetRet, pData)
     end
 
     ScutScene = {}
@@ -91,7 +91,9 @@ local function ScutMain()
     function ScutScene:registerScriptHandler(func)
     end
 
-    function ScutScene:registerCallback()
+    function ScutScene:registerCallback(func)
+        print("ScutScene:registerCallback",func)
+        self.mCallback = func
     end
 
     function ScutScene:registerNetErrorFunc()
@@ -103,14 +105,18 @@ local function ScutMain()
     function ScutScene:registerNetDecodeEnd()
     end
 
-    function ScutScene:execCallback(nTag, nNetState, str, size)
-        print(nTag, nNetState, size, str)
+    function ScutScene:execCallback1(nTag, nNetState, pData)
+        print(nTag, nNetState)
         if 2 == nNetState then
             print("aisSucceed")
-            local reader = ScutDataLogic.CNetReader:getInstance()
-            local bValue = reader:pushNetStream(str, size)
-            if not bValue then return end
+            local reader = ScutDataLogic.CDataRequest:getInstance()
+            --local bValue = reader:LuaHandlePushDataWithInt(pData)
+            --if not bValue then return end
             print("read successfully")
+
+            if self.mCallback then
+                self.mCallback(self.root)
+            end
             --self:registerNetCommonDataFunc()
             --self:registerCallback()
             --netDecodeEnd(self.root, nTag)

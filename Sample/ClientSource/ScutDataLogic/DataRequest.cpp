@@ -462,7 +462,8 @@ void ScutDataLogic::CDataRequest::LuaHandleData(void* pScene, int nTag, int nNet
 	lua_pushlightuserdata(LuaHost::Instance()->GetLuaState(), pScene);
 	lua_pushnumber(LuaHost::Instance()->GetLuaState(), nTag);
 	lua_pushnumber(LuaHost::Instance()->GetLuaState(), nNetRet);
-	lua_pushlstring(LuaHost::Instance()->GetLuaState(), (const char*)((CMemoryStream*)lpData)->GetMemory(), ((CMemoryStream*)lpData)->GetSize());
+	//lua_pushlstring(LuaHost::Instance()->GetLuaState(), (const char*)((CMemoryStream*)lpData)->GetMemory(), ((CMemoryStream*)lpData)->GetSize());
+	lua_pushnumber(LuaHost::Instance()->GetLuaState(), int(lpData));
 	lua_pushnumber(LuaHost::Instance()->GetLuaState(), ((CMemoryStream*)lpData)->GetSize());
 	if (lua_pcall(LuaHost::Instance()->GetLuaState(), 5, 0, 0) != 0)
 	{
@@ -483,6 +484,11 @@ void ScutDataLogic::CDataRequest::LuaHandlePushData( CStream* lpData )
 	{
 		ScutDataLogic::LuaHost::Instance()->execFunc(pushFunc, NULL, bValue);
 	}
+}
+
+void ScutDataLogic::CDataRequest::LuaHandlePushDataWithInt( int p )
+{
+	LuaHandlePushData((CStream*)p);
 }
 
 void ScutDataLogic::CDataRequest::LuaHandleErrorData()

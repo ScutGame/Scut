@@ -233,7 +233,7 @@ function init()
     -- 廣過利大指距
     local scene = ScutScene:new()
     mScene = scene.root
-    scene:registerCallback("testScene.netCallback")
+    scene:registerCallback(netCallback)
 
     CCDirector:sharedDirector():pushScene(mScene)
     CCDirector:sharedDirector():RegisterBackHandler("MainScene.closeApp")
@@ -274,6 +274,7 @@ end
 
 function netCallback(pZyScene, lpExternalData)
     local actionID = ZyReader:getActionID()
+    local lpExternalData = lpExternalData or 0
     local userData = ZyRequestParam:getParamData(lpExternalData)
     if actionID==1001 then
         local table =  _1001Callback(pZyScene, lpExternalData);

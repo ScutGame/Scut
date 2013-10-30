@@ -1,6 +1,6 @@
 /*
 ** Lua binding: ScutDataLogic
-** Generated automatically by tolua++-1.0.92 on 10/30/13 21:28:39.
+** Generated automatically by tolua++-1.0.92 on 10/30/13 23:25:13.
 */
 
 #ifndef __cplusplus
@@ -2313,6 +2313,39 @@ static int tolua_ScutDataLogic_ScutDataLogic_CDataRequest_PeekLUAData00(lua_Stat
 }
 #endif //#ifndef TOLUA_DISABLE
 
+/* method: LuaHandlePushDataWithInt of class  ScutDataLogic::CDataRequest */
+#ifndef TOLUA_DISABLE_tolua_ScutDataLogic_ScutDataLogic_CDataRequest_LuaHandlePushDataWithInt00
+static int tolua_ScutDataLogic_ScutDataLogic_CDataRequest_LuaHandlePushDataWithInt00(lua_State* tolua_S)
+{
+#ifndef TOLUA_RELEASE
+ tolua_Error tolua_err;
+ if (
+     !tolua_isusertype(tolua_S,1,"ScutDataLogic::CDataRequest",0,&tolua_err) ||
+     !tolua_isnumber(tolua_S,2,0,&tolua_err) ||
+     !tolua_isnoobj(tolua_S,3,&tolua_err)
+ )
+  goto tolua_lerror;
+ else
+#endif
+ {
+  ScutDataLogic::CDataRequest* self = (ScutDataLogic::CDataRequest*)  tolua_tousertype(tolua_S,1,0);
+  int p = ((int)  tolua_tonumber(tolua_S,2,0));
+#ifndef TOLUA_RELEASE
+  if (!self) tolua_error(tolua_S,"invalid 'self' in function 'LuaHandlePushDataWithInt'", NULL);
+#endif
+  {
+   self->LuaHandlePushDataWithInt(p);
+  }
+ }
+ return 0;
+#ifndef TOLUA_RELEASE
+ tolua_lerror:
+ tolua_error(tolua_S,"#ferror in function 'LuaHandlePushDataWithInt'.",&tolua_err);
+ return 0;
+#endif
+}
+#endif //#ifndef TOLUA_DISABLE
+
 /* method: recordBegin of class  ScutDataLogic::CNetStreamExport */
 #ifndef TOLUA_DISABLE_tolua_ScutDataLogic_ScutDataLogic_CNetStreamExport_recordBegin00
 static int tolua_ScutDataLogic_ScutDataLogic_CNetStreamExport_recordBegin00(lua_State* tolua_S)
@@ -3495,6 +3528,7 @@ TOLUA_API int tolua_ScutDataLogic_open (lua_State* tolua_S)
     tolua_function(tolua_S,"AsyncExecRequest",tolua_ScutDataLogic_ScutDataLogic_CDataRequest_AsyncExecRequest00);
     tolua_function(tolua_S,"AsyncExecTcpRequest",tolua_ScutDataLogic_ScutDataLogic_CDataRequest_AsyncExecTcpRequest00);
     tolua_function(tolua_S,"PeekLUAData",tolua_ScutDataLogic_ScutDataLogic_CDataRequest_PeekLUAData00);
+    tolua_function(tolua_S,"LuaHandlePushDataWithInt",tolua_ScutDataLogic_ScutDataLogic_CDataRequest_LuaHandlePushDataWithInt00);
    tolua_endmodule(tolua_S);
   tolua_endmodule(tolua_S);
   tolua_module(tolua_S,"ScutDataLogic",0);
