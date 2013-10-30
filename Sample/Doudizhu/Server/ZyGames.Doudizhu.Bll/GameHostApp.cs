@@ -56,6 +56,9 @@ namespace ZyGames.Doudizhu.Bll
         {
             try
             {
+                //var actionId = httpGet.GetString("ActionID").ToInt();
+                //var uid = httpGet.GetString("uid");
+                //Console.WriteLine("Action{0} from {1} {2}", actionId, httpGet.RemoteAddress, uid);
                 ActionFactory.Request(httpGet, response, userId => new GameDataCacheSet<GameUser>().FindKey(userId.ToNotNullString()));
 
             }
@@ -79,9 +82,21 @@ namespace ZyGames.Doudizhu.Bll
                     PythonContext pythonContext;
                     PythonScriptManager.Current.TryLoadPython(@"Lib/action.py", out pythonContext);
                     AppstoreClientManager.Current.InitConfig();
+                    //RouteItem routeItem;
+                    //PythonScriptManager.Current.TryGetAction(1008, out routeItem);
                     LoadUnlineUser();
                     InitRanking();
 
+                    ////todo 广播
+                    //var list = new ShareCacheStruct<GameNotice>().FindAll(
+                    //    s => (s.IsBroadcast &&
+                    //            (s.ExpiryDate <= MathUtils.SqlMinDate) ||
+                    //                (s.ExpiryDate > MathUtils.SqlMinDate && s.ExpiryDate >= DateTime.Now))
+                    //          );
+                    //foreach (var notice in list)
+                    //{
+                    //    DdzBroadcastService.Send(notice.Content);
+                    //}
                     return true;
                 }, 600, assembly);
 

@@ -442,6 +442,7 @@ class CardAILogic():
         if len(resultCards) > 0:
             if handTimes > 2 and self.getCardSize(resultCards[0]) >= self.__CA:
                c2Cards = resultCards
+               resultCards = []
             else:
                return resultCards
         if len(c2Cards) == 0:
@@ -451,6 +452,7 @@ class CardAILogic():
             resultCards = self.processOutCard(vector, DeckType.Three, val, 3)
             if len(resultCards) > 0:
                 return resultCards
+            resultCards = []
         #只差一对
         if len(handCard) == 2:
             resultCards = self.processOutCard(vector, DeckType.Double, val, 2)
@@ -459,6 +461,7 @@ class CardAILogic():
         #是否有四带2
         bombCards = self.processOutCard(vector, DeckType.Bomb, val, 4)
         if handTimes < 5 and len(bombCards) > 0:
+            resultCards = []
             self.copyList(bombCards, resultCards)
             oneCount = self.getSingleCount(vector)
             twoCount = self.getTwoCount(vector)
