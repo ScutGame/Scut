@@ -51,26 +51,22 @@ namespace GameNotice
 
         protected override void OnStartAffer()
         {
-            //时间间隔更新库
-            int cacheInterval = 600;
-            BaseLog log = null;
             try
             {
-                log = new BaseLog();
+                //时间间隔更新库
+                int cacheInterval = 600;
                 GameEnvironment.Start(cacheInterval, () => true);
                 Console.WriteLine("The server is staring...");
             }
             catch (Exception ex)
             {
-                if (log != null)
-                {
-                    log.SaveLog(ex);
-                }
+                TraceLog.WriteError("The server start error:{0}",ex);
             }
         }
 
         protected override void OnServiceStop()
         {
+            GameEnvironment.Stop();
         }
 
     }
