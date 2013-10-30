@@ -1680,12 +1680,12 @@
         </member>
         <member name="M:ZyGames.Framework.Game.Context.GameContext.Refresh">
             <summary>
-            
+            刷新清空
             </summary>
         </member>
         <member name="M:ZyGames.Framework.Game.Context.GameContext.Refresh(System.String,System.Int32,System.Int32)">
             <summary>
-            
+            刷新
             </summary>
             <param name="ssid"></param>
             <param name="actionId"></param>
@@ -1701,7 +1701,7 @@
         </member>
         <member name="M:ZyGames.Framework.Game.Context.GameContext.GetUser``1">
             <summary>
-            
+            当前玩家对象
             </summary>
             <typeparam name="T"></typeparam>
             <returns></returns>
@@ -1718,22 +1718,22 @@
         </member>
         <member name="P:ZyGames.Framework.Game.Context.GameContext.MonitorLock">
             <summary>
-            
+            获得锁策略
             </summary>
         </member>
         <member name="P:ZyGames.Framework.Game.Context.GameContext.UserId">
             <summary>
-            
+            当前玩家Id
             </summary>
         </member>
         <member name="P:ZyGames.Framework.Game.Context.GameContext.ActionId">
             <summary>
-            
+            请求的ActionId
             </summary>
         </member>
         <member name="P:ZyGames.Framework.Game.Context.GameContext.User">
             <summary>
-            
+            当前玩家对象
             </summary>
         </member>
         <member name="T:ZyGames.Framework.Game.Configuration.LoginElement">
