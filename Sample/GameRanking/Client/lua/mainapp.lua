@@ -139,6 +139,9 @@ end
 local function main()
     require("config")
     require("framework.init")
+    require("FrameManager")
+    g_frame_mgr = FrameManager:new()
+    g_frame_mgr:init()
     ScutMain()
     testScene.init()
 end

@@ -1,6 +1,6 @@
 /*
 ** Lua binding: ScutDataLogic
-** Generated automatically by tolua++-1.0.92 on 10/07/13 15:18:27.
+** Generated automatically by tolua++-1.0.92 on 10/30/13 21:28:39.
 */
 
 #ifndef __cplusplus
@@ -2282,6 +2282,37 @@ static int tolua_ScutDataLogic_ScutDataLogic_CDataRequest_AsyncExecTcpRequest00(
 }
 #endif //#ifndef TOLUA_DISABLE
 
+/* method: PeekLUAData of class  ScutDataLogic::CDataRequest */
+#ifndef TOLUA_DISABLE_tolua_ScutDataLogic_ScutDataLogic_CDataRequest_PeekLUAData00
+static int tolua_ScutDataLogic_ScutDataLogic_CDataRequest_PeekLUAData00(lua_State* tolua_S)
+{
+#ifndef TOLUA_RELEASE
+ tolua_Error tolua_err;
+ if (
+     !tolua_isusertype(tolua_S,1,"ScutDataLogic::CDataRequest",0,&tolua_err) ||
+     !tolua_isnoobj(tolua_S,2,&tolua_err)
+ )
+  goto tolua_lerror;
+ else
+#endif
+ {
+  ScutDataLogic::CDataRequest* self = (ScutDataLogic::CDataRequest*)  tolua_tousertype(tolua_S,1,0);
+#ifndef TOLUA_RELEASE
+  if (!self) tolua_error(tolua_S,"invalid 'self' in function 'PeekLUAData'", NULL);
+#endif
+  {
+   self->PeekLUAData();
+  }
+ }
+ return 0;
+#ifndef TOLUA_RELEASE
+ tolua_lerror:
+ tolua_error(tolua_S,"#ferror in function 'PeekLUAData'.",&tolua_err);
+ return 0;
+#endif
+}
+#endif //#ifndef TOLUA_DISABLE
+
 /* method: recordBegin of class  ScutDataLogic::CNetStreamExport */
 #ifndef TOLUA_DISABLE_tolua_ScutDataLogic_ScutDataLogic_CNetStreamExport_recordBegin00
 static int tolua_ScutDataLogic_ScutDataLogic_CNetStreamExport_recordBegin00(lua_State* tolua_S)
@@ -3463,6 +3494,7 @@ TOLUA_API int tolua_ScutDataLogic_open (lua_State* tolua_S)
     tolua_function(tolua_S,"ExecRequest",tolua_ScutDataLogic_ScutDataLogic_CDataRequest_ExecRequest00);
     tolua_function(tolua_S,"AsyncExecRequest",tolua_ScutDataLogic_ScutDataLogic_CDataRequest_AsyncExecRequest00);
     tolua_function(tolua_S,"AsyncExecTcpRequest",tolua_ScutDataLogic_ScutDataLogic_CDataRequest_AsyncExecTcpRequest00);
+    tolua_function(tolua_S,"PeekLUAData",tolua_ScutDataLogic_ScutDataLogic_CDataRequest_PeekLUAData00);
    tolua_endmodule(tolua_S);
   tolua_endmodule(tolua_S);
   tolua_module(tolua_S,"ScutDataLogic",0);
