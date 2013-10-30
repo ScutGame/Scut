@@ -49,10 +49,12 @@
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
-    <Reference Include="ZyGames.Framework">
+    <Reference Include="ZyGames.Framework, Version=5.1.0.1020, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\..\Release\5.2.3.2\Lib\ZyGames.Framework.dll</HintPath>
     </Reference>
-    <Reference Include="ZyGames.Framework.Common">
+    <Reference Include="ZyGames.Framework.Common, Version=5.1.0.1009, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\..\Release\5.2.3.2\Lib\ZyGames.Framework.Common.dll</HintPath>
     </Reference>
     <Reference Include="ZyGames.Framework.Game">
