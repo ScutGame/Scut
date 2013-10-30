@@ -61,7 +61,7 @@ namespace ZyGames.ContractTools
             string serverUrl = txtServerUrl.Text;
             string[] keyNames = txtKeyName.Text.Split(new char[] { ',' });
 
-            MessageReader msgReader = MessageReader.Create(serverUrl, requestParams, msg, false);
+            MessageReader msgReader = MessageReader.Create(serverUrl, requestParams, ref msg, false);
             if (msgReader != null)
             {
                 try

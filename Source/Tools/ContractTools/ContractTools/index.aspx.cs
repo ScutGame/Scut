@@ -669,7 +669,7 @@ namespace ZyGames.ContractTools
         protected void ddlAgreement_SelectedIndexChanged(object sender, EventArgs e)
         {
             ContractBLL BLL = new ContractBLL();
-            DataSet ds = ddlAgreement.SelectedValue == "0" ? BLL.GetList("AgreementID>=0") : BLL.GetList("AgreementID=" + ddlAgreement.SelectedValue);
+            DataSet ds = ddlAgreement.SelectedValue == "0" ? BLL.GetList(" SlnID=" + this.ddlSolution.SelectedValue + " and AgreementID>=0") : BLL.GetList(" SlnID=" + this.ddlSolution.SelectedValue + " and  AgreementID=" + ddlAgreement.SelectedValue);
             if (ds.Tables[0].Rows.Count > 0)
             {
                 DropGetList.DataSource = ds;
