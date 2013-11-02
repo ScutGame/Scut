@@ -1,8 +1,0 @@
-﻿<?xml version="1.0" encoding="utf-8" ?>
-<serverConnection>
-  <!--connectTimeout:建立连接和传送数据的超时间(默认10秒)
-      receiveTimeout:保持连接的情况下，空闲超时触发Closing事件,尽量最大,默认10分钟
-      inactivityTimeout:连接断开的情况下，空闲超时触发Faulted事件,要小于receiveTimeout时间间隔(默认5秒)
-  -->
-  <connection gameid="7" serverid="1" ip="192.168.1.55" port="9701" connectTimeout="3" receiveTimeout="1800" inactivityTimeout="5"/>
-</serverConnection>

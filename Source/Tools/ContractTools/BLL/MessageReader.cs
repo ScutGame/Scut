@@ -9,6 +9,13 @@ namespace BLL
 {
     public class Message
     {
+        public bool Success
+        {
+            get
+            {
+                return ErrorCode == 0;
+            }
+        }
         public int Length
         {
             get;
@@ -51,17 +58,31 @@ namespace BLL
         public static byte[] _buffer;
         public static int GameID { get; set; }
         public static int ServerID { get; set; }
-        public static MessageReader Create(string serverUrl, string requestParams, Message header, bool IsSocket)
+
+        public Message ReadHead()
+        {
+            var header = new Message();
+            header.Length = ReadInt();
+            header.ErrorCode = ReadInt();
+            header.MsgID = ReadInt();
+            header.ErrorInfo = ReadString();
+            header.Action = ReadInt();
+            header.St = ReadString();
+            return header;
+        }
+        public static MessageReader Create(string serverUrl, string requestParams,ref Message header, bool IsSocket)
         {
             MessageReader msgReader = null;
             if (IsSocket)
             {
-               
+
                 SocketAction socketAction = new SocketAction();
                 socketAction.DoSocket(serverUrl, requestParams);
-                MemoryStream ms = new MemoryStream(socketAction.result.ReadBuffer());
-                BinaryReader reader = new BinaryReader(ms, Encoding.UTF8);
-                msgReader = new MessageReader(reader);
+                msgReader = socketAction.result;
+                header = socketAction._head;
+                //MemoryStream ms = new MemoryStream(socketAction.result.ReadByte());
+                //BinaryReader reader = new BinaryReader(ms, Encoding.UTF8);
+                //msgReader = new MessageReader(reader);
             }
             else
             {
@@ -85,13 +106,13 @@ namespace BLL
                 {
                     BinaryReader reader = new BinaryReader(responseStream, Encoding.UTF8);
                     msgReader = new MessageReader(reader);
-
                     header.Length = msgReader.ReadInt();
                     header.ErrorCode = msgReader.ReadInt();
                     header.MsgID = msgReader.ReadInt();
                     header.ErrorInfo = msgReader.ReadString();
                     header.Action = msgReader.ReadInt();
                     header.St = msgReader.ReadString();
+
                 }
             }
             return msgReader;
@@ -118,7 +139,7 @@ namespace BLL
             //}
         }
 
-        
+
         public static MessageReader Create(byte[] buffer)
         {
             MessageReader msgReader = null;
@@ -139,7 +160,10 @@ namespace BLL
         {
             this.reader = reader;
         }
-
+        public MessageReader(byte[] buffer)
+        {
+            reader = new BinaryReader(new MemoryStream(buffer));
+        }
         public string ReadString()
         {
             Int32 length = reader.ReadInt32();

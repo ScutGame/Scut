@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using ZyGames.Framework.Game.Runtime;
 using ZyGames.Framework.Game.Service;
 using ZyGames.Doudizhu.Lang;
 using ZyGames.Framework.Common.Security;
@@ -59,7 +60,7 @@ namespace ZyGames.Doudizhu.Bll.Action
             {
                 string[] userList = SnsManager.GetRegPassport(deviceID);
                 passport = userList[0];
-                password = CryptoHelper.DES_Decrypt(userList[1], "5^1-34E!");
+                password = CryptoHelper.DES_Decrypt(userList[1], GameEnvironment.ProductDesEnKey);
                 return true;
             }
             catch (Exception ex)

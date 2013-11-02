@@ -16,7 +16,7 @@ namespace ZyGames.ContractTools
         {
             return string.Format("{0}_{1}", SlnID, str);
         }
-        public byte[] _buffer; 
+        public byte[] _buffer;
         private void SetCookies(string key, string value)
         {
             Response.Cookies[GetCookesKey(key)].Value = value;
@@ -43,10 +43,12 @@ namespace ZyGames.ContractTools
                     this.txtServerUrl.Text = new SolutionBLL().GetUrl(SlnID);
                 }
                 SolutionModel solutionModel = new SolutionModel();
-                this.lbtGmeID.Text = new SolutionBLL().GetGameID(SlnID);
-                
+                string gameId = new SolutionBLL().GetGameID(SlnID);
+                gameId = string.IsNullOrEmpty(gameId) ? "0" : gameId;
+                this.lbtGmeID.Text = gameId;
+
                 ddlServerID.Items.Clear();
-                DataSet ds = new SolutionBLL().GetServerList(" GameID="+lbtGmeID.Text);
+                DataSet ds = new SolutionBLL().GetServerList(" GameID=" + lbtGmeID.Text);
                 ddlServerID.DataSource = ds;
                 ddlServerID.DataTextField = "ServerName";
                 ddlServerID.DataValueField = "ID";
@@ -122,7 +124,7 @@ namespace ZyGames.ContractTools
                 string responseStr = "";
                 string requestParams = "";
                 string[] contractList = txtMoreContrats.Text.Trim().Split(',');
-               
+
                 foreach (var tempId in contractList)
                 {
                     if (string.IsNullOrEmpty(tempId)) continue;
@@ -187,7 +189,7 @@ namespace ZyGames.ContractTools
                 string responseStr = "";
                 string requestParams = "";
                 string[] contractList = txtMoreContrats.Text.Trim().Split(',');
-                
+
                 foreach (var tempId in contractList)
                 {
                     if (string.IsNullOrEmpty(tempId)) continue;
@@ -228,7 +230,7 @@ namespace ZyGames.ContractTools
                 lblResponse.Text = ex.ToString().Replace("\r\n", "<br>").Replace("\n", "<br>");
             }
         }
-       
+
 
         private static string GetRequestParams(string sid, string uid, string contractId, int slnId, string pid, string pwd, string paramList)
         {
@@ -298,7 +300,7 @@ namespace ZyGames.ContractTools
             uid = "";
             StringBuilder respContent = new StringBuilder();
             Message msg = new Message();
-            MessageReader msgReader = MessageReader.Create(serverUrl, requestParams, msg, IsSocket);
+            MessageReader msgReader = MessageReader.Create(serverUrl, requestParams,ref msg, IsSocket);
             if (msgReader != null)
             {
                 try

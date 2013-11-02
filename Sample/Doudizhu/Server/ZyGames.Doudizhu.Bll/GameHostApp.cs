@@ -76,8 +76,6 @@ namespace ZyGames.Doudizhu.Bll
             try
             {
                 log = new BaseLog();
-                GameEnvironment.ProductDesEnKey = "5^1-34E!";
-                GameEnvironment.ClientDesDeKey = "n7=7=7dk";
                 var assembly = Assembly.Load("ZyGames.Doudizhu.Model");
                 GameEnvironment.Start(cacheInterval, () =>
                 {

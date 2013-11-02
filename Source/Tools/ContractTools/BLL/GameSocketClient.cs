@@ -15,6 +15,7 @@ using ZyGames.Core.Data;
 using ZyGames.Framework.RPC.IO;
 using ZyGames.Framework.RPC.Sockets;
 using ZyGames.GameService.BaseService.LogService;
+using ZyGames.OA.BLL.Remote;
 
 namespace BLL
 {
@@ -27,7 +28,7 @@ namespace BLL
       
         protected HttpContext _context;
 
-
+        private ClientSocket client;
 
         protected GameSocketClient()
         {
@@ -36,7 +37,8 @@ namespace BLL
             
         }
 
-      
+        public MessageStructure result { get; set; }
+        public MessageHead _head { get; set; }
 
         public int GameID { get { return GetParamAsInt("GameID"); } }
 
@@ -102,40 +104,6 @@ namespace BLL
                 serverId,
                 param);
         }
-
-        protected void DoRequest(string host, int port, string route, string param)
-        {
-            DoRequest(host, port, route, param, 4096);
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="host">远端主机地址</param>
-        /// <param name="port"></param>
-        /// <param name="route">远端执行方法名</param>
-        /// <param name="param">参数</param>
-        protected void DoRequest(string host, int port, string route, string param, int bufferSize)
-        {
-            using (SocketClient client = new SocketClient(host, port, bufferSize))
-            {
-                client.ErrorHandle += DoError;
-                client.ReceiveHandle += DoReceive;
-
-                if (client.Connect())
-                {
-
-                    param = GetRemoteParam(GameID, ServerID, param);
-                    param = param + "&sign=" + GetSign(param);
-                    param = HttpUtility.UrlEncode(param, Encoding.UTF8);
-                    byte[] data = Encoding.UTF8.GetBytes(string.Format("{0}", param));
-                    data = BufferUtils.MergeBytes(BufferUtils.GetSocketBytes(data.Length), data);
-                    client.Send(data);
-                    client.ReceiveResult();
-                }
-            }
-        }
-
         /// <summary>
         /// 
         /// </summary>
@@ -146,22 +114,36 @@ namespace BLL
         protected void DoRequest(string server, string param)
         {
             string[] serverArray = server.Split(':');
-            using (SocketClient client = new SocketClient(serverArray[0], Convert.ToInt32(serverArray[1]), 4096))
+           
+            param += string.Format("&sign={0}", GetSign(param));
+            param = HttpUtility.UrlEncode(param);
+            DoRequest(serverArray[0], Convert.ToInt32(serverArray[1]), param);
+        }
+        protected void DoRequest(string host, int port, string param)
+        {
+            var remoteEndPoint = new IPEndPoint(Dns.GetHostAddresses(host)[0], port);
+            DoRequest(remoteEndPoint, param, 4096);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="remoteEndPoint"></param>
+        /// <param name="route">远端执行方法名</param>
+        /// <param name="param">参数</param>
+        /// <param name="bufferSize"></param>
+        protected void DoRequest(IPEndPoint remoteEndPoint, string param, int bufferSize)
+        {
+            client = new ClientSocket(new ClientSocketSettings(1024, remoteEndPoint));
+            client.Disconnected += DoDisconnected;
+            client.DataReceived += DoReceive;
+            client.Connect();
+            byte[] data = Encoding.UTF8.GetBytes("?d="+param);
+
+            client.PostSend(data, 0, data.Length);
+            if (!client.WaitAll(10000))
             {
-                client.ErrorHandle += DoError;
-                client.ReceiveHandle += DoReceive;
-
-                if (client.Connect())
-                {
-
-                    //param = GetRemoteParam(GameID, ServerID, param);
-                    param = param + "&sign=" + GetSign(param);
-                    param = HttpUtility.UrlEncode(param, Encoding.UTF8);
-                    byte[] data = Encoding.UTF8.GetBytes(param);
-                    data = BufferUtils.MergeBytes(BufferUtils.GetSocketBytes(data.Length), data);
-                    client.Send(data);
-                    client.ReceiveResult();
-                }
+                DoError("请求超时");
             }
         }
         private static string GetSign(string param)
@@ -170,12 +152,18 @@ namespace BLL
             string sign = FormsAuthentication.HashPasswordForStoringInConfigFile(attachParam, "MD5") ?? "";
             return sign.ToLower();
         }
-        private void DoReceive(byte[] data)
+
+        private void DoDisconnected(object sender, SocketEventArgs e)
+        {
+            DoError("服务器已关闭");
+        }
+        private void DoReceive(object sender, SocketEventArgs e)
         {
             try
             {
-                MessageStructure writer = new MessageStructure(data);
-                var head = writer.ReadHeadGzip();
+               
+                MessageReader writer = new MessageReader(e.Data);
+                var head = writer.ReadHead();
                 if (head.Success)
                 {
                     SuccessCallback(writer, head);
@@ -189,8 +177,13 @@ namespace BLL
             {
                 new BaseLog().SaveLog(ex);
             }
+            finally
+            {
+                if (client != null)
+                    client.StopWait();
+            }
         }
-
+       
         protected virtual void DoError(string msg)
         {
             new BaseLog().SaveLog(new Exception(msg));
@@ -202,10 +195,16 @@ namespace BLL
             string msg = string.Format("出错:{0}-{1}", head.ErrorCode, head.ErrorInfo);
             _context.Response.Write(new JsonObject().Add("state", false).Add("message", msg).ToJson());
         }
-
-        protected virtual void SuccessCallback(MessageStructure writer, MessageHead head)
+        protected virtual void FailCallback(Message head)
         {
+            string msg = string.Format("出错:{0}-{1}", head.ErrorCode, head.ErrorInfo);
+            _context.Response.Write(new JsonObject().Add("state", false).Add("message", msg).ToJson());
+        }
 
+       
+        protected virtual void SuccessCallback(MessageReader writer, Message head)
+        {
+            
         }
         protected void WriteTableJson(JsonObject obj)
         {

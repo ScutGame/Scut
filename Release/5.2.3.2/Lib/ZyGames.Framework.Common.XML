@@ -578,26 +578,50 @@
             操作Web.config文档
             </summary>
         </member>
+        <member name="M:ZyGames.Framework.Common.Configuration.ConfigUtils.GetSetting(System.String,System.Int32)">
+            <summary>
+            读取Config配置文件的Add结点键int配置值
+            </summary>
+            <param name="key">键值Key</param>
+            <param name="defaultValue">默认值</param>
+            <returns></returns>
+        </member>
+        <member name="M:ZyGames.Framework.Common.Configuration.ConfigUtils.GetSetting(System.String,System.Decimal)">
+            <summary>
+            读取Config配置文件的Add结点键decimal配置值
+            </summary>
+            <param name="key">键值Key</param>
+            <param name="defaultValue">默认值</param>
+            <returns></returns>
+        </member>
+        <member name="M:ZyGames.Framework.Common.Configuration.ConfigUtils.GetSetting(System.String,System.Boolean)">
+            <summary>
+            读取Config配置文件的Add结点键bool配置值
+            </summary>
+            <param name="key">键值Key</param>
+            <param name="defaultValue">默认值</param>
+            <returns></returns>
+        </member>
         <member name="M:ZyGames.Framework.Common.Configuration.ConfigUtils.GetSetting(System.String,System.String)">
             <summary>
-            读取Config配置文件的Add结点键值
+            读取Config配置文件的Add结点键配置值
             </summary>
-            <param name="key"></param>
-            <param name="defaultValue"></param>
+            <param name="key">键值Key</param>
+            <param name="defaultValue">默认值</param>
             <returns></returns>
         </member>
         <member name="M:ZyGames.Framework.Common.Configuration.ConfigUtils.GetSetting(System.String)">
             <summary>
             读取Config配置文件的Add结点键值
             </summary>
-            <param name="key"></param>
+            <param name="key">键值Key</param>
             <returns></returns>
         </member>
         <member name="M:ZyGames.Framework.Common.Configuration.ConfigUtils.GetConnectionString(System.String,System.String)">
             <summary>
             获取连接字符串
             </summary>
-            <param name="connName"></param>
+            <param name="connName">键值Key</param>
             <param name="mKey">解密密钥</param>
             <returns></returns>
         </member>
@@ -1889,6 +1913,12 @@
             自定的事模型
             </summary>
             <typeparam name="T">类型EventArgs的子类</typeparam>
+        </member>
+        <member name="M:ZyGames.Framework.Common.Event.CustomEvent`1.AddSingle(ZyGames.Framework.Common.Event.CustomEventHandle{`0})">
+            <summary>
+            注册单一事件
+            </summary>
+            <param name="handle"></param>
         </member>
         <member name="M:ZyGames.Framework.Common.Event.CustomEvent`1.Add(ZyGames.Framework.Common.Event.CustomEventHandle{`0})">
             <summary>
