@@ -35,7 +35,7 @@ function step3()
         tip3 = nil
     end 
     --[[
-     --透明背景
+    --透明背景
     local transparentBg=bg2;--背景图片
     local sprite = CCSprite:create(P(transparentBg));
     local sprite2 = CCSprite:create(P(bg1));
@@ -45,11 +45,11 @@ function step3()
     sprite:setAnchorPoint(PT(0.5,0.5));
     sprite:setPosition(PT(mScene:getContentSize().width/2, mScene:getContentSize().height/2));
     mScene:addChild(sprite,0);
-   ]]
+   ]]   
 end
 
 function step2()
-    if(tip2) then 
+if(tip2) then 
         tip2:getParent():removeChild(tip2, true)
         tip2 = nil
     end 
@@ -70,7 +70,7 @@ function step1()
      tip2 = CCLabelTTF:create(commonString.IDS_TIP2, "sdfsfe", 20)
     tip2:setPosition(PT(SX(240),SY(160)))
     mScene:addChild(tip2)
-    local  action = CCSequence:createWithTwoActions(
+    local action = CCSequence:createWithTwoActions(
     CCDelayTime:create(0.5),
     CCCallFuncN:create(step2));
     mScene:runAction(action)
@@ -96,21 +96,21 @@ function showRank()
     ZyExecRequest(mScene, nil,false,1)
 end
 
-function submitOK()
-    local name=mNameEdit:GetEditText()
-    local sorce=mScoreEdit:GetEditText()
-    if name==""  or sorce == "" then
-        --跳出的提示界面
-        local box = ZyMessageBoxEx:new()
-        box:doPrompt(mScene, nil, commonString.IDS_EMPTY_TIP,commonString.IDS_OK,messageCallback)
-        mNameEdit:setVisible(false);
-        mScoreEdit:setVisible(false);
-    else
-        ScutDataLogic.CNetWriter:getInstance():writeString("ActionId",1000)
+function submitOK()    
+        local name=mNameEdit:GetEditText()
+        local sorce=mScoreEdit:GetEditText()
+        if  name==""  or sorce == "" then
+            --跳出的提示界面
+            local box = ZyMessageBoxEx:new()
+            box:doPrompt(mScene, nil, commonString.IDS_EMPTY_TIP,commonString.IDS_OK,messageCallback)
+            mNameEdit:setVisible(false);
+            mScoreEdit:setVisible(false);
+        else
+            ScutDataLogic.CNetWriter:getInstance():writeString("ActionId",1000)
         ScutDataLogic.CNetWriter:getInstance():writeString("UserName",name )
-        ScutDataLogic.CNetWriter:getInstance():writeString("Score",sorce)
-        ZyExecRequest(mScene, nil,false,1)
-    end
+        ScutDataLogic.CNetWriter:getInstance():writeString("Score",sorce)    
+        ZyExecRequest(mScene, nil,false,1) 
+        end
 end
 
 function messageCallback()
@@ -135,17 +135,17 @@ function submit()
     --密码文字
     local imgSprite=CCSprite:create(P(Image.image_list_txt));
     local txt_h= imgSprite:getContentSize().height--输入框高
-    submitLayer = CCLayer:create();
-    submitLayer:setContentSize(CCSize(SX(240),SY(160)));
-    mScene:addChild(submitLayer);
-    submitLayer:setAnchorPoint(PT(0.5,0.5));
-    submitLayer:setPosition(PT(mScene:getContentSize().width/2, mScene:getContentSize().height/2));
-    local sprite = CCSprite:create(P("common/panel_1002_12.png"))
-    sprite:setScaleX(SX(240)/sprite:getContentSize().width);
-    sprite:setScaleY(SY(160)/sprite:getContentSize().height);
-    submitLayer:addChild(sprite,0);
-    local startY = 0
-    local titleName1=CCLabelTTF:create(commonString.IDS_NICKNAME,FONT_NAME, FONT_DEF_SIZE);
+   submitLayer = CCLayer:create();
+   submitLayer:setContentSize(CCSize(SX(240),SY(160)));
+   mScene:addChild(submitLayer);
+   submitLayer:setAnchorPoint(PT(0.5,0.5));
+   submitLayer:setPosition(PT(mScene:getContentSize().width/2, mScene:getContentSize().height/2));
+   local sprite = CCSprite:create(P("common/panel_1002_12.png"))
+   sprite:setScaleX(SX(240)/sprite:getContentSize().width);
+   sprite:setScaleY(SY(160)/sprite:getContentSize().height);
+   submitLayer:addChild(sprite,0);
+   local startY = 0
+   local titleName1=CCLabelTTF:create(commonString.IDS_NICKNAME,FONT_NAME, FONT_DEF_SIZE);
     titleName1:setAnchorPoint(CCPoint(0,0))
     titleName1:setPosition(CCPoint(SX(-100),
         startY+titleName1:getContentSize().height - SY(30)))
@@ -226,7 +226,7 @@ function closeSubmitLaye()
      isCanGetRank = true 
 end 
 
-function init() 
+function init()
     if mScene then
         return 
     end
@@ -234,7 +234,7 @@ function init()
     local scene = ScutScene:new()
     mScene = scene.root
     scene:registerCallback(netCallback)
-
+    
     CCDirector:sharedDirector():pushScene(mScene)
     CCDirector:sharedDirector():RegisterBackHandler("MainScene.closeApp")
     --mScene:registerOnExit("LoginScene.onExit")
@@ -259,37 +259,37 @@ function init()
     bgSprite:setPosition(CCPoint(pWinSize.width/2,pWinSize.height/2));
     mScene:addChild(bgSprite);
     ScutDataLogic.CNetWriter:setUrl("http://ph.scutgame.com/service.aspx")
-
+ 
     local button = ZyButton:new(P("icon_1011.png"));
     button:addto(mScene,0);
     button:setPosition(PT(pWinSize.width - button:getContentSize().width - SX(10), SY(10)));
     button:registerScriptTapHandler(showRank)
-
+    
     local button2 = ZyButton:new(P("button/button_1011.png"),P("button/button_1012.png"),nil,commonString.IDS_SUBMIT)
     button2:setPosition(PT(pWinSize.width/2 - button2:getContentSize().width/2 ,SY(10)));
     button2:addto(mScene,0)
     button2:registerScriptTapHandler(submit);
     --mLayer:addChild(bgSprite,0)
-end
+end 
 
-function netCallback(pZyScene, lpExternalData)
+function netCallback(pZyScene, lpExternalData)  
     local actionID = ZyReader:getActionID()
     local lpExternalData = lpExternalData or 0
     local userData = ZyRequestParam:getParamData(lpExternalData)
     if actionID==1001 then
         local table =  _1001Callback(pZyScene, lpExternalData);
         if table then
-            bgLayer= UIHelper.createUIBg(nil,nil,ZyColor:colorWhite(),nil,true);--没有背景框
-            mScene:addChild(bgLayer);
+            bgLayer= UIHelper.createUIBg(nil,nil,ccc3(255,255,255),nil,true)--没有背景框
+            mScene:addChild(bgLayer);   
          --返回按钮
             local closeBtn=ZyButton:new(P(Image.image_exit),P(Image.image_exit));
             closeBtn:setPosition(PT(bgLayer:getContentSize().width-closeBtn:getContentSize().width - SX(15),bgLayer:getContentSize().height-closeBtn:getContentSize().height - SY(5)));
             closeBtn:registerScriptTapHandler(closeBtnActon);
             closeBtn:addto(bgLayer,99);
-            showLayout()
-            update(table.RecordTabel)--更新数据
+             showLayout()
+             update(table.RecordTabel)--更新数据
         end
-    elseif actionID == 1000 then
+    elseif actionID == 1000 then 
           _1000Callback(pZyScene, lpExternalData);
     end
 end
@@ -314,16 +314,16 @@ function showLayout()
      --名次--昵称--胜率
     table={commonString.IDS_ORDER,commonString.IDS_NICKNAME1,commonString.IDS_SORCE1}
    ----
-    allTable.title={}
-    for i,v in ipairs(table) do
+   allTable.title={}
+   for i,v in ipairs(table) do  
         local temp=scaleList[i];
         local textlabel=CCLabelTTF:create(v,FONT_NAME,FONT_SM_SIZE);
         textlabel:setAnchorPoint(PT(0.5,0));
-        textlabel:setColor(ccRED1)
-        textlabel:setPosition(PT(cursor+simpleW*temp/2,listBgStartY+SY(2)))
+       textlabel:setColor(ccRED1)
+       textlabel:setPosition(PT(cursor+simpleW*temp/2,listBgStartY+SY(2)))
         allTable.ranKingTitlePos[i]=(textlabel:getPosition().x);
-        allTable.biliSize[i]=simpleW*scaleList[i]
-        cursor=cursor+(simpleW*scaleList[i])
+       allTable.biliSize[i]=simpleW*scaleList[i]
+       cursor=cursor+(simpleW*scaleList[i])
         layoutLayer:addChild(textlabel,1)
         allTable.title[i]=textlabel
     end
@@ -332,7 +332,7 @@ function showLayout()
         layoutLayer:removeChild(mList,true)
         mList=nil;
     end
-
+    
     mList=ScutCxList:node(pWinSize.height*0.63/4,ccc4(124, 124, 124, 255),SZ(pWinSize.width*0.8,pWinSize.height*0.63));
     mList:setPosition(PT(pWinSize.width*0.1,listBgStartY-pWinSize.height*0.63));
     mList:setSelectedItemColor(ccc3(0, 70, 65), ccc3(0, 70, 65))
@@ -372,7 +372,7 @@ function update(mtable)
     layout.val_x.val.pixel_val = 0
     layout.val_y.val.pixel_val = 0
     ----
-        for i,v in ipairs(mtable) do 
+       for i,v in ipairs(mtable) do 
             local listItem=ScutCxListItem:itemWithColor(ccc3(0,0,0))
             listItem:setDrawTopLine(false)
             listItem:setOpacity(0)
@@ -409,11 +409,11 @@ function _1001Callback(pZyScene, lpExternalData)
         DataTabel={}
         DataTabel.PageCount= ZyReader:getInt()
         local RecordNums_1=ZyReader:getInt()
-        local RecordTabel_1={}
-        if RecordNums_1~=0 then
+         local RecordTabel_1={}
+          if RecordNums_1~=0 then
             for k=1,RecordNums_1 do
-                local mRecordTabel_1={}
-                ZyReader:recordBegin()
+             local mRecordTabel_1={}
+             ZyReader:recordBegin()
                 mRecordTabel_1.UserName= ZyReader:readString()
                 mRecordTabel_1.Score= ZyReader:getInt()
                 ZyReader:recordEnd()
@@ -421,9 +421,9 @@ function _1001Callback(pZyScene, lpExternalData)
               end
         end
         DataTabel.RecordTabel = RecordTabel_1;
-    else
-        local box = ZyMessageBoxEx:new()
-        box:doPrompt(pZyScene, nil, ZyReader:readErrorMsg(),commonString.IDS_OK)
+    else          
+          local box = ZyMessageBoxEx:new()
+          box:doPrompt(pZyScene, nil, ZyReader:readErrorMsg(),commonString.IDS_OK)
     end
     return DataTabel
 end
@@ -432,10 +432,10 @@ function _1000Callback(pZyScene, lpExternalData)
     local DataTabel=nil
     if ZyReader:getResult() == 0 then
         DataTabel={}
-        closeSubmitLaye()
-    else
-        local box = ZyMessageBoxEx:new()
-        box:doPrompt(pZyScene, nil, ZyReader:readErrorMsg(),commonString.IDS_OK)
+       closeSubmitLaye()
+    else          
+          local box = ZyMessageBoxEx:new()
+          box:doPrompt(pZyScene, nil, ZyReader:readErrorMsg(),commonString.IDS_OK)
     end
     return DataTabel
 end
