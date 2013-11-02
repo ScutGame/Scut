@@ -122,10 +122,10 @@ namespace ScutDataLogic
 
 		//LUA
 		void LuaHandleData(void* pScene, int nTag, int nNetRet, CStream* lpData, LPVOID lpExternal);
-		void LuaHandlePushData(CStream* lpData);
+		bool LuaHandlePushData(CStream* lpData);
 		void LuaHandleErrorData();
 	public:
-		void LuaHandlePushDataWithInt(int p);
+		bool LuaHandlePushDataWithInt(int p);
 	private:
 		void Initialize();
 		void Finitialize();

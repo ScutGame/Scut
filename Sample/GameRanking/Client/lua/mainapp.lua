@@ -60,13 +60,11 @@ local function ScutMain()
     require("lib.lib")
     require("datapool.Image")
     require("testScene")
+    require("datapool.PushReceiverLayer")
 
     function OnHandleData(pScene, nTag, nNetRet, pData, size)
-        print(pScene, nTag, nNetRet, pData, size)
-        print("size", size)
         pScene = tolua.cast(pScene, "CCScene")
-        scenes[pScene]:test()
-        scenes[pScene]:execCallback1(nTag, nNetRet, pData)
+        scenes[pScene]:execCallback(nTag, nNetRet, pData)
     end
 
     ScutScene = {}
@@ -84,44 +82,47 @@ local function ScutMain()
         return o
     end
 
-    function ScutScene:test()
-        print("test", self.root)
-    end
-
     function ScutScene:registerScriptHandler(func)
     end
 
     function ScutScene:registerCallback(func)
-        print("ScutScene:registerCallback",func)
-        self.mCallback = func
+        func = func or function()end
+        self.mCallbackFunc = func
     end
 
-    function ScutScene:registerNetErrorFunc()
+    function ScutScene:registerNetErrorFunc(func)
+        func = func or function()end
+        self.mNetErrorFunc = func
     end
 
-    function ScutScene:registerNetCommonDataFunc()
+    function ScutScene:registerNetCommonDataFunc(func)
+        func = func or function()end
+        self.mNetCommonDataFunc = func
     end
 
     function ScutScene:registerNetDecodeEnd()
+        func = func or function()end
+        self.NetDecodeEndFunc = func
     end
 
-    function ScutScene:execCallback1(nTag, nNetState, pData)
-        print(nTag, nNetState)
+    function ScutScene:execCallback(nTag, nNetState, pData)
         if 2 == nNetState then
-            print("aisSucceed")
-            local reader = ScutDataLogic.CDataRequest:getInstance()
-            --local bValue = reader:LuaHandlePushDataWithInt(pData)
-            --if not bValue then return end
-            print("read successfully")
-
-            if self.mCallback then
-                self.mCallback(self.root)
+            local reader = ScutDataLogic.CDataRequest:Instance()
+            local bValue = reader:LuaHandlePushDataWithInt(pData)
+            if not bValue then return end
+            if self.mCallbackFunc then
+                self.mCallbackFunc(self.root)
             end
-            --self:registerNetCommonDataFunc()
-            --self:registerCallback()
-            --netDecodeEnd(self.root, nTag)
-        --else 
-            --self:registerNetErrorFunc()
+
+            if self.mNetCommonDataFunc then
+                self.mNetCommonDataFunc()
+            end
+
+            netDecodeEnd(self.root, nTag)
+
+            if self.mNetErrorFunc then
+                self.mNetErrorFunc()
+            end
         end
     end
 
@@ -139,10 +140,10 @@ local function ScutMain()
         ZyLoading.hide(pScutScene, nTag)
     end
     --注册服务器push回调
-    CCDirector:sharedDirector():RegisterSocketPushHandler("PushReceiverLayer.PushReceiverCallback");
+    CCDirector:sharedDirector():RegisterSocketPushHandler("PushReceiverLayer.PushReceiverCallback")
     --NDFixSDK.FixCocos2dx:CreateFixCocos2dx():RegisterSocketPushHandler("PushReceiverLayer.PushReceiverCallback")
     --ScutScene:registerNetCommonDataFunc("processCommonData");
-    ScutScene:registerNetErrorFunc("LoginScene.netConnectError2");
+    --ScutScene:registerNetErrorFunc("LoginScene.netConnectError2")
     ScutScene:registerNetDecodeEnd("netDecodeEnd");
     --NdUpdate.CUpdateEngine:getInstance():registerResPackageUpdateLuaHandleFunc("CommandDataResove.resourceUpdated")
     
@@ -174,8 +175,6 @@ function __G__TRACKBACK__(msg)
 end
 
 local function main()
-    require("config")
-    require("framework.init")
     require("FrameManager")
     g_frame_mgr = FrameManager:new()
     g_frame_mgr:init()

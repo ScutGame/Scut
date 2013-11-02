@@ -1,6 +1,6 @@
 /*
 ** Lua binding: ScutDataLogic
-** Generated automatically by tolua++-1.0.92 on 10/30/13 23:25:13.
+** Generated automatically by tolua++-1.0.92 on 11/02/13 14:52:51.
 */
 
 #ifndef __cplusplus
@@ -2334,10 +2334,11 @@ static int tolua_ScutDataLogic_ScutDataLogic_CDataRequest_LuaHandlePushDataWithI
   if (!self) tolua_error(tolua_S,"invalid 'self' in function 'LuaHandlePushDataWithInt'", NULL);
 #endif
   {
-   self->LuaHandlePushDataWithInt(p);
+   bool tolua_ret = (bool)  self->LuaHandlePushDataWithInt(p);
+   tolua_pushboolean(tolua_S,(bool)tolua_ret);
   }
  }
- return 0;
+ return 1;
 #ifndef TOLUA_RELEASE
  tolua_lerror:
  tolua_error(tolua_S,"#ferror in function 'LuaHandlePushDataWithInt'.",&tolua_err);

@@ -498,23 +498,22 @@ void ScutDataLogic::CDataRequest::LuaHandleData(void* pScene, int nTag, int nNet
 	}
 }
 
-void ScutDataLogic::CDataRequest::LuaHandlePushData( CStream* lpData )
+bool ScutDataLogic::CDataRequest::LuaHandlePushData( CStream* lpData )
 {
-	if (!lpData)
-	{
-		return;
-	}
-	bool bValue = ScutDataLogic::CNetReader::getInstance()->pushNetStream((char*)((ScutSystem::CMemoryStream*)lpData)->GetMemory(), ((ScutSystem::CMemoryStream*)lpData)->GetSize());
+	bool bRt = false;
+	if (!lpData) return bRt;
+	bool bPush = ScutDataLogic::CNetReader::getInstance()->pushNetStream((char*)((ScutSystem::CMemoryStream*)lpData)->GetMemory(), ((ScutSystem::CMemoryStream*)lpData)->GetSize());
 	const char*  pushFunc = cocos2d::CCDirector::sharedDirector()->GetSocketPushHandler();
 	if (pushFunc)
 	{
-		ScutDataLogic::LuaHost::Instance()->execFunc(pushFunc, NULL, bValue);
+		bRt = ScutDataLogic::LuaHost::Instance()->execFunc(pushFunc, NULL, bPush);
 	}
+	return bRt;
 }
 
-void ScutDataLogic::CDataRequest::LuaHandlePushDataWithInt( int p )
+bool ScutDataLogic::CDataRequest::LuaHandlePushDataWithInt( int p )
 {
-	LuaHandlePushData((CStream*)p);
+	return LuaHandlePushData((CStream*)p);
 }
 
 void ScutDataLogic::CDataRequest::LuaHandleErrorData()

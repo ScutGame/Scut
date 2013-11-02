@@ -21,6 +21,6 @@ namespace ScutDataLogic
 		DWORD AsyncExecTcpRequest(void* pScene, const char* szUrl, int nTag, void* lpData, const char* lpSendData, unsigned int nDataLen = 0);
 
 		void PeekLUAData();
-		void LuaHandlePushDataWithInt( int p );
+		bool LuaHandlePushDataWithInt( int p );
 	};
 }
