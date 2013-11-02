@@ -65,7 +65,7 @@ local function ScutMain()
     g_frame_mgr = FrameManager:new()
     g_frame_mgr:init()
 
-    function OnHandleData(pScene, nTag, nNetRet, pData, size)
+    function OnHandleData(pScene, nTag, nNetRet, pData)
         pScene = tolua.cast(pScene, "CCScene")
         g_scenes[pScene]:execCallback(nTag, nNetRet, pData)
     end

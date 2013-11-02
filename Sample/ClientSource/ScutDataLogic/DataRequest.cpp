@@ -461,15 +461,14 @@ void ScutDataLogic::CDataRequest::LuaHandleData(void* pScene, int nTag, int nNet
 
 	lua_State* pState = LuaHost::Instance()->GetLuaState();
 	lua_getglobal(pState, "OnHandleData");
+	CC_ASSERT( lua_isfunction(pState, -1) && "OnHandleData is not a function");
+
 	lua_pushlightuserdata(pState, pScene);
 	lua_pushnumber(pState, nTag);
 	lua_pushnumber(pState, nNetRet);
-	//lua_pushlstring(LuaHost::Instance()->GetLuaState(), (const char*)((CMemoryStream*)lpData)->GetMemory(), ((CMemoryStream*)lpData)->GetSize());
 	lua_pushnumber(pState, int(lpData));
-	lua_pushnumber(pState, ((CMemoryStream*)lpData)->GetSize());
 
-
-	int functionIndex = -6;
+	int nargs = 4;
 	int traceback = 0;
 	lua_getglobal(pState, "__G__TRACKBACK__");                         /* L: ... func arg1 arg2 ... G */
 	if (!lua_isfunction(pState, -1))
@@ -478,24 +477,16 @@ void ScutDataLogic::CDataRequest::LuaHandleData(void* pScene, int nTag, int nNet
 	}
 	else
 	{
-		lua_insert(pState, functionIndex - 1);                         /* L: ... G func arg1 arg2 ... */
-		traceback = functionIndex - 1;
+		traceback = -nargs-2;
+		lua_insert(pState, traceback);                                 /* L: ... G func arg1 arg2 ... */
 	}
 
-
-	if (lua_pcall(pState, 5, 0, traceback) != 0)
+	if (lua_pcall(pState, nargs, 0, traceback) != 0)
 	{
 		l_error(pState, "Call lua OnHandlerData failed: %s", lua_tostring(pState, -1));
 	}
 
-	if(traceback != 0)
-	{
-		lua_pop(pState, 2);
-	}
-	else
-	{
-		lua_pop(pState, 1);
-	}
+	lua_pop(pState, (traceback != 0) ? 2 : 1);
 }
 
 bool ScutDataLogic::CDataRequest::LuaHandlePushData( CStream* lpData )
