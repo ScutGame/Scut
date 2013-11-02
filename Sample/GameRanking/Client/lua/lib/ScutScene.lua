@@ -1,6 +1,6 @@
 ScutScene = {}
+g_scenes = {}
 
-scenes = {}
 function ScutScene:new(o)
     o = o or {}
     if o.root == nil then
@@ -9,7 +9,7 @@ function ScutScene:new(o)
     end
     setmetatable(o, self)
     self.__index = self
-    scenes[o.root] = o
+    g_scenes[o.root] = o
     return o
 end
 

@@ -8,8 +8,6 @@ function FrameManager:new(o)
 end
 
 function FrameManager:init()
-    print("FrameManager:init")
-
     CCDirector:sharedDirector():getScheduler():scheduleScriptFunc(function()
         self:update()
     end, 0, false)

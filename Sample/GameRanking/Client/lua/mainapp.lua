@@ -57,19 +57,19 @@ local function ScutMain()
     
     -- require必须在环境变量初始化之后，避免文件找不到的情况发生
     require("lib.lib")
-	require("lib.ScutScene")
+    require("lib.ScutScene")
+    require("lib.FrameManager")
     require("datapool.Image")
     require("testScene")
     require("datapool.PushReceiverLayer")
-    require("FrameManager")
     g_frame_mgr = FrameManager:new()
     g_frame_mgr:init()
 
     function OnHandleData(pScene, nTag, nNetRet, pData, size)
         pScene = tolua.cast(pScene, "CCScene")
-        scenes[pScene]:execCallback(nTag, nNetRet, pData)
+        g_scenes[pScene]:execCallback(nTag, nNetRet, pData)
     end
-	
+
     math.randomseed(os.time());
     __NETWORK__=true
     ------------------------------------------------------------------
