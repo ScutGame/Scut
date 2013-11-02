@@ -458,18 +458,44 @@ void ScutDataLogic::CDataRequest::LuaHandleData(void* pScene, int nTag, int nNet
 	{
 		(*m_pLuaDataHandleCallBack)(pScene, nTag, nNetRet, lpData, lpExternal);
 	}
-	lua_getglobal(LuaHost::Instance()->GetLuaState(), "OnHandleData");
-	lua_pushlightuserdata(LuaHost::Instance()->GetLuaState(), pScene);
-	lua_pushnumber(LuaHost::Instance()->GetLuaState(), nTag);
-	lua_pushnumber(LuaHost::Instance()->GetLuaState(), nNetRet);
+
+	lua_State* pState = LuaHost::Instance()->GetLuaState();
+	lua_getglobal(pState, "OnHandleData");
+	lua_pushlightuserdata(pState, pScene);
+	lua_pushnumber(pState, nTag);
+	lua_pushnumber(pState, nNetRet);
 	//lua_pushlstring(LuaHost::Instance()->GetLuaState(), (const char*)((CMemoryStream*)lpData)->GetMemory(), ((CMemoryStream*)lpData)->GetSize());
-	lua_pushnumber(LuaHost::Instance()->GetLuaState(), int(lpData));
-	lua_pushnumber(LuaHost::Instance()->GetLuaState(), ((CMemoryStream*)lpData)->GetSize());
-	if (lua_pcall(LuaHost::Instance()->GetLuaState(), 5, 0, 0) != 0)
+	lua_pushnumber(pState, int(lpData));
+	lua_pushnumber(pState, ((CMemoryStream*)lpData)->GetSize());
+
+
+	int functionIndex = -6;
+	int traceback = 0;
+	lua_getglobal(pState, "__G__TRACKBACK__");                         /* L: ... func arg1 arg2 ... G */
+	if (!lua_isfunction(pState, -1))
 	{
-		l_error(LuaHost::Instance()->GetLuaState(), "Call lua OnHandlerData failed: %s", lua_tostring(LuaHost::Instance()->GetLuaState(), -1));
+		lua_pop(pState, 1);                                            /* L: ... func arg1 arg2 ... */
 	}
-	lua_pop(LuaHost::Instance()->GetLuaState(), 1);
+	else
+	{
+		lua_insert(pState, functionIndex - 1);                         /* L: ... G func arg1 arg2 ... */
+		traceback = functionIndex - 1;
+	}
+
+
+	if (lua_pcall(pState, 5, 0, traceback) != 0)
+	{
+		l_error(pState, "Call lua OnHandlerData failed: %s", lua_tostring(pState, -1));
+	}
+
+	if(traceback != 0)
+	{
+		lua_pop(pState, 2);
+	}
+	else
+	{
+		lua_pop(pState, 1);
+	}
 }
 
 void ScutDataLogic::CDataRequest::LuaHandlePushData( CStream* lpData )
