@@ -1,6 +1,6 @@
 LOCAL_PATH := $(call my-dir)
 
-# compile scutsystem.so
+# compile ndsystem.so
 include $(CLEAR_VARS)
 LOCAL_MODULE := libScutDataLogic
 

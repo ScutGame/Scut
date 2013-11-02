@@ -417,8 +417,8 @@ function _1001Callback(pZyScene, lpExternalData)
                 mRecordTabel_1.UserName= ZyReader:readString()
                 mRecordTabel_1.Score= ZyReader:getInt()
                 ZyReader:recordEnd()
-                ZyTable.push_back(RecordTabel_1,mRecordTabel_1)
-            end
+                table.insert(RecordTabel_1,mRecordTabel_1)
+              end
         end
         DataTabel.RecordTabel = RecordTabel_1;
     else

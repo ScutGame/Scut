@@ -879,7 +879,7 @@ namespace ScutDataLogic
 
 	CLuaString CFileHelper::encryptPwd(const char* pPwd, const char*key)
 	{
-	#define  DES_KEY "n7=7=7dk"
+	#define  DES_KEY "j6=9=1ac"
 		std::string strRet;
 		ScutSystem::CScutUtility::DesEncrypt(DES_KEY, pPwd,strRet);
 		return CLuaString(strRet);

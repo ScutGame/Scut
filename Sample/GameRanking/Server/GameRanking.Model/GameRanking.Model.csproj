@@ -47,11 +47,13 @@
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
-    <Reference Include="ZyGames.Framework">
-      <HintPath>..\..\..\..\Release\5.2.3.2\Lib\ZyGames.Framework.dll</HintPath>
+    <Reference Include="ZyGames.Framework, Version=5.3.0.30318, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\Release\5.3.3.3\Lib\ZyGames.Framework.dll</HintPath>
     </Reference>
-    <Reference Include="ZyGames.Framework.Common">
-      <HintPath>..\..\..\..\Release\5.2.3.2\Lib\ZyGames.Framework.Common.dll</HintPath>
+    <Reference Include="ZyGames.Framework.Common, Version=5.3.0.29869, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\Release\5.3.3.3\Lib\ZyGames.Framework.Common.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -69,6 +71,6 @@
   -->
   <UsingTask TaskName="ZyGames.Framework.Common.Build.WeavingEntityTask" AssemblyFile="bin\$(Configuration)\ZyGames.Framework.Common.dll" />
   <Target Name="AfterBuild">
-    <WeavingEntityTask SolutionDir=".\\bin" FilePattern="GameRanking.Model.dll" />
+    <WeavingEntityTask SolutionDir=".\\bin\$(Configuration)" FilePattern="GameRanking.Model.dll" />
   </Target>
 </Project>

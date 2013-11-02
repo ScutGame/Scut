@@ -1,0 +1,118 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{1261C6C6-93A7-4234-B269-84B85784F8A7}</ProjectGuid>
+    <RootNamespace>NdAnimation</RootNamespace>
+    <Keyword>Win32Proj</Keyword>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <CharacterSet>Unicode</CharacterSet>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup>
+    <_ProjectFileVersion>10.0.40219.1</_ProjectFileVersion>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(SolutionDir)$(Configuration).win32\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(Platform)\$(Configuration)\</IntDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(SolutionDir)$(Configuration).win32\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(Configuration)\</IntDir>
+    <CodeAnalysisRuleSet Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">AllRules.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRules Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" />
+    <CodeAnalysisRuleAssemblies Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" />
+    <CodeAnalysisRuleSet Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">AllRules.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRules Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" />
+    <CodeAnalysisRuleAssemblies Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" />
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <Optimization>Disabled</Optimization>
+      <AdditionalIncludeDirectories>$(ProjectDir)\..\ScutSystem\;$(ProjectDir)\..\ScutDataLogic\;$(ProjectDir)\..\ScutSystem\Markup\;$(ProjectDir)\..\ScutSystem\re_lib\;$(ProjectDir)\..\ScutNetwork\;$(ProjectDir)\..\cocos2dx;$(ProjectDir)\..\cocos2dx\platform\;$(ProjectDir)\..\cocos2dx\platform\third_party\win32\OGLES;$(ProjectDir)\..\cocos2dx\platform\third_party\win32\zlib;$(ProjectDir)\..\cocos2dx\include;$(ProjectDir)\..\cocos2dx\platform\third_party\win32\WinOpenGL;$(ProjectDir)\..\cocos2dx\platform\win32;./LUA_Export;./;$(ProjectDir)\..\NDEncrypt;$(ProjectDir)\..\cocos2dx\support\data_support;./JS_Export/generated;$(ProjectDir)\..\scripting;$(ProjectDir)\..\scripting\javascript;$(ProjectDir)\..\scripting\spidermonkey-win32\include;$(ProjectDir)\..\scripting\lua;$(ProjectDir)\..\scripting\lua\tolua;$(ProjectDir)\..\scripting\lua\lua;$(ProjectDir)\..\cocos2dx\kazmath\include;$(ProjectDir)\..\scripting\lua\cocos2dx_support;$(ProjectDir)\..\cocos2dx\cocoa;$(ProjectDir)\..\cocos2dx\textures;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_LIB;_CRT_SECURE_NO_WARNINGS;_SCL_SECURE_NO_WARNINGS;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MinimalRebuild>true</MinimalRebuild>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
+    </ClCompile>
+    <Lib>
+      <OutputFile>%(OutputFile)</OutputFile>
+    </Lib>
+    <PostBuildEvent>
+      <Command>
+      </Command>
+    </PostBuildEvent>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <Optimization>MaxSpeed</Optimization>
+      <IntrinsicFunctions>false</IntrinsicFunctions>
+      <WholeProgramOptimization>false</WholeProgramOptimization>
+      <AdditionalIncludeDirectories>$(ProjectDir)\..\ScutSystem\;$(ProjectDir)\..\ScutDataLogic\;$(ProjectDir)\..\ScutSystem\Markup\;$(ProjectDir)\..\ScutSystem\re_lib\;$(ProjectDir)\..\ScutNetwork\;$(ProjectDir)\..\cocos2dx;$(ProjectDir)\..\cocos2dx\platform\;$(ProjectDir)\..\cocos2dx\platform\third_party\win32\OGLES;$(ProjectDir)\..\cocos2dx\platform\third_party\win32\zlib;$(ProjectDir)\..\cocos2dx\include;$(ProjectDir)\..\cocos2dx\platform\third_party\win32\WinOpenGL;$(ProjectDir)\..\cocos2dx\platform\win32;./LUA_Export;./;$(ProjectDir)\..\NDEncrypt;$(ProjectDir)\..\cocos2dx\support\data_support;./JS_Export/generated;$(ProjectDir)\..\scripting;$(ProjectDir)\..\scripting\javascript;$(ProjectDir)\..\scripting\spidermonkey-win32\include;$(ProjectDir)\..\scripting\lua;$(ProjectDir)\..\scripting\lua\tolua;$(ProjectDir)\..\scripting\lua\lua;$(ProjectDir)\..\cocos2dx\kazmath\include;$(ProjectDir)\..\scripting\lua\cocos2dx_support;$(ProjectDir)\..\cocos2dx\cocoa;$(ProjectDir)\..\cocos2dx\textures;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;_LIB;_WINDOWS;_CRT_SECURE_NO_WARNINGS;_SCL_SECURE_NO_WARNINGS;SCUT_WIN32;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+    </ClCompile>
+    <Lib>
+      <OutputFile>%(OutputFile)</OutputFile>
+    </Lib>
+    <PostBuildEvent>
+      <Command>
+      </Command>
+    </PostBuildEvent>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="ScutAniData.cpp" />
+    <ClCompile Include="ScutAniGroup.cpp" />
+    <ClCompile Include="ScutAnimationManager.cpp" />
+    <ClCompile Include="ScutFrame.cpp" />
+    <ClCompile Include="ScutSprite.cpp" />
+    <ClCompile Include="ScutTile.cpp" />
+    <ClCompile Include="ScutTileTable.cpp" />
+    <ClCompile Include="SpriteFileStream.cpp" />
+    <ClCompile Include="LUA_Export\LuaScutAnimation.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="ScutAniData.h" />
+    <ClInclude Include="ScutAniGroup.h" />
+    <ClInclude Include="ScutAnimationManager.h" />
+    <ClInclude Include="ScutFrame.h" />
+    <ClInclude Include="ScutSprite.h" />
+    <ClInclude Include="ScutTile.h" />
+    <ClInclude Include="ScutTileTable.h" />
+    <ClInclude Include="SpriteFileStream.h" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

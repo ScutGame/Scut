@@ -1,0 +1,14 @@
+namespace ScutUtility
+{
+	class CScutLuaLan
+	{
+	public:
+		static CScutLuaLan* instance();
+		bool Add(const char* pszLan, const char* pszPath);
+		bool Switch(const char* pszLan);
+		void Remove(const char* pszLan);
+		const char* Get(const char *group, const char *key);
+		void RemoveAll();
+	};
+
+}

@@ -314,9 +314,12 @@ function ZyMessageBoxEx:initMessageBox()
 		
 		--ÎÄ×Ö	
 		local labelWidth= boxSize.width*0.9 - edgeWidth * 2
-		local contentStr=string.format("<label>%s</label>",self._tableStyle[MB_STYLE_MESSAGE] )
-		contentLabel= ZyMultiLabel:new(contentStr,labelWidth,FONT_NAME,FONT_SMM_SIZE)
-		contentLabel:addto(messageBox,0)
+		--local contentStr=string.format("<label>%s</label>",self._tableStyle[MB_STYLE_MESSAGE] )
+		local contentStr=self._tableStyle[MB_STYLE_MESSAGE] 
+		contentLabel= CCLabelTTF:create(contentStr,FONT_NAME,FONT_SMM_SIZE)
+		--contentLabel:addto(messageBox,0)
+		messageBox:addChild(contentLabel,0);
+		contentLabel:setAnchorPoint(PT(0.5,0.5));
 		local posX=boxSize.width/2-contentLabel:getContentSize().width/2
 		local posY=boxSize.height*0.42-contentLabel:getContentSize().height/2
 		contentLabel:setPosition(PT(posX,posY))

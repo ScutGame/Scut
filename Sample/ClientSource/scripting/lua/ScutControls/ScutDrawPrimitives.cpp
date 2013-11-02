@@ -28,19 +28,19 @@ namespace ScutCxControl
 	{
 		if (fLineWidth > 1.0f)
 		{
-			glDisable(GL_LINE_SMOOTH);
+			//glDisable(GL_LINE_SMOOTH);
 		}
 		else
 		{
-			glEnable(GL_LINE_SMOOTH);
+			//glEnable(GL_LINE_SMOOTH);
 		}
 		glLineWidth(fLineWidth);
-		glColor4f(color.r/ 255.f, color.g / 255.f, color.b/ 255.f, color.a / 255.f);
+		//glColor4f(color.r/ 255.f, color.g / 255.f, color.b/ 255.f, color.a / 255.f);
 		ccDrawLine(origin, destination);
 		
-		glDisable(GL_LINE_SMOOTH);
+		//glDisable(GL_LINE_SMOOTH);
 		glLineWidth(1.0);
-		glColor4f(1.0, 1.0, 1.0, 1.0);
+		//glColor4f(1.0, 1.0, 1.0, 1.0);
 	}
 
 	ScutLineNode* ScutLineNode::lineWithPoint( cocos2d::CCPoint origin, cocos2d::CCPoint destination , float fLineWidth, cocos2d::ccColor4B color )

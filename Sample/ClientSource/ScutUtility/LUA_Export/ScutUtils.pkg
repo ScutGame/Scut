@@ -1,0 +1,61 @@
+namespace ScutUtility
+{
+	enum EPlatformType
+	{
+
+		ptWin32,
+	
+		ptiPod,
+		
+		ptiPad,
+		
+		ptiPhone,
+		
+		ptiPhone_AppStore,
+		
+		ptANDROID,
+	
+		ptMac,
+		
+		ptwindowsPhone7,
+	
+		ptUnknow,
+	};
+
+	enum EActiveNetworkType
+	{
+		antNone,
+		antWIFI,
+		ant2G,
+		ant3G,
+	};
+
+	class ScutUtils
+	{
+	public:
+		static EPlatformType GetPlatformType();
+		static const char* getImsi();
+		static const char* getImei();
+		static int scheduleLocalNotification(const char* pszSoundName, const char* pszAlertBody, const char* pszAlertAction, const char* pszLaunchImage, 
+											double timeIntervalSince1970, int repeatInterval, bool hasAction, const char* pszAlertTitle = NULL, bool hasVibration = true, int iconResId = 1);
+		static void cancelLocalNotification(int nNotificationID);
+		static void cancelLocalNotifications();
+		static const char* getMacAddress();
+		static void setTextToClipBoard(std::string content);
+		static const char* getTextFromClipBoard();
+		static void launchApp(std::string packageName, std::string data = "");
+		static void installPackage(std::string packageFilePath);
+		static bool checkAppInstalled(std::string packageName, bool bForceUpdate);
+		static void registerWebviewCallback(std::string strFun);
+		static const char* getInstalledApps();
+		static const char* getCurrentAppId();
+		
+		static void GoBack();
+		static const char* getOpenUrlData();
+		
+		static bool isJailBroken();
+		
+		static EActiveNetworkType getActiveNetworkInfo();
+	};
+
+}

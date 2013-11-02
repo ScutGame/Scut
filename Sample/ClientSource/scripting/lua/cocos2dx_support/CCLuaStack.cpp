@@ -42,7 +42,8 @@ extern "C" {
 extern int  tolua_ScutScene_open (lua_State* tolua_S);
 extern int  tolua_ScutDataLogic_open (lua_State* tolua_S);
 extern int  tolua_ScutSystem_open (lua_State* tolua_S);
-
+extern int  tolua_ScutUtility_open(lua_State* tolua_S);
+extern int  luaopen_ScutAnimation(lua_State* tolua_S);
 namespace {
 int lua_print(lua_State * luastate)
 {
@@ -114,6 +115,8 @@ bool CCLuaStack::init(void)
 	tolua_ScutDataLogic_open(m_state);
 	//tolua_ScutScene_open(m_state);
 	tolua_ScutSystem_open(m_state);
+	tolua_ScutUtility_open(m_state);
+	luaopen_ScutAnimation(m_state);
     // Register our version of the global "print" function
     const luaL_reg global_functions [] = {
         {"print", lua_print},

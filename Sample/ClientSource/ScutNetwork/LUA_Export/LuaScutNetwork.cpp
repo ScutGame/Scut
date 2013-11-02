@@ -43,9 +43,9 @@ static int tolua_collect_ScutNetwork__CHttpClientResponse (lua_State* tolua_S)
 	return 0;
 }
 
-static int tolua_collect_BOOL (lua_State* tolua_S)
+static int tolua_collect_bool (lua_State* tolua_S)
 {
- BOOL* self = (BOOL*) tolua_tousertype(tolua_S,1,0);
+ bool* self = (bool*) tolua_tousertype(tolua_S,1,0);
 	Mtolua_delete(self);
 	return 0;
 }
@@ -85,8 +85,8 @@ static void tolua_reg_types (lua_State* tolua_S)
  Mtolua_typeid(tolua_S,typeid(ScutNetwork::CNetClientBase), "ScutNetwork::CNetClientBase");
  tolua_usertype(tolua_S,"ScutNetwork::CHttpClientResponse");
  Mtolua_typeid(tolua_S,typeid(ScutNetwork::CHttpClientResponse), "ScutNetwork::CHttpClientResponse");
- tolua_usertype(tolua_S,"BOOL");
- Mtolua_typeid(tolua_S,typeid(BOOL), "BOOL");
+ tolua_usertype(tolua_S,"bool");
+ Mtolua_typeid(tolua_S,typeid(bool), "bool");
  tolua_usertype(tolua_S,"ScutNetwork::INetStatusNotify");
  Mtolua_typeid(tolua_S,typeid(ScutNetwork::INetStatusNotify), "ScutNetwork::INetStatusNotify");
  tolua_usertype(tolua_S,"ScutNetwork::CHttpSession");
@@ -687,15 +687,15 @@ static int tolua_ScutNetwork_ScutNetwork_CNetClientBase_AddHeader00(lua_State* t
   if (!self) tolua_error(tolua_S,"invalid 'self' in function 'AddHeader'", NULL);
 #endif
   {
-   BOOL tolua_ret = (BOOL)  self->AddHeader(name,value);
+   bool tolua_ret = (bool)  self->AddHeader(name,value);
    {
 #ifdef __cplusplus
-    void* tolua_obj = Mtolua_new((BOOL)(tolua_ret));
-     tolua_pushusertype(tolua_S,tolua_obj,"BOOL");
+    void* tolua_obj = Mtolua_new((bool)(tolua_ret));
+     tolua_pushusertype(tolua_S,tolua_obj,"bool");
     tolua_register_gc(tolua_S,lua_gettop(tolua_S));
 #else
-    void* tolua_obj = tolua_copy(tolua_S,(void*)&tolua_ret,sizeof(BOOL));
-     tolua_pushusertype(tolua_S,tolua_obj,"BOOL");
+    void* tolua_obj = tolua_copy(tolua_S,(void*)&tolua_ret,sizeof(bool));
+     tolua_pushusertype(tolua_S,tolua_obj,"bool");
     tolua_register_gc(tolua_S,lua_gettop(tolua_S));
 #endif
    }
@@ -1228,15 +1228,15 @@ static int tolua_ScutNetwork_ScutNetwork_CHttpClient_HttpPost00(lua_State* tolua
   if (!self) tolua_error(tolua_S,"invalid 'self' in function 'HttpPost'", NULL);
 #endif
   {
-   BOOL tolua_ret = (BOOL)  self->HttpPost(url,postData,nPostDataSize,*resp,formflag);
+   bool tolua_ret = (bool)  self->HttpPost(url,postData,nPostDataSize,*resp,formflag);
    {
 #ifdef __cplusplus
-    void* tolua_obj = Mtolua_new((BOOL)(tolua_ret));
-     tolua_pushusertype(tolua_S,tolua_obj,"BOOL");
+    void* tolua_obj = Mtolua_new((bool)(tolua_ret));
+     tolua_pushusertype(tolua_S,tolua_obj,"bool");
     tolua_register_gc(tolua_S,lua_gettop(tolua_S));
 #else
-    void* tolua_obj = tolua_copy(tolua_S,(void*)&tolua_ret,sizeof(BOOL));
-     tolua_pushusertype(tolua_S,tolua_obj,"BOOL");
+    void* tolua_obj = tolua_copy(tolua_S,(void*)&tolua_ret,sizeof(bool));
+     tolua_pushusertype(tolua_S,tolua_obj,"bool");
     tolua_register_gc(tolua_S,lua_gettop(tolua_S));
 #endif
    }
@@ -1420,15 +1420,15 @@ static int tolua_ScutNetwork_ScutNetwork_CHttpClient_AddHeader00(lua_State* tolu
   if (!self) tolua_error(tolua_S,"invalid 'self' in function 'AddHeader'", NULL);
 #endif
   {
-   BOOL tolua_ret = (BOOL)  self->AddHeader(name,value);
+   bool tolua_ret = (bool)  self->AddHeader(name,value);
    {
 #ifdef __cplusplus
-    void* tolua_obj = Mtolua_new((BOOL)(tolua_ret));
-     tolua_pushusertype(tolua_S,tolua_obj,"BOOL");
+    void* tolua_obj = Mtolua_new((bool)(tolua_ret));
+     tolua_pushusertype(tolua_S,tolua_obj,"bool");
     tolua_register_gc(tolua_S,lua_gettop(tolua_S));
 #else
-    void* tolua_obj = tolua_copy(tolua_S,(void*)&tolua_ret,sizeof(BOOL));
-     tolua_pushusertype(tolua_S,tolua_obj,"BOOL");
+    void* tolua_obj = tolua_copy(tolua_S,(void*)&tolua_ret,sizeof(bool));
+     tolua_pushusertype(tolua_S,tolua_obj,"bool");
     tolua_register_gc(tolua_S,lua_gettop(tolua_S));
 #endif
    }
@@ -1451,7 +1451,7 @@ static int tolua_ScutNetwork_ScutNetwork_CHttpClient_UseHttpProxy00(lua_State* t
  tolua_Error tolua_err;
  if (
      !tolua_isusertype(tolua_S,1,"ScutNetwork::CHttpClient",0,&tolua_err) ||
-     (tolua_isvaluenil(tolua_S,2,&tolua_err) || !tolua_isusertype(tolua_S,2,"BOOL",0,&tolua_err)) ||
+     (tolua_isvaluenil(tolua_S,2,&tolua_err) || !tolua_isusertype(tolua_S,2,"bool",0,&tolua_err)) ||
      !tolua_isnoobj(tolua_S,3,&tolua_err)
  )
   goto tolua_lerror;
@@ -1459,7 +1459,7 @@ static int tolua_ScutNetwork_ScutNetwork_CHttpClient_UseHttpProxy00(lua_State* t
 #endif
  {
   ScutNetwork::CHttpClient* self = (ScutNetwork::CHttpClient*)  tolua_tousertype(tolua_S,1,0);
-  BOOL bUseProxy = *((BOOL*)  tolua_tousertype(tolua_S,2,0));
+  bool bUseProxy = *((bool*)  tolua_tousertype(tolua_S,2,0));
 #ifndef TOLUA_RELEASE
   if (!self) tolua_error(tolua_S,"invalid 'self' in function 'UseHttpProxy'", NULL);
 #endif
@@ -1519,7 +1519,7 @@ static int tolua_ScutNetwork_ScutNetwork_CHttpClient_UseHttpsProxy00(lua_State* 
  tolua_Error tolua_err;
  if (
      !tolua_isusertype(tolua_S,1,"ScutNetwork::CHttpClient",0,&tolua_err) ||
-     (tolua_isvaluenil(tolua_S,2,&tolua_err) || !tolua_isusertype(tolua_S,2,"BOOL",0,&tolua_err)) ||
+     (tolua_isvaluenil(tolua_S,2,&tolua_err) || !tolua_isusertype(tolua_S,2,"bool",0,&tolua_err)) ||
      !tolua_isnoobj(tolua_S,3,&tolua_err)
  )
   goto tolua_lerror;
@@ -1527,7 +1527,7 @@ static int tolua_ScutNetwork_ScutNetwork_CHttpClient_UseHttpsProxy00(lua_State* 
 #endif
  {
   ScutNetwork::CHttpClient* self = (ScutNetwork::CHttpClient*)  tolua_tousertype(tolua_S,1,0);
-  BOOL bUseProxy = *((BOOL*)  tolua_tousertype(tolua_S,2,0));
+  bool bUseProxy = *((bool*)  tolua_tousertype(tolua_S,2,0));
 #ifndef TOLUA_RELEASE
   if (!self) tolua_error(tolua_S,"invalid 'self' in function 'UseHttpsProxy'", NULL);
 #endif
@@ -2306,15 +2306,15 @@ static int tolua_ScutNetwork_ScutNetwork_CHttpClientResponse_DataContains00(lua_
   if (!self) tolua_error(tolua_S,"invalid 'self' in function 'DataContains'", NULL);
 #endif
   {
-   BOOL tolua_ret = (BOOL)  self->DataContains(searchStr);
+   bool tolua_ret = (bool)  self->DataContains(searchStr);
    {
 #ifdef __cplusplus
-    void* tolua_obj = Mtolua_new((BOOL)(tolua_ret));
-     tolua_pushusertype(tolua_S,tolua_obj,"BOOL");
+    void* tolua_obj = Mtolua_new((bool)(tolua_ret));
+     tolua_pushusertype(tolua_S,tolua_obj,"bool");
     tolua_register_gc(tolua_S,lua_gettop(tolua_S));
 #else
-    void* tolua_obj = tolua_copy(tolua_S,(void*)&tolua_ret,sizeof(BOOL));
-     tolua_pushusertype(tolua_S,tolua_obj,"BOOL");
+    void* tolua_obj = tolua_copy(tolua_S,(void*)&tolua_ret,sizeof(bool));
+     tolua_pushusertype(tolua_S,tolua_obj,"bool");
     tolua_register_gc(tolua_S,lua_gettop(tolua_S));
 #endif
    }
@@ -2350,15 +2350,15 @@ static int tolua_ScutNetwork_ScutNetwork_CHttpClientResponse_ContentTypeContains
   if (!self) tolua_error(tolua_S,"invalid 'self' in function 'ContentTypeContains'", NULL);
 #endif
   {
-   BOOL tolua_ret = (BOOL)  self->ContentTypeContains(searchStr);
+   bool tolua_ret = (bool)  self->ContentTypeContains(searchStr);
    {
 #ifdef __cplusplus
-    void* tolua_obj = Mtolua_new((BOOL)(tolua_ret));
-     tolua_pushusertype(tolua_S,tolua_obj,"BOOL");
+    void* tolua_obj = Mtolua_new((bool)(tolua_ret));
+     tolua_pushusertype(tolua_S,tolua_obj,"bool");
     tolua_register_gc(tolua_S,lua_gettop(tolua_S));
 #else
-    void* tolua_obj = tolua_copy(tolua_S,(void*)&tolua_ret,sizeof(BOOL));
-     tolua_pushusertype(tolua_S,tolua_obj,"BOOL");
+    void* tolua_obj = tolua_copy(tolua_S,(void*)&tolua_ret,sizeof(bool));
+     tolua_pushusertype(tolua_S,tolua_obj,"bool");
     tolua_register_gc(tolua_S,lua_gettop(tolua_S));
 #endif
    }

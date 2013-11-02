@@ -92,7 +92,7 @@
       <AdditionalIncludeDirectories>$(MSBuildProgramFiles32)\Microsoft SDKs\Windows\v7.1A\include;$(IntDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ResourceCompile>
     <Link>
-      <AdditionalDependencies>libcocos2d.lib;libCocosDenshion.lib;opengl32.lib;glew32.lib;liblua.lib;libzlib.lib;libcurl_imp.lib;ScutNetWork.lib;ScutDataLogic.lib;ScutSystem.lib;libjpeg.lib;libpng.lib;libtiff.lib;pthreadVCE2.lib;libwebp.lib;ws2_32.lib;winmm.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>libcocos2d.lib;libCocosDenshion.lib;opengl32.lib;glew32.lib;liblua.lib;libzlib.lib;libcurl_imp.lib;ScutNetWork.lib;ScutDataLogic.lib;ScutSystem.lib;ScutUtility.lib;ScutAnimation.lib;libjpeg.lib;libpng.lib;libtiff.lib;pthreadVCE2.lib;libwebp.lib;ws2_32.lib;winmm.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(OutDir);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
@@ -132,7 +132,7 @@
       <AdditionalIncludeDirectories>$(MSBuildProgramFiles32)\Microsoft SDKs\Windows\v7.1A\include;$(IntDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ResourceCompile>
     <Link>
-      <AdditionalDependencies>libcocos2d.lib;libCocosDenshion.lib;opengl32.lib;glew32.lib;liblua.lib;lua51.lib;libzlib.lib;libcurl_imp.lib;ScutNetWork.lib;ScutDataLogic.lib;ScutSystem.lib;libjpeg.lib;libpng.lib;libtiff.lib;pthreadVCE2.lib;libwebp.lib;ws2_32.lib;winmm.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>libcocos2d.lib;libCocosDenshion.lib;opengl32.lib;glew32.lib;liblua.lib;lua51.lib;libzlib.lib;libcurl_imp.lib;ScutNetWork.lib;ScutDataLogic.lib;ScutSystem.lib;ScutUtility.lib;ScutAnimation.lib;libjpeg.lib;libpng.lib;libtiff.lib;pthreadVCE2.lib;libwebp.lib;ws2_32.lib;winmm.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(OutDir);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <SubSystem>Windows</SubSystem>
       <TargetMachine>MachineX86</TargetMachine>
