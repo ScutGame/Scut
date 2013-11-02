@@ -1,56 +1,58 @@
-ScutScene = {
-    root=nil
-}
+ScutScene = {}
 
-print(ScutScene)
-
+scenes = {}
 function ScutScene:new(o)
     o = o or {}
+    if o.root == nil then
+        o.root = CCScene:create()
+        print(o.root)
+    end
     setmetatable(o, self)
     self.__index = self
+    scenes[o.root] = o
     return o
 end
 
-function ScutScene:create_and_init()
-    root = CCScene:create()
-    self:register_script_handler()
-    return root
+function ScutScene:registerScriptHandler(func)
 end
 
-function ScutScene:on_lua_scene_enter()
-    if self.on_enter then
-        self:on_enter()
-    end
+function ScutScene:registerCallback(func)
+    func = func or function()end
+    self.mCallbackFunc = func
 end
 
-function ScutScene:on_lua_scene_exit()
-    if self.on_exit then
-        self:on_exit()
-    end
+function ScutScene:registerNetErrorFunc(func)
+    func = func or function()end
+    self.mNetErrorFunc = func
 end
 
-function ScutScene:register_script_handler()
-    local function on_node_event(event)
-        if event == "enter" then
-            self:on_lua_scene_enter()
-        elseif event == "exit" then
-            self:on_lua_scene_exit()
+function ScutScene:registerNetCommonDataFunc(func)
+    func = func or function()end
+    self.mNetCommonDataFunc = func
+end
+
+function ScutScene:registerNetDecodeEnd()
+    func = func or function()end
+    self.NetDecodeEndFunc = func
+end
+
+function ScutScene:execCallback(nTag, nNetState, pData)
+    if 2 == nNetState then
+        local reader = ScutDataLogic.CDataRequest:Instance()
+        local bValue = reader:LuaHandlePushDataWithInt(pData)
+        if not bValue then return end
+        if self.mCallbackFunc then
+            self.mCallbackFunc(self.root)
+        end
+
+        if self.mNetCommonDataFunc then
+            self.mNetCommonDataFunc()
+        end
+
+        netDecodeEnd(self.root, nTag)
+
+        if self.mNetErrorFunc then
+            self.mNetErrorFunc()
         end
     end
-    self.root:registerScriptHandler(on_node_event)
-end
-
-function ScutScene:register_callback()
-end
-
-function ScutScene:exec_callback()
-end
-
-function ScutScene:net_error_func()
-    end
-
-function ScutScene:net_common_data_func()
-end
-
-function ScutScene:net_decode_end_func()
 end
