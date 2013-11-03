@@ -458,31 +458,53 @@ void ScutDataLogic::CDataRequest::LuaHandleData(void* pScene, int nTag, int nNet
 	{
 		(*m_pLuaDataHandleCallBack)(pScene, nTag, nNetRet, lpData, lpExternal);
 	}
-	//TODO:之前的处理方式，第一个版本后移除
-	//lua_getglobal(LuaHost::Instance()->GetLuaState(), "OnHandleData");
-	//lua_pushlightuserdata(LuaHost::Instance()->GetLuaState(), this);
-	//lua_pushnumber(LuaHost::Instance()->GetLuaState(), nTag);
-	//lua_pushnumber(LuaHost::Instance()->GetLuaState(), nNetRet);
-	//lua_pushlstring(LuaHost::Instance()->GetLuaState(), (const char*)((CMemoryStream*)&data)->GetMemory(), data.GetSize());
-	//if (lua_pcall(LuaHost::Instance()->GetLuaState(), 4, 0, 0) != 0)
-	//{
-	//	l_error(LuaHost::Instance()->GetLuaState(), "Call lua OnHandlerData failed: %s", lua_tostring(LuaHost::Instance()->GetLuaState(), -1));
-	//}
-	//::lua_pop(LuaHost::Instance()->GetLuaState(), 1);
+
+	lua_State* pState = LuaHost::Instance()->GetLuaState();
+	lua_getglobal(pState, "OnHandleData");
+	CC_ASSERT( lua_isfunction(pState, -1) && "OnHandleData is not a function");
+
+	lua_pushlightuserdata(pState, pScene);
+	lua_pushnumber(pState, nTag);
+	lua_pushnumber(pState, nNetRet);
+	lua_pushnumber(pState, int(lpData));
+
+	int nargs = 4;
+	int traceback = 0;
+	lua_getglobal(pState, "__G__TRACKBACK__");                         /* L: ... func arg1 arg2 ... G */
+	if (!lua_isfunction(pState, -1))
+	{
+		lua_pop(pState, 1);                                            /* L: ... func arg1 arg2 ... */
+	}
+	else
+	{
+		traceback = -nargs-2;
+		lua_insert(pState, traceback);                                 /* L: ... G func arg1 arg2 ... */
+	}
+
+	if (lua_pcall(pState, nargs, 0, traceback) != 0)
+	{
+		l_error(pState, "Call lua OnHandlerData failed: %s", lua_tostring(pState, -1));
+	}
+
+	lua_pop(pState, (traceback != 0) ? 2 : 1);
 }
 
-void ScutDataLogic::CDataRequest::LuaHandlePushData( CStream* lpData )
+bool ScutDataLogic::CDataRequest::LuaHandlePushData( CStream* lpData )
 {
-	if (!lpData)
-	{
-		return;
-	}
-	bool bValue = ScutDataLogic::CNetReader::getInstance()->pushNetStream((char*)((ScutSystem::CMemoryStream*)lpData)->GetMemory(), ((ScutSystem::CMemoryStream*)lpData)->GetSize());
+	bool bRt = false;
+	if (!lpData) return bRt;
+	bool bPush = ScutDataLogic::CNetReader::getInstance()->pushNetStream((char*)((ScutSystem::CMemoryStream*)lpData)->GetMemory(), ((ScutSystem::CMemoryStream*)lpData)->GetSize());
 	const char*  pushFunc = cocos2d::CCDirector::sharedDirector()->GetSocketPushHandler();
 	if (pushFunc)
 	{
-		ScutDataLogic::LuaHost::Instance()->execFunc(pushFunc, NULL, bValue);
+		bRt = ScutDataLogic::LuaHost::Instance()->execFunc(pushFunc, NULL, bPush);
 	}
+	return bRt;
+}
+
+bool ScutDataLogic::CDataRequest::LuaHandlePushDataWithInt( int p )
+{
+	return LuaHandlePushData((CStream*)p);
 }
 
 void ScutDataLogic::CDataRequest::LuaHandleErrorData()

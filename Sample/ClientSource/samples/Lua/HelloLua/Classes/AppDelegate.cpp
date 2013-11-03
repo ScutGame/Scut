@@ -5,9 +5,7 @@
 #include "script_support/CCScriptSupport.h"
 #include "CCLuaEngine.h"
 #include "LuaHost.h"
-#include "FrameManager.h"
 #include "DataRequest.h"
-#include "SceneManager.h"
 USING_NS_CC;
 using namespace CocosDenshion;
 using namespace ScutDataLogic;
@@ -53,8 +51,8 @@ bool AppDelegate::applicationDidFinishLaunching()
 	
 	lua_State * pLuaState = ScutDataLogic::LuaHost::Instance()->GetLuaState();
 
-	CDataRequest::Instance()->RegisterLUACallBack((LUA_DATAHANDLE_CALLBACK)&ScutCxControl::netDataDispatch);
-	CFrameManager::Instance(); 
+	//CDataRequest::Instance()->RegisterLUACallBack((LUA_DATAHANDLE_CALLBACK)&ScutCxControl::netDataDispatch);
+	//CFrameManager::Instance(); 
 	char tempPath[MAX_PATH + 1];
 	::GetModuleFileNameA(NULL,tempPath, _MAX_PATH + 1);
 	string ret((char*)tempPath);
