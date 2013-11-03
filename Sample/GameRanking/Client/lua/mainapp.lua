@@ -11,6 +11,9 @@ local strModuleName = "mainapp"
 CCLuaLog("Module ".. strModuleName.. " loaded.")
 strModuleName = nil
 
+function PushReceiverCallback(pScutScene, lpExternalData)
+end
+
 local function ScutMain()
     ---[[
     ------------------------------------------------------------------
@@ -61,7 +64,6 @@ local function ScutMain()
     require("lib.FrameManager")
     require("datapool.Image")
     require("testScene")
-    require("datapool.PushReceiverLayer")
     g_frame_mgr = FrameManager:new()
     g_frame_mgr:init()
 
@@ -83,8 +85,9 @@ local function ScutMain()
     function netDecodeEnd(pScutScene, nTag)
 --        ZyLoading.hide(pScutScene, nTag)
     end
+
     --注册服务器push回调
-    CCDirector:sharedDirector():RegisterSocketPushHandler("PushReceiverLayer.PushReceiverCallback")
+    CCDirector:sharedDirector():RegisterSocketPushHandler("PushReceiverCallback")
     --NDFixSDK.FixCocos2dx:CreateFixCocos2dx():RegisterSocketPushHandler("PushReceiverLayer.PushReceiverCallback")
     --ScutScene:registerNetCommonDataFunc("processCommonData");
     --ScutScene:registerNetErrorFunc("LoginScene.netConnectError2")
