@@ -1,0 +1,37 @@
+﻿<Properties>
+  <MonoDevelop.Ide.Workspace ActiveConfiguration="Release_Linux" />
+  <MonoDevelop.Ide.Workbench ActiveDocument="ZyGames.Doudizhu.Bll\GameHostApp.cs">
+    <Files>
+      <File FileName="ZyGames.Doudizhu.HostServer\PyScript\Action\Action1008.py" Line="1" Column="1" />
+      <File FileName="ZyGames.Doudizhu.Bll\GameHostApp.cs" Line="126" Column="36" />
+      <File FileName="ZyGames.Doudizhu.HostServer\PyScript\Route.config.xml" Line="1" Column="1" />
+      <File FileName="ZyGames.Doudizhu.HostServer\Program.cs" Line="1" Column="1" />
+      <File FileName="ZyGames.Doudizhu.HostServer\App.config" Line="1" Column="1" />
+    </Files>
+    <Pads>
+      <Pad Id="ProjectPad">
+        <State expanded="True">
+          <Node name="ZyGames.Doudizhu.Bll" expanded="True" />
+          <Node name="ZyGames.Doudizhu.HostServer" expanded="True" selected="True">
+            <Node name="PyScript" expanded="True" />
+          </Node>
+          <Node name="ZyGames.Doudizhu.Model" expanded="True">
+            <Node name="DataModel" expanded="True" />
+            <Node name="LogModel" expanded="True" />
+            <Node name="Model" expanded="True" />
+          </Node>
+        </State>
+      </Pad>
+      <Pad Id="ClassPad">
+        <State expanded="True" selected="True" />
+      </Pad>
+      <Pad Id="MonoDevelop.Debugger.WatchPad">
+        <State />
+      </Pad>
+    </Pads>
+  </MonoDevelop.Ide.Workbench>
+  <MonoDevelop.Ide.DebuggingService.Breakpoints>
+    <BreakpointStore />
+  </MonoDevelop.Ide.DebuggingService.Breakpoints>
+  <MonoDevelop.Ide.DebuggingService.PinnedWatches />
+</Properties>
