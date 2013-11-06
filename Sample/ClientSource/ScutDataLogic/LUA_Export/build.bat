@@ -1,0 +1,1 @@
+tolua++.exe -tScutDataLogic -o LuaScutDataLogic.cpp ScutDataLogic.pkg

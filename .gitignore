@@ -77,6 +77,8 @@ build/
 *.pidb
 *.log
 *.scc
+*.lib
+*.tlog
 
 # Visual C++ cache files
 ipch/
@@ -213,3 +215,6 @@ pip-log.txt
 
 #Mr Developer
 .mr.developer.cfg
+
+Debug.Win32
+Win32Debug
