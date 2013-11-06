@@ -36,6 +36,12 @@
             </summary>
             <returns></returns>
         </member>
+        <member name="P:ZyGames.Framework.Common.Build.WeavingEntityTask.SolutionDir">
+            <summary>
+            Gets or sets the solution dir.
+            </summary>
+            <value>The solution dir.</value>
+        </member>
         <member name="P:ZyGames.Framework.Common.Build.WeavingEntityTask.FilePattern">
             <summary>
             过滤文件类型

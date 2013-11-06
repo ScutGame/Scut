@@ -936,6 +936,12 @@
             是否是修改列，False则新增列
             </summary>
         </member>
+        <member name="P:ZyGames.Framework.Data.DbColumn.IsIdentity">
+            <summary>
+            是否是自增列
+            </summary>
+            <value><c>true</c> if this instance is identity; otherwise, <c>false</c>.</value>
+        </member>
         <member name="P:ZyGames.Framework.Data.DbColumn.DbType">
             <summary>
             Db映射类型
@@ -996,12 +1002,13 @@
             执行命令结构
             </summary>
         </member>
-        <member name="M:ZyGames.Framework.Data.CommandStruct.#ctor(System.String,ZyGames.Framework.Data.CommandMode)">
+        <member name="M:ZyGames.Framework.Data.CommandStruct.#ctor(System.String,ZyGames.Framework.Data.CommandMode,System.String)">
             <summary>
             
             </summary>
             <param name="tableName"></param>
             <param name="editType"></param>
+            <param name="columns">Inquiry table columns</param>
         </member>
         <member name="M:ZyGames.Framework.Data.CommandStruct.AddKey(System.Data.IDataParameter)">
             <summary>
@@ -1082,14 +1089,54 @@
             提交
             </summary>
         </member>
+        <member name="M:ZyGames.Framework.Data.CommandStruct.ParserInquiry">
+            <summary>
+            Parsers the inquiry.
+            </summary>
+        </member>
         <member name="M:ZyGames.Framework.Data.CommandStruct.ParserInsert">
             <summary>
             
             </summary>
         </member>
+        <member name="M:ZyGames.Framework.Data.CommandStruct.FormatFieldName(System.String)">
+            <summary>
+            Formats the name of the field.
+            </summary>
+            <returns>The field name.</returns>
+            <param name="field">Field.</param>
+        </member>
         <member name="M:ZyGames.Framework.Data.CommandStruct.ParserUpdateInsert">
             <summary>
             
+            </summary>
+        </member>
+        <member name="M:ZyGames.Framework.Data.CommandStruct.AppendToDataParam(System.Collections.Generic.List{System.Data.IDataParameter},System.Data.IDataParameter[])">
+            <summary>
+            Appends to data parameter.
+            </summary>
+            <param name="paramList">Parameter list.</param>
+            <param name="dataParameters">Data parameters.</param>
+        </member>
+        <member name="M:ZyGames.Framework.Data.CommandStruct.FormatUpdateInsertSql(System.String,System.String,System.String,System.String,System.String)">
+            <summary>
+            Formats the update insert sql.
+            </summary>
+            <returns>The update insert sql.</returns>
+            <param name="tableName">Table name.</param>
+            <param name="updateSets">Update sets.</param>
+            <param name="condition">Condition.</param>
+            <param name="insertFields">Insert fields.</param>
+            <param name="insertValues">Insert values.</param>
+        </member>
+        <member name="M:ZyGames.Framework.Data.CommandStruct.ParserUpdate">
+            <summary>
+            Parsers the update.
+            </summary>
+        </member>
+        <member name="M:ZyGames.Framework.Data.CommandStruct.ParserDelete">
+            <summary>
+            Parsers the delete.
             </summary>
         </member>
         <member name="P:ZyGames.Framework.Data.CommandStruct.TableName">
@@ -1101,6 +1148,29 @@
             <summary>
             
             </summary>
+        </member>
+        <member name="P:ZyGames.Framework.Data.CommandStruct.Columns">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:ZyGames.Framework.Data.CommandStruct.FromIndex">
+            <summary>
+            Gets or sets the index of the from.
+            </summary>
+            <value>The index of the from.</value>
+        </member>
+        <member name="P:ZyGames.Framework.Data.CommandStruct.ToIndex">
+            <summary>
+            Gets or sets the index of the to.
+            </summary>
+            <value>The index of the to.</value>
+        </member>
+        <member name="P:ZyGames.Framework.Data.CommandStruct.OrderBy">
+            <summary>
+            Gets or sets the order by.
+            </summary>
+            <value>The order by.</value>
         </member>
         <member name="P:ZyGames.Framework.Data.CommandStruct.Filter">
             <summary>
@@ -1128,6 +1198,54 @@
             </summary>
             <param name="tableName"></param>
             <param name="editType"></param>
+        </member>
+        <member name="M:ZyGames.Framework.Data.MySql.MySqlCommandStruct.AddExpressParam(System.String,System.Int32,System.Int32,System.Object)">
+            <summary>
+            
+            </summary>
+            <param name="paramName"></param>
+            <param name="dbType"></param>
+            <param name="size"></param>
+            <param name="value"></param>
+        </member>
+        <member name="M:ZyGames.Framework.Data.MySql.MySqlCommandStruct.AddParameter(System.String,System.Object)">
+            <summary>
+            添加参数
+            </summary>
+            <param name="field">字段名称</param>
+            <param name="value">参数</param>
+        </member>
+        <member name="M:ZyGames.Framework.Data.MySql.MySqlCommandStruct.AddParameter(System.String,System.Int32,System.Int32,System.Object)">
+            <summary>
+            
+            </summary>
+            <param name="field"></param>
+            <param name="sqlDbType"></param>
+            <param name="size"></param>
+            <param name="value"></param>
+        </member>
+        <member name="M:ZyGames.Framework.Data.MySql.MySqlCommandStruct.FormatFieldName(System.String)">
+            <summary>
+            Formats the name of the field.
+            </summary>
+            <returns>The field name.</returns>
+            <param name="field">Field.</param>
+        </member>
+        <member name="M:ZyGames.Framework.Data.MySql.MySqlCommandStruct.FormatUpdateInsertSql(System.String,System.String,System.String,System.String,System.String)">
+            <summary>
+            Formats the update insert sql.
+            </summary>
+            <returns>The update insert sql.</returns>
+            <param name="tableName">Table name.</param>
+            <param name="updateSets">Update sets.</param>
+            <param name="condition">Condition.</param>
+            <param name="insertFields">Insert fields.</param>
+            <param name="insertValues">Insert values.</param>
+        </member>
+        <member name="M:ZyGames.Framework.Data.MySql.MySqlCommandStruct.ParserInquiry">
+            <summary>
+            Parsers the inquiry.
+            </summary>
         </member>
         <member name="T:ZyGames.Framework.Data.MySql.MySqlDataProvider">
             <summary>
@@ -1273,6 +1391,12 @@
             连接数据库字符串
             </summary>
         </member>
+        <member name="P:ZyGames.Framework.Data.DbBaseProvider.ConnectionSetting">
+            <summary>
+            Gets or sets the connection setting.
+            </summary>
+            <value>The connection setting.</value>
+        </member>
         <member name="M:ZyGames.Framework.Data.MySql.MySqlDataProvider.#ctor(System.String)">
             <summary>
             
@@ -1362,6 +1486,36 @@
             </summary>
             <param name="paramName"></param>
             <param name="value"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ZyGames.Framework.Data.MySql.MySqlDataProvider.CreateCommandStruct(System.String,ZyGames.Framework.Data.CommandMode)">
+            <summary>
+            创建CommandStruct对象
+            </summary>
+            <param name="tableName"></param>
+            <param name="editType"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ZyGames.Framework.Data.MySql.MySqlDataProvider.CreateCommandFilter">
+            <summary>
+            创建CommandFilter对象
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:ZyGames.Framework.Data.MySql.MySqlDataProvider.FormatFilterParam(System.String,System.String)">
+            <summary>
+            格式化条件语句中的参数
+            </summary>
+            <param name="fieldNname"></param>
+            <param name="paramName"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ZyGames.Framework.Data.MySql.MySqlDataProvider.FormatQueryColumn(System.String,System.String[])">
+            <summary>
+            格式化Select语句中的列名
+            </summary>
+            <param name="splitChat"></param>
+            <param name="columns"></param>
             <returns></returns>
         </member>
         <member name="T:ZyGames.Framework.Data.MySql.MySqlParamHelper">
@@ -3854,6 +4008,12 @@
             
             </summary>
         </member>
+        <member name="M:ZyGames.Framework.Model.AbstractEntity.#ctor(ZyGames.Framework.Model.AccessLevel)">
+            <summary>
+            Initializes a new instance of the <see cref="T:ZyGames.Framework.Model.AbstractEntity"/> class.
+            </summary>
+            <param name="access">Access.</param>
+        </member>
         <member name="M:ZyGames.Framework.Model.AbstractEntity.#ctor(System.Boolean)">
             <summary>
             
@@ -4109,6 +4269,12 @@
             
             </summary>
         </member>
+        <member name="M:ZyGames.Framework.Model.BaseEntity.#ctor(System.Boolean)">
+            <summary>
+            Initializes a new instance of the <see cref="T:ZyGames.Framework.Model.BaseEntity"/> class.
+            </summary>
+            <param name="isReadonly">If set to <c>true</c> is readonly.</param>
+        </member>
         <member name="M:ZyGames.Framework.Model.BaseEntity.#ctor(ZyGames.Framework.Model.AccessLevel)">
             <summary>
             
@@ -4181,6 +4347,12 @@
             <summary>
             共享实体数据基类
             </summary>
+        </member>
+        <member name="M:ZyGames.Framework.Model.ShareEntity.#ctor(System.Boolean)">
+            <summary>
+            Initializes a new instance of the <see cref="T:ZyGames.Framework.Model.ShareEntity"/> class.
+            </summary>
+            <param name="isReadonly">If set to <c>true</c> is readonly.</param>
         </member>
         <member name="M:ZyGames.Framework.Model.ShareEntity.#ctor(ZyGames.Framework.Model.AccessLevel)">
             <summary>
@@ -4597,6 +4769,11 @@
             
             </summary>
         </member>
+        <member name="F:ZyGames.Framework.Data.CommandMode.Inquiry">
+            <summary>
+            The inquiry.
+            </summary>
+        </member>
         <member name="T:ZyGames.Framework.Data.DbConnectionProvider">
             <summary>
             数据连接提供类
@@ -4718,6 +4895,36 @@
             </summary>
             <param name="paramName"></param>
             <param name="value"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ZyGames.Framework.Data.Sql.SqlDataProvider.CreateCommandStruct(System.String,ZyGames.Framework.Data.CommandMode)">
+            <summary>
+            创建CommandStruct对象
+            </summary>
+            <param name="tableName"></param>
+            <param name="editType"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ZyGames.Framework.Data.Sql.SqlDataProvider.CreateCommandFilter">
+            <summary>
+            创建CommandFilter对象
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:ZyGames.Framework.Data.Sql.SqlDataProvider.FormatFilterParam(System.String,System.String)">
+            <summary>
+            格式化条件语句中的参数
+            </summary>
+            <param name="fieldNname"></param>
+            <param name="paramName"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ZyGames.Framework.Data.Sql.SqlDataProvider.FormatQueryColumn(System.String,System.String[])">
+            <summary>
+            格式化Select语句中的列名
+            </summary>
+            <param name="splitChat"></param>
+            <param name="columns"></param>
             <returns></returns>
         </member>
         <member name="T:ZyGames.Framework.Data.Sql.SqlHelper">
@@ -6416,11 +6623,10 @@
             <summary>
             
             </summary>
-            <remarks>
-            <![CDATA[
-            
-            ]]>
-            </remarks>
+            <example>
+            <code>
+            </code>
+            </example>
         </member>
         <member name="M:ZyGames.Framework.Plugin.PythonScript.PythonScriptHost.Initialize(System.String,System.String,System.Boolean)">
             <summary>
@@ -7363,6 +7569,12 @@
             <summary>
             </summary>
         </member>
+        <member name="M:ZyGames.Framework.RPC.IO.PacketHead.ToByte">
+            <summary>
+            
+            </summary>
+            <returns></returns>
+        </member>
         <member name="T:ZyGames.Framework.RPC.IO.PacketMsgType">
             <summary>
             
@@ -7479,10 +7691,37 @@
             </summary>
             <returns></returns>
         </member>
+        <member name="M:ZyGames.Framework.RPC.IO.Receiver.Dispose">
+            <summary>
+            Releases all resource used by the <see cref="T:ZyGames.Framework.RPC.IO.Receiver"/> object.
+            </summary>
+            <remarks>Call <see cref="M:ZyGames.Framework.RPC.IO.Receiver.Dispose"/> when you are finished using the <see cref="T:ZyGames.Framework.RPC.IO.Receiver"/>. The
+            <see cref="M:ZyGames.Framework.RPC.IO.Receiver.Dispose"/> method leaves the <see cref="T:ZyGames.Framework.RPC.IO.Receiver"/> in an unusable state.
+            After calling <see cref="M:ZyGames.Framework.RPC.IO.Receiver.Dispose"/>, you must release all references to the
+            <see cref="T:ZyGames.Framework.RPC.IO.Receiver"/> so the garbage collector can reclaim the memory that the
+            <see cref="T:ZyGames.Framework.RPC.IO.Receiver"/> was occupying.</remarks>
+        </member>
+        <member name="M:ZyGames.Framework.RPC.IO.Receiver.DoDispose(System.Boolean)">
+            <summary>
+            Dos the dispose.
+            </summary>
+            <param name="disposing">If set to <c>true</c> disposing.</param>
+        </member>
         <member name="T:ZyGames.Framework.RPC.IO.RequestParam">
             <summary>
             请求参数
             </summary>
+        </member>
+        <member name="M:ZyGames.Framework.RPC.IO.RequestParam.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:ZyGames.Framework.RPC.IO.RequestParam"/> class.
+            </summary>
+        </member>
+        <member name="M:ZyGames.Framework.RPC.IO.RequestParam.SetChatSet(System.Text.Encoding)">
+            <summary>
+            Sets the chat set.
+            </summary>
+            <param name="encoding">Encoding.</param>
         </member>
         <member name="M:ZyGames.Framework.RPC.IO.RequestParam.Add(System.String,System.Object)">
             <summary>
@@ -7543,7 +7782,12 @@
             </summary>
             <returns></returns>
         </member>
-        <!-- 对于成员“M:ZyGames.Framework.RPC.IO.RequestParam.ToPostString”忽略有格式错误的 XML 注释 -->
+        <member name="M:ZyGames.Framework.RPC.IO.RequestParam.ToPostString">
+            <summary>
+            Tos the post string.
+            </summary>
+            <returns>The post string.</returns>
+        </member>
         <member name="M:ZyGames.Framework.RPC.IO.RequestParam.FilterSignValue(System.String)">
             <summary>
             过滤签名参数值
@@ -7562,6 +7806,18 @@
             </summary>
             <param name="sign"></param>
             <returns></returns>
+        </member>
+        <member name="P:ZyGames.Framework.RPC.IO.RequestParam.Content">
+            <summary>
+            Gets the content.
+            </summary>
+            <value>The content.</value>
+        </member>
+        <member name="P:ZyGames.Framework.RPC.IO.RequestParam.Count">
+            <summary>
+            Gets the count.
+            </summary>
+            <value>The count.</value>
         </member>
         <member name="T:ZyGames.Framework.RPC.IO.Sender">
             <summary>
@@ -7588,9 +7844,20 @@
             
             </summary>
         </member>
+        <member name="M:ZyGames.Framework.RPC.IO.Sender.DoDispose(System.Boolean)">
+            <summary>
+            Dos the dispose.
+            </summary>
+            <param name="disposing">If set to <c>true</c> disposing.</param>
+        </member>
         <member name="T:ZyGames.Framework.RPC.IO.SignUtils">
             <summary>
             签名配置
+            </summary>
+        </member>
+        <member name="F:ZyGames.Framework.RPC.IO.SignUtils.DefaultKey">
+            <summary>
+            The default key.
             </summary>
         </member>
         <member name="M:ZyGames.Framework.RPC.IO.SignUtils.PasswordMd5(System.String)">
@@ -7599,6 +7866,56 @@
             </summary>
             <param name="str"></param>
             <returns></returns>
+        </member>
+        <member name="T:ZyGames.Framework.RPC.Sockets.SocketEventArgs">
+            <summary>
+            Socket event arguments.
+            </summary>
+        </member>
+        <member name="F:ZyGames.Framework.RPC.Sockets.SocketEventArgs.Empty">
+            <summary>
+            The empty.
+            </summary>
+        </member>
+        <member name="P:ZyGames.Framework.RPC.Sockets.SocketEventArgs.Data">
+            <summary>
+            Gets or sets the data.
+            </summary>
+            <value>The data.</value>
+        </member>
+        <member name="T:ZyGames.Framework.RPC.Sockets.SocketEventHandler">
+            <summary>
+            Socket event handler.
+            </summary>
+        </member>
+        <member name="T:ZyGames.Framework.RPC.Sockets.ClientSocket">
+            <summary>
+            Client socket.
+            </summary>
+        </member>
+        <member name="M:ZyGames.Framework.RPC.Sockets.ClientSocket.#ctor(ZyGames.Framework.RPC.Sockets.ClientSocketSettings)">
+            <summary>
+            Initializes a new instance of the <see cref="T:ZyGames.Framework.RPC.Sockets.ClientSocket"/> class.
+            </summary>
+            <param name="clientSettings">Client settings.</param>
+        </member>
+        <member name="M:ZyGames.Framework.RPC.Sockets.ClientSocket.Connect">
+            <summary>
+            Connect this instance.
+            </summary>
+        </member>
+        <member name="M:ZyGames.Framework.RPC.Sockets.ClientSocket.PostSend(System.Byte[],System.Int32,System.Int32)">
+            <summary>
+            Posts the send.
+            </summary>
+            <param name="data">Data.</param>
+            <param name="offset">Offset.</param>
+            <param name="count">Count.</param>
+        </member>
+        <member name="M:ZyGames.Framework.RPC.Sockets.ClientSocket.Close">
+            <summary>
+            Close this instance.
+            </summary>
         </member>
         <member name="E:ZyGames.Framework.RPC.Sockets.ClientSocket.DataReceived">
             <summary>
@@ -7609,6 +7926,36 @@
             <summary>
             连接断开事件
             </summary>
+        </member>
+        <member name="P:ZyGames.Framework.RPC.Sockets.ClientSocket.Connected">
+            <summary>
+            Gets a value indicating whether this <see cref="T:ZyGames.Framework.RPC.Sockets.ClientSocket"/> is connected.
+            </summary>
+            <value><c>true</c> if connected; otherwise, <c>false</c>.</value>
+        </member>
+        <member name="T:ZyGames.Framework.RPC.Sockets.ClientSocketSettings">
+            <summary>
+            Client socket settings.
+            </summary>
+        </member>
+        <member name="M:ZyGames.Framework.RPC.Sockets.ClientSocketSettings.#ctor(System.Int32,System.Net.IPEndPoint)">
+            <summary>
+            Initializes a new instance of the <see cref="T:ZyGames.Framework.RPC.Sockets.ClientSocketSettings"/> class.
+            </summary>
+            <param name="bufferSize">Buffer size.</param>
+            <param name="remoteEndPoint">Remote end point.</param>
+        </member>
+        <member name="P:ZyGames.Framework.RPC.Sockets.ClientSocketSettings.BufferSize">
+            <summary>
+            Gets the size of the buffer.
+            </summary>
+            <value>The size of the buffer.</value>
+        </member>
+        <member name="P:ZyGames.Framework.RPC.Sockets.ClientSocketSettings.RemoteEndPoint">
+            <summary>
+            Gets the remote end point.
+            </summary>
+            <value>The remote end point.</value>
         </member>
         <member name="T:ZyGames.Framework.RPC.Sockets.Threading.CallerThreadContext">
             <summary>
@@ -7663,6 +8010,31 @@
             Represents an exception in case IWorkItemResult.GetResult has been canceled
             </summary>
         </member>
+        <member name="M:ZyGames.Framework.RPC.Sockets.Threading.WorkItemCancelException.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:ZyGames.Framework.RPC.Sockets.Threading.WorkItemCancelException"/> class.
+            </summary>
+        </member>
+        <member name="M:ZyGames.Framework.RPC.Sockets.Threading.WorkItemCancelException.#ctor(System.String)">
+            <summary>
+            Initializes a new instance of the <see cref="T:ZyGames.Framework.RPC.Sockets.Threading.WorkItemCancelException"/> class.
+            </summary>
+            <param name="message">Message.</param>
+        </member>
+        <member name="M:ZyGames.Framework.RPC.Sockets.Threading.WorkItemCancelException.#ctor(System.String,System.Exception)">
+            <summary>
+            Initializes a new instance of the <see cref="T:ZyGames.Framework.RPC.Sockets.Threading.WorkItemCancelException"/> class.
+            </summary>
+            <param name="message">Message.</param>
+            <param name="e">E.</param>
+        </member>
+        <member name="M:ZyGames.Framework.RPC.Sockets.Threading.WorkItemCancelException.#ctor(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)">
+            <summary>
+            Initializes a new instance of the <see cref="T:ZyGames.Framework.RPC.Sockets.Threading.WorkItemCancelException"/> class.
+            </summary>
+            <param name="si">Si.</param>
+            <param name="sc">Sc.</param>
+        </member>
         <member name="T:ZyGames.Framework.RPC.Sockets.Threading.WorkItemTimeoutException">
             <summary>
             Represents an exception in case IWorkItemResult.GetResult has been timed out
@@ -7671,6 +8043,31 @@
             Represents an exception in case IWorkItemResult.GetResult has been timed out
             </summary>
         </member>
+        <member name="M:ZyGames.Framework.RPC.Sockets.Threading.WorkItemTimeoutException.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:ZyGames.Framework.RPC.Sockets.Threading.WorkItemTimeoutException"/> class.
+            </summary>
+        </member>
+        <member name="M:ZyGames.Framework.RPC.Sockets.Threading.WorkItemTimeoutException.#ctor(System.String)">
+            <summary>
+            Initializes a new instance of the <see cref="T:ZyGames.Framework.RPC.Sockets.Threading.WorkItemTimeoutException"/> class.
+            </summary>
+            <param name="message">Message.</param>
+        </member>
+        <member name="M:ZyGames.Framework.RPC.Sockets.Threading.WorkItemTimeoutException.#ctor(System.String,System.Exception)">
+            <summary>
+            Initializes a new instance of the <see cref="T:ZyGames.Framework.RPC.Sockets.Threading.WorkItemTimeoutException"/> class.
+            </summary>
+            <param name="message">Message.</param>
+            <param name="e">E.</param>
+        </member>
+        <member name="M:ZyGames.Framework.RPC.Sockets.Threading.WorkItemTimeoutException.#ctor(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)">
+            <summary>
+            Initializes a new instance of the <see cref="T:ZyGames.Framework.RPC.Sockets.Threading.WorkItemTimeoutException"/> class.
+            </summary>
+            <param name="si">Si.</param>
+            <param name="sc">Sc.</param>
+        </member>
         <member name="T:ZyGames.Framework.RPC.Sockets.Threading.WorkItemResultException">
             <summary>
             Represents an exception in case IWorkItemResult.GetResult has been timed out
@@ -7678,6 +8075,31 @@
             <summary>
             Represents an exception in case IWorkItemResult.GetResult has been timed out
             </summary>
+        </member>
+        <member name="M:ZyGames.Framework.RPC.Sockets.Threading.WorkItemResultException.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:ZyGames.Framework.RPC.Sockets.Threading.WorkItemResultException"/> class.
+            </summary>
+        </member>
+        <member name="M:ZyGames.Framework.RPC.Sockets.Threading.WorkItemResultException.#ctor(System.String)">
+            <summary>
+            Initializes a new instance of the <see cref="T:ZyGames.Framework.RPC.Sockets.Threading.WorkItemResultException"/> class.
+            </summary>
+            <param name="message">Message.</param>
+        </member>
+        <member name="M:ZyGames.Framework.RPC.Sockets.Threading.WorkItemResultException.#ctor(System.String,System.Exception)">
+            <summary>
+            Initializes a new instance of the <see cref="T:ZyGames.Framework.RPC.Sockets.Threading.WorkItemResultException"/> class.
+            </summary>
+            <param name="message">Message.</param>
+            <param name="e">E.</param>
+        </member>
+        <member name="M:ZyGames.Framework.RPC.Sockets.Threading.WorkItemResultException.#ctor(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)">
+            <summary>
+            Initializes a new instance of the <see cref="T:ZyGames.Framework.RPC.Sockets.Threading.WorkItemResultException"/> class.
+            </summary>
+            <param name="si">Si.</param>
+            <param name="sc">Sc.</param>
         </member>
         <member name="T:ZyGames.Framework.RPC.Sockets.Threading.WorkItemCallback">
             <summary>
@@ -7720,6 +8142,31 @@
             Defines the availeable priorities of a work item.
             The higher the priority a work item has, the sooner
             it will be executed.
+            </summary>
+        </member>
+        <member name="F:ZyGames.Framework.RPC.Sockets.Threading.WorkItemPriority.Lowest">
+            <summary>
+            The lowest.
+            </summary>
+        </member>
+        <member name="F:ZyGames.Framework.RPC.Sockets.Threading.WorkItemPriority.BelowNormal">
+            <summary>
+            The below normal.
+            </summary>
+        </member>
+        <member name="F:ZyGames.Framework.RPC.Sockets.Threading.WorkItemPriority.Normal">
+            <summary>
+            The normal.
+            </summary>
+        </member>
+        <member name="F:ZyGames.Framework.RPC.Sockets.Threading.WorkItemPriority.AboveNormal">
+            <summary>
+            The above normal.
+            </summary>
+        </member>
+        <member name="F:ZyGames.Framework.RPC.Sockets.Threading.WorkItemPriority.Highest">
+            <summary>
+            The highest.
             </summary>
         </member>
         <member name="T:ZyGames.Framework.RPC.Sockets.Threading.IWorkItemsGroup">
@@ -8009,6 +8456,11 @@
             it throws the NotImplementedException.
             </summary>
         </member>
+        <member name="T:ZyGames.Framework.RPC.Sockets.Threading.CallToPostExecute">
+            <summary>
+            Call to post execute.
+            </summary>
+        </member>
         <member name="F:ZyGames.Framework.RPC.Sockets.Threading.CallToPostExecute.Never">
             <summary>
             Never call to the PostExecute call back
@@ -8212,6 +8664,51 @@
             Returns the exception if occured otherwise returns null.
             </summary>
         </member>
+        <member name="T:ZyGames.Framework.RPC.Sockets.Threading.Action">
+            <summary>
+            Action.
+            </summary>
+        </member>
+        <member name="T:ZyGames.Framework.RPC.Sockets.Threading.Action`2">
+            <summary>
+            Action.
+            </summary>
+        </member>
+        <member name="T:ZyGames.Framework.RPC.Sockets.Threading.Action`3">
+            <summary>
+            Action.
+            </summary>
+        </member>
+        <member name="T:ZyGames.Framework.RPC.Sockets.Threading.Action`4">
+            <summary>
+            Action.
+            </summary>
+        </member>
+        <member name="T:ZyGames.Framework.RPC.Sockets.Threading.Func`1">
+            <summary>
+            Func.
+            </summary>
+        </member>
+        <member name="T:ZyGames.Framework.RPC.Sockets.Threading.Func`2">
+            <summary>
+            Func.
+            </summary>
+        </member>
+        <member name="T:ZyGames.Framework.RPC.Sockets.Threading.Func`3">
+            <summary>
+            Func.
+            </summary>
+        </member>
+        <member name="T:ZyGames.Framework.RPC.Sockets.Threading.Func`4">
+            <summary>
+            Func.
+            </summary>
+        </member>
+        <member name="T:ZyGames.Framework.RPC.Sockets.Threading.Func`5">
+            <summary>
+            Func.
+            </summary>
+        </member>
         <member name="T:ZyGames.Framework.RPC.Sockets.Threading.WorkItemStateCallback">
             <summary>
             An internal delegate to call when the WorkItem starts or completes
@@ -8221,6 +8718,17 @@
             <summary>
             This method is intent for internal use.
             </summary>   
+        </member>
+        <member name="T:ZyGames.Framework.RPC.Sockets.Threading.IHasWorkItemPriority">
+            <summary>
+            I has work item priority.
+            </summary>
+        </member>
+        <member name="P:ZyGames.Framework.RPC.Sockets.Threading.IHasWorkItemPriority.WorkItemPriority">
+            <summary>
+            Gets the work item priority.
+            </summary>
+            <value>The work item priority.</value>
         </member>
         <member name="T:ZyGames.Framework.RPC.Sockets.Threading.PriorityQueue">
             <summary>
@@ -8246,6 +8754,11 @@
         <member name="F:ZyGames.Framework.RPC.Sockets.Threading.PriorityQueue._version">
             <summary>
             Use with IEnumerable interface
+            </summary>
+        </member>
+        <member name="M:ZyGames.Framework.RPC.Sockets.Threading.PriorityQueue.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:ZyGames.Framework.RPC.Sockets.Threading.PriorityQueue"/> class.
             </summary>
         </member>
         <member name="M:ZyGames.Framework.RPC.Sockets.Threading.PriorityQueue.Enqueue(ZyGames.Framework.RPC.Sockets.Threading.IHasWorkItemPriority)">
@@ -8295,11 +8808,47 @@
             Smart thread pool class.
             </summary>
         </member>
+        <member name="T:ZyGames.Framework.RPC.Sockets.Threading.WorkItemsGroupBase">
+            <summary>
+            Work items group base.
+            </summary>
+        </member>
         <member name="F:ZyGames.Framework.RPC.Sockets.Threading.WorkItemsGroupBase._name">
             <summary>
             Contains the name of this instance of SmartThreadPool.
             Can be changed by the user.
             </summary>
+        </member>
+        <member name="M:ZyGames.Framework.RPC.Sockets.Threading.WorkItemsGroupBase.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:ZyGames.Framework.RPC.Sockets.Threading.WorkItemsGroupBase"/> class.
+            </summary>
+        </member>
+        <member name="M:ZyGames.Framework.RPC.Sockets.Threading.WorkItemsGroupBase.GetStates">
+            <summary>
+            Get an array with all the state objects of the currently running items.
+            The array represents a snap shot and impact performance.
+            </summary>
+            <returns>The states.</returns>
+        </member>
+        <member name="M:ZyGames.Framework.RPC.Sockets.Threading.WorkItemsGroupBase.Start">
+            <summary>
+            Starts to execute work items
+            </summary>
+        </member>
+        <member name="M:ZyGames.Framework.RPC.Sockets.Threading.WorkItemsGroupBase.Cancel(System.Boolean)">
+            <summary>
+            Cancel all work items using thread abortion
+            </summary>
+            <param name="abortExecution">True to stop work items by raising ThreadAbortException</param>
+            <returns><c>true</c> if this instance cancel abortExecution; otherwise, <c>false</c>.</returns>
+        </member>
+        <member name="M:ZyGames.Framework.RPC.Sockets.Threading.WorkItemsGroupBase.WaitForIdle(System.Int32)">
+            <summary>
+            Wait for all work item to complete, until timeout expired
+            </summary>
+            <param name="millisecondsTimeout">How long to wait for the work items to complete</param>
+            <returns>Returns true if work items completed within the timeout, otherwise false.</returns>
         </member>
         <member name="M:ZyGames.Framework.RPC.Sockets.Threading.WorkItemsGroupBase.Cancel">
             <summary>
@@ -8428,9 +8977,200 @@
             <param name="workItemPriority">The work item priority</param>
             <returns>Returns a work item result</returns>
         </member>
+        <member name="M:ZyGames.Framework.RPC.Sockets.Threading.WorkItemsGroupBase.QueueWorkItem(ZyGames.Framework.RPC.Sockets.Threading.Action)">
+            <summary>
+            Queue a work item
+            </summary>
+            <param name="action">A callback to execute</param>
+            <returns>Returns a work item result</returns>
+        </member>
+        <member name="M:ZyGames.Framework.RPC.Sockets.Threading.WorkItemsGroupBase.QueueWorkItem(ZyGames.Framework.RPC.Sockets.Threading.Action,ZyGames.Framework.RPC.Sockets.Threading.WorkItemPriority)">
+            <summary>
+            Queue a work item
+            </summary>
+            <param name="action">A callback to execute</param>
+            <param name="priority">The priority of the work item</param>
+            <returns>Returns a work item result</returns>
+        </member>
+        <member name="M:ZyGames.Framework.RPC.Sockets.Threading.WorkItemsGroupBase.QueueWorkItem``1(System.Action{``0},``0)">
+            <summary>
+            Queue a work item
+            </summary>
+            <param name="action">Action.</param>
+            <param name="arg">Argument.</param>
+            <typeparam name="T">The 1st type parameter.</typeparam>
+        </member>
+        <member name="M:ZyGames.Framework.RPC.Sockets.Threading.WorkItemsGroupBase.QueueWorkItem``1(System.Action{``0},``0,ZyGames.Framework.RPC.Sockets.Threading.WorkItemPriority)">
+            <summary>
+            Queue a work item
+            </summary>
+            <param name="action">Action.</param>
+            <param name="arg">Argument.</param>
+            <param name="priority">Priority.</param>
+            <typeparam name="T">The 1st type parameter.</typeparam>
+        </member>
+        <member name="M:ZyGames.Framework.RPC.Sockets.Threading.WorkItemsGroupBase.QueueWorkItem``2(ZyGames.Framework.RPC.Sockets.Threading.Action{``0,``1},``0,``1)">
+            <summary>
+            Queue a work item
+            </summary>
+            <param name="action">Action.</param>
+            <param name="arg1">Arg1.</param>
+            <param name="arg2">Arg2.</param>
+            <typeparam name="T1">The 1st type parameter.</typeparam>
+            <typeparam name="T2">The 2nd type parameter.</typeparam>
+        </member>
+        <member name="M:ZyGames.Framework.RPC.Sockets.Threading.WorkItemsGroupBase.QueueWorkItem``2(ZyGames.Framework.RPC.Sockets.Threading.Action{``0,``1},``0,``1,ZyGames.Framework.RPC.Sockets.Threading.WorkItemPriority)">
+            <summary>
+            Queue a work item
+            </summary>
+            <param name="action">Action.</param>
+            <param name="arg1">Arg1.</param>
+            <param name="arg2">Arg2.</param>
+            <param name="priority">Priority.</param>
+            <typeparam name="T1">The 1st type parameter.</typeparam>
+            <typeparam name="T2">The 2nd type parameter.</typeparam>
+        </member>
+        <member name="M:ZyGames.Framework.RPC.Sockets.Threading.WorkItemsGroupBase.QueueWorkItem``3(ZyGames.Framework.RPC.Sockets.Threading.Action{``0,``1,``2},``0,``1,``2)">
+            <summary>
+            Queue a work item
+            </summary>
+            <param name="action">Action.</param>
+            <param name="arg1">Arg1.</param>
+            <param name="arg2">Arg2.</param>
+            <param name="arg3">Arg3.</param>
+            <typeparam name="T1">The 1st type parameter.</typeparam>
+            <typeparam name="T2">The 2nd type parameter.</typeparam>
+            <typeparam name="T3">The 3rd type parameter.</typeparam>
+        </member>
+        <member name="M:ZyGames.Framework.RPC.Sockets.Threading.WorkItemsGroupBase.QueueWorkItem``3(ZyGames.Framework.RPC.Sockets.Threading.Action{``0,``1,``2},``0,``1,``2,ZyGames.Framework.RPC.Sockets.Threading.WorkItemPriority)">
+            <summary>
+            Queue a work item
+            </summary>
+            <param name="action">Action.</param>
+            <param name="arg1">Arg1.</param>
+            <param name="arg2">Arg2.</param>
+            <param name="arg3">Arg3.</param>
+            <param name="priority">Priority.</param>
+            <typeparam name="T1">The 1st type parameter.</typeparam>
+            <typeparam name="T2">The 2nd type parameter.</typeparam>
+            <typeparam name="T3">The 3rd type parameter.</typeparam>
+        </member>
+        <member name="M:ZyGames.Framework.RPC.Sockets.Threading.WorkItemsGroupBase.QueueWorkItem``4(ZyGames.Framework.RPC.Sockets.Threading.Action{``0,``1,``2,``3},``0,``1,``2,``3)">
+            <summary>
+            Queue a work item
+            </summary>
+            <param name="action">Action.</param>
+            <param name="arg1">Arg1.</param>
+            <param name="arg2">Arg2.</param>
+            <param name="arg3">Arg3.</param>
+            <param name="arg4">Arg4.</param>
+            <typeparam name="T1">The 1st type parameter.</typeparam>
+            <typeparam name="T2">The 2nd type parameter.</typeparam>
+            <typeparam name="T3">The 3rd type parameter.</typeparam>
+            <typeparam name="T4">The 4th type parameter.</typeparam>
+        </member>
+        <member name="M:ZyGames.Framework.RPC.Sockets.Threading.WorkItemsGroupBase.QueueWorkItem``4(ZyGames.Framework.RPC.Sockets.Threading.Action{``0,``1,``2,``3},``0,``1,``2,``3,ZyGames.Framework.RPC.Sockets.Threading.WorkItemPriority)">
+            <summary>
+            Queue a work item.
+            </summary>
+            <returns>Returns a IWorkItemResult object, but its GetResult() will always return null</returns>
+            <param name="action">Action.</param>
+            <param name="arg1">Arg1.</param>
+            <param name="arg2">Arg2.</param>
+            <param name="arg3">Arg3.</param>
+            <param name="arg4">Arg4.</param>
+            <param name="priority">Priority.</param>
+            <typeparam name="T1">The 1st type parameter.</typeparam>
+            <typeparam name="T2">The 2nd type parameter.</typeparam>
+            <typeparam name="T3">The 3rd type parameter.</typeparam>
+            <typeparam name="T4">The 4th type parameter.</typeparam>
+        </member>
+        <member name="M:ZyGames.Framework.RPC.Sockets.Threading.WorkItemsGroupBase.QueueWorkItem``1(ZyGames.Framework.RPC.Sockets.Threading.Func{``0})">
+            <summary>
+            Queue a work item
+            </summary>
+            <param name="func">Func.</param>
+            <typeparam name="TResult">The 1st type parameter.</typeparam>
+        </member>
+        <member name="M:ZyGames.Framework.RPC.Sockets.Threading.WorkItemsGroupBase.QueueWorkItem``2(ZyGames.Framework.RPC.Sockets.Threading.Func{``0,``1},``0)">
+            <summary>
+            Queue a work item
+            </summary>
+            <param name="func">Func.</param>
+            <param name="arg">Argument.</param>
+            <typeparam name="T">The 1st type parameter.</typeparam>
+            <typeparam name="TResult">The 2nd type parameter.</typeparam>
+        </member>
+        <member name="M:ZyGames.Framework.RPC.Sockets.Threading.WorkItemsGroupBase.QueueWorkItem``3(ZyGames.Framework.RPC.Sockets.Threading.Func{``0,``1,``2},``0,``1)">
+            <summary>
+            Queue a work item
+            </summary>
+            <param name="func">Func.</param>
+            <param name="arg1">Arg1.</param>
+            <param name="arg2">Arg2.</param>
+            <typeparam name="T1">The 1st type parameter.</typeparam>
+            <typeparam name="T2">The 2nd type parameter.</typeparam>
+            <typeparam name="TResult">The 3rd type parameter.</typeparam>
+        </member>
+        <member name="M:ZyGames.Framework.RPC.Sockets.Threading.WorkItemsGroupBase.QueueWorkItem``4(ZyGames.Framework.RPC.Sockets.Threading.Func{``0,``1,``2,``3},``0,``1,``2)">
+            <summary>
+            Queue a work item
+            </summary>
+            <returns>Returns a work item result</returns>
+            <param name="func">Func.</param>
+            <param name="arg1">Arg1.</param>
+            <param name="arg2">Arg2.</param>
+            <param name="arg3">Arg3.</param>
+            <typeparam name="T1">The 1st type parameter.</typeparam>
+            <typeparam name="T2">The 2nd type parameter.</typeparam>
+            <typeparam name="T3">The 3rd type parameter.</typeparam>
+            <typeparam name="TResult">The 4th type parameter.</typeparam>
+        </member>
+        <member name="M:ZyGames.Framework.RPC.Sockets.Threading.WorkItemsGroupBase.QueueWorkItem``5(ZyGames.Framework.RPC.Sockets.Threading.Func{``0,``1,``2,``3,``4},``0,``1,``2,``3)">
+            <summary>
+            Queue a work item
+            </summary>
+            <returns>Returns a work item result</returns>
+            <param name="func">Func.</param>
+            <param name="arg1">Arg1.</param>
+            <param name="arg2">Arg2.</param>
+            <param name="arg3">Arg3.</param>
+            <param name="arg4">Arg4.</param>
+            <typeparam name="T1">The 1st type parameter.</typeparam>
+            <typeparam name="T2">The 2nd type parameter.</typeparam>
+            <typeparam name="T3">The 3rd type parameter.</typeparam>
+            <typeparam name="T4">The 4th type parameter.</typeparam>
+            <typeparam name="TResult">The 5th type parameter.</typeparam>
+        </member>
         <member name="P:ZyGames.Framework.RPC.Sockets.Threading.WorkItemsGroupBase.Name">
             <summary>
             Get/Set the name of the SmartThreadPool/WorkItemsGroup instance
+            </summary>
+        </member>
+        <member name="P:ZyGames.Framework.RPC.Sockets.Threading.WorkItemsGroupBase.Concurrency">
+            <summary>
+            Get/Set the maximum number of workitem that execute cocurrency on the thread pool
+            </summary>
+            <value>The concurrency.</value>
+        </member>
+        <member name="P:ZyGames.Framework.RPC.Sockets.Threading.WorkItemsGroupBase.WaitingCallbacks">
+            <summary>
+            Get the number of work items waiting in the queue.
+            </summary>
+            <value>The waiting callbacks.</value>
+        </member>
+        <member name="P:ZyGames.Framework.RPC.Sockets.Threading.WorkItemsGroupBase.WIGStartInfo">
+            <summary>
+            Get the WorkItemsGroup start information
+            </summary>
+            <value>The WIG start info.</value>
+        </member>
+        <member name="E:ZyGames.Framework.RPC.Sockets.Threading.WorkItemsGroupBase.OnIdle">
+            <summary>
+            This event is fired when all work items are completed.
+            (When IsIdle changes to true)
+            This event only work on WorkItemsGroup. On SmartThreadPool
+            it throws the NotImplementedException.
             </summary>
         </member>
         <member name="P:ZyGames.Framework.RPC.Sockets.Threading.WorkItemsGroupBase.IsIdle">
@@ -8841,6 +9581,17 @@
             Can be used with Cancel and timeout
             </summary>
         </member>
+        <member name="M:ZyGames.Framework.RPC.Sockets.Threading.SmartThreadPool.Dispose">
+            <summary>
+            Releases all resource used by the <see cref="T:ZyGames.Framework.RPC.Sockets.Threading.SmartThreadPool"/> object.
+            </summary>
+            <remarks>Call <see cref="M:ZyGames.Framework.RPC.Sockets.Threading.SmartThreadPool.Dispose"/> when you are finished using the
+            <see cref="T:ZyGames.Framework.RPC.Sockets.Threading.SmartThreadPool"/>. The <see cref="M:ZyGames.Framework.RPC.Sockets.Threading.SmartThreadPool.Dispose"/> method leaves the
+            <see cref="T:ZyGames.Framework.RPC.Sockets.Threading.SmartThreadPool"/> in an unusable state. After calling
+            <see cref="M:ZyGames.Framework.RPC.Sockets.Threading.SmartThreadPool.Dispose"/>, you must release all references to the
+            <see cref="T:ZyGames.Framework.RPC.Sockets.Threading.SmartThreadPool"/> so the garbage collector can reclaim the
+            memory that the <see cref="T:ZyGames.Framework.RPC.Sockets.Threading.SmartThreadPool"/> was occupying.</remarks>
+        </member>
         <member name="M:ZyGames.Framework.RPC.Sockets.Threading.SmartThreadPool.GetStates">
             <summary>
             Get an array with all the state objects of the currently running items.
@@ -8972,6 +9723,12 @@
             Thread Pool start information (readonly)
             </summary>
         </member>
+        <member name="P:ZyGames.Framework.RPC.Sockets.Threading.SmartThreadPool.IsShuttingdown">
+            <summary>
+            Gets a value indicating whether this instance is shuttingdown.
+            </summary>
+            <value><c>true</c> if this instance is shuttingdown; otherwise, <c>false</c>.</value>
+        </member>
         <member name="P:ZyGames.Framework.RPC.Sockets.Threading.SmartThreadPool.PerformanceCountersReader">
             <summary>
             Return the local calculated performance counters
@@ -9034,6 +9791,35 @@
             Used with WindowsCE and Silverlight which don't have Stopwatch
             </summary>
         </member>
+        <member name="T:ZyGames.Framework.RPC.Sockets.Threading.ISTPPerformanceCountersReader">
+            <summary>
+            ISTP performance counters reader.
+            </summary>
+        </member>
+        <member name="P:ZyGames.Framework.RPC.Sockets.Threading.ISTPPerformanceCountersReader.InUseThreads">
+            <summary>
+            Gets the in use threads.
+            </summary>
+            <value>The in use threads.</value>
+        </member>
+        <member name="P:ZyGames.Framework.RPC.Sockets.Threading.ISTPPerformanceCountersReader.ActiveThreads">
+            <summary>
+            Gets the active threads.
+            </summary>
+            <value>The active threads.</value>
+        </member>
+        <member name="P:ZyGames.Framework.RPC.Sockets.Threading.ISTPPerformanceCountersReader.WorkItemsQueued">
+            <summary>
+            Gets the work items queued.
+            </summary>
+            <value>The work items queued.</value>
+        </member>
+        <member name="P:ZyGames.Framework.RPC.Sockets.Threading.ISTPPerformanceCountersReader.WorkItemsProcessed">
+            <summary>
+            Gets the work items processed.
+            </summary>
+            <value>The work items processed.</value>
+        </member>
         <member name="T:ZyGames.Framework.RPC.Sockets.Threading.STPPerformanceCounter">
             <summary>
             Summary description for STPPerformanceCounter.
@@ -9047,6 +9833,27 @@
         <member name="T:ZyGames.Framework.RPC.Sockets.Threading.WIGStartInfo">
             <summary>
             Summary description for WIGStartInfo.
+            </summary>
+        </member>
+        <member name="F:ZyGames.Framework.RPC.Sockets.Threading.WIGStartInfo._readOnly">
+            <summary>
+            The _read only.
+            </summary>
+        </member>
+        <member name="M:ZyGames.Framework.RPC.Sockets.Threading.WIGStartInfo.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:ZyGames.Framework.RPC.Sockets.Threading.WIGStartInfo"/> class.
+            </summary>
+        </member>
+        <member name="M:ZyGames.Framework.RPC.Sockets.Threading.WIGStartInfo.#ctor(ZyGames.Framework.RPC.Sockets.Threading.WIGStartInfo)">
+            <summary>
+            Initializes a new instance of the <see cref="T:ZyGames.Framework.RPC.Sockets.Threading.WIGStartInfo"/> class.
+            </summary>
+            <param name="wigStartInfo">Wig start info.</param>
+        </member>
+        <member name="M:ZyGames.Framework.RPC.Sockets.Threading.WIGStartInfo.ThrowIfReadOnly">
+            <summary>
+            Throws if read only.
             </summary>
         </member>
         <member name="M:ZyGames.Framework.RPC.Sockets.Threading.WIGStartInfo.AsReadOnly">
@@ -9097,6 +9904,17 @@
             arguments as an object array into the state of the work item.
             The arguments can be access later by IWorkItemResult.State.
             </summary>
+        </member>
+        <member name="M:ZyGames.Framework.RPC.Sockets.Threading.STPStartInfo.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:ZyGames.Framework.RPC.Sockets.Threading.STPStartInfo"/> class.
+            </summary>
+        </member>
+        <member name="M:ZyGames.Framework.RPC.Sockets.Threading.STPStartInfo.#ctor(ZyGames.Framework.RPC.Sockets.Threading.STPStartInfo)">
+            <summary>
+            Initializes a new instance of the <see cref="T:ZyGames.Framework.RPC.Sockets.Threading.STPStartInfo"/> class.
+            </summary>
+            <param name="stpStartInfo">Stp start info.</param>
         </member>
         <member name="M:ZyGames.Framework.RPC.Sockets.Threading.STPStartInfo.AsReadOnly">
             <summary>
@@ -9384,6 +10202,11 @@
             A wait handle to wait for completion, cancel, or timeout 
             </summary>
         </member>
+        <member name="M:ZyGames.Framework.RPC.Sockets.Threading.WorkItem.DisposeOfState">
+            <summary>
+            Disposes the state of the of.
+            </summary>
+        </member>
         <member name="E:ZyGames.Framework.RPC.Sockets.Threading.WorkItem._workItemStartedEvent">
             <summary>
             Called when the WorkItem starts
@@ -9393,6 +10216,18 @@
             <summary>
             Called when the WorkItem completes
             </summary>
+        </member>
+        <member name="P:ZyGames.Framework.RPC.Sockets.Threading.WorkItem.WaitingTime">
+            <summary>
+            Gets the waiting time.
+            </summary>
+            <value>The waiting time.</value>
+        </member>
+        <member name="P:ZyGames.Framework.RPC.Sockets.Threading.WorkItem.ProcessTime">
+            <summary>
+            Gets the process time.
+            </summary>
+            <value>The process time.</value>
         </member>
         <member name="P:ZyGames.Framework.RPC.Sockets.Threading.WorkItem.IsCompleted">
             <summary>
@@ -9429,6 +10264,11 @@
             Returns the exception if occured otherwise returns null.
             This value is valid only after the work item completed,
             before that it is always null.
+            </summary>
+        </member>
+        <member name="T:ZyGames.Framework.RPC.Sockets.Threading.WorkItemFactory">
+            <summary>
+            Work item factory.
             </summary>
         </member>
         <member name="M:ZyGames.Framework.RPC.Sockets.Threading.WorkItemFactory.CreateWorkItem(ZyGames.Framework.RPC.Sockets.Threading.IWorkItemsGroup,ZyGames.Framework.RPC.Sockets.Threading.WIGStartInfo,ZyGames.Framework.RPC.Sockets.Threading.WorkItemCallback)">
@@ -9567,6 +10407,17 @@
             Summary description for WorkItemInfo.
             </summary>
         </member>
+        <member name="M:ZyGames.Framework.RPC.Sockets.Threading.WorkItemInfo.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:ZyGames.Framework.RPC.Sockets.Threading.WorkItemInfo"/> class.
+            </summary>
+        </member>
+        <member name="M:ZyGames.Framework.RPC.Sockets.Threading.WorkItemInfo.#ctor(ZyGames.Framework.RPC.Sockets.Threading.WorkItemInfo)">
+            <summary>
+            Initializes a new instance of the <see cref="T:ZyGames.Framework.RPC.Sockets.Threading.WorkItemInfo"/> class.
+            </summary>
+            <param name="workItemInfo">Work item info.</param>
+        </member>
         <member name="P:ZyGames.Framework.RPC.Sockets.Threading.WorkItemInfo.UseCallerCallContext">
             <summary>
             Get/Set if to use the caller's security context
@@ -9660,24 +10511,77 @@
             generate so we can mark them to cancel in O(1)
             </summary>
         </member>
+        <member name="M:ZyGames.Framework.RPC.Sockets.Threading.WorkItemsGroup.#ctor(ZyGames.Framework.RPC.Sockets.Threading.SmartThreadPool,System.Int32,ZyGames.Framework.RPC.Sockets.Threading.WIGStartInfo)">
+            <summary>
+            Initializes a new instance of the <see cref="T:ZyGames.Framework.RPC.Sockets.Threading.WorkItemsGroup"/> class.
+            </summary>
+            <param name="stp">Stp.</param>
+            <param name="concurrency">Concurrency.</param>
+            <param name="wigStartInfo">Wig start info.</param>
+        </member>
+        <member name="M:ZyGames.Framework.RPC.Sockets.Threading.WorkItemsGroup.GetStates">
+            <summary>
+            Get an array with all the state objects of the currently running items.
+            The array represents a snap shot and impact performance.
+            </summary>
+            <returns>The states.</returns>
+        </member>
         <member name="M:ZyGames.Framework.RPC.Sockets.Threading.WorkItemsGroup.Start">
             <summary>
             Start the Work Items Group if it was started suspended
             </summary>
+        </member>
+        <member name="M:ZyGames.Framework.RPC.Sockets.Threading.WorkItemsGroup.Cancel(System.Boolean)">
+            <summary>
+            Cancel all work items using thread abortion
+            </summary>
+            <param name="abortExecution">True to stop work items by raising ThreadAbortException</param>
+            <returns><c>true</c> if this instance cancel abortExecution; otherwise, <c>false</c>.</returns>
         </member>
         <member name="M:ZyGames.Framework.RPC.Sockets.Threading.WorkItemsGroup.WaitForIdle(System.Int32)">
             <summary>
             Wait for the thread pool to be idle
             </summary>
         </member>
+        <member name="M:ZyGames.Framework.RPC.Sockets.Threading.WorkItemsGroup.OnSTPIsStarting">
+            <summary>
+            Raises the STP is starting event.
+            </summary>
+        </member>
+        <member name="M:ZyGames.Framework.RPC.Sockets.Threading.WorkItemsGroup.EnqueueToSTPNextNWorkItem(System.Int32)">
+            <summary>
+            Enqueues to STP next N work item.
+            </summary>
+            <param name="count">Count.</param>
+        </member>
         <member name="E:ZyGames.Framework.RPC.Sockets.Threading.WorkItemsGroup._onIdle">
             <summary>
             The OnIdle event
             </summary>
         </member>
+        <member name="P:ZyGames.Framework.RPC.Sockets.Threading.WorkItemsGroup.Concurrency">
+            <summary>
+            Get/Set the maximum number of workitem that execute cocurrency on the thread pool
+            </summary>
+            <value>The concurrency.</value>
+        </member>
+        <member name="P:ZyGames.Framework.RPC.Sockets.Threading.WorkItemsGroup.WaitingCallbacks">
+            <summary>
+            Get the number of work items waiting in the queue.
+            </summary>
+            <value>The waiting callbacks.</value>
+        </member>
         <member name="P:ZyGames.Framework.RPC.Sockets.Threading.WorkItemsGroup.WIGStartInfo">
             <summary>
             WorkItemsGroup start information
+            </summary>
+        </member>
+        <member name="E:ZyGames.Framework.RPC.Sockets.Threading.WorkItemsGroup.OnIdle">
+            <summary>
+            This event is fired when all work items are completed.
+            (When IsIdle changes to true)
+            This event only work on WorkItemsGroup. On SmartThreadPool
+            it throws the NotImplementedException.
             </summary>
         </member>
         <member name="T:ZyGames.Framework.RPC.Sockets.Threading.WorkItemsQueue">
@@ -9729,6 +10633,12 @@
             items are allowed to be queue
             </summary>
         </member>
+        <member name="M:ZyGames.Framework.RPC.Sockets.Threading.WorkItemsQueue.GetStates">
+            <summary>
+            Gets the states.
+            </summary>
+            <returns>The states.</returns>
+        </member>
         <member name="M:ZyGames.Framework.RPC.Sockets.Threading.WorkItemsQueue.GetThreadWaiterEntry">
             <summary>
             Returns the WaiterEntry of the current thread
@@ -9756,6 +10666,17 @@
             <param name="waiterEntry">A waiter entry to remove</param>
             <param name="popDecrement">If true the waiter count is always decremented</param>
         </member>
+        <member name="M:ZyGames.Framework.RPC.Sockets.Threading.WorkItemsQueue.Dispose">
+            <summary>
+            Releases all resource used by the <see cref="T:ZyGames.Framework.RPC.Sockets.Threading.WorkItemsQueue"/> object.
+            </summary>
+            <remarks>Call <see cref="M:ZyGames.Framework.RPC.Sockets.Threading.WorkItemsQueue.Dispose"/> when you are finished using the
+            <see cref="T:ZyGames.Framework.RPC.Sockets.Threading.WorkItemsQueue"/>. The <see cref="M:ZyGames.Framework.RPC.Sockets.Threading.WorkItemsQueue.Dispose"/> method leaves the
+            <see cref="T:ZyGames.Framework.RPC.Sockets.Threading.WorkItemsQueue"/> in an unusable state. After calling
+            <see cref="M:ZyGames.Framework.RPC.Sockets.Threading.WorkItemsQueue.Dispose"/>, you must release all references to the
+            <see cref="T:ZyGames.Framework.RPC.Sockets.Threading.WorkItemsQueue"/> so the garbage collector can reclaim the
+            memory that the <see cref="T:ZyGames.Framework.RPC.Sockets.Threading.WorkItemsQueue"/> was occupying.</remarks>
+        </member>
         <member name="P:ZyGames.Framework.RPC.Sockets.Threading.WorkItemsQueue.CurrentWaiterEntry">
             <summary>
             Each thread in the thread pool keeps its own waiter entry.
@@ -9769,6 +10690,11 @@
         <member name="P:ZyGames.Framework.RPC.Sockets.Threading.WorkItemsQueue.WaitersCount">
             <summary>
             Returns the current number of waiters
+            </summary>
+        </member>
+        <member name="T:ZyGames.Framework.RPC.Sockets.Threading.WorkItemsQueue.WaiterEntry">
+            <summary>
+             A waiter entry in the _waiters queue.
             </summary>
         </member>
         <member name="F:ZyGames.Framework.RPC.Sockets.Threading.WorkItemsQueue.WaiterEntry._waitHandle">
@@ -9791,6 +10717,11 @@
             <summary>
             A work item that passed directly to the waiter withou going 
             through the queue
+            </summary>
+        </member>
+        <member name="M:ZyGames.Framework.RPC.Sockets.Threading.WorkItemsQueue.WaiterEntry.#ctor">
+            <summary>
+            Initializes a new instance of the
             </summary>
         </member>
         <member name="M:ZyGames.Framework.RPC.Sockets.Threading.WorkItemsQueue.WaiterEntry.Signal(ZyGames.Framework.RPC.Sockets.Threading.WorkItem)">
@@ -9817,6 +10748,90 @@
             Free resources
             </summary>
         </member>
+        <member name="M:ZyGames.Framework.RPC.Sockets.Threading.WorkItemsQueue.WaiterEntry.Dispose">
+            <summary>
+            Releases all resource used by the
+            </summary>
+        </member>
+        <member name="P:ZyGames.Framework.RPC.Sockets.Threading.WorkItemsQueue.WaiterEntry.WaitHandle">
+            <summary>
+            Gets the wait handle.
+            </summary>
+            <value>The wait handle.</value>
+        </member>
+        <member name="P:ZyGames.Framework.RPC.Sockets.Threading.WorkItemsQueue.WaiterEntry.WorkItem">
+            <summary>
+            Gets the work item.
+            </summary>
+            <value>The work item.</value>
+        </member>
+        <member name="T:ZyGames.Framework.RPC.Sockets.ConnectionEventArgs">
+            <summary>
+            Connection event arguments.
+            </summary>
+        </member>
+        <member name="P:ZyGames.Framework.RPC.Sockets.ConnectionEventArgs.Socket">
+            <summary>
+            Gets or sets the socket.
+            </summary>
+            <value>The socket.</value>
+        </member>
+        <member name="P:ZyGames.Framework.RPC.Sockets.ConnectionEventArgs.Data">
+            <summary>
+            Gets or sets the data.
+            </summary>
+            <value>The data.</value>
+        </member>
+        <member name="T:ZyGames.Framework.RPC.Sockets.ConnectionEventHandler">
+            <summary>
+            Connection event handler.
+            </summary>
+        </member>
+        <member name="T:ZyGames.Framework.RPC.Sockets.ExSocket">
+            <summary>
+            Ex socket.
+            </summary>
+        </member>
+        <member name="M:ZyGames.Framework.RPC.Sockets.ExSocket.#ctor(System.Net.Sockets.Socket)">
+            <summary>
+            Initializes a new instance of the <see cref="T:ZyGames.Framework.RPC.Sockets.ExSocket"/> class.
+            </summary>
+            <param name="socket">Socket.</param>
+        </member>
+        <member name="P:ZyGames.Framework.RPC.Sockets.ExSocket.WorkSocket">
+            <summary>
+            Gets the work socket.
+            </summary>
+            <value>The work socket.</value>
+        </member>
+        <member name="P:ZyGames.Framework.RPC.Sockets.ExSocket.RemoteEndPoint">
+            <summary>
+            Gets the remote end point.
+            </summary>
+            <value>The remote end point.</value>
+        </member>
+        <member name="P:ZyGames.Framework.RPC.Sockets.ExSocket.QueueLength">
+            <summary>
+            Gets the length of the queue.
+            </summary>
+            <value>The length of the queue.</value>
+        </member>
+        <member name="T:ZyGames.Framework.RPC.Sockets.SocketListener">
+            <summary>
+            Socket listener.
+            </summary>
+        </member>
+        <member name="M:ZyGames.Framework.RPC.Sockets.SocketListener.#ctor(ZyGames.Framework.RPC.Sockets.SocketSettings)">
+            <summary>
+            Initializes a new instance of the <see cref="T:ZyGames.Framework.RPC.Sockets.SocketListener"/> class.
+            </summary>
+            <param name="socketSettings">Socket settings.</param>
+        </member>
+        <member name="M:ZyGames.Framework.RPC.Sockets.SocketListener.StartListen">
+            <summary>
+            Starts the listen.
+            </summary>
+        </member>
         <member name="M:ZyGames.Framework.RPC.Sockets.SocketListener.PostReceive(System.Net.Sockets.SocketAsyncEventArgs)">
             <summary>
             投递接收数据请求
@@ -9828,6 +10843,26 @@
             处理数据接收回调
             </summary>
             <param name="ioEventArgs"></param>
+        </member>
+        <member name="M:ZyGames.Framework.RPC.Sockets.SocketListener.PostSend(ZyGames.Framework.RPC.Sockets.ExSocket,System.Byte[],System.Int32,System.Int32)">
+            <summary>
+            Posts the send.
+            </summary>
+            <param name="socket">Socket.</param>
+            <param name="data">Data.</param>
+            <param name="offset">Offset.</param>
+            <param name="count">Count.</param>
+        </member>
+        <member name="M:ZyGames.Framework.RPC.Sockets.SocketListener.CloseSocket(ZyGames.Framework.RPC.Sockets.ExSocket)">
+            <summary>
+            Closes the socket.
+            </summary>
+            <param name="socket">Socket.</param>
+        </member>
+        <member name="M:ZyGames.Framework.RPC.Sockets.SocketListener.Close">
+            <summary>
+            Close this instance.
+            </summary>
         </member>
         <member name="E:ZyGames.Framework.RPC.Sockets.SocketListener.Connected">
             <summary>
@@ -9844,11 +10879,84 @@
             接收到数据包事件
             </summary>
         </member>
+        <member name="P:ZyGames.Framework.RPC.Sockets.SocketListener.Connections">
+            <summary>
+            Gets the connections.
+            </summary>
+            <value>The connections.</value>
+        </member>
+        <member name="T:ZyGames.Framework.RPC.Sockets.SocketSettings">
+            <summary>
+            Socket settings.
+            </summary>
+        </member>
+        <member name="M:ZyGames.Framework.RPC.Sockets.SocketSettings.#ctor(System.Int32,System.Int32,System.Int32,System.Int32,System.Net.IPEndPoint,System.Int32,System.Int32)">
+            <summary>
+            Initializes a new instance of the <see cref="T:ZyGames.Framework.RPC.Sockets.SocketSettings"/> class.
+            </summary>
+            <param name="maxConnections">Max connections.</param>
+            <param name="backlog">Backlog.</param>
+            <param name="maxAcceptOps">Max accept ops.</param>
+            <param name="bufferSize">Buffer size.</param>
+            <param name="localEndPoint">Local end point.</param>
+            <param name="expireInterval">Expire interval.</param>
+            <param name="expireTime">Expire time.</param>
+        </member>
+        <member name="P:ZyGames.Framework.RPC.Sockets.SocketSettings.MaxConnections">
+            <summary>
+            Gets the max connections.
+            </summary>
+            <value>The max connections.</value>
+        </member>
+        <member name="P:ZyGames.Framework.RPC.Sockets.SocketSettings.NumOfSaeaForRecSend">
+            <summary>
+            Gets the number of saea for rec send.
+            </summary>
+            <value>The number of saea for rec send.</value>
+        </member>
+        <member name="P:ZyGames.Framework.RPC.Sockets.SocketSettings.Backlog">
+            <summary>
+            Gets the backlog.
+            </summary>
+            <value>The backlog.</value>
+        </member>
+        <member name="P:ZyGames.Framework.RPC.Sockets.SocketSettings.MaxAcceptOps">
+            <summary>
+            Gets the max accept ops.
+            </summary>
+            <value>The max accept ops.</value>
+        </member>
+        <member name="P:ZyGames.Framework.RPC.Sockets.SocketSettings.BufferSize">
+            <summary>
+            Gets the size of the buffer.
+            </summary>
+            <value>The size of the buffer.</value>
+        </member>
+        <member name="P:ZyGames.Framework.RPC.Sockets.SocketSettings.LocalEndPoint">
+            <summary>
+            Gets the local end point.
+            </summary>
+            <value>The local end point.</value>
+        </member>
+        <member name="P:ZyGames.Framework.RPC.Sockets.SocketSettings.ExpireInterval">
+            <summary>
+            Gets the expire interval.
+            </summary>
+            <value>The expire interval.</value>
+        </member>
+        <member name="P:ZyGames.Framework.RPC.Sockets.SocketSettings.ExpireTime">
+            <summary>
+            Gets the expire time.
+            </summary>
+            <value>The expire time.</value>
+        </member>
         <member name="M:ZyGames.Framework.RPC.Sockets.Util.ToHex(System.Byte[],System.Int32,System.Int32)">
             <summary>
             字节数组转成字符串表示
             </summary>
             <param name="bytes">字节数组</param>
+            <param name="offset">offset</param>
+            <param name="count">count</param>
             <returns></returns>
         </member>
         <member name="T:ZyGames.Framework.SyncThreading.SyncLimit">
@@ -9949,6 +11057,35 @@
             <param name="value"></param>
             <param name="decrement"></param>
             <returns></returns>
+        </member>
+        <member name="T:ZyGames.Framework.ConnectionSetting">
+            <summary>
+            Connection setting.
+            </summary>
+        </member>
+        <member name="M:ZyGames.Framework.ConnectionSetting.#ctor(System.String)">
+            <summary>
+            Initializes a new instance of the <see cref="T:ZyGames.Framework.ConnectionSetting"/> class.
+            </summary>
+            <param name="connectionString">Connection string.</param>
+        </member>
+        <member name="P:ZyGames.Framework.ConnectionSetting.ConnectionString">
+            <summary>
+            Gets or sets the connection string.
+            </summary>
+            <value>The connection string.</value>
+        </member>
+        <member name="P:ZyGames.Framework.ConnectionSetting.DataSource">
+            <summary>
+            Gets or sets the data source.
+            </summary>
+            <value>The data source.</value>
+        </member>
+        <member name="P:ZyGames.Framework.ConnectionSetting.DatabaseName">
+            <summary>
+            Gets or sets the name of the data base.
+            </summary>
+            <value>The name of the data base.</value>
         </member>
     </members>
 </doc>

@@ -1620,6 +1620,11 @@
             Action管理
             </summary>
         </member>
+        <member name="F:ZyGames.Framework.Game.Contract.ActionFactory.ErrorCode">
+            <summary>
+            The error code.
+            </summary>
+        </member>
         <member name="M:ZyGames.Framework.Game.Contract.ActionFactory.GetLocalIp">
             <summary>
             获取本地IP
@@ -3622,9 +3627,19 @@
             游戏服信息
             </summary>
         </member>
+        <member name="T:ZyGames.Framework.Game.Runtime.RuntimeEventHandler">
+            <summary>
+            Runtime event handler.
+            </summary>
+        </member>
         <member name="T:ZyGames.Framework.Game.Runtime.GameEnvironment">
             <summary>
             游戏运行环境
+            </summary>
+        </member>
+        <member name="F:ZyGames.Framework.Game.Runtime.GameEnvironment.PythonScriptTaskCacheKey">
+            <summary>
+            The python script task cache key.
             </summary>
         </member>
         <member name="M:ZyGames.Framework.Game.Runtime.GameEnvironment.InitializeCache(System.Int32,System.Int32)">
