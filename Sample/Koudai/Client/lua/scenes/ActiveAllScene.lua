@@ -66,10 +66,10 @@ function releaseResource()
 end
 -- 创建场景
 function init()
-	g_scene = ScutScene:node()
+	local scene = ScutScene:new()
 	-- 注册网络回调
-	g_scene:registerCallback("ActiveAllScene.networkCallback")
-
+	scene:registerCallback(networkCallback)
+    g_scene = scene.root
 	mScene:registerScriptHandler(SpriteEase_onEnterOrExit)
 	-- 添加背景
 	local layer = CCLayer:create()

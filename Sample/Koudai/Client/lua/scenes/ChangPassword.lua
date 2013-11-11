@@ -41,8 +41,8 @@ end
 
 -- 创建场景
 function createScene()
-	mScene = ScutScene:node()
-
+	local scene = ScutScene:new()
+    mScene = scene.root 
 	runningScene = CCDirector:sharedDirector():getRunningScene()
 	if runningScene == nil then
 		CCDirector:sharedDirector():runWithScene(mScene)
@@ -52,7 +52,7 @@ function createScene()
 	MainScene.releaseResource()
 
 	-- 注册网络回调
-	mScene:registerCallback("ChangPassword.networkCallback")
+	scene:registerCallback(networkCallback)
 	
 	-- 添加主层
 	mLayer= CCLayer:create()

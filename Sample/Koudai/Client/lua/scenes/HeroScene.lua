@@ -113,12 +113,12 @@ end;
 -- 创建场景
 function createScene()
 
-	mScene = ScutScene:node()
-
+	local scene = ScutScene:new()
+    mScene = scene.root 
 	-- 注册网络回调	
 			
 	mScene:registerScriptHandler(SpriteEase_onEnterOrExit)
-	mScene:registerCallback("HeroScene.networkCallback")
+	scene:registerCallback(networkCallback)
 	SlideInLReplaceScene(mScene,1)
 
 	

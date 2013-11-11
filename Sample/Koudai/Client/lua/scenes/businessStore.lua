@@ -130,9 +130,10 @@ function  closeAllLayer()
 end;
 -- 创建场景
 function createScene()
-	_scene = ScutScene:node()
+	local scene  = ScutScene:new()
 	-- 注册网络回调
-	_scene:registerCallback("businessStore.networkCallback")
+	scene:registerCallback(networkCallback)
+	_scene = scene.root 
 	_scene:registerScriptHandler(SpriteEase_onEnterOrExit)
 	SlideInLReplaceScene(_scene,1)
 	

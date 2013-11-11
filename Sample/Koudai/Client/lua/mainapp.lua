@@ -59,13 +59,16 @@ require("lib.lib");
 require("lib.RequireLuaClass");
 require("scenes.LanScenes");
 require("common.CommandDataResove")
+require("lib.ScutScene")
+require("lib.FrameManager")
 --require("payment.channelEngine")
 math.randomseed(tostring(os.time()):reverse():sub(1, 6))  
 
 ------------------------------------------------------------------
 -- ↓↓ 协议解析函数注册 开始 ↓↓
 ------------------------------------------------------------------
-
+function PushReceiverCallback(pScutScene, lpExternalData)
+end
 function processCommonData(lpScene)
 	return true;
 end
@@ -76,9 +79,16 @@ function netDecodeEnd(pScutScene, nTag)
 end
 
 
+g_frame_mgr = FrameManager:new()
+    g_frame_mgr:init()
 
-ScutScene:registerNetCommonDataFunc("processCommonData");
-ScutScene:registerNetErrorFunc("LanScenes.netConnectError");
+    function OnHandleData(pScene, nTag, nNetRet, pData, lpExternalData)
+        pScene = tolua.cast(pScene, "CCScene")
+        g_scenes[pScene]:execCallback(nTag, nNetRet, pData,lpExternalData)
+    end
+CCDirector:sharedDirector():RegisterSocketPushHandler("PushReceiverCallback")
+--ScutScene:registerNetCommonDataFunc("processCommonData");
+--ScutScene:registerNetErrorFunc("LanScenes.netConnectError");
 ScutScene:registerNetDecodeEnd("netDecodeEnd");
 CCDirector:sharedDirector():RegisterBackHandler("MainScene.closeApp")
 --注册crash log回调

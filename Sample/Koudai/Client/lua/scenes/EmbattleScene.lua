@@ -74,11 +74,12 @@ end
 
 -- 创建场景
 function createScene()
-	mScene = ScutScene:node()
+	local scene  = ScutScene:new()
+	mScene = scene.root
 	mScene:registerScriptHandler(SpriteEase_onEnterOrExit)
 		
 	-- 注册网络回调
-	mScene:registerCallback("EmbattleScene.networkCallback")	
+	scene:registerCallback(networkCallback)	
 	-- 添加主层
 	mLayer= CCLayer:create()
 	mScene:addChild(mLayer, 0)

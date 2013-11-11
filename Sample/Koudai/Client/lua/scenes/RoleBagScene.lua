@@ -55,9 +55,9 @@ end
 
 -- ´´½¨³¡¾°
 function createScene()
-	mScene = ScutScene:node()
-	mScene:registerCallback("RoleBagScene.networkCallback")
-
+	local scene  = ScutScene:new()
+	scene:registerCallback(networkCallback)
+    mScene = scene.root 
 		mScene:registerScriptHandler(SpriteEase_onEnterOrExit)
 	SlideInLReplaceScene(mScene,1)
 

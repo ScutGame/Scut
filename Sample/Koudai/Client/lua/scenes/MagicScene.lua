@@ -151,8 +151,9 @@ function init()
 	if magicScene ~= nil then
 		return
 	end
-	magicScene = ScutScene:node()  --场景
-	magicScene:registerCallback("MagicScene.netCallback")--设置网络回调监听
+    local scene = ScutScene:new()  --场景
+	scene:registerCallback(netCallback)--设置网络回调监听
+	magicScene = scene.root
 	magicScene:registerScriptHandler(SpriteEase_onEnterOrExit)
 	SlideInLReplaceScene(magicScene,1)
 

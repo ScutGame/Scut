@@ -94,9 +94,10 @@ end;
 -- 创建场景
 function createScene()
 	initResource()
-	_scene = ScutScene:node()
+	local scene = ScutScene:new()
 	-- 注册网络回调
-	_scene:registerCallback("progressLayer.networkCallback")
+	_scene = scene.root
+	scene:registerCallback(networkCallback)
 --	_scene:registerOnExit("progressLayer.onExit")
 	local size = CCDirector:sharedDirector():getWinSize()
 	-- 添加背景

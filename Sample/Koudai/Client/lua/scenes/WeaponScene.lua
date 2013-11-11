@@ -51,9 +51,10 @@ function init()
 		return
 	end	
 	initResource()
-	mScene = ScutScene:node()
+	local scene = ScutScene:new()
 	-- 廣過利大指距
-	mScene:registerCallback("WeaponScene.networkCallback")
+	scene:registerCallback(networkCallback)
+	mScene = scene.root
 	mScene:registerScriptHandler(SpriteEase_onEnterOrExit)
 	SlideInLReplaceScene(mScene,1)
 	

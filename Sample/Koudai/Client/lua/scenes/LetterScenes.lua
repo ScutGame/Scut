@@ -122,11 +122,11 @@ end
 
 -- 创建场景
 function init()
-	g_scene = ScutScene:node()
+	local scene = ScutScene:new()
 	-- 注册网络回调
 	initResource()
-	g_scene:registerCallback("LetterScenes.networkCallback")
-	
+	scene:registerCallback(networkCallback)
+	g_scene = scene.root 
 	g_scene:registerScriptHandler(SpriteEase_onEnterOrExit)
 	--g_scene:registerOnEnter("LetterScenes.OnEnter")
 	SlideInLReplaceScene(g_scene,1)

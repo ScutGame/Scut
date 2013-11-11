@@ -34,8 +34,9 @@ function init()
 	end
 	 releaseResource()
 	ScutScene:registerNetErrorFunc("MainScene.netConnectError");
-	pMainScene=ScutScene:node();
-	pMainScene:registerCallback("MainScene.networkCallback")
+	local scene =ScutScene:new();
+	pMainScene = scene.root 
+	scene:registerCallback(networkCallback)
 
 	pWinSize=CCDirector:sharedDirector():getWinSize();
 	SlideInLReplaceScene(pMainScene)

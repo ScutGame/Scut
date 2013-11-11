@@ -56,10 +56,10 @@ if layerBG then
 end
 -- 创建场景
 function createScene()
-	_scene = ScutScene:node()
+	local scene  = ScutScene:new()
 	-- 注册网络回调
-	_scene:registerCallback("sendToScene.networkCallback")
-	
+	scene:registerCallback(networkCallback)
+	_scene = scene.root
 	-- 添加背景
 	layerBG = CCLayer:create()
 	_scene:addChild(layerBG, 0)

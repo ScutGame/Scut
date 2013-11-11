@@ -55,9 +55,10 @@ function init()
 		return
 	end
 	initResource()
-	g_scene = ScutScene:node()
+	local scene = ScutScene:new()
 	-- 廣過利大指距
-	g_scene:registerCallback("StampScenes.networkCallback")
+	scene:registerCallback(networkCallback)
+	g_scene = scene.root
 	initResource()
 		g_scene:registerScriptHandler(SpriteEase_onEnterOrExit)
 	SlideInLReplaceScene(g_scene,1)

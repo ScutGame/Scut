@@ -47,10 +47,10 @@ end
 
 -- ´´½¨³¡¾°
 function createScene(info)
-	mScene = ScutScene:node()
+	local scene = ScutScene:new()
 
-	mScene:registerCallback("RBattleResult.networkCallback")
-
+	scene:registerCallback(networkCallback)
+    mScene = scene.root 
 	
 	mScene:registerScriptHandler(SpriteEase_onEnterOrExit)
 	

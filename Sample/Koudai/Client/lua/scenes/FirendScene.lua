@@ -37,9 +37,10 @@ function init()
 	if mScene then
 		return
 	end
-	mScene = ScutScene:node()
+	local scene  = ScutScene:new()
+	mScene = scene.root
 	-- ×¢²áÍøÂç»Øµ÷
-	mScene:registerCallback("FireScutScene.networkCallback")
+	scene:registerCallback(networkCallback)
 		mScene:registerScriptHandler(SpriteEase_onEnterOrExit)
 	SlideInLReplaceScene(mScene,1)
 	-- Ìí¼Ó±³¾°

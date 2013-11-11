@@ -192,8 +192,9 @@ function init(type)
 		return 
 	end	
 	initResource()
-	mScene=ScutScene:node()
-	mScene:registerCallback("LanScenes.netCallback")--设置网络回调监听
+	local scene =ScutScene:new()
+	scene:registerCallback(netCallback)--设置网络回调监听
+	mScene = scene.root;
     	mLayer=CCLayer:create();
     	mLayer:setAnchorPoint(PT(0,0))
 	mLayer:setPosition(PT(0,0))

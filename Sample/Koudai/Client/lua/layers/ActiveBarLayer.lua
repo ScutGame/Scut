@@ -92,11 +92,11 @@ end;
 
 
 function init()
-	mScene = ScutScene:node()
+	local scene = ScutScene:new()
 	-- 注册网络回调
 			mScene:registerScriptHandler(SpriteEase_onEnterOrExit)
-	mScene:registerCallback("ActiveBarLayer.networkCallback")
-
+	scene:registerCallback(networkCallback)
+    mScene = scene.root
 	SlideInLReplaceScene(mScene,1)
 
 	-- 添加主层

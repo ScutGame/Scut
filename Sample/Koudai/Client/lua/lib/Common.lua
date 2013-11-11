@@ -5,7 +5,7 @@
 -- Author     : ChenJM
 -- Version    : 1.15
 -- Date       :   
--- Description: font, color, position adaption
+-- Description: 通用类，包含字体，颜色，适配位置等,
 ------------------------------------------------------------------
 
 
@@ -13,7 +13,7 @@ require("lib.ZyImage")
 
 pWinSize=CCDirector:sharedDirector():getWinSize()
 
---[[
+
 function ScutRequire()
 	local eLanguage = ScutUtility.CLocale:getLanguage()
 	local strPath = nil
@@ -29,8 +29,9 @@ function ScutRequire()
 	require(strPath2)
 	require(strPath3)
 end
+
+
 ScutRequire()
-]]
 
 function PT(x,y)
     return CCPoint(x,y)
