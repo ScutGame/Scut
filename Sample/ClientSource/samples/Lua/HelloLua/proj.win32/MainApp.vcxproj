@@ -42,7 +42,7 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup>
     <_ProjectFileVersion>10.0.40219.1</_ProjectFileVersion>
-    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(SolutionDir)..\GameRanking\Client\</OutDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(SolutionDir)$(Configuration).win32\</OutDir>
     <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(Configuration).win32\</IntDir>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</LinkIncremental>
     <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(SolutionDir)$(Configuration).win32\</OutDir>
@@ -92,7 +92,7 @@
       <AdditionalIncludeDirectories>$(MSBuildProgramFiles32)\Microsoft SDKs\Windows\v7.1A\include;$(IntDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ResourceCompile>
     <Link>
-      <AdditionalDependencies>libcocos2d.lib;libCocosDenshion.lib;opengl32.lib;glew32.lib;liblua.lib;libzlib.lib;libcurl_imp.lib;ScutNetWork.lib;ScutDataLogic.lib;ScutSystem.lib;libjpeg.lib;libpng.lib;libtiff.lib;pthreadVCE2.lib;libwebp.lib;ws2_32.lib;winmm.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>libcocos2d.lib;libCocosDenshion.lib;opengl32.lib;glew32.lib;liblua.lib;libzlib.lib;libcurl_imp.lib;ScutNetWork.lib;ScutDataLogic.lib;ScutSystem.lib;ScutUtility.lib;ScutAnimation.lib;libjpeg.lib;libpng.lib;libtiff.lib;pthreadVCE2.lib;libwebp.lib;ws2_32.lib;winmm.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(OutDir);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
@@ -132,7 +132,7 @@
       <AdditionalIncludeDirectories>$(MSBuildProgramFiles32)\Microsoft SDKs\Windows\v7.1A\include;$(IntDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ResourceCompile>
     <Link>
-      <AdditionalDependencies>libcocos2d.lib;libCocosDenshion.lib;opengl32.lib;glew32.lib;liblua.lib;lua51.lib;libzlib.lib;libcurl_imp.lib;ScutNetWork.lib;ScutDataLogic.lib;ScutSystem.lib;libjpeg.lib;libpng.lib;libtiff.lib;pthreadVCE2.lib;libwebp.lib;ws2_32.lib;winmm.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>libcocos2d.lib;libCocosDenshion.lib;opengl32.lib;glew32.lib;liblua.lib;lua51.lib;libzlib.lib;libcurl_imp.lib;ScutNetWork.lib;ScutDataLogic.lib;ScutSystem.lib;ScutUtility.lib;ScutAnimation.lib;libjpeg.lib;libpng.lib;libtiff.lib;pthreadVCE2.lib;libwebp.lib;ws2_32.lib;winmm.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(OutDir);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <SubSystem>Windows</SubSystem>
       <TargetMachine>MachineX86</TargetMachine>
@@ -159,12 +159,6 @@
     <ProjectReference Include="..\..\..\..\scripting\lua\proj.win32\liblua.vcxproj">
       <Project>{ddc3e27f-004d-4dd4-9dd3-931a013d2159}</Project>
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\..\ScutAnimation\ScutAnimation.vcxproj">
-      <Project>{1261c6c6-93a7-4234-b269-84b85784f8a7}</Project>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\..\ScutUtility\ScutUtility.vcxproj">
-      <Project>{277f39ff-abe9-4e7b-8d7f-46425a5f5974}</Project>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

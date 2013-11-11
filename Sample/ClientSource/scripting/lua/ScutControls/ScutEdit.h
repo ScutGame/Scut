@@ -34,7 +34,7 @@ THE SOFTWARE.
 #endif
 
 #if (CC_TARGET_PLATFORM == CC_PLATFORM_ANDROID)
-#include "./ANDROID/ANDROIDWindow.h"
+#include "./ANDROID/AndroidWindow.h"
 #endif
 #include "../cocos2dx_support/CCLuaEngine.h"
 
