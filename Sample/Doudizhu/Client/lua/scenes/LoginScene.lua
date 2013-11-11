@@ -84,9 +84,9 @@ function init(type)
 		return 
 	end
 	-- 廣過利大指距
-	mScene = ScutScene:node()	
-	mScene:registerCallback("LoginScene.netCallback")	
-	
+	local scene = ScutScene:new()	
+	scene:registerCallback(netCallback)	
+	mScene = scene.root;
 	--mScene:registerOnExit("LoginScene.onExit")
 	
 	mLayer = CCLayer:create()

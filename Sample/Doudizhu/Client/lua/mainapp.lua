@@ -58,6 +58,13 @@ require("scenes.LoginScene")
 require("datapool.PushReceiverLayer")
 require("scenes.MainScene")
 
+ g_frame_mgr = FrameManager:new()
+    g_frame_mgr:init()
+
+    function OnHandleData(pScene, nTag, nNetRet, pData)
+        pScene = tolua.cast(pScene, "CCScene")
+        g_scenes[pScene]:execCallback(nTag, nNetRet, pData)
+    end
 
 math.randomseed(os.time());
 __NETWORK__=true

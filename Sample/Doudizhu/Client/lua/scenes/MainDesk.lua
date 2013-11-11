@@ -290,9 +290,10 @@ function initScene()
 	if mScene then
 		return 
 	end
-	mScene = ScutScene:node()	
+	local scene = ScutScene:new()	
 	-- 注册网络回调
-	mScene:registerCallback("MainDesk.networkCallback")	
+	scene:registerCallback(networkCallback)	
+	mScene = scene.root
 	-- 添加背景
 	mLayer = CCLayer:create()
 	mScene:addChild(mLayer, 0)
@@ -316,7 +317,7 @@ function initScene()
 	mLayer:addChild(bgLayer,0)
 	
 	--创建底下 信息
-	local bottomLayer,label,info=MainHelper.createBottomLayer(mPersonalInfo,mRoomID)
+	local bottomLayer,label,info=MainHelper.createBottomLayer(mPersonalInfo,1001)
 	mBeiLabel=label
 	roomInfo=info	
 	mLayer:addChild(bottomLayer,0)

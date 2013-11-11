@@ -94,6 +94,7 @@ function PushReceiverCallback(pScutScene, lpExternalData)
 	elseif actionId==2015 then
 		local serverInfo=actionLayer._2015Callback(pScutScene, lpExternalData)
   	 	if serverInfo~=nil then
+  	 	    MainDesk.initScene()
 			MainDesk.continuGame(serverInfo)
 		end	 	
 	end

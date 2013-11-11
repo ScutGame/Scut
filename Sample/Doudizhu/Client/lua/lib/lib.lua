@@ -20,6 +20,8 @@ require("lib.ZyButton");
 require("lib.ZyImage");
 require("lib.NetHelper");
 require("lib.ZyToast");
+require("lib.ScutScene")
+require("lib.FrameManager")
 --require("lib.PointHelper");
 require("lib.ZyTable");
 require("lib.UIHelper");

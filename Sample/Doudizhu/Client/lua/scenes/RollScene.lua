@@ -179,12 +179,13 @@ end
 
 -- 创建场景
 function createScene()
-	mScene = ScutScene:node()
+	local scene = ScutScene:new()
+	mScene = scene.root
 --	mScene:registerOnExit("RollScene.releaseResource")	
 	CCDirector:sharedDirector():pushScene(mScene)
 
 	-- 注册网络回调
-	mScene:registerCallback("RollScene.networkCallback")
+	scene:registerCallback("RollScene.networkCallback")
 	
 	-- 添加主层
 	mLayer= CCLayer:create()

@@ -84,10 +84,11 @@ function initScene(gotype)
 		return 
 	end
     haveWhere=true;--在哪里
-	mScene = ScutScene:node()	
+	local scene = ScutScene:new()	
+	mScene = scene.root
 	CCDirector:sharedDirector():replaceScene(mScene)
 	-- 注册网络回调
-	mScene:registerCallback("MainSceneNetCallback.netCallBack")	
+	scene:registerCallback(netCallBack)	
 --	mScene:registerOnEnter("MainScene.onEnter")
 --	mScene:registerOnExit("MainScene.onExit")
 	--SlideInLReplaceScene(mScene)
