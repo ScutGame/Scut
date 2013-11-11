@@ -49,9 +49,10 @@ function releaseResource()
 end
 -- 创建场景
 function createScene(info)
-	mScene = ScutScene:node()
+	local scene = ScutScene:new()
 	-- 注册网络回调
-	mScene:registerCallback("SbattleScene.networkCallback")
+	scene:registerCallback(networkCallback)
+	mScene = scene.root
 	CCDirector:sharedDirector():pushScene(mScene)
 	fightinfo=info
 	-- 添加背景

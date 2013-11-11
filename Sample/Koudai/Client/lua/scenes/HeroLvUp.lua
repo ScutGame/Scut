@@ -63,9 +63,10 @@ end
 
 -- ´´½¨³¡¾°
 function createScene()
-	mScene = ScutScene:node()
+	local scene = ScutScene:new()
+	mScene = scene.root 
 	mScene:registerScriptHandler(SpriteEase_onEnterOrExit)
-	mScene:registerCallback("HeroLvUp.networkCallback")
+	scene:registerCallback(networkCallback)
 	SlideInLReplaceScene(mScene,1)
 
 

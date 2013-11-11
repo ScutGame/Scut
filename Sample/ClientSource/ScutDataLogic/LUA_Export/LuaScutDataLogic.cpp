@@ -1,6 +1,6 @@
 /*
 ** Lua binding: ScutDataLogic
-** Generated automatically by tolua++-1.0.92 on 11/02/13 14:52:51.
+** Generated automatically by tolua++-1.0.92 on 10/07/13 15:18:27.
 */
 
 #ifndef __cplusplus

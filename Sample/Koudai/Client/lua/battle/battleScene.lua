@@ -62,10 +62,11 @@ end
 
 -- ´´½¨³¡¾°
 function createScene()
-	mScene = ScutScene:node()
+	local scene = ScutScene:new()
 
 
-	mScene:registerCallback("battleScene.networkCallback")
+	scene:registerCallback(networkCallback)
+	mScene = scene.root;
 --	mScene:registerOnExit("battleScene.releaseResource")	
 	SlideInLReplaceScene(mScene,1)
 

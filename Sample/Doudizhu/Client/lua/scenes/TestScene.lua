@@ -6,10 +6,11 @@ local mScene
 local mLayer
 
 function init()
-	mScene = ScutScene:node()
+	local scene = ScutScene:new()
 	mLayer = CCLayer:create()
+	mScene = scene.root 
 	mScene:addChild(mLayer,0)
-	mScene:registerCallback("TestScene.netCallBack")
+	scene:registerCallback(netCallBack)
 	local runningScene = CCDirector:sharedDirector():getRunningScene()
 	if runningScene == nil then
 		CCDirector:sharedDirector():runWithScene(mScene)

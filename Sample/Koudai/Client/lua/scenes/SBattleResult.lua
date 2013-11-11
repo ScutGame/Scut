@@ -56,9 +56,9 @@ end
 
 -- ´´½¨³¡¾°
 function createScene(Score,StarNum)
-	mScene = ScutScene:node()
-
-	mScene:registerCallback("SBattleResult.networkCallback")
+	local scene = ScutScene:new()
+    mScene = scene.root
+	scene:registerCallback(networkCallback)
 
 		mScene:registerScriptHandler(SpriteEase_onEnterOrExit)
 	SlideInLReplaceScene(mScene,1)

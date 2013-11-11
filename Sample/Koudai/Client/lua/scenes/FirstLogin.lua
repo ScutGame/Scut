@@ -26,8 +26,8 @@ function initResource()
 end;
 function init()
 	initResource()
-	_scene = ScutScene:node()
-	
+	local scene = ScutScene:new()
+	_scene = scene.root
 		_scene:registerScriptHandler(SpriteEase_onEnterOrExit)
 	SlideInLReplaceScene(_scene)	
 

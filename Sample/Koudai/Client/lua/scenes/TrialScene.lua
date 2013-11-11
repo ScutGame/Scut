@@ -58,10 +58,11 @@ end
 
 -- 创建场景
 function init()
-	mScene = ScutScene:node()
+	local scene = ScutScene:new()
+	mScene = scene.root
 		mScene:registerScriptHandler(SpriteEase_onEnterOrExit)
 	-- 注册网络回调
-	mScene:registerCallback("TrialScene.networkCallback")
+	scene:registerCallback(networkCallback)
 	
 	SlideInLReplaceScene(mScene,1)	
 --	

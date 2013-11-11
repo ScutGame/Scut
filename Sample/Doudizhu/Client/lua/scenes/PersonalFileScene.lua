@@ -150,9 +150,10 @@ end
 function createScene(type)
 	isRollIn = type
 	initResource()
-	mScene = ScutScene:node()
+	local scene = ScutScene:new()
 	-- ×¢²áÍøÂç»Øµ÷
-	mScene:registerCallback("PersonalFileScene.networkCallback")
+	scene:registerCallback(networkCallback)
+	mScene = scene.root
 --	mScene:registerOnEnter("PersonalFileScene.onEnter")
 	-- Ìí¼Ó±³¾°
 	mLayer = CCLayer:create()

@@ -61,8 +61,9 @@ function init(fatherType)
 
 	initResource()
 
-	mScene = ScutScene:node()
-	mScene:registerCallback("InheritScene.networkCallback")
+	local scene  = ScutScene:new()
+	scene:registerCallback(networkCallback)
+	mScene = scene.root 
 	mScene:registerScriptHandler(SpriteEase_onEnterOrExit)
 	SlideInLReplaceScene(mScene,1)
 

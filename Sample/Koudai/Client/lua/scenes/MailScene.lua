@@ -34,11 +34,12 @@ function init()
 		return
 	end
 	initResource()
-	mScene = ScutScene:node()
+	local scene  = ScutScene:new()
 		mScene:registerScriptHandler(SpriteEase_onEnterOrExit)
 		
 	-- ×¢²áÍøÂç»Øµ÷
-	mScene:registerCallback("MailScene.networkCallback")
+	scene:registerCallback(networkCallback)
+	mScene = scene.root 
 	SlideInLReplaceScene(mScene,1)
 	-- Ìí¼Ó±³¾°
 	mLayer = CCLayer:create()

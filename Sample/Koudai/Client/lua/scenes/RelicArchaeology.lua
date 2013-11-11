@@ -100,11 +100,11 @@ end;
 
 
 function init(mRecordTabel)
-	mScene = ScutScene:node()
+	local scene = ScutScene:new()
 	-- 廣過利大指距
-
+    mScene = scene.root
 		mScene:registerScriptHandler(SpriteEase_onEnterOrExit)
-	mScene:registerCallback("RelicArchaeology.networkCallback")
+	scene:registerCallback(networkCallback)
 
 	SlideInLReplaceScene(mScene,1)
 	

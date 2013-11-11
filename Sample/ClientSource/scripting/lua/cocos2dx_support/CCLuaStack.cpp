@@ -39,7 +39,7 @@ extern "C" {
 #if (CC_TARGET_PLATFORM == CC_PLATFORM_IOS || CC_TARGET_PLATFORM == CC_PLATFORM_MAC)
 #include "platform/ios/CCLuaObjcBridge.h"
 #endif
-extern int  tolua_ScutScene_open (lua_State* tolua_S);
+//extern int  tolua_ScutScene_open (lua_State* tolua_S);
 extern int  tolua_ScutDataLogic_open (lua_State* tolua_S);
 extern int  tolua_ScutSystem_open (lua_State* tolua_S);
 extern int  tolua_ScutUtility_open(lua_State* tolua_S);
@@ -82,7 +82,7 @@ int lua_print(lua_State * luastate)
         if (i!=nargs)
             t += "\t";
     }
-    cocos2d::CCLog("[LUA-print] %s", t.c_str());
+    CCLOG("[LUA-print] %s", t.c_str());
 
     return 0;
 }
@@ -506,7 +506,7 @@ int nderror_handler(lua_State* L)
 	lua_Debug debug_info;
 	int level = 0;
 	std::string err;
-	//char tmp[10];
+	char tmp[10];
 
 	if(lua_gettop(L) > 0 && lua_isstring(L, -1))
 	{

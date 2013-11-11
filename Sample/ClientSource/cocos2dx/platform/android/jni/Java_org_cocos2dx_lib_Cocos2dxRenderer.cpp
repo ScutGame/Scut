@@ -20,7 +20,7 @@ extern "C" {
         CCNotificationCenter::sharedNotificationCenter()->postNotification(EVENT_COME_TO_BACKGROUND, NULL);
     }
 
-    JNIEXPORT void JNICALL Java_org_cocos2dx_lib_Cocos2dxRenderer_nativeOnResume() {
+      JNIEXPORT void JNICALL Java_org_cocos2dx_lib_Cocos2dxRenderer_nativeOnResume() {
         if (CCDirector::sharedDirector()->getOpenGLView()) {
             CCApplication::sharedApplication()->applicationWillEnterForeground();
         }

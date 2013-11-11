@@ -27,10 +27,12 @@ function init(scene)
 		return
 	end
 	initResource()
-	mScene = ScutScene:node()
-		mScene:registerScriptHandler(SpriteEase_onEnterOrExit)
+	local scene = ScutScene:new()
+		
 	-- 廣過利大指距
-	mScene:registerCallback("BossScene.networkCallback")
+	scene:registerCallback("BossScene.networkCallback")
+	mScene = scene.root
+	mScene:registerScriptHandler(SpriteEase_onEnterOrExit)
 	SlideInLReplaceScene(mScene,1)
 	mLayer = CCLayer:create()
 	mScene:addChild(mLayer, 0)

@@ -57,7 +57,7 @@ end;
 
 -- 创建场景
 function init()
-	mScene = ScutScene:node()
+	local scene  = ScutScene:new()
 
 	runningScene = CCDirector:sharedDirector():getRunningScene()
 	if runningScene == nil then
@@ -67,7 +67,8 @@ function init()
 	end
 	
 	-- 注册网络回调
-	mScene:registerCallback("LoginScene.networkCallback")
+	mScene = scene.root 
+	scene:registerCallback(networkCallback)
 		mScene:registerScriptHandler(SpriteEase_onEnterOrExit)
 	-- 添加主层
 	mLayer= CCLayer:create()

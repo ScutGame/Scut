@@ -467,8 +467,9 @@ void ScutDataLogic::CDataRequest::LuaHandleData(void* pScene, int nTag, int nNet
 	lua_pushnumber(pState, nTag);
 	lua_pushnumber(pState, nNetRet);
 	lua_pushnumber(pState, int(lpData));
+	lua_pushnumber(pState, int(lpExternal));
 
-	int nargs = 4;
+	int nargs = 5;
 	int traceback = 0;
 	lua_getglobal(pState, "__G__TRACKBACK__");                         /* L: ... func arg1 arg2 ... G */
 	if (!lua_isfunction(pState, -1))

@@ -50,10 +50,10 @@ end
 -- 创建场景
 function createScene()
 	 initResource()
-	mScene = ScutScene:node()
+	local scene = ScutScene:new()
 	-- 注册网络回调
-	mScene:registerCallback("ChangePwd.networkCallback")
-	
+	scene:registerCallback(networkCallback)
+	mScene = scene.root
 	-- 添加背景
 	mLayer = CCLayer:create()
 	mScene:addChild(mLayer, 0)

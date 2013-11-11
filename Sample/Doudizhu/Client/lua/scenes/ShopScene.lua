@@ -181,10 +181,11 @@ function releaseResource()
 end
 -- 创建场景
 function createScene(type,back)
-	mScene = ScutScene:node()
+	local scene = ScutScene:new()
 	backType=back
 	-- 注册网络回调
-	mScene:registerCallback("ShopScene.networkCallback")
+	scene:registerCallback(networkCallback)
+	mScene = scene.root
 	
 	-- 添加背景
 	mLayer = CCLayer:create()

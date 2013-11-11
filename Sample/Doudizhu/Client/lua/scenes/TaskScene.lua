@@ -76,10 +76,10 @@ end
 -- 创建场景
 function createScene()
 	initResource()
-	mScene = ScutScene:node()
+	local scene = ScutScene:new()
 	-- 注册网络回调
-	mScene:registerCallback("TaskScene.networkCallback")
-
+	scene:registerCallback(networkCallback)
+    mScene = scene.root
 	-- 此处添加场景初始内容
 	mLayer = CCLayer:create()
 	mScene:addChild(mLayer, 0)
