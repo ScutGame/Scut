@@ -7,6 +7,7 @@ using ZyGames.Framework.Event;
 
 namespace ZyGames.Doudizhu.Model
 {
+    [Serializable, ProtoContract]
     public class UserAchieveInfo : EntityChangeEvent
     {
         public UserAchieveInfo()

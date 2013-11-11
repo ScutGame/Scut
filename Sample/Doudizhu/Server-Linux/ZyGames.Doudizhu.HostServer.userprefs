@@ -1,22 +1,39 @@
 ﻿<Properties>
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Release_Linux" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="ZyGames.Doudizhu.Bll\GameHostApp.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="ZyGames.Doudizhu.Model\DataModel\UserTask.cs">
     <Files>
-      <File FileName="ZyGames.Doudizhu.HostServer\PyScript\Action\Action1008.py" Line="1" Column="1" />
-      <File FileName="ZyGames.Doudizhu.Bll\GameHostApp.cs" Line="126" Column="36" />
-      <File FileName="ZyGames.Doudizhu.HostServer\PyScript\Route.config.xml" Line="1" Column="1" />
-      <File FileName="ZyGames.Doudizhu.HostServer\Program.cs" Line="1" Column="1" />
-      <File FileName="ZyGames.Doudizhu.HostServer\App.config" Line="1" Column="1" />
+      <File FileName="ZyGames.Doudizhu.Bll\Action\Action1002.cs" Line="1" Column="1" />
+      <File FileName="ZyGames.Doudizhu.Bll\Action\Action1004.cs" Line="1" Column="1" />
+      <File FileName="ZyGames.Doudizhu.Bll\Action\Action1080.cs" Line="1" Column="1" />
+      <File FileName="ZyGames.Doudizhu.Bll\Action\Action404.cs" Line="1" Column="1" />
+      <File FileName="ZyGames.Doudizhu.Bll\Action\Action1007.cs" Line="1" Column="1" />
+      <File FileName="ZyGames.Doudizhu.Bll\Action\Action1006.cs" Line="1" Column="1" />
+      <File FileName="ZyGames.Doudizhu.Bll\Action\Action1005.cs" Line="1" Column="1" />
+      <File FileName="ZyGames.Doudizhu.Model\DataModel\GameUser.cs" Line="79" Column="14" />
+      <File FileName="ZyGames.Doudizhu.Model\Model\TableData.cs" Line="1" Column="1" />
+      <File FileName="ZyGames.Doudizhu.Model\LogModel\UserLoginLog.cs" Line="192" Column="10" />
+      <File FileName="ZyGames.Doudizhu.Model\DataModel\UserAchieve.cs" Line="62" Column="5" />
+      <File FileName="ZyGames.Doudizhu.Model\DataModel\GameNotice.cs" Line="46" Column="46" />
+      <File FileName="ZyGames.Doudizhu.Model\DataModel\UserDailyRestrain.cs" Line="62" Column="5" />
+      <File FileName="ZyGames.Doudizhu.Model\DataModel\UserItemPackage.cs" Line="62" Column="5" />
+      <File FileName="ZyGames.Doudizhu.Model\DataModel\UserNickName.cs" Line="44" Column="5" />
+      <File FileName="ZyGames.Doudizhu.Model\DataModel\UserTakePrize.cs" Line="73" Column="14" />
+      <File FileName="ZyGames.Doudizhu.Model\DataModel\UserTask.cs" Line="61" Column="4" />
     </Files>
     <Pads>
       <Pad Id="ProjectPad">
         <State expanded="True">
-          <Node name="ZyGames.Doudizhu.Bll" expanded="True" />
-          <Node name="ZyGames.Doudizhu.HostServer" expanded="True" selected="True">
-            <Node name="PyScript" expanded="True" />
+          <Node name="ZyGames.Doudizhu.Bll" expanded="True">
+            <Node name="Action" expanded="True" />
+            <Node name="Com" expanded="True">
+              <Node name="Share" expanded="True" />
+            </Node>
+            <Node name="Logic" expanded="True" />
           </Node>
           <Node name="ZyGames.Doudizhu.Model" expanded="True">
-            <Node name="DataModel" expanded="True" />
+            <Node name="DataModel" expanded="True">
+              <Node name="UserTask.cs" selected="True" />
+            </Node>
             <Node name="LogModel" expanded="True" />
             <Node name="Model" expanded="True" />
           </Node>

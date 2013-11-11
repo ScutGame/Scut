@@ -43,6 +43,7 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Microsoft.CSharp" />
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -247,6 +248,9 @@
     </Content>
     <Content Include="PyScript\Lib\mathUtils.py">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="PyScript\Lib\types.py">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="PyScript\Logic\cardAILogic.py">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>

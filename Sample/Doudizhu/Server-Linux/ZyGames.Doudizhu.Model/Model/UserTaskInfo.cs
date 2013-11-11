@@ -8,6 +8,8 @@ using ZyGames.Framework.Game.Cache;
 
 namespace ZyGames.Doudizhu.Model
 {
+
+    [Serializable, ProtoContract]
     public class UserTaskInfo : EntityChangeEvent
     {
         public UserTaskInfo()

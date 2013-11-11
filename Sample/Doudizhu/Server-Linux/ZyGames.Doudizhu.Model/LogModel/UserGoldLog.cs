@@ -24,7 +24,7 @@ namespace ZyGames.Doudizhu.Model
     /// </remarks>
     [Serializable, ProtoContract]
 	[EntityTable(AccessLevel.WriteOnly, DbConfig.Log, "UserGoldLog")]
-    public class UserGoldLog : ShareEntity
+    public class UserGoldLog : LogEntity
     {
         #region auto-generated static method
         static UserGoldLog()
@@ -35,7 +35,6 @@ namespace ZyGames.Doudizhu.Model
         /// <summary>
         /// </summary>
         public UserGoldLog()
-            : base(AccessLevel.WriteOnly)
         {
             
         }        

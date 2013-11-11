@@ -55,7 +55,11 @@ namespace ZyGames.Doudizhu.Model
             get
             {
                 return _userID;
-            }
+			}
+			set
+			{
+				SetChange("UserID", value);
+			}
 
         }
         private CacheList<UserTaskInfo> _taskPackage;

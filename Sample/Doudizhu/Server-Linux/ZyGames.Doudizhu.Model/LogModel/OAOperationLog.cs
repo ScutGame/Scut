@@ -24,7 +24,7 @@ namespace ZyGames.Doudizhu.Model
     /// </remarks>
     [Serializable, ProtoContract]
 	[EntityTable(AccessLevel.WriteOnly, DbConfig.Log, "OAOperationLog")]
-    public class OAOperationLog : ShareEntity
+    public class OAOperationLog : LogEntity
     {
         #region auto-generated static method
         static OAOperationLog()
@@ -35,7 +35,6 @@ namespace ZyGames.Doudizhu.Model
         /// <summary>
         /// </summary>
         public OAOperationLog()
-            : base(AccessLevel.WriteOnly)
         {
             
         }        

@@ -1,6 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <config>
-  <lib path="/usr/local/Python/Lib" />
+  <!--/usr/local/Python/Lib-->
+  <lib path="D:/Python/Lib" />
   <!--Action路由配置表-->
   <route-list>
     <!--ignoreAuthorize:是否不需要登录验证-->

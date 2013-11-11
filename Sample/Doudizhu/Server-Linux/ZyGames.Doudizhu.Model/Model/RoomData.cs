@@ -1,4 +1,5 @@
 ﻿using System;
+using ProtoBuf;
 using ZyGames.Framework.Common;
 using ZyGames.Framework.Model;
 using ZyGames.Framework.Cache.Generic;
@@ -8,6 +9,7 @@ namespace ZyGames.Doudizhu.Model
     /// <summary>
     /// 房间对象
     /// </summary>
+    [Serializable, ProtoContract]
     public class RoomData : MemoryEntity
     {
         private CacheQueue<TableData> _tablePool;

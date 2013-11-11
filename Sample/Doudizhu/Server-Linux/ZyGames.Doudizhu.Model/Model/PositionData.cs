@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using ProtoBuf;
 using ZyGames.Framework.Common;
 
 namespace ZyGames.Doudizhu.Model
@@ -9,6 +10,7 @@ namespace ZyGames.Doudizhu.Model
     /// <summary>
     /// 桌子的座位对象
     /// </summary>
+    [Serializable, ProtoContract]
     public class PositionData
     {
         private int _id;

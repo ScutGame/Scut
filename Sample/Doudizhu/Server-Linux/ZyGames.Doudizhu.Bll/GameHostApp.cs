@@ -52,7 +52,7 @@ namespace ZyGames.Doudizhu.Bll
 
 		protected override void OnReceivedBefore (ConnectionEventArgs e)
 		{
-			Console.WriteLine("Url:{0}", Encoding.ASCII.GetString(e.Data));
+			//Console.WriteLine("Url:{0}", Encoding.ASCII.GetString(e.Data));
 		}
 
         protected override void OnRequested(HttpGet httpGet, IGameResponse response)
@@ -84,9 +84,13 @@ namespace ZyGames.Doudizhu.Bll
                 {
                     PythonContext pythonContext;
                     PythonScriptManager.Current.TryLoadPython(@"Lib/action.py", out pythonContext);
+                    PythonScriptManager.Current.TryLoadPython(@"Lib/lang.py", out pythonContext);
+                    PythonScriptManager.Current.TryLoadPython(@"Logic/cardAILogic.py", out pythonContext);
+
                     AppstoreClientManager.Current.InitConfig();
                     RouteItem routeItem;
                     PythonScriptManager.Current.TryGetAction(1008, out routeItem);
+                    PythonScriptManager.Current.TryGetAction(9202, out routeItem);
                     LoadUnlineUser();
                     InitRanking();
 

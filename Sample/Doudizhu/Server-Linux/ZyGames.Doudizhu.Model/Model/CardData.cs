@@ -2,12 +2,14 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using ProtoBuf;
 
 namespace ZyGames.Doudizhu.Model
 {
     /// <summary>
     /// 牌面数据
     /// </summary>
+    [Serializable, ProtoContract]
     public class CardData
     {
         public CardData(int userId, int posId)

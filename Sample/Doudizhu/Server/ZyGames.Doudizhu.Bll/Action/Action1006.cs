@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using ZyGames.Framework.Game.Runtime;
 using ZyGames.Framework.Game.Service;
 using ZyGames.Framework.Game.Sns;
 using ZyGames.Framework.Common.Security;
@@ -26,14 +27,14 @@ namespace ZyGames.Doudizhu.Bll.Action
             try
             {
                 DESAlgorithmNew des = new DESAlgorithmNew();
-                password = des.DecodePwd(password, "n7=7=7dk");
+                password = des.DecodePwd(password, GameEnvironment.ClientDesDeKey);
                 if (password.Length > 12 || password.Length < 4)
                 {
                     this.ErrorCode = LanguageManager.GetLang().ErrorCode;
                     this.ErrorInfo = LanguageManager.GetLang().St1006_PasswordTooLong;
                     return false;
                 }
-                password = CryptoHelper.DES_Encrypt(password, "5^1-34E!");
+                password = CryptoHelper.DES_Encrypt(password, GameEnvironment.ProductDesEnKey);
                 if (SnsManager.ChangePass(Uid, password) <= 0)
                 {
                     this.ErrorCode = LanguageManager.GetLang().ErrorCode;

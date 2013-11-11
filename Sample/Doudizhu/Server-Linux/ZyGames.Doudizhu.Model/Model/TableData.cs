@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading;
+using ProtoBuf;
 using ZyGames.Framework.Common;
 
 namespace ZyGames.Doudizhu.Model
@@ -10,6 +11,7 @@ namespace ZyGames.Doudizhu.Model
     /// <summary>
     /// 桌子对象
     /// </summary>
+    [Serializable, ProtoContract]
     public class TableData : BaseDisposable
     {
         private const int PackMaxNum = 54;

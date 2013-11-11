@@ -54,7 +54,11 @@ namespace ZyGames.Doudizhu.Model
             get
             {
                 return _iD;
-            } 
+			} 
+			set
+			{
+				SetChange("ID", value);
+			}
             
         }
         private int _userID;

@@ -2,12 +2,14 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using ProtoBuf;
 
 namespace ZyGames.Doudizhu.Model
 {
     /// <summary>
     /// 牌组
     /// </summary>
+    [Serializable, ProtoContract]
     public class CardGroup
     {
         private const int MaxLength = 20;

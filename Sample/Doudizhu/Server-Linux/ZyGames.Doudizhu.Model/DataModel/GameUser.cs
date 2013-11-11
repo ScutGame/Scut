@@ -58,7 +58,7 @@ namespace ZyGames.Doudizhu.Model
             } 
 			private set
 			{
-				_userId = value;
+				SetChange("UserId", value);
 			}
         }
         private string _pid;

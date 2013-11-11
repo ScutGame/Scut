@@ -24,7 +24,7 @@ namespace ZyGames.Doudizhu.Model
     /// </remarks>
     [Serializable, ProtoContract]
 	[EntityTable(AccessLevel.WriteOnly, DbConfig.Log, "LogActionVisitor")]
-    public class LogActionVisitor : ShareEntity
+    public class LogActionVisitor : LogEntity
     {
         #region auto-generated static method
         static LogActionVisitor()
@@ -35,7 +35,6 @@ namespace ZyGames.Doudizhu.Model
         /// <summary>
         /// </summary>
         public LogActionVisitor()
-            : base(AccessLevel.WriteOnly)
         {
             
         }        
