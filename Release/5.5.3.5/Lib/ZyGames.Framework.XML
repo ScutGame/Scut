@@ -1737,10 +1737,10 @@
         </member>
         <member name="T:ZyGames.Framework.Net.IDataReceiver">
             <summary>
-            
+            数据接收处理接口
             </summary>
         </member>
-        <member name="M:ZyGames.Framework.Net.IDataReceiver.Receive``1">
+        <member name="M:ZyGames.Framework.Net.IDataReceiver.TryReceive``1(System.Collections.Generic.List{``0}@)">
             <summary>
             
             </summary>
@@ -2332,6 +2332,12 @@
             启动创建表结构检查定时器
             </summary>
         </member>
+        <member name="M:ZyGames.Framework.Model.EntitySchemaSet.GenerateRedisKey``1(System.String)">
+            <summary>
+            生成存储在Redis的Key
+            </summary>
+            <returns></returns>
+        </member>
         <member name="M:ZyGames.Framework.Model.EntitySchemaSet.LoadAssembly(System.Reflection.Assembly)">
             <summary>
             加载实体程序集
@@ -2473,12 +2479,13 @@
             数据转发器
             </summary>
         </member>
-        <member name="M:ZyGames.Framework.Net.ITransponder.ReceiveData``1(ZyGames.Framework.Net.TransReceiveParam)">
+        <member name="M:ZyGames.Framework.Net.ITransponder.TryReceiveData``1(ZyGames.Framework.Net.TransReceiveParam,System.Collections.Generic.List{``0}@)">
             <summary>
             
             </summary>
             <typeparam name="T"></typeparam>
             <param name="receiveParam"></param>
+            <param name="dataList"></param>
             <returns></returns>
         </member>
         <member name="M:ZyGames.Framework.Net.ITransponder.SendData``1(``0[],ZyGames.Framework.Net.TransSendParam)">
@@ -2489,12 +2496,13 @@
             <param name="dataList"></param>
             <param name="sendParam"></param>
         </member>
-        <member name="M:ZyGames.Framework.Net.RedisTransponder.ReceiveData``1(ZyGames.Framework.Net.TransReceiveParam)">
+        <member name="M:ZyGames.Framework.Net.RedisTransponder.TryReceiveData``1(ZyGames.Framework.Net.TransReceiveParam,System.Collections.Generic.List{``0}@)">
             <summary>
             
             </summary>
             <typeparam name="T"></typeparam>
             <param name="receiveParam"></param>
+            <param name="dataList"></param>
             <returns></returns>
         </member>
         <member name="M:ZyGames.Framework.Net.RedisTransponder.SendData``1(``0[],ZyGames.Framework.Net.TransSendParam)">
@@ -3429,6 +3437,11 @@
             是否存储到DB
             </summary>
         </member>
+        <member name="P:ZyGames.Framework.Model.EntityTableAttribute.IsPersistence">
+            <summary>
+            是否持久化到DB，当从Redis内存移除后
+            </summary>
+        </member>
         <member name="P:ZyGames.Framework.Model.EntityTableAttribute.Capacity">
             <summary>
             容量
@@ -3469,10 +3482,11 @@
             提供数据访问基类
             </summary>
         </member>
-        <member name="M:ZyGames.Framework.Data.DbBaseProvider.#ctor(System.String)">
+        <member name="M:ZyGames.Framework.Data.DbBaseProvider.#ctor(System.String,System.String)">
             <summary>
             
             </summary>
+            <param name="providerTypeName"></param>
             <param name="connectionString"></param>
         </member>
         <member name="M:ZyGames.Framework.Data.DbBaseProvider.ExecuteReader(System.Data.CommandType,System.String,System.Data.IDataParameter[])">
@@ -3608,6 +3622,11 @@
             <param name="columns"></param>
             <returns></returns>
         </member>
+        <member name="P:ZyGames.Framework.Data.DbBaseProvider.ProviderTypeName">
+            <summary>
+            提供者
+            </summary>
+        </member>
         <member name="P:ZyGames.Framework.Data.DbBaseProvider.ConnectionString">
             <summary>
             连接数据库字符串
@@ -3619,10 +3638,11 @@
             </summary>
             <value>The connection setting.</value>
         </member>
-        <member name="M:ZyGames.Framework.Data.Sql.SqlDataProvider.#ctor(System.String)">
+        <member name="M:ZyGames.Framework.Data.Sql.SqlDataProvider.#ctor(System.String,System.String)">
             <summary>
             
             </summary>
+            <param name="providerTypeName"></param>
             <param name="connectionString"></param>
         </member>
         <member name="M:ZyGames.Framework.Data.Sql.SqlDataProvider.ExecuteReader(System.Data.CommandType,System.String,System.Data.IDataParameter[])">
@@ -4409,6 +4429,14 @@
             <param name="str"></param>
             <returns></returns>
         </member>
+        <member name="M:ZyGames.Framework.Net.Sql.SqlDataReceiver.TryReceive``1(System.Collections.Generic.List{``0}@)">
+            <summary>
+            
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="dataList"></param>
+            <returns></returns>
+        </member>
         <member name="T:ZyGames.Framework.Data.DbConnectionProvider">
             <summary>
             数据连接提供类
@@ -4479,12 +4507,13 @@
             
             </summary>
         </member>
-        <member name="M:ZyGames.Framework.Net.DbTransponder.ReceiveData``1(ZyGames.Framework.Net.TransReceiveParam)">
+        <member name="M:ZyGames.Framework.Net.DbTransponder.TryReceiveData``1(ZyGames.Framework.Net.TransReceiveParam,System.Collections.Generic.List{``0}@)">
             <summary>
             
             </summary>
             <typeparam name="T"></typeparam>
             <param name="receiveParam"></param>
+            <param name="dataList"></param>
             <returns></returns>
         </member>
         <member name="M:ZyGames.Framework.Net.DbTransponder.SendData``1(``0[],ZyGames.Framework.Net.TransSendParam)">
@@ -4659,6 +4688,15 @@
             </summary>
             <typeparam name="V">实体类型</typeparam>
             <param name="receiveParam">接收转发器参数</param>
+            <param name="dataList"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ZyGames.Framework.Cache.Generic.IDataContainer`1.TryLoadHistory``1(System.String,System.Collections.Generic.List{``0}@)">
+            <summary>
+            尝试从Redis历史记录数中检索
+            </summary>
+            <typeparam name="V">实体类型</typeparam>
+            <param name="redisKey">redis Key</param>
             <param name="dataList"></param>
             <returns></returns>
         </member>
@@ -7291,7 +7329,7 @@
             MSSQL数据库服务提供者
             </summary>
         </member>
-        <member name="M:ZyGames.Framework.Data.MySql.MySqlDataProvider.#ctor(System.String)">
+        <member name="M:ZyGames.Framework.Data.MySql.MySqlDataProvider.#ctor(System.String,System.String)">
             <summary>
             
             </summary>
@@ -8191,14 +8229,6 @@
             <param name="schema"></param>
             <param name="capacity"></param>
             <param name="filter"></param>
-            <returns></returns>
-        </member>
-        <member name="M:ZyGames.Framework.Net.DataSyncManager.CreateRedisKey``1(System.Int32)">
-            <summary>
-            
-            </summary>
-            <typeparam name="T"></typeparam>
-            <param name="identityId"></param>
             <returns></returns>
         </member>
         <member name="M:ZyGames.Framework.Net.DataSyncManager.GetRedisSender(System.String)">
@@ -10483,6 +10513,11 @@
             是否存储到DB（可从Db取数据，但不能更新回DB）
             </summary>
         </member>
+        <member name="P:ZyGames.Framework.Model.SchemaTable.IsPersistence">
+            <summary>
+            是否持久化到DB，当从Redis内存移除后
+            </summary>
+        </member>
         <member name="P:ZyGames.Framework.Model.SchemaTable.PeriodTime">
             <summary>
             生命周期，单位秒
@@ -10601,6 +10636,12 @@
             <param name="redisKey"></param>
             <param name="itemSet"></param>
             <returns></returns>
+        </member>
+        <member name="M:ZyGames.Framework.Cache.Generic.CacheFactory.RemoveToDatabase(System.String[])">
+            <summary>
+            从Redis内存移除，并保存到数据库
+            </summary>
+            <param name="keys"></param>
         </member>
         <member name="M:ZyGames.Framework.Cache.Generic.CacheFactory.StartListener">
             <summary>
@@ -10786,13 +10827,14 @@
             <param name="dataList"></param>
             <returns></returns>
         </member>
-        <member name="M:ZyGames.Framework.Redis.RedisManager.Get``1(System.String)">
+        <member name="M:ZyGames.Framework.Redis.RedisManager.TryGet``1(System.String,System.Collections.Generic.List{``0}@)">
             <summary>
             获取数据
             </summary>
             <typeparam name="T"></typeparam>
             <param name="redisKey"></param>
-            <returns></returns>
+            <param name="dataList"></param>
+            <returns>返回是否加载成功</returns>
         </member>
         <member name="M:ZyGames.Framework.Redis.RedisManager.Process(System.Action{ZyGames.Framework.Redis.RedisConnection})">
             <summary>
@@ -11123,6 +11165,26 @@
             <param name="min"></param>
             <param name="max">从队列取的最大值，0为不限制</param>
             <returns></returns>
+        </member>
+        <member name="T:ZyGames.Framework.Model.EntityHistory">
+            <summary>
+            实体对象的历史记录
+            </summary>
+        </member>
+        <member name="M:ZyGames.Framework.Model.EntityHistory.#ctor">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:ZyGames.Framework.Model.EntityHistory.Key">
+            <summary>
+            The key.
+            </summary>
+        </member>
+        <member name="P:ZyGames.Framework.Model.EntityHistory.Value">
+            <summary>
+            The bytes data.
+            </summary>
         </member>
     </members>
 </doc>
