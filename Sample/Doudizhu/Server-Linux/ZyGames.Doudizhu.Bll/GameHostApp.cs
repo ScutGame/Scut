@@ -47,13 +47,13 @@ namespace ZyGames.Doudizhu.Bll
 
 
         protected override void OnConnectCompleted(object sender, ConnectionEventArgs e)
-		{
+        {
         }
 
-		protected override void OnReceivedBefore (ConnectionEventArgs e)
-		{
-			//Console.WriteLine("Url:{0}", Encoding.ASCII.GetString(e.Data));
-		}
+        protected override void OnReceivedBefore(ConnectionEventArgs e)
+        {
+            //Console.WriteLine("Url:{0}", Encoding.ASCII.GetString(e.Data));
+        }
 
         protected override void OnRequested(HttpGet httpGet, IGameResponse response)
         {
@@ -107,14 +107,13 @@ namespace ZyGames.Doudizhu.Bll
                     return true;
                 }, 600, assembly);
 
-                if (log != null)
-                {
-#if(DEBUG)
-                    log.SaveLog(new Exception("系统正使用Debug版本"));
-#else
-                    log.SaveLog("系统正使用Release版本");
-#endif
-                }
+                //todo test
+                //CacheFactory.RemoveToDatabase("ZyGames.Doudizhu.Model.UserNickName_1380003");
+                //UserNickName u = new ShareCacheStruct<UserNickName>().FindKey(1380003);
+                //if (u == null)
+                //{
+
+                //}
             }
             catch (Exception ex)
             {
@@ -139,17 +138,17 @@ namespace ZyGames.Doudizhu.Bll
                 int loadUnlineDay = ConfigUtils.GetSetting("LoadUnlineDay", "1").ToInt();
                 int maxCount = ConfigUtils.GetSetting("MaxLoadCount", "100").ToInt();
                 var dbProvider = DbConnectionProvider.CreateDbProvider(DbConfig.Data);
-				var command = dbProvider.CreateCommandStruct("GameUser", CommandMode.Inquiry);
-				command.Columns = dbProvider.FormatQueryColumn(",", new string[]{ "UserID" });
-				command.ToIndex = maxCount;
-				command.OrderBy = "LoginDate desc";
-				command.Filter = dbProvider.CreateCommandFilter();
-				command.Filter.Condition = dbProvider.FormatFilterParam("LoginDate", "LoginDate");
-				var param = dbProvider.CreateParameter("LoginDate", DateTime.Now.Date.AddDays(-loadUnlineDay));
-				command.Filter.AddParam(param);
-				command.Parser();
+                var command = dbProvider.CreateCommandStruct("GameUser", CommandMode.Inquiry);
+                command.Columns = dbProvider.FormatQueryColumn(",", new string[] { "UserID" });
+                command.ToIndex = maxCount;
+                command.OrderBy = "LoginDate desc";
+                command.Filter = dbProvider.CreateCommandFilter();
+                command.Filter.Condition = dbProvider.FormatFilterParam("LoginDate", "LoginDate").Replace("=", ">");
+                var param = dbProvider.CreateParameter("LoginDate", DateTime.Now.Date.AddDays(-loadUnlineDay));
+                command.Filter.AddParam(param);
+                command.Parser();
 
-				using (IDataReader reader = dbProvider.ExecuteReader(CommandType.Text, command.Sql, command.Parameters))
+                using (IDataReader reader = dbProvider.ExecuteReader(CommandType.Text, command.Sql, command.Parameters))
                 {
                     while (reader.Read())
                     {
