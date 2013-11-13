@@ -2338,6 +2338,14 @@
             </summary>
             <returns></returns>
         </member>
+        <member name="M:ZyGames.Framework.Model.EntitySchemaSet.GenerateRedisKey(System.Type,System.String)">
+            <summary>
+            生成存储在Redis的Key
+            </summary>
+            <param name="type"></param>
+            <param name="key"></param>
+            <returns></returns>
+        </member>
         <member name="M:ZyGames.Framework.Model.EntitySchemaSet.LoadAssembly(System.Reflection.Assembly)">
             <summary>
             加载实体程序集
@@ -2513,6 +2521,21 @@
             <param name="dataList"></param>
             <param name="sendParam"></param>
         </member>
+        <member name="T:ZyGames.Framework.Model.EntityHistory">
+            <summary>
+            实体对象的历史记录
+            </summary>
+        </member>
+        <member name="T:ZyGames.Framework.Model.ShareEntity">
+            <summary>
+            共享实体数据基类
+            </summary>
+        </member>
+        <member name="T:ZyGames.Framework.Model.AbstractEntity">
+            <summary>
+            实体数据基类
+            </summary>
+        </member>
         <member name="T:ZyGames.Framework.Event.EntityChangeEvent">
             <summary>
             实体变更事件,定义属性时不要使用get;set简写方式，在WebService调用时只读时会有异常
@@ -2625,6 +2648,330 @@
         <member name="P:ZyGames.Framework.Event.EntityChangeEvent.HasChanged">
             <summary>
             是否有改变
+            </summary>
+        </member>
+        <member name="T:ZyGames.Framework.Cache.Generic.IDataExpired">
+            <summary>
+            数据过期接口
+            </summary>
+        </member>
+        <member name="M:ZyGames.Framework.Cache.Generic.IDataExpired.RemoveExpired(System.String)">
+            <summary>
+            移除过期键
+            </summary>
+            <param name="key"></param>
+            <returns></returns>
+        </member>
+        <member name="F:ZyGames.Framework.Model.AbstractEntity.DefIdentityId">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="F:ZyGames.Framework.Model.AbstractEntity._changePropertys">
+            <summary>
+            存储改变的属性集合
+            </summary>
+        </member>
+        <member name="F:ZyGames.Framework.Model.AbstractEntity._waitUpdateList">
+            <summary>
+            等待更新属性
+            </summary>
+        </member>
+        <member name="M:ZyGames.Framework.Model.AbstractEntity.#ctor">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:ZyGames.Framework.Model.AbstractEntity.#ctor(ZyGames.Framework.Model.AccessLevel)">
+            <summary>
+            Initializes a new instance of the <see cref="T:ZyGames.Framework.Model.AbstractEntity"/> class.
+            </summary>
+            <param name="access">Access.</param>
+        </member>
+        <member name="M:ZyGames.Framework.Model.AbstractEntity.#ctor(System.Boolean)">
+            <summary>
+            
+            </summary>
+            <param name="isReadOnly"></param>
+        </member>
+        <member name="M:ZyGames.Framework.Model.AbstractEntity.Init">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:ZyGames.Framework.Model.AbstractEntity.SetValueBefore">
+            <summary>
+            设置属性值之前处理
+            </summary>
+        </member>
+        <member name="M:ZyGames.Framework.Model.AbstractEntity.SetValueAfter">
+            <summary>
+            设置属性值之后处理
+            </summary>
+        </member>
+        <member name="F:ZyGames.Framework.Model.AbstractEntity._isReadOnly">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="F:ZyGames.Framework.Model.AbstractEntity._isNew">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="F:ZyGames.Framework.Model.AbstractEntity._isDelete">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:ZyGames.Framework.Model.AbstractEntity.GetIdentityId">
+            <summary>
+            标识ID，消息队列分发
+            </summary>
+        </member>
+        <member name="M:ZyGames.Framework.Model.AbstractEntity.Notify(System.Object,ZyGames.Framework.Event.CacheItemEventArgs)">
+            <summary>
+            当前对象(包括继承)的属性触发通知事件
+            </summary>
+            <param name="sender">触发事件源</param>
+            <param name="eventArgs"></param>
+        </member>
+        <member name="M:ZyGames.Framework.Model.AbstractEntity.NotifyByChildren(System.Object,ZyGames.Framework.Event.CacheItemEventArgs)">
+            <summary>
+            
+            </summary>
+            <param name="sender">由IContainer对象触发</param>
+            <param name="eventArgs"></param>
+        </member>
+        <member name="M:ZyGames.Framework.Model.AbstractEntity.UnChangeNotify(System.Object,ZyGames.Framework.Event.CacheItemEventArgs)">
+            <summary>
+            设置UnChange事件通知
+            </summary>
+            <param name="sender"></param>
+            <param name="eventArgs"></param>
+        </member>
+        <member name="M:ZyGames.Framework.Model.AbstractEntity.GetPropertyValue(System.Boolean,System.String)">
+            <summary>
+            
+            </summary>
+            <param name="canRead"></param>
+            <param name="property"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ZyGames.Framework.Model.AbstractEntity.GetPropertyValue(System.String)">
+            <summary>
+            获得属性
+            </summary>
+            <param name="property"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ZyGames.Framework.Model.AbstractEntity.SetPropertyValue(System.String,System.Object)">
+            <summary>
+            
+            </summary>
+            <param name="property"></param>
+            <param name="value"></param>
+        </member>
+        <member name="M:ZyGames.Framework.Model.AbstractEntity.SetFieldValue(System.String,System.Object)">
+            <summary>
+            
+            </summary>
+            <param name="name"></param>
+            <param name="value"></param>
+        </member>
+        <member name="M:ZyGames.Framework.Model.AbstractEntity.CreateKeyCode(System.Object[])">
+            <summary>
+            生成Key
+            </summary>
+            <param name="keys"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ZyGames.Framework.Model.AbstractEntity.GetKeyCode">
+            <summary>
+            获取实体KEY
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:ZyGames.Framework.Model.AbstractEntity.GetSchema">
+            <summary>
+            获得实体DB架构信息
+            </summary>
+            <returns>返回值会为Null</returns>
+        </member>
+        <member name="M:ZyGames.Framework.Model.AbstractEntity.IsRemoveFlag">
+            <summary>
+            获取是否移除标记
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:ZyGames.Framework.Model.AbstractEntity.OnRemove">
+            <summary>
+            触发从内存中移除
+            </summary>
+        </member>
+        <member name="M:ZyGames.Framework.Model.AbstractEntity.OnDelete">
+            <summary>
+            删除实体，将从源数据（DB、Redis）中删除
+            </summary>
+        </member>
+        <member name="M:ZyGames.Framework.Model.AbstractEntity.OnUnNew">
+            <summary>
+            设置为非新的实体
+            </summary>
+        </member>
+        <member name="M:ZyGames.Framework.Model.AbstractEntity.SetChange(System.String,System.Object)">
+            <summary>
+            在索引属性调用
+            </summary>
+            <param name="propertyName"></param>
+            <param name="value"></param>
+        </member>
+        <member name="M:ZyGames.Framework.Model.AbstractEntity.SetChangeProperty(System.String)">
+            <summary>
+            设置变更的属性
+            </summary>
+            <param name="propertyName"></param>
+        </member>
+        <member name="M:ZyGames.Framework.Model.AbstractEntity.ResetChangePropertys">
+            <summary>
+            重置改变的字段属性
+            </summary>
+        </member>
+        <member name="M:ZyGames.Framework.Model.AbstractEntity.CompleteUpdate">
+            <summary>
+            完成更新处理
+            </summary>
+        </member>
+        <member name="M:ZyGames.Framework.Model.AbstractEntity.DequeueChangePropertys">
+            <summary>
+            取出改变的字段属性
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:ZyGames.Framework.Model.AbstractEntity.GetWaitUpdateList">
+            <summary>
+            获取等待更新的属性列表
+            </summary>
+        </member>
+        <member name="M:ZyGames.Framework.Model.AbstractEntity.GetChangePropertys">
+            <summary>
+            获取改变的字段属性
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:ZyGames.Framework.Model.AbstractEntity.ConvertCustomField``1(System.Object,System.String)">
+            <summary>
+            转换自定对象类型，并绑定集合字段信息
+            </summary>
+            <param name="fieldValue"></param>
+            <param name="propertyName"></param>
+        </member>
+        <member name="M:ZyGames.Framework.Model.AbstractEntity.RemoveExpired(System.String)">
+            <summary>
+            移除过期的键
+            </summary>
+            <param name="key"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ZyGames.Framework.Model.AbstractEntity.CompareTo(ZyGames.Framework.Model.AbstractEntity)">
+            <summary>
+            
+            </summary>
+            <param name="other"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ZyGames.Framework.Model.AbstractEntity.Dispose(System.Boolean)">
+            <summary>
+            
+            </summary>
+            <param name="disposing"></param>
+        </member>
+        <member name="M:ZyGames.Framework.Model.AbstractEntity.GetNextNo">
+            <summary>
+            获取实体的下个编号
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="P:ZyGames.Framework.Model.AbstractEntity.KeyValue">
+            <summary>
+            初始键值，未配置EntityField属性时
+            </summary>
+        </member>
+        <member name="P:ZyGames.Framework.Model.AbstractEntity.IsReadOnly">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:ZyGames.Framework.Model.AbstractEntity.IsLoading">
+            <summary>
+            判断是否处理加载中设置属性,只读实体为False后才不可修改
+            </summary>
+        </member>
+        <member name="P:ZyGames.Framework.Model.AbstractEntity.IsNew">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:ZyGames.Framework.Model.AbstractEntity.IsDelete">
+            <summary>
+            删除实体标记，将从源数据（DB、Redis）中删除
+            </summary>
+        </member>
+        <member name="P:ZyGames.Framework.Model.AbstractEntity.PersonalId">
+            <summary>
+            分组Key
+            </summary>
+        </member>
+        <member name="P:ZyGames.Framework.Model.AbstractEntity.Item(System.String)">
+            <summary>
+            对象索引器属性
+            </summary>
+            <param name="name">属性名</param>
+            <returns></returns>
+        </member>
+        <member name="P:ZyGames.Framework.Model.AbstractEntity.HasChangePropertys">
+            <summary>
+            是否有改变的字段列属性
+            </summary>
+        </member>
+        <member name="M:ZyGames.Framework.Model.ShareEntity.#ctor(System.Boolean)">
+            <summary>
+            Initializes a new instance of the <see cref="T:ZyGames.Framework.Model.ShareEntity"/> class.
+            </summary>
+            <param name="isReadonly">If set to <c>true</c> is readonly.</param>
+        </member>
+        <member name="M:ZyGames.Framework.Model.ShareEntity.#ctor(ZyGames.Framework.Model.AccessLevel)">
+            <summary>
+            
+            </summary>
+            <param name="access"></param>
+        </member>
+        <member name="M:ZyGames.Framework.Model.ShareEntity.GetIdentityId">
+            <summary>
+            
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:ZyGames.Framework.Model.ShareEntity.CompareTo(ZyGames.Framework.Model.ShareEntity)">
+            <summary>
+            
+            </summary>
+            <param name="other"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ZyGames.Framework.Model.EntityHistory.#ctor">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:ZyGames.Framework.Model.EntityHistory.Key">
+            <summary>
+            The key.
+            </summary>
+        </member>
+        <member name="P:ZyGames.Framework.Model.EntityHistory.Value">
+            <summary>
+            The bytes data.
             </summary>
         </member>
         <member name="T:ZyGames.Framework.Cache.Generic.PersonalCacheStruct`1">
@@ -2839,18 +3186,6 @@
             
             </summary>
             <typeparam name="T"></typeparam>
-        </member>
-        <member name="T:ZyGames.Framework.Cache.Generic.IDataExpired">
-            <summary>
-            数据过期接口
-            </summary>
-        </member>
-        <member name="M:ZyGames.Framework.Cache.Generic.IDataExpired.RemoveExpired(System.String)">
-            <summary>
-            移除过期键
-            </summary>
-            <param name="key"></param>
-            <returns></returns>
         </member>
         <member name="M:ZyGames.Framework.Cache.Generic.CacheQueue`1.#ctor">
             <summary>
@@ -3775,283 +4110,6 @@
             私有实体基类
             </summary>
         </member>
-        <member name="T:ZyGames.Framework.Model.AbstractEntity">
-            <summary>
-            实体数据基类
-            </summary>
-        </member>
-        <member name="F:ZyGames.Framework.Model.AbstractEntity.DefIdentityId">
-            <summary>
-            
-            </summary>
-        </member>
-        <member name="F:ZyGames.Framework.Model.AbstractEntity._changePropertys">
-            <summary>
-            存储改变的属性集合
-            </summary>
-        </member>
-        <member name="F:ZyGames.Framework.Model.AbstractEntity._waitUpdateList">
-            <summary>
-            等待更新属性
-            </summary>
-        </member>
-        <member name="M:ZyGames.Framework.Model.AbstractEntity.#ctor">
-            <summary>
-            
-            </summary>
-        </member>
-        <member name="M:ZyGames.Framework.Model.AbstractEntity.#ctor(ZyGames.Framework.Model.AccessLevel)">
-            <summary>
-            Initializes a new instance of the <see cref="T:ZyGames.Framework.Model.AbstractEntity"/> class.
-            </summary>
-            <param name="access">Access.</param>
-        </member>
-        <member name="M:ZyGames.Framework.Model.AbstractEntity.#ctor(System.Boolean)">
-            <summary>
-            
-            </summary>
-            <param name="isReadOnly"></param>
-        </member>
-        <member name="M:ZyGames.Framework.Model.AbstractEntity.Init">
-            <summary>
-            
-            </summary>
-        </member>
-        <member name="M:ZyGames.Framework.Model.AbstractEntity.SetValueBefore">
-            <summary>
-            设置属性值之前处理
-            </summary>
-        </member>
-        <member name="M:ZyGames.Framework.Model.AbstractEntity.SetValueAfter">
-            <summary>
-            设置属性值之后处理
-            </summary>
-        </member>
-        <member name="F:ZyGames.Framework.Model.AbstractEntity._isReadOnly">
-            <summary>
-            
-            </summary>
-        </member>
-        <member name="F:ZyGames.Framework.Model.AbstractEntity._isNew">
-            <summary>
-            
-            </summary>
-        </member>
-        <member name="F:ZyGames.Framework.Model.AbstractEntity._isDelete">
-            <summary>
-            
-            </summary>
-        </member>
-        <member name="M:ZyGames.Framework.Model.AbstractEntity.GetIdentityId">
-            <summary>
-            标识ID，消息队列分发
-            </summary>
-        </member>
-        <member name="M:ZyGames.Framework.Model.AbstractEntity.Notify(System.Object,ZyGames.Framework.Event.CacheItemEventArgs)">
-            <summary>
-            当前对象(包括继承)的属性触发通知事件
-            </summary>
-            <param name="sender">触发事件源</param>
-            <param name="eventArgs"></param>
-        </member>
-        <member name="M:ZyGames.Framework.Model.AbstractEntity.NotifyByChildren(System.Object,ZyGames.Framework.Event.CacheItemEventArgs)">
-            <summary>
-            
-            </summary>
-            <param name="sender">由IContainer对象触发</param>
-            <param name="eventArgs"></param>
-        </member>
-        <member name="M:ZyGames.Framework.Model.AbstractEntity.UnChangeNotify(System.Object,ZyGames.Framework.Event.CacheItemEventArgs)">
-            <summary>
-            设置UnChange事件通知
-            </summary>
-            <param name="sender"></param>
-            <param name="eventArgs"></param>
-        </member>
-        <member name="M:ZyGames.Framework.Model.AbstractEntity.GetPropertyValue(System.Boolean,System.String)">
-            <summary>
-            
-            </summary>
-            <param name="canRead"></param>
-            <param name="property"></param>
-            <returns></returns>
-        </member>
-        <member name="M:ZyGames.Framework.Model.AbstractEntity.GetPropertyValue(System.String)">
-            <summary>
-            获得属性
-            </summary>
-            <param name="property"></param>
-            <returns></returns>
-        </member>
-        <member name="M:ZyGames.Framework.Model.AbstractEntity.SetPropertyValue(System.String,System.Object)">
-            <summary>
-            
-            </summary>
-            <param name="property"></param>
-            <param name="value"></param>
-        </member>
-        <member name="M:ZyGames.Framework.Model.AbstractEntity.SetFieldValue(System.String,System.Object)">
-            <summary>
-            
-            </summary>
-            <param name="name"></param>
-            <param name="value"></param>
-        </member>
-        <member name="M:ZyGames.Framework.Model.AbstractEntity.CreateKeyCode(System.Object[])">
-            <summary>
-            生成Key
-            </summary>
-            <param name="keys"></param>
-            <returns></returns>
-        </member>
-        <member name="M:ZyGames.Framework.Model.AbstractEntity.GetKeyCode">
-            <summary>
-            获取实体KEY
-            </summary>
-            <returns></returns>
-        </member>
-        <member name="M:ZyGames.Framework.Model.AbstractEntity.GetSchema">
-            <summary>
-            获得实体DB架构信息
-            </summary>
-            <returns>返回值会为Null</returns>
-        </member>
-        <member name="M:ZyGames.Framework.Model.AbstractEntity.IsRemoveFlag">
-            <summary>
-            获取是否移除标记
-            </summary>
-            <returns></returns>
-        </member>
-        <member name="M:ZyGames.Framework.Model.AbstractEntity.OnRemove">
-            <summary>
-            触发从内存中移除
-            </summary>
-        </member>
-        <member name="M:ZyGames.Framework.Model.AbstractEntity.OnDelete">
-            <summary>
-            删除实体，将从源数据（DB、Redis）中删除
-            </summary>
-        </member>
-        <member name="M:ZyGames.Framework.Model.AbstractEntity.OnUnNew">
-            <summary>
-            设置为非新的实体
-            </summary>
-        </member>
-        <member name="M:ZyGames.Framework.Model.AbstractEntity.SetChange(System.String,System.Object)">
-            <summary>
-            在索引属性调用
-            </summary>
-            <param name="propertyName"></param>
-            <param name="value"></param>
-        </member>
-        <member name="M:ZyGames.Framework.Model.AbstractEntity.SetChangeProperty(System.String)">
-            <summary>
-            设置变更的属性
-            </summary>
-            <param name="propertyName"></param>
-        </member>
-        <member name="M:ZyGames.Framework.Model.AbstractEntity.ResetChangePropertys">
-            <summary>
-            重置改变的字段属性
-            </summary>
-        </member>
-        <member name="M:ZyGames.Framework.Model.AbstractEntity.CompleteUpdate">
-            <summary>
-            完成更新处理
-            </summary>
-        </member>
-        <member name="M:ZyGames.Framework.Model.AbstractEntity.DequeueChangePropertys">
-            <summary>
-            取出改变的字段属性
-            </summary>
-            <returns></returns>
-        </member>
-        <member name="M:ZyGames.Framework.Model.AbstractEntity.GetWaitUpdateList">
-            <summary>
-            获取等待更新的属性列表
-            </summary>
-        </member>
-        <member name="M:ZyGames.Framework.Model.AbstractEntity.GetChangePropertys">
-            <summary>
-            获取改变的字段属性
-            </summary>
-            <returns></returns>
-        </member>
-        <member name="M:ZyGames.Framework.Model.AbstractEntity.ConvertCustomField``1(System.Object,System.String)">
-            <summary>
-            转换自定对象类型，并绑定集合字段信息
-            </summary>
-            <param name="fieldValue"></param>
-            <param name="propertyName"></param>
-        </member>
-        <member name="M:ZyGames.Framework.Model.AbstractEntity.RemoveExpired(System.String)">
-            <summary>
-            移除过期的键
-            </summary>
-            <param name="key"></param>
-            <returns></returns>
-        </member>
-        <member name="M:ZyGames.Framework.Model.AbstractEntity.CompareTo(ZyGames.Framework.Model.AbstractEntity)">
-            <summary>
-            
-            </summary>
-            <param name="other"></param>
-            <returns></returns>
-        </member>
-        <member name="M:ZyGames.Framework.Model.AbstractEntity.Dispose(System.Boolean)">
-            <summary>
-            
-            </summary>
-            <param name="disposing"></param>
-        </member>
-        <member name="M:ZyGames.Framework.Model.AbstractEntity.GetNextNo">
-            <summary>
-            获取实体的下个编号
-            </summary>
-            <returns></returns>
-        </member>
-        <member name="P:ZyGames.Framework.Model.AbstractEntity.KeyValue">
-            <summary>
-            初始键值，未配置EntityField属性时
-            </summary>
-        </member>
-        <member name="P:ZyGames.Framework.Model.AbstractEntity.IsReadOnly">
-            <summary>
-            
-            </summary>
-        </member>
-        <member name="P:ZyGames.Framework.Model.AbstractEntity.IsLoading">
-            <summary>
-            判断是否处理加载中设置属性,只读实体为False后才不可修改
-            </summary>
-        </member>
-        <member name="P:ZyGames.Framework.Model.AbstractEntity.IsNew">
-            <summary>
-            
-            </summary>
-        </member>
-        <member name="P:ZyGames.Framework.Model.AbstractEntity.IsDelete">
-            <summary>
-            删除实体标记，将从源数据（DB、Redis）中删除
-            </summary>
-        </member>
-        <member name="P:ZyGames.Framework.Model.AbstractEntity.PersonalId">
-            <summary>
-            分组Key
-            </summary>
-        </member>
-        <member name="P:ZyGames.Framework.Model.AbstractEntity.Item(System.String)">
-            <summary>
-            对象索引器属性
-            </summary>
-            <param name="name">属性名</param>
-            <returns></returns>
-        </member>
-        <member name="P:ZyGames.Framework.Model.AbstractEntity.HasChangePropertys">
-            <summary>
-            是否有改变的字段列属性
-            </summary>
-        </member>
         <member name="M:ZyGames.Framework.Model.BaseEntity.#ctor">
             <summary>
             
@@ -4450,6 +4508,12 @@
         <member name="M:ZyGames.Framework.Data.DbConnectionProvider.Find(ZyGames.Framework.Data.DbLevel)">
             <summary>
             查找库连接
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:ZyGames.Framework.Data.DbConnectionProvider.FindFirst">
+            <summary>
+            取第一个
             </summary>
             <returns></returns>
         </member>
@@ -9711,36 +9775,6 @@
             参数
             </summary>
         </member>
-        <member name="T:ZyGames.Framework.Model.ShareEntity">
-            <summary>
-            共享实体数据基类
-            </summary>
-        </member>
-        <member name="M:ZyGames.Framework.Model.ShareEntity.#ctor(System.Boolean)">
-            <summary>
-            Initializes a new instance of the <see cref="T:ZyGames.Framework.Model.ShareEntity"/> class.
-            </summary>
-            <param name="isReadonly">If set to <c>true</c> is readonly.</param>
-        </member>
-        <member name="M:ZyGames.Framework.Model.ShareEntity.#ctor(ZyGames.Framework.Model.AccessLevel)">
-            <summary>
-            
-            </summary>
-            <param name="access"></param>
-        </member>
-        <member name="M:ZyGames.Framework.Model.ShareEntity.GetIdentityId">
-            <summary>
-            
-            </summary>
-            <returns></returns>
-        </member>
-        <member name="M:ZyGames.Framework.Model.ShareEntity.CompareTo(ZyGames.Framework.Model.ShareEntity)">
-            <summary>
-            
-            </summary>
-            <param name="other"></param>
-            <returns></returns>
-        </member>
         <member name="T:ZyGames.Framework.SyncThreading.SyncLimit">
             <summary>
             </summary>
@@ -11165,26 +11199,6 @@
             <param name="min"></param>
             <param name="max">从队列取的最大值，0为不限制</param>
             <returns></returns>
-        </member>
-        <member name="T:ZyGames.Framework.Model.EntityHistory">
-            <summary>
-            实体对象的历史记录
-            </summary>
-        </member>
-        <member name="M:ZyGames.Framework.Model.EntityHistory.#ctor">
-            <summary>
-            
-            </summary>
-        </member>
-        <member name="P:ZyGames.Framework.Model.EntityHistory.Key">
-            <summary>
-            The key.
-            </summary>
-        </member>
-        <member name="P:ZyGames.Framework.Model.EntityHistory.Value">
-            <summary>
-            The bytes data.
-            </summary>
         </member>
     </members>
 </doc>
