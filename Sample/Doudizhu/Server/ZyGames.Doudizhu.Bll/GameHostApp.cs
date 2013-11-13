@@ -75,6 +75,7 @@ namespace ZyGames.Doudizhu.Bll
             BaseLog log = null;
             try
             {
+                GameEnvironment.ClientDesDeKey = "j6=9=1ac";
                 log = new BaseLog();
                 var assembly = Assembly.Load("ZyGames.Doudizhu.Model");
                 GameEnvironment.Start(cacheInterval, () =>

@@ -12,3 +12,8 @@ Server：服务器源代码
 修改的地方
 1.ZyGames.Doudizhu.HostServer\PyScript\Route.config.xml文件，<lib path="D:\Python\Lib" />改成Python安装时的目录
 2.修改App.config里的sa密码，和PayDB_Acount、Snscenter_Acount配置
+
+Server5.2_Release: 发布的游戏服，可直接运行（相关配置需要修改）
+
+
+Server5.5: 使用5.5版本的Lib
