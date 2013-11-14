@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{0EDF246F-C17C-4501-903A-8BB025A8E0EF}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>ZyGames.Doudizhu.Bll</RootNamespace>
+    <AssemblyName>ZyGames.Doudizhu.Bll</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release_Linux|AnyCPU'">
+    <OutputPath>bin\Release_Linux\</OutputPath>
+    <WarningLevel>4</WarningLevel>
+    <Optimize>false</Optimize>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Web" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+    <Reference Include="IronPython">
+      <HintPath>..\..\..\..\..\Release\5.5.3.5\Lib\IronPython.dll</HintPath>
+    </Reference>
+    <Reference Include="IronPython.Modules">
+      <HintPath>..\..\..\..\..\Release\5.5.3.5\Lib\IronPython.Modules.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Dynamic">
+      <HintPath>..\..\..\..\..\Release\5.5.3.5\Lib\Microsoft.Dynamic.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Scripting">
+      <HintPath>..\..\..\..\..\Release\5.5.3.5\Lib\Microsoft.Scripting.dll</HintPath>
+    </Reference>
+    <Reference Include="Newtonsoft.Json">
+      <HintPath>..\..\..\..\..\Release\5.5.3.5\Lib\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="NLog">
+      <HintPath>..\..\..\..\..\Release\5.5.3.5\Lib\NLog.dll</HintPath>
+    </Reference>
+    <Reference Include="protobuf-net">
+      <HintPath>..\..\..\..\..\Release\5.5.3.5\Lib\protobuf-net.dll</HintPath>
+    </Reference>
+    <Reference Include="ServiceStack.Common">
+      <HintPath>..\..\..\..\..\Release\5.5.3.5\Lib\ServiceStack.Common.dll</HintPath>
+    </Reference>
+    <Reference Include="ServiceStack">
+      <HintPath>..\..\..\..\..\Release\5.5.3.5\Lib\ServiceStack.dll</HintPath>
+    </Reference>
+    <Reference Include="ZyGames.Framework.Common">
+      <HintPath>..\..\..\..\..\Release\5.5.3.5\Lib\ZyGames.Framework.Common.dll</HintPath>
+    </Reference>
+    <Reference Include="ZyGames.Framework">
+      <HintPath>..\..\..\..\..\Release\5.5.3.5\Lib\ZyGames.Framework.dll</HintPath>
+    </Reference>
+    <Reference Include="ZyGames.Framework.Game">
+      <HintPath>..\..\..\..\..\Release\5.5.3.5\Lib\ZyGames.Framework.Game.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Action\Action100.cs" />
+    <Compile Include="Action\Action1000.cs" />
+    <Compile Include="Action\Action1002.cs" />
+    <Compile Include="Action\Action1004.cs" />
+    <Compile Include="Action\Action1005.cs" />
+    <Compile Include="Action\Action1006.cs" />
+    <Compile Include="Action\Action1007.cs" />
+    <Compile Include="Action\Action1065.cs" />
+    <Compile Include="Action\Action1066.cs" />
+    <Compile Include="Action\Action1069.cs" />
+    <Compile Include="Action\Action1080.cs" />
+    <Compile Include="Action\Action1081.cs" />
+    <Compile Include="Action\Action360.cs" />
+    <Compile Include="Action\Action404.cs" />
+    <Compile Include="Action\ActionIDDefine.cs" />
+    <Compile Include="Action\BaseAction.cs" />
+    <Compile Include="Base\AppstoreClientManager.cs" />
+    <Compile Include="Base\AppStoreHelper.cs" />
+    <Compile Include="Base\PaymentService.cs" />
+    <Compile Include="Base\PythonHelper.cs" />
+    <Compile Include="Com\Chat\DdzBroadcastService.cs" />
+    <Compile Include="Com\Chat\DdzChatService.cs" />
+    <Compile Include="Com\Rank\BeansRanking.cs" />
+    <Compile Include="Com\Rank\WinRanking.cs" />
+    <Compile Include="Com\Share\DdzPaymentNotify.cs" />
+    <Compile Include="Logic\AchieveTask.cs" />
+    <Compile Include="Logic\CardRole.cs" />
+    <Compile Include="Logic\ClientNotifier.cs" />
+    <Compile Include="Logic\GameHall.cs" />
+    <Compile Include="Com\Share\RoleFunc.cs" />
+    <Compile Include="GameHostApp.cs" />
+    <Compile Include="Logic\GameRoom.cs" />
+    <Compile Include="Logic\GameTable.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\ZyGames.Doudizhu.Lang\ZyGames.Doudizhu.Lang.csproj">
+      <Project>{DB05C1ED-B8EC-40B8-B6A3-BAC98EE97B57}</Project>
+      <Name>ZyGames.Doudizhu.Lang</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\ZyGames.Doudizhu.Model\ZyGames.Doudizhu.Model.csproj">
+      <Project>{32E54E6F-31E4-405B-A6AB-25E5A5A04F3A}</Project>
+      <Name>ZyGames.Doudizhu.Model</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup />
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>
