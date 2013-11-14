@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -37,41 +37,54 @@
   <ItemGroup>
     <Reference Include="IronPython, Version=2.7.0.40, Culture=neutral, PublicKeyToken=7f709c5b713576e1, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\Release\5.2.3.2\Lib\IronPython.dll</HintPath>
+      <HintPath>..\..\..\..\Release\5.5.3.5\Lib\IronPython.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="IronPython.Modules, Version=2.7.0.40, Culture=neutral, PublicKeyToken=7f709c5b713576e1, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\Release\5.2.3.2\Lib\IronPython.Modules.dll</HintPath>
+      <HintPath>..\..\..\..\Release\5.5.3.5\Lib\IronPython.Modules.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Microsoft.Dynamic, Version=1.1.0.20, Culture=neutral, PublicKeyToken=7f709c5b713576e1, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\Release\5.2.3.2\Lib\Microsoft.Dynamic.dll</HintPath>
+      <HintPath>..\..\..\..\Release\5.5.3.5\Lib\Microsoft.Dynamic.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Microsoft.Scripting, Version=1.1.0.20, Culture=neutral, PublicKeyToken=7f709c5b713576e1, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\Release\5.2.3.2\Lib\Microsoft.Scripting.dll</HintPath>
+      <HintPath>..\..\..\..\Release\5.5.3.5\Lib\Microsoft.Scripting.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="NetLibrary">
-      <HintPath>..\..\..\Release\5.2.3.2\Lib\NetLibrary.dll</HintPath>
+    <Reference Include="MySql.Data, Version=6.7.4.0, Culture=neutral, PublicKeyToken=c5687fc88969c44d, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\Release\5.5.3.5\Lib\MySql.Data.dll</HintPath>
     </Reference>
     <Reference Include="Newtonsoft.Json">
-      <HintPath>..\..\..\Release\5.2.3.2\Lib\Newtonsoft.Json.dll</HintPath>
+      <HintPath>..\..\..\..\Release\5.5.3.5\Lib\Newtonsoft.Json.dll</HintPath>
     </Reference>
-    <Reference Include="NLog, Version=2.0.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\Release\5.2.3.2\Lib\NLog.dll</HintPath>
+    <Reference Include="NLog">
+      <HintPath>..\..\..\..\Release\5.5.3.5\Lib\NLog.dll</HintPath>
     </Reference>
     <Reference Include="protobuf-net">
-      <HintPath>..\..\..\Release\5.2.3.2\Lib\protobuf-net.dll</HintPath>
+      <HintPath>..\..\..\..\Release\5.5.3.5\Lib\protobuf-net.dll</HintPath>
+    </Reference>
+    <Reference Include="ServiceStack">
+      <HintPath>..\..\..\..\Release\5.5.3.5\Lib\ServiceStack.dll</HintPath>
     </Reference>
     <Reference Include="ServiceStack.Common">
-      <HintPath>..\..\..\Release\5.2.3.2\Lib\ServiceStack.Common.dll</HintPath>
+      <HintPath>..\..\..\..\Release\5.5.3.5\Lib\ServiceStack.Common.dll</HintPath>
+    </Reference>
+    <Reference Include="ServiceStack.Interfaces">
+      <HintPath>..\..\..\..\Release\5.5.3.5\Lib\ServiceStack.Interfaces.dll</HintPath>
+    </Reference>
+    <Reference Include="ServiceStack.Redis">
+      <HintPath>..\..\..\..\Release\5.5.3.5\Lib\ServiceStack.Redis.dll</HintPath>
+    </Reference>
+    <Reference Include="ServiceStack.Text">
+      <HintPath>..\..\..\..\Release\5.5.3.5\Lib\ServiceStack.Text.dll</HintPath>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.configuration" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
@@ -81,25 +94,13 @@
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
     <Reference Include="ZyGames.Framework">
-      <HintPath>..\..\..\Release\5.2.3.2\Lib\ZyGames.Framework.dll</HintPath>
+      <HintPath>..\..\..\..\Release\5.5.3.5\Lib\ZyGames.Framework.dll</HintPath>
     </Reference>
     <Reference Include="ZyGames.Framework.Common">
-      <HintPath>..\..\..\Release\5.2.3.2\Lib\ZyGames.Framework.Common.dll</HintPath>
+      <HintPath>..\..\..\..\Release\5.5.3.5\Lib\ZyGames.Framework.Common.dll</HintPath>
     </Reference>
     <Reference Include="ZyGames.Framework.Game">
-      <HintPath>..\..\..\Release\5.2.3.2\Lib\ZyGames.Framework.Game.dll</HintPath>
-    </Reference>
-    <Reference Include="ZyGames.Framework.Game.Contract">
-      <HintPath>..\..\..\Release\5.2.3.2\Lib\ZyGames.Framework.Game.Contract.dll</HintPath>
-    </Reference>
-    <Reference Include="ZyGames.Framework.Game.Lang">
-      <HintPath>..\..\..\Release\5.2.3.2\Lib\ZyGames.Framework.Game.Lang.dll</HintPath>
-    </Reference>
-    <Reference Include="ZyGames.Framework.Plugin">
-      <HintPath>..\..\..\Release\5.2.3.2\Lib\ZyGames.Framework.Plugin.dll</HintPath>
-    </Reference>
-    <Reference Include="ZyGames.Framework.RPC">
-      <HintPath>..\..\..\Release\5.2.3.2\Lib\ZyGames.Framework.RPC.dll</HintPath>
+      <HintPath>..\..\..\..\Release\5.5.3.5\Lib\ZyGames.Framework.Game.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -132,9 +133,8 @@
   <Target Name="AfterBuild">
   </Target>
   -->
-    <UsingTask TaskName="ZyGames.Framework.Common.Build.WeavingEntityTask" AssemblyFile="bin\$(Configuration)\ZyGames.Framework.Common.dll" />
+  <UsingTask TaskName="ZyGames.Framework.Common.Build.WeavingEntityTask" AssemblyFile="bin\$(Configuration)\ZyGames.Framework.Common.dll" />
   <Target Name="AfterBuild">
     <WeavingEntityTask SolutionDir=".\\bin\$(Configuration)" FilePattern="GameNotice.exe" />
   </Target>
-
 </Project>
