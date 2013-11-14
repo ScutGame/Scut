@@ -1872,6 +1872,12 @@
             <param name="key"></param>
             <returns></returns>
         </member>
+        <member name="M:ZyGames.Framework.Cache.Generic.BaseCacheStruct`1.GetNextNo">
+            <summary>
+            获取实体的下个编号
+            </summary>
+            <returns></returns>
+        </member>
         <member name="M:ZyGames.Framework.Cache.Generic.BaseCacheStruct`1.HasChangeCache(System.String)">
             <summary>
             数据是否改变
@@ -2699,6 +2705,11 @@
             
             </summary>
         </member>
+        <member name="M:ZyGames.Framework.Model.AbstractEntity.Reset">
+            <summary>
+            重置状态
+            </summary>
+        </member>
         <member name="M:ZyGames.Framework.Model.AbstractEntity.SetValueBefore">
             <summary>
             设置属性值之前处理
@@ -2885,12 +2896,6 @@
             
             </summary>
             <param name="disposing"></param>
-        </member>
-        <member name="M:ZyGames.Framework.Model.AbstractEntity.GetNextNo">
-            <summary>
-            获取实体的下个编号
-            </summary>
-            <returns></returns>
         </member>
         <member name="P:ZyGames.Framework.Model.AbstractEntity.KeyValue">
             <summary>
@@ -3817,12 +3822,11 @@
             提供数据访问基类
             </summary>
         </member>
-        <member name="M:ZyGames.Framework.Data.DbBaseProvider.#ctor(System.String,System.String)">
+        <member name="M:ZyGames.Framework.Data.DbBaseProvider.#ctor(ZyGames.Framework.Data.ConnectionSetting)">
             <summary>
-            
+            Initializes a new instance of the <see cref="T:ZyGames.Framework.Data.DbBaseProvider"/> class.
             </summary>
-            <param name="providerTypeName"></param>
-            <param name="connectionString"></param>
+            <param name="connectionSetting"></param>
         </member>
         <member name="M:ZyGames.Framework.Data.DbBaseProvider.ExecuteReader(System.Data.CommandType,System.String,System.Data.IDataParameter[])">
             <summary>
@@ -3973,12 +3977,11 @@
             </summary>
             <value>The connection setting.</value>
         </member>
-        <member name="M:ZyGames.Framework.Data.Sql.SqlDataProvider.#ctor(System.String,System.String)">
+        <member name="M:ZyGames.Framework.Data.Sql.SqlDataProvider.#ctor(ZyGames.Framework.Data.ConnectionSetting)">
             <summary>
             
             </summary>
-            <param name="providerTypeName"></param>
-            <param name="connectionString"></param>
+            <param name="connectionSetting">connection setting</param>
         </member>
         <member name="M:ZyGames.Framework.Data.Sql.SqlDataProvider.ExecuteReader(System.Data.CommandType,System.String,System.Data.IDataParameter[])">
             <summary>
@@ -4531,10 +4534,11 @@
             <param name="schema"></param>
             <returns></returns>
         </member>
-        <member name="M:ZyGames.Framework.Data.DbConnectionProvider.CreateDbProvider(System.String,System.String)">
+        <member name="M:ZyGames.Framework.Data.DbConnectionProvider.CreateDbProvider(System.String,System.String,System.String)">
             <summary>
             
             </summary>
+            <param name="name"></param>
             <param name="providerTypeName"></param>
             <param name="connectionString"></param>
             <returns></returns>
@@ -7393,11 +7397,11 @@
             MSSQL数据库服务提供者
             </summary>
         </member>
-        <member name="M:ZyGames.Framework.Data.MySql.MySqlDataProvider.#ctor(System.String,System.String)">
+        <member name="M:ZyGames.Framework.Data.MySql.MySqlDataProvider.#ctor(ZyGames.Framework.Data.ConnectionSetting)">
             <summary>
             
             </summary>
-            <param name="connectionString"></param>
+            <param name="connectionSetting">connection setting.</param>
         </member>
         <member name="M:ZyGames.Framework.Data.MySql.MySqlDataProvider.ExecuteReader(System.Data.CommandType,System.String,System.Data.IDataParameter[])">
             <summary>
@@ -7774,16 +7778,38 @@
             日志
             </summary>
         </member>
+        <member name="F:ZyGames.Framework.Data.DbLevel.LocalSql">
+            <summary>
+            本机的Sql数据服务
+            </summary>
+        </member>
+        <member name="F:ZyGames.Framework.Data.DbLevel.LocalMysql">
+            <summary>
+            本机的MySql数据服务
+            </summary>
+        </member>
         <member name="T:ZyGames.Framework.Data.ConnectionSetting">
             <summary>
             Connection setting.
             </summary>
         </member>
-        <member name="M:ZyGames.Framework.Data.ConnectionSetting.#ctor(System.String)">
+        <member name="M:ZyGames.Framework.Data.ConnectionSetting.#ctor(System.String,System.String,System.String)">
             <summary>
             Initializes a new instance of the <see cref="T:ZyGames.Framework.Data.ConnectionSetting"/> class.
             </summary>
+            <param name="name"></param>
+            <param name="providerTypeName">provider type name.</param>
             <param name="connectionString">Connection string.</param>
+        </member>
+        <member name="P:ZyGames.Framework.Data.ConnectionSetting.Name">
+            <summary>
+            配置名
+            </summary>
+        </member>
+        <member name="P:ZyGames.Framework.Data.ConnectionSetting.ProviderTypeName">
+            <summary>
+            数据提供者类型名
+            </summary>
         </member>
         <member name="P:ZyGames.Framework.Data.ConnectionSetting.DbLevel">
             <summary>
