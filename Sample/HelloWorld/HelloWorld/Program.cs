@@ -2,7 +2,7 @@
 using ZyGames.Framework.Game.Contract;
 using ZyGames.Framework.Game.Runtime;
 using ZyGames.Framework.Game.Service;
-using ZyGames.Framework.NetLibrary;
+using ZyGames.Framework.RPC.Sockets;
 
 namespace HelloWorld
 {
