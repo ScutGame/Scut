@@ -1,7 +1,0 @@
-安装方法：
-1.进入Visual Studio.net 2008命令提示符模式或进入C:\Windows\Microsoft.NET\Framework\v2.0.50727
-
-2.进入指定目录下，输入installutil 路径\ZyGames.OA.WatchMSMQService.exe
-卸载方法
-
-1.进入指定目录下，输入installutil /u 路径\ZyGames.OA.WatchMSMQService.exe
