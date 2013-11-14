@@ -42,10 +42,10 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="ICSharpCode.SharpZipLib">
-      <HintPath>..\..\..\..\FrameworkPublish\Release\4.0\ICSharpCode.SharpZipLib.dll</HintPath>
+      <HintPath>..\..\..\Release\5.5.3.5\Lib\ICSharpCode.SharpZipLib.dll</HintPath>
     </Reference>
     <Reference Include="NLog">
-      <HintPath>..\..\..\..\FrameworkPublish\Release\4.0\NLog.dll</HintPath>
+      <HintPath>..\..\..\Release\5.5.3.5\Lib\NLog.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -58,13 +58,13 @@
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
+    <Reference Include="System.Configuration" />
     <Reference Include="ZyGames.Framework">
-      <HintPath>..\..\..\..\FrameworkPublish\Unstable\4.0\Core\5.3.3.3\ZyGames.Framework.dll</HintPath>
+      <HintPath>..\..\..\Release\5.5.3.5\Lib\ZyGames.Framework.dll</HintPath>
     </Reference>
     <Reference Include="ZyGames.Framework.Common">
-      <HintPath>..\..\..\..\FrameworkPublish\Unstable\4.0\Core\5.3.3.3\ZyGames.Framework.Common.dll</HintPath>
+      <HintPath>..\..\..\Release\5.5.3.5\Lib\ZyGames.Framework.Common.dll</HintPath>
     </Reference>
-    <Reference Include="System.Configuration" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="..\Solution Items\GlobalAssemblyInfo.cs">

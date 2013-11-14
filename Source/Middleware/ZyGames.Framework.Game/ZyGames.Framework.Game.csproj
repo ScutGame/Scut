@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -31,7 +31,8 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>    <DocumentationFile>bin\Release\ZyGames.Framework.Game.xml</DocumentationFile>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+    <DocumentationFile>bin\Release\ZyGames.Framework.Game.xml</DocumentationFile>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
   </PropertyGroup>
   <ItemGroup>
@@ -40,13 +41,13 @@
     </Reference>
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="Newtonsoft.Json">
-      <HintPath>..\..\..\..\FrameworkPublish\Release\4.0\Newtonsoft.Json.dll</HintPath>
+      <HintPath>..\..\..\Release\5.5.3.5\Lib\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="NLog">
-      <HintPath>..\..\..\..\FrameworkPublish\Release\4.0\NLog.dll</HintPath>
+      <HintPath>..\..\..\Release\5.5.3.5\Lib\NLog.dll</HintPath>
     </Reference>
     <Reference Include="protobuf-net">
-      <HintPath>..\..\..\..\FrameworkPublish\Release\4.0\Redis\protobuf-net.dll</HintPath>
+      <HintPath>..\..\..\Release\5.5.3.5\Lib\protobuf-net.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -66,11 +67,11 @@
       <HintPath>..\..\..\..\FrameworkPublish\Release\4.0\Python\Microsoft.Scripting.dll</HintPath>
     </Reference>
     <Reference Include="System.Configuration" />
-    <Reference Include="ZyGames.Framework.Common">
-      <HintPath>..\..\..\..\FrameworkPublish\Unstable\4.0\Core\5.5.3.5\ZyGames.Framework.Common.dll</HintPath>
-    </Reference>
     <Reference Include="ZyGames.Framework">
-      <HintPath>..\..\..\..\FrameworkPublish\Unstable\4.0\Core\5.5.3.5\ZyGames.Framework.dll</HintPath>
+      <HintPath>..\..\..\Release\5.5.3.5\Lib\ZyGames.Framework.dll</HintPath>
+    </Reference>
+    <Reference Include="ZyGames.Framework.Common">
+      <HintPath>..\..\..\Release\5.5.3.5\Lib\ZyGames.Framework.Common.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
