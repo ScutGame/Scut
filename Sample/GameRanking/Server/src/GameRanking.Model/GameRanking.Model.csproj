@@ -32,13 +32,13 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Mono.Cecil">
-      <HintPath>..\..\..\..\Release\5.2.3.2\Lib\Mono.Cecil.dll</HintPath>
+      <HintPath>..\..\..\..\..\Release\5.5.3.5\Lib\Mono.Cecil.dll</HintPath>
     </Reference>
     <Reference Include="Newtonsoft.Json">
-      <HintPath>..\..\..\..\Release\5.2.3.2\Lib\Newtonsoft.Json.dll</HintPath>
+      <HintPath>..\..\..\..\..\Release\5.5.3.5\Lib\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="protobuf-net">
-      <HintPath>..\..\..\..\Release\5.2.3.2\Lib\protobuf-net.dll</HintPath>
+      <HintPath>..\..\..\..\..\Release\5.5.3.5\Lib\protobuf-net.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -47,13 +47,11 @@
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
-    <Reference Include="ZyGames.Framework, Version=5.3.0.30318, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\Release\5.3.3.3\Lib\ZyGames.Framework.dll</HintPath>
+    <Reference Include="ZyGames.Framework">
+      <HintPath>..\..\..\..\..\Release\5.5.3.5\Lib\ZyGames.Framework.dll</HintPath>
     </Reference>
-    <Reference Include="ZyGames.Framework.Common, Version=5.3.0.29869, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\Release\5.3.3.3\Lib\ZyGames.Framework.Common.dll</HintPath>
+    <Reference Include="ZyGames.Framework.Common">
+      <HintPath>..\..\..\..\..\Release\5.5.3.5\Lib\ZyGames.Framework.Common.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
