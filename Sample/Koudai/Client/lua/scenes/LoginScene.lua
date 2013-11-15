@@ -58,7 +58,7 @@ end;
 -- ´´½¨³¡¾°
 function init()
 	local scene  = ScutScene:new()
-
+    mScene = scene.root
 	runningScene = CCDirector:sharedDirector():getRunningScene()
 	if runningScene == nil then
 		CCDirector:sharedDirector():runWithScene(mScene)
