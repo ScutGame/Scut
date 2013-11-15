@@ -17,12 +17,12 @@ go
 use $(gameName)Config
 GO
 --权限
-IF NOT EXISTS (SELECT * FROM sys.database_principals WHERE name = N'game_user')
-	CREATE USER game_user FOR LOGIN game_user WITH DEFAULT_SCHEMA=[dbo]
+IF NOT EXISTS (SELECT * FROM sys.database_principals WHERE name = N'$(gameuser)')
+	CREATE USER $(gameuser) FOR LOGIN $(gameuser) WITH DEFAULT_SCHEMA=[dbo]
 GO
-EXEC sp_addrolemember N'db_datareader', N'game_user'
-EXEC sp_addrolemember N'db_datawriter', N'game_user'
-EXEC sp_addrolemember N'db_ddladmin', N'game_user'
+EXEC sp_addrolemember N'db_datareader', N'$(gameuser)'
+EXEC sp_addrolemember N'db_datawriter', N'$(gameuser)'
+EXEC sp_addrolemember N'db_ddladmin', N'$(gameuser)'
 GO
 
 --data
@@ -36,12 +36,12 @@ go
 use $(gameName)1Data
 GO
 --权限
-IF NOT EXISTS (SELECT * FROM sys.database_principals WHERE name = N'game_user')
-	CREATE USER game_user FOR LOGIN game_user WITH DEFAULT_SCHEMA=[dbo]
+IF NOT EXISTS (SELECT * FROM sys.database_principals WHERE name = N'$(gameuser)')
+	CREATE USER $(gameuser) FOR LOGIN $(gameuser) WITH DEFAULT_SCHEMA=[dbo]
 GO
-EXEC sp_addrolemember N'db_datareader', N'game_user'
-EXEC sp_addrolemember N'db_datawriter', N'game_user'
-EXEC sp_addrolemember N'db_ddladmin', N'game_user'
+EXEC sp_addrolemember N'db_datareader', N'$(gameuser)'
+EXEC sp_addrolemember N'db_datawriter', N'$(gameuser)'
+EXEC sp_addrolemember N'db_ddladmin', N'$(gameuser)'
 GO
 
 --log
@@ -55,10 +55,10 @@ go
 use $(gameName)1Log
 GO
 --权限
-IF NOT EXISTS (SELECT * FROM sys.database_principals WHERE name = N'game_user')
-	CREATE USER game_user FOR LOGIN game_user WITH DEFAULT_SCHEMA=[dbo]
+IF NOT EXISTS (SELECT * FROM sys.database_principals WHERE name = N'$(gameuser)')
+	CREATE USER $(gameuser) FOR LOGIN $(gameuser) WITH DEFAULT_SCHEMA=[dbo]
 GO
-EXEC sp_addrolemember N'db_datareader', N'game_user'
-EXEC sp_addrolemember N'db_datawriter', N'game_user'
-EXEC sp_addrolemember N'db_ddladmin', N'game_user'
+EXEC sp_addrolemember N'db_datareader', N'$(gameuser)'
+EXEC sp_addrolemember N'db_datawriter', N'$(gameuser)'
+EXEC sp_addrolemember N'db_ddladmin', N'$(gameuser)'
 GO
