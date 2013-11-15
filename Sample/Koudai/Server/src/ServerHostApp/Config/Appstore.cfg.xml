@@ -1,0 +1,26 @@
+<?xml version="1.0"?>
+<configuration>
+  <iphone>
+    <add key="36youKouDaiTJ0001" dollar="0.99" currency="6" gameCoin="36"></add>
+    <add key="36youKouDaiTJ0002" dollar="2.99" currency="18" gameCoin="108"></add>
+    <add key="36youKouDaiTJ0003" dollar="7.99" currency="50" gameCoin="325"></add>
+    <add key="36youKouDaiTJ0004" dollar="14.99" currency="98" gameCoin="637"></add>
+    <add key="36youKouDaiTJ0005" dollar="29.99" currency="198" gameCoin="1386"></add>
+    <add key="36youKouDaiTJ0006" dollar="74.99" currency="488" gameCoin="3416"></add>
+  </iphone>
+  <ipad>
+    <add key="36youKouDaiTJ0001" dollar="0.99" currency="6" gameCoin="36"></add>
+    <add key="36youKouDaiTJ0002" dollar="2.99" currency="18" gameCoin="108"></add>
+    <add key="36youKouDaiTJ0003" dollar="7.99" currency="50" gameCoin="325"></add>
+    <add key="36youKouDaiTJ0004" dollar="14.99" currency="98" gameCoin="637"></add>
+    <add key="36youKouDaiTJ0005" dollar="29.99" currency="198" gameCoin="1386"></add>
+    <add key="36youKouDaiTJ0006" dollar="74.99" currency="488" gameCoin="3416"></add>
+  </ipad>
+  <self> 
+    <add key="com.36you.by0001" dollar="0.99" currency="6" gameCoin="50"></add>
+    <add key="com.36you.by0002" dollar="1.99" currency="12" gameCoin="100"></add>
+    <add key="com.36you.by0003" dollar="4.99" currency="32" gameCoin="250"></add>
+    <add key="com.36you.by0004" dollar="9.99" currency="50" gameCoin="570"></add>
+    <add key="com.36you.by0005" dollar="19.99" currency="128" gameCoin="1140"></add>
+  </self> 
+</configuration>

@@ -1,0 +1,76 @@
+﻿<?xml version="1.0"?>
+<config>
+  <lib path="D:\Python\Lib">
+  </lib>
+  <!--Action路由配置表-->
+  <route-list>
+    <!--<route action="1004" path="Action\action1004.py" ignoreAuthorize="true"/>-->
+    <!--<route action="404" path="Action\action404.py" />-->
+    <route action="1008" path="Action\action1008.py"/>
+    <route action="1110" path="Action\action1110.py" />
+    <route action="1113" path="Action\action1113.py" />
+    <route action="1114" path="Action\action1114.py" />
+    <route action="1023" path="Action\action1023.py"/>
+    <route action="1026" path="Action\action1026.py"/>
+    <route action="1025" path="Action\action1025.py"/>
+    <route action="1091" path="Action\action1091.py"/>
+    <route action="1092" path="Action\action1092.py"/>
+    <route action="1093" path="Action\action1093.py"/>
+    <route action="1094" path="Action\action1094.py"/>
+    <route action="1095" path="Action\action1095.py"/>
+    <route action="1091" path="Action\action1091.py"/>
+    <route action="12051" path="Action\action12051.py"/>
+    <route action="12052" path="Action\action12052.py"/>
+    <route action="12053" path="Action\action12053.py"/>
+    <route action="12054" path="Action\action12054.py"/>
+    <route action="12055" path="Action\action12055.py"/>
+    <route action="12056" path="Action\action12056.py"/>
+    <route action="12057" path="Action\action12057.py"/>
+    <route action="12101" path="Action\action12101.py"/>          <!--龙穴取宝界面-->
+    <route action="12102" path="Action\action12102.py"/>         <!--取宝接口-->
+    <route action="12103" path="Action\action12103.py"/>           <!--领取奖励-->
+    <route action="1402" path="Action\action1402.py"/>
+    <route action="1404" path="Action\action1404.py"/>
+    <route action="1425" path="Action\action1425.py"/>
+    <route action="1441" path="Action\action1441.py"/>
+    <route action="1442" path="Action\action1442.py"/>
+    <route action="1443" path="Action\action1443.py"/>
+    <route action="1444" path="Action\action1444.py"/>
+    <route action="1445" path="Action\action1445.py"/>
+    <route action="1446" path="Action\action1446.py"/>
+    <route action="1447" path="Action\action1447.py"/>
+    <route action="1448" path="Action\action1448.py"/>
+    <route action="1449" path="Action\action1449.py"/>
+    <route action="1481" path="Action\action1481.py"/>
+    <route action="1482" path="Action\action1482.py"/>
+    <route action="1483" path="Action\action1483.py"/>
+    <route action="1483" path="Action\action1483.py"/>
+    <route action="1484" path="Action\action1484.py"/>
+    <route action="1485" path="Action\action1485.py"/>
+    <route action="1610" path="Action\action1610.py"/>
+    <route action="1611" path="Action\action1611.py"/>
+    <route action="3012" path="Action\action3012.py"/>
+    <route action="3013" path="Action\action3013.py"/>
+    <route action="3014" path="Action\action3014.py"/>
+    <route action="3301" path="Action\action3301.py"/>
+    <route action="3302" path="Action\action3302.py"/>
+    <route action="4401" path="Action\action4401.py"/>        <!--圣吉塔活动界面-->
+    <route action="4402" path="Action\action4402.py"/>         <!--圣吉塔属性加成界面接口-->
+    <route action="4403" path="Action\action4403.py"/>           <!--圣吉塔选择属性接口-->
+    <route action="4404" path="Action\action4404.py"/>         <!--圣吉塔Npc界面接口-->
+    <route action="4405" path="Action\action4405.py"/>
+    <route action="4406" path="Action\action4406.py"/>
+    <route action="4407" path="Action\action4407.py"/>
+    <route action="4408" path="Action\action4408.py"/>
+    <route action="4409" path="Action\action4409.py"/>           <!--五层奖励界面接口-->
+    <route action="4410" path="Action\action4410.py"/>         <!--领取五层奖励接口-->
+    <route action="4411" path="Action\action4411.py"/>          <!--排行榜-->
+    <route action="4412" path="Action\action4412.py"/>           <!--排行榜玩家阵容-->
+    <route action="5108" path="Action\action5108.py"/>  <!--竞技场战斗回放-->
+    <route action="7011" path="Action\action7011.py"/>
+    <route action="7012" path="Action\action7012.py"/>
+    <route action="9006" path="Action\action9006.py"/>
+    <route action="9301" path="Action\action9301.py"/>
+    <route action="9302" path="Action\action9302.py"/> 
+  </route-list>
+</config>
