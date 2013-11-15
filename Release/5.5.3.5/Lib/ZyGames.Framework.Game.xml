@@ -4007,10 +4007,11 @@
             <param name="actionId"></param>
             <param name="userId"></param>
         </member>
-        <member name="M:ZyGames.Framework.Game.Context.GameContext.#ctor(System.Int32,System.Int32,System.Int32)">
+        <member name="M:ZyGames.Framework.Game.Context.GameContext.#ctor(System.String,System.Int32,System.Int32,System.Int32)">
             <summary>
             
             </summary>
+            <param name="ssid"></param>
             <param name="actionId"></param>
             <param name="userId"></param>
             <param name="timeOut">超时时间(毫秒)</param>
@@ -4035,6 +4036,11 @@
         <member name="P:ZyGames.Framework.Game.Context.GameContext.MonitorLock">
             <summary>
             获得锁策略
+            </summary>
+        </member>
+        <member name="P:ZyGames.Framework.Game.Context.GameContext.SessionId">
+            <summary>
+            
             </summary>
         </member>
         <member name="P:ZyGames.Framework.Game.Context.GameContext.UserId">

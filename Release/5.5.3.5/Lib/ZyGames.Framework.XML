@@ -1869,7 +1869,7 @@
             <summary>
             创建Redis主键
             </summary>
-            <param name="key"></param>
+            <param name="personalKey"></param>
             <returns></returns>
         </member>
         <member name="M:ZyGames.Framework.Cache.Generic.BaseCacheStruct`1.GetNextNo">
@@ -2349,7 +2349,7 @@
             生成存储在Redis的Key
             </summary>
             <param name="type"></param>
-            <param name="key"></param>
+            <param name="personalKey"></param>
             <returns></returns>
         </member>
         <member name="M:ZyGames.Framework.Model.EntitySchemaSet.LoadAssembly(System.Reflection.Assembly)">
@@ -6548,12 +6548,24 @@
             缓存改变键管理
             </summary>
         </member>
-        <member name="M:ZyGames.Framework.Cache.Generic.CacheChangeManager.Get(System.Int32)">
+        <member name="M:ZyGames.Framework.Cache.Generic.CacheChangeManager.PopSql(System.Int32)">
+            <summary>
+            
+            </summary>
+            <param name="count"></param>
+        </member>
+        <member name="M:ZyGames.Framework.Cache.Generic.CacheChangeManager.GetKeys(System.Int32)">
             <summary>
             
             </summary>
             <param name="count"></param>
             <returns></returns>
+        </member>
+        <member name="M:ZyGames.Framework.Cache.Generic.CacheChangeManager.Remove(System.String[])">
+            <summary>
+            
+            </summary>
+            <param name="keys"></param>
         </member>
         <member name="M:ZyGames.Framework.Cache.Generic.CacheChangeManager.SetEntity(ZyGames.Framework.Model.AbstractEntity[])">
             <summary>
@@ -6561,7 +6573,7 @@
             </summary>
             <param name="entitys"></param>
         </member>
-        <member name="M:ZyGames.Framework.Cache.Generic.CacheChangeManager.Set(System.String)">
+        <member name="M:ZyGames.Framework.Cache.Generic.CacheChangeManager.SetKey(System.String)">
             <summary>
             
             </summary>
