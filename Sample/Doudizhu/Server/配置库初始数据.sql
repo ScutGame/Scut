@@ -1,4 +1,230 @@
-USE [DdzConfig]
+USE [$(gameName)Config]
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[AchievementInfo]') AND type in (N'U'))
+BEGIN
+CREATE TABLE [dbo].[AchievementInfo](
+	[Id] [int] NOT NULL,
+	[Name] [varchar](20) NOT NULL,
+	[Type] [smallint] NOT NULL DEFAULT ((0)),
+	[TargetNum] [int] NOT NULL DEFAULT ((0)),
+	[HeadIcon] [varchar](50) NULL,
+	[Description] [varchar](500) NULL,
+PRIMARY KEY CLUSTERED 
+(
+	[Id] ASC
+)WITH (PAD_INDEX  = OFF, STATISTICS_NORECOMPUTE  = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS  = ON, ALLOW_PAGE_LOCKS  = ON) ON [PRIMARY]
+) ON [PRIMARY]
+END
+GO
+IF NOT EXISTS (SELECT * FROM ::fn_listextendedproperty(N'MS_Description' , N'SCHEMA',N'dbo', N'TABLE',N'AchievementInfo', N'COLUMN',N'Type'))
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'成就类型' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'AchievementInfo', @level2type=N'COLUMN',@level2name=N'Type'
+GO
+IF NOT EXISTS (SELECT * FROM ::fn_listextendedproperty(N'MS_Description' , N'SCHEMA',N'dbo', N'TABLE',N'AchievementInfo', N'COLUMN',N'TargetNum'))
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'成就达到值' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'AchievementInfo', @level2type=N'COLUMN',@level2name=N'TargetNum'
+GO
+IF NOT EXISTS (SELECT * FROM ::fn_listextendedproperty(N'MS_Description' , N'SCHEMA',N'dbo', N'TABLE',N'AchievementInfo', NULL,NULL))
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'成就配置' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'AchievementInfo'
+GO
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[RoomInfo]') AND type in (N'U'))
+BEGIN
+CREATE TABLE [dbo].[RoomInfo](
+	[Id] [int] NOT NULL,
+	[Name] [varchar](20) NOT NULL,
+	[AnteNum] [int] NOT NULL DEFAULT ((0)),
+	[MultipleNum] [smallint] NOT NULL DEFAULT ((0)),
+	[MinGameCion] [int] NOT NULL DEFAULT ((0)),
+	[GiffCion] [int] NOT NULL DEFAULT ((0)),
+	[Description] [varchar](500) NULL,
+	[PlayerNum] [int] NOT NULL DEFAULT ((0)),
+	[CardPackNum] [int] NOT NULL DEFAULT ((0)),
+PRIMARY KEY CLUSTERED 
+(
+	[Id] ASC
+)WITH (PAD_INDEX  = OFF, STATISTICS_NORECOMPUTE  = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS  = ON, ALLOW_PAGE_LOCKS  = ON) ON [PRIMARY]
+) ON [PRIMARY]
+END
+GO
+IF NOT EXISTS (SELECT * FROM ::fn_listextendedproperty(N'MS_Description' , N'SCHEMA',N'dbo', N'TABLE',N'RoomInfo', N'COLUMN',N'AnteNum'))
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'底注分' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'RoomInfo', @level2type=N'COLUMN',@level2name=N'AnteNum'
+GO
+IF NOT EXISTS (SELECT * FROM ::fn_listextendedproperty(N'MS_Description' , N'SCHEMA',N'dbo', N'TABLE',N'RoomInfo', N'COLUMN',N'MultipleNum'))
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'房间倍数' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'RoomInfo', @level2type=N'COLUMN',@level2name=N'MultipleNum'
+GO
+IF NOT EXISTS (SELECT * FROM ::fn_listextendedproperty(N'MS_Description' , N'SCHEMA',N'dbo', N'TABLE',N'RoomInfo', N'COLUMN',N'MinGameCion'))
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'金豆数限制' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'RoomInfo', @level2type=N'COLUMN',@level2name=N'MinGameCion'
+GO
+IF NOT EXISTS (SELECT * FROM ::fn_listextendedproperty(N'MS_Description' , N'SCHEMA',N'dbo', N'TABLE',N'RoomInfo', N'COLUMN',N'GiffCion'))
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'每日赠豆,0:不赠送' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'RoomInfo', @level2type=N'COLUMN',@level2name=N'GiffCion'
+GO
+IF NOT EXISTS (SELECT * FROM ::fn_listextendedproperty(N'MS_Description' , N'SCHEMA',N'dbo', N'TABLE',N'RoomInfo', N'COLUMN',N'PlayerNum'))
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'玩家人数' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'RoomInfo', @level2type=N'COLUMN',@level2name=N'PlayerNum'
+GO
+IF NOT EXISTS (SELECT * FROM ::fn_listextendedproperty(N'MS_Description' , N'SCHEMA',N'dbo', N'TABLE',N'RoomInfo', N'COLUMN',N'CardPackNum'))
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'卡牌几副' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'RoomInfo', @level2type=N'COLUMN',@level2name=N'CardPackNum'
+GO
+IF NOT EXISTS (SELECT * FROM ::fn_listextendedproperty(N'MS_Description' , N'SCHEMA',N'dbo', N'TABLE',N'RoomInfo', NULL,NULL))
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'房间配置' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'RoomInfo'
+GO
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[ConfigEnvSet]') AND type in (N'U'))
+BEGIN
+CREATE TABLE [dbo].[ConfigEnvSet](
+	[EnvKey] [varchar](50) NOT NULL,
+	[EnvValue] [varchar](50) NOT NULL,
+	[EnvDesc] [varchar](200) NULL,
+PRIMARY KEY CLUSTERED 
+(
+	[EnvKey] ASC
+)WITH (PAD_INDEX  = OFF, STATISTICS_NORECOMPUTE  = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS  = ON, ALLOW_PAGE_LOCKS  = ON) ON [PRIMARY]
+) ON [PRIMARY]
+END
+GO
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[ShopInfo]') AND type in (N'U'))
+BEGIN
+CREATE TABLE [dbo].[ShopInfo](
+	[ShopID] [int] NOT NULL,
+	[ShopName] [varchar](20) NOT NULL,
+	[HeadID] [varchar](100) NULL,
+	[ShopType] [smallint] NOT NULL,
+	[SeqNO] [smallint] NOT NULL,
+	[Price] [int] NOT NULL,
+	[VipPrice] [int] NOT NULL,
+	[GameCoin] [int] NOT NULL,
+	[ShopDesc] [varchar](200) NULL,
+PRIMARY KEY CLUSTERED 
+(
+	[ShopID] ASC
+)WITH (PAD_INDEX  = OFF, STATISTICS_NORECOMPUTE  = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS  = ON, ALLOW_PAGE_LOCKS  = ON) ON [PRIMARY]
+) ON [PRIMARY]
+END
+GO
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[DialInfo]') AND type in (N'U'))
+BEGIN
+CREATE TABLE [dbo].[DialInfo](
+	[ID] [int] NOT NULL,
+	[GameCoin] [int] NOT NULL,
+	[HeadID] [varchar](100) NULL,
+	[Probability] [decimal](8, 4) NOT NULL,
+	[ItemDesc] [varchar](500) NULL,
+PRIMARY KEY CLUSTERED 
+(
+	[ID] ASC
+)WITH (PAD_INDEX  = OFF, STATISTICS_NORECOMPUTE  = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS  = ON, ALLOW_PAGE_LOCKS  = ON) ON [PRIMARY]
+) ON [PRIMARY]
+END
+GO
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[TaskInfo]') AND type in (N'U'))
+BEGIN
+CREATE TABLE [dbo].[TaskInfo](
+	[TaskID] [int] NOT NULL,
+	[TaskName] [varchar](50) NOT NULL,
+	[TaskType] [smallint] NOT NULL,
+	[TaskClass] [smallint] NOT NULL,
+	[RestraintNum] [int] NOT NULL,
+	[AchieveID] [int] NOT NULL,
+	[GameCoin] [int] NOT NULL,
+	[TaskDesc] [varchar](500) NULL,
+PRIMARY KEY CLUSTERED 
+(
+	[TaskID] ASC
+)WITH (PAD_INDEX  = OFF, STATISTICS_NORECOMPUTE  = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS  = ON, ALLOW_PAGE_LOCKS  = ON) ON [PRIMARY]
+) ON [PRIMARY]
+END
+GO
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[PokerInfo]') AND type in (N'U'))
+BEGIN
+CREATE TABLE [dbo].[PokerInfo](
+	[Id] [int] NOT NULL,
+	[Name] [varchar](20) NOT NULL,
+	[Color] [smallint] NOT NULL,
+	[Value] [smallint] NOT NULL,
+	[HeadIcon] [varchar](50) NULL,
+PRIMARY KEY CLUSTERED 
+(
+	[Id] ASC
+)WITH (PAD_INDEX  = OFF, STATISTICS_NORECOMPUTE  = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS  = ON, ALLOW_PAGE_LOCKS  = ON) ON [PRIMARY]
+) ON [PRIMARY]
+END
+GO
+IF NOT EXISTS (SELECT * FROM ::fn_listextendedproperty(N'MS_Description' , N'SCHEMA',N'dbo', N'TABLE',N'PokerInfo', N'COLUMN',N'Color'))
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'牌花色[Enum<CardColor>]' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'PokerInfo', @level2type=N'COLUMN',@level2name=N'Color'
+GO
+IF NOT EXISTS (SELECT * FROM ::fn_listextendedproperty(N'MS_Description' , N'SCHEMA',N'dbo', N'TABLE',N'PokerInfo', N'COLUMN',N'Value'))
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'牌大小值' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'PokerInfo', @level2type=N'COLUMN',@level2name=N'Value'
+GO
+IF NOT EXISTS (SELECT * FROM ::fn_listextendedproperty(N'MS_Description' , N'SCHEMA',N'dbo', N'TABLE',N'PokerInfo', NULL,NULL))
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'扑克牌配置' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'PokerInfo'
+GO
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[ChatInfo]') AND type in (N'U'))
+BEGIN
+CREATE TABLE [dbo].[ChatInfo](
+	[Id] [int] NOT NULL,
+	[Content] [varchar](100) NULL,
+PRIMARY KEY CLUSTERED 
+(
+	[Id] ASC
+)WITH (PAD_INDEX  = OFF, STATISTICS_NORECOMPUTE  = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS  = ON, ALLOW_PAGE_LOCKS  = ON) ON [PRIMARY]
+) ON [PRIMARY]
+END
+GO
+IF NOT EXISTS (SELECT * FROM ::fn_listextendedproperty(N'MS_Description' , N'SCHEMA',N'dbo', N'TABLE',N'ChatInfo', NULL,NULL))
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'聊天语言配置' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'ChatInfo'
+GO
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[TitleInfo]') AND type in (N'U'))
+BEGIN
+CREATE TABLE [dbo].[TitleInfo](
+	[Id] [int] NOT NULL,
+	[Name] [varchar](20) NOT NULL,
+	[TargetNum] [int] NOT NULL DEFAULT ((0)),
+PRIMARY KEY CLUSTERED 
+(
+	[Id] ASC
+)WITH (PAD_INDEX  = OFF, STATISTICS_NORECOMPUTE  = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS  = ON, ALLOW_PAGE_LOCKS  = ON) ON [PRIMARY]
+) ON [PRIMARY]
+END
+GO
+IF NOT EXISTS (SELECT * FROM ::fn_listextendedproperty(N'MS_Description' , N'SCHEMA',N'dbo', N'TABLE',N'TitleInfo', N'COLUMN',N'TargetNum'))
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'达到值' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'TitleInfo', @level2type=N'COLUMN',@level2name=N'TargetNum'
+GO
+IF NOT EXISTS (SELECT * FROM ::fn_listextendedproperty(N'MS_Description' , N'SCHEMA',N'dbo', N'TABLE',N'TitleInfo', NULL,NULL))
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'称号配置' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'TitleInfo'
+go
+
+
 GO
 INSERT [AchievementInfo] ([Id], [Name], [Type], [TargetNum], [HeadIcon], [Description]) VALUES (1001, N'萌妹铜牌', 2, 50, N'icon_1034', N'成就描述：赢得50场萌妹斗地主胜利')
 INSERT [AchievementInfo] ([Id], [Name], [Type], [TargetNum], [HeadIcon], [Description]) VALUES (1002, N'萌妹银牌', 2, 150, N'icon_1035', N'成就描述：赢得150场萌妹斗地主胜利')
