@@ -3,4 +3,6 @@
 目录构成：
 
 Client：客户端源代码（lua）
+
 Server：服务器源代码
+    架设IIS站点"ph.scutgame.com"，并设置Host：127.0.0.1 ph.scutgame.com
