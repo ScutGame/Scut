@@ -42,7 +42,7 @@ function ScutScene:execCallback(nTag, nNetState, pData,lpExternalData)
         local bValue = reader:LuaHandlePushDataWithInt(pData)
         if not bValue then return end
         if self.mCallbackFunc then
-            self.mCallbackFunc(self.root,lpExternalData)
+            self.mCallbackFunc(self.root,nTag)
         end
 
         if self.mNetCommonDataFunc then
