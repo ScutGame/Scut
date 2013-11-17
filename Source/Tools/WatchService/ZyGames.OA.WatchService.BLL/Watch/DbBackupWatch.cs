@@ -1,4 +1,4 @@
-ï»¿using System;
+using System;
 using System.Configuration;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,7 +17,7 @@ using ZyGames.SimpleManager.Service;
 namespace ZyGames.OA.WatchService.BLL.Watch
 {
     /// <summary>
-    /// å‘¨ä¸€åšå®Œæˆå¤‡ä»½ï¼Œå…¶å®ƒå·®å¼‚å¤‡ä»½ï¼Œä¿ç•™ä¸¤å‘¨çš„æ•°æ®
+    /// ÖÜÒ»×öÍê³É±¸·İ£¬ÆäËü²îÒì±¸·İ£¬±£ÁôÁ½ÖÜµÄÊı¾İ
     /// </summary>
     public class DbBackupWatch : BaseWatch
     {
@@ -72,7 +72,7 @@ namespace ZyGames.OA.WatchService.BLL.Watch
         //        string path = IsNetBackup ? _netWorkPath : DbBackupPath;
         //        if (!OpenNetAddress(path, _netWorkUser, _netWorkPassword))
         //        {
-        //            Logger.SaveLog("ç½‘ç»œè·¯å¾„" + path + "æ‰¾å¼€å¤±è´¥");
+        //            Logger.SaveLog("ÍøÂçÂ·¾¶" + path + "ÕÒ¿ªÊ§°Ü");
         //            return;
         //        }
         //        BackupDatabase(path, dbName);
@@ -94,8 +94,8 @@ namespace ZyGames.OA.WatchService.BLL.Watch
                     if (!OpenNetAddress(path, _netWorkUser, _netWorkPassword))
                     {
                         Logger.SaveLog("Network path " + path + " Unable to connect.");
-                        string planName = string.Format("{0}æ•°æ®åº“è‡ªåŠ¨å¤‡ä»½", GetServerIP());
-                        OaSimplePlanHelper.PostDataToServer(planName, "ç½‘ç»œè·¯å¾„" + path + "æ— æ³•è¿æ¥");
+                        string planName = string.Format("{0}Êı¾İ¿â×Ô¶¯±¸·İ", GetServerIP());
+                        OaSimplePlanHelper.PostDataToServer(planName, "ÍøÂçÂ·¾¶" + path + "ÎŞ·¨Á¬½Ó");
                         return false;
                     }
 
@@ -171,7 +171,7 @@ namespace ZyGames.OA.WatchService.BLL.Watch
         }
 
         /// <summary>
-        /// æäº¤æ•°æ®åˆ°è¿œç¨‹
+        /// Ìá½»Êı¾İµ½Ô¶³Ì
         /// </summary>
         public void PostDataToServer(string ip, int successNum, int faildNum)
         {
@@ -193,7 +193,7 @@ namespace ZyGames.OA.WatchService.BLL.Watch
                 {
                     if (reader.Read())
                     {
-                        if (reader[0].ToString().StartsWith("å‘½ä»¤æˆåŠŸå®Œæˆ")) result = true;
+                        if (reader[0].ToString().StartsWith("ÃüÁî³É¹¦Íê³É")) result = true;
                     }
                 }
             }
@@ -225,14 +225,14 @@ namespace ZyGames.OA.WatchService.BLL.Watch
                 {
                     fileName = string.Format("{0}_{1}_full.bak", dbName, currDate);
                     filePath = Path.Combine(filePath, fileName);
-                    sql = string.Format("backup database {0} to disk='{1}' WITH NOFORMAT, NOINIT, NAME = N'{0}-å®Œæ•´ æ•°æ®åº“ å¤‡ä»½', SKIP, NOREWIND, NOUNLOAD", dbName, filePath);
+                    sql = string.Format("backup database {0} to disk='{1}' WITH NOFORMAT, NOINIT, NAME = N'{0}-ÍêÕû Êı¾İ¿â ±¸·İ', SKIP, NOREWIND, NOUNLOAD", dbName, filePath);
 
                 }
                 else
                 {
                     fileName = string.Format("{0}_{1}_diff.bak", dbName, currDate);
                     filePath = Path.Combine(filePath, fileName);
-                    sql = string.Format("backup database {0} to disk='{1}' WITH  DIFFERENTIAL , NOFORMAT, NOINIT, NAME = N'{0}-å·®å¼‚ æ•°æ®åº“ å¤‡ä»½', SKIP, NOREWIND, NOUNLOAD,  STATS = 10", dbName, filePath);
+                    sql = string.Format("backup database {0} to disk='{1}' WITH  DIFFERENTIAL , NOFORMAT, NOINIT, NAME = N'{0}-²îÒì Êı¾İ¿â ±¸·İ', SKIP, NOREWIND, NOUNLOAD,  STATS = 10", dbName, filePath);
                 }
                 ExecuteNonQuery(sql);
                 //SqlHelper.ExecuteNonQuery(ConnectionString, CommandType.Text, sql);
@@ -290,10 +290,10 @@ namespace ZyGames.OA.WatchService.BLL.Watch
         }
 
         /// <summary>
-        /// åˆ©ç”¨ xp_cmdshell å‘½ä»¤è¿”å› dos å‘½ä»¤ç»“æœ
+        /// ÀûÓÃ xp_cmdshell ÃüÁî·µ»Ø dos ÃüÁî½á¹û
         /// </summary>
-        /// <param name="command">dos å‘½ä»¤</param>
-        /// <returns>DataSet ç±»å‹</returns>
+        /// <param name="command">dos ÃüÁî</param>
+        /// <returns>DataSet ÀàĞÍ</returns>
         DataSet GetCmdShell(string command)
         {
             SqlConnection cn = new SqlConnection(ConnectionString);
@@ -311,7 +311,7 @@ namespace ZyGames.OA.WatchService.BLL.Watch
                 SqlParameter param = new SqlParameter("@command", SqlDbType.NVarChar, 1000);
                 param.Value = command;
 
-                //æ·»åŠ  DOS å‘½ä»¤
+                //Ìí¼Ó DOS ÃüÁî
                 cmd.Parameters.Add(param);
 
                 SqlDataReader reader;
@@ -321,14 +321,14 @@ namespace ZyGames.OA.WatchService.BLL.Watch
 
                 int fieldCount = reader.FieldCount;
 
-                //æ·»åŠ è¡¨çš„å­—æ®µåç§°å’Œç±»å‹
+                //Ìí¼Ó±íµÄ×Ö¶ÎÃû³ÆºÍÀàĞÍ
                 for (int i = 0; i < fieldCount; i++)
                     dt.Columns.Add(reader.GetName(i), reader.GetFieldType(i));
 
                 object[] values = new object[fieldCount];
                 while (reader.Read())
                 {
-                    //å¾ªç¯æ·»åŠ æ¯ä¸€è¡Œè®°å½•åˆ° DataTable
+                    //Ñ­»·Ìí¼ÓÃ¿Ò»ĞĞ¼ÇÂ¼µ½ DataTable
                     reader.GetValues(values);
                     dt.LoadDataRow(values, true);
                 }

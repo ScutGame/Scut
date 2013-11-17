@@ -1,4 +1,4 @@
-ï»¿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -59,7 +59,7 @@ namespace ZyGames.OA.WatchService.BLL.Tools
             }
         }
         /// <summary>
-        /// å¼€å§‹è¯»å–æ•°æ®
+        /// ¿ªÊ¼¶ÁÈ¡Êı¾İ
         /// </summary>
         public void StartRead()
         {
@@ -119,7 +119,7 @@ namespace ZyGames.OA.WatchService.BLL.Tools
             else
             {
                 clientSock.Close();
-                Console.WriteLine("ä¸æœåŠ¡å™¨è¿æ¥æ–­å¼€");
+                Console.WriteLine("Óë·şÎñÆ÷Á¬½Ó¶Ï¿ª");
             }
 
         }
@@ -140,7 +140,7 @@ namespace ZyGames.OA.WatchService.BLL.Tools
             int Action = reader.ReadInt32();
         }
         /// <summary>
-        /// å‘é€åˆ°æ¸¸æˆæœ
+        /// ·¢ËÍµ½ÓÎÏ··ş
         /// </summary>
         public void SendToServer(int gameId, int serverId, int actionId, string command)
         {
@@ -164,17 +164,17 @@ namespace ZyGames.OA.WatchService.BLL.Tools
             Int32 length = 0;
             foreach (byte[] tempbyte in args)
             {
-                length += tempbyte.Length;  //è®¡ç®—æ•°æ®åŒ…æ€»é•¿åº¦
+                length += tempbyte.Length;  //¼ÆËãÊı¾İ°ü×Ü³¤¶È
             }
 
-            Byte[] bytes = new Byte[length]; //å»ºç«‹æ–°çš„æ•°æ®åŒ…
+            Byte[] bytes = new Byte[length]; //½¨Á¢ĞÂµÄÊı¾İ°ü
 
             Int32 tempLength = 0;
 
             foreach (byte[] tempByte in args)
             {
                 tempByte.CopyTo(bytes, tempLength);
-                tempLength += tempByte.Length;  //å¤åˆ¶æ•°æ®åŒ…åˆ°æ–°æ•°æ®åŒ…
+                tempLength += tempByte.Length;  //¸´ÖÆÊı¾İ°üµ½ĞÂÊı¾İ°ü
             }
 
             return bytes;
@@ -182,7 +182,7 @@ namespace ZyGames.OA.WatchService.BLL.Tools
         }
 
         /// <summary>
-        /// å°†ä¸€ä¸ª32ä½æ•´å½¢è½¬æ¢æˆä¸€ä¸ªBYTE[]4å­—èŠ‚
+        /// ½«Ò»¸ö32Î»ÕûĞÎ×ª»»³ÉÒ»¸öBYTE[]4×Ö½Ú
         /// </summary>
         /// <param name="data"></param>
         /// <returns></returns>
@@ -198,7 +198,7 @@ namespace ZyGames.OA.WatchService.BLL.Tools
         }
 
         /// <summary>
-        /// å‘é€æ•°æ®åŒ…
+        /// ·¢ËÍÊı¾İ°ü
         /// </summary>
         /// <param name="data"></param>
         public void SendData(byte[] data)

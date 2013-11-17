@@ -1,4 +1,4 @@
-ï»¿using System;
+using System;
 using System.Diagnostics;
 
 namespace ZyGames.OA.WatchService.BLL.Tools
@@ -32,10 +32,10 @@ namespace ZyGames.OA.WatchService.BLL.Tools
 
         public static string Run(string fileName, string arguments, string directory)
         {
-            //å®ä¾‹åŒ–ä¸€ä¸ªè¿›ç¨‹ç±»
+            //ÊµÀı»¯Ò»¸ö½ø³ÌÀà
             Process procExe = new Process();
 
-            //è·å¾—ç³»ç»Ÿä¿¡æ¯ï¼Œä½¿ç”¨çš„æ˜¯ systeminfo.exe è¿™ä¸ªæ§åˆ¶å°ç¨‹åº
+            //»ñµÃÏµÍ³ĞÅÏ¢£¬Ê¹ÓÃµÄÊÇ systeminfo.exe Õâ¸ö¿ØÖÆÌ¨³ÌĞò
             //procExe.StartInfo.FileName = CurrentContext.Server.MapPath("/") + strSvnExePath;
             if (!string.IsNullOrEmpty(directory))
             {
@@ -48,20 +48,20 @@ namespace ZyGames.OA.WatchService.BLL.Tools
                 procExe.StartInfo.Arguments = arguments;
             }
 
-            //å°†procExeçš„æ ‡å‡†è¾“å…¥å’Œè¾“å‡ºå…¨éƒ¨é‡å®šå‘åˆ°.NETçš„ç¨‹åºé‡Œ
+            //½«procExeµÄ±ê×¼ÊäÈëºÍÊä³öÈ«²¿ÖØ¶¨Ïòµ½.NETµÄ³ÌĞòÀï
 
-            procExe.StartInfo.UseShellExecute = false; //æ­¤å¤„å¿…é¡»ä¸ºfalseå¦åˆ™å¼•å‘å¼‚å¸¸
-            procExe.StartInfo.RedirectStandardInput = true; //æ ‡å‡†è¾“å…¥
-            procExe.StartInfo.RedirectStandardOutput = true; //æ ‡å‡†è¾“å‡º
+            procExe.StartInfo.UseShellExecute = false; //´Ë´¦±ØĞëÎªfalse·ñÔòÒı·¢Òì³£
+            procExe.StartInfo.RedirectStandardInput = true; //±ê×¼ÊäÈë
+            procExe.StartInfo.RedirectStandardOutput = true; //±ê×¼Êä³ö
             procExe.StartInfo.RedirectStandardError = true;
 
-            //ä¸æ˜¾ç¤ºå‘½ä»¤è¡Œçª—å£ç•Œé¢
+            //²»ÏÔÊ¾ÃüÁîĞĞ´°¿Ú½çÃæ
             procExe.StartInfo.CreateNoWindow = true;
             procExe.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
             var loger = new ZyGames.GameService.BaseService.LogService.BaseLog();
             try
             {
-                procExe.Start(); //å¯åŠ¨è¿›ç¨‹
+                procExe.Start(); //Æô¶¯½ø³Ì
             }
             catch (Exception Ex)
             {
@@ -69,14 +69,14 @@ namespace ZyGames.OA.WatchService.BLL.Tools
                 return Ex.Message;
             }
 
-            //è·å–è¾“å‡º
-            //éœ€è¦è¯´æ˜çš„ï¼šæ­¤å¤„æ˜¯æŒ‡æ˜å¼€å§‹è·å–ï¼Œè¦è·å–çš„å†…å®¹ï¼Œ
-            //åªæœ‰ç­‰è¿›ç¨‹é€€å‡ºåæ‰èƒ½çœŸæ­£æ‹¿åˆ°
+            //»ñÈ¡Êä³ö
+            //ĞèÒªËµÃ÷µÄ£º´Ë´¦ÊÇÖ¸Ã÷¿ªÊ¼»ñÈ¡£¬Òª»ñÈ¡µÄÄÚÈİ£¬
+            //Ö»ÓĞµÈ½ø³ÌÍË³öºó²ÅÄÜÕæÕıÄÃµ½
             string strOutput = procExe.StandardOutput.ReadToEnd() + procExe.StandardError.ReadToEnd();
             loger.SaveLog(strOutput);
 
-            procExe.WaitForExit();//ç­‰å¾…æ§åˆ¶å°ç¨‹åºæ‰§è¡Œå®Œæˆ
-            procExe.Close();//å…³é—­è¯¥è¿›ç¨‹
+            procExe.WaitForExit();//µÈ´ı¿ØÖÆÌ¨³ÌĞòÖ´ĞĞÍê³É
+            procExe.Close();//¹Ø±Õ¸Ã½ø³Ì
             procExe.Dispose();
             return strOutput;
         }

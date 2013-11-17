@@ -1,4 +1,4 @@
-ï»¿using System;
+using System;
 
 namespace ZyGames.OA.WatchService.BLL.Tools
 {
@@ -23,7 +23,7 @@ namespace ZyGames.OA.WatchService.BLL.Tools
                 default:
                     break;
             }
-            throw new NotImplementedException("æœªå®ç°IIsç‰ˆæœ¬æ“ä½œ");
+            throw new NotImplementedException("Î´ÊµÏÖIIs°æ±¾²Ù×÷");
         }
 
         public abstract bool Start(out string msg);
@@ -31,7 +31,7 @@ namespace ZyGames.OA.WatchService.BLL.Tools
         public abstract bool Stop(out string msg);
 
         /// <summary>
-        /// å›æ”¶ç¨‹åºæ± 
+        /// »ØÊÕ³ÌĞò³Ø
         /// </summary>
         /// <param name="msg"></param>
         /// <returns></returns>
@@ -63,7 +63,7 @@ namespace ZyGames.OA.WatchService.BLL.Tools
 
         public override bool RecycleAppPool(out string msg)
         {
-            //å›æ”¶ç¨‹åºæ± 
+            //»ØÊÕ³ÌĞò³Ø
             string arguments = string.Format(" iisapp.vbs /a \"{0}\" /r", _siteName);
             msg = CommandExeHelper.Run("cscript.exe", arguments);
             return true;

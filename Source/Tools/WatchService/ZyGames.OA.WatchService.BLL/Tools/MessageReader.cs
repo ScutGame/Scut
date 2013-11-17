@@ -1,4 +1,4 @@
-ï»¿using System;
+using System;
 using System.IO;
 using System.Net;
 using System.Text;
@@ -74,7 +74,7 @@ namespace ZyGames.OA.WatchService.BLL.Tools
                 requestStream.Write(bufferData, 0, bufferData.Length);
                 requestStream.Close();
 
-                //è¿”å›æµ
+                //·µ»ØÁ÷
                 MessageReader msgReader = null;
                 WebResponse serverResponse = serverRequest.GetResponse();
                 Stream responseStream = serverResponse.GetResponseStream();
@@ -146,7 +146,7 @@ namespace ZyGames.OA.WatchService.BLL.Tools
             return reader.ReadChar();
         }
         /// <summary>
-        /// è®°å½•æ€»æ•°
+        /// ¼ÇÂ¼×ÜÊı
         /// </summary>
         /// <returns></returns>
         public int RecordCount()
@@ -155,7 +155,7 @@ namespace ZyGames.OA.WatchService.BLL.Tools
         }
 
         /// <summary>
-        /// å¾ªç¯å¼€å§‹
+        /// Ñ­»·¿ªÊ¼
         /// </summary>
         public void RecordStart()
         {
@@ -163,7 +163,7 @@ namespace ZyGames.OA.WatchService.BLL.Tools
             recordLength = length;
         }
         /// <summary>
-        /// å¾ªç¯ç»“æŸ
+        /// Ñ­»·½áÊø
         /// </summary>
         public void RecordEnd()
         {
@@ -171,7 +171,7 @@ namespace ZyGames.OA.WatchService.BLL.Tools
             recordLength = 0;
         }
 
-        #region IDisposable æˆå‘˜
+        #region IDisposable ³ÉÔ±
 
         public void Dispose()
         {
