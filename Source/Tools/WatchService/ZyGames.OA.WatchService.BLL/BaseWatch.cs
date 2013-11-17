@@ -1,4 +1,4 @@
-锘縰sing System;
+using System;
 using System.Net;
 using ZyGames.GameService.BaseService.LogService;
 using ZyGames.OA.WatchService.BLL.Tools;
@@ -29,11 +29,11 @@ namespace ZyGames.OA.WatchService.BLL
             }
         }
         /// <summary>
-        /// 鏄惁寰幆鎵ц,榛樿涓篢rue
+        /// 是否循环执行,默认为True
         /// </summary>
         public bool IsForLoop { get; set; }
         /// <summary>
-        /// 瀹氭椂鏃堕棿
+        /// 定时时间
         /// </summary>
         public TimeSpan Timing
         {
@@ -41,7 +41,7 @@ namespace ZyGames.OA.WatchService.BLL
             protected set;
         }
         /// <summary>
-        /// 闂撮殧鏃堕棿(姣)
+        /// 间隔时间(毫秒)
         /// </summary>
         public int Interval
         {
