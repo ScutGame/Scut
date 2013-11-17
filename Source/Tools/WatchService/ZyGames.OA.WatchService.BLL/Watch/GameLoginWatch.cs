@@ -1,4 +1,4 @@
-ï»¿using System;
+using System;
 using System.Configuration;
 using System.Collections.Generic;
 using System.Text;
@@ -15,7 +15,7 @@ using ZyGames.SimpleManager.Service.Common;
 namespace ZyGames.OA.WatchService.BLL.Watch
 {
     /// <summary>
-    /// æ¸¸æˆç™»å½•ç›‘è§†
+    /// ÓÎÏ·µÇÂ¼¼àÊÓ
     /// </summary>
     public class GameLoginWatch : BaseWatch
     {
@@ -141,7 +141,7 @@ namespace ZyGames.OA.WatchService.BLL.Watch
             catch (Exception ex)
             {
                 Logger.SaveLog(string.Format("The Game Login surveillance >> read {0} the game hours service list error:", gameName), ex);
-                SendToMail(string.Format("è¯»å–åˆ†æœåˆ—è¡¨å¼‚å¸¸:{0}", ex.Message));
+                SendToMail(string.Format("¶ÁÈ¡·Ö·şÁĞ±íÒì³£:{0}", ex.Message));
             }
         }
 
@@ -150,7 +150,7 @@ namespace ZyGames.OA.WatchService.BLL.Watch
             if (state is ServerInfo)
             {
                 var server = state as ServerInfo;
-                //Logger.SaveLog(string.Format("æ¸¸æˆç™»å½•ç›‘è§†>>{0}[{1}]è¯·æ±‚å¼€å§‹", server.GameName, server.Name));
+                //Logger.SaveLog(string.Format("ÓÎÏ·µÇÂ¼¼àÊÓ>>{0}[{1}]ÇëÇó¿ªÊ¼", server.GameName, server.Name));
                 StringBuilder requestParams = new StringBuilder();
                 requestParams.AppendFormat("{0}={1}", "ActionID", 1004);
                 requestParams.AppendFormat("&{0}={1}", "Sid", "");
@@ -172,12 +172,12 @@ namespace ZyGames.OA.WatchService.BLL.Watch
 
                     if (msg.ErrorCode != 0)
                     {
-                        errorInfo = string.Format("æ¸¸æˆç™»å½•ç›‘è§†>>{0}[{4}æœ-{1}]ç™»å½•å‡ºé”™ï¼ŒError:{2}-{3}", server.GameName, server.Name, msg.ErrorCode, msg.ErrorInfo, server.ID);
+                        errorInfo = string.Format("ÓÎÏ·µÇÂ¼¼àÊÓ>>{0}[{4}·ş-{1}]µÇÂ¼³ö´í£¬Error:{2}-{3}", server.GameName, server.Name, msg.ErrorCode, msg.ErrorInfo, server.ID);
                         Logger.SaveLog(new Exception(errorInfo));
 
                         
                         //Modify post trace
-                        string planName = string.Format("ç›‘è§†æ¸¸æˆï¼š{0}ï¼Œæœï¼š{1}ç™»å½•å¤±è´¥", server.GameName, server.Name);
+                        string planName = string.Format("¼àÊÓÓÎÏ·£º{0}£¬·ş£º{1}µÇÂ¼Ê§°Ü", server.GameName, server.Name);
                         string planValue = string.Format("{0}:{1}", msg.ErrorCode, msg.ErrorInfo);
                         OaSimplePlanHelper.PostDataToServer(planName, planValue);
                     }
@@ -205,7 +205,7 @@ namespace ZyGames.OA.WatchService.BLL.Watch
                     {
                         errorTimes = 0;
                     }
-                    Mail139Helper.SendMail("æ¸¸æˆç™»å½•ç›‘è§†", content, ConfigContext.GetInstance().SendTo139Mail, true);
+                    Mail139Helper.SendMail("ÓÎÏ·µÇÂ¼¼àÊÓ", content, ConfigContext.GetInstance().SendTo139Mail, true);
                 }
                 catch (Exception ex)
                 {

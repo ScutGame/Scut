@@ -1,4 +1,4 @@
-ï»¿using System;
+using System;
 using System.Configuration;
 using System.Net;
 using System.Threading;
@@ -12,7 +12,7 @@ using ZyGames.Core.Util;
 namespace ZyGames.OA.WatchService.BLL.Watch
 {
     /// <summary>
-    /// é¡¹ç›®éƒ¨ç½²
+    /// ÏîÄ¿²¿Êğ
     /// </summary>
     public class SvnDeploymentWatch : BaseWatch
     {
@@ -88,22 +88,22 @@ namespace ZyGames.OA.WatchService.BLL.Watch
                                 DeployPython(projectAction);
                                 break;
                             case 11:
-                                //åˆ›å»ºè®¡åˆ’ä»»åŠ¡
+                                //´´½¨¼Æ»®ÈÎÎñ
                                 CreateSchTasks(projectAction);
                                 break;
                             case 12:
-                                //åˆ é™¤è®¡åˆ’ä»»åŠ¡
+                                //É¾³ı¼Æ»®ÈÎÎñ
                                 DeleteSchTasks(projectAction);
                                 break;
                             case 13:
-                                //åˆ›å»ºè®¡åˆ’ä»»åŠ¡
+                                //´´½¨¼Æ»®ÈÎÎñ
                                 StartSchTasks(projectAction);
                                 break;
                             case 14:
                                 StopSchTasks(projectAction);
                                 break;
                             case 15:
-                                //é‡å¯IISæˆ–ä»»åŠ¡è®¡åˆ’
+                                //ÖØÆôIIS»òÈÎÎñ¼Æ»®
                                 ReStart(projectAction, IIS_VERSION);
                                 break;
                             default:
@@ -112,7 +112,7 @@ namespace ZyGames.OA.WatchService.BLL.Watch
                     }
                     catch (Exception ex)
                     {
-                        Logger.SaveLog(string.Format("SvnDeploy Execution [{0}] command errorï¼š", projectAction.Id), ex);
+                        Logger.SaveLog(string.Format("SvnDeploy Execution [{0}] command error£º", projectAction.Id), ex);
                         SvnProcesser.UpdateDeployStatus(projectAction.Id, 2, ex.ToString());
                     }
                     Logger.SaveLog(projectAction.Id + " the end of the project deployment");
@@ -127,7 +127,7 @@ namespace ZyGames.OA.WatchService.BLL.Watch
             }
         }
         /// <summary>
-        /// å›æ”¶IIS poolæˆ–é‡å¯ä»»åŠ¡è®¡åˆ’
+        /// »ØÊÕIIS pool»òÖØÆôÈÎÎñ¼Æ»®
         /// </summary>
         /// <param name="projectAction"></param>
         /// <param name="version"></param>
@@ -144,7 +144,7 @@ namespace ZyGames.OA.WatchService.BLL.Watch
         }
 
         /// <summary>
-        /// åˆ›å»ºä»»åŠ¡è®¡åˆ’
+        /// ´´½¨ÈÎÎñ¼Æ»®
         /// </summary>
         /// <param name="projectAction"></param>
         private void CreateSchTasks(DepProjectAction projectAction)
@@ -163,7 +163,7 @@ namespace ZyGames.OA.WatchService.BLL.Watch
 
         }
         /// <summary>
-        /// åˆ é™¤è®¡åˆ’ä»»åŠ¡
+        /// É¾³ı¼Æ»®ÈÎÎñ
         /// </summary>
         /// <param name="projectAction"></param>
         private void DeleteSchTasks(DepProjectAction projectAction)
@@ -174,7 +174,7 @@ namespace ZyGames.OA.WatchService.BLL.Watch
             SvnProcesser.UpdateDeployStatus(projectAction.Id, SUCCESS, strOutput);
         }
         /// <summary>
-        /// åœæ­¢è®¡åˆ’ä»»åŠ¡
+        /// Í£Ö¹¼Æ»®ÈÎÎñ
         /// </summary>
         /// <param name="projectAction"></param>
         private void StopSchTasks(DepProjectAction projectAction)
@@ -185,7 +185,7 @@ namespace ZyGames.OA.WatchService.BLL.Watch
             SvnProcesser.UpdateDeployStatus(projectAction.Id, SUCCESS, strOutput);
         }
         /// <summary>
-        /// å¼€å¯è®¡åˆ’ä»»åŠ¡
+        /// ¿ªÆô¼Æ»®ÈÎÎñ
         /// </summary>
         /// <param name="projectAction"></param>
         private void StartSchTasks(DepProjectAction projectAction)
@@ -196,7 +196,7 @@ namespace ZyGames.OA.WatchService.BLL.Watch
             SvnProcesser.UpdateDeployStatus(projectAction.Id, SUCCESS, strOutput);
         }
         /// <summary>
-        /// é‡å¯
+        /// ÖØÆô
         /// </summary>
         /// <param name="projectAction"></param>
         private void ReStartSchTasks(DepProjectAction projectAction)
@@ -209,7 +209,7 @@ namespace ZyGames.OA.WatchService.BLL.Watch
         }
 
         /// <summary>
-        /// æ¸…ç†SVN
+        /// ÇåÀíSVN
         /// </summary>
         /// <param name="projectAction"></param>
         private void Cleanup(DepProjectAction projectAction)
@@ -224,7 +224,7 @@ namespace ZyGames.OA.WatchService.BLL.Watch
                         SVN_PASSWORD
                     );
 
-            Logger.SaveLog(string.Format("SvnDeployæ‰§è¡Œsvn.exe {0}", svnArguments));
+            Logger.SaveLog(string.Format("SvnDeployÖ´ĞĞsvn.exe {0}", svnArguments));
             string strOutput = CommandExeHelper.Run("svn.exe", svnArguments);
             if (string.IsNullOrEmpty(strOutput))
             {
@@ -240,7 +240,7 @@ namespace ZyGames.OA.WatchService.BLL.Watch
 
 
         /// <summary>
-        /// å¼€å¯IIS
+        /// ¿ªÆôIIS
         /// </summary>
         /// <param name="projectAction"></param>
         /// <param name="iisVersion"></param>
@@ -252,7 +252,7 @@ namespace ZyGames.OA.WatchService.BLL.Watch
             SvnProcesser.UpdateDeployStatus(projectAction.Id, SUCCESS, strOutput);
         }
         /// <summary>
-        /// åœæ­¢IIS
+        /// Í£Ö¹IIS
         /// </summary>
         /// <param name="projectAction"></param>
         /// <param name="iisVersion"></param>
@@ -265,7 +265,7 @@ namespace ZyGames.OA.WatchService.BLL.Watch
 
         }
         /// <summary>
-        /// å›æ”¶IISåº”ç”¨ç¨‹åºæ± 
+        /// »ØÊÕIISÓ¦ÓÃ³ÌĞò³Ø
         /// </summary>
         /// <param name="projectAction"></param>
         /// <param name="iisVersion"></param>
@@ -284,7 +284,7 @@ namespace ZyGames.OA.WatchService.BLL.Watch
         }
 
         /// <summary>
-        /// æ›´æ–°SVN
+        /// ¸üĞÂSVN
         /// </summary>
         /// <param name="projectAction"></param>
         private void SvnUpdate(DepProjectAction projectAction, bool isCheckout)
@@ -296,7 +296,7 @@ namespace ZyGames.OA.WatchService.BLL.Watch
             string svnArguments = string.Empty;
             Exception error = null;
             
-            //åˆ¤æ–­æ˜¯å¦æ£€å‡º
+            //ÅĞ¶ÏÊÇ·ñ¼ì³ö
             if (isCheckout || !Directory.Exists(checkOutPath))
             {
                 //if (Directory.Exists(checkOutPath))
@@ -356,24 +356,24 @@ namespace ZyGames.OA.WatchService.BLL.Watch
             }
             if (error != null)
             {
-                Logger.SaveLog(string.Format("SvnDeployæ‰§è¡Œsvn.exe {0}\r\næ¸…é™¤ç›®å½•å‡ºé”™ï¼š", svnArguments), error);
+                Logger.SaveLog(string.Format("SvnDeployÖ´ĞĞsvn.exe {0}\r\nÇå³ıÄ¿Â¼³ö´í£º", svnArguments), error);
             }
             else
             {
-                Logger.SaveLog(string.Format("SvnDeployæ‰§è¡Œsvn.exe {0}", svnArguments));
+                Logger.SaveLog(string.Format("SvnDeployÖ´ĞĞsvn.exe {0}", svnArguments));
             }
 
             string strOutput = CommandExeHelper.Run("svn.exe", svnArguments);
             if (error != null)
             {
-                strOutput = "æ¸…é™¤ç›®å½•å‡ºé”™ï¼š" + error.Message + "\r\n" + strOutput;
+                strOutput = "Çå³ıÄ¿Â¼³ö´í£º" + error.Message + "\r\n" + strOutput;
             }
             SvnProcesser.UpdateDeployStatus(projectAction.Id, SUCCESS, strOutput);
 
         }
 
         /// <summary>
-        /// æ£€æŸ¥æ˜¯å¦æ˜¯ä»»åŠ¡è®¡åˆ’æ“ä½œ
+        /// ¼ì²éÊÇ·ñÊÇÈÎÎñ¼Æ»®²Ù×÷
         /// </summary>
         /// <param name="projectAction"></param>
         /// <returns></returns>
@@ -386,7 +386,7 @@ namespace ZyGames.OA.WatchService.BLL.Watch
 
         private void QuickDeploy(DepProjectAction projectAction, IIsVersion iisVersion)
         {
-            //åœæ­¢IIS
+            //Í£Ö¹IIS
             DepProjectItem projectItem = SvnProcesser.ProjectItem(projectAction.DepId);
             if (CheckSchTaskOperate(projectAction))
             {
@@ -399,15 +399,15 @@ namespace ZyGames.OA.WatchService.BLL.Watch
         }
 
         /// <summary>
-        /// å¿«é€Ÿéƒ¨ç½²è®¡åˆ’ä»»åŠ¡
+        /// ¿ìËÙ²¿Êğ¼Æ»®ÈÎÎñ
         /// </summary>
         private void DoSchTaskQuickDeploy(DepProjectAction projectAction, DepProjectItem projectItem)
         {
-            //æ›´æ–°ç¼“å­˜
+            //¸üĞÂ»º´æ
             DepProject project = SvnProcesser.Project(projectItem.DepId);
             int gameId = project.GameId;
             int serverId = projectItem.ServerId;
-            string host = project.ExcludeFile;//é…ç½®æˆSocketåœ°å€
+            string host = project.ExcludeFile;//ÅäÖÃ³ÉSocketµØÖ·
             using (GameSocketClient client = new GameSocketClient())
             {
                 string msg = string.Empty;
@@ -417,7 +417,7 @@ namespace ZyGames.OA.WatchService.BLL.Watch
                     {
 
                         msg += string.Format("cache cmd:{0}-{1}\r\n", error, errorInfo);
-                        //åœæ­¢è®¡åˆ’ä»»åŠ¡
+                        //Í£Ö¹¼Æ»®ÈÎÎñ
                         msg += SchTasksOperate.StopRun(projectItem.WebSite);
                         string deploymsg = string.Empty;
                         if (Deploy(projectAction, ref deploymsg))
@@ -425,7 +425,7 @@ namespace ZyGames.OA.WatchService.BLL.Watch
                             msg += deploymsg;
                             int sleepTime = SVN_QDEPLOY_WAIT + new Random().Next(1, 10);
                             Thread.Sleep(sleepTime * 1000);
-                            //å¼€å¯è®¡åˆ’ä»»åŠ¡
+                            //¿ªÆô¼Æ»®ÈÎÎñ
                             msg += SchTasksOperate.StartRun(projectItem.WebSite);
                         }
                         SvnProcesser.UpdateDeployStatus(projectAction.Id, SUCCESS, msg);
@@ -470,7 +470,7 @@ namespace ZyGames.OA.WatchService.BLL.Watch
             SvnProcesser.UpdateDeployStatus(projectAction.Id, SUCCESS, msg);
         }
         /// <summary>
-        /// éƒ¨ç½²é¡¹ç›®
+        /// ²¿ÊğÏîÄ¿
         /// </summary>
         /// <param name="projectAction"></param>
         private bool Deploy(DepProjectAction projectAction, ref string msg)
@@ -499,19 +499,19 @@ namespace ZyGames.OA.WatchService.BLL.Watch
                 checkSharePath = CommandExeHelper.CombineDir(checkSharePath, project.SharePath);
 
                 string exclude = "";//string.IsNullOrEmpty(project.ExcludeFile) ? "" : string.Format("/xf {0}", project.ExcludeFile);
-                //æ›´æ–°å…±äº«çš„ç›®å½•,å¦‚Codeç›®å½•
+                //¸üĞÂ¹²ÏíµÄÄ¿Â¼,ÈçCodeÄ¿Â¼
                 string robarguments = string.Format("{0} {1} /MIR {2}", checkSharePath, targetPath, exclude);
                 Logger.SaveLog(string.Format("SvnDeploy shared directory robocopy.exe {0}", robarguments));
                 msg += CommandExeHelper.Run("robocopy.exe", robarguments);
             }
 
-            //å·®å¼‚ç›®å½•,å¦‚å¤©ç•Œè¡Œ1æœç›®å½•ä¸‹çš„Web.Configæ–‡ä»¶
+            //²îÒìÄ¿Â¼,ÈçÌì½çĞĞ1·şÄ¿Â¼ÏÂµÄWeb.ConfigÎÄ¼ş
             string checkOutPath = CommandExeHelper.CombineDir(SVN_UPDATE_ROOT, project.Id.ToString());
             checkOutPath = CommandExeHelper.CombineDir(checkOutPath, projectItem.Name);
             bool isExist = Directory.Exists(checkOutPath);
             if (isExist)
             {
-                //åˆå¹¶Debugä¸Releaseç›®å½•æ–‡ä»¶
+                //ºÏ²¢DebugÓëReleaseÄ¿Â¼ÎÄ¼ş
                 string arguments = string.Empty;
                 if (IsRelease)
                 {
@@ -525,7 +525,7 @@ namespace ZyGames.OA.WatchService.BLL.Watch
                 Logger.SaveLog(string.Format("SvnDeploy differences in directory xcopy.exe {0}", arguments));
                 msg += CommandExeHelper.Run("xcopy.exe", arguments);
             }
-            //æ”¯æŒä»¥å‰ç›®å½•ç»“æ„
+            //Ö§³ÖÒÔÇ°Ä¿Â¼½á¹¹
             else if (string.IsNullOrEmpty(project.SharePath.Trim()))
             {
                 checkOutPath = CommandExeHelper.CombineDir(SVN_UPDATE_ROOT, project.Id.ToString());
@@ -536,13 +536,13 @@ namespace ZyGames.OA.WatchService.BLL.Watch
             else
             {
                 result = false;
-                msg += string.Format("Directory errorï¼š{0} {1}", checkOutPath, targetPath);
+                msg += string.Format("Directory error£º{0} {1}", checkOutPath, targetPath);
             }
             return result;
         }
 
         /// <summary>
-        /// éƒ¨ç½²Pythonè„šæœ¬
+        /// ²¿ÊğPython½Å±¾
         /// </summary>
         /// <param name="projectAction"></param>
         private bool DeployPython(DepProjectAction projectAction)
@@ -552,12 +552,12 @@ namespace ZyGames.OA.WatchService.BLL.Watch
             string pythonPath = ConfigHelper.GetSetting("DEPLOY_Python_Path", "PyScript");
             DepProjectItem projectItem = SvnProcesser.ProjectItem(projectAction.DepId);
             DepProject project = SvnProcesser.Project(projectItem.DepId);
-            //ç›®æ ‡è·¯å¾„
+            //Ä¿±êÂ·¾¶
             string targetPath = projectItem.DeployPath.Replace("/", @"\");
             if (targetPath.IndexOf(":") == -1)
             {
                 targetPath = CommandExeHelper.CombineDir(DEPLOY_ROOT, targetPath);
-                //Pythonç›®å½•
+                //PythonÄ¿Â¼
                 targetPath = CommandExeHelper.CombineDir(targetPath, pythonPath);
             }
             if (!Directory.Exists(targetPath))
@@ -566,11 +566,11 @@ namespace ZyGames.OA.WatchService.BLL.Watch
             }
             string checkSharePath = CommandExeHelper.CombineDir(SVN_UPDATE_ROOT, project.Id.ToString());
             checkSharePath = CommandExeHelper.CombineDir(checkSharePath, project.SharePath);
-            //Pythonç›®å½•
+            //PythonÄ¿Â¼
             checkSharePath = CommandExeHelper.CombineDir(checkSharePath, pythonPath);
 
             string exclude = "";//string.IsNullOrEmpty(project.ExcludeFile) ? "" : string.Format("/xf {0}", project.ExcludeFile);
-            //æ›´æ–°å…±äº«çš„ç›®å½•,å¦‚Codeç›®å½•
+            //¸üĞÂ¹²ÏíµÄÄ¿Â¼,ÈçCodeÄ¿Â¼
             string robarguments = string.Format("{0} {1} /MIR {2}", checkSharePath, targetPath, exclude);
             Logger.SaveLog(string.Format("SvnDeploy Python shared directory robocopy.exe {0}", robarguments));
             msg += CommandExeHelper.Run("robocopy.exe", robarguments);

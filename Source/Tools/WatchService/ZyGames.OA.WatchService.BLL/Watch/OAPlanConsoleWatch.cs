@@ -1,4 +1,4 @@
-ï»¿using System;
+using System;
 using System.Configuration;
 using System.Net;
 using ZyGames.Core.Util;
@@ -7,7 +7,7 @@ using ZyGames.OA.WatchService.BLL.Plugin;
 namespace ZyGames.OA.WatchService.BLL.Watch
 {
     /// <summary>
-    /// cpu,driveç›‘è§†
+    /// cpu,drive¼àÊÓ
     /// </summary>
     public class OAPlanConsoleWatch : BaseWatch
     {

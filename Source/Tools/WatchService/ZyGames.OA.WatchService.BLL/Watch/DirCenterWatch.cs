@@ -1,4 +1,4 @@
-ï»¿using System;
+using System;
 using System.Configuration;
 using System.Collections.Generic;
 using System.Linq;
@@ -35,7 +35,7 @@ namespace ZyGames.OA.WatchService.BLL.Watch
                 requestStream.Write(bufferData, 0, bufferData.Length);
                 requestStream.Close();
 
-                //è¿”å›æµ
+                //·µ»ØÁ÷
                 StringBuilder respContent = new StringBuilder();
                 WebResponse serverResponse = serverRequest.GetResponse();
                 Stream responseStream = serverResponse.GetResponseStream();

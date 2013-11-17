@@ -1,4 +1,4 @@
-ï»¿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
@@ -23,7 +23,7 @@ namespace ZyGames.OA.WatchService.BLL.Tools
         private static string LocalAddress = ConfigHelper.GetSetting("OAPlan_Local_Address", "127.0.0.1");
 
         /// <summary>
-        /// æäº¤æ•°æ®åˆ°è¿œç¨‹
+        /// Ìá½»Êı¾İµ½Ô¶³Ì
         /// </summary>
         public static void PostDataToServer(string name, object value)
         {

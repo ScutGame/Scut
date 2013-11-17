@@ -1,11 +1,11 @@
-ï»¿using System;
+using System;
 using ZyGames.Core.Util;
 using ZyGames.MSMQ.Service.Service;
 
 namespace ZyGames.OA.WatchService.BLL.Watch
 {
     /// <summary>
-    /// Erroræ¶ˆæ¯é˜Ÿåˆ—ç®¡ç†å™¨
+    /// ErrorÏûÏ¢¶ÓÁĞ¹ÜÀíÆ÷
     /// </summary>
     public class ErrorMSMQWatch : BaseWatch
     {

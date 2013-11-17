@@ -1,4 +1,4 @@
-ï»¿using System;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -8,7 +8,7 @@ using System.Text;
 namespace ZyGames.OA.WatchService.BLL.Tools
 {
     /// <summary>
-    /// ç³»ç»Ÿä»»åŠ¡è®¡åˆ’æ“ä½œ
+    /// ÏµÍ³ÈÎÎñ¼Æ»®²Ù×÷
     /// </summary>
     public static class SchTasksOperate
     {
@@ -17,8 +17,8 @@ namespace ZyGames.OA.WatchService.BLL.Tools
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="taskName">ä»»åŠ¡è®¡åˆ’å</param>
-        /// <param name="taskPath">ç¨‹åºä½ç½®</param>
+        /// <param name="taskName">ÈÎÎñ¼Æ»®Ãû</param>
+        /// <param name="taskPath">³ÌĞòÎ»ÖÃ</param>
         /// <returns></returns>
         public static string Create(string taskName, string taskPath)
         {
@@ -28,7 +28,7 @@ namespace ZyGames.OA.WatchService.BLL.Tools
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="taskName">ä»»åŠ¡è®¡åˆ’å</param>
+        /// <param name="taskName">ÈÎÎñ¼Æ»®Ãû</param>
         /// <returns></returns>
         public static string Delete(string taskName)
         {
@@ -39,7 +39,7 @@ namespace ZyGames.OA.WatchService.BLL.Tools
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="taskName">ä»»åŠ¡è®¡åˆ’å</param>
+        /// <param name="taskName">ÈÎÎñ¼Æ»®Ãû</param>
         /// <returns></returns>
         public static string StartRun(string taskName)
         {
@@ -50,7 +50,7 @@ namespace ZyGames.OA.WatchService.BLL.Tools
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="taskName">ä»»åŠ¡è®¡åˆ’å</param>
+        /// <param name="taskName">ÈÎÎñ¼Æ»®Ãû</param>
         /// <returns></returns>
         public static string StopRun(string taskName)
         {
@@ -60,14 +60,14 @@ namespace ZyGames.OA.WatchService.BLL.Tools
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="taskName">ä»»åŠ¡è®¡åˆ’å</param>
+        /// <param name="taskName">ÈÎÎñ¼Æ»®Ãû</param>
         /// <returns></returns>
         public static bool CheckRun(string taskName)
         {
             FileInfo file = new FileInfo(programBat);
             if (!file.Exists)
             {
-                throw new FileNotFoundException("ä»»åŠ¡è®¡åˆ’æŸ¥è¯¢æ‰¹å¤„ç†æ–‡ä»¶ä¸å­˜åœ¨", programBat);
+                throw new FileNotFoundException("ÈÎÎñ¼Æ»®²éÑ¯Åú´¦ÀíÎÄ¼ş²»´æÔÚ", programBat);
             }
             if (file.Directory != null)
             {
