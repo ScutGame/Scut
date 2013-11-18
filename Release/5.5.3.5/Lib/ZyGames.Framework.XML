@@ -2562,9 +2562,9 @@
             设置禁用事件绑定
             </summary>
         </member>
-        <member name="M:ZyGames.Framework.Event.EntityChangeEvent.ClearChangeEvent">
+        <member name="M:ZyGames.Framework.Event.EntityChangeEvent.ClearChildrenEvent">
             <summary>
-            清除绑定
+            清除子类事件句柄
             </summary>
         </member>
         <member name="F:ZyGames.Framework.Event.EntityChangeEvent._hasChanged">
