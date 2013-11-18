@@ -124,10 +124,11 @@ namespace ZyGames.ContractTools
             ddlSolution.DataValueField = "SlnID";
             ddlSolution.DataBind();
             ddlSolution.SelectedValue = SlnID;
+            string gameId = string.IsNullOrEmpty(ddlSolution.SelectedValue) ? "0" : ddlSolution.SelectedValue;
 
             ddlAgreement.Items.Clear();
             ddlAgreement.Items.Add(new ListItem("全部", "0"));
-            DataSet ds2 = new AgreementBLL().GetList(" gameid=" + ddlSolution.SelectedValue, ddlSolution.SelectedValue);
+            DataSet ds2 = new AgreementBLL().GetList(" gameid=" + gameId, gameId);
             for (int i = 0; i < ds2.Tables[0].Rows.Count; i++)
             {
                 ddlAgreement.Items.Add(new ListItem(ds2.Tables[0].Rows[i]["Title"].ToString(), ds2.Tables[0].Rows[i]["AgreementID"].ToString()));
@@ -138,8 +139,8 @@ namespace ZyGames.ContractTools
             //ddlAgreement.DataBind();
             
             ddlAgreement.SelectedValue = "0";
-            DataSet ds3 = new AgreementBLL().GetList(" gameid=" + ddlSolution.SelectedValue, ddlSolution.SelectedValue);
-            DataSet ds4 = new ContractBLL().GetList(" SlnID=" + ddlSolution.SelectedValue);
+            DataSet ds3 = new AgreementBLL().GetList(" gameid=" + gameId, gameId);
+            DataSet ds4 = new ContractBLL().GetList(" SlnID=" + gameId);
             TreeList.Nodes.Clear();
             leftStyle = "display:none;";
             for (int i = 0; i < ds3.Tables[0].Rows.Count; i++)
@@ -621,13 +622,15 @@ namespace ZyGames.ContractTools
             QueryResult();
             ddlAgreement.Items.Clear();
             ddlAgreement.Items.Add(new ListItem("全部", "0"));
-            DataSet ds2 = new AgreementBLL().GetList(" gameid=" + ddlSolution.SelectedValue, ddlSolution.SelectedValue);
+
+            string gameId = string.IsNullOrEmpty(ddlSolution.SelectedValue) ? "0" : ddlSolution.SelectedValue;
+            DataSet ds2 = new AgreementBLL().GetList(" gameid=" + gameId, gameId);
             for (int i = 0; i < ds2.Tables[0].Rows.Count; i++)
             {
                 ddlAgreement.Items.Add(new ListItem(ds2.Tables[0].Rows[i]["Title"].ToString(), ds2.Tables[0].Rows[i]["AgreementID"].ToString()));
             }
-            DataSet ds3 = new AgreementBLL().GetList(" gameid=" + ddlSolution.SelectedValue, ddlSolution.SelectedValue);
-            DataSet ds4 = new ContractBLL().GetList(" SlnID=" + ddlSolution.SelectedValue);
+            DataSet ds3 = new AgreementBLL().GetList(" gameid=" + gameId, gameId);
+            DataSet ds4 = new ContractBLL().GetList(" SlnID=" + gameId);
             TreeList.Nodes.Clear();
             for (int i = 0; i < ds3.Tables[0].Rows.Count; i++)
             {
@@ -669,7 +672,11 @@ namespace ZyGames.ContractTools
         protected void ddlAgreement_SelectedIndexChanged(object sender, EventArgs e)
         {
             ContractBLL BLL = new ContractBLL();
-            DataSet ds = ddlAgreement.SelectedValue == "0" ? BLL.GetList(" SlnID=" + this.ddlSolution.SelectedValue + " and AgreementID>=0") : BLL.GetList(" SlnID=" + this.ddlSolution.SelectedValue + " and  AgreementID=" + ddlAgreement.SelectedValue);
+
+            string gameId = string.IsNullOrEmpty(ddlSolution.SelectedValue) ? "0" : ddlSolution.SelectedValue;
+            DataSet ds = ddlAgreement.SelectedValue == "0" 
+                ? BLL.GetList(" SlnID=" + gameId + " and AgreementID>=0") 
+                : BLL.GetList(" SlnID=" + gameId + " and  AgreementID=" + ddlAgreement.SelectedValue);
             if (ds.Tables[0].Rows.Count > 0)
             {
                 DropGetList.DataSource = ds;

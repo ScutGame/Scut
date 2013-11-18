@@ -30,9 +30,13 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="NLog, Version=1.0.0.505, Culture=neutral, PublicKeyToken=5120e14c03d0593c, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\Release\OldLib\NLog.dll</HintPath>
+    </Reference>
     <Reference Include="StructService1.3, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\通用DLL\StructService1.3.dll</HintPath>
+      <HintPath>..\..\..\..\Release\OldLib\StructService1.3.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
@@ -55,13 +59,13 @@
     <Reference Include="System.Web.Services" />
     <Reference Include="System.EnterpriseServices" />
     <Reference Include="System.Web.Mobile" />
+    <Reference Include="ZyGames.Common, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\Release\OldLib\ZyGames.Common.dll</HintPath>
+    </Reference>
     <Reference Include="ZyGames.Core, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\通用DLL\ZyGames.Core.dll</HintPath>
-    </Reference>
-    <Reference Include="ZyGames.Framework.RPC, Version=3.5.0.5, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\FrameworkPublish\Unstable\3.5\Core\Rpc_V0.5\ZyGames.Framework.RPC.dll</HintPath>
+      <HintPath>..\..\..\..\Release\OldLib\ZyGames.Core.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
