@@ -1,0 +1,34 @@
+{
+    "pre_order":
+    [
+        "js/jsb_cocos2d_constants.js",
+        "js/jsb_cocos2d.js",
+        "js/jsb_cocos2d_extension.js",
+        "js/jsb_chipmunk_constants.js",
+        "js/jsb_chipmunk.js",
+        "js/jsb_opengl_constants.js",
+        "js/jsb_opengl.js",
+        "js/jsb_cocosbuilder.js",
+        "js/jsb_sys.js",
+        "tests/tests_resources-jsb.js",
+        "tests/tests-main.js",
+        "tests/BaseTestLayer/BaseTestLayer.js",
+        "tests/PerformanceTest/PerformanceTest.js"
+    ],
+    "post_order":
+    [
+        "tests/tests-boot-jsb-for-obfuscation.js"
+    ],
+    "skip":
+    [
+        "tests/main.js",
+        "tests/tests_resources-html5.js",
+        "tests/tests-boot-html5.js",
+        "tests/tests-boot-jsb.js",
+        "tests/ExtensionsTest/CocosBuilderTest",
+        "tests/ExtensionsTest/ControlExtensionTest",
+        "js/jsb_debugger.js",
+        "js/jsb.js",
+        "js/main.debug.js"
+    ]
+}
