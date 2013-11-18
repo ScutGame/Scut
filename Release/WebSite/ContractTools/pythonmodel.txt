@@ -1,0 +1,31 @@
+﻿"""##Description##"""
+import clr, sys
+from action import *
+#引用示例
+#clr.AddReference('ZyGames.Framework.Common');
+#from ZyGames.Framework.Common.Log import *
+
+class UrlParam(HttpParam):
+    def __init__(self):
+        HttpParam.__init__(self)
+##UrlParam##
+
+class ActionResult(DataResult):
+    def __init__(self):
+        DataResult.__init__(self)
+##actionResult##
+
+def getUrlElement(httpGet, parent):
+    urlParam = UrlParam()
+##getUrlElement##
+    return urlParam
+
+def takeAction(urlParam, parent):
+    actionResult = ActionResult()
+    user = parent.Current.User
+    #需要实现
+    return actionResult
+
+def buildPacket(writer, urlParam, actionResult):
+##buildPacket##
+    return True
