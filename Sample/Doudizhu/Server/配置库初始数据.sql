@@ -8,7 +8,7 @@ BEGIN
 CREATE TABLE [dbo].[AchievementInfo](
 	[Id] [int] NOT NULL,
 	[Name] [varchar](20) NOT NULL,
-	[Type] [smallint] NOT NULL DEFAULT ((0)),
+	[Type] [int] NOT NULL DEFAULT ((0)),
 	[TargetNum] [int] NOT NULL DEFAULT ((0)),
 	[HeadIcon] [varchar](50) NULL,
 	[Description] [varchar](500) NULL,
