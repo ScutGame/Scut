@@ -32,11 +32,11 @@
   <ItemGroup>
     <Reference Include="NLog, Version=1.0.0.505, Culture=neutral, PublicKeyToken=5120e14c03d0593c, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\通用DLL\NLog.dll</HintPath>
+      <HintPath>..\..\..\Release\OldLib\NLog.dll</HintPath>
     </Reference>
     <Reference Include="StructService2.0, Version=2.0.1.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\Lib\Plugin\StructService2.0.dll</HintPath>
+      <HintPath>..\..\..\Release\OldLib\StructService2.0.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
@@ -61,7 +61,7 @@
     <Reference Include="System.Web.Mobile" />
     <Reference Include="ZyGames.Core, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\Lib\Plugin\ZyGames.Core.dll</HintPath>
+      <HintPath>..\..\..\Release\OldLib\ZyGames.Core.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
