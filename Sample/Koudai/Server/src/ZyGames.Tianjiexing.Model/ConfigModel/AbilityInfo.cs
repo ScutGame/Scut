@@ -535,7 +535,7 @@ namespace ZyGames.Tianjiexing.Model
             }
             private set
             {
-                SetChange("ProbabFntHeadIDility", value);
+                SetChange("FntHeadID", value);
             }
         }
         private Int16 _IsActive;

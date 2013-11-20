@@ -22,6 +22,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ****************************************************************************/
 using System;
+using ZyGames.Framework.Game.Runtime;
 using ZyGames.Framework.Game.Service;
 using ZyGames.Framework.Common.Security;
 using ZyGames.Framework.Game.Sns;
@@ -81,7 +82,7 @@ namespace ZyGames.Tianjiexing.BLL.Action
             {
                 string[] userList = SnsManager.GetRegPassport(deviceID);
                 passport = userList[0];
-                password = CryptoHelper.DES_Decrypt(userList[1], "5^1-34E!");
+                password = CryptoHelper.DES_Decrypt(userList[1], GameEnvironment.ProductDesEnKey);
                 return true;
             }
             catch (Exception ex)
