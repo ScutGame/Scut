@@ -3361,6 +3361,13 @@
             </summary>
             <param name="express"></param>
         </member>
+        <member name="M:ZyGames.Framework.Data.CommandStruct.AddExpressParam(System.String,System.Object)">
+            <summary>
+            
+            </summary>
+            <param name="paramName"></param>
+            <param name="value"></param>
+        </member>
         <member name="M:ZyGames.Framework.Data.CommandStruct.AddExpressParam(System.String,System.Int32,System.Int32,System.Object)">
             <summary>
             
@@ -3537,6 +3544,13 @@
             </summary>
             <param name="tableName"></param>
             <param name="editType"></param>
+        </member>
+        <member name="M:ZyGames.Framework.Data.MySql.MySqlCommandStruct.AddExpressParam(System.String,System.Object)">
+            <summary>
+            
+            </summary>
+            <param name="paramName"></param>
+            <param name="value"></param>
         </member>
         <member name="M:ZyGames.Framework.Data.MySql.MySqlCommandStruct.AddExpressParam(System.String,System.Int32,System.Int32,System.Object)">
             <summary>
@@ -3857,7 +3871,7 @@
         </member>
         <member name="M:ZyGames.Framework.Data.DbBaseProvider.ExecuteNonQuery(System.Int32,System.Data.CommandType,System.String,System.Data.IDataParameter[])">
             <summary>
-            执行Sql语句
+            写入消息队列
             </summary>
             <param name="identityID"></param>
             <param name="commandType"></param>
@@ -3945,11 +3959,12 @@
             <param name="parameters"></param>
             <returns></returns>
         </member>
-        <member name="M:ZyGames.Framework.Data.DbBaseProvider.FormatFilterParam(System.String,System.String)">
+        <member name="M:ZyGames.Framework.Data.DbBaseProvider.FormatFilterParam(System.String,System.String,System.String)">
             <summary>
             格式化条件语句中的参数
             </summary>
-            <param name="fieldNname"></param>
+            <param name="fieldName"></param>
+            <param name="compareChar">比较字符,大于、等于、小于等</param>
             <param name="paramName"></param>
             <returns></returns>
         </member>
@@ -4092,11 +4107,12 @@
             </summary>
             <returns></returns>
         </member>
-        <member name="M:ZyGames.Framework.Data.Sql.SqlDataProvider.FormatFilterParam(System.String,System.String)">
+        <member name="M:ZyGames.Framework.Data.Sql.SqlDataProvider.FormatFilterParam(System.String,System.String,System.String)">
             <summary>
             格式化条件语句中的参数
             </summary>
-            <param name="fieldNname"></param>
+            <param name="fieldName"></param>
+            <param name="compareChar"></param>
             <param name="paramName"></param>
             <returns></returns>
         </member>
@@ -4184,81 +4200,67 @@
             内存中一定时间存在的实体，不存储数据库
             </summary>
         </member>
-        <member name="F:ZyGames.Framework.Cache.Generic.MemoryCacheStruct`1.DataContainer">
-            <summary>
-            
-            </summary>
-        </member>
         <member name="M:ZyGames.Framework.Cache.Generic.MemoryCacheStruct`1.#ctor">
             <summary>
             
             </summary>
         </member>
-        <member name="M:ZyGames.Framework.Cache.Generic.MemoryCacheStruct`1.Foreach(System.Func{System.String,System.String,`0,System.Boolean})">
+        <member name="M:ZyGames.Framework.Cache.Generic.MemoryCacheStruct`1.Foreach(System.Func{System.String,`0,System.Boolean})">
             <summary>
             
             </summary>
             <param name="func"></param>
         </member>
-        <member name="M:ZyGames.Framework.Cache.Generic.MemoryCacheStruct`1.TryAdd(System.String,System.String,`0,System.Int32)">
+        <member name="M:ZyGames.Framework.Cache.Generic.MemoryCacheStruct`1.TryAdd(System.String,`0)">
             <summary>
             
             </summary>
-            <param name="groupKey"></param>
-            <param name="subKey"></param>
+            <param name="key"></param>
             <param name="value"></param>
-            <param name="periodTime"></param>
             <returns></returns>
         </member>
-        <member name="M:ZyGames.Framework.Cache.Generic.MemoryCacheStruct`1.TryRemove(System.String,System.String,System.Func{`0,System.Boolean})">
+        <member name="M:ZyGames.Framework.Cache.Generic.MemoryCacheStruct`1.AddOrUpdate(System.String,`0)">
+            <summary>
+            
+            </summary>
+            <param name="key"></param>
+            <param name="value"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ZyGames.Framework.Cache.Generic.MemoryCacheStruct`1.TryRemove(System.String,System.Func{`0,System.Boolean})">
             <summary>
             尝试移除
             </summary>
-            <param name="groupKey"></param>
-            <param name="subKey"></param>
+            <param name="key"></param>
             <param name="callback">移除成功回调</param>
             <returns></returns>
         </member>
-        <member name="M:ZyGames.Framework.Cache.Generic.MemoryCacheStruct`1.TryRemove(System.String,System.Func{ZyGames.Framework.Cache.Generic.CacheItemSet,System.Boolean})">
+        <member name="M:ZyGames.Framework.Cache.Generic.MemoryCacheStruct`1.TryGet(System.String,`0@)">
             <summary>
             
             </summary>
-            <param name="groupKey"></param>
-            <param name="callback"></param>
-            <returns></returns>
-        </member>
-        <member name="M:ZyGames.Framework.Cache.Generic.MemoryCacheStruct`1.TryGet(System.String,ZyGames.Framework.Cache.Generic.BaseCollection@)">
-            <summary>
-            
-            </summary>
-            <param name="groupKey"></param>
-            <param name="collection"></param>
-            <returns></returns>
-        </member>
-        <member name="M:ZyGames.Framework.Cache.Generic.MemoryCacheStruct`1.TryGet(System.String,System.String,`0@)">
-            <summary>
-            
-            </summary>
-            <param name="groupKey"></param>
-            <param name="subKey"></param>
+            <param name="key"></param>
             <param name="value"></param>
             <returns></returns>
         </member>
-        <member name="M:ZyGames.Framework.Cache.Generic.MemoryCacheStruct`1.Find(System.String,System.Predicate{`0})">
+        <member name="M:ZyGames.Framework.Cache.Generic.MemoryCacheStruct`1.Find(System.Predicate{`0})">
             <summary>
             查找第一个匹配数据
             </summary>
-            <param name="personalId"></param>
             <param name="match"></param>
             <returns></returns>
         </member>
-        <member name="M:ZyGames.Framework.Cache.Generic.MemoryCacheStruct`1.FindAll(System.String,System.Predicate{`0})">
+        <member name="M:ZyGames.Framework.Cache.Generic.MemoryCacheStruct`1.FindAll(System.Predicate{`0})">
             <summary>
             查找所有匹配数据
             </summary>
-            <param name="groupKey"></param>
             <param name="match"></param>
             <returns></returns>
+        </member>
+        <member name="P:ZyGames.Framework.Cache.Generic.MemoryCacheStruct`1.ContainerKey">
+            <summary>
+            
+            </summary>
         </member>
         <member name="P:ZyGames.Framework.Cache.Generic.MemoryCacheStruct`1.IsEmpty">
             <summary>
@@ -5545,12 +5547,13 @@
             数据传送操作接口
             </summary>
         </member>
-        <member name="M:ZyGames.Framework.Net.IDataSender.Send``1(``0)">
+        <member name="M:ZyGames.Framework.Net.IDataSender.Send``1(``0,System.Boolean)">
             <summary>
             
             </summary>
             <typeparam name="T"></typeparam>
             <param name="data"></param>
+            <param name="isChange"></param>
         </member>
         <member name="M:ZyGames.Framework.Net.IDataSender.Send``1(``0[])">
             <summary>
@@ -5629,6 +5632,15 @@
             <param name="paramName"></param>
             <returns></returns>
         </member>
+        <member name="M:ZyGames.Framework.Data.Sql.SqlParamHelper.FormatFilterParam(System.String,System.String,System.String)">
+            <summary>
+            
+            </summary>
+            <param name="fieldName"></param>
+            <param name="compareChar"></param>
+            <param name="paramName"></param>
+            <returns></returns>
+        </member>
         <member name="T:ZyGames.Framework.Data.SqlStatement">
             <summary>
             Sql语句对象
@@ -5674,6 +5686,11 @@
             释放
             </summary>
         </member>
+        <member name="M:ZyGames.Framework.Cache.Generic.CacheContainer.SetRemoveStatus">
+            <summary>
+            设置移除状态
+            </summary>
+        </member>
         <member name="M:ZyGames.Framework.Cache.Generic.CacheContainer.OnLoadFactory(System.Func{System.Boolean},System.Boolean)">
             <summary>
             执行加载数据工厂
@@ -5692,7 +5709,7 @@
             加载状态
             </summary>
         </member>
-        <member name="P:ZyGames.Framework.Cache.Generic.CacheContainer.IsEmpyt">
+        <member name="P:ZyGames.Framework.Cache.Generic.CacheContainer.IsEmpty">
             <summary>
             数据是否为空
             </summary>
@@ -6548,24 +6565,30 @@
             缓存改变键管理
             </summary>
         </member>
+        <member name="M:ZyGames.Framework.Cache.Generic.CacheChangeManager.PutSql(System.String)">
+            <summary>
+            Put to sql change keys
+            </summary>
+            <param name="key">The entity key</param>
+        </member>
         <member name="M:ZyGames.Framework.Cache.Generic.CacheChangeManager.PopSql(System.Int32)">
             <summary>
-            
+            pop sql change keys
             </summary>
-            <param name="count"></param>
+            <param name="count">the count.</param>
         </member>
         <member name="M:ZyGames.Framework.Cache.Generic.CacheChangeManager.GetKeys(System.Int32)">
             <summary>
-            
+            get entity keys
             </summary>
             <param name="count"></param>
             <returns></returns>
         </member>
         <member name="M:ZyGames.Framework.Cache.Generic.CacheChangeManager.Remove(System.String[])">
             <summary>
-            
+            remove entity key
             </summary>
-            <param name="keys"></param>
+            <param name="keys">The entity key</param>
         </member>
         <member name="M:ZyGames.Framework.Cache.Generic.CacheChangeManager.SetEntity(ZyGames.Framework.Model.AbstractEntity[])">
             <summary>
@@ -6955,6 +6978,21 @@
             <summary>
             
             </summary>
+        </member>
+        <member name="M:ZyGames.Framework.Data.CommandFilter.FormatExpression(System.String,System.String,System.String)">
+            <summary>
+            
+            </summary>
+            <param name="fieldName"></param>
+            <param name="compareChar"></param>
+            <param name="paramName"></param>
+        </member>
+        <member name="M:ZyGames.Framework.Data.CommandFilter.AddParam(System.String,System.Object)">
+            <summary>
+            
+            </summary>
+            <param name="paramName"></param>
+            <param name="value"></param>
         </member>
         <member name="M:ZyGames.Framework.Data.CommandFilter.AddParam(System.String,System.Data.SqlDbType,System.Int32,System.Object)">
             <summary>
@@ -7524,11 +7562,12 @@
             </summary>
             <returns></returns>
         </member>
-        <member name="M:ZyGames.Framework.Data.MySql.MySqlDataProvider.FormatFilterParam(System.String,System.String)">
+        <member name="M:ZyGames.Framework.Data.MySql.MySqlDataProvider.FormatFilterParam(System.String,System.String,System.String)">
             <summary>
             格式化条件语句中的参数
             </summary>
-            <param name="fieldNname"></param>
+            <param name="fieldName"></param>
+            <param name="compareChar"></param>
             <param name="paramName"></param>
             <returns></returns>
         </member>
@@ -8951,7 +8990,7 @@
             加载失败
             </summary>
         </member>
-        <member name="M:ZyGames.Framework.Cache.Generic.CacheItemSet.OnRemove">
+        <member name="M:ZyGames.Framework.Cache.Generic.CacheItemSet.SetRemoveStatus">
             <summary>
             
             </summary>
@@ -10694,6 +10733,14 @@
             <param name="updateInterval">缓存数据更新间隔，单位：秒</param>
             <param name="autoRun">是否自动开启缓存写库监听，默认:自动开启</param>
         </member>
+        <member name="M:ZyGames.Framework.Cache.Generic.CacheFactory.GetEntityFromRedis(System.String,System.Type)">
+            <summary>
+            通过Redis键获取实体对象
+            </summary>
+            <param name="key"></param>
+            <param name="type"></param>
+            <returns></returns>
+        </member>
         <member name="M:ZyGames.Framework.Cache.Generic.CacheFactory.GetPersonalEntity(System.String)">
             <summary>
             通过Redis键获取实体对象
@@ -10822,6 +10869,15 @@
             <param name="paramName"></param>
             <returns></returns>
         </member>
+        <member name="M:ZyGames.Framework.Data.MySql.MySqlParamHelper.FormatFilterParam(System.String,System.String,System.String)">
+            <summary>
+            
+            </summary>
+            <param name="fieldName"></param>
+            <param name="compareChar"></param>
+            <param name="paramName"></param>
+            <returns></returns>
+        </member>
         <member name="T:ZyGames.Framework.Data.MySql.MySqlCommandFilter">
             <summary>
             
@@ -10831,6 +10887,13 @@
             <summary>
             
             </summary>
+        </member>
+        <member name="M:ZyGames.Framework.Data.MySql.MySqlCommandFilter.AddParam(System.String,System.Object)">
+            <summary>
+            
+            </summary>
+            <param name="paramName"></param>
+            <param name="value"></param>
         </member>
         <member name="T:ZyGames.Framework.RPC.IO.Receiver">
             <summary>

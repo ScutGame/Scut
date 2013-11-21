@@ -182,6 +182,13 @@
             </summary>
             <param name="obj"></param>
         </member>
+        <member name="M:ZyGames.Framework.Common.Serialization.ProtoObject.#ctor(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)">
+            <summary>
+            
+            </summary>
+            <param name="info"></param>
+            <param name="context"></param>
+        </member>
         <member name="M:ZyGames.Framework.Common.Serialization.ProtoObject.ToString">
             <summary>
             重载Tostring方法
@@ -279,44 +286,87 @@
         </member>
         <member name="T:ZyGames.Framework.Common.Serialization.ProtoBufUtils">
             <summary>
-            
+            Protobuf序列化与反序列化
             </summary>
         </member>
-        <member name="M:ZyGames.Framework.Common.Serialization.ProtoBufUtils.ProtobufSerialize``1(``0,System.String)">
+        <member name="M:ZyGames.Framework.Common.Serialization.ProtoBufUtils.Serialize(System.Object,System.String)">
             <summary>
             使用protobuf序列化对象为二进制文件
             </summary>
-            <typeparam name="T">需要序列化的对象类型，必须声明[ProtoContract]特征，且相应属性必须声明[ProtoMember(序号)]特征</typeparam>
-            <param name="obj">需要序列化的对象</param>
-            <param name="serializeFilePath">序列化后的物理文件路径</param>
+            <param name="obj"></param>
+            <param name="serializeFilePath"></param>
         </member>
-        <member name="M:ZyGames.Framework.Common.Serialization.ProtoBufUtils.ProtobufDeserialize``1(System.String)">
+        <member name="M:ZyGames.Framework.Common.Serialization.ProtoBufUtils.Deserialize(System.String,System.Type)">
             <summary>
             使用protobuf反序列化二进制文件为对象
             </summary>
-            <typeparam name="T">需要反序列化的对象类型，必须声明[ProtoContract]特征，且相应属性必须声明[ProtoMember(序号)]特征</typeparam>
             <param name="serializeFilePath">反序列化对象的物理文件路径</param>
+            <param name="type">the type.</param>
         </member>
         <member name="M:ZyGames.Framework.Common.Serialization.ProtoBufUtils.ProtobufSerialize``1(``0)">
             <summary>
             使用protobuf把对象序列化为Byte数组
             </summary>
-            <typeparam name="T">需要反序列化的对象类型，必须声明[ProtoContract]特征，且相应属性必须声明[ProtoMember(序号)]特征</typeparam>
+            <typeparam name="T"></typeparam>
             <param name="obj"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ZyGames.Framework.Common.Serialization.ProtoBufUtils.Serialize(System.Object)">
+            <summary>
+            使用protobuf把对象序列化为Byte数组
+            </summary>
+            <param name="obj">序列化的对象</param>
             <returns></returns>
         </member>
         <member name="M:ZyGames.Framework.Common.Serialization.ProtoBufUtils.ProtobufDeserialize``1(System.Byte[])">
             <summary>
+            
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="data"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ZyGames.Framework.Common.Serialization.ProtoBufUtils.Deserialize``1(System.Byte[])">
+            <summary>
             使用protobuf反序列化二进制数组为对象
             </summary>
             <typeparam name="T">需要反序列化的对象类型，必须声明[ProtoContract]特征，且相应属性必须声明[ProtoMember(序号)]特征</typeparam>
+            <param name="data">二进字节数据</param>
+            <returns></returns>
+        </member>
+        <member name="M:ZyGames.Framework.Common.Serialization.ProtoBufUtils.Deserialize(System.Byte[],System.Type)">
+            <summary>
+            使用protobuf反序列化二进制数组为对象
+            </summary>
+            <param name="data">二进字节数据</param>
+            <param name="type">反序列化的类型.</param>
+            <returns></returns>
+        </member>
+        <member name="M:ZyGames.Framework.Common.Serialization.ProtoBufUtils.SerializeAutoGZip(System.Object)">
+            <summary>
+            序列化对象为二进制数组,并gzip压缩
+            </summary>
+            <param name="obj">序列化的对象</param>
+            <returns></returns>
+        </member>
+        <member name="M:ZyGames.Framework.Common.Serialization.ProtoBufUtils.DeserializeAutoGZip(System.Byte[],System.Type)">
+            <summary>
+            反序列化二进制数组为对象,并gzip压缩
+            </summary>
             <param name="data"></param>
+            <param name="type"></param>
+            <returns></returns>
         </member>
         <member name="M:ZyGames.Framework.Common.Serialization.ProtoBufUtils.LoadProtobufType(System.Reflection.Assembly)">
             <summary>
             动态绑定实体对象的子类类型
             </summary>
             <param name="assembly"></param>
+        </member>
+        <member name="P:ZyGames.Framework.Common.Serialization.ProtoBufUtils.CompressOutLength">
+            <summary>
+            byte数组压缩超出限制长度
+            </summary>
         </member>
         <member name="T:ZyGames.Framework.Common.RandomUtils">
             <summary>
