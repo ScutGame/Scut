@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Web.Script.Serialization;
 using ZyGames.DirCenter.CacheData;
 using ZyGames.DirCenter.Model;
-using ZyGames.GameService.BaseService.LogService;
+using ZyGames.Framework.Common.Log;
 
 namespace ZyGames.DirCenter
 {

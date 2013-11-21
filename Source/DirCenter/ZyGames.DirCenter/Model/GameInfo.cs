@@ -1,13 +1,17 @@
 ﻿using System;
-using ZyGames.Common;
+using ZyGames.Framework.Common;
+using ZyGames.Framework.Model;
 
 namespace ZyGames.DirCenter.Model
 {
-    public class GameInfo
+    /// <summary>
+    /// 游戏信息对象
+    /// </summary>
+    public class GameInfo : MemoryEntity
     {
         public GameInfo()
         {
-            ReleaseDate = ConvertHelper.SqlMinDate;
+            ReleaseDate = MathUtils.SqlMinDate;
             Currency = "";
             GameWord = "";
             AgentsID = "";
@@ -15,12 +19,18 @@ namespace ZyGames.DirCenter.Model
             SocketServer = "";
         }
 
+        /// <summary>
+        /// 游戏编号
+        /// </summary>
         public int ID
         {
             get;
             set;
         }
 
+        /// <summary>
+        /// 游戏名
+        /// </summary>
         public string Name
         {
             get;

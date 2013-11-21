@@ -1,33 +1,49 @@
 ﻿using System;
-using ZyGames.Common;
+using ZyGames.Framework.Common;
+using ZyGames.Framework.Model;
 
 namespace ZyGames.DirCenter.Model
 {
-    public class ServerInfo : IComparable<ServerInfo>
+    /// <summary>
+    /// 游戏服信息对象
+    /// </summary>
+    public class ServerInfo  : MemoryEntity, IComparable<ServerInfo>
     {
         public ServerInfo()
         {
-            EnableDate = ConvertHelper.SqlMinDate;
+            EnableDate = MathUtils.SqlMinDate;
         }
 
+        /// <summary>
+        /// 游戏服编号
+        /// </summary>
         public int ID
         {
             get;
             set;
         }
 
+        /// <summary>
+        /// 游戏编号
+        /// </summary>
         public int GameID
         {
             get;
             set;
         }
 
+        /// <summary>
+        /// 游戏服名称
+        /// </summary>
         public string ServerName
         {
             get;
             set;
         }
 
+        /// <summary>
+        /// 游戏服访问地址
+        /// </summary>
         public string ServerUrl
         {
             get;
@@ -35,7 +51,7 @@ namespace ZyGames.DirCenter.Model
         }
 
         /// <summary>
-        /// 内网地址
+        /// 内网程序访问地址
         /// </summary>
         public string IntranetAddress
         {
@@ -43,6 +59,9 @@ namespace ZyGames.DirCenter.Model
             set;
         }
 
+        /// <summary>
+        /// 分服状态，停服、顺畅、拥挤等
+        /// </summary>
         public string Status
         {
             get;
@@ -50,7 +69,7 @@ namespace ZyGames.DirCenter.Model
         }
 
         /// <summary>
-        /// 活跃数
+        /// 活跃人数
         /// </summary>
         public int ActiveNum
         {
@@ -58,13 +77,17 @@ namespace ZyGames.DirCenter.Model
             set;
         }
 
+        /// <summary>
+        /// 排序的权重比
+        /// </summary>
         public int Weight
         {
             get;
             set;
         }
+
         /// <summary>
-        /// 指向服务器
+        /// 合服转向目录务器
         /// </summary>
         public int TargetServer
         {

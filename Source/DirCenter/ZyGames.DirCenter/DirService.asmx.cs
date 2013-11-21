@@ -26,7 +26,7 @@ namespace ZyGames.DirCenter
         public GameInfo[] GetOfficialGame()
         {
             CacheGame cacheGame = new CacheGame();
-            return cacheGame.GetOfficialGame();
+            return cacheGame.GetOfficialGame().ToArray();
         }
 
         [WebMethod(Description = "游戏列表")]
@@ -40,7 +40,7 @@ namespace ZyGames.DirCenter
         public GameInfo[] GetGame()
         {
             CacheGame cacheGame = new CacheGame();
-            return cacheGame.GetGame();
+            return cacheGame.GetGame().ToArray();
         }
         [WebMethod(Description = "游戏信息")]
         public GameInfo GetGameInfo(int gameId)
@@ -50,7 +50,7 @@ namespace ZyGames.DirCenter
             var gameInfo = new GameInfo();
             foreach (var item in list)
             {
-                if(item.ID==gameId)
+                if (item.ID == gameId)
                 {
                     gameInfo = item;
                     break;
@@ -108,24 +108,31 @@ namespace ZyGames.DirCenter
         }
 
         [WebMethod(Description = "游戏服务器列表")]
+        public ServerInfo GetServerObj(int gameID, int serverId)
+        {
+            CacheServer cacheServer = new CacheServer();
+            return cacheServer.GetServers(gameID, serverId);
+        }
+
+        [WebMethod(Description = "游戏服务器列表")]
         public ServerInfo[] GetServers(int gameID, bool isSort, bool isEnable)
         {
             CacheServer cacheServer = new CacheServer();
-            return cacheServer.GetServers(gameID, isSort, isEnable);
+            return cacheServer.GetServers(gameID, isSort, isEnable).ToArray();
         }
 
         [WebMethod(Description = "游戏服务器列表")]
         public ServerInfo[] GetServerList(int gameID)
         {
             CacheServer cacheServer = new CacheServer();
-            return cacheServer.GetServerList(gameID, false);
+            return cacheServer.GetServerList(gameID, false).ToArray();
         }
 
         [WebMethod(Description = "游戏服务器排序列表")]
         public ServerInfo[] GetServerSortList(int gameID)
         {
             CacheServer cacheServer = new CacheServer();
-            return cacheServer.GetServerList(gameID, true);
+            return cacheServer.GetServerList(gameID, true).ToArray();
         }
 
         [WebMethod(Description = "删除游戏服务器")]
@@ -167,7 +174,8 @@ namespace ZyGames.DirCenter
         public string GetServerName(int gameID, int serverID)
         {
             CacheServer cacheServer = new CacheServer();
-            return cacheServer.GetServerName(gameID, serverID);
+            var info = cacheServer.GetServers(gameID, serverID);
+            return info == null ? "" : info.ServerName;
         }
 
         [WebMethod(Description = "游戏服务器开启时间")]

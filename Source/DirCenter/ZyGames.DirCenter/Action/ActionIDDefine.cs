@@ -16,6 +16,10 @@ namespace ZyGames.DirCenter.Action
         /// 分服列表
         /// </summary>
         public const Int16 Cst_Action1001 = 1001;
+        /// <summary>
+        /// 分服状态
+        /// </summary>
+        public const Int16 Cst_Action1002 = 1002;
 
     }
 }
