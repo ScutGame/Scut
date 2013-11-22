@@ -15,7 +15,7 @@ namespace ZyGames.DirCenter
     /// <summary>
     /// Service 的摘要说明
     /// </summary>
-    [WebService(Namespace = "http://dir.36you.net/")]
+    [WebService(Namespace = "http://dir.scutgame.com/")]
     [WebServiceBinding(ConformsTo = WsiProfiles.BasicProfile1_1)]
     [ToolboxItem(false)]
     // 若要允许使用 ASP.NET AJAX 从脚本中调用此 Web 服务，请取消对下行的注释。
