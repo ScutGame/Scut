@@ -4,7 +4,7 @@ Scut开源游戏服务器引擎
 
 简介
 ----------------
-Scut游戏服务器引擎使用C#语言开发，特别适用于手机网络游戏，支持使用Python脚本进行游戏开发；支持MSSQL/Mysql数据库；支持HTTP/Socket协议同时接入；采用实体类对象建模，自动构造数据库表结构生成和修改语句；业务逻辑层使用Python脚本开发，提供了丰富的类库和API接口，极大降低了开发人员的技术要求。
+Scut游戏服务器引擎使用C#语言开发，特别适用于手机网络游戏，支持使用Python脚本进行游戏开发；支持MSSQL/Mysql数据库；支持HTTP/Socket协议同时接入；采用实体类对象建模，自动构造数据库表结构生成和修改语句；业务逻辑层使用C#/Python脚本开发，提供了丰富的类库和API接口，极大降低了开发人员的技术要求。
 
 游戏中间件
 ----------------
@@ -31,13 +31,18 @@ GM命令系统<br />
 在架构上，可以支持多服务器耦合架构，可以分离业务到不同服务器，以提升在线人数，如战斗服务器、聊天服务器分别部署至不同物理服务器；根据业务等级，实现不同等级的写库需求，默认前提下，数据更新将延迟10分钟写入数据库，提供预读机制，极大降低对数据库的依赖，哪怕数据库网络短期中断也不会形成脏读；
 服务器内存和CPU占用低，对象在一定时间内（24小时）未登陆将会被交换至数据库，并从内存卸下，节省内存利用率（16核服务器，20个游服平均CPU低于10%，峰值低于30%）；
 
+数据库支持
+----------------
+Windows：支持MSSQL/Mysql<br />
+Linux：支持Mysql
+从5.5.3.5版开始，Scut游戏服务器引擎将Redis作为必备的存储，数据库是可选存储
 
 资源
 ----------------
-官网地址：http://www.scutgame.com
-Github代码库：https://github.com/scutgame/scut
-OSChina代码库：https://git.oschina.net/scutgame/Scut
-博客园地址：http://www.cnblogs.com/scut/
+官网地址：http://www.scutgame.com<br />
+Github代码库：https://github.com/scutgame/scut<br />
+OSChina代码库：https://git.oschina.net/scutgame/Scut<br />
+博客园地址：http://www.cnblogs.com/scut/<br />
 
 技术交流QQ群：138266675
 
