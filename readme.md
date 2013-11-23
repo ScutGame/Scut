@@ -34,7 +34,7 @@ GM命令系统<br />
 数据库支持
 ----------------
 Windows：支持MSSQL/Mysql<br />
-Linux：支持Mysql
+Linux：支持Mysql<br />
 从5.5.3.5版开始，Scut游戏服务器引擎将Redis作为必备的存储，数据库是可选存储
 
 资源
