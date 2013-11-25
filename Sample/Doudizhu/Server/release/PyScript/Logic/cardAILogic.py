@@ -125,7 +125,7 @@ class CardAILogic():
         roomStruct = MemoryCacheStruct[RoomData]()
         key = str(roomId)
         roomData = None
-        result = roomStruct.TryGet(key, key)
+        result = roomStruct.TryGet(key)
         if result[0]:
             roomData = result[1]
             resultTable = roomData.Tables.TryGetValue(tableId)

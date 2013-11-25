@@ -144,7 +144,7 @@ namespace ZyGames.Doudizhu.Bll
                 command.ToIndex = maxCount;
                 command.OrderBy = "LoginDate desc";
                 command.Filter = dbProvider.CreateCommandFilter();
-                command.Filter.Condition = dbProvider.FormatFilterParam("LoginDate", "LoginDate").Replace("=", ">");
+                command.Filter.Condition = dbProvider.FormatFilterParam("LoginDate", ">");
                 var param = dbProvider.CreateParameter("LoginDate", DateTime.Now.Date.AddDays(-loadUnlineDay));
                 command.Filter.AddParam(param);
                 command.Parser();

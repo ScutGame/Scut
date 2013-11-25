@@ -26,7 +26,7 @@ namespace ZyGames.Doudizhu.Bll.Logic
             {
                 var roomData = new RoomData() { RoomId = roomInfo.Id };
                 string key = roomData.RoomId.ToString();
-                roomStruct.TryAdd(key, key, roomData);
+                roomStruct.TryAdd(key, roomData);
             }
         }
 
@@ -77,7 +77,7 @@ namespace ZyGames.Doudizhu.Bll.Logic
             List<PositionData> list = new List<PositionData>();
             string key = roomInfo.Id.ToString();
             RoomData roomData;
-            if (_roomStruct.TryGet(key, key, out roomData))
+            if (_roomStruct.TryGet(key, out roomData))
             {
                 var tableData = GameTable.Current.SelectTable(user, roomData, roomInfo);
                 if (tableData != null && tableData.Positions.Length > 0)
@@ -104,7 +104,7 @@ namespace ZyGames.Doudizhu.Bll.Logic
             }
             string key = user.Property.RoomId.ToString();
             RoomData roomData;
-            if (_roomStruct.TryGet(key, key, out roomData))
+            if (_roomStruct.TryGet(key, out roomData))
             {
                 TableData table;
                 if (roomData.Tables.TryGetValue(user.Property.TableId, out table))
@@ -125,7 +125,7 @@ namespace ZyGames.Doudizhu.Bll.Logic
         {
             string key = roomId.ToString();
             RoomData roomData;
-            if (_roomStruct.TryGet(key, key, out roomData))
+            if (_roomStruct.TryGet(key, out roomData))
             {
                 return roomData;
             }

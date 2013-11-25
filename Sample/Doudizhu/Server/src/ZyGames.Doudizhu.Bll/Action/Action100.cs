@@ -40,7 +40,7 @@ namespace ZyGames.Doudizhu.Bll.Action
             if (!string.IsNullOrEmpty(host) && !host.Equals(bindHost))
             {
                 UserConnection con;
-                if (_roomStruct.TryGet(host, host, out con))
+                if (_roomStruct.TryGet(host, out con))
                 {
                     var tempUser = new GameDataCacheSet<GameUser>().FindKey(Uid);
                     if (tempUser != null)
@@ -52,7 +52,7 @@ namespace ZyGames.Doudizhu.Bll.Action
                 }
                 else
                 {
-                    _roomStruct.TryAdd(host, host, new UserConnection() { UserId = UserId, LocalHost = host });
+                    _roomStruct.TryAdd(host, new UserConnection() { UserId = UserId, LocalHost = host });
                 }
                 if (ContextUser != null)
                 {

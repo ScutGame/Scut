@@ -72,7 +72,7 @@ namespace ZyGames.Doudizhu.Bll.Logic
         {
             string key = roomId.ToString();
             RoomData roomData;
-            if (_roomStruct.TryGet(key, key, out roomData))
+            if (_roomStruct.TryGet(key, out roomData))
             {
                 return roomData;
             }
