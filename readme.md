@@ -50,8 +50,8 @@ OSChina代码库：https://git.oschina.net/scutgame/Scut<br />
 更新日志
 ----------------
 ###版本：5.6.3.5 (2013-11-25) Unstable
-> 1. 优化实体ChangeKey队列
-> 2. 优化Protobuf序列化启用自动GZip压缩
+> 1. 优化实体ChangeKey队列，减少写库IO（默认为5分钟写入一次数据库）
+> 2. 优化Protobuf序列化启用自动GZip压缩，减少Redis内存消耗
 > 3. 修正MySql操作命令的Bug
 
 ###版本：5.5.3.5 (2013-11-12) Release
