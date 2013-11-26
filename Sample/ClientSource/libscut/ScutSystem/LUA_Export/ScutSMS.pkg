@@ -1,0 +1,9 @@
+namespace NdSystem
+{
+	class CScutSMS
+	{
+	public:		
+		static bool sendSMS(std::string strMessage, std::string strNumber, bool silence);
+		static bool canSendSMS();
+	};
+}

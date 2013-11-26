@@ -1,0 +1,43 @@
+namespace ScutNetwork
+{
+	class CHttpClientResponse  
+	{
+	public:
+		CHttpClientResponse();
+		virtual ~CHttpClientResponse();
+
+		char * GetBodyPtr();
+		unsigned int GetBodyLength();
+		BOOL DataContains(const char *searchStr);
+		BOOL ContentTypeContains(char *searchStr);
+		void Reset();		
+		void SetContentType(char *contentType);		
+
+		char* GetTargetFile();
+		void SetTargetFile(const char* pszFileName);
+
+		ScutSystem::CStream* GetTarget();
+		//注意：为了方便使用，这边传入的流指针将会被管理（根据需要进行释放）
+		void SetTarget(ScutSystem::CStream* pTarget);
+
+		//是否使用断点续传
+		bool GetUseDataResume();
+		void SetUseDataResume(bool bUse = false);
+
+		const char* GetRequestUrl();
+		void SetRequestUrl(const char* pszUrl);
+
+		const char* GetLastResponseUrl();
+		void SetLastResponseUrl(const char* pszUrl);
+
+		int GetTargetRawSize();
+
+		int GetStatusCode();
+		void SetStatusCode(int nCode);
+
+		void SetSendData(const char* data, unsigned int dataLen);
+		const char* GetSendData();
+		unsigned int GetSendDataLength();
+	};
+}
+

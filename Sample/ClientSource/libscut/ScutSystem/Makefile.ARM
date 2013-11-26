@@ -1,0 +1,101 @@
+
+############################################################################
+#
+#   Makefile for building : NdSystem_ARM.TMK3
+#   Created by TMK3_V2.3, please do not modify.
+#
+#############################################################################
+
+TO_PROJECT_ROOT = ../../PRJ_TG3
+OUTPUT_FILENAME = libNdSystem.a
+
+include $(TO_PROJECT_ROOT)/MakeInclude/Makefile_Base_StaticLib.ARM
+include $(TO_PROJECT_ROOT)/MakeInclude/Makefile_TOPS_Def.ARM
+
+DEFINES += -DLINUX -D_DEBUG -DNU_DEBUG -D_TRANZDA_VM_ -DSS_SHARED -DND_UPHONE
+
+INCLUDE_PATH += -I. -I./Res
+
+OBJECTS_DIR = ./Debug-ARM
+DESTDIR = $(TO_PROJECT_ROOT)/$(BIN_OUTPUT_DIR)
+TARGET = $(DESTDIR)/$(OUTPUT_FILENAME)
+
+DEL_FILE = rm -f
+MKDIR = mkdir -p
+
+first: all
+
+OBJECTS = \
+	$(OBJECTS_DIR)/Des91Priv.o \
+	$(OBJECTS_DIR)/Logger.o \
+	$(OBJECTS_DIR)/md5c.o \
+	$(OBJECTS_DIR)/NdString.o \
+	$(OBJECTS_DIR)/NdUtility.o \
+	$(OBJECTS_DIR)/PathUtility.o \
+	$(OBJECTS_DIR)/stdafx.o \
+	$(OBJECTS_DIR)/Stream.o \
+	$(OBJECTS_DIR)/unzip.o \
+	$(OBJECTS_DIR)/ZipUnZip.o \
+	$(OBJECTS_DIR)/AutoGuard.o \
+	$(OBJECTS_DIR)/WjcDes.o \
+	$(OBJECTS_DIR)/Markup.o
+
+ADD_OBJECTS += 
+
+$(OBJECTS_DIR) :
+	$(MKDIR) $(OBJECTS_DIR)
+
+$(DESTDIR) :
+	$(MKDIR) $(DESTDIR)
+
+all : $(OBJECTS_DIR) $(DESTDIR) $(TARGET)
+
+$(TARGET) : $(OBJECTS)
+	$(LINK) $(LINK_FLAGS) -o $(TARGET) $(SYS_OBJECTS) $(OBJECTS) $(ADD_OBJECTS) $(LIBS) $(SYS_LIBS)
+
+clean : 
+	-$(DEL_FILE) $(OBJECTS)
+	-$(DEL_FILE) $(TARGET)
+
+$(OBJECTS_DIR)/Des91Priv.o : ./Des91Priv.cpp
+	$(CXX) -c $(CXX_FLAGS) $(INCLUDE_PATH) $(LAST_INCLUDE_PATH) -o $(OBJECTS_DIR)/Des91Priv.o ./Des91Priv.cpp
+
+$(OBJECTS_DIR)/Logger.o : ./Logger.cpp
+	$(CXX) -c $(CXX_FLAGS) $(INCLUDE_PATH) $(LAST_INCLUDE_PATH) -o $(OBJECTS_DIR)/Logger.o ./Logger.cpp
+
+$(OBJECTS_DIR)/md5c.o : ./md5c.c
+	$(CC) -c $(CC_FLAGS) $(INCLUDE_PATH) $(LAST_INCLUDE_PATH) -o $(OBJECTS_DIR)/md5c.o ./md5c.c
+
+$(OBJECTS_DIR)/NdString.o : ./NdString.cpp
+	$(CXX) -c $(CXX_FLAGS) $(INCLUDE_PATH) $(LAST_INCLUDE_PATH) -o $(OBJECTS_DIR)/NdString.o ./NdString.cpp
+
+$(OBJECTS_DIR)/NdUtility.o : ./NdUtility.cpp
+	$(CXX) -c $(CXX_FLAGS) $(INCLUDE_PATH) $(LAST_INCLUDE_PATH) -o $(OBJECTS_DIR)/NdUtility.o ./NdUtility.cpp
+	
+$(OBJECTS_DIR)/PathUtility.o : ./PathUtility.cpp
+	$(CXX) -c $(CXX_FLAGS) $(INCLUDE_PATH) $(LAST_INCLUDE_PATH) -o $(OBJECTS_DIR)/PathUtility.o ./PathUtility.cpp	
+
+$(OBJECTS_DIR)/stdafx.o : ./stdafx.cpp
+	$(CXX) -c $(CXX_FLAGS) $(INCLUDE_PATH) $(LAST_INCLUDE_PATH) -o $(OBJECTS_DIR)/stdafx.o ./stdafx.cpp
+
+$(OBJECTS_DIR)/Stream.o : ./Stream.cpp
+	$(CXX) -c $(CXX_FLAGS) $(INCLUDE_PATH) $(LAST_INCLUDE_PATH) -o $(OBJECTS_DIR)/Stream.o ./Stream.cpp
+	
+$(OBJECTS_DIR)/unzip.o : ./unzip.cpp
+	$(CXX) -c $(CXX_FLAGS) $(INCLUDE_PATH) $(LAST_INCLUDE_PATH) -o $(OBJECTS_DIR)/unzip.o ./unzip.cpp
+
+$(OBJECTS_DIR)/ZipUnZip.o : ./ZipUnZip.cpp
+	$(CXX) -c $(CXX_FLAGS) $(INCLUDE_PATH) $(LAST_INCLUDE_PATH) -o $(OBJECTS_DIR)/ZipUnZip.o ./ZipUnZip.cpp	
+	
+$(OBJECTS_DIR)/AutoGuard.o : ./AutoGuard.cpp
+	$(CXX) -c $(CXX_FLAGS) $(INCLUDE_PATH) $(LAST_INCLUDE_PATH) -o $(OBJECTS_DIR)/AutoGuard.o ./AutoGuard.cpp	
+
+$(OBJECTS_DIR)/WjcDes.o : ./WjcDes.cpp
+	$(CXX) -c $(CXX_FLAGS) $(INCLUDE_PATH) $(LAST_INCLUDE_PATH) -o $(OBJECTS_DIR)/WjcDes.o ./WjcDes.cpp
+
+
+$(OBJECTS_DIR)/Markup.o : ./Markup/Markup.cpp
+	$(CXX) -c $(CXX_FLAGS) $(INCLUDE_PATH) $(LAST_INCLUDE_PATH) -o $(OBJECTS_DIR)/Markup.o ./Markup/Markup.cpp
+
+
+

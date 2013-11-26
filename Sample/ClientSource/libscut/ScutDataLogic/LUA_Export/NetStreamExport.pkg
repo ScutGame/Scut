@@ -1,0 +1,27 @@
+$#include "NetStreamExport.h"
+namespace ScutDataLogic 
+{
+	class CNetStreamExport{
+
+	public:
+	
+		bool recordBegin();
+		void recordEnd();
+
+	
+		unsigned char		getBYTE(void);
+		unsigned short		getWORD(void);
+		unsigned int		getDWORD(void);
+		int			getInt(void);
+		float			getFloat(void);
+		double			getDouble(void);
+
+		unsigned long long	getInt64();
+
+	};
+
+
+	
+}
+
+

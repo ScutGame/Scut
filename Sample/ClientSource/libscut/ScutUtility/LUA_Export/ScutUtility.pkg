@@ -1,0 +1,16 @@
+$#include"../ScutLocale.h"
+$#include"../ScutUtils.h"
+$#include"../ScutLuaLan.h"
+$#include"../ScutLanFactory.h"
+
+
+$#include <string>
+
+$pfile "ScutUtils.pkg"
+
+$pfile "ScutLocale.pkg"
+
+$pfile "ScutLuaLan.pkg"
+
+$pfile "ScutLanFactory.pkg"
+

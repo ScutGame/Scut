@@ -1,0 +1,32 @@
+
+namespace ScutNetwork
+{
+	class CTcpClient : public CNetClientBase
+	{
+	public:
+		CTcpClient();
+		virtual ~CTcpClient();		
+
+		int TcpGet(const char* host, const char* port, CHttpClientResponse &resp);
+		int TcpGet(const char* url, CHttpClientResponse &resp);
+
+		///////////////////////////////异步//////////////////////////
+
+		//由于异步处理，因此resp参数必须一直有效
+		int AsyncTcpGet(const char* host, const char* port, CHttpClientResponse* resp);
+		int AsyncTcpGet(const char* url, CHttpClientResponse* resp);
+
+		virtual int AsyncNetGet(const char* url, CHttpClientResponse* resp);
+
+		//重设状态
+		virtual void FullReset();
+		virtual void Reset();
+		CScutString GetHost();	
+		unsigned short GetPort();
+
+		static int GetUrlHost(const char *url, char *host);		
+
+		static int wait_on_socket(int sockfd, int for_recv, long timeout_ms);
+	};
+
+}

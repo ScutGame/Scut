@@ -1,0 +1,26 @@
+$#include"DataRequest.h"
+namespace ScutDataLogic
+{
+	 
+	enum ERequestError
+	{
+		reNetFailed,		 
+		reNetTimeOut,		 
+	};
+
+	 
+	class CDataRequest: public INetStatusNotify
+	{	 
+	public:
+		static CDataRequest* Instance();	 
+		//同步执行请求
+		bool ExecRequest(void* pScene);
+		//添加数据的处理者 目前默认是NdScene
+		DWORD AsyncExecRequest(void* pScene, const char* szUrl, int nTag, void* lpData);
+
+		DWORD AsyncExecTcpRequest(void* pScene, const char* szUrl, int nTag, void* lpData, const char* lpSendData, unsigned int nDataLen = 0);
+
+		void PeekLUAData();
+		bool LuaHandlePushDataWithInt( int p );
+	};
+}

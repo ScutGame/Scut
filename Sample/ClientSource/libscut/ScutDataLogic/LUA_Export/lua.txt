@@ -1,0 +1,2 @@
+说明进当前目录 运行如下命令
+tolua++.exe -tScutDataLogic -o LuaScutDataLogic.cpp ScutDataLogic.pkg

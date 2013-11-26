@@ -1,0 +1,2 @@
+将NdUitilityJni.java文件 放到com.nd.lib 包里
+在入口Activity中初始化时 调用 NdUitilityJni.init();
