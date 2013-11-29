@@ -1,4 +1,5 @@
 ﻿using System;
+using ZyGames.Doudizhu.Bll;
 using ZyGames.Framework.Game.Service;
 using ZyGames.Framework.Common;
 using ZyGames.Doudizhu.Lang;
@@ -7,8 +8,7 @@ using ZyGames.Framework.Net;
 using ZyGames.Framework.Game.Contract.Action;
 using ZyGames.Framework.Game.Cache;
 
-
-namespace ZyGames.Doudizhu.Bll.Action
+namespace ZyGames.Doudizhu.Script.Action
 {
 
     /// <summary>
@@ -16,7 +16,6 @@ namespace ZyGames.Doudizhu.Bll.Action
     /// </summary>
     public class Action1004 : LoginExtendAction
     {
-
         public Action1004(HttpGet httpGet)
             : base(ActionIDDefine.Cst_Action1004, httpGet)
         {

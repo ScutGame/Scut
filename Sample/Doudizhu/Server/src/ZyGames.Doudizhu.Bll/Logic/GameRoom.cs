@@ -110,6 +110,7 @@ namespace ZyGames.Doudizhu.Bll.Logic
                 if (roomData.Tables.TryGetValue(user.Property.TableId, out table))
                 {
                     GameTable.Current.ExitTablePosition(user, table);
+                    user.Property.RoomId = 0;
                     return true;
                 }
             }

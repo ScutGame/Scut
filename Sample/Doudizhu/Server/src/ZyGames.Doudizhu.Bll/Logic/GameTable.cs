@@ -6,9 +6,9 @@ using ZyGames.Framework.Cache.Generic;
 using ZyGames.Framework.Common;
 using ZyGames.Framework.Common.Log;
 using ZyGames.Framework.Game.Cache;
-using ZyGames.Framework.Game.Script;
 using ZyGames.Framework.Net;
 using ZyGames.Framework.Plugin.PythonScript;
+using ZyGames.Framework.Script;
 
 namespace ZyGames.Doudizhu.Bll.Logic
 {
@@ -184,8 +184,8 @@ namespace ZyGames.Doudizhu.Bll.Logic
                     if (!table.IsStarting)
                     {
                         //todo AI Join
-                        PythonContext context;
-                        if (PythonScriptManager.Current.TryLoadPython(@"Logic\cardAILogic.py", out context))
+                        dynamic scope = ScriptEngines.Execute("Logic/cardAILogic.py", null);
+                        if (scope != null)
                         {
                             HashSet<string> nickSet = new HashSet<string>();
                             foreach (var pos in table.Positions)
@@ -197,7 +197,7 @@ namespace ZyGames.Doudizhu.Bll.Logic
                                     string head = "head_1001";
                                     try
                                     {
-                                        var nameList = context.Scope.AIConfig.getConfig("nickName");
+                                        var nameList = scope.AIConfig.getConfig("nickName");
                                         if (nameList != null && nameList.Count > 0)
                                         {
                                             for (int i = 0; i < 5; i++)
@@ -211,7 +211,7 @@ namespace ZyGames.Doudizhu.Bll.Logic
                                                 }
                                             }
                                         }
-                                        var headList = context.Scope.AIConfig.getConfig("head");
+                                        var headList = scope.AIConfig.getConfig("head");
                                         if (headList != null && headList.Count > 0)
                                         {
                                             int index = RandomUtils.GetRandom(0, headList.Count);
@@ -221,7 +221,7 @@ namespace ZyGames.Doudizhu.Bll.Logic
                                     catch (Exception ex)
                                     {
                                         TraceLog.WriteError("AI get nickname error:{0}", ex.ToString());
-                                        Console.WriteLine(ex.Message);
+                                        //Console.WriteLine(ex.Message);
                                     }
                                     pos.InitAI(table.RoomId, table.TableId, aiId, nickName, head);
                                 }
@@ -248,21 +248,22 @@ namespace ZyGames.Doudizhu.Bll.Logic
                         }
                         if (pos != null && pos.IsAI)
                         {
-                            Console.WriteLine("Table:{0} is ai", table.TableId);
-                            PythonContext context;
-                            if (PythonScriptManager.Current.TryLoadPython(@"Logic\cardAILogic.py", out context))
+                            //Console.WriteLine("Table:{0} is ai", table.TableId);
+
+                            dynamic scope = ScriptEngines.Execute("Logic/cardAILogic.py", null);
+                            if (scope != null)
                             {
                                 bool iscall = false;
                                 try
                                 {
-                                    var myClass = context.GetVariable<Func<int, int, int, dynamic>>("CardAILogic");
+                                    var myClass = scope.GetVariable<Func<int, int, int, dynamic>>("CardAILogic");
                                     var myInstance = myClass(table.RoomId, table.TableId, pos.Id);
                                     iscall = (bool)myInstance.checkCall();
                                 }
                                 catch (Exception e)
                                 {
                                     TraceLog.WriteError("桌子:{0}Timer error:{1}", table.TableId, e.ToString());
-                                    Console.WriteLine("Table:{0} is error:{1}", table.TableId, e.ToString());
+                                    //Console.WriteLine("Table:{0} is error:{1}", table.TableId, e.ToString());
                                 }
                                 CallCard(pos.Id, table, iscall);
                                 table.ReStartTimer(outcardPeroid);
@@ -283,10 +284,10 @@ namespace ZyGames.Doudizhu.Bll.Logic
                         {
                             try
                             {
-                                PythonContext context;
-                                if (PythonScriptManager.Current.TryLoadPython(@"Logic\cardAILogic.py", out context))
+                                dynamic scope = ScriptEngines.Execute("Logic/cardAILogic.py", null);
+                                if (scope != null)
                                 {
-                                    var myClass = context.GetVariable<Func<int, int, int, dynamic>>("CardAILogic");
+                                    var myClass = scope.GetVariable<Func<int, int, int, dynamic>>("CardAILogic");
                                     var myInstance = myClass(table.RoomId, table.TableId, pos.Id);
                                     var outList = (IronPython.Runtime.List)myInstance.searchOutCard();
                                     string cards = string.Empty;
@@ -313,8 +314,8 @@ namespace ZyGames.Doudizhu.Bll.Logic
                             }
                             catch (Exception e)
                             {
-                                TraceLog.WriteError("Timer error:{0}", e.ToString());
-                                Console.WriteLine("Table:{0} is error:{1}", table.TableId, e.ToString());
+                                TraceLog.WriteError("Table:{0} is error:{1}", table.TableId, e);
+                                //Console.WriteLine("Table:{0} is error:{1}", table.TableId, e.ToString());
                                 //出错过牌
                                 OutCard(pos.UserId, pos.Id, table, "");
                                 table.ReStartTimer(outcardPeroid);
@@ -711,7 +712,7 @@ namespace ZyGames.Doudizhu.Bll.Logic
                 SyncNotifyAction(ActionIDDefine.Cst_Action2013, tableData, param,
                     c =>
                     {
-                        Console.WriteLine("Table:{0} is stop", tableData.TableId);
+                        //Console.WriteLine("Table:{0} is stop", tableData.TableId);
                         DoComplatedSettlement(tableData);
                         TraceLog.WriteError("桌子{0}多次连续不出牌并强制退出桌位", tableData.TableId);
                     });
@@ -845,7 +846,7 @@ namespace ZyGames.Doudizhu.Bll.Logic
                 tableData.Init();
                 if (roomData.Tables.Remove(tableData.TableId))
                 {
-                    Console.WriteLine("Table:{0} is init", tableData.TableId);
+                    //Console.WriteLine("Table:{0} is init", tableData.TableId);
                     int minTableCount = ConfigEnvSet.GetInt("Game.Table.MinTableCount", 10);
                     if (roomData.TablePool.Count < minTableCount)
                     {

@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -51,61 +51,64 @@
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
     <Reference Include="Mono.Cecil">
-      <HintPath>..\..\..\..\..\Release\5.6.3.5\Lib\Mono.Cecil.dll</HintPath>
+      <HintPath>..\..\..\..\..\Release\6.0.5.0\Lib\Mono.Cecil.dll</HintPath>
     </Reference>
     <Reference Include="MySql.Data">
-      <HintPath>..\..\..\..\..\Release\5.6.3.5\Lib\MySql.Data.dll</HintPath>
+      <HintPath>..\..\..\..\..\Release\6.0.5.0\Lib\MySql.Data.dll</HintPath>
     </Reference>
     <Reference Include="Newtonsoft.Json">
-      <HintPath>..\..\..\..\..\Release\5.6.3.5\Lib\Newtonsoft.Json.dll</HintPath>
+      <HintPath>..\..\..\..\..\Release\6.0.5.0\Lib\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="NLog">
-      <HintPath>..\..\..\..\..\Release\5.6.3.5\Lib\NLog.dll</HintPath>
+      <HintPath>..\..\..\..\..\Release\6.0.5.0\Lib\NLog.dll</HintPath>
     </Reference>
     <Reference Include="protobuf-net">
-      <HintPath>..\..\..\..\..\Release\5.6.3.5\Lib\protobuf-net.dll</HintPath>
+      <HintPath>..\..\..\..\..\Release\6.0.5.0\Lib\protobuf-net.dll</HintPath>
     </Reference>
     <Reference Include="ServiceStack.Common">
-      <HintPath>..\..\..\..\..\Release\5.6.3.5\Lib\ServiceStack.Common.dll</HintPath>
+      <HintPath>..\..\..\..\..\Release\6.0.5.0\Lib\ServiceStack.Common.dll</HintPath>
     </Reference>
     <Reference Include="ServiceStack">
-      <HintPath>..\..\..\..\..\Release\5.6.3.5\Lib\ServiceStack.dll</HintPath>
+      <HintPath>..\..\..\..\..\Release\6.0.5.0\Lib\ServiceStack.dll</HintPath>
     </Reference>
     <Reference Include="ServiceStack.Interfaces">
-      <HintPath>..\..\..\..\..\Release\5.6.3.5\Lib\ServiceStack.Interfaces.dll</HintPath>
+      <HintPath>..\..\..\..\..\Release\6.0.5.0\Lib\ServiceStack.Interfaces.dll</HintPath>
     </Reference>
     <Reference Include="ServiceStack.Redis">
-      <HintPath>..\..\..\..\..\Release\5.6.3.5\Lib\ServiceStack.Redis.dll</HintPath>
+      <HintPath>..\..\..\..\..\Release\6.0.5.0\Lib\ServiceStack.Redis.dll</HintPath>
     </Reference>
     <Reference Include="ZyGames.Framework.Common">
-      <HintPath>..\..\..\..\..\Release\5.6.3.5\Lib\ZyGames.Framework.Common.dll</HintPath>
+      <HintPath>..\..\..\..\..\Release\6.0.5.0\Lib\ZyGames.Framework.Common.dll</HintPath>
     </Reference>
     <Reference Include="ZyGames.Framework">
-      <HintPath>..\..\..\..\..\Release\5.6.3.5\Lib\ZyGames.Framework.dll</HintPath>
+      <HintPath>..\..\..\..\..\Release\6.0.5.0\Lib\ZyGames.Framework.dll</HintPath>
     </Reference>
     <Reference Include="ZyGames.Framework.Game">
-      <HintPath>..\..\..\..\..\Release\5.6.3.5\Lib\ZyGames.Framework.Game.dll</HintPath>
+      <HintPath>..\..\..\..\..\Release\6.0.5.0\Lib\ZyGames.Framework.Game.dll</HintPath>
     </Reference>
     <Reference Include="IronPython">
-      <HintPath>..\..\..\..\..\Release\5.6.3.5\Lib\IronPython.dll</HintPath>
+      <HintPath>..\..\..\..\..\Release\6.0.5.0\Lib\IronPython.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="IronPython.Modules">
-      <HintPath>..\..\..\..\..\Release\5.6.3.5\Lib\IronPython.Modules.dll</HintPath>
+      <HintPath>..\..\..\..\..\Release\6.0.5.0\Lib\IronPython.Modules.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Microsoft.Dynamic">
-      <HintPath>..\..\..\..\..\Release\5.6.3.5\Lib\Microsoft.Dynamic.dll</HintPath>
+      <HintPath>..\..\..\..\..\Release\6.0.5.0\Lib\Microsoft.Dynamic.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Microsoft.Scripting">
-      <HintPath>..\..\..\..\..\Release\5.6.3.5\Lib\Microsoft.Scripting.dll</HintPath>
+      <HintPath>..\..\..\..\..\Release\6.0.5.0\Lib\Microsoft.Scripting.dll</HintPath>
       <Private>True</Private>
     </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <EmbeddedResource Include="Script\Action\Action1004.cs">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config">
@@ -140,6 +143,10 @@
     <ProjectReference Include="..\ZyGames.Doudizhu.Bll\ZyGames.Doudizhu.Bll.csproj">
       <Project>{0EDF246F-C17C-4501-903A-8BB025A8E0EF}</Project>
       <Name>ZyGames.Doudizhu.Bll</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\ZyGames.Doudizhu.Lang\ZyGames.Doudizhu.Lang.csproj">
+      <Project>{DB05C1ED-B8EC-40B8-B6A3-BAC98EE97B57}</Project>
+      <Name>ZyGames.Doudizhu.Lang</Name>
     </ProjectReference>
     <ProjectReference Include="..\ZyGames.Doudizhu.Model\ZyGames.Doudizhu.Model.csproj">
       <Project>{32E54E6F-31E4-405B-A6AB-25E5A5A04F3A}</Project>

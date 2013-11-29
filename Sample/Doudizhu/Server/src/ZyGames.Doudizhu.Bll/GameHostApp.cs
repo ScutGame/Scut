@@ -1,33 +1,20 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Data.SqlClient;
-using System.Linq;
 using System.Reflection;
-using System.Text;
-using System.Web.Caching;
 using ZyGames.Doudizhu.Bll.Base;
-using ZyGames.Doudizhu.Bll.Com.Chat;
-using ZyGames.Doudizhu.Bll.Logic;
-using ZyGames.Doudizhu.Lang;
 using ZyGames.Doudizhu.Model;
-using ZyGames.Framework.Cache.Generic;
 using ZyGames.Framework.Common;
 using ZyGames.Framework.Common.Configuration;
 using ZyGames.Framework.Common.Log;
-using ZyGames.Framework.Common.Serialization;
-using ZyGames.Framework.Common.Timing;
 using ZyGames.Framework.Data;
-using ZyGames.Framework.Data.Sql;
 using ZyGames.Framework.Game.Cache;
 using ZyGames.Framework.Game.Com.Rank;
 using ZyGames.Framework.Game.Contract;
 using ZyGames.Framework.Game.Runtime;
-using ZyGames.Framework.Game.Script;
 using ZyGames.Framework.Game.Service;
-using ZyGames.Framework.Plugin.PythonScript;
-using ZyGames.Framework.RPC.IO;
 using ZyGames.Framework.RPC.Sockets;
+using ZyGames.Framework.Script;
 
 namespace ZyGames.Doudizhu.Bll
 {
@@ -59,7 +46,7 @@ namespace ZyGames.Doudizhu.Bll
         {
             try
             {
-                var actionId = httpGet.GetString("ActionID").ToInt();
+                var actionId = httpGet.ActionId;
                 var uid = httpGet.GetString("uid");
                 Console.WriteLine("Action{0} from {1} {2}", actionId, httpGet.RemoteAddress, uid);
                 ActionFactory.Request(httpGet, response, userId => new GameDataCacheSet<GameUser>().FindKey(userId.ToNotNullString()));
@@ -83,15 +70,16 @@ namespace ZyGames.Doudizhu.Bll
                 var assembly = Assembly.Load("ZyGames.Doudizhu.Model");
                 GameEnvironment.Start(cacheInterval, () =>
                 {
-                    PythonContext pythonContext;
-                    PythonScriptManager.Current.TryLoadPython(@"Lib/action.py", out pythonContext);
-                    PythonScriptManager.Current.TryLoadPython(@"Lib/lang.py", out pythonContext);
-                    PythonScriptManager.Current.TryLoadPython(@"Logic/cardAILogic.py", out pythonContext);
+                    ScriptEngines.AddReferencedAssembly(new string[] {
+                        "ZyGames.Doudizhu.Lang.dll",
+                        "ZyGames.Doudizhu.Model.dll",
+                        "ZyGames.Doudizhu.Bll.dll"
+                    });
+                    ActionFactory.SetActionIgnoreAuthorize(1012);
+                    ActionFactory.SetActionIgnoreAuthorize(9001);
+                    ActionFactory.SetActionIgnoreAuthorize(9203);
 
                     AppstoreClientManager.Current.InitConfig();
-                    RouteItem routeItem;
-                    PythonScriptManager.Current.TryGetAction(1008, out routeItem);
-                    PythonScriptManager.Current.TryGetAction(9202, out routeItem);
                     LoadUnlineUser();
                     InitRanking();
 
@@ -108,6 +96,13 @@ namespace ZyGames.Doudizhu.Bll
                     return true;
                 }, 600, assembly);
 
+                //HttpGet httpGet = new HttpGet("d=", "11", "127.0.0.1");
+                //var script = (CSharpFileInfo)ScriptEngines.LoadScript("action1004.cs");
+                //var scriptType = script.Assembly.GetType("ZyGames.Doudizhu.Script.Action.Action1004", false, true);
+                //if (scriptType.CreateInstance<BaseStruct>(httpGet) == null)
+                //{
+
+                //}
                 //todo test
                 //CacheFactory.RemoveToDatabase("ZyGames.Doudizhu.Model.UserNickName_1380003");
                 //UserNickName u = new ShareCacheStruct<UserNickName>().FindKey(1380003);

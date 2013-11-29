@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -44,16 +44,14 @@
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
     <Reference Include="ZyGames.Framework.Common">
-      <HintPath>..\..\..\..\..\Release\5.6.3.5\Lib\ZyGames.Framework.Common.dll</HintPath>
+      <HintPath>..\..\..\..\..\Release\6.0.5.0\Lib\ZyGames.Framework.Common.dll</HintPath>
     </Reference>
     <Reference Include="ZyGames.Framework.Game">
-      <HintPath>..\..\..\..\..\Release\5.6.3.5\Lib\ZyGames.Framework.Game.dll</HintPath>
+      <HintPath>..\..\..\..\..\Release\6.0.5.0\Lib\ZyGames.Framework.Game.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="GameZhLanguage.cs">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Compile>
+    <Compile Include="GameZhLanguage.cs" />
     <Compile Include="IGameLanguage.cs" />
     <Compile Include="LanguageManager.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
