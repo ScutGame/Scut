@@ -36,7 +36,7 @@ namespace ZyGames.Doudizhu.Model
         /// <summary>
         /// 成就状态
         /// </summary>
-        [ProtoMember(1)]
+        [ProtoMember(2)]
         public TaskStatus TaskStatus
         {
             get { return _TaskStatus; }

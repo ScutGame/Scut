@@ -169,7 +169,7 @@ namespace ZyGames.Doudizhu.Model
         /// <summary>
         /// 
         /// </summary>
-        [ProtoMember(8)]
+        [ProtoMember(9)]
         [EntityField("NoticeType")]
         public int NoticeType
         {
