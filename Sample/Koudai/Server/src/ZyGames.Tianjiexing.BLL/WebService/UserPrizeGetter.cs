@@ -28,6 +28,7 @@ using System.Data.SqlClient;
 
 using ZyGames.Framework.Collection;
 using ZyGames.Framework.Common;
+using ZyGames.Framework.Data;
 using ZyGames.Framework.Data.Sql;
 using ZyGames.Tianjiexing.Model;
 
@@ -41,9 +42,17 @@ namespace ZyGames.Tianjiexing.BLL.WebService
 
         public override object GetData(JsonParameter[] paramList)
         {
+            var dbProvider = DbConnectionProvider.CreateDbProvider(DbConfig.Data);
+            var filter = dbProvider.CreateCommandFilter();
+            //command.Columns = "count(ID)";
+            //command.Filter = dbProvider.CreateCommandFilter();
+            //command.Filter.Condition = condition;
+            //command.Filter.AddParam("NickName", name);
+            //command.Parser();
+
             int pageIndex = 0;
             int pageSize = 0;
-            string condition = "Where 1=1";
+            //string condition = "Where 1=1";
             List<SqlParameter> paramValues = new List<SqlParameter>();
             foreach (JsonParameter param in paramList)
             {
@@ -59,27 +68,27 @@ namespace ZyGames.Tianjiexing.BLL.WebService
                 }
                 else if (param.Key == "fromDate")
                 {
-                    condition += string.Format(" and CreateDate >= @{0}", param.Key);
-                    paramValues.Add(SqlParamHelper.MakeInParam("@" + param.Key, SqlDbType.DateTime, 0, Convert.ToDateTime(param.Value)));
+                    filter.Condition += " AND " + filter.FormatExpression("CreateDate", ">=", param.Key);
+                    filter.AddParam(param.Key, Convert.ToDateTime(param.Value));
                 }
                 else if (param.Key == "toDate")
                 {
-                    condition += string.Format(" and CreateDate <= @{0}", param.Key);
+                    filter.Condition += " AND " + filter.FormatExpression("CreateDate", "<=", param.Key);
                     if (param.Value.Length <= 10)
                     {
                         param.Value += " 23:59:59";
                     }
-                    paramValues.Add(SqlParamHelper.MakeInParam("@" + param.Key, SqlDbType.DateTime, 0, Convert.ToDateTime(param.Value)));
+                    filter.AddParam(param.Key, Convert.ToDateTime(param.Value));
                 }
                 else if (param.Key == "IsTasked")
                 {
-                    condition += string.Format(" and IsTasked = @{0}", param.Key);
-                    paramValues.Add(SqlParamHelper.MakeInParam("@" + param.Key, SqlDbType.Bit, 0, param.Value.ToBool()));
+                    filter.Condition += " AND " + filter.FormatExpression("IsTasked");
+                    filter.AddParam("IsTasked", param.Value.ToBool());
                 }
                 else if (param.Key == "UserID" && !string.IsNullOrEmpty(param.Value))
                 {
-                    condition += string.Format(" and UserID = @{0}", param.Key);
-                    paramValues.Add(SqlParamHelper.MakeInParam("@" + param.Key, SqlDbType.VarChar, 0, Convert.ToString(param.Value)));
+                    filter.Condition += " AND " + filter.FormatExpression("UserID");
+                    filter.AddParam("UserID", Convert.ToString(param.Value));
                 }
             }
 
@@ -87,13 +96,15 @@ namespace ZyGames.Tianjiexing.BLL.WebService
             pageIndex = pageIndex < 1 ? 1 : pageIndex;
             int statIndex = (pageIndex - 1) * pageSize;
             int endIndex = pageIndex * pageSize;
-            paramValues.Add(SqlParamHelper.MakeInParam("@statIndex", SqlDbType.Int, 0, statIndex));
-            paramValues.Add(SqlParamHelper.MakeInParam("@endIndex", SqlDbType.Int, 0, endIndex));
 
-            int pageCount = 0;
+            var command = dbProvider.CreateCommandStruct("UserTakePrize", CommandMode.Inquiry);
+            command.Columns = "COUNT(ID)";
+            command.Filter = filter;
+            command.Parser();
+            int pageCount = dbProvider.ExecuteScalar(CommandType.Text,command.Sql, command.Parameters).ToInt();
 
             JsonGrid jsonGrid = new JsonGrid();
-            jsonGrid.rows = GetUserPrizeList(condition, out pageCount, paramValues.ToArray());
+            jsonGrid.rows = GetUserPrizeList(dbProvider, filter, statIndex, endIndex);
             jsonGrid.total = pageCount;
             return jsonGrid;
         }
@@ -102,13 +113,18 @@ namespace ZyGames.Tianjiexing.BLL.WebService
         /// 获取所有
         /// </summary>
         /// <returns></returns>
-        private static DataTable GetUserPrizeList(string condition, out int pageCount, SqlParameter[] parameters)
+        private static DataTable GetUserPrizeList(DbBaseProvider dbProvider, CommandFilter condition, int statIndex, int endIndex)
         {
-            string sql = "SELECT count([ID]) FROM [dbo].[UserTakePrize] " + condition;
-            pageCount = Convert.ToInt32(SqlHelper.ExecuteScalar(DbConfig.DataConnectString, CommandType.Text, sql, parameters));
-            sql = "SELECT * FROM (SELECT row_number()over(order by [ID] desc) as RowNumber,[ID],[UserID],[ObtainNum],[EnergyNum],[GameCoin],[Gold],[ExpNum],[VipLv],[GainBlessing],[ItemPackage],[CrystalPackage],[SparePackage],[EnchantPackage],[MailContent],[IsTasked],[TaskDate],[OpUserID],[CreateDate],[HonourNum],[Items] from [UserTakePrize] " + condition + ") temp where RowNumber > @statIndex and RowNumber<=@endIndex";
+            var command = dbProvider.CreateCommandStruct("UserTakePrize", CommandMode.Inquiry);
+            command.Columns = "ID,UserID,ObtainNum,EnergyNum,GameCoin,Gold,ExpNum,VipLv,GainBlessing,ItemPackage,CrystalPackage,SparePackage,EnchantPackage,MailContent,IsTasked,TaskDate,OpUserID,CreateDate,HonourNum,Items";
+            command.FromIndex = statIndex;
+            command.ToIndex = endIndex;
+            command.OrderBy = "ID DESC";
+            command.Filter = condition;
+            command.Parser();
+
             DataTable dt = new DataTable();
-            using (SqlDataReader reader = SqlHelper.ExecuteReader(DbConfig.DataConnectString, CommandType.Text, sql, parameters))
+            using (var reader = dbProvider.ExecuteReader(CommandType.Text, command.Sql, command.Parameters))
             {
                 DataColumn col;
                 DataRow row;

@@ -35,6 +35,7 @@ using System.Data.SqlClient;
 using System.Runtime.Serialization;
 using ProtoBuf;
 using ZyGames.Framework.Common.Log;
+using ZyGames.Framework.Data;
 using ZyGames.Framework.Data.Sql;
 using ZyGames.Framework.Game.Cache;
 using ZyGames.Framework.Cache;
@@ -1736,10 +1737,14 @@ namespace ZyGames.Tianjiexing.Model
             bl = new GameDataCacheSet<GameUser>().IsExist(u => u.NickName.ToLower() == name.ToLower().Trim());
             if (!bl)
             {
-                List<SqlParameter> paramValues = new List<SqlParameter>();
-                string sql = "SELECT NickName FROM GameUser WHERE NickName = @NickName";
-                paramValues.Add(SqlParamHelper.MakeInParam("@NickName", SqlDbType.VarChar, 0, name));
-                using (SqlDataReader reader = SqlHelper.ExecuteReader(DbConfig.DataConnectString, CommandType.Text, sql, paramValues.ToArray()))
+                var dbProvider = DbConnectionProvider.CreateDbProvider(DbConfig.Data);
+
+                var command = dbProvider.CreateCommandStruct("GameUser", CommandMode.Inquiry, "NickName");
+                command.Filter = dbProvider.CreateCommandFilter();
+                command.Filter.Condition = command.Filter.FormatExpression("NickName");
+                command.Filter.AddParam("NickName", name);
+                command.Parser();
+                using (var reader = dbProvider.ExecuteReader(CommandType.Text, command.Sql, command.Parameters))
                 {
                     while (reader.Read())
                     {

@@ -75,9 +75,7 @@ namespace ZyGames.Doudizhu.Bll
                         "ZyGames.Doudizhu.Model.dll",
                         "ZyGames.Doudizhu.Bll.dll"
                     });
-                    ActionFactory.SetActionIgnoreAuthorize(1012);
-                    ActionFactory.SetActionIgnoreAuthorize(9001);
-                    ActionFactory.SetActionIgnoreAuthorize(9203);
+                    ActionFactory.SetActionIgnoreAuthorize(1012, 9001, 9203);
 
                     AppstoreClientManager.Current.InitConfig();
                     LoadUnlineUser();

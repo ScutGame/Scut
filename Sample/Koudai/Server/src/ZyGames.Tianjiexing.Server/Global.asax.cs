@@ -23,10 +23,10 @@ THE SOFTWARE.
 ****************************************************************************/
 using System;
 using System.Reflection;
-using ZyGames.Framework.Cache;
+using ZyGames.Framework.Common.Log;
+using ZyGames.Framework.Game.Contract;
 using ZyGames.Framework.Game.Runtime;
-using ZyGames.Framework.Game.Script;
-using ZyGames.Framework.Plugin.PythonScript;
+using ZyGames.Framework.Script;
 using ZyGames.Tianjiexing.BLL.Base;
 
 namespace ZyGames.Tianjiexing.Service
@@ -36,39 +36,38 @@ namespace ZyGames.Tianjiexing.Service
 
         protected void Application_Start(object sender, EventArgs e)
         {
-            BaseLog log = null;
             try
             {
                 GameEnvironment.ClientDesDeKey = "j6=9=1ac";
-                log = new BaseLog();
                 int cacheInterval = 600;
                 var assembly = Assembly.Load("ZyGames.Tianjiexing.Model");
                 GameEnvironment.Start(cacheInterval, () =>
                 {
                     SystemGlobal.Run();
-                    log.SaveLog(PythonScriptManager.Current.PythonRootPath);
-                    PythonContext pythonContext;
-                    PythonScriptManager.Current.TryLoadPython(@"Lib/action.py", out pythonContext);
-                    RouteItem routeItem;
-                    PythonScriptManager.Current.TryGetAction(1008, out routeItem);
+
+                    ScriptEngines.AddReferencedAssembly(new string[] {
+                        "ZyGames.Tianjiexing.Lang.dll",
+                        "ZyGames.Tianjiexing.Model.dll",
+                        "ZyGames.Tianjiexing.Component.dll",
+                        "ZyGames.Tianjiexing.BLL.Combat.dll",
+                        "ZyGames.Tianjiexing.BLL.GM.dll",
+                        "ZyGames.Tianjiexing.BLL.dll"
+                    });
+
+                    //ActionFactory.SetActionIgnoreAuthorize(404);
+
                     return true;
                 }, 600, assembly);
 
-                if (log != null)
-                {
 #if(DEBUG)
-                    log.SaveLog(new Exception("系统正使用Debug版本"));
+                TraceLog.WriteError("系统正使用Debug版本");
 #else
-                    log.SaveLog("系统正使用Release版本");
+                TraceLog.ReleaseWrite("系统正使用Release版本");
 #endif
-                }
             }
             catch (Exception ex)
             {
-                if (log != null)
-                {
-                    log.SaveLog(ex);
-                }
+                TraceLog.WriteError("global start error:{0}",ex);
             }
 
 

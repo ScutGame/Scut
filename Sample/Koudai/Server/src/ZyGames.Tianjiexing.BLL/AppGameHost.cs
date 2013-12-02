@@ -28,12 +28,11 @@ using ZyGames.Framework.Common.Log;
 using ZyGames.Framework.Game.Cache;
 using ZyGames.Framework.Game.Contract;
 using ZyGames.Framework.Game.Runtime;
-using ZyGames.Framework.Game.Script;
 using ZyGames.Framework.Game.Service;
 using ZyGames.Framework.Plugin.PythonScript;
+using ZyGames.Framework.Script;
 using ZyGames.Tianjiexing.BLL.Base;
 using ZyGames.Tianjiexing.Model;
-using ZyGames.Framework.Common.Log;
 using ZyGames.Framework.RPC.Sockets;
 
 namespace ZyGames.Tianjiexing.BLL
@@ -68,10 +67,17 @@ namespace ZyGames.Tianjiexing.BLL
                 GameEnvironment.Start(cacheInterval, () =>
                 {
                     SystemGlobal.Run();
-                    PythonContext pythonContext;
-                    PythonScriptManager.Current.TryLoadPython(@"Lib/action.py", out pythonContext);
-                    RouteItem routeItem;
-                    PythonScriptManager.Current.TryGetAction(1008, out routeItem);
+
+                    ScriptEngines.AddReferencedAssembly(new string[] {
+                        "ZyGames.Tianjiexing.Lang.dll",
+                        "ZyGames.Tianjiexing.Model.dll",
+                        "ZyGames.Tianjiexing.Component.dll",
+                        "ZyGames.Tianjiexing.BLL.Combat.dll",
+                        "ZyGames.Tianjiexing.BLL.GM.dll",
+                        "ZyGames.Tianjiexing.BLL.dll"
+                    });
+
+                    //ActionFactory.SetActionIgnoreAuthorize(404);
                     return true;
                 });
 

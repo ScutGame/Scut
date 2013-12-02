@@ -4288,11 +4288,11 @@
             The error code.
             </summary>
         </member>
-        <member name="M:ZyGames.Framework.Game.Contract.ActionFactory.SetActionIgnoreAuthorize(System.Int32)">
+        <member name="M:ZyGames.Framework.Game.Contract.ActionFactory.SetActionIgnoreAuthorize(System.Int32[])">
             <summary>
             设置忽略认证Action
             </summary>
-            <param name="actionId"></param>
+            <param name="actionIds"></param>
         </member>
         <member name="M:ZyGames.Framework.Game.Contract.ActionFactory.GetLocalIp">
             <summary>
@@ -4683,6 +4683,11 @@
             Gets or sets the SS identifier.
             </summary>
             <value>The SS identifier.</value>
+        </member>
+        <member name="P:ZyGames.Framework.Game.Contract.GameSession.Connected">
+            <summary>
+            是否已连接
+            </summary>
         </member>
         <member name="T:ZyGames.Framework.Game.Contract.Action.RegisterAction">
             <summary>

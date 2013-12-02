@@ -141,13 +141,17 @@ namespace ZyGames.Tianjiexing.BLL.Base
 
         public static List<string> GetLoadUser(int days, int maxCount)
         {
-            List<string> userList = new List<string>();
-            string sql = string.Format("SELECT top {0} [UserID] FROM GameUser where LoginTime>@loginTime order by LoginTime desc", maxCount);
-            IDataParameter[] para = new SqlParameter[]{
-                SqlParamHelper.MakeInParam("@loginTime", SqlDbType.DateTime,0, DateTime.Now.AddDays(-days))
-             };
             var dbProvider = DbConnectionProvider.CreateDbProvider(DbConfig.Data);
-            using (IDataReader reader = dbProvider.ExecuteReader(CommandType.Text, sql, para))
+
+            var command = dbProvider.CreateCommandStruct("GameUser", CommandMode.Inquiry, "UserID");
+            command.OrderBy = "LoginTime desc";
+            command.Filter = dbProvider.CreateCommandFilter();
+            command.Filter.Condition = command.Filter.FormatExpression("LoginTime", ">");
+            command.Filter.AddParam("LoginTime", DateTime.Now.AddDays(-days));
+            command.Parser();
+
+            List<string> userList = new List<string>();
+            using (IDataReader reader = dbProvider.ExecuteReader(CommandType.Text, command.Sql, command.Parameters))
             {
                 while (reader.Read())
                 {

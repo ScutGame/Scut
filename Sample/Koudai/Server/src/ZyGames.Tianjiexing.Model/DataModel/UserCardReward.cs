@@ -53,7 +53,7 @@ namespace ZyGames.Tianjiexing.Model.DataModel
 
         public int _ID;
         [ProtoMember(1)]
-        [EntityField("ID", IsIdentity = true)]
+        [EntityField("ID", IsKey = true, IsIdentity = true)]
         public int ID
         {
             get { return _ID; }
@@ -65,7 +65,7 @@ namespace ZyGames.Tianjiexing.Model.DataModel
         /// 用户ID
         /// </summary>
         [ProtoMember(2)]
-        [EntityField("UserID", IsKey = true)]
+        [EntityField("UserID")]
         public string UserID
         {
             get { return _UserID; }
@@ -77,7 +77,7 @@ namespace ZyGames.Tianjiexing.Model.DataModel
         ///  拉新卡用户ID
         /// </summary>
         [ProtoMember(3)]
-        [EntityField("CardUserID", IsKey = true)]
+        [EntityField("CardUserID")]
         public string CardUserID
         {
             get { return _CardUserID; }
@@ -89,7 +89,7 @@ namespace ZyGames.Tianjiexing.Model.DataModel
         /// 新手等级
         /// </summary>
         [ProtoMember(4)]
-        [EntityField("UserLv", IsKey = true)]
+        [EntityField("UserLv")]
         public Int16 UserLv
         {
             get { return _UserLv; }

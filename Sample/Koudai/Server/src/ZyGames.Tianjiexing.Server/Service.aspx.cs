@@ -53,7 +53,7 @@ namespace ZyGames.Tianjiexing.Service
             }
             catch (Exception ex)
             {
-                new BaseLog().SaveLog(ex);
+                TraceLog.WriteError("Service error:{0}", ex);
             }
         }
     }
