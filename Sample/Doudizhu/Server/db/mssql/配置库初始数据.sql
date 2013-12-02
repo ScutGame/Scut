@@ -99,7 +99,7 @@ CREATE TABLE [dbo].[ShopInfo](
 	[ShopID] [int] NOT NULL,
 	[ShopName] [varchar](20) NOT NULL,
 	[HeadID] [varchar](100) NULL,
-	[ShopType] [smallint] NOT NULL,
+	[ShopType] [int] NOT NULL,
 	[SeqNO] [smallint] NOT NULL,
 	[Price] [int] NOT NULL,
 	[VipPrice] [int] NOT NULL,
@@ -140,7 +140,7 @@ BEGIN
 CREATE TABLE [dbo].[TaskInfo](
 	[TaskID] [int] NOT NULL,
 	[TaskName] [varchar](50) NOT NULL,
-	[TaskType] [smallint] NOT NULL,
+	[TaskType] [int] NOT NULL,
 	[TaskClass] [smallint] NOT NULL,
 	[RestraintNum] [int] NOT NULL,
 	[AchieveID] [int] NOT NULL,
@@ -162,7 +162,7 @@ BEGIN
 CREATE TABLE [dbo].[PokerInfo](
 	[Id] [int] NOT NULL,
 	[Name] [varchar](20) NOT NULL,
-	[Color] [smallint] NOT NULL,
+	[Color] [int] NOT NULL,
 	[Value] [smallint] NOT NULL,
 	[HeadIcon] [varchar](50) NULL,
 PRIMARY KEY CLUSTERED 

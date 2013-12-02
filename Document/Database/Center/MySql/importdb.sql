@@ -1,4 +1,4 @@
-﻿
+
 /*create databases*/
 DROP database IF EXISTS `snscenter`;
 create database `snscenter` DEFAULT CHARACTER SET gbk COLLATE gbk_chinese_ci;
@@ -29,6 +29,7 @@ File Encoding         : 65001
 Date: 2013-11-22 16:01:01
 */
 
+set names utf8;
 SET FOREIGN_KEY_CHECKS=0;
 
 -- ----------------------------
