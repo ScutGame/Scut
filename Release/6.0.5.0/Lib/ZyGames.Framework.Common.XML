@@ -794,20 +794,6 @@
             </summary>
             <returns></returns>
         </member>
-        <member name="M:ZyGames.Framework.Common.Timing.TaskDispatch.QueryPerformanceCounter(System.Int64@)">
-            <summary>
-            计数器
-            </summary>
-            <param name="lpPerformanceCount"></param>
-            <returns></returns>
-        </member>
-        <member name="M:ZyGames.Framework.Common.Timing.TaskDispatch.QueryPerformanceFrequency(System.Int64@)">
-            <summary>
-            频率次数
-            </summary>
-            <param name="lpFrequency"></param>
-            <returns></returns>
-        </member>
         <member name="M:ZyGames.Framework.Common.Timing.TaskDispatch.Add(ZyGames.Framework.Common.Timing.BaseTask)">
             <summary>
             
@@ -827,11 +813,6 @@
         <member name="M:ZyGames.Framework.Common.Timing.TaskDispatch.Finalize">
             <summary>
             
-            </summary>
-        </member>
-        <member name="P:ZyGames.Framework.Common.Timing.TaskDispatch.Interval">
-            <summary>
-            间隔时间(毫秒)
             </summary>
         </member>
         <member name="T:ZyGames.Framework.Common.Reflect.TypeAccessor">
