@@ -185,7 +185,7 @@ function createScene()
 	CCDirector:sharedDirector():pushScene(mScene)
 
 	-- 注册网络回调
-	scene:registerCallback("RollScene.networkCallback")
+	scene:registerCallback(networkCallback)
 	
 	-- 添加主层
 	mLayer= CCLayer:create()
