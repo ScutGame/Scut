@@ -54,6 +54,7 @@ namespace GameNotice
                 int cacheInterval = 600;
                 GameEnvironment.Start(cacheInterval, () =>
                 {
+                    ActionFactory.SetActionIgnoreAuthorize(2001, 404);
                     InitNotice();
                     return true;
                 });
@@ -66,19 +67,19 @@ namespace GameNotice
             }
         }
 
-        private void InitNotice()
+    private void InitNotice()
+    {
+        var cacheSet = new ShareCacheStruct<Notice>();
+        for (int i = 0; i < 5; i++)
         {
-            var cacheSet = new ShareCacheStruct<Notice>();
-            for (int i = 0; i < 5; i++)
-            {
-                int id = (int)cacheSet.GetNextNo();
-                Notice notice = new Notice(id);
-                notice.Title = "tile" + i;
-                notice.Content = "Content" + i;
-                notice.CreateDate = DateTime.Now;
-                cacheSet.Add(notice);
-            }
+            int id = (int)cacheSet.GetNextNo();
+            Notice notice = new Notice(id);
+            notice.Title = "tile" + id;
+            notice.Content = "Content" + id;
+            notice.CreateDate = DateTime.Now;
+            cacheSet.Add(notice);
         }
+    }
 
         protected override void OnServiceStop()
         {

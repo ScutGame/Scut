@@ -4,7 +4,7 @@ from action import *
 clr.AddReference('ZyGames.Framework')
 clr.AddReference('ZyGames.Framework.Common')
 clr.AddReference('ZyGames.Framework.Game')
-clr.AddReference('GameNotice')
+clr.AddReference('GameNotice.Model')
 from ZyGames.Framework.Common import *
 from ZyGames.Framework.Cache.Generic import *
 from ZyGames.Framework.Game.Cache import *

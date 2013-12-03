@@ -3,6 +3,8 @@ Microsoft Visual Studio Solution File, Format Version 11.00
 # Visual Studio 2010
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GameNotice", "GameNotice\GameNotice.csproj", "{643FF4DC-E17E-45EC-80FA-13832D65B6BD}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GameNotice.Model", "GameNotice.Model\GameNotice.Model.csproj", "{49971B0C-5C3C-4B4D-8442-E5F039EBB47F}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -23,6 +25,16 @@ Global
 		{643FF4DC-E17E-45EC-80FA-13832D65B6BD}.Release|Mixed Platforms.Build.0 = Release|x86
 		{643FF4DC-E17E-45EC-80FA-13832D65B6BD}.Release|x86.ActiveCfg = Release|x86
 		{643FF4DC-E17E-45EC-80FA-13832D65B6BD}.Release|x86.Build.0 = Release|x86
+		{49971B0C-5C3C-4B4D-8442-E5F039EBB47F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{49971B0C-5C3C-4B4D-8442-E5F039EBB47F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{49971B0C-5C3C-4B4D-8442-E5F039EBB47F}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{49971B0C-5C3C-4B4D-8442-E5F039EBB47F}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{49971B0C-5C3C-4B4D-8442-E5F039EBB47F}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{49971B0C-5C3C-4B4D-8442-E5F039EBB47F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{49971B0C-5C3C-4B4D-8442-E5F039EBB47F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{49971B0C-5C3C-4B4D-8442-E5F039EBB47F}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{49971B0C-5C3C-4B4D-8442-E5F039EBB47F}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{49971B0C-5C3C-4B4D-8442-E5F039EBB47F}.Release|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
