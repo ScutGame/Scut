@@ -49,6 +49,12 @@ OSChina代码库：https://git.oschina.net/scutgame/Scut<br />
 
 更新日志
 ----------------
+###版本：6.0.5.1 (2013-12-4) Unstable
+> 1. 修正缓存删除时不会更新到Redis的问题
+> 2. 修正Model组合3个以上子类时Change事件未绑定的问题
+> 3. 修正中间层MySql与MsSql数据库Sql语句分页问题
+
+
 ###版本：6.0.5.0 (2013-11-29) Unstable
 > 1. 增加C#脚本支持
 > 2. 增加Pay和Sns中间件对Mysql数据库支持
