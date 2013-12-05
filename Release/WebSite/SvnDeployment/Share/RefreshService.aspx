@@ -1,0 +1,1 @@
+﻿<%@ Page Language="C#" AutoEventWireup="true" CodeBehind="RefreshService.aspx.cs" Inherits="ZyGames.OA.Share.RefreshService" ValidateRequest="false"%>
