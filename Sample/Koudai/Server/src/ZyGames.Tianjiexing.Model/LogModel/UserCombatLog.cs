@@ -42,7 +42,7 @@ namespace ZyGames.Tianjiexing.Model
     /// 
     /// </summary>
     [Serializable, ProtoContract]
-    [EntityTable(CacheType.None,DbConfig.Log, "UserCombatLog")]
+    [EntityTable(AccessLevel.WriteOnly, DbConfig.Log, "UserCombatLog")]
     public class UserCombatLog : BaseEntity
     {
         #region auto-generated static method

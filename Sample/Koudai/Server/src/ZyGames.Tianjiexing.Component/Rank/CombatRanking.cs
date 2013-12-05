@@ -133,7 +133,7 @@ namespace ZyGames.Tianjiexing.Component
                 return rankList;
             }
             var dbProvider = DbConnectionProvider.CreateDbProvider(DbConfig.Data);
-            string sql = "SELECT GameUser.[UserID],GameUser.[NickName],GameUser.[CombatNum],GameUser.[VictoryNum], GameUser.[RankID],GameUser.[UserLv],GameUser.[ObtainNum],GameUser.GameCoin,GameUser.VipLv,GameUser.CountryID,GameUser.[SportsIntegral],GameUser.[RankDate] FROM GameUser where GameUser.RankID>0 order by GameUser.RankID";
+            string sql = "SELECT UserID,NickName,CombatNum,VictoryNum,RankID,UserLv,ObtainNum,GameCoin,VipLv,CountryID,SportsIntegral,RankDate FROM GameUser where RankID>0 order by RankID";
             using (IDataReader reader = dbProvider.ExecuteReader(CommandType.Text, sql))
             {
                 while (reader.Read())

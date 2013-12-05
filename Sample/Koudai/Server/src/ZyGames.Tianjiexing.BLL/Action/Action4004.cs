@@ -543,7 +543,7 @@ namespace ZyGames.Tianjiexing.BLL.Action
             }
             //日志
             UserCombatLog log = new UserCombatLog();
-            log.CombatLogID = Guid.NewGuid().ToString();
+            log.CombatLogID = Guid.NewGuid().ToString("N");
             log.UserID = userPlotCombat.UserID;
             log.CityID = ContextUser.CityID;
             log.PlotID = userPlotCombat.PlotID;

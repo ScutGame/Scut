@@ -26,8 +26,10 @@ using System.Reflection;
 using ZyGames.Framework.Common.Log;
 using ZyGames.Framework.Game.Contract;
 using ZyGames.Framework.Game.Runtime;
+using ZyGames.Framework.Net;
 using ZyGames.Framework.Script;
 using ZyGames.Tianjiexing.BLL.Base;
+using ZyGames.Tianjiexing.Model;
 
 namespace ZyGames.Tianjiexing.Service
 {
@@ -58,6 +60,7 @@ namespace ZyGames.Tianjiexing.Service
 
                     return true;
                 }, 600, assembly);
+
 
 #if(DEBUG)
                 TraceLog.WriteError("系统正使用Debug版本");
