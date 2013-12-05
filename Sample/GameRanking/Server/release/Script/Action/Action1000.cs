@@ -28,44 +28,30 @@ using System.Linq;
 using System.Text;
 using GameRanking.Model;
 using ZyGames.Framework.Cache.Generic;
-using ZyGames.Framework.Common;
 using ZyGames.Framework.Game.Service;
 
 namespace GameRanking.Server.Script.Action
 {
-    public class Action1001 : BaseStruct
+    public class Action1000 : BaseStruct
     {
-        private int PageIndex;
-        private int PageSize;
-        private int PageCount;
-        private List<UserRanking> rankingList;
+        private string UserName;
+        private int Score;
 
 
-        public Action1001(HttpGet httpGet)
-            : base(1001, httpGet)
+        public Action1000(HttpGet httpGet)
+            : base(1000, httpGet)
         {
-
         }
 
         public override void BuildPacket()
         {
-            this.PushIntoStack(PageCount);
-            this.PushIntoStack(rankingList.Count);
-            foreach (var item in rankingList)
-            {
-                DataStruct dsItem = new DataStruct();
-                dsItem.PushIntoStack(item.UserName);
-                dsItem.PushIntoStack(item.Score);
-
-                this.PushIntoStack(dsItem);
-            }
 
         }
 
         public override bool GetUrlElement()
         {
-            if (httpGet.GetInt("PageIndex", ref PageIndex)
-                 && httpGet.GetInt("PageSize", ref PageSize))
+            if (httpGet.GetString("UserName", ref UserName)
+                 && httpGet.GetInt("Score", ref Score))
             {
                 return true;
             }
@@ -74,22 +60,23 @@ namespace GameRanking.Server.Script.Action
 
         public override bool TakeAction()
         {
-            GameRanking.Server.Script.Lib.TestHelper.Test();
             var cache = new ShareCacheStruct<UserRanking>();
-            rankingList = cache.FindAll();
-            rankingList = MathUtils.QuickSort<UserRanking>(rankingList, compareTo);
-            rankingList = rankingList.GetPaging(PageIndex, PageSize, out PageCount);
+            var ranking = cache.Find(m => m.UserName == UserName);
+            if (ranking == null)
+            {
+                ranking = new UserRanking();
+                ranking.UserID = (int)cache.GetNextNo();
+                ranking.UserName = UserName;
+                ranking.Score = Score;
+                cache.Add(ranking);
+            }
+            else
+            {
+                ranking.UserName = UserName;
+                ranking.Score = Score;
+            }
             return true;
         }
 
-        private int compareTo(UserRanking x, UserRanking y)
-        {
-            int result = y.Score - x.Score;
-            if (result == 0)
-            {
-                result = y.UserID - x.UserID;
-            }
-            return result;
-        }
     }
 }
