@@ -39,10 +39,10 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="lua51">
-      <HintPath>..\..\..\FrameworkPublish\Release\4.0\Lua\lua51.dll</HintPath>
+      <HintPath>..\Lib\lua51.dll</HintPath>
     </Reference>
     <Reference Include="LuaInterface">
-      <HintPath>..\..\..\FrameworkPublish\Release\4.0\Lua\LuaInterface.dll</HintPath>
+      <HintPath>..\Lib\LuaInterface.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.configuration" />
@@ -56,10 +56,10 @@
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
     <Reference Include="ZyGames.Framework.Common">
-      <HintPath>..\..\..\FrameworkPublish\Unstable\4.0\Core\V5.1\ZyGames.Framework.Common.dll</HintPath>
+      <HintPath>..\Lib\ZyGames.Framework.Common.dll</HintPath>
     </Reference>
     <Reference Include="ZyGames.Framework.RPC">
-      <HintPath>..\..\..\FrameworkPublish\Unstable\4.0\Core\Rpc_V1.0\ZyGames.Framework.RPC.dll</HintPath>
+      <HintPath>..\Lib\ZyGames.Framework.RPC.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
