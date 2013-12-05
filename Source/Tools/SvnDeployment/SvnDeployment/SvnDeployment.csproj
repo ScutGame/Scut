@@ -34,14 +34,13 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Newtonsoft.Json">
-      <HintPath>..\..\..\..\Lib\Plugin\Newtonsoft.Json.dll</HintPath>
+      <HintPath>..\..\..\..\Release\OldLib\Newtonsoft.Json.dll</HintPath>
     </Reference>
-    <Reference Include="NLog, Version=2.0.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\Lib\Plugin\NLog.dll</HintPath>
+    <Reference Include="NLog">
+      <HintPath>..\..\..\..\Release\OldLib\NLog.dll</HintPath>
     </Reference>
     <Reference Include="StructService2.0">
-      <HintPath>..\..\..\..\Lib\Plugin\StructService2.0.dll</HintPath>
+      <HintPath>..\..\..\..\Release\OldLib\StructService2.0.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
@@ -59,31 +58,30 @@
     <Reference Include="System.Web.Mobile" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="ZyGames.Common">
-      <HintPath>..\..\..\..\Lib\Plugin\ZyGames.Common.dll</HintPath>
+      <HintPath>..\..\..\..\Release\OldLib\ZyGames.Common.dll</HintPath>
     </Reference>
     <Reference Include="ZyGames.Core">
-      <HintPath>..\..\..\..\Lib\Plugin\ZyGames.Core.dll</HintPath>
-    </Reference>
-    <Reference Include="ZyGames.Framework">
-      <HintPath>..\..\..\..\Lib\Framework\V5.1\ZyGames.Framework.dll</HintPath>
-    </Reference>
-    <Reference Include="ZyGames.Framework.Plugin">
-      <HintPath>..\..\..\..\Lib\Framework\V5.1\ZyGames.Framework.Plugin.dll</HintPath>
+      <HintPath>..\..\..\..\Release\OldLib\ZyGames.Core.dll</HintPath>
     </Reference>
     <Reference Include="ZyGames.Framework.RPC">
-      <HintPath>..\..\..\..\Lib\Framework\V5.1\ZyGames.Framework.RPC.dll</HintPath>
+      <HintPath>..\Lib\ZyGames.Framework.RPC.dll</HintPath>
     </Reference>
-    <Reference Include="ZyGames.SimpleManager.Model">
-      <HintPath>..\..\..\..\Lib\Plugin\ZyGames.SimpleManager.Model.dll</HintPath>
+    <Reference Include="ZyGames.SimpleManager.DataAccess">
+      <HintPath>..\Lib\ZyGames.SimpleManager.DataAccess.dll</HintPath>
     </Reference>
-    <Reference Include="ZyGames.SimpleManager.Service">
-      <HintPath>..\..\..\..\Lib\Plugin\ZyGames.SimpleManager.Service.dll</HintPath>
+    <Reference Include="ZyGames.SimpleManager.Model, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Lib\ZyGames.SimpleManager.Model.dll</HintPath>
+    </Reference>
+    <Reference Include="ZyGames.SimpleManager.Service, Version=1.0.0.1, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Lib\ZyGames.SimpleManager.Service.dll</HintPath>
     </Reference>
     <Reference Include="ZyGames.SvnDeployment.Model">
-      <HintPath>..\..\..\..\Lib\Plugin\ZyGames.SvnDeployment.Model.dll</HintPath>
+      <HintPath>..\Lib\ZyGames.SvnDeployment.Model.dll</HintPath>
     </Reference>
     <Reference Include="ZyGames.SvnDeployment.Service">
-      <HintPath>..\..\..\..\Lib\Plugin\ZyGames.SvnDeployment.Service.dll</HintPath>
+      <HintPath>..\Lib\ZyGames.SvnDeployment.Service.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>

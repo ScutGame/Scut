@@ -52,7 +52,7 @@
                         *
                     </td>
                     <td class="e">
-                        <span class="Small">必填。SVN相对路径（注：相对/svn/36you/目录下）。</span>
+                        <span class="Small">必填。SVN相对路径（注：相对/svn/scut/目录下）。</span>
                     </td>
                 </tr>
                 <tr>
