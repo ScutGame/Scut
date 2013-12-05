@@ -48,8 +48,8 @@ namespace ZyGames.Framework.Game.Message
 				SchemaTable schema;
 				if (EntitySchemaSet.TryGet<SensitiveWord>(out schema))
 				{
-					schema.ConnectionProviderType = ConfigManger.ConnectionProviderType;
-					schema.ConnectionString = ConfigManger.connectionString;
+					schema.ConnectionProviderType = ConfigManger.Provider.ConnectionSetting.ProviderTypeName;
+                    schema.ConnectionString = ConfigManger.Provider.ConnectionString;
 				}
 			}
 			catch(Exception ex)

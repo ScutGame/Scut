@@ -30,13 +30,15 @@ using System.IO;
 using System.Collections.Specialized;
 using NLog;
 using ICSharpCode.SharpZipLib.GZip;
+using ZyGames.Framework.Common.Configuration;
+using ZyGames.Framework.Common.Log;
+using ZyGames.Framework.Common.Security;
 
 namespace ProxyServer
 {
     class RequestParse
     {
-        private static string signkey = Util.GetAppSetting<string>("ProxySignkey", "44CAC8ED53714BF18D60C5C7B6296000");
-        private static readonly Logger Logger = LogManager.GetLogger("RequestParse");
+        private static string signkey = ConfigUtils.GetSetting("ProxySignkey", "44CAC8ED53714BF18D60C5C7B6296000");
         public static NameValueCollection Parse(string ip, string rawUrl, string data, out int gameId, out int serverId, out int statuscode)
         {
             NameValueCollection nvc = new NameValueCollection();
@@ -46,7 +48,7 @@ namespace ProxyServer
             if (string.IsNullOrEmpty(data))
             {
                 statuscode = (int)HttpStatusCode.BadRequest;
-                Logger.Error("参数d不存在，RawUrl[{0}][{1}]", rawUrl, ip);
+                TraceLog.WriteError("参数d不存在，RawUrl[{0}][{1}]", rawUrl, ip);
                 return nvc;
             }
 
@@ -58,7 +60,7 @@ namespace ProxyServer
                 if (idx == -1)
                 {
                     statuscode = (int)HttpStatusCode.BadRequest;
-                    Logger.Error("参数sign不存在，Request[{0}][{1}]", data, ip);
+                    TraceLog.WriteError("参数sign不存在，Request[{0}][{1}]", data, ip);
                     return nvc;
                 }
 
@@ -68,7 +70,7 @@ namespace ProxyServer
                 if (string.Compare(clientCheckcode, mycheckcode, true) != 0)
                 {
                     statuscode = (int)HttpStatusCode.Forbidden;
-                    Logger.Error("md5校验错误，Request[{0}][{1}]", data, ip);
+                    TraceLog.WriteError("md5校验错误，Request[{0}][{1}]", data, ip);
                     return nvc;
                 }
             }
@@ -78,7 +80,7 @@ namespace ProxyServer
             if (!nvc.AllKeys.Contains("actionid", StringComparer.InvariantCultureIgnoreCase) || !int.TryParse(nvc["actionid"], out actionid))
             {
                 statuscode = (int)HttpStatusCode.BadRequest;
-                Logger.Error("参数actionid不存在，Request[{0}][{1}]", data, ip);
+                TraceLog.WriteError("参数actionid不存在，Request[{0}][{1}]", data, ip);
                 return nvc;
             }
 
@@ -86,7 +88,7 @@ namespace ProxyServer
             if (!nvc.AllKeys.Contains("msgid", StringComparer.InvariantCultureIgnoreCase) || !int.TryParse(nvc["msgid"], out msgid))
             {
                 statuscode = (int)HttpStatusCode.BadRequest;
-                Logger.Error("参数msgid不存在，Request[{0}][{1}]", data, ip);
+                TraceLog.WriteError("参数msgid不存在，Request[{0}][{1}]", data, ip);
                 return nvc;
             }
 
@@ -97,21 +99,21 @@ namespace ProxyServer
                 //serverid判断
                 if (!nvc.AllKeys.Contains("serverid", StringComparer.InvariantCultureIgnoreCase))
                 {
-                    Logger.Warn("请求未传参数serverid或者sid，Request[{0}][{1}]", data, ip);
+                    TraceLog.WriteError("请求未传参数serverid或者sid，Request[{0}][{1}]", data, ip);
                 }
                 else if (!int.TryParse(nvc["serverid"], out serverId))
                 {
-                    Logger.Warn("请求未传参数serverid或者sid，Request[{0}][{1}]", data, ip);
+                    TraceLog.WriteError("请求未传参数serverid或者sid，Request[{0}][{1}]", data, ip);
                 }
 
                 //gameiId判断
                 if (!nvc.AllKeys.Contains("GameType", StringComparer.InvariantCultureIgnoreCase))
                 {
-                    Logger.Warn("请求未传参数gameId或者sid，Request[{0}][{1}]", data, ip);
+                    TraceLog.WriteError("请求未传参数gameId或者sid，Request[{0}][{1}]", data, ip);
                 }
                 else if (!int.TryParse(nvc["GameType"], out gameId))
                 {
-                    Logger.Warn("请求未传参数gameId或者sid，Request[{0}][{1}]", data, ip);
+                    TraceLog.WriteError("请求未传参数gameId或者sid，Request[{0}][{1}]", data, ip);
                 }
             }
             else

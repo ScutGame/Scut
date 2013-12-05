@@ -58,7 +58,7 @@ namespace ZyGames.Framework.Game.Task
         public virtual int TaskID
         {
             get;
-            private set;
+            set;
         }
     }
 }

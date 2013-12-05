@@ -44,12 +44,20 @@ namespace ZyGames.Framework.Game.Pay
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="condition"></param>
+        /// <param name="match"></param>
         /// <returns></returns>
-        public List<FeedbackInfo> GetFeedBackList(string condition)
+        public List<FeedbackInfo> GetFeedBackList(Action<CommandFilter> match)
         {
-            string sql = string.Format("SELECT * FROM (SELECT row_number()over(order by [GMId] desc) as RowNumber, [GMID],[UId],[GameID],[ServerID],[GMType],[content],[SubmittedTime],[RContent],[ReplyTime],[ReplyID],Pid,NickName FROM GMFeedBack {0} order by SubmittedTime desc", condition);
-            return GetFeedBackList(sql);
+            var command = ConfigManger.Provider.CreateCommandStruct("GMFeedBack", CommandMode.Inquiry);
+            command.Columns = "GMID,UId,GameID,ServerID,GMType,content,SubmittedTime,RContent,ReplyTime,ReplyID,Pid,NickName";
+            command.OrderBy = "SUBMITTEDTIME DESC";
+            command.Filter = ConfigManger.Provider.CreateCommandFilter();
+            if (match != null)
+            {
+                match(command.Filter);
+            }
+            command.Parser();
+            return GetFeedBackList(command.Sql, command.Parameters);
         }
         /// <summary>
         /// 
@@ -58,12 +66,11 @@ namespace ZyGames.Framework.Game.Pay
         /// <returns></returns>
         public List<FeedbackInfo> GetFeedBackList(int uID)
         {
-            string sql = string.Format("SELECT [GMID],[UId],[GameID],[ServerID],[GMType],[content],[SubmittedTime],[RContent],[ReplyTime],[ReplyID],Pid,NickName FROM GMFeedBack where UId=@UId order by SubmittedTime desc");
-
-            SqlParameter[] parameters = new[]{
-					SqlParamHelper.MakeInParam("@UId", SqlDbType.Int, 0, uID),
-            };
-            return GetFeedBackList(sql, parameters);
+            return GetFeedBackList(f =>
+            {
+                f.Condition = f.FormatExpression("UId");
+                f.AddParam("UId", uID);
+            });
         }
 
         /// <summary>
@@ -72,9 +79,9 @@ namespace ZyGames.Framework.Game.Pay
         /// <param name="sql"></param>
         /// <param name="parameters"></param>
         /// <returns></returns>
-        private List<FeedbackInfo> GetFeedBackList(string sql, params SqlParameter[] parameters)
+        private List<FeedbackInfo> GetFeedBackList(string sql, params IDataParameter[] parameters)
         {
-            using (SqlDataReader reader = SqlHelper.ExecuteReader(ConfigManger.connectionString, CommandType.Text, sql, parameters))
+            using (var reader = ConfigManger.Provider.ExecuteReader(CommandType.Text, sql, parameters))
             {
                 List<FeedbackInfo> olist = new List<FeedbackInfo>();
                 while (reader.Read())
@@ -107,18 +114,18 @@ namespace ZyGames.Framework.Game.Pay
         /// <param name="info"></param>
         public bool PostFeedBack(FeedbackInfo info)
         {
-            CommandStruct command = new CommandStruct("GMFeedBack", CommandMode.Insert);
-            command.AddParameter("UId", SqlDbType.Int, info.Uid);
-            command.AddParameter("GameID", SqlDbType.Int, info.GameID);
-            command.AddParameter("ServerID", SqlDbType.Int, info.ServerID);
-            command.AddParameter("GMType", SqlDbType.Int, info.Type);
-            command.AddParameter("content", SqlDbType.VarChar, info.Content);
-            command.AddParameter("Pid", SqlDbType.VarChar, info.Pid);
-            command.AddParameter("NickName", SqlDbType.VarChar, info.NickName);
-            command.AddParameter("SubmittedTime", SqlDbType.DateTime, info.CreateDate);
+            CommandStruct command = ConfigManger.Provider.CreateCommandStruct("GMFeedBack", CommandMode.Insert);
+            command.AddParameter("UId", info.Uid);
+            command.AddParameter("GameID", info.GameID);
+            command.AddParameter("ServerID", info.ServerID);
+            command.AddParameter("GMType", info.Type);
+            command.AddParameter("content", info.Content);
+            command.AddParameter("Pid", info.Pid);
+            command.AddParameter("NickName", info.NickName);
+            command.AddParameter("SubmittedTime", info.CreateDate);
             command.Parser();
 
-            return SqlHelper.ExecuteNonQuery(ConfigManger.connectionString, CommandType.Text, command.Sql, command.SqlParameters) > 0;
+            return ConfigManger.Provider.ExecuteQuery(CommandType.Text, command.Sql, command.Parameters) > 0;
         }
 
         /// <summary>
@@ -130,16 +137,16 @@ namespace ZyGames.Framework.Game.Pay
         /// <returns></returns>
         public bool ReplyToFeedBack(int feedbackId, string replyContent, int replyId)
         {
-            CommandStruct command = new CommandStruct("GMFeedBack", CommandMode.Modify);
-            command.AddParameter("RContent", SqlDbType.VarChar, replyContent);
-            command.AddParameter("ReplyID", SqlDbType.VarChar, replyId);
-            command.AddParameter("ReplyTime", SqlDbType.DateTime, DateTime.Now);
-            command.Filter = new CommandFilter();
-            command.Filter.Condition = "GMId=@GMId";
-            command.Filter.AddParam("@GMId", SqlDbType.Int, 0, feedbackId);
+            CommandStruct command = ConfigManger.Provider.CreateCommandStruct("GMFeedBack", CommandMode.Modify);
+            command.AddParameter("RContent", replyContent);
+            command.AddParameter("ReplyID", replyId);
+            command.AddParameter("ReplyTime", DateTime.Now);
+            command.Filter = ConfigManger.Provider.CreateCommandFilter();
+            command.Filter.Condition = ConfigManger.Provider.FormatFilterParam("GMId");
+            command.Filter.AddParam("GMId", feedbackId);
             command.Parser();
 
-            return SqlHelper.ExecuteNonQuery(ConfigManger.connectionString, CommandType.Text, command.Sql, command.SqlParameters) > 0;
+            return ConfigManger.Provider.ExecuteQuery(CommandType.Text, command.Sql, command.Parameters) > 0;
         }
     }
 }

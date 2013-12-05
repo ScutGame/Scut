@@ -32,9 +32,9 @@ using ZyGames.Framework.Data.Sql;
 
 namespace ZyGames.Framework.Game.Pay
 {
-	/// <summary>
-	/// Order form BL.
-	/// </summary>
+    /// <summary>
+    /// Order form BL.
+    /// </summary>
     public class OrderFormBLL
     {
         /// <summary>
@@ -43,38 +43,35 @@ namespace ZyGames.Framework.Game.Pay
         /// <param name="model">Model.</param>
         public bool Add(OrderInfo model)
         {
-            model.CreateDate = DateTime.Now;
-            CommandStruct command = new CommandStruct("OrderInfo", CommandMode.Insert);
-            command.AddParameter("OrderNO", SqlDbType.VarChar, model.OrderNO);
-            command.AddParameter("MerchandiseName", SqlDbType.VarChar, model.MerchandiseName);
-            command.AddParameter("PayType", SqlDbType.VarChar, model.PayType);
-            command.AddParameter("Amount", SqlDbType.Decimal, model.Amount);
-            command.AddParameter("Currency", SqlDbType.VarChar, model.Currency);
-            command.AddParameter("Expand", SqlDbType.VarChar, model.Expand);
-            command.AddParameter("SerialNumber", SqlDbType.VarChar, model.SerialNumber);
-            command.AddParameter("PassportID", SqlDbType.VarChar, model.PassportID);
-            command.AddParameter("ServerID", SqlDbType.Int, model.ServerID);
-            command.AddParameter("GameID", SqlDbType.Int, model.GameID);
-            command.AddParameter("gameName", SqlDbType.VarChar, model.GameName);
-            command.AddParameter("ServerName", SqlDbType.VarChar, model.ServerName);
-            command.AddParameter("PayStatus", SqlDbType.Int, model.PayStatus);
-            command.AddParameter("Signature", SqlDbType.VarChar, model.Signature);
-            command.AddParameter("Remarks", SqlDbType.Text, model.Remarks);
-            command.AddParameter("GameCoins", SqlDbType.Int, model.GameCoins);
-            command.AddParameter("SendState", SqlDbType.Int, model.SendState);
-            command.AddParameter("RetailID", SqlDbType.VarChar, model.RetailID);//添加渠道商ID 孙德尧 2012/4/1 9:24
-            command.AddParameter("DeviceID", SqlDbType.VarChar, model.DeviceID == null ? string.Empty : model.DeviceID);
+            model.CreateDate = MathUtils.Now;
+            var command = ConfigManger.Provider.CreateCommandStruct("OrderInfo", CommandMode.Insert);
+            command.AddParameter("OrderNO", model.OrderNO);
+            command.AddParameter("MerchandiseName", model.MerchandiseName);
+            command.AddParameter("PayType", model.PayType);
+            command.AddParameter("Amount", model.Amount);
+            command.AddParameter("Currency", model.Currency);
+            command.AddParameter("Expand", model.Expand);
+            command.AddParameter("SerialNumber", model.SerialNumber);
+            command.AddParameter("PassportID", model.PassportID);
+            command.AddParameter("ServerID", model.ServerID);
+            command.AddParameter("GameID", model.GameID);
+            command.AddParameter("gameName", model.GameName);
+            command.AddParameter("ServerName", model.ServerName);
+            command.AddParameter("PayStatus", model.PayStatus);
+            command.AddParameter("Signature", model.Signature);
+            command.AddParameter("Remarks", model.Remarks);
+            command.AddParameter("GameCoins", model.GameCoins);
+            command.AddParameter("SendState", model.SendState);
+            command.AddParameter("RetailID", model.RetailID);
+            command.AddParameter("DeviceID", model.DeviceID == null ? string.Empty : model.DeviceID);
             if (model.SendDate > DateTime.MinValue)
             {
-                command.AddParameter("SendDate", SqlDbType.DateTime, model.SendDate);
+                command.AddParameter("SendDate", model.SendDate);
             }
-            command.AddParameter("CreateDate", SqlDbType.DateTime, model.CreateDate);
+            command.AddParameter("CreateDate", model.CreateDate);
             command.Parser();
 
-            int rows = SqlHelper.ExecuteNonQuery(ConfigManger.connectionString, CommandType.Text, command.Sql, command.SqlParameters);
-            if (rows > 0)
-                return true;
-            return false;
+            return ConfigManger.Provider.ExecuteQuery(CommandType.Text, command.Sql, command.Parameters) > 0;
         }
 
         /// <summary>
@@ -84,117 +81,123 @@ namespace ZyGames.Framework.Game.Pay
         /// <returns></returns>
         public bool Update(OrderInfo model)
         {
-            CommandStruct command = new CommandStruct("OrderInfo", CommandMode.Modify);
-            command.AddParameter("SerialNumber", SqlDbType.VarChar, model.SerialNumber);
-            command.AddParameter("PayStatus", SqlDbType.Int, model.PayStatus);
-            command.AddParameter("@Signature", SqlDbType.VarChar, 0, model.Signature);
-            command.Filter = new CommandFilter();
-            command.Filter.Condition = "OrderNO=@OrderNO";
-            command.Filter.AddParam("@OrderNO", SqlDbType.VarChar, 0, model.OrderNO);
+            var command = ConfigManger.Provider.CreateCommandStruct("OrderInfo", CommandMode.Modify);
+            command.AddParameter("SerialNumber", model.SerialNumber);
+            command.AddParameter("PayStatus", model.PayStatus);
+            command.AddParameter("@Signature", model.Signature);
+            command.Filter = ConfigManger.Provider.CreateCommandFilter();
+            command.Filter.Condition = command.Filter.FormatExpression("OrderNO");
+            command.Filter.AddParam("OrderNO", model.OrderNO);
             command.Parser();
 
-            int rows = SqlHelper.ExecuteNonQuery(ConfigManger.connectionString, CommandType.Text, command.Sql, command.SqlParameters);
-            return rows > 0;
+            return ConfigManger.Provider.ExecuteQuery(CommandType.Text, command.Sql, command.Parameters) > 0;
         }
 
-		/// <summary>
-		/// 获取游戏币.
-		/// </summary>
-		/// <returns>The list.</returns>
-		/// <param name="game">Game.</param>
-		/// <param name="Server">Server.</param>
-		/// <param name="Account">Account.</param>
-        public OrderInfo[] GetList(int game, int Server, string Account)
+        /// <summary>
+        /// 获取游戏币.
+        /// </summary>
+        /// <returns>The list.</returns>
+        /// <param name="gameID">Game.</param>
+        /// <param name="serverID">Server.</param>
+        /// <param name="pID">Account.</param>
+        public OrderInfo[] GetList(int gameID, int serverID, string pID)
         {
-            //return dal.GetList(game, Server, Account);
-            StringBuilder strSql = new StringBuilder();
-            strSql.Append("select [OrderNO],[MerchandiseName],[PayType],[Amount],[Currency],[Expand],[SerialNumber],[PassportID],[ServerID],[GameID],[gameName],[ServerName],[PayStatus],[Signature],[Remarks],[GameCoins],[SendState],[CreateDate],[SendDate],[RetailID],[DeviceID] ");
-            strSql.Append(" FROM OrderInfo");
-            strSql.Append(" where gameID=@game and ServerID=@Server and PassportID=@PassportID and SendState=1 and PayStatus=2 ");
-            SqlParameter[] parameters = {
-					new SqlParameter("@PassportID", SqlDbType.VarChar,100),
-                   	new SqlParameter("@Server", SqlDbType.Int,4),
-                    new SqlParameter("@game", SqlDbType.VarChar,50)};
-            parameters[0].Value = Account;
-            parameters[1].Value = Server;
-            parameters[2].Value = game;
+            var command = ConfigManger.Provider.CreateCommandStruct("OrderInfo", CommandMode.Inquiry);
+            command.OrderBy = "ID ASC";
+            command.Columns = "OrderNO,MerchandiseName,PayType,Amount,Currency,Expand,SerialNumber,PassportID,ServerID,GameID,gameName,ServerName,PayStatus,Signature,Remarks,GameCoins,SendState,CreateDate,SendDate,RetailID,DeviceID";
+            command.Filter = ConfigManger.Provider.CreateCommandFilter();
+            command.Filter.Condition = string.Format("{0} AND {1} AND {2} AND {3} AND {4}",
+                command.Filter.FormatExpression("GameID"),
+                command.Filter.FormatExpression("ServerID"),
+                command.Filter.FormatExpression("PassportID"),
+                command.Filter.FormatExpression("SendState"),
+                command.Filter.FormatExpression("PayStatus")
+                );
+            command.Filter.AddParam("GameID", gameID);
+            command.Filter.AddParam("ServerID", serverID);
+            command.Filter.AddParam("PassportID", pID);
+            command.Filter.AddParam("SendState", 1);
+            command.Filter.AddParam("PayStatus", 2);
+            command.Parser();
 
-            using (SqlDataReader reader = SqlHelper.ExecuteReader(ConfigManger.connectionString, CommandType.Text, strSql.ToString(), parameters))
+            using (var reader = ConfigManger.Provider.ExecuteReader(CommandType.Text, command.Sql, command.Parameters))
             {
                 List<OrderInfo> olist = new List<OrderInfo>();
                 while (reader.Read())
                 {
                     OrderInfo ordermode = SetOrderInfo(reader);
-
                     olist.Add(ordermode);
                 }
                 return olist.ToArray();
             }
         }
 
-		/// <summary>
-		/// Determines whether this instance is exists the specified OrderNo.
-		/// </summary>
-		/// <returns><c>true</c> if this instance is exists the specified OrderNo; otherwise, <c>false</c>.</returns>
-		/// <param name="OrderNo">Order no.</param>
-        public bool IsExists(string OrderNo)
+        /// <summary>
+        /// Determines whether this instance is exists the specified OrderNo.
+        /// </summary>
+        /// <returns><c>true</c> if this instance is exists the specified OrderNo; otherwise, <c>false</c>.</returns>
+        /// <param name="orderNo">Order no.</param>
+        public bool IsExists(string orderNo)
         {
-            string sql = "select top 1 OrderNO from OrderInfo where OrderNO=@OrderNO";
-            object obj = SqlHelper.ExecuteScalar(ConfigManger.connectionString, CommandType.Text, sql, new SqlParameter("@OrderNO", OrderNo));
-            return obj != null;
-            //return dal.IsExists(OrderNo);
+            var command = ConfigManger.Provider.CreateCommandStruct("OrderInfo", CommandMode.Inquiry, "OrderNO");
+            command.OrderBy = "ID ASC";
+            command.Top = 1;
+            command.Filter = ConfigManger.Provider.CreateCommandFilter();
+            command.Filter.Condition = command.Filter.FormatExpression("OrderNO");
+            command.Filter.AddParam("OrderNO", orderNo);
+            command.Parser();
+            return ConfigManger.Provider.ExecuteScalar(CommandType.Text, command.Sql, command.Parameters) != null;
         }
 
-		/// <summary>
-		/// Updates the by91.
-		/// </summary>
-		/// <returns><c>true</c>, if by91 was updated, <c>false</c> otherwise.</returns>
-		/// <param name="model">Model.</param>
-		/// <param name="callback">If set to <c>true</c> callback.</param>
+        /// <summary>
+        /// Updates the by91.
+        /// </summary>
+        /// <returns><c>true</c>, if by91 was updated, <c>false</c> otherwise.</returns>
+        /// <param name="model">Model.</param>
+        /// <param name="callback">If set to <c>true</c> callback.</param>
         public bool UpdateBy91(OrderInfo model, bool callback)
         {
-            CommandStruct command = new CommandStruct("OrderInfo", CommandMode.Modify);
+            var command = ConfigManger.Provider.CreateCommandStruct("OrderInfo", CommandMode.Modify);
             if (callback)
             {
-                command.AddParameter("MerchandiseName", SqlDbType.VarChar, model.MerchandiseName);
-                command.AddParameter("PayType", SqlDbType.VarChar, model.PayType);
-                command.AddParameter("Amount", SqlDbType.Decimal, model.Amount);
-                command.AddParameter("SendState", SqlDbType.Int, model.SendState);
-                command.AddParameter("PayStatus", SqlDbType.Int, model.PayStatus);
-                command.AddParameter("GameCoins", SqlDbType.Int, model.GameCoins);
-                command.AddParameter("Signature", SqlDbType.VarChar, model.Signature);
+                command.AddParameter("MerchandiseName", model.MerchandiseName);
+                command.AddParameter("PayType", model.PayType);
+                command.AddParameter("Amount", model.Amount);
+                command.AddParameter("SendState", model.SendState);
+                command.AddParameter("PayStatus", model.PayStatus);
+                command.AddParameter("GameCoins", model.GameCoins);
+                command.AddParameter("Signature", model.Signature);
             }
             else
             {
-                command.AddParameter("ServerID", SqlDbType.Int, model.ServerID);
-                command.AddParameter("PassportID", SqlDbType.VarChar, model.PassportID);
-                command.AddParameter("GameID", SqlDbType.Int, model.GameID);
-                command.AddParameter("RetailID", SqlDbType.VarChar, model.RetailID);//20
-                //修改了服务器名称为空写库的BUG panx 2012-11-26
+                command.AddParameter("ServerID", model.ServerID);
+                command.AddParameter("PassportID", model.PassportID);
+                command.AddParameter("GameID", model.GameID);
+                command.AddParameter("RetailID", model.RetailID);//20
+
                 if (!string.IsNullOrEmpty(model.ServerName))
                 {
-                    command.AddParameter("ServerName", SqlDbType.VarChar, model.ServerName);
+                    command.AddParameter("ServerName", model.ServerName);
                 }
-                //修改了游戏名称为空写库的BUG panx 2012-11-26
                 if (!string.IsNullOrEmpty(model.GameName))
                 {
-                    command.AddParameter("gameName", SqlDbType.VarChar, model.GameName);
+                    command.AddParameter("gameName", model.GameName);
                 }
             }
-            command.Filter = new CommandFilter();
-            command.Filter.Condition = "OrderNO=@OrderNO";
-            command.Filter.AddParam("@OrderNO", SqlDbType.VarChar, 0, model.OrderNO);
+            command.Filter = ConfigManger.Provider.CreateCommandFilter();
+            command.Filter.Condition = command.Filter.FormatExpression("OrderNO");
+            command.Filter.AddParam("OrderNO", model.OrderNO);
             command.Parser();
-            int rows = SqlHelper.ExecuteNonQuery(ConfigManger.connectionString, CommandType.Text, command.Sql, command.SqlParameters);
-            return rows > 0;
+            return ConfigManger.Provider.ExecuteQuery(CommandType.Text, command.Sql, command.Parameters) > 0;
+
         }
 
-		/// <summary>
-		/// Add91s the pay.
-		/// </summary>
-		/// <returns><c>true</c>, if pay was add91ed, <c>false</c> otherwise.</returns>
-		/// <param name="order">Order.</param>
-		/// <param name="callback">If set to <c>true</c> callback.</param>
+        /// <summary>
+        /// Add91s the pay.
+        /// </summary>
+        /// <returns><c>true</c>, if pay was add91ed, <c>false</c> otherwise.</returns>
+        /// <param name="order">Order.</param>
+        /// <param name="callback">If set to <c>true</c> callback.</param>
         public bool Add91Pay(OrderInfo order, bool callback)
         {
             if (!IsExists(order.OrderNO))
@@ -208,7 +211,7 @@ namespace ZyGames.Framework.Game.Pay
         }
 
 
-        private OrderInfo SetOrderInfo(SqlDataReader reader)
+        private OrderInfo SetOrderInfo(IDataReader reader)
         {
             OrderInfo ordermode = new OrderInfo();
             ordermode.OrderNO = reader["OrderNO"].ToNotNullString();
@@ -242,25 +245,15 @@ namespace ZyGames.Framework.Game.Pay
         /// <param name="OrderNo">Order no.</param>
         public bool Updatestr(string OrderNo)
         {
-            CommandStruct command = new CommandStruct("OrderInfo", CommandMode.Modify);
+            var command = ConfigManger.Provider.CreateCommandStruct("OrderInfo", CommandMode.Modify);
             command.AddParameter("SendState", 2);
-            command.AddParameter("SendDate", SqlDbType.DateTime, DateTime.Now);
-            command.Filter = new CommandFilter();
-            command.Filter.Condition = "OrderNO=@OrderNO";
-            command.Filter.AddParam("@OrderNO", SqlDbType.VarChar, 0, OrderNo);
+            command.AddParameter("SendDate", DateTime.Now);
+            command.Filter = ConfigManger.Provider.CreateCommandFilter();
+            command.Filter.Condition = command.Filter.FormatExpression("OrderNO");
+            command.Filter.AddParam("OrderNO", OrderNo);
             command.Parser();
 
-            int rows = SqlHelper.ExecuteNonQuery(ConfigManger.connectionString, CommandType.Text, command.Sql, command.SqlParameters);
-            {
-                if (rows > 0)
-                {
-                    return true;
-                }
-                else
-                {
-                    return false;
-                }
-            }
+            return ConfigManger.Provider.ExecuteQuery(CommandType.Text, command.Sql, command.Parameters) > 0;
         }
 
         /// <summary>
@@ -271,15 +264,20 @@ namespace ZyGames.Framework.Game.Pay
         /// <returns></returns>
         public ServerInfo GetServerData(int gameID, int serverID)
         {
-            StringBuilder strSql = new StringBuilder();
-            strSql.Append("SELECT TOP 1 ID,GameID,(SELECT GameName FROM GameInfo WHERE GameInfo.GameID=ServerInfo.GameID) GameName,ServerName  FROM ServerInfo WHERE GameID=@GameID AND ID=@ServerID");
-            SqlParameter[] parameters = {
-                   	new SqlParameter("@GameID", SqlDbType.Int, 0),
-                    new SqlParameter("@ServerID", SqlDbType.Int, 0)};
-            parameters[0].Value = gameID;
-            parameters[1].Value = serverID;
+            var command = ConfigManger.Provider.CreateCommandStruct("ServerInfo", CommandMode.Inquiry);
+            command.Columns = "ID,GameID,(SELECT GameName FROM GameInfo WHERE GameInfo.GameID=ServerInfo.GameID) GameName,ServerName";
+            command.OrderBy = "GameID ASC,ID ASC";
+            command.Top = 1;
+            command.Filter = ConfigManger.Provider.CreateCommandFilter();
+            command.Filter.Condition = string.Format("{0} AND {1}",
+                    command.Filter.FormatExpression("GameID"),
+                    command.Filter.FormatExpression("ID")
+                );
+            command.Filter.AddParam("GameID", gameID);
+            command.Filter.AddParam("ID", serverID);
+            command.Parser();
 
-            using (SqlDataReader reader = SqlHelper.ExecuteReader(ConfigManger.connectionString, CommandType.Text, strSql.ToString(), parameters))
+            using (var reader = ConfigManger.Provider.ExecuteReader(CommandType.Text, command.Sql, command.Parameters))
             {
                 var serverInfo = new ServerInfo
                 {
@@ -299,25 +297,24 @@ namespace ZyGames.Framework.Game.Pay
 
         internal bool PaySuccess(string orderNo, OrderInfo orderInfo)
         {
-            CommandStruct command = new CommandStruct("OrderInfo", CommandMode.Modify);
+            var command = ConfigManger.Provider.CreateCommandStruct("OrderInfo", CommandMode.Modify);
             orderInfo.PayStatus = 2;
-            command.AddParameter("PayStatus", SqlDbType.Int, orderInfo.PayStatus);
+            command.AddParameter("PayStatus", orderInfo.PayStatus);
             if (!string.IsNullOrEmpty(orderInfo.PayType))
             {
-                command.AddParameter("PayType", SqlDbType.VarChar, orderInfo.PayType);
+                command.AddParameter("PayType", orderInfo.PayType);
             }
             if (orderInfo.Amount > 0 && orderInfo.GameCoins > 0)
             {
-                command.AddParameter("Amount", SqlDbType.Decimal, orderInfo.Amount);
-                command.AddParameter("GameCoins", SqlDbType.Int, orderInfo.GameCoins);
+                command.AddParameter("Amount", orderInfo.Amount);
+                command.AddParameter("GameCoins", orderInfo.GameCoins);
             }
-            command.Filter = new CommandFilter();
-            command.Filter.Condition = "OrderNO=@OrderNO";
-            command.Filter.AddParam("@OrderNO", SqlDbType.VarChar, 0, orderNo);
+            command.Filter = ConfigManger.Provider.CreateCommandFilter();
+            command.Filter.Condition = command.Filter.FormatExpression("OrderNO");
+            command.Filter.AddParam("OrderNO", orderNo);
             command.Parser();
 
-            int rows = SqlHelper.ExecuteNonQuery(ConfigManger.connectionString, CommandType.Text, command.Sql, command.SqlParameters);
-            return rows > 0;
+            return ConfigManger.Provider.ExecuteQuery(CommandType.Text, command.Sql, command.Parameters) > 0;
         }
     }
 }

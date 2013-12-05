@@ -79,15 +79,14 @@ namespace ZyGames.Framework.Game.Context
         /// <returns></returns>
         public static GameContext GetInstance(string ssid, int actionId, int userId, int timeOut = TimeOut)
         {
-            string key = ssid;
-            if (string.IsNullOrEmpty(key))
+            if (string.IsNullOrEmpty(ssid))
             {
-                key = Guid.NewGuid().ToString("N");
+                ssid =  Guid.NewGuid().ToString("N");
             }
-            key = CreateContextKey(key, actionId);
+            string key = CreateContextKey(ssid, actionId);
             if (!_contextSet.ContainsKey(key))
             {
-                _contextSet.Add(key, new GameContext(actionId, userId, timeOut));
+                _contextSet.Add(key, new GameContext(ssid, actionId, userId, timeOut));
             }
             var context = _contextSet[key];
             if (context != null)
@@ -118,7 +117,7 @@ namespace ZyGames.Framework.Game.Context
             if (_contextSet.ContainsKey(key))
             {
                 int timeOut = _contextSet[key].LockTimeOut;
-                _contextSet[key] = new GameContext(actionId, userId, timeOut);
+                _contextSet[key] = new GameContext(ssid, actionId, userId, timeOut);
             }
         }
 
@@ -130,13 +129,15 @@ namespace ZyGames.Framework.Game.Context
         /// <summary>
         /// 
         /// </summary>
+        /// <param name="ssid"></param>
         /// <param name="actionId"></param>
         /// <param name="userId"></param>
         /// <param name="timeOut">超时时间(毫秒)</param>
-        private GameContext(int actionId, int userId, int timeOut)
+        private GameContext(string ssid, int actionId, int userId, int timeOut)
         {
             LockTimeOut = timeOut;
             _monitorLock = new MonitorLockStrategy(timeOut);
+            SessionId = ssid;
             ActionId = actionId;
             UserId = userId;
             IsRequesting = false;
@@ -167,6 +168,11 @@ namespace ZyGames.Framework.Game.Context
         {
             get { return _monitorLock; }
         }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public string SessionId { get; set; }
 
         /// <summary>
         /// 当前玩家Id

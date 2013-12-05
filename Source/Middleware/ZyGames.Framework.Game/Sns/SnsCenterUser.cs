@@ -28,14 +28,15 @@ using System.Collections.Generic;
 using ZyGames.Framework.Common;
 using ZyGames.Framework.Common.Log;
 using ZyGames.Framework.Common.Security;
+using ZyGames.Framework.Data;
 using ZyGames.Framework.Data.Sql;
 using ZyGames.Framework.Game.Runtime;
 
 namespace ZyGames.Framework.Game.Sns
 {
-	/// <summary>
-	/// Reg type.
-	/// </summary>
+    /// <summary>
+    /// Reg type.
+    /// </summary>
     public enum RegType
     {
         /// <summary>
@@ -46,23 +47,23 @@ namespace ZyGames.Framework.Game.Sns
         /// 游客通过设备ID登录
         /// </summary>
         Guest,
-		/// <summary>
-		/// The other.
-		/// </summary>
+        /// <summary>
+        /// The other.
+        /// </summary>
         Other
     }
-	/// <summary>
-	/// Pwd type.
-	/// </summary>
+    /// <summary>
+    /// Pwd type.
+    /// </summary>
     public enum PwdType
     {
-		/// <summary>
-		/// The DE.
-		/// </summary>
+        /// <summary>
+        /// The DE.
+        /// </summary>
         DES = 0,
-		/// <summary>
-		/// The M d5.
-		/// </summary>
+        /// <summary>
+        /// The M d5.
+        /// </summary>
         MD5
     }
 
@@ -71,11 +72,11 @@ namespace ZyGames.Framework.Game.Sns
     /// </summary>
     public class SnsCenterUser
     {
-		/// <summary>
-		/// Passwords the encrypt md5.
-		/// </summary>
-		/// <returns>The encrypt md5.</returns>
-		/// <param name="str">String.</param>
+        /// <summary>
+        /// Passwords the encrypt md5.
+        /// </summary>
+        /// <returns>The encrypt md5.</returns>
+        /// <param name="str">String.</param>
         public static string PasswordEncryptMd5(string str)
         {
             return CryptoHelper.RegUser_MD5_Pwd(str);
@@ -97,61 +98,61 @@ namespace ZyGames.Framework.Game.Sns
         private string _deviceID = String.Empty;
         private BaseLog _Logger = new BaseLog();
 
-		/// <summary>
-		/// Gets the passport identifier.
-		/// </summary>
-		/// <value>The passport identifier.</value>
+        /// <summary>
+        /// Gets the passport identifier.
+        /// </summary>
+        /// <value>The passport identifier.</value>
         public string PassportId
         {
             get { return _PassportId; }
         }
-		/// <summary>
-		/// Gets the password.
-		/// </summary>
-		/// <value>The password.</value>
+        /// <summary>
+        /// Gets the password.
+        /// </summary>
+        /// <value>The password.</value>
         public string Password
         {
             get { return _PassportPwd; }
         }
-		/// <summary>
-		/// Gets or sets the retail I.
-		/// </summary>
-		/// <value>The retail I.</value>
+        /// <summary>
+        /// Gets or sets the retail I.
+        /// </summary>
+        /// <value>The retail I.</value>
         public string RetailID
         {
             get;
             set;
         }
-		/// <summary>
-		/// Gets or sets the weixin code.
-		/// </summary>
-		/// <value>The weixin code.</value>
+        /// <summary>
+        /// Gets or sets the weixin code.
+        /// </summary>
+        /// <value>The weixin code.</value>
         public string WeixinCode
         {
             get;
             set;
         }
-		/// <summary>
-		/// Gets or sets the retail user.
-		/// </summary>
-		/// <value>The retail user.</value>
+        /// <summary>
+        /// Gets or sets the retail user.
+        /// </summary>
+        /// <value>The retail user.</value>
         public string RetailUser
         {
             get;
             set;
         }
-		/// <summary>
-		/// Gets or sets the type of the reg.
-		/// </summary>
-		/// <value>The type of the reg.</value>
+        /// <summary>
+        /// Gets or sets the type of the reg.
+        /// </summary>
+        /// <value>The type of the reg.</value>
         public RegType RegType
         {
             get;
             set;
         }
-		/// <summary>
-		/// Initializes a new instance of the <see cref="ZyGames.Framework.Game.Sns.SnsCenterUser"/> class.
-		/// </summary>
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ZyGames.Framework.Game.Sns.SnsCenterUser"/> class.
+        /// </summary>
         public SnsCenterUser()
         {
             RegType = RegType.Other;
@@ -181,8 +182,12 @@ namespace ZyGames.Framework.Game.Sns
             RegType regType = RegType;
             PwdType pwdType = PwdType.DES;
             SetLoginType(ref regType, ref pwdType, PassportId);
-            List<SqlParameter> listTmp = new List<SqlParameter>();
-            string sGetSql = "select top 1 userid,PassportId,DeviceID,RegType,RetailID,RetailUser,WeixinCode from SnsUserInfo ";
+
+            var command = ConnectManager.Provider.CreateCommandStruct("SnsUserInfo", CommandMode.Inquiry);
+            command.OrderBy = "USERID ASC";
+            command.Columns = "USERID,PASSPORTID,DEVICEID,REGTYPE,RETAILID,RETAILUSER,WEIXINCODE";
+            command.Filter = ConnectManager.Provider.CreateCommandFilter();
+
             string password = _PassportPwd;
 
             if (regType == RegType.Normal)
@@ -192,9 +197,12 @@ namespace ZyGames.Framework.Game.Sns
                     password = CryptoHelper.DES_Decrypt(password, GameEnvironment.ProductDesEnKey);
                     password = PasswordEncryptMd5(password);
                 }
-                sGetSql += "where PassportId=@aPassportId and PassportPwd=@PassportPwd";
-                listTmp.Add(SqlParamHelper.MakeInParam("@aPassportId", SqlDbType.VarChar, 0, _PassportId));
-                listTmp.Add(SqlParamHelper.MakeInParam("@PassportPwd", SqlDbType.VarChar, 0, password));
+                command.Filter.Condition = string.Format("{0} AND {1}",
+                        command.Filter.FormatExpression("PassportId"),
+                        command.Filter.FormatExpression("PassportPwd")
+                    );
+                command.Filter.AddParam("PassportId", _PassportId);
+                command.Filter.AddParam("PassportPwd", password);
             }
             else if (regType == RegType.Guest)
             {
@@ -207,20 +215,31 @@ namespace ZyGames.Framework.Game.Sns
                         password = PasswordEncryptMd5(password);
                     }
                 }
-                sGetSql += "where (DeviceID=@DeviceID and PassportPwd=@PassportPwd ) and PassportId=@aPassportId and RegType=@RegType";
-                listTmp.Add(SqlParamHelper.MakeInParam("@aPassportId", SqlDbType.VarChar, 0, _PassportId));
-                listTmp.Add(SqlParamHelper.MakeInParam("@DeviceID", SqlDbType.VarChar, 0, _deviceID));
-                listTmp.Add(SqlParamHelper.MakeInParam("@PassportPwd", SqlDbType.VarChar, 0, password));
-                listTmp.Add(SqlParamHelper.MakeInParam("@RegType", SqlDbType.Int, 0, (int)regType));
+
+                command.Filter.Condition = string.Format("{0} AND {1} AND {2} AND {3}",
+                        command.Filter.FormatExpression("DeviceID"),
+                        command.Filter.FormatExpression("PassportPwd"),
+                        command.Filter.FormatExpression("PassportId"),
+                        command.Filter.FormatExpression("RegType")
+                    );
+                command.Filter.AddParam("DeviceID", _deviceID);
+                command.Filter.AddParam("PassportPwd", password);
+                command.Filter.AddParam("PassportId", _PassportId);
+                command.Filter.AddParam("RegType", (int)regType);
             }
             else
             {
-                sGetSql += "where RetailID=@RetailID and RetailUser=@RetailUser";
-                listTmp.Add(SqlParamHelper.MakeInParam("@RetailID", SqlDbType.VarChar, 0, RetailID));
-                listTmp.Add(SqlParamHelper.MakeInParam("@RetailUser", SqlDbType.VarChar, 0, RetailUser));
+                command.Filter.Condition = string.Format("{0} AND {1}",
+                        command.Filter.FormatExpression("RetailID"),
+                        command.Filter.FormatExpression("RetailUser")
+                    );
+                command.Filter.AddParam("RetailID", RetailID);
+                command.Filter.AddParam("RetailUser", RetailUser);
             }
-            SqlParameter[] paramsGet = listTmp.ToArray();
-            using (SqlDataReader aReader = SqlHelper.ExecuteReader(config.connectionString, CommandType.Text, sGetSql, paramsGet))
+
+            command.Parser();
+
+            using (var aReader = ConnectManager.Provider.ExecuteReader(CommandType.Text, command.Sql, command.Parameters))
             {
                 SnsCenterUser user = new SnsCenterUser();
                 if (aReader.Read())
@@ -237,7 +256,7 @@ namespace ZyGames.Framework.Game.Sns
                     }
                     catch (Exception ex)
                     {
-                        TraceLog.WriteError("GetUserId method error:{0}, sql:{0}", ex, sGetSql);
+                        TraceLog.WriteError("GetUserId method error:{0}, sql:{0}", ex, command.Sql);
                     }
                     return _userid;
                 }
@@ -254,11 +273,15 @@ namespace ZyGames.Framework.Game.Sns
         /// <returns></returns>
         public RegType GetUserType()
         {
-            string sGetSql = "select top 1 PassportId, PassportPwd, RegType from SnsCenter.dbo.SnsUserInfo where PassportId=@PassportId";
-            List<SqlParameter> listTmp = new List<SqlParameter>();
-            listTmp.Add(SqlParamHelper.MakeInParam("@PassportId", SqlDbType.VarChar, 0, PassportId));
-            SqlParameter[] paramsGet = listTmp.ToArray();
-            using (SqlDataReader aReader = SqlHelper.ExecuteReader(config.connectionString, CommandType.Text, sGetSql, paramsGet))
+            var command = ConnectManager.Provider.CreateCommandStruct("SnsUserInfo", CommandMode.Inquiry);
+            command.OrderBy = "USERID ASC";
+            command.Columns = "PassportId,PassportPwd,RegType";
+            command.Filter = ConnectManager.Provider.CreateCommandFilter();
+            command.Filter.Condition = command.Filter.FormatExpression("PassportId");
+            command.Filter.AddParam("PassportId", PassportId);
+            command.Parser();
+
+            using (var aReader = ConnectManager.Provider.ExecuteReader(CommandType.Text, command.Sql, command.Parameters))
             {
                 if (aReader.Read())
                 {
@@ -274,11 +297,15 @@ namespace ZyGames.Framework.Game.Sns
         /// <returns></returns>
         public bool IsExist()
         {
-            string sGetSql = "select top 1 userid from SnsCenter.dbo.SnsUserInfo where PassportId=@aPassportId";
-            List<SqlParameter> listTmp = new List<SqlParameter>();
-            listTmp.Add(SqlParamHelper.MakeInParam("@aPassportId", SqlDbType.VarChar, 0, PassportId));
-            SqlParameter[] paramsGet = listTmp.ToArray();
-            using (SqlDataReader aReader = SqlHelper.ExecuteReader(config.connectionString, CommandType.Text, sGetSql, paramsGet))
+            var command = ConnectManager.Provider.CreateCommandStruct("SnsUserInfo", CommandMode.Inquiry);
+            command.Columns = "userid";
+            command.OrderBy = "USERID ASC";
+            command.Filter = ConnectManager.Provider.CreateCommandFilter();
+            command.Filter.Condition = command.Filter.FormatExpression("PassportId");
+            command.Filter.AddParam("PassportId", PassportId);
+            command.Parser();
+
+            using (var aReader = ConnectManager.Provider.ExecuteReader(CommandType.Text, command.Sql, command.Parameters))
             {
                 if (aReader.Read())
                 {
@@ -287,18 +314,26 @@ namespace ZyGames.Framework.Game.Sns
             }
             return false;
         }
-		/// <summary>
-		/// Determines whether this instance is exist retail.
-		/// </summary>
-		/// <returns><c>true</c> if this instance is exist retail; otherwise, <c>false</c>.</returns>
+        /// <summary>
+        /// Determines whether this instance is exist retail.
+        /// </summary>
+        /// <returns><c>true</c> if this instance is exist retail; otherwise, <c>false</c>.</returns>
         public bool IsExistRetail()
         {
-            string sGetSql = "select top 1 userid from SnsUserInfo where RetailID=@RetailID and RetailUser=@RetailUser";
-            List<SqlParameter> listTmp = new List<SqlParameter>();
-            listTmp.Add(SqlParamHelper.MakeInParam("@RetailID", SqlDbType.VarChar, 0, RetailID));
-            listTmp.Add(SqlParamHelper.MakeInParam("@RetailUser", SqlDbType.VarChar, 0, RetailUser));
-            SqlParameter[] paramsGet = listTmp.ToArray();
-            using (SqlDataReader aReader = SqlHelper.ExecuteReader(config.connectionString, CommandType.Text, sGetSql, paramsGet))
+
+            var command = ConnectManager.Provider.CreateCommandStruct("SnsUserInfo", CommandMode.Inquiry);
+            command.Columns = "userid";
+            command.OrderBy = "USERID ASC";
+            command.Filter = ConnectManager.Provider.CreateCommandFilter();
+            command.Filter.Condition = string.Format("{0} AND {1}",
+                    command.Filter.FormatExpression("RetailID"),
+                    command.Filter.FormatExpression("RetailUser")
+                );
+            command.Filter.AddParam("RetailID", RetailID);
+            command.Filter.AddParam("RetailUser", RetailUser);
+            command.Parser();
+
+            using (var aReader = ConnectManager.Provider.ExecuteReader(CommandType.Text, command.Sql, command.Parameters))
             {
                 if (aReader.Read())
                 {
@@ -313,19 +348,23 @@ namespace ZyGames.Framework.Game.Sns
             return false;
         }
 
-		/// <summary>
-		/// Sets the type of the login.
-		/// </summary>
-		/// <param name="regType">Reg type.</param>
-		/// <param name="pwdType">Pwd type.</param>
-		/// <param name="passportId">Passport identifier.</param>
+        /// <summary>
+        /// Sets the type of the login.
+        /// </summary>
+        /// <param name="regType">Reg type.</param>
+        /// <param name="pwdType">Pwd type.</param>
+        /// <param name="passportId">Passport identifier.</param>
         public static void SetLoginType(ref RegType regType, ref PwdType pwdType, string passportId)
         {
-            string sGetSql = "select top 1 RegType,DeviceID,PwdType from SnsUserInfo where PassportId=@aPassportId";
-            List<SqlParameter> listTmp = new List<SqlParameter>();
-            listTmp.Add(SqlParamHelper.MakeInParam("@aPassportId", SqlDbType.VarChar, 0, passportId));
-            SqlParameter[] paramsGet = listTmp.ToArray();
-            using (SqlDataReader aReader = SqlHelper.ExecuteReader(config.connectionString, CommandType.Text, sGetSql, paramsGet))
+            var command = ConnectManager.Provider.CreateCommandStruct("SnsUserInfo", CommandMode.Inquiry);
+            command.OrderBy = "USERID ASC";
+            command.Columns = "RegType,DeviceID,PwdType";
+            command.Filter = ConnectManager.Provider.CreateCommandFilter();
+            command.Filter.Condition = command.Filter.FormatExpression("PassportId");
+            command.Filter.AddParam("PassportId", passportId);
+            command.Parser();
+
+            using (var aReader = ConnectManager.Provider.ExecuteReader(CommandType.Text, command.Sql, command.Parameters))
             {
                 if (aReader.Read())
                 {
@@ -355,11 +394,16 @@ namespace ZyGames.Framework.Game.Sns
             {
                 deviceID = Guid.NewGuid().ToString();
             }
-            string sGetSql = "select top 1 PassportId, PassportPwd,PwdType, RegType from SnsUserInfo where DeviceID=@DeviceID";
-            List<SqlParameter> listTmp = new List<SqlParameter>();
-            listTmp.Add(SqlParamHelper.MakeInParam("@DeviceID", SqlDbType.VarChar, 0, deviceID));
-            SqlParameter[] paramsGet = listTmp.ToArray();
-            using (SqlDataReader aReader = SqlHelper.ExecuteReader(config.connectionString, CommandType.Text, sGetSql, paramsGet))
+
+            var command = ConnectManager.Provider.CreateCommandStruct("SnsUserInfo", CommandMode.Inquiry);
+            command.OrderBy = "USERID ASC";
+            command.Columns = "PassportId,PassportPwd,PwdType,RegType";
+            command.Filter = ConnectManager.Provider.CreateCommandFilter();
+            command.Filter.Condition = command.Filter.FormatExpression("DeviceID");
+            command.Filter.AddParam("DeviceID", deviceID);
+            command.Parser();
+
+            using (var aReader = ConnectManager.Provider.ExecuteReader(CommandType.Text, command.Sql, command.Parameters))
             {
                 if (aReader.Read())
                 {
@@ -377,12 +421,12 @@ namespace ZyGames.Framework.Game.Sns
             }
             return null;
         }
-		/// <summary>
-		/// Inserts the sns user.
-		/// </summary>
-		/// <returns>The sns user.</returns>
-		/// <param name="paramNames">Parameter names.</param>
-		/// <param name="paramValues">Parameter values.</param>
+        /// <summary>
+        /// Inserts the sns user.
+        /// </summary>
+        /// <returns>The sns user.</returns>
+        /// <param name="paramNames">Parameter names.</param>
+        /// <param name="paramValues">Parameter values.</param>
         public int InsertSnsUser(string[] paramNames, string[] paramValues)
         {
             SnsPassport oSnsPassportLog = new SnsPassport();
@@ -393,36 +437,30 @@ namespace ZyGames.Framework.Game.Sns
             //md5加密
             string password = CryptoHelper.DES_Decrypt(_PassportPwd, GameEnvironment.ProductDesEnKey);
             password = PasswordEncryptMd5(password);
-            string sInsertSql = string.Empty;
 
-            string extColumns = string.Join(",", paramNames);
-            extColumns = extColumns.TrimEnd().Length > 0 ? "," + extColumns : string.Empty;
-            string paramColumns = string.Join(",@", paramNames);
-            paramColumns = paramColumns.TrimEnd().Length > 0 ? ",@" + paramColumns : string.Empty;
-
-            List<SqlParameter> paramsInsert = new List<SqlParameter>();
-            sInsertSql = string.Format("insert into SnsUserInfo(passportid, passportpwd, DeviceID, RegType, RegTime,RetailID,RetailUser,PwdType{0})", extColumns);
-            sInsertSql += string.Format("values(@aPassportId, @aPassportPwd, @DeviceID, @RegType, @RegTime, @RetailID, @RetailUser,@PwdType{0}) select @@IDENTITY", paramColumns);
-            paramsInsert.Add(SqlParamHelper.MakeInParam("@aPassportId", SqlDbType.VarChar, 0, _PassportId));
-            paramsInsert.Add(SqlParamHelper.MakeInParam("@aPassportPwd", SqlDbType.VarChar, 0, password));
-            paramsInsert.Add(SqlParamHelper.MakeInParam("@deviceID", SqlDbType.VarChar, 0, _deviceID));
-            paramsInsert.Add(SqlParamHelper.MakeInParam("@RegType", SqlDbType.Int, 0, (int)RegType));
-            paramsInsert.Add(SqlParamHelper.MakeInParam("@RegTime", SqlDbType.DateTime, 0, DateTime.Now));
-            paramsInsert.Add(SqlParamHelper.MakeInParam("@RetailID", SqlDbType.VarChar, 0, RetailID));
-            paramsInsert.Add(SqlParamHelper.MakeInParam("@RetailUser", SqlDbType.VarChar, 0, RetailUser));
-            paramsInsert.Add(SqlParamHelper.MakeInParam("@PwdType", SqlDbType.Int, 0, (int)PwdType.MD5));
+            var command = ConnectManager.Provider.CreateCommandStruct("SnsUserInfo", CommandMode.Insert);
+            command.ReturnIdentity = true;
+            command.AddParameter("passportid", _PassportId);
+            command.AddParameter("passportpwd", password);
+            command.AddParameter("DeviceID", _deviceID);
+            command.AddParameter("RegType", (int)RegType);
+            command.AddParameter("RegTime", DateTime.Now);
+            command.AddParameter("RetailID", RetailID);
+            command.AddParameter("RetailUser", RetailUser);
+            command.AddParameter("PwdType", (int)PwdType.MD5);
             for (int i = 0; i < paramNames.Length; i++)
             {
-                paramsInsert.Add(SqlParamHelper.MakeInParam("@" + paramNames[i], SqlDbType.VarChar, 0, paramValues[i]));
+                command.AddParameter(paramNames[i], paramValues.Length > i ? paramValues[i] : "");
             }
+            command.Parser();
+
             try
             {
-
                 if (!oSnsPassportLog.SetPassportReg(_PassportId))
                 {
                     throw new Exception("SetPassportReg Error");
                 }
-                using (SqlDataReader aReader = SqlHelper.ExecuteReader(config.connectionString, CommandType.Text, sInsertSql, paramsInsert.ToArray()))
+                using (var aReader = ConnectManager.Provider.ExecuteReader(CommandType.Text, command.Sql, command.Parameters))
                 {
                     if (aReader.Read())
                     {
@@ -457,26 +495,27 @@ namespace ZyGames.Framework.Game.Sns
                 //md5加密
                 string password = CryptoHelper.DES_Decrypt(_PassportPwd, GameEnvironment.ProductDesEnKey);
                 password = PasswordEncryptMd5(password);
-                string sInsertSql = string.Empty;
-                SqlParameter[] paramsUpdate = new SqlParameter[5];
-                string condition = " where 1=1";
+
+                var command = ConnectManager.Provider.CreateCommandStruct("SnsUserInfo", CommandMode.Modify);
+                command.AddParameter("passportpwd", password);
+                command.AddParameter("RegType", (int)RegType.Normal);
+                command.AddParameter("DeviceID", "");
+                command.AddParameter("PwdType", (int)PwdType.MD5);
+
+                command.Filter = ConnectManager.Provider.CreateCommandFilter();
                 if (userId.ToUpper().StartsWith("Z"))
                 {
-                    condition += " and PassportID=@UserId";
+                    command.Filter.Condition = command.Filter.FormatExpression("PassportID");
+                    command.Filter.AddParam("PassportID", userId);
                 }
                 else
                 {
-                    condition += " and UserID=@UserId";
+                    command.Filter.Condition = command.Filter.FormatExpression("UserID");
+                    command.Filter.AddParam("UserID", userId);
                 }
-                sInsertSql = "update SnsUserInfo set passportpwd=@aPassportPwd,RegType=@RegType,DeviceID=@DeviceID,PwdType=@PwdType" + condition;
+                command.Parser();
 
-                paramsUpdate[0] = SqlParamHelper.MakeInParam("@UserId", SqlDbType.VarChar, 0, userId);
-                paramsUpdate[1] = SqlParamHelper.MakeInParam("@aPassportPwd", SqlDbType.VarChar, 0, password);
-                paramsUpdate[2] = SqlParamHelper.MakeInParam("@RegType", SqlDbType.Int, 0, (int)RegType.Normal);
-                paramsUpdate[3] = SqlParamHelper.MakeInParam("@DeviceID", SqlDbType.VarChar, 0, string.Empty);
-                paramsUpdate[4] = SqlParamHelper.MakeInParam("@PwdType", SqlDbType.Int, 0, (int)PwdType.MD5);//MD5
-
-                return SqlHelper.ExecuteNonQuery(config.connectionString, CommandType.Text, sInsertSql, paramsUpdate);
+                return ConnectManager.Provider.ExecuteQuery(CommandType.Text, command.Sql, command.Parameters);
             }
             catch (Exception ex)
             {
@@ -484,18 +523,20 @@ namespace ZyGames.Framework.Game.Sns
                 return 0;
             }
         }
-		/// <summary>
-		/// Gets the password.
-		/// </summary>
-		/// <returns>The password.</returns>
-		/// <param name="passportId">Passport identifier.</param>
+        /// <summary>
+        /// Gets the password.
+        /// </summary>
+        /// <returns>The password.</returns>
+        /// <param name="passportId">Passport identifier.</param>
         public string GetPassword(string passportId)
         {
-            string sGetSql = "select top 1 PassportPwd from SnsUserInfo where PassportId=@PassportId";
-            List<SqlParameter> listTmp = new List<SqlParameter>();
-            listTmp.Add(SqlParamHelper.MakeInParam("@PassportId", SqlDbType.VarChar, 0, passportId));
-            SqlParameter[] paramsGet = listTmp.ToArray();
-            using (SqlDataReader aReader = SqlHelper.ExecuteReader(config.connectionString, CommandType.Text, sGetSql, paramsGet))
+            var command = ConnectManager.Provider.CreateCommandStruct("SnsUserInfo", CommandMode.Inquiry, "PassportPwd");
+            command.OrderBy = "USERID ASC";
+            command.Filter = ConnectManager.Provider.CreateCommandFilter();
+            command.Filter.Condition = command.Filter.FormatExpression("PassportID");
+            command.Filter.AddParam("PassportID", passportId);
+            command.Parser();
+            using (var aReader = ConnectManager.Provider.ExecuteReader(CommandType.Text, command.Sql, command.Parameters))
             {
                 if (aReader.Read())
                 {
@@ -510,54 +551,45 @@ namespace ZyGames.Framework.Game.Sns
         {
             try
             {
-                string sInsertSql = string.Empty;
-                List<SqlParameter> paramsUpdate = new List<SqlParameter>();
-                paramsUpdate.Add(SqlParamHelper.MakeInParam("@PassportId", SqlDbType.VarChar, 0, pid));
-
-                sInsertSql = "update SnsUserInfo set PassportId=@PassportId";
+                var command = ConnectManager.Provider.CreateCommandStruct("SnsUserInfo", CommandMode.Modify);
                 if (!string.IsNullOrEmpty(snsuser.Mobile))
                 {
-                    sInsertSql += ", Mobile=@Mobile";
-                    paramsUpdate.Add(SqlParamHelper.MakeInParam("@Mobile", SqlDbType.VarChar, 0, snsuser.Mobile));
+                    command.AddParameter("Mobile", snsuser.Mobile);
                 }
                 if (!string.IsNullOrEmpty(snsuser.Mail))
                 {
-                    sInsertSql += ", Mail=@Mail";
-                    paramsUpdate.Add(SqlParamHelper.MakeInParam("@Mail", SqlDbType.VarChar, 0, snsuser.Mail));
+                    command.AddParameter("Mail", snsuser.Mail);
                 }
                 if (!string.IsNullOrEmpty(snsuser.RealName))
                 {
-                    sInsertSql += ", RealName=@RealName";
-                    paramsUpdate.Add(SqlParamHelper.MakeInParam("@RealName", SqlDbType.VarChar, 0, snsuser.RealName));
+                    command.AddParameter("RealName", snsuser.RealName);
                 }
                 if (!string.IsNullOrEmpty(snsuser.IDCards))
                 {
-                    sInsertSql += ", IDCards=@IDCards";
-                    paramsUpdate.Add(SqlParamHelper.MakeInParam("@IDCards", SqlDbType.VarChar, 0, snsuser.IDCards));
+                    command.AddParameter("IDCards", snsuser.IDCards);
                 }
                 if (!string.IsNullOrEmpty(snsuser.ActiveCode))
                 {
-                    sInsertSql += ", ActiveCode=@ActiveCode";
-                    paramsUpdate.Add(SqlParamHelper.MakeInParam("@ActiveCode", SqlDbType.VarChar, 0, snsuser.ActiveCode));
+                    command.AddParameter("ActiveCode", snsuser.ActiveCode);
                 }
                 if (snsuser.SendActiveDate > DateTime.MinValue)
                 {
-                    sInsertSql += ", SendActiveDate=@SendActiveDate";
-                    paramsUpdate.Add(SqlParamHelper.MakeInParam("@SendActiveDate", SqlDbType.DateTime, 0, snsuser.SendActiveDate));
+                    command.AddParameter("SendActiveDate", snsuser.SendActiveDate);
                 }
                 if (snsuser.ActiveDate > DateTime.MinValue)
                 {
-                    sInsertSql += ", ActiveDate=@ActiveDate";
-                    paramsUpdate.Add(SqlParamHelper.MakeInParam("@ActiveDate", SqlDbType.DateTime, 0, snsuser.ActiveDate));
+                    command.AddParameter("ActiveDate", snsuser.ActiveDate);
                 }
                 if (!string.IsNullOrEmpty(snsuser.WeixinCode))
                 {
-                    sInsertSql += ", WeixinCode=@WeixinCode";
-                    paramsUpdate.Add(SqlParamHelper.MakeInParam("@WeixinCode", SqlDbType.VarChar, 0, snsuser.WeixinCode));
+                    command.AddParameter("WeixinCode", snsuser.WeixinCode);
                 }
-                sInsertSql += " where PassportId=@PassportId";
+                command.Filter = ConnectManager.Provider.CreateCommandFilter();
+                command.Filter.Condition = command.Filter.FormatExpression("PassportID");
+                command.Filter.AddParam("PassportID", pid);
+                command.Parser();
 
-                return SqlHelper.ExecuteNonQuery(config.connectionString, CommandType.Text, sInsertSql, paramsUpdate.ToArray());
+                return ConnectManager.Provider.ExecuteQuery(CommandType.Text, command.Sql, command.Parameters);
             }
             catch (Exception ex)
             {
@@ -570,23 +602,26 @@ namespace ZyGames.Framework.Game.Sns
         {
             if (device == string.Empty)
                 return true;
-            string sGetSql = string.Format("select count([DeviceID]) from LimitDevice where DeviceID = @deviceID ", device);
-            SqlParameter[] para = new SqlParameter[] 
-            {
-                SqlParamHelper.MakeInParam("@deviceID",SqlDbType.VarChar,0,device),
-            };
-            int count = Convert.ToInt32(SqlHelper.ExecuteScalar(config.connectionString, CommandType.Text, sGetSql, para));
+
+            var command = ConnectManager.Provider.CreateCommandStruct("LimitDevice", CommandMode.Inquiry);
+            command.Columns = "COUNT(DeviceID)";
+            command.Filter = ConnectManager.Provider.CreateCommandFilter();
+            command.Filter.Condition = command.Filter.FormatExpression("DeviceID");
+            command.Filter.AddParam("DeviceID", device);
+            command.Parser();
+
+            int count = Convert.ToInt32(ConnectManager.Provider.ExecuteScalar(CommandType.Text, command.Sql, command.Parameters));
             return count <= 0;
         }
 
         internal SnsUser GetUserInfo(string passportId)
         {
             SnsUser snsUser = new SnsUser();
-            string sGetSql = "select top 1 [UserId],[PassportID],[PassportPwd],[DeviceID],[RegType],[RegTime],[RetailID],[RetailUser],[Mobile],[Mail],[PwdType],[RealName],[IDCards],[ActiveCode],[SendActiveDate],[ActiveDate],WeixinCode from SnsUserInfo where PassportId=@PassportId";
-            List<SqlParameter> listTmp = new List<SqlParameter>();
-            listTmp.Add(SqlParamHelper.MakeInParam("@PassportId", SqlDbType.VarChar, 0, passportId));
-            SqlParameter[] paramsGet = listTmp.ToArray();
-            SetUserInfo(sGetSql, paramsGet, snsUser);
+            SetUserInfo(f =>
+            {
+                f.Condition = f.FormatExpression("PassportId");
+                f.AddParam("PassportId", passportId);
+            }, snsUser);
             return snsUser;
         }
 
@@ -598,17 +633,24 @@ namespace ZyGames.Framework.Game.Sns
         internal SnsUser GetUserByWeixin(string openId)
         {
             SnsUser snsUser = new SnsUser();
-            string sGetSql = "select top 1 [UserId],[PassportID],[PassportPwd],[DeviceID],[RegType],[RegTime],[RetailID],[RetailUser],[Mobile],[Mail],[PwdType],[RealName],[IDCards],[ActiveCode],[SendActiveDate],[ActiveDate],WeixinCode from SnsUserInfo where WeixinCode=@WeixinCode";
-            List<SqlParameter> listTmp = new List<SqlParameter>();
-            listTmp.Add(SqlParamHelper.MakeInParam("@WeixinCode", SqlDbType.VarChar, 0, openId));
-            SqlParameter[] paramsGet = listTmp.ToArray();
-            SetUserInfo(sGetSql, paramsGet, snsUser);
+            SetUserInfo(f =>
+            {
+                f.Condition = f.FormatExpression("WeixinCode");
+                f.AddParam("WeixinCode", openId);
+            }, snsUser);
             return snsUser;
         }
 
-        private void SetUserInfo(string sGetSql, SqlParameter[] paramsGet, SnsUser snsUser)
+        private void SetUserInfo(Action<CommandFilter> match, SnsUser snsUser)
         {
-            using (SqlDataReader aReader = SqlHelper.ExecuteReader(config.connectionString, CommandType.Text, sGetSql, paramsGet))
+            var command = ConnectManager.Provider.CreateCommandStruct("SnsUserInfo", CommandMode.Inquiry);
+            command.OrderBy = "USERID ASC";
+            command.Columns = "UserId,PassportID,PassportPwd,DeviceID,RegType,RegTime,RetailID,RetailUser,Mobile,Mail,PwdType,RealName,IDCards,ActiveCode,SendActiveDate,ActiveDate,WeixinCode";
+            command.Filter = ConnectManager.Provider.CreateCommandFilter();
+            match(command.Filter);
+            command.Parser();
+
+            using (var aReader = ConnectManager.Provider.ExecuteReader(CommandType.Text, command.Sql, command.Parameters))
             {
                 if (aReader.Read())
                 {
@@ -631,30 +673,29 @@ namespace ZyGames.Framework.Game.Sns
 
         private DateTime ToDate(string str)
         {
-            DateTime result = new DateTime();
+            DateTime result;
             DateTime.TryParse(str, out result);
             return result;
         }
 
-		/// <summary>
-		/// Adds the login log.
-		/// </summary>
-		/// <param name="deviceID">Device I.</param>
-		/// <param name="PassportID">Passport I.</param>
-        public static void AddLoginLog(string deviceID, string PassportID)
+        /// <summary>
+        /// Adds the login log.
+        /// </summary>
+        /// <param name="deviceID">Device I.</param>
+        /// <param name="passportID">Passport I.</param>
+        public static void AddLoginLog(string deviceID, string passportID)
         {
-            if (string.IsNullOrEmpty(deviceID) || string.IsNullOrEmpty(PassportID))
+            if (string.IsNullOrEmpty(deviceID) || string.IsNullOrEmpty(passportID))
             {
                 return;
             }
-            string sql = "insert into PassportLoginLog values(@deviceID,@passportid,@logintime)";
-            SqlParameter[] para = new SqlParameter[] 
-            {
-                SqlParamHelper.MakeInParam("@deviceID",SqlDbType.VarChar,0,deviceID),
-               SqlParamHelper.MakeInParam("@passportid",SqlDbType.VarChar,0,PassportID),
-               SqlParamHelper.MakeInParam("@logintime",SqlDbType.DateTime,0,DateTime.Now),
-            };
-            SqlHelper.ExecuteNonQuery(config.connectionString, CommandType.Text, sql, para);
+            var command = ConnectManager.Provider.CreateCommandStruct("PassportLoginLog", CommandMode.Insert);
+            command.AddParameter("DeviceID", deviceID);
+            command.AddParameter("PassportID", passportID);
+            command.AddParameter("LoginTime", MathUtils.Now);
+            command.Parser();
+
+            ConnectManager.Provider.ExecuteQuery(CommandType.Text, command.Sql, command.Parameters);
         }
     }
 }

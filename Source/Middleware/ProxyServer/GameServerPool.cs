@@ -24,10 +24,12 @@ THE SOFTWARE.
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Net.Security;
 using System.Text;
-using NLog;
-using ProxyServer.net._36you.dir;
+using System.Threading;
+using ProxyServer.com.scutgame.dir;
+using ZyGames.Framework.Common;
+using ZyGames.Framework.Common.Configuration;
+using ZyGames.Framework.Common.Log;
 using ZyGames.Framework.RPC.Sockets;
 using System.Net;
 using System.Threading.Tasks;
@@ -35,45 +37,86 @@ using System.Collections.Specialized;
 
 namespace ProxyServer
 {
-    internal class GameServerListManager
+    internal enum ActionEnum
     {
-        private Logger logger = LogManager.GetLogger("GameServerListManager");
-        private static GameServerListManager intance = new GameServerListManager();
-        private ConcurrentDictionary<string, ServerInfo> serversPool = new ConcurrentDictionary<string, ServerInfo>();
+        /// <summary>
+        /// 心跳
+        /// </summary>
+        Heartbeat = 1,
+        /// <summary>
+        /// 中断
+        /// </summary>
+        Interrupt = 2
+    }
 
-        public static GameServerListManager Current
+    internal static class GameServerListManager
+    {
+        private static ConcurrentDictionary<string, ServerInfo> serversPool = new ConcurrentDictionary<string, ServerInfo>();
+
+        public static void Initialize()
         {
-            get { return intance; }
+            Initialize(s => { });
         }
 
-        GameServerListManager()
+        public static void Initialize(Action<ServerInfo> updateCallback)
         {
             try
             {
-
-                DirServiceSoapClient dirClient = new DirServiceSoapClient();
+                string[] gameIds = ConfigUtils.GetSetting("GameIds", "").Split(',');
+                DirService dirClient = new DirService();
                 ServicePointManager.ServerCertificateValidationCallback += (se, cert, chain, sslerror) => true;
 
                 string keyCode = "";
-                var gameList = dirClient.GetGame();
+                List<GameInfo> gameList = new List<GameInfo>();
+                foreach (var gameId in gameIds)
+                {
+                    if (!string.IsNullOrEmpty(gameId))
+                    {
+                        var gameInfo = dirClient.GetGameObj(gameId.ToInt());
+                        if (gameInfo != null)
+                        {
+                            gameList.Add(gameInfo);
+                        }
+                    }
+                }
+                if (gameList.Count == 0)
+                {
+                    gameList.AddRange(dirClient.GetGame());
+                }
                 foreach (var gameInfo in gameList)
                 {
                     var serverList = dirClient.GetServers(gameInfo.ID, false, false);
                     foreach (var serverInfo in serverList)
                     {
                         keyCode = string.Format("{0}_{1}", gameInfo.ID, serverInfo.ID);
-                        serversPool.TryAdd(keyCode, serverInfo);
+                        ServerInfo temp;
+                        if (!serversPool.TryGetValue(keyCode, out temp))
+                        {
+                            serversPool.TryAdd(keyCode, serverInfo);
+                        }
+                        else if (temp.IsEnable != serverInfo.IsEnable ||
+                            temp.IntranetAddress != serverInfo.IntranetAddress ||
+                            temp.ServerUrl != serverInfo.ServerUrl)
+                        {
+                            temp.IsEnable = serverInfo.IsEnable;
+                            temp.IntranetAddress = serverInfo.IntranetAddress;
+                            temp.ServerUrl = serverInfo.ServerUrl;
+                            if (updateCallback != null)
+                            {
+                                updateCallback(temp);
+                            }
+                        }
                     }
                 }
-                logger.Info("load game server:{0}", string.Join(",", serversPool.Keys));
+                TraceLog.ReleaseWrite("load game server:{0}", string.Join(",", serversPool.Keys));
             }
             catch (Exception ex)
             {
-                logger.Error("load game server error:{0}", ex);
+                TraceLog.WriteError("load game server error:{0}", ex);
             }
         }
 
-        public ServerInfo Find(int gameId, int serverId)
+        public static ServerInfo Find(int gameId, int serverId)
         {
             string keyCode = string.Format("{0}_{1}", gameId, serverId);
             ServerInfo server;
@@ -87,26 +130,48 @@ namespace ProxyServer
 
     class GSConnectionManager
     {
-        private Dictionary<string, GameServerConnection> serversPool = new Dictionary<string, GameServerConnection>();
+        private ConcurrentDictionary<string, GameServerConnection> serversPool = new ConcurrentDictionary<string, GameServerConnection>();
+        private Timer _timer;
+        private int _dueRefleshTime = ConfigUtils.GetSetting("ServerHostRefleshTime", 120000); //2m
         private GameProxy proxy;
-        private Logger logger = LogManager.GetLogger("GSConnectionManager");
 
         public GSConnectionManager(GameProxy proxy)
         {
             this.proxy = proxy;
+            _timer = new Timer(DoRefreshGameServer, null, 60000, _dueRefleshTime);
+        }
+
+        private void DoRefreshGameServer(object state)
+        {
+            try
+            {
+                GameServerListManager.Initialize(s =>
+                {
+                    string key = GetKey(s.GameID, s.ID);
+                    TraceLog.ReleaseWrite("Reflesh server:{0} setting.", key);
+                    GameServerConnection value;
+                    if (serversPool.TryRemove(key, out value))
+                    {
+                        value.Stop();
+                    }
+                });
+            }
+            catch (Exception)
+            {
+            }
         }
 
         public void Send(int gameId, int serverId, byte[] data)
         {
             GameServerConnection connection;
-            var key = string.Format("{0}_{1}", gameId, serverId);
+            string key = GetKey(gameId, serverId);
             if (!serversPool.TryGetValue(key, out connection))
             {
                 lock (serversPool)
                 {
                     if (!serversPool.TryGetValue(key, out connection))
                     {
-                        var serverInfo = GameServerListManager.Current.Find(gameId, serverId);
+                        var serverInfo = GameServerListManager.Find(gameId, serverId);
                         //需要实现的,加载服务器列表到proxy pool中,必须实现
                         if (serverInfo == null)
                             throw new ApplicationException(string.Format("游戏id={0}服务器id={1}不存在。", gameId, serverId));
@@ -125,19 +190,26 @@ namespace ProxyServer
 
             connection.Send(data);
         }
+
+        private string GetKey(int gameId, int serverId)
+        {
+            return string.Format("{0}_{1}", gameId, serverId);
+        }
     }
 
     class GameServerConnection
     {
+        private Timer _timer;
+        private Guid _ssid;
         private ClientSocket clientSocket;
         private GameProxy proxy;
-        private static readonly Logger logger = LogManager.GetLogger("GameServerConnection");
         private IPEndPoint remoteEndPoint;
         private object syncRoot = new object();
-        private static int bufferSize = Util.GetAppSetting<int>("BufferSize", 8192);
+        private static int bufferSize = ConfigUtils.GetSetting("BufferSize", 8192);
 
         public GameServerConnection(string ip, int port, GameProxy proxy)
         {
+            _ssid = Guid.NewGuid();
             this.proxy = proxy;
 
             remoteEndPoint = new IPEndPoint(Dns.GetHostAddresses(ip)[0], port);
@@ -145,9 +217,52 @@ namespace ProxyServer
             clientSocket = new ClientSocket(settings);
             clientSocket.DataReceived += new SocketEventHandler(DataReceived);
             clientSocket.Disconnected += new SocketEventHandler(Disconnected);
+            EnsureConnected();
+
+            _timer = new Timer(DoCheckHeartbeat, null, 1000, 30 * 1000); //30s
         }
 
-        private void EnsureConnected()
+        public void Stop()
+        {
+            try
+            {
+                _timer.Dispose();
+            }
+            catch
+            {
+            }
+        }
+
+        /// <summary>
+        /// 心跳包
+        /// </summary>
+        /// <param name="state"></param>
+        private void DoCheckHeartbeat(object state)
+        {
+            try
+            {
+                NameValueCollection requestParam = new NameValueCollection();
+                requestParam["actionid"] = ((int)ActionEnum.Heartbeat).ToString();
+                requestParam["ssid"] = _ssid.ToString("N");
+                requestParam["msgid"] = "0";
+                string paramStr = RequestParse.ToQueryString(requestParam);
+                byte[] paramData = Encoding.ASCII.GetBytes(paramStr);
+                try
+                {
+                    Send(paramData);
+                }
+                catch (Exception ex)
+                {
+                    TraceLog.WriteError("连接游戏服中断error:{0}\r\nParam:{1}", ex, paramStr);
+                }
+            }
+            catch (Exception ex)
+            {
+
+            }
+        }
+
+        private bool EnsureConnected()
         {
             if (!clientSocket.Connected)
             {
@@ -158,15 +273,17 @@ namespace ProxyServer
                         try
                         {
                             clientSocket.Connect();
+                            return true;
                         }
                         catch (Exception ex)
                         {
-                            logger.Error("连接到游戏服失败，地址:{0}", remoteEndPoint);
-                            throw ex;
+                            TraceLog.WriteError("连接到游戏服失败，地址:{0}, error:{1}", remoteEndPoint, ex);
                         }
                     }
                 }
+                return false;
             }
+            return true;
         }
 
         void Disconnected(object sender, SocketEventArgs e)
@@ -176,38 +293,48 @@ namespace ProxyServer
 
         void DataReceived(object sender, SocketEventArgs e)
         {
-            var bytes = new byte[16];
-            Buffer.BlockCopy(e.Data, 0, bytes, 0, 16);
-            var ssid = new Guid(bytes);
-            var data = e.Data;
-            var sendResult = proxy.SendDataBack(ssid, e.Data, 16, e.Data.Length - 16);
-            if (!sendResult)
+            try
             {
-                Task.Factory.StartNew(() =>
+                var bytes = new byte[16];
+                Buffer.BlockCopy(e.Data, 0, bytes, 0, 16);
+                var ssid = new Guid(bytes);
+                var sendResult = proxy.SendDataBack(ssid, e.Data, 16, e.Data.Length - 16);
+                if (!sendResult)
                 {
-                    NameValueCollection requestParam = new NameValueCollection();
-                    requestParam["actionid"] = "2";
-                    requestParam["ssid"] = ssid.ToString("N");
-                    requestParam["msgid"] = "0";
-
-                    byte[] paramData = Encoding.ASCII.GetBytes(RequestParse.ToQueryString(requestParam));
-
-                    try
+                    Task.Factory.StartNew(() =>
                     {
-                        Send(paramData);
-                    }
-                    catch (Exception ex)
-                    {
-                        logger.Error("发送tcp连接断开通知失败。", ex);
-                    }
-                });
+                        NameValueCollection requestParam = new NameValueCollection();
+                        //连接中断通知游戏服
+                        requestParam["actionid"] = ((int)ActionEnum.Interrupt).ToString();
+                        requestParam["ssid"] = ssid.ToString("N");
+                        requestParam["msgid"] = "0";
+                        string paramStr = RequestParse.ToQueryString(requestParam);
+
+                        byte[] paramData = Encoding.ASCII.GetBytes(paramStr);
+
+                        try
+                        {
+                            Send(paramData);
+                        }
+                        catch (Exception ex)
+                        {
+                            TraceLog.WriteError("连接中断通知游戏服error:{0}\r\nParam:{1}", ex, paramStr);
+                        }
+                    });
+                }
+            }
+            catch (Exception er)
+            {
+                TraceLog.WriteError("DataReceived error:{0}", er);
             }
         }
 
         public void Send(byte[] data)
         {
-            EnsureConnected();
-            clientSocket.PostSend(data, 0, data.Length);
+            if (EnsureConnected())
+            {
+                clientSocket.PostSend(data, 0, data.Length);
+            }
         }
     }
 }

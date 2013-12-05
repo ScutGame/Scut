@@ -54,6 +54,7 @@ namespace ZyGames.Framework.Game.Com.Model
     /// <summary>
     /// 引导进度项
     /// </summary>
+    [Serializable, ProtoContract]
     public class GuideProgressItem : EntityChangeEvent
     {
         /// <summary>
@@ -114,7 +115,7 @@ namespace ZyGames.Framework.Game.Com.Model
         /// <summary>
         /// </summary>        
         [ProtoMember(1)]
-        public abstract Int32 UserId { get; }
+        public abstract Int32 UserId { get; set; }
 
         /// <summary>
         /// 是否结束引导

@@ -25,6 +25,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using ProtoBuf;
 using ZyGames.Framework.Model;
 
 namespace ZyGames.Framework.Game.Com.Model
@@ -32,6 +33,7 @@ namespace ZyGames.Framework.Game.Com.Model
     /// <summary>
     /// 媒体礼包新手卡
     /// </summary>
+    [Serializable, ProtoContract]
     public abstract class GiftNoviceCard : BaseEntity
     {
 		/// <summary>

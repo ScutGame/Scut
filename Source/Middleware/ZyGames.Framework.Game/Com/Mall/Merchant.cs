@@ -26,6 +26,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using ProtoBuf;
 using ZyGames.Framework.Common;
 using ZyGames.Framework.Game.Com.Model;
 using ZyGames.Framework.Game.Context;
@@ -35,6 +36,7 @@ namespace ZyGames.Framework.Game.Com.Mall
     /// <summary>
     /// 商家
     /// </summary>
+    [Serializable, ProtoContract]
     public class Merchant
     {
         private readonly int _merchantId;

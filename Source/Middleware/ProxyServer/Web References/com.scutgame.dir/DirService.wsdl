@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<wsdl:definitions xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" xmlns:tns="http://dir.36you.net/" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:tm="http://microsoft.com/wsdl/mime/textMatching/" xmlns:s="http://www.w3.org/2001/XMLSchema" xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/" targetNamespace="http://dir.36you.net/" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
+<wsdl:definitions xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" xmlns:tns="http://dir.scutgame.com/" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:s="http://www.w3.org/2001/XMLSchema" xmlns:tm="http://microsoft.com/wsdl/mime/textMatching/" xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/" targetNamespace="http://dir.scutgame.com/" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
   <wsdl:types>
-    <s:schema elementFormDefault="qualified" targetNamespace="http://dir.36you.net/">
+    <s:schema elementFormDefault="qualified" targetNamespace="http://dir.scutgame.com/">
       <s:element name="GetOfficialGame">
         <s:complexType />
       </s:element>
@@ -18,20 +18,35 @@
         </s:sequence>
       </s:complexType>
       <s:complexType name="GameInfo">
-        <s:sequence>
-          <s:element minOccurs="1" maxOccurs="1" name="ID" type="s:int" />
-          <s:element minOccurs="0" maxOccurs="1" name="Name" type="s:string" />
-          <s:element minOccurs="0" maxOccurs="1" name="Currency" type="s:string" />
-          <s:element minOccurs="1" maxOccurs="1" name="Multiple" type="s:decimal" />
-          <s:element minOccurs="0" maxOccurs="1" name="GameWord" type="s:string" />
-          <s:element minOccurs="0" maxOccurs="1" name="AgentsID" type="s:string" />
-          <s:element minOccurs="1" maxOccurs="1" name="IsRelease" type="s:boolean" />
-          <s:element minOccurs="1" maxOccurs="1" name="ReleaseDate" type="s:dateTime" />
-          <s:element minOccurs="0" maxOccurs="1" name="PayStyle" type="s:string" />
-          <s:element minOccurs="0" maxOccurs="1" name="SocketServer" type="s:string" />
-          <s:element minOccurs="1" maxOccurs="1" name="SocketPort" type="s:int" />
-        </s:sequence>
+        <s:complexContent mixed="false">
+          <s:extension base="tns:MemoryEntity">
+            <s:sequence>
+              <s:element minOccurs="1" maxOccurs="1" name="ID" type="s:int" />
+              <s:element minOccurs="0" maxOccurs="1" name="Name" type="s:string" />
+              <s:element minOccurs="0" maxOccurs="1" name="Currency" type="s:string" />
+              <s:element minOccurs="1" maxOccurs="1" name="Multiple" type="s:decimal" />
+              <s:element minOccurs="0" maxOccurs="1" name="GameWord" type="s:string" />
+              <s:element minOccurs="0" maxOccurs="1" name="AgentsID" type="s:string" />
+              <s:element minOccurs="1" maxOccurs="1" name="IsRelease" type="s:boolean" />
+              <s:element minOccurs="1" maxOccurs="1" name="ReleaseDate" type="s:dateTime" />
+              <s:element minOccurs="0" maxOccurs="1" name="PayStyle" type="s:string" />
+              <s:element minOccurs="0" maxOccurs="1" name="SocketServer" type="s:string" />
+              <s:element minOccurs="1" maxOccurs="1" name="SocketPort" type="s:int" />
+            </s:sequence>
+          </s:extension>
+        </s:complexContent>
       </s:complexType>
+      <s:complexType name="MemoryEntity">
+        <s:complexContent mixed="false">
+          <s:extension base="tns:EntityChangeEvent" />
+        </s:complexContent>
+      </s:complexType>
+      <s:complexType name="EntityChangeEvent">
+        <s:complexContent mixed="false">
+          <s:extension base="tns:IItemChangeEvent" />
+        </s:complexContent>
+      </s:complexType>
+      <s:complexType name="IItemChangeEvent" abstract="true" />
       <s:element name="GetGameObj">
         <s:complexType>
           <s:sequence>
@@ -132,6 +147,40 @@
       <s:element name="SetServerResponse">
         <s:complexType />
       </s:element>
+      <s:element name="GetServerObj">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="1" maxOccurs="1" name="gameID" type="s:int" />
+            <s:element minOccurs="1" maxOccurs="1" name="serverId" type="s:int" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="GetServerObjResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="GetServerObjResult" type="tns:ServerInfo" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:complexType name="ServerInfo">
+        <s:complexContent mixed="false">
+          <s:extension base="tns:MemoryEntity">
+            <s:sequence>
+              <s:element minOccurs="1" maxOccurs="1" name="ID" type="s:int" />
+              <s:element minOccurs="1" maxOccurs="1" name="GameID" type="s:int" />
+              <s:element minOccurs="0" maxOccurs="1" name="ServerName" type="s:string" />
+              <s:element minOccurs="0" maxOccurs="1" name="ServerUrl" type="s:string" />
+              <s:element minOccurs="0" maxOccurs="1" name="IntranetAddress" type="s:string" />
+              <s:element minOccurs="0" maxOccurs="1" name="Status" type="s:string" />
+              <s:element minOccurs="1" maxOccurs="1" name="ActiveNum" type="s:int" />
+              <s:element minOccurs="1" maxOccurs="1" name="Weight" type="s:int" />
+              <s:element minOccurs="1" maxOccurs="1" name="TargetServer" type="s:int" />
+              <s:element minOccurs="1" maxOccurs="1" name="IsEnable" type="s:boolean" />
+              <s:element minOccurs="1" maxOccurs="1" name="EnableDate" type="s:dateTime" />
+            </s:sequence>
+          </s:extension>
+        </s:complexContent>
+      </s:complexType>
       <s:element name="GetServers">
         <s:complexType>
           <s:sequence>
@@ -151,21 +200,6 @@
       <s:complexType name="ArrayOfServerInfo">
         <s:sequence>
           <s:element minOccurs="0" maxOccurs="unbounded" name="ServerInfo" nillable="true" type="tns:ServerInfo" />
-        </s:sequence>
-      </s:complexType>
-      <s:complexType name="ServerInfo">
-        <s:sequence>
-          <s:element minOccurs="1" maxOccurs="1" name="ID" type="s:int" />
-          <s:element minOccurs="1" maxOccurs="1" name="GameID" type="s:int" />
-          <s:element minOccurs="0" maxOccurs="1" name="ServerName" type="s:string" />
-          <s:element minOccurs="0" maxOccurs="1" name="ServerUrl" type="s:string" />
-          <s:element minOccurs="0" maxOccurs="1" name="IntranetAddress" type="s:string" />
-          <s:element minOccurs="0" maxOccurs="1" name="Status" type="s:string" />
-          <s:element minOccurs="1" maxOccurs="1" name="ActiveNum" type="s:int" />
-          <s:element minOccurs="1" maxOccurs="1" name="Weight" type="s:int" />
-          <s:element minOccurs="1" maxOccurs="1" name="TargetServer" type="s:int" />
-          <s:element minOccurs="1" maxOccurs="1" name="IsEnable" type="s:boolean" />
-          <s:element minOccurs="1" maxOccurs="1" name="EnableDate" type="s:dateTime" />
         </s:sequence>
       </s:complexType>
       <s:element name="GetServerList">
@@ -358,6 +392,12 @@
   <wsdl:message name="SetServerSoapOut">
     <wsdl:part name="parameters" element="tns:SetServerResponse" />
   </wsdl:message>
+  <wsdl:message name="GetServerObjSoapIn">
+    <wsdl:part name="parameters" element="tns:GetServerObj" />
+  </wsdl:message>
+  <wsdl:message name="GetServerObjSoapOut">
+    <wsdl:part name="parameters" element="tns:GetServerObjResponse" />
+  </wsdl:message>
   <wsdl:message name="GetServersSoapIn">
     <wsdl:part name="parameters" element="tns:GetServers" />
   </wsdl:message>
@@ -471,6 +511,11 @@
       <wsdl:input message="tns:SetServerSoapIn" />
       <wsdl:output message="tns:SetServerSoapOut" />
     </wsdl:operation>
+    <wsdl:operation name="GetServerObj">
+      <wsdl:documentation xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">游戏服务器列表</wsdl:documentation>
+      <wsdl:input message="tns:GetServerObjSoapIn" />
+      <wsdl:output message="tns:GetServerObjSoapOut" />
+    </wsdl:operation>
     <wsdl:operation name="GetServers">
       <wsdl:documentation xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">游戏服务器列表</wsdl:documentation>
       <wsdl:input message="tns:GetServersSoapIn" />
@@ -535,7 +580,7 @@
   <wsdl:binding name="DirServiceSoap" type="tns:DirServiceSoap">
     <soap:binding transport="http://schemas.xmlsoap.org/soap/http" />
     <wsdl:operation name="GetOfficialGame">
-      <soap:operation soapAction="http://dir.36you.net/GetOfficialGame" style="document" />
+      <soap:operation soapAction="http://dir.scutgame.com/GetOfficialGame" style="document" />
       <wsdl:input>
         <soap:body use="literal" />
       </wsdl:input>
@@ -544,7 +589,7 @@
       </wsdl:output>
     </wsdl:operation>
     <wsdl:operation name="GetGameObj">
-      <soap:operation soapAction="http://dir.36you.net/GetGameObj" style="document" />
+      <soap:operation soapAction="http://dir.scutgame.com/GetGameObj" style="document" />
       <wsdl:input>
         <soap:body use="literal" />
       </wsdl:input>
@@ -553,7 +598,7 @@
       </wsdl:output>
     </wsdl:operation>
     <wsdl:operation name="GetGame">
-      <soap:operation soapAction="http://dir.36you.net/GetGame" style="document" />
+      <soap:operation soapAction="http://dir.scutgame.com/GetGame" style="document" />
       <wsdl:input>
         <soap:body use="literal" />
       </wsdl:input>
@@ -562,7 +607,7 @@
       </wsdl:output>
     </wsdl:operation>
     <wsdl:operation name="GetGameInfo">
-      <soap:operation soapAction="http://dir.36you.net/GetGameInfo" style="document" />
+      <soap:operation soapAction="http://dir.scutgame.com/GetGameInfo" style="document" />
       <wsdl:input>
         <soap:body use="literal" />
       </wsdl:input>
@@ -571,7 +616,7 @@
       </wsdl:output>
     </wsdl:operation>
     <wsdl:operation name="AddGame">
-      <soap:operation soapAction="http://dir.36you.net/AddGame" style="document" />
+      <soap:operation soapAction="http://dir.scutgame.com/AddGame" style="document" />
       <wsdl:input>
         <soap:body use="literal" />
       </wsdl:input>
@@ -580,7 +625,7 @@
       </wsdl:output>
     </wsdl:operation>
     <wsdl:operation name="AddGameNew">
-      <soap:operation soapAction="http://dir.36you.net/AddGameNew" style="document" />
+      <soap:operation soapAction="http://dir.scutgame.com/AddGameNew" style="document" />
       <wsdl:input>
         <soap:body use="literal" />
       </wsdl:input>
@@ -589,7 +634,7 @@
       </wsdl:output>
     </wsdl:operation>
     <wsdl:operation name="AddServer">
-      <soap:operation soapAction="http://dir.36you.net/AddServer" style="document" />
+      <soap:operation soapAction="http://dir.scutgame.com/AddServer" style="document" />
       <wsdl:input>
         <soap:body use="literal" />
       </wsdl:input>
@@ -598,7 +643,16 @@
       </wsdl:output>
     </wsdl:operation>
     <wsdl:operation name="SetServer">
-      <soap:operation soapAction="http://dir.36you.net/SetServer" style="document" />
+      <soap:operation soapAction="http://dir.scutgame.com/SetServer" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetServerObj">
+      <soap:operation soapAction="http://dir.scutgame.com/GetServerObj" style="document" />
       <wsdl:input>
         <soap:body use="literal" />
       </wsdl:input>
@@ -607,7 +661,7 @@
       </wsdl:output>
     </wsdl:operation>
     <wsdl:operation name="GetServers">
-      <soap:operation soapAction="http://dir.36you.net/GetServers" style="document" />
+      <soap:operation soapAction="http://dir.scutgame.com/GetServers" style="document" />
       <wsdl:input>
         <soap:body use="literal" />
       </wsdl:input>
@@ -616,7 +670,7 @@
       </wsdl:output>
     </wsdl:operation>
     <wsdl:operation name="GetServerList">
-      <soap:operation soapAction="http://dir.36you.net/GetServerList" style="document" />
+      <soap:operation soapAction="http://dir.scutgame.com/GetServerList" style="document" />
       <wsdl:input>
         <soap:body use="literal" />
       </wsdl:input>
@@ -625,7 +679,7 @@
       </wsdl:output>
     </wsdl:operation>
     <wsdl:operation name="GetServerSortList">
-      <soap:operation soapAction="http://dir.36you.net/GetServerSortList" style="document" />
+      <soap:operation soapAction="http://dir.scutgame.com/GetServerSortList" style="document" />
       <wsdl:input>
         <soap:body use="literal" />
       </wsdl:input>
@@ -634,7 +688,7 @@
       </wsdl:output>
     </wsdl:operation>
     <wsdl:operation name="RemoveServer">
-      <soap:operation soapAction="http://dir.36you.net/RemoveServer" style="document" />
+      <soap:operation soapAction="http://dir.scutgame.com/RemoveServer" style="document" />
       <wsdl:input>
         <soap:body use="literal" />
       </wsdl:input>
@@ -643,7 +697,7 @@
       </wsdl:output>
     </wsdl:operation>
     <wsdl:operation name="RemoveGame">
-      <soap:operation soapAction="http://dir.36you.net/RemoveGame" style="document" />
+      <soap:operation soapAction="http://dir.scutgame.com/RemoveGame" style="document" />
       <wsdl:input>
         <soap:body use="literal" />
       </wsdl:input>
@@ -652,7 +706,7 @@
       </wsdl:output>
     </wsdl:operation>
     <wsdl:operation name="SetActiveNum">
-      <soap:operation soapAction="http://dir.36you.net/SetActiveNum" style="document" />
+      <soap:operation soapAction="http://dir.scutgame.com/SetActiveNum" style="document" />
       <wsdl:input>
         <soap:body use="literal" />
       </wsdl:input>
@@ -661,7 +715,7 @@
       </wsdl:output>
     </wsdl:operation>
     <wsdl:operation name="ReloadServer">
-      <soap:operation soapAction="http://dir.36you.net/ReloadServer" style="document" />
+      <soap:operation soapAction="http://dir.scutgame.com/ReloadServer" style="document" />
       <wsdl:input>
         <soap:body use="literal" />
       </wsdl:input>
@@ -670,7 +724,7 @@
       </wsdl:output>
     </wsdl:operation>
     <wsdl:operation name="GetGameName">
-      <soap:operation soapAction="http://dir.36you.net/GetGameName" style="document" />
+      <soap:operation soapAction="http://dir.scutgame.com/GetGameName" style="document" />
       <wsdl:input>
         <soap:body use="literal" />
       </wsdl:input>
@@ -679,7 +733,7 @@
       </wsdl:output>
     </wsdl:operation>
     <wsdl:operation name="GetServerName">
-      <soap:operation soapAction="http://dir.36you.net/GetServerName" style="document" />
+      <soap:operation soapAction="http://dir.scutgame.com/GetServerName" style="document" />
       <wsdl:input>
         <soap:body use="literal" />
       </wsdl:input>
@@ -688,7 +742,7 @@
       </wsdl:output>
     </wsdl:operation>
     <wsdl:operation name="SetServerEnableDate">
-      <soap:operation soapAction="http://dir.36you.net/SetServerEnableDate" style="document" />
+      <soap:operation soapAction="http://dir.scutgame.com/SetServerEnableDate" style="document" />
       <wsdl:input>
         <soap:body use="literal" />
       </wsdl:input>
@@ -697,7 +751,7 @@
       </wsdl:output>
     </wsdl:operation>
     <wsdl:operation name="EnableServer">
-      <soap:operation soapAction="http://dir.36you.net/EnableServer" style="document" />
+      <soap:operation soapAction="http://dir.scutgame.com/EnableServer" style="document" />
       <wsdl:input>
         <soap:body use="literal" />
       </wsdl:input>
@@ -706,7 +760,7 @@
       </wsdl:output>
     </wsdl:operation>
     <wsdl:operation name="ServerStatus">
-      <soap:operation soapAction="http://dir.36you.net/ServerStatus" style="document" />
+      <soap:operation soapAction="http://dir.scutgame.com/ServerStatus" style="document" />
       <wsdl:input>
         <soap:body use="literal" />
       </wsdl:input>
@@ -718,7 +772,7 @@
   <wsdl:binding name="DirServiceSoap12" type="tns:DirServiceSoap">
     <soap12:binding transport="http://schemas.xmlsoap.org/soap/http" />
     <wsdl:operation name="GetOfficialGame">
-      <soap12:operation soapAction="http://dir.36you.net/GetOfficialGame" style="document" />
+      <soap12:operation soapAction="http://dir.scutgame.com/GetOfficialGame" style="document" />
       <wsdl:input>
         <soap12:body use="literal" />
       </wsdl:input>
@@ -727,7 +781,7 @@
       </wsdl:output>
     </wsdl:operation>
     <wsdl:operation name="GetGameObj">
-      <soap12:operation soapAction="http://dir.36you.net/GetGameObj" style="document" />
+      <soap12:operation soapAction="http://dir.scutgame.com/GetGameObj" style="document" />
       <wsdl:input>
         <soap12:body use="literal" />
       </wsdl:input>
@@ -736,7 +790,7 @@
       </wsdl:output>
     </wsdl:operation>
     <wsdl:operation name="GetGame">
-      <soap12:operation soapAction="http://dir.36you.net/GetGame" style="document" />
+      <soap12:operation soapAction="http://dir.scutgame.com/GetGame" style="document" />
       <wsdl:input>
         <soap12:body use="literal" />
       </wsdl:input>
@@ -745,7 +799,7 @@
       </wsdl:output>
     </wsdl:operation>
     <wsdl:operation name="GetGameInfo">
-      <soap12:operation soapAction="http://dir.36you.net/GetGameInfo" style="document" />
+      <soap12:operation soapAction="http://dir.scutgame.com/GetGameInfo" style="document" />
       <wsdl:input>
         <soap12:body use="literal" />
       </wsdl:input>
@@ -754,7 +808,7 @@
       </wsdl:output>
     </wsdl:operation>
     <wsdl:operation name="AddGame">
-      <soap12:operation soapAction="http://dir.36you.net/AddGame" style="document" />
+      <soap12:operation soapAction="http://dir.scutgame.com/AddGame" style="document" />
       <wsdl:input>
         <soap12:body use="literal" />
       </wsdl:input>
@@ -763,7 +817,7 @@
       </wsdl:output>
     </wsdl:operation>
     <wsdl:operation name="AddGameNew">
-      <soap12:operation soapAction="http://dir.36you.net/AddGameNew" style="document" />
+      <soap12:operation soapAction="http://dir.scutgame.com/AddGameNew" style="document" />
       <wsdl:input>
         <soap12:body use="literal" />
       </wsdl:input>
@@ -772,7 +826,7 @@
       </wsdl:output>
     </wsdl:operation>
     <wsdl:operation name="AddServer">
-      <soap12:operation soapAction="http://dir.36you.net/AddServer" style="document" />
+      <soap12:operation soapAction="http://dir.scutgame.com/AddServer" style="document" />
       <wsdl:input>
         <soap12:body use="literal" />
       </wsdl:input>
@@ -781,7 +835,16 @@
       </wsdl:output>
     </wsdl:operation>
     <wsdl:operation name="SetServer">
-      <soap12:operation soapAction="http://dir.36you.net/SetServer" style="document" />
+      <soap12:operation soapAction="http://dir.scutgame.com/SetServer" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetServerObj">
+      <soap12:operation soapAction="http://dir.scutgame.com/GetServerObj" style="document" />
       <wsdl:input>
         <soap12:body use="literal" />
       </wsdl:input>
@@ -790,7 +853,7 @@
       </wsdl:output>
     </wsdl:operation>
     <wsdl:operation name="GetServers">
-      <soap12:operation soapAction="http://dir.36you.net/GetServers" style="document" />
+      <soap12:operation soapAction="http://dir.scutgame.com/GetServers" style="document" />
       <wsdl:input>
         <soap12:body use="literal" />
       </wsdl:input>
@@ -799,7 +862,7 @@
       </wsdl:output>
     </wsdl:operation>
     <wsdl:operation name="GetServerList">
-      <soap12:operation soapAction="http://dir.36you.net/GetServerList" style="document" />
+      <soap12:operation soapAction="http://dir.scutgame.com/GetServerList" style="document" />
       <wsdl:input>
         <soap12:body use="literal" />
       </wsdl:input>
@@ -808,7 +871,7 @@
       </wsdl:output>
     </wsdl:operation>
     <wsdl:operation name="GetServerSortList">
-      <soap12:operation soapAction="http://dir.36you.net/GetServerSortList" style="document" />
+      <soap12:operation soapAction="http://dir.scutgame.com/GetServerSortList" style="document" />
       <wsdl:input>
         <soap12:body use="literal" />
       </wsdl:input>
@@ -817,7 +880,7 @@
       </wsdl:output>
     </wsdl:operation>
     <wsdl:operation name="RemoveServer">
-      <soap12:operation soapAction="http://dir.36you.net/RemoveServer" style="document" />
+      <soap12:operation soapAction="http://dir.scutgame.com/RemoveServer" style="document" />
       <wsdl:input>
         <soap12:body use="literal" />
       </wsdl:input>
@@ -826,7 +889,7 @@
       </wsdl:output>
     </wsdl:operation>
     <wsdl:operation name="RemoveGame">
-      <soap12:operation soapAction="http://dir.36you.net/RemoveGame" style="document" />
+      <soap12:operation soapAction="http://dir.scutgame.com/RemoveGame" style="document" />
       <wsdl:input>
         <soap12:body use="literal" />
       </wsdl:input>
@@ -835,7 +898,7 @@
       </wsdl:output>
     </wsdl:operation>
     <wsdl:operation name="SetActiveNum">
-      <soap12:operation soapAction="http://dir.36you.net/SetActiveNum" style="document" />
+      <soap12:operation soapAction="http://dir.scutgame.com/SetActiveNum" style="document" />
       <wsdl:input>
         <soap12:body use="literal" />
       </wsdl:input>
@@ -844,7 +907,7 @@
       </wsdl:output>
     </wsdl:operation>
     <wsdl:operation name="ReloadServer">
-      <soap12:operation soapAction="http://dir.36you.net/ReloadServer" style="document" />
+      <soap12:operation soapAction="http://dir.scutgame.com/ReloadServer" style="document" />
       <wsdl:input>
         <soap12:body use="literal" />
       </wsdl:input>
@@ -853,7 +916,7 @@
       </wsdl:output>
     </wsdl:operation>
     <wsdl:operation name="GetGameName">
-      <soap12:operation soapAction="http://dir.36you.net/GetGameName" style="document" />
+      <soap12:operation soapAction="http://dir.scutgame.com/GetGameName" style="document" />
       <wsdl:input>
         <soap12:body use="literal" />
       </wsdl:input>
@@ -862,7 +925,7 @@
       </wsdl:output>
     </wsdl:operation>
     <wsdl:operation name="GetServerName">
-      <soap12:operation soapAction="http://dir.36you.net/GetServerName" style="document" />
+      <soap12:operation soapAction="http://dir.scutgame.com/GetServerName" style="document" />
       <wsdl:input>
         <soap12:body use="literal" />
       </wsdl:input>
@@ -871,7 +934,7 @@
       </wsdl:output>
     </wsdl:operation>
     <wsdl:operation name="SetServerEnableDate">
-      <soap12:operation soapAction="http://dir.36you.net/SetServerEnableDate" style="document" />
+      <soap12:operation soapAction="http://dir.scutgame.com/SetServerEnableDate" style="document" />
       <wsdl:input>
         <soap12:body use="literal" />
       </wsdl:input>
@@ -880,7 +943,7 @@
       </wsdl:output>
     </wsdl:operation>
     <wsdl:operation name="EnableServer">
-      <soap12:operation soapAction="http://dir.36you.net/EnableServer" style="document" />
+      <soap12:operation soapAction="http://dir.scutgame.com/EnableServer" style="document" />
       <wsdl:input>
         <soap12:body use="literal" />
       </wsdl:input>
@@ -889,7 +952,7 @@
       </wsdl:output>
     </wsdl:operation>
     <wsdl:operation name="ServerStatus">
-      <soap12:operation soapAction="http://dir.36you.net/ServerStatus" style="document" />
+      <soap12:operation soapAction="http://dir.scutgame.com/ServerStatus" style="document" />
       <wsdl:input>
         <soap12:body use="literal" />
       </wsdl:input>
@@ -900,10 +963,10 @@
   </wsdl:binding>
   <wsdl:service name="DirService">
     <wsdl:port name="DirServiceSoap" binding="tns:DirServiceSoap">
-      <soap:address location="http://dir.36you.net/DirService.asmx" />
+      <soap:address location="http://dir.scutgame.com/DirService.asmx" />
     </wsdl:port>
     <wsdl:port name="DirServiceSoap12" binding="tns:DirServiceSoap12">
-      <soap12:address location="http://dir.36you.net/DirService.asmx" />
+      <soap12:address location="http://dir.scutgame.com/DirService.asmx" />
     </wsdl:port>
   </wsdl:service>
 </wsdl:definitions>

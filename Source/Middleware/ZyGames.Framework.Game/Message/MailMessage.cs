@@ -54,8 +54,10 @@ namespace ZyGames.Framework.Game.Message
         }
 
         #region 自动生成属性
-
-        private Guid _MailID;
+		/// <summary>
+		/// The _ mail I.
+		/// </summary>
+        protected Guid _MailID;
         /// <summary>
         /// </summary>        
         [ProtoMember(1)]
@@ -66,10 +68,16 @@ namespace ZyGames.Framework.Game.Message
             {
                 return _MailID;
             }
+            set
+            {
+                SetChange("MailID", value);
+            }
 
         }
-
-        private Int32 _UserId;
+		/// <summary>
+		/// The _ user identifier.
+		/// </summary>
+        protected Int32 _UserId;
         /// <summary>
         /// </summary>        
         [ProtoMember(2)]
@@ -85,8 +93,10 @@ namespace ZyGames.Framework.Game.Message
                 SetChange("UserId", value);
             }
         }
-
-        private Int32 _MailType;
+		/// <summary>
+		/// The type of the _ mail.
+		/// </summary>
+        protected Int32 _MailType;
         /// <summary>
         /// </summary>        
         [ProtoMember(3)]
@@ -102,8 +112,10 @@ namespace ZyGames.Framework.Game.Message
                 SetChange("MailType", value);
             }
         }
-
-        private Int32 _FromUserId;
+		/// <summary>
+		/// The _ from user identifier.
+		/// </summary>
+        protected Int32 _FromUserId;
         /// <summary>
         /// </summary>        
         [ProtoMember(4)]
@@ -119,8 +131,10 @@ namespace ZyGames.Framework.Game.Message
                 SetChange("FromUserId", value);
             }
         }
-
-        private String _FromUserName;
+		/// <summary>
+		/// The name of the _ from user.
+		/// </summary>
+        protected String _FromUserName;
         /// <summary>
         /// </summary>        
         [ProtoMember(5)]
@@ -136,8 +150,10 @@ namespace ZyGames.Framework.Game.Message
                 SetChange("FromUserName", value);
             }
         }
-
-        private Int32 _ToUserID;
+		/// <summary>
+		/// The _ to user I.
+		/// </summary>
+        protected Int32 _ToUserID;
         /// <summary>
         /// </summary>        
         [ProtoMember(6)]
@@ -153,8 +169,10 @@ namespace ZyGames.Framework.Game.Message
                 SetChange("ToUserID", value);
             }
         }
-
-        private String _ToUserName;
+		/// <summary>
+		/// The name of the _ to user.
+		/// </summary>
+        protected String _ToUserName;
         /// <summary>
         /// </summary>        
         [ProtoMember(7)]
@@ -170,8 +188,10 @@ namespace ZyGames.Framework.Game.Message
                 SetChange("ToUserName", value);
             }
         }
-
-        private String _Title;
+		/// <summary>
+		/// The _ title.
+		/// </summary>
+        protected String _Title;
         /// <summary>
         /// </summary>        
         [ProtoMember(8)]
@@ -187,8 +207,10 @@ namespace ZyGames.Framework.Game.Message
                 SetChange("Title", value);
             }
         }
-
-        private String _Content;
+		/// <summary>
+		/// The content of the _.
+		/// </summary>
+        protected String _Content;
         /// <summary>
         /// </summary>        
         [ProtoMember(9)]
@@ -204,8 +226,10 @@ namespace ZyGames.Framework.Game.Message
                 SetChange("Content", value);
             }
         }
-
-        private DateTime _SendDate;
+		/// <summary>
+		/// The _ send date.
+		/// </summary>
+        protected DateTime _SendDate;
         /// <summary>
         /// </summary>        
         [ProtoMember(10)]
@@ -221,8 +245,10 @@ namespace ZyGames.Framework.Game.Message
                 SetChange("SendDate", value);
             }
         }
-
-        private Boolean _IsRead;
+		/// <summary>
+		/// The _ is read.
+		/// </summary>
+        protected Boolean _IsRead;
         /// <summary>
         /// </summary>        
         [ProtoMember(11)]
@@ -238,8 +264,10 @@ namespace ZyGames.Framework.Game.Message
                 SetChange("IsRead", value);
             }
         }
-
-        private Boolean _IsRemove;
+		/// <summary>
+		/// The _ is remove.
+		/// </summary>
+        protected Boolean _IsRemove;
         /// <summary>
         /// </summary>        
         [ProtoMember(12)]
@@ -255,8 +283,10 @@ namespace ZyGames.Framework.Game.Message
                 SetChange("IsRemove", value);
             }
         }
-
-        private DateTime _RemoveDate;
+		/// <summary>
+		/// The _ remove date.
+		/// </summary>
+        protected DateTime _RemoveDate;
         /// <summary>
         /// </summary>        
         [ProtoMember(13)]

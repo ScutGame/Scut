@@ -24,7 +24,6 @@ THE SOFTWARE.
 using System;
 using System.Collections.Generic;
 using System.Collections.Concurrent;
-using System.Collections.Specialized;
 using System.IO;
 using System.Net;
 using System.Text;
@@ -35,18 +34,28 @@ using ZyGames.Framework.Common.Configuration;
 using ZyGames.Framework.Common.Log;
 using ZyGames.Framework.Game.Context;
 using ZyGames.Framework.Game.Runtime;
-using ZyGames.Framework.Game.Script;
 using ZyGames.Framework.Game.Service;
 using ZyGames.Framework.Net;
 using ZyGames.Framework.RPC.Sockets;
 using NLog;
-using ZyGames.Framework.Plugin.PythonScript;
 using ZyGames.Framework.RPC.IO;
 using ZyGames.Framework.RPC.Sockets.Threading;
+using ZyGames.Framework.Script;
 
 namespace ZyGames.Framework.Game.Contract
 {
 
+    internal enum ActionEnum
+    {
+        /// <summary>
+        /// 心跳
+        /// </summary>
+        Heartbeat = 1,
+        /// <summary>
+        /// 中断
+        /// </summary>
+        Interrupt = 2
+    }
     class RequestPackage
     {
         public string Route { get; set; }
@@ -62,7 +71,6 @@ namespace ZyGames.Framework.Game.Contract
     /// </summary>
     public abstract class GameSocketHost
     {
-        private static readonly Logger Logger = LogManager.GetLogger("GameSocketHost");
         private static int httpRequestTimeout = ConfigUtils.GetSetting("Game.Http.Timeout", "120000").ToInt();
         private ConcurrentQueue<RequestPackage> requestQueue = new ConcurrentQueue<RequestPackage>();
         private ConcurrentQueue<RequestPackage> lockedQueue = new ConcurrentQueue<RequestPackage>();
@@ -75,31 +83,31 @@ namespace ZyGames.Framework.Game.Contract
         private SmartThreadPool threadPool;
         private SocketListener socketLintener;
         private HttpListener httpListener;
-		/// <summary>
-		/// The enable http.
-		/// </summary>
+        /// <summary>
+        /// The enable http.
+        /// </summary>
         protected bool EnableHttp;
-		/// <summary>
-		/// The receive number.
-		/// </summary>
+        /// <summary>
+        /// The receive number.
+        /// </summary>
         internal protected int receiveNum;
-		/// <summary>
-		/// The error drop number.
-		/// </summary>
+        /// <summary>
+        /// The error drop number.
+        /// </summary>
         internal protected int errorDropNum;
-		/// <summary>
-		/// The timeout drop number.
-		/// </summary>
+        /// <summary>
+        /// The timeout drop number.
+        /// </summary>
         internal int timeoutDropNum = 0;
-		/// <summary>
-		/// The running number.
-		/// </summary>
+        /// <summary>
+        /// The running number.
+        /// </summary>
         internal protected int runningNum;
         private Timer _LockedQueueChecker;
-		/// <summary>
-		/// Gets the blocking number.
-		/// </summary>
-		/// <value>The blocking number.</value>
+        /// <summary>
+        /// Gets the blocking number.
+        /// </summary>
+        /// <value>The blocking number.</value>
         internal protected int blockingNum { get { return lockedQueue.Count; } }
 
         /// <summary>
@@ -202,8 +210,7 @@ namespace ZyGames.Framework.Game.Contract
                         hasSession = true;
                     }
                 }
-
-                if (actionid == 2)
+                if (actionid == (int)ActionEnum.Interrupt)
                 {
                     // 客户端tcp连接断开
                     foreach (var s in globalSessions.Values)
@@ -244,10 +251,10 @@ namespace ZyGames.Framework.Game.Contract
                 TraceLog.WriteError("Received to Host:{0} error:{1}", e.Socket.RemoteEndPoint, ex);
             }
         }
-		/// <summary>
-		/// Raises the received before event.
-		/// </summary>
-		/// <param name="e">E.</param>
+        /// <summary>
+        /// Raises the received before event.
+        /// </summary>
+        /// <param name="e">E.</param>
         protected virtual void OnReceivedBefore(ConnectionEventArgs e)
         {
         }
@@ -293,6 +300,7 @@ namespace ZyGames.Framework.Game.Contract
                 singal.Set();
             }
         }
+
         private void ProcessPackage(object state)
         {
             var package = (RequestPackage)state;
@@ -300,10 +308,11 @@ namespace ZyGames.Framework.Game.Contract
             var session = package.Session;
             var ssid = package.SSID;
             var actionid = package.ActionId;
-            if (actionid == 1)
+            if (actionid == (int)ActionEnum.Heartbeat)
             {
                 // 客户端tcp心跳包
                 session.LastActivityTime = DateTime.Now;
+                OnHeartbeat(session);
                 session.ExitSession();
                 Interlocked.Decrement(ref runningNum);
                 return;
@@ -336,19 +345,27 @@ namespace ZyGames.Framework.Game.Contract
                 }
                 catch (Exception ex)
                 {
-                    Logger.Error("PostSend异常", ex);
+                    TraceLog.WriteError("PostSend异常{0}", ex);
                 }
 
             }
             catch (Exception ex)
             {
-                Logger.Error("Task异常", ex);
+                TraceLog.WriteError("Task异常{0}", ex);
             }
             finally
             {
                 session.ExitSession();
                 Interlocked.Decrement(ref runningNum);
             }
+        }
+
+        /// <summary>
+        /// 心跳包
+        /// </summary>
+        /// <param name="session"></param>
+        protected virtual void OnHeartbeat(GameSession session)
+        {
         }
 
         /// <summary>
@@ -389,16 +406,16 @@ namespace ZyGames.Framework.Game.Contract
             globalSessions[session.SessionId] = session;
         }
 
-		/// <summary>
-		/// Raises the connect completed event.
-		/// </summary>
-		/// <param name="sender">Sender.</param>
-		/// <param name="e">E.</param>
+        /// <summary>
+        /// Raises the connect completed event.
+        /// </summary>
+        /// <param name="sender">Sender.</param>
+        /// <param name="e">E.</param>
         protected abstract void OnConnectCompleted(object sender, ConnectionEventArgs e);
-		/// <summary>
-		/// Raises the disconnected event.
-		/// </summary>
-		/// <param name="session">Session.</param>
+        /// <summary>
+        /// Raises the disconnected event.
+        /// </summary>
+        /// <param name="session">Session.</param>
         protected virtual void OnDisconnected(GameSession session)
         {
 
@@ -597,8 +614,10 @@ namespace ZyGames.Framework.Game.Contract
                     GameSession session;
                     if (globalSessions.TryGetValue(user.SocketSid, out session))
                     {
-                        SendAsync(session, sendData);
-                        successHandle(user);
+                        if (SendAsync(session, sendData))
+                        {
+                            if (successHandle != null) successHandle(user);
+                        }
                     }
                 }
                 catch (Exception ex)
@@ -664,19 +683,25 @@ namespace ZyGames.Framework.Game.Contract
         /// </summary>
         /// <param name="sessionId"></param>
         /// <param name="data"></param>
-        public void SendAsync(string sessionId, byte[] data)
+        public bool SendAsync(string sessionId, byte[] data)
         {
             GameSession session;
             if (globalSessions.TryGetValue(sessionId, out session))
             {
-                SendAsync(session, data);
+                return SendAsync(session, data);
             }
+            return false;
         }
 
-        private void SendAsync(GameSession session, byte[] data)
+        private bool SendAsync(GameSession session, byte[] data)
         {
-            data = CheckAdditionalHead(data, session.SSId);
-            socketLintener.PostSend(session.Channel, data, 0, data.Length);
+            if (session.Connected)
+            {
+                data = CheckAdditionalHead(data, session.SSId);
+                socketLintener.PostSend(session.Channel, data, 0, data.Length);
+                return true;
+            }
+            return false;
         }
 
         private string GenerateSid()
@@ -699,12 +724,13 @@ namespace ZyGames.Framework.Game.Contract
                     routeName = string.Join("/", mapList, 0, mapList.Length - 1);
                 }
                 string routeFile = string.Format("Remote/{0}.py", routeName);
+                string typeName = string.Format("Game.Script.Remote.{0}", routeName);
                 int actionId = httpGet.GetInt("actionId");
                 MessageHead head = new MessageHead(actionId);
-                PythonContext context;
-                if (PythonScriptManager.Current.TryLoadPython(routeFile, out context))
+                dynamic scope = ScriptEngines.Execute(routeFile, typeName);
+                if (scope != null)
                 {
-                    var funcHandle = context.GetVariable<RemoteHandle>(funcName);
+                    var funcHandle = scope.GetVariable<RemoteHandle>(funcName);
                     if (funcHandle != null)
                     {
                         funcHandle(httpGet, head, response);
@@ -717,29 +743,29 @@ namespace ZyGames.Framework.Game.Contract
                 TraceLog.WriteError("{0}", ex);
             }
         }
-		/// <summary>
-		/// Checks the remote.
-		/// </summary>
-		/// <returns><c>true</c>, if remote was checked, <c>false</c> otherwise.</returns>
-		/// <param name="route">Route.</param>
-		/// <param name="httpGet">Http get.</param>
+        /// <summary>
+        /// Checks the remote.
+        /// </summary>
+        /// <returns><c>true</c>, if remote was checked, <c>false</c> otherwise.</returns>
+        /// <param name="route">Route.</param>
+        /// <param name="httpGet">Http get.</param>
         protected virtual bool CheckRemote(string route, HttpGet httpGet)
         {
             return true;
         }
-		/// <summary>
-		/// Raises the requested event.
-		/// </summary>
-		/// <param name="httpGet">Http get.</param>
-		/// <param name="response">Response.</param>
+        /// <summary>
+        /// Raises the requested event.
+        /// </summary>
+        /// <param name="httpGet">Http get.</param>
+        /// <param name="response">Response.</param>
         protected abstract void OnRequested(HttpGet httpGet, IGameResponse response);
-		/// <summary>
-		/// Raises the start affer event.
-		/// </summary>
+        /// <summary>
+        /// Raises the start affer event.
+        /// </summary>
         protected abstract void OnStartAffer();
-		/// <summary>
-		/// Raises the service stop event.
-		/// </summary>
+        /// <summary>
+        /// Raises the service stop event.
+        /// </summary>
         protected abstract void OnServiceStop();
 
 

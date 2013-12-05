@@ -25,12 +25,14 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using ProtoBuf;
 
 namespace ZyGames.Framework.Game.Com.Model
 {
     /// <summary>
     /// 排行榜数据项
     /// </summary>
+    [Serializable, ProtoContract]
     public class RankingItem
     {
         /// <summary>

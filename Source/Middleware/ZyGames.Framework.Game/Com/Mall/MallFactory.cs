@@ -27,6 +27,7 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Web.Caching;
+using ProtoBuf;
 using ZyGames.Framework.Common.Log;
 using ZyGames.Framework.Common.Timing;
 using ZyGames.Framework.Game.Com.Model;
@@ -36,6 +37,7 @@ namespace ZyGames.Framework.Game.Com.Mall
     /// <summary>
     /// 商城工厂
     /// </summary>
+    [Serializable, ProtoContract]
     public static class MallFactory
     {
         private static Dictionary<int, Merchant> _merchantList = new Dictionary<int, Merchant>();

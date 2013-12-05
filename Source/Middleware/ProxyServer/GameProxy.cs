@@ -22,7 +22,6 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ****************************************************************************/
 using System;
-using NLog;
 
 namespace ProxyServer
 {
@@ -31,7 +30,6 @@ namespace ProxyServer
         private HttpProxy httpProxy;
         private SocketProxy socketProxy;
         private GSConnectionManager gsConnectionManager;
-        private static readonly Logger Logger = LogManager.GetLogger("GameProxy");
 
         public GameProxy()
         {

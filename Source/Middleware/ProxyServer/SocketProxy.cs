@@ -28,22 +28,23 @@ using System.Web;
 using System.Threading;
 using System.Collections.Specialized;
 using NLog;
+using ZyGames.Framework.Common.Configuration;
+using ZyGames.Framework.Common.Log;
 using ZyGames.Framework.RPC.Sockets;
 
 namespace ProxyServer
 {
     class SocketProxy
     {
-        private static readonly Logger Logger = LogManager.GetLogger("SocketProxy");
-        private static int ListenPort = Util.GetAppSetting<int>("Port", 9500);
-        private static string errmsg = Util.GetAppSetting<string>("ErrMsg");
-        private static int expireTime = Util.GetAppSetting<int>("ExpireTime", 300000);
-        private static int expireInterval = Util.GetAppSetting<int>("ExpireInterval", 60000);
-        private static int maxConnections = Util.GetAppSetting<int>("MaxConnections", 40000);
-        private static int backlog = Util.GetAppSetting<int>("Backlog", 100);
-        private static int maxAcceptOps = Util.GetAppSetting<int>("MaxAcceptOps", 100);
-        private static int bufferSize = Util.GetAppSetting<int>("BufferSize", 2048);
-        private static int proxyCheckPeriod = Util.GetAppSetting<int>("ProxyCheckPeriod", 60000);
+        private static int ListenPort = ConfigUtils.GetSetting("Port", 9500);
+        private static string errmsg = ConfigUtils.GetSetting("ErrMsg", "");
+        private static int expireTime = ConfigUtils.GetSetting("ExpireTime", 300000);
+        private static int expireInterval = ConfigUtils.GetSetting("ExpireInterval", 60000);
+        private static int maxConnections = ConfigUtils.GetSetting("MaxConnections", 40000);
+        private static int backlog = ConfigUtils.GetSetting("Backlog", 100);
+        private static int maxAcceptOps = ConfigUtils.GetSetting("MaxAcceptOps", 100);
+        private static int bufferSize = ConfigUtils.GetSetting("BufferSize", 2048);
+        private static int proxyCheckPeriod = ConfigUtils.GetSetting("ProxyCheckPeriod", 60000);
 
         private SocketListener listener;
         private GSConnectionManager gsConnectionManager;
@@ -61,17 +62,14 @@ namespace ProxyServer
             listener.Connected += new ConnectionEventHandler(socketLintener_Connected);
             listener.Disconnected += new ConnectionEventHandler(socketLintener_Disconnected);
             listener.StartListen();
-			Logger.Info("TCP listent is started, The port:{0}.", ListenPort);
+            TraceLog.ReleaseWrite("TCP listent is started, The port:{0}.", ListenPort);
 
             timer = new Timer(Check, null, proxyCheckPeriod, proxyCheckPeriod);
         }
 
         private void Check(object state)
         {
-            if (Logger.IsDebugEnabled)
-            {
-                Logger.Debug("Tcp connect count：{0}", clientConnections.Count);
-            }
+            TraceLog.ReleaseWriteDebug("Tcp connect count：{0}", clientConnections.Count);
         }
 
         void socketLintener_Disconnected(object sender, ConnectionEventArgs e)
@@ -80,33 +78,29 @@ namespace ProxyServer
             if (clientConnections.TryGetValue(e.Socket, out clientConnection))
             {
                 clientConnections.Remove(clientConnection.SSID);
-                if (Logger.IsDebugEnabled)
-                {
-                    Logger.Debug("断开 IP:{0},ssid:{1}", clientConnection.Socket.RemoteEndPoint, clientConnection.SSID);
-                }
+                TraceLog.ReleaseWriteDebug("断开 IP:{0},ssid:{1}", clientConnection.Socket.RemoteEndPoint, clientConnection.SSID);
 
                 if (clientConnection.ServerId != 0)
                 {
                     NameValueCollection requestParam = new NameValueCollection();
-                    requestParam["actionid"] = "2";
+                    requestParam["actionid"] = ((int)ActionEnum.Interrupt).ToString();
                     requestParam["ssid"] = clientConnection.SSID.ToString("N");
                     requestParam["msgid"] = "0";
-
-                    byte[] paramData = Encoding.ASCII.GetBytes(RequestParse.ToQueryString(requestParam));
-
+                    string paramStr = RequestParse.ToQueryString(requestParam);
+                    byte[] paramData = Encoding.ASCII.GetBytes(paramStr);
                     try
                     {
                         gsConnectionManager.Send(clientConnection.GameId, clientConnection.ServerId, paramData);
                     }
                     catch (Exception ex)
                     {
-                        Logger.Error("Send to tcp disconnected notify failed", ex);
+                        TraceLog.WriteError("Send to tcp disconnected notify failed:{0}\r\nparam:{1}", ex, paramStr);
                     }
                 }
             }
             else
             {
-                Logger.Debug("断开 IP:{0}。", e.Socket.RemoteEndPoint);
+                TraceLog.ReleaseWriteDebug("断开 IP:{0}。", e.Socket.RemoteEndPoint);
             }
         }
 
@@ -114,18 +108,14 @@ namespace ProxyServer
         {
             var ssid = Guid.NewGuid();
             var clientConnection = new ClientConnection { SSID = ssid, Socket = e.Socket };
-
-            if (Logger.IsDebugEnabled)
-            {
-                Logger.Debug("连接 IP:{0},ssid:{1}", e.Socket.RemoteEndPoint, ssid);
-            }
+            TraceLog.ReleaseWriteDebug("连接 IP:{0},ssid:{1}", e.Socket.RemoteEndPoint, ssid);
             clientConnections.Add(ssid, e.Socket, clientConnection);
         }
 
         void socketLintener_DataReceived(object sender, ConnectionEventArgs e)
         {
             var data = Encoding.ASCII.GetString(e.Data);
-			
+
             string routeName = string.Empty;
             int index = data.LastIndexOf("?d=");
             if (index > 0)
@@ -148,7 +138,7 @@ namespace ProxyServer
             ClientConnection clientConnection;
             if (!clientConnections.TryGetValue(e.Socket, out clientConnection))
             {
-                Logger.Warn("接收到不在连接池中的socket数据，哪里有bug。");
+                TraceLog.WriteError("接收到不在连接池中的socket数据，哪里有bug。");
                 listener.CloseSocket(e.Socket);
                 return;
             }
@@ -176,7 +166,7 @@ namespace ProxyServer
             }
             catch (Exception ex)
             {
-                Logger.Error("无法连接游服。", ex);
+                TraceLog.WriteError("无法连接游服error:{0}\r\nparam:{1}", ex, paramStr);
                 var responseData = RequestParse.CtorErrMsg(errmsg, requestParam);
                 SendDataBack(clientConnection.SSID, responseData, 0, responseData.Length);
             }
@@ -197,7 +187,7 @@ namespace ProxyServer
             }
             catch (Exception ex)
             {
-                Logger.Error("SendDataBack。", ex);
+                TraceLog.WriteError("SendDataBack error:{0}", ex);
                 return false;
             }
         }

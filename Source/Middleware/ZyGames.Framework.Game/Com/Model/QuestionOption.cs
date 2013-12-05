@@ -25,6 +25,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using ProtoBuf;
 using ZyGames.Framework.Event;
 
 namespace ZyGames.Framework.Game.Com.Model
@@ -32,6 +33,7 @@ namespace ZyGames.Framework.Game.Com.Model
     /// <summary>
     /// 问题选项
     /// </summary>
+    [Serializable, ProtoContract]
     public class QuestionOption : CacheItemChangeEvent
     {
         /// <summary>

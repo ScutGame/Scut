@@ -163,7 +163,7 @@ namespace ZyGames.Framework.Game.Contract.Action
                 if (user != null)
                 {
                     user.RemoteAddress = httpGet.RemoteAddress;
-                    user.SocketSid = httpGet.SessionId;
+                    user.SocketSid = Current.SessionId;
                     httpGet.LoginSuccessCallback(UserId);
                 }
             }

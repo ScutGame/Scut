@@ -25,6 +25,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using ProtoBuf;
 using ZyGames.Framework.Collection.Generic;
 
 namespace ZyGames.Framework.Game.Com
@@ -32,6 +33,7 @@ namespace ZyGames.Framework.Game.Com
     /// <summary>
     /// 中间层组件管理类（抽象工厂模式）
     /// </summary>
+    [Serializable, ProtoContract]
     public static class ComManager
     {
         private static DictionaryExtend<string, ComProxy> _pools = new DictionaryExtend<string, ComProxy>();

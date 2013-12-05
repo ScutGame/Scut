@@ -31,19 +31,20 @@ using System.Threading;
 using System.Collections.Concurrent;
 using System.Collections.Specialized;
 using NLog;
+using ZyGames.Framework.Common.Configuration;
+using ZyGames.Framework.Common.Log;
 
 
 namespace ProxyServer
 {
     class HttpProxy
     {
-        private static readonly Logger Logger = LogManager.GetLogger("GameHttpProxy");
-        private static string gameName = Util.GetAppSetting<string>("GameName","default");
-        private static int gamePort = Util.GetAppSetting<int>("GamePort", 8088);
-        private static string errmsg = Util.GetAppSetting<string>("ErrMsg");
-        private static int proxyCheckPeriod = Util.GetAppSetting<int>("ProxyCheckPeriod", 60000);
-        private static int httpProxyTimeout = Util.GetAppSetting<int>("HttpProxyTimeout", 120000);
-        private static string gameHost = Util.GetAppSetting<string>("GameHost", "http://127.0.0.1");
+        private static string gameName = ConfigUtils.GetSetting("GameName", "default");
+        private static int gamePort = ConfigUtils.GetSetting("GamePort", 8088);
+        private static string errmsg = ConfigUtils.GetSetting("ErrMsg");
+        private static int proxyCheckPeriod = ConfigUtils.GetSetting("ProxyCheckPeriod", 60000);
+        private static int httpProxyTimeout = ConfigUtils.GetSetting("HttpProxyTimeout", 120000);
+        private static string gameHost = ConfigUtils.GetSetting("GameHost", "http://127.0.0.1");
         private HttpListener listener;
         private GSConnectionManager gsConnectionManager;
         private ConcurrentDictionary<Guid, HttpClientConnection> pool = new ConcurrentDictionary<Guid, HttpClientConnection>();
@@ -60,7 +61,7 @@ namespace ProxyServer
                 listener.Prefixes.Add(string.Format("{2}:{0}/{1}/", gamePort, gameName, h));
             }
             listener.Start();
-            Logger.Info("Http listent is started,The port:{0}.", gamePort);
+            TraceLog.ReleaseWrite("Http listent is started,The port:{0}.", gamePort);
             listener.BeginGetContext(ListenerCallback, listener);
             timer = new Timer(Check, null, proxyCheckPeriod, proxyCheckPeriod);
         }
@@ -68,11 +69,7 @@ namespace ProxyServer
         private void Check(object state)
         {
             ConfigurationManager.RefreshSection("appSettings");
-            errmsg = Util.GetAppSetting<string>("ErrMsg");
-            if (Logger.IsDebugEnabled)
-            {
-                Logger.Debug("Http并发数：{0}", pool.Count);
-            }
+            errmsg = ConfigUtils.GetSetting("ErrMsg");
         }
 
         public void ListenerCallback(IAsyncResult result)
@@ -109,7 +106,7 @@ namespace ProxyServer
             }
 
             int gameId, serverId, statuscode;
-            var requestParam = RequestParse.Parse(request.RemoteEndPoint.Address.ToString(), request.RawUrl, data,out gameId, out serverId, out statuscode);
+            var requestParam = RequestParse.Parse(request.RemoteEndPoint.Address.ToString(), request.RawUrl, data, out gameId, out serverId, out statuscode);
             if (statuscode != (int)HttpStatusCode.OK)
             {
                 response.StatusCode = statuscode;
@@ -128,11 +125,11 @@ namespace ProxyServer
 
             try
             {
-                gsConnectionManager.Send(gameId,serverId, paramData);
+                gsConnectionManager.Send(gameId, serverId, paramData);
             }
             catch (Exception ex)
             {
-                Logger.Error("无法连接游服", ex);
+                TraceLog.WriteError("无法连接游服error:{0}", ex);
                 var responseData = RequestParse.CtorErrMsg(errmsg, requestParam);
                 SendDataBack(ssid, responseData, 0, responseData.Length);
             }
@@ -142,8 +139,8 @@ namespace ProxyServer
         {
             HttpClientConnection clientConnection = (HttpClientConnection)state;
             NameValueCollection requestParam = clientConnection.Param;
-            Logger.Error("超时无法连接游服");
             var responseData = RequestParse.CtorErrMsg(errmsg, requestParam);
+            TraceLog.WriteError("超时无法连接游服:{0}", RequestParse.ToQueryString(requestParam));
             SendDataBack(clientConnection.SSID, responseData, 0, responseData.Length);
         }
 

@@ -21,6 +21,8 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ****************************************************************************/
+using System;
+using ProtoBuf;
 using ZyGames.Framework.Common;
 
 namespace ZyGames.Framework.Game.Com.Generic
@@ -28,6 +30,7 @@ namespace ZyGames.Framework.Game.Com.Generic
     /// <summary>
     /// 新手卡
     /// </summary>
+    [Serializable, ProtoContract]
     public abstract class NoviceCard
     {
 		/// <summary>

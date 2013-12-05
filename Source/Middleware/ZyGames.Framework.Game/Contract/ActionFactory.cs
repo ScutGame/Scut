@@ -22,6 +22,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ****************************************************************************/
 using System;
+using System.Collections.Generic;
 using System.Net;
 using System.Net.Sockets;
 using System.Web;
@@ -30,10 +31,10 @@ using ZyGames.Framework.Common.Configuration;
 using ZyGames.Framework.Common.Locking;
 using ZyGames.Framework.Common.Log;
 using ZyGames.Framework.Game.Context;
-using ZyGames.Framework.Game.Script;
 using ZyGames.Framework.Game.Service;
 using ZyGames.Framework.Game.Contract.Action;
 using ZyGames.Framework.RPC.IO;
+using ZyGames.Framework.Script;
 
 namespace ZyGames.Framework.Game.Contract
 {
@@ -42,9 +43,9 @@ namespace ZyGames.Framework.Game.Contract
     /// </summary>
     public static class ActionFactory
     {
-		/// <summary>
-		/// The error code.
-		/// </summary>
+        /// <summary>
+        /// The error code.
+        /// </summary>
         public static int ErrorCode = 10000;
 
         internal class ActionConfig
@@ -63,12 +64,14 @@ namespace ZyGames.Framework.Game.Contract
                         instance.TypeName = assemblyName + ".Action.Action{0}," + assemblyName;
                     }
                 }
+                instance.ScriptTypeName = ConfigUtils.GetSetting("Game.Action.Script.TypeName", "Game.Script.Action{0}");
                 instance.IpAddress = ConfigUtils.GetSetting("Game.IpAddress");
                 if (string.IsNullOrEmpty(instance.IpAddress))
                 {
                     instance.IpAddress = GetLocalIp();
                 }
                 instance.Port = ConfigUtils.GetSetting("Game.Port", 9101);
+                instance.IgnoreAuthorizeSet = new HashSet<int>();
             }
 
             public static ActionConfig Current
@@ -92,6 +95,30 @@ namespace ZyGames.Framework.Game.Contract
             {
                 get;
                 private set;
+            }
+
+            /// <summary>
+            /// CSharp脚本类型名
+            /// </summary>
+            public string ScriptTypeName
+            {
+                get;
+                private set;
+            }
+
+            public HashSet<int> IgnoreAuthorizeSet { get; set; }
+
+        }
+
+        /// <summary>
+        /// 设置忽略认证Action
+        /// </summary>
+        /// <param name="actionIds"></param>
+        public static void SetActionIgnoreAuthorize(params int[] actionIds)
+        {
+            foreach (var actionId in actionIds)
+            {
+                ActionConfig.Current.IgnoreAuthorizeSet.Add(actionId);
             }
         }
 
@@ -159,6 +186,7 @@ namespace ZyGames.Framework.Game.Contract
         /// <param name="httpGet"></param>
         public static void Request(string typeName, HttpGet httpGet, IGameResponse response, Func<int, BaseUser> userFactory)
         {
+            string tempName = string.Format(typeName, httpGet.ActionId);
             int actionID = 0;
             string errorInfo = "";
             try
@@ -179,12 +207,12 @@ namespace ZyGames.Framework.Game.Contract
                 else
                 {
                     errorInfo = "签名验证失败";
-					TraceLog.WriteError("Action request {3} error:{2},rl:{0},param:{1}", isRL, httpGet.ParamString, errorInfo, typeName);
+                    TraceLog.WriteError("Action request {3} error:{2},rl:{0},param:{1}", isRL, httpGet.ParamString, errorInfo, tempName);
                 }
             }
             catch (Exception ex)
             {
-				TraceLog.WriteError("Action request {0} error:{1}\r\nparam:{2}", typeName, ex, httpGet.ParamString);
+                TraceLog.WriteError("Action request {0} error:{1}\r\nparam:{2}", tempName, ex, httpGet.ParamString);
             }
             RequestError(response, actionID, errorInfo);
         }
@@ -208,24 +236,18 @@ namespace ZyGames.Framework.Game.Contract
         /// <param name="userFactory">创建user对象工厂,可为Null</param>
         public static void RequestScript(HttpGet httpGet, IGameResponse response, Func<int, BaseUser> userFactory)
         {
-            int actionID = httpGet.GetInt("actionId");
+            int actionID = httpGet.ActionId;
             string errorInfo = "";
             try
             {
                 bool isRl = BaseStruct.CheckRunloader(httpGet);
                 if (isRl || httpGet.CheckSign())
                 {
-                    ScriptRoute scriptRoute = new ScriptRoute(actionID);
-                    RouteItem routeItem;
-                    var pythonManager = PythonScriptManager.Current;
-                    if (pythonManager.TryGetAction(actionID, out routeItem))
+                    BaseStruct baseStruct = FindScriptRoute(httpGet, actionID);
+                    if (baseStruct != null)
                     {
-                        if (scriptRoute.TryLoadAction(routeItem.ScriptPath))
-                        {
-                            var baseStruct = new ScriptAction((short)actionID, httpGet, scriptRoute, routeItem.IgnoreAuthorize);
-                            Process(baseStruct, httpGet, response, userFactory);
-                            return;
-                        }
+                        Process(baseStruct, httpGet, response, userFactory);
+                        return;
                     }
                 }
                 else
@@ -338,39 +360,42 @@ namespace ZyGames.Framework.Game.Contract
             }
         }
 
-        internal static BaseStruct FindRoute(string typeExpression, HttpGet httpGet, int actionID)
+        internal static BaseStruct FindScriptRoute(HttpGet httpGet, int actionID)
         {
-            string typeName = string.Format(typeExpression, actionID);
-            ScriptRoute scriptRoute = new ScriptRoute(actionID);
-            RouteItem routeItem;
-            var pythonManager = PythonScriptManager.Current;
-            if (pythonManager.TryGetAction(actionID, out routeItem))
+            string typeName = string.Format(ActionConfig.Current.ScriptTypeName, actionID);
+            string scriptCode = string.Format("action{0}", actionID);
+            dynamic scriptScope = ScriptEngines.Execute(scriptCode + ".py", null);
+            if (scriptScope != null)
             {
-                if (scriptRoute.TryLoadAction(routeItem.ScriptPath))
-                {
-                    return new ScriptAction((short)actionID, httpGet, scriptRoute, routeItem.IgnoreAuthorize);
-                }
-                //中间件路由配置
-                if (!string.IsNullOrEmpty(routeItem.TypeName))
-                {
-                    typeName = routeItem.TypeName;
-                }
+                bool ignoreAuthorize = ActionConfig.Current.IgnoreAuthorizeSet.Contains(actionID);
+                return new ScriptAction((short)actionID, httpGet, scriptScope, ignoreAuthorize);
             }
 
+            BaseStruct baseStruct = ScriptEngines.Execute(scriptCode + ".cs", typeName, httpGet);
+            if (baseStruct != null) return baseStruct;
+            return null;
+        }
+
+        internal static BaseStruct FindRoute(string typeExpression, HttpGet httpGet, int actionID)
+        {
+            BaseStruct baseStruct = FindScriptRoute(httpGet, actionID);
+            if (baseStruct != null)
+            {
+                return baseStruct;
+            }
+            string typeName = string.Format(typeExpression, actionID);
             Type actionType = Type.GetType(typeName);
             if (actionType != null)
             {
-				try
-				{
-					return actionType.CreateInstance<BaseStruct>(new object[] { httpGet });
-					//return (BaseStruct)Activator.CreateInstance(actionType, new object[] { httpGet });
-				}
-				catch(Exception ex) 
-				{
-					throw ex;
-				}
+                try
+                {
+                    return actionType.CreateInstance<BaseStruct>(new object[] { httpGet });
+                }
+                catch (Exception ex)
+                {
+                    throw ex;
+                }
             }
-
             throw new NullReferenceException(string.Format("未找到Action处理对象的类型:{0}!", typeName));
         }
     }

@@ -22,6 +22,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ****************************************************************************/
 using System;
+using Microsoft.Scripting.Hosting;
 using ZyGames.Framework.Game.Lang;
 using ZyGames.Framework.Game.Service;
 
@@ -30,22 +31,24 @@ namespace ZyGames.Framework.Game.Contract.Action
     /// <summary>
     /// 提供脚本支持
     /// </summary>
-    public class ScriptAction : AuthorizeAction//AuthorizeAction
+    public class ScriptAction : AuthorizeAction
     {
-        private readonly ScriptRoute _scriptRoute;
+        private readonly dynamic _scriptScope;
         private readonly bool _ignoreAuthorize;
+        private dynamic _urlParam;
+        private dynamic _actionResult;
 
         /// <summary>
         /// /
         /// </summary>
         /// <param name="aActionId"></param>
         /// <param name="httpGet"></param>
-        /// <param name="scriptRoute"></param>
+        /// <param name="scriptScope"></param>
         /// <param name="ignoreAuthorize">忽略授权</param>
-        public ScriptAction(short aActionId, HttpGet httpGet, ScriptRoute scriptRoute, bool ignoreAuthorize)
+        public ScriptAction(short aActionId, HttpGet httpGet, dynamic scriptScope, bool ignoreAuthorize)
             : base(aActionId, httpGet)
         {
-            _scriptRoute = scriptRoute;
+            _scriptScope = scriptScope;
             _ignoreAuthorize = ignoreAuthorize;
         }
 		/// <summary>
@@ -60,7 +63,8 @@ namespace ZyGames.Framework.Game.Contract.Action
 		/// <returns></returns>
         public override bool GetUrlElement()
         {
-            return _scriptRoute.GetUrlElement(httpGet, this);
+            _urlParam = _scriptScope.getUrlElement(httpGet, this);
+            return _urlParam != null && _urlParam.Result ? true : false;
         }
 		/// <summary>
 		/// 子类实现Action处理
@@ -68,14 +72,16 @@ namespace ZyGames.Framework.Game.Contract.Action
 		/// <returns></returns>
         public override bool TakeAction()
         {
-            return _scriptRoute.TakeAction(this);
+            _actionResult = _scriptScope.takeAction(_urlParam, this);
+            return _actionResult != null && _actionResult.Result ? true : false;
         }
 		/// <summary>
 		/// 创建返回协议内容输出栈
 		/// </summary>
         public override void BuildPacket()
         {
-            if (!_scriptRoute.BuildPacket(dataStruct))
+            bool result =  _scriptScope.buildPacket(dataStruct, _urlParam, _actionResult);
+            if (!result)
             {
                 ErrorCode = LanguageHelper.GetLang().ErrorCode;
                 if (IsRealse)

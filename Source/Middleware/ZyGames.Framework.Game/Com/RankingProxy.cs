@@ -25,6 +25,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using ProtoBuf;
 using ZyGames.Framework.Game.Com.Model;
 using ZyGames.Framework.Game.Com.Rank;
 
@@ -33,6 +34,7 @@ namespace ZyGames.Framework.Game.Com
     /// <summary>
     /// 排行榜操作代理类
     /// </summary>
+    [Serializable, ProtoContract]
     public class RankingProxy : ComProxy
     {
         /// <summary>

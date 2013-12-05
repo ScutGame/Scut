@@ -88,7 +88,7 @@ namespace ZyGames.Framework.Game.Sns
                 }
                 return true;
             }
-            TraceLog.WriteError("LoginByDevice pid:{0},pwd:{1},device:{2},uid:{3}", PassportID, Password, DeviceID, UserID);
+            //TraceLog.WriteError("LoginByDevice pid:{0},pwd:{1},device:{2},uid:{3}", PassportID, Password, DeviceID, UserID);
             return false;
         }
 

@@ -26,6 +26,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading;
+using ProtoBuf;
 using ZyGames.Framework.Common.Locking;
 using ZyGames.Framework.Game.Com.Model;
 using ZyGames.Framework.Game.Context;
@@ -35,6 +36,7 @@ namespace ZyGames.Framework.Game.Com.Mall
     /// <summary>
     /// 单例交易
     /// </summary>
+    [Serializable, ProtoContract]
     public class SingleTrade : ITrade
     {
         private GoodsData _goods;

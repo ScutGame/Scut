@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<discovery xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="http://schemas.xmlsoap.org/disco/">
+  <contractRef ref="http://dir.scutgame.com/DirService.asmx?wsdl" docRef="http://dir.scutgame.com/DirService.asmx" xmlns="http://schemas.xmlsoap.org/disco/scl/" />
+  <soap address="http://dir.scutgame.com/DirService.asmx" xmlns:q1="http://dir.scutgame.com/" binding="q1:DirServiceSoap" xmlns="http://schemas.xmlsoap.org/disco/soap/" />
+  <soap address="http://dir.scutgame.com/DirService.asmx" xmlns:q2="http://dir.scutgame.com/" binding="q2:DirServiceSoap12" xmlns="http://schemas.xmlsoap.org/disco/soap/" />
+</discovery>

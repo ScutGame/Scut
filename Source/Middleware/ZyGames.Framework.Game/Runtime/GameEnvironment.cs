@@ -22,26 +22,23 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ****************************************************************************/
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
 using System.Threading;
 using ZyGames.Framework.Cache.Generic;
-using ZyGames.Framework.Common;
 using ZyGames.Framework.Common.Configuration;
 using ZyGames.Framework.Common.Serialization;
 using ZyGames.Framework.Data;
 using ZyGames.Framework.Game.Cache;
 using ZyGames.Framework.Game.Configuration;
 using ZyGames.Framework.Game.Message;
-using ZyGames.Framework.Game.Script;
 using ZyGames.Framework.Model;
+using ZyGames.Framework.Script;
 
 namespace ZyGames.Framework.Game.Runtime
 {
-	/// <summary>
-	/// Runtime event handler.
-	/// </summary>
+    /// <summary>
+    /// Runtime event handler.
+    /// </summary>
     public delegate void RuntimeEventHandler();
 
     /// <summary>
@@ -49,9 +46,9 @@ namespace ZyGames.Framework.Game.Runtime
     /// </summary>
     public static class GameEnvironment
     {
-		/// <summary>
-		/// The python script task cache key.
-		/// </summary>
+        /// <summary>
+        /// The python script task cache key.
+        /// </summary>
         public static readonly string PythonScriptTaskCacheKey = "__PythonScript_Task";
 
         private static int _isRunning;
@@ -141,28 +138,32 @@ namespace ZyGames.Framework.Game.Runtime
         /// <param name="loadDataFactory"></param>
         /// <param name="expiredInterval">定时清理过期缓存时间</param>
         /// <param name="entityAssembly">数据实体的程序集</param>
-        public static void Start(int cacheInterval, Func<bool> loadDataFactory, int expiredInterval = 600, Assembly entityAssembly = null)
+        /// <param name="changedHandle"></param>
+        public static void Start(int cacheInterval, Func<bool> loadDataFactory, int expiredInterval = 600, Assembly entityAssembly = null, EntityChangedNotifyEvent changedHandle = null)
         {
-			bool result = false;
-			DbConnectionProvider.Initialize();
+            bool result = false;
+            DbConnectionProvider.Initialize();
             EntitySchemaSet.CacheGlobalPeriod = CacheGlobalPeriod;
             EntitySchemaSet.CacheUserPeriod = CacheUserPeriod;
             ZyGameBaseConfigManager.Intialize();
-            CacheFactory.Initialize(expiredInterval, cacheInterval);
+            CacheFactory.Initialize(expiredInterval, cacheInterval, true, changedHandle);
             SensitiveWordService.LoadSchema();
             if (entityAssembly != null)
             {
                 ProtoBufUtils.LoadProtobufType(entityAssembly);
                 EntitySchemaSet.LoadAssembly(entityAssembly);
             }
-            PythonScriptManager.Current.Intialize();
-			EntitySchemaSet.StartCheckTableTimer();
+            ScriptEngines.SetPythonDebug = ConfigUtils.GetSetting("Python_IsDebug", false);
+            ScriptEngines.AddReferencedAssembly("ZyGames.Framework.Game.dll");
+            EntitySchemaSet.StartCheckTableTimer();
             Global = new ContextCacheSet<CacheItem>("__gameenvironment_global");
 
             if (loadDataFactory != null)
             {
                 result = loadDataFactory();
             }
+            ScriptEngines.Initialize();
+
             if (result)
             {
                 Interlocked.Exchange(ref _isRunning, 1);

@@ -23,6 +23,7 @@ THE SOFTWARE.
 ****************************************************************************/
 using System;
 using System.Collections.Generic;
+using ProtoBuf;
 using ZyGames.Framework.Common;
 using ZyGames.Framework.Game.Cache;
 using ZyGames.Framework.Game.Com.Model;
@@ -32,6 +33,7 @@ namespace ZyGames.Framework.Game.Com.Exam
     /// <summary>
     /// 答题中间件
     /// </summary>
+    [Serializable, ProtoContract]
     public abstract class ExamQuestion<T> : AbstractExam<T> where T : QuestionData, new()
     {
 		/// <summary>

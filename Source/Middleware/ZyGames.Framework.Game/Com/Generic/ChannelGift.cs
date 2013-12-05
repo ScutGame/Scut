@@ -22,6 +22,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ****************************************************************************/
 using System;
+using ProtoBuf;
 using ZyGames.Framework.Common;
 using ZyGames.Framework.Game.Com.Model;
 
@@ -30,6 +31,7 @@ namespace ZyGames.Framework.Game.Com.Generic
     /// <summary>
     /// 渠道媒体礼包
     /// </summary>
+    [Serializable, ProtoContract]
     public abstract class ChannelGift
     {
         private static readonly object SyncRoot = new object();

@@ -25,6 +25,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Threading;
+using ProtoBuf;
 using ZyGames.Framework.Common;
 using ZyGames.Framework.Common.Log;
 using ZyGames.Framework.Game.Com.Model;
@@ -55,6 +56,7 @@ namespace ZyGames.Framework.Game.Com.Rank
     /// <summary>
     /// 排行榜基类
     /// </summary>
+    [Serializable, ProtoContract]
     public abstract class Ranking<T> : IRanking where T : RankingItem
     {
         private readonly int _top;

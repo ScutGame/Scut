@@ -22,27 +22,33 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ****************************************************************************/
 using System;
+using System.Configuration;
+using System.IO;
+using System.Web;
 using ZyGames.Framework.Common.Configuration;
 using ZyGames.Framework.Common.Security;
 using ZyGames.Framework.Data;
 using ZyGames.Framework.Game.Runtime;
 
-namespace ZyGames.Framework.Game.Pay
+namespace ZyGames.Framework.Game.Sns
 {
-    internal class ConfigManger
+	/// <summary>
+	/// Config.
+	/// </summary>
+    internal class ConnectManager
     {
         private static readonly DbBaseProvider _dbBaseProvider;
 
-        static ConfigManger()
+        static ConnectManager()
         {
-            string providerType = ConfigUtils.GetSetting("PayDB_ProviderType");
-            string connectionFormat = ConfigUtils.GetSetting("PayDB_ConnectionString");
+            string providerType = ConfigUtils.GetSetting("Snscenter_ProviderType");
+            string connectionFormat = ConfigUtils.GetSetting("Snscenter_ConnectionString");
             string dataSource = string.Empty;
             string userInfo = string.Empty;
             try
             {
-                dataSource = ConfigUtils.GetSetting("PayDB_Server");
-                userInfo = ConfigUtils.GetSetting("PayDB_Acount");
+                dataSource = ConfigUtils.GetSetting("Snscenter_Server");
+                userInfo = ConfigUtils.GetSetting("Snscenter_Acount");
                 if (!string.IsNullOrEmpty(userInfo))
                 {
                     userInfo = CryptoHelper.DES_Decrypt(userInfo, GameEnvironment.ProductDesEnKey);
@@ -56,7 +62,7 @@ namespace ZyGames.Framework.Game.Pay
             {
                 connectionString = string.Format(connectionFormat, dataSource, userInfo);
             }
-            _dbBaseProvider = DbConnectionProvider.CreateDbProvider("PayDB", providerType, connectionString);
+            _dbBaseProvider = DbConnectionProvider.CreateDbProvider("Snscenter", providerType, connectionString);
         }
 
         public static DbBaseProvider Provider

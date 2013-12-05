@@ -173,7 +173,7 @@ namespace ZyGames.Framework.Game.Contract.Action
             if (login != null && login.CheckLogin())
             {
                 Uid = login.UserID;
-                Sid = httpGet.SessionId;//string.Format("{0}|{1}|{2}", login.SessionID, GameType, ServerID);
+                Sid = Current.SessionId;//string.Format("{0}|{1}|{2}", login.SessionID, GameType, ServerID);
                 UserId = Uid.ToInt();
                 PassportId = login.PassportID;
                 UserType = SnsManager.GetUserType(PassportId);
@@ -187,7 +187,7 @@ namespace ZyGames.Framework.Game.Contract.Action
                         {
                             Current.User = user;
                             user.RemoteAddress = httpGet.RemoteAddress;
-                            user.SocketSid = httpGet.SessionId;
+                            user.SocketSid = Current.SessionId;
                             httpGet.LoginSuccessCallback(UserId);
                         }
                     }

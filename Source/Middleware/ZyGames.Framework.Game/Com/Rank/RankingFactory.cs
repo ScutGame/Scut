@@ -21,9 +21,11 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ****************************************************************************/
+using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Web.Caching;
+using ProtoBuf;
 using ZyGames.Framework.Common.Log;
 using ZyGames.Framework.Common.Timing;
 using ZyGames.Framework.Game.Com.Model;
@@ -33,6 +35,7 @@ namespace ZyGames.Framework.Game.Com.Rank
     /// <summary>
     /// 排行榜工厂
     /// </summary>
+    [Serializable, ProtoContract]
     public static class RankingFactory
     {
         private static readonly string CacheKey = "__RankingFactoryListener";

@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -12,6 +12,7 @@
     <AssemblyName>ZyGames.Framework.Game</AssemblyName>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile />
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -22,7 +23,6 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -33,22 +33,9 @@
     <WarningLevel>4</WarningLevel>
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
     <DocumentationFile>bin\Release\ZyGames.Framework.Game.xml</DocumentationFile>
-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="IronPython.Modules">
-      <HintPath>..\..\..\..\FrameworkPublish\Release\4.0\Python\IronPython.Modules.dll</HintPath>
-    </Reference>
     <Reference Include="Microsoft.CSharp" />
-    <Reference Include="Newtonsoft.Json">
-      <HintPath>..\..\..\Release\5.5.3.5\Lib\Newtonsoft.Json.dll</HintPath>
-    </Reference>
-    <Reference Include="NLog">
-      <HintPath>..\..\..\Release\5.5.3.5\Lib\NLog.dll</HintPath>
-    </Reference>
-    <Reference Include="protobuf-net">
-      <HintPath>..\..\..\Release\5.5.3.5\Lib\protobuf-net.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.ServiceModel" />
@@ -57,21 +44,33 @@
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
+    <Reference Include="System.Configuration" />
     <Reference Include="IronPython">
-      <HintPath>..\..\..\..\FrameworkPublish\Release\4.0\Python\IronPython.dll</HintPath>
+      <HintPath>..\..\..\Release\6.0.5.1\Lib\IronPython.dll</HintPath>
+    </Reference>
+    <Reference Include="IronPython.Modules">
+      <HintPath>..\..\..\Release\6.0.5.1\Lib\IronPython.Modules.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.Dynamic">
-      <HintPath>..\..\..\..\FrameworkPublish\Release\4.0\Python\Microsoft.Dynamic.dll</HintPath>
+      <HintPath>..\..\..\Release\6.0.5.1\Lib\Microsoft.Dynamic.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.Scripting">
-      <HintPath>..\..\..\..\FrameworkPublish\Release\4.0\Python\Microsoft.Scripting.dll</HintPath>
+      <HintPath>..\..\..\Release\6.0.5.1\Lib\Microsoft.Scripting.dll</HintPath>
     </Reference>
-    <Reference Include="System.Configuration" />
-    <Reference Include="ZyGames.Framework">
-      <HintPath>..\..\..\Release\5.5.3.5\Lib\ZyGames.Framework.dll</HintPath>
+    <Reference Include="Newtonsoft.Json">
+      <HintPath>..\..\..\Release\6.0.5.1\Lib\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="NLog">
+      <HintPath>..\..\..\Release\6.0.5.1\Lib\NLog.dll</HintPath>
+    </Reference>
+    <Reference Include="protobuf-net">
+      <HintPath>..\..\..\Release\6.0.5.1\Lib\protobuf-net.dll</HintPath>
     </Reference>
     <Reference Include="ZyGames.Framework.Common">
-      <HintPath>..\..\..\Release\5.5.3.5\Lib\ZyGames.Framework.Common.dll</HintPath>
+      <HintPath>..\..\..\Release\6.0.5.1\Lib\ZyGames.Framework.Common.dll</HintPath>
+    </Reference>
+    <Reference Include="ZyGames.Framework">
+      <HintPath>..\..\..\Release\6.0.5.1\Lib\ZyGames.Framework.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -177,10 +176,8 @@
     <Compile Include="Pay\Section\AppStorePayElement.cs" />
     <Compile Include="Pay\Section\AppStorePaySection.cs" />
     <Compile Include="Runtime\HttpRequest.cs" />
-    <Compile Include="Script\PythonScriptManager.cs" />
     <Compile Include="Service\HttpGameResponse.cs" />
     <Compile Include="Service\LoginStatus.cs" />
-    <Compile Include="Service\ScriptRoute.cs" />
     <Compile Include="Service\SocketGameResponse.cs" />
     <Compile Include="Sns\AbstractLogin.cs" />
     <Compile Include="Sns\LoginDanLeV2.cs" />
@@ -207,7 +204,7 @@
     <Compile Include="Service\MobileType.cs" />
     <Compile Include="Sns\91sdk\HttpPostManager.cs" />
     <Compile Include="Sns\91sdk\Login91sdk.cs" />
-    <Compile Include="Sns\config.cs" />
+    <Compile Include="Sns\ConnectManager.cs" />
     <Compile Include="Sns\ILogin.cs" />
     <Compile Include="Sns\Login360.cs" />
     <Compile Include="Sns\Login36you.cs" />

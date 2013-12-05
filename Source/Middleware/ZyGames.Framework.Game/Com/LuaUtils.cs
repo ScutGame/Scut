@@ -23,6 +23,7 @@ THE SOFTWARE.
 ****************************************************************************/
 using System;
 using System.Text.RegularExpressions;
+using ProtoBuf;
 using ZyGames.Framework.Game.Model;
 
 namespace ZyGames.Framework.Game.Com
@@ -31,6 +32,7 @@ namespace ZyGames.Framework.Game.Com
     ///<summary>
     ///Lua操作工具类
     ///</summary>
+    [Serializable, ProtoContract]
     public static class LuaUtils
     {
         /// <summary>

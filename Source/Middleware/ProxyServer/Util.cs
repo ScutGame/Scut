@@ -32,20 +32,6 @@ namespace ProxyServer
 {
     public class Util
     {
-        public static T GetAppSetting<T>(string key)
-        {
-            var v = ConfigurationManager.AppSettings[key];
-            if (string.IsNullOrEmpty(v)) return default(T);
-            return (T)Convert.ChangeType(v, typeof(T));
-        }
-
-        public static T GetAppSetting<T>(string key, T @default)
-        {
-            var v = ConfigurationManager.AppSettings[key];
-            if (string.IsNullOrEmpty(v)) return @default;
-            return (T)Convert.ChangeType(v, typeof(T));
-        }
-
         public static string MD5_Encrypt(string source, string addKey, Encoding encoding)
         {
             if (addKey.Length > 0)

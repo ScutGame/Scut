@@ -25,12 +25,14 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using ProtoBuf;
 
 namespace ZyGames.Framework.Game.Com
 {
     /// <summary>
     /// 中间件配置信息
     /// </summary>
+    [Serializable, ProtoContract]
     public class ComConfig
     {
         /// <summary>

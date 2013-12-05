@@ -9,12 +9,8 @@
  * *******************************************************/
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using ZyGames.Framework.Common.Log;
-using ZyGames.Framework.Game.Script;
-using ZyGames.Framework.Plugin.PythonScript;
+using ZyGames.Framework.Script;
 
 namespace ZyGames.Framework.Game.Command
 {
@@ -40,20 +36,19 @@ namespace ZyGames.Framework.Game.Command
         {
             _cmd = cmd;
         }
-		/// <summary>
-		/// Processes the cmd.
-		/// </summary>
-		/// <param name="args">Arguments.</param>
+        /// <summary>
+        /// Processes the cmd.
+        /// </summary>
+        /// <param name="args">Arguments.</param>
         protected override void ProcessCmd(string[] args)
         {
             string routeName = string.Format("Gm\\{0}.py", _cmd);
-
-            PythonContext pyContext;
-            if (PythonScriptManager.Current.TryLoadPython(routeName, out pyContext))
+            dynamic scriptScope = ScriptEngines.Execute(routeName, null);
+            if (scriptScope != null)
             {
                 try
                 {
-                    pyContext.Scope.processCmd(UserID, args);
+                    scriptScope.processCmd(UserID, args);
                 }
                 catch (Exception ex)
                 {

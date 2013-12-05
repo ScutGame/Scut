@@ -62,13 +62,18 @@ namespace ZyGames.Framework.Game.Contract
         internal ExSocket Channel;
 
         /// <summary>
+        /// 是否已连接
+        /// </summary>
+        public bool Connected { get { return Channel.WorkSocket.Connected; } }
+
+        /// <summary>
         /// 构造函数
         /// </summary>
         public GameSession()
         {
             LastActivityTime = DateTime.Now;
         }
-       
+
         private int isInSession;
         internal bool EnterSession()
         {

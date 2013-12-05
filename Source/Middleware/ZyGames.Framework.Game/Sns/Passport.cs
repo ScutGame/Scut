@@ -24,6 +24,9 @@ THE SOFTWARE.
 using System;
 using System.Data;
 using System.Data.SqlClient;
+using ZyGames.Framework.Common;
+using ZyGames.Framework.Common.Configuration;
+using ZyGames.Framework.Data;
 using ZyGames.Framework.Data.Sql;
 
 namespace ZyGames.Framework.Game.Sns
@@ -33,7 +36,7 @@ namespace ZyGames.Framework.Game.Sns
     /// </summary>
     public class SnsPassport : IDisposable
     {
-        private const string PreAccount = "Z";
+        private static readonly string PreAccount = ConfigUtils.GetSetting("Sns.PreAccount", "Z");
         /// <summary>
         /// ID的状态
         /// </summary>
@@ -54,13 +57,6 @@ namespace ZyGames.Framework.Game.Sns
         }
 
         /// <summary>
-        /// 
-        /// </summary>
-        public SnsPassport()
-        {
-        }
-
-        /// <summary>
         /// 获取6位随机密码
         /// </summary>
         /// <returns></returns>
@@ -77,16 +73,21 @@ namespace ZyGames.Framework.Game.Sns
         public string GetRegPassport()
         {
             bool isGet = false;
+            var command = ConnectManager.Provider.CreateCommandStruct("SnsPassportLog", CommandMode.Inquiry, "PASSPORTID");
+            command.Top = 1;
+            command.OrderBy = "PASSPORTID ASC";
+            command.Filter = ConnectManager.Provider.CreateCommandFilter();
+            command.Filter.Condition = command.Filter.FormatExpression("MARK");
+            command.Filter.AddParam("MARK", Convert.ToInt32(PassMark.UnPush));
+            command.Parser();
+
             string iPassportId = String.Empty;
-            string sGetSql = "select top 1 passportid from SnsPassportLog where mark=@aUnPush order by passportid";
-            SqlParameter[] paramsGet = new SqlParameter[1];
-            paramsGet[0] = SqlParamHelper.MakeInParam("@aUnPush", SqlDbType.Int, 0, Convert.ToInt32(PassMark.UnPush));
-            using (SqlDataReader aReader = SqlHelper.ExecuteReader(config.connectionString, CommandType.Text, sGetSql, paramsGet))
+            using (var aReader = ConnectManager.Provider.ExecuteReader(CommandType.Text, command.Sql, command.Parameters))
             {
                 if (aReader.Read())
                 {
                     isGet = true;
-                    iPassportId = aReader["passportid"].ToString();
+                    iPassportId = aReader["PASSPORTID"].ToString();
                 }
             }
 
@@ -100,10 +101,13 @@ namespace ZyGames.Framework.Game.Sns
             }
             else
             {
-                string sInsertSql = "insert into SnsPassportLog(mark, regpushtime)values(@aMark, getdate()) select @@IDENTITY";
-                SqlParameter[] paramsInsert = new SqlParameter[1];
-                paramsInsert[0] = SqlParamHelper.MakeInParam("@aMark", SqlDbType.Int, 0, Convert.ToInt32(PassMark.IsPushToNewUser));
-                using (SqlDataReader aReader = SqlHelper.ExecuteReader(config.connectionString, CommandType.Text, sInsertSql, paramsInsert))
+                command = ConnectManager.Provider.CreateCommandStruct("SnsPassportLog", CommandMode.Insert);
+                command.ReturnIdentity = true;
+                command.AddParameter("mark", Convert.ToInt32(PassMark.IsPushToNewUser));
+                command.AddParameter("regpushtime", MathUtils.Now);
+                command.Parser();
+
+                using (var aReader = ConnectManager.Provider.ExecuteReader(CommandType.Text, command.Sql, command.Parameters))
                 {
                     if (aReader.Read())
                     {
@@ -135,13 +139,14 @@ namespace ZyGames.Framework.Game.Sns
                 }
 
                 string sTmp = aPid.Substring(PreAccount.Length);
-                string sGetSql = "select top 1 passportid from SnsPassportLog where PassportId=@aPid";
-                SqlParameter[] paramsGet = new SqlParameter[1];
-                paramsGet[0] = SqlParamHelper.MakeInParam("@aPid", SqlDbType.VarChar, 0, sTmp);
-                using (SqlDataReader aReader = SqlHelper.ExecuteReader(config.connectionString, CommandType.Text, sGetSql, paramsGet))
-                {
-                    return aReader.HasRows;
-                }
+                var command = ConnectManager.Provider.CreateCommandStruct("SnsPassportLog", CommandMode.Inquiry, "passportid");
+                command.Top = 1;
+                command.OrderBy = "PASSPORTID ASC";
+                command.Filter = ConnectManager.Provider.CreateCommandFilter();
+                command.Filter.Condition = command.Filter.FormatExpression("PassportId");
+                command.Filter.AddParam("PassportId", sTmp);
+                command.Parser();
+                return ConnectManager.Provider.ExecuteScalar(CommandType.Text, command.Sql, command.Parameters) != null;
             }
             catch
             {
@@ -150,7 +155,7 @@ namespace ZyGames.Framework.Game.Sns
         }
         /// <summary>
         /// </summary>
-		/// <param name="aPid"></param>
+        /// <param name="aPid"></param>
         /// <returns></returns>
         public bool SetPassportReg(string aPid)
         {
@@ -162,21 +167,23 @@ namespace ZyGames.Framework.Game.Sns
         {
             try
             {
-                string sUpSql = "update SnsPassportLog set mark=@aNewMark,";
+                string sTmp = aPid.Substring(PreAccount.Length);
+                var command = ConnectManager.Provider.CreateCommandStruct("SnsPassportLog", CommandMode.Modify);
+                command.AddParameter("mark", Convert.ToInt32(aMark));
                 if (aMark == PassMark.IsPushToNewUser)
                 {
-                    sUpSql += " regpushtime=getdate()";
+                    command.AddParameter("regpushtime", MathUtils.Now);
                 }
                 else if (aMark == PassMark.IsReg)
                 {
-                    sUpSql += " regtime=getdate()";
+                    command.AddParameter("regtime", MathUtils.Now);
                 }
-                sUpSql += " where passportid=@aPid";
-                SqlParameter[] paramsUpdate = new SqlParameter[2];
-                string sTmp = aPid.Substring(PreAccount.Length);
-                paramsUpdate[0] = SqlParamHelper.MakeInParam("@anewMark", SqlDbType.Int, 0, Convert.ToInt32(aMark));
-                paramsUpdate[1] = SqlParamHelper.MakeInParam("@aPid", SqlDbType.VarChar, 0, sTmp);
-                SqlHelper.ExecuteNonQuery(config.connectionString, CommandType.Text, sUpSql, paramsUpdate);
+                command.Filter = ConnectManager.Provider.CreateCommandFilter();
+                command.Filter.Condition = command.Filter.FormatExpression("PassportId");
+                command.Filter.AddParam("PassportId", sTmp);
+                command.Parser();
+
+                ConnectManager.Provider.ExecuteQuery(CommandType.Text, command.Sql, command.Parameters);
                 return true;
             }
             catch

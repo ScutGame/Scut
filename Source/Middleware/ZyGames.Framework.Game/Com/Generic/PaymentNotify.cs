@@ -21,6 +21,8 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ****************************************************************************/
+using System;
+using ProtoBuf;
 using ZyGames.Framework.Common.Log;
 using ZyGames.Framework.Game.Context;
 using ZyGames.Framework.Game.Pay;
@@ -31,6 +33,7 @@ namespace ZyGames.Framework.Game.Com.Generic
     /// <summary>
     /// 付款通知
     /// </summary>
+    [Serializable, ProtoContract]
     public abstract class PaymentNotify
     {
         /// <summary>

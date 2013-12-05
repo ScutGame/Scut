@@ -21,14 +21,8 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ****************************************************************************/
-using System;
 using System.Collections.Generic;
-using System.IO;
-using ZyGames.Framework.Common.Log;
-using ZyGames.Framework.Game.Model;
-using ZyGames.Framework.Game.Runtime;
-using ZyGames.Framework.Game.Script;
-using ZyGames.Framework.Plugin.PythonScript;
+using ZyGames.Framework.Script;
 
 namespace ZyGames.Framework.Game.Task
 {
@@ -55,11 +49,11 @@ namespace ZyGames.Framework.Game.Task
         where T : ITaskItem
         where TC : TaskBaseConfig
     {
-		/// <summary>
-		/// The user identifier.
-		/// </summary>
+        /// <summary>
+        /// The user identifier.
+        /// </summary>
         protected readonly int UserId;
-        private PythonContext _taskContext;
+        private dynamic _taskScope;
         private bool _isUsedPy;
         /// <summary>
         /// 
@@ -70,23 +64,14 @@ namespace ZyGames.Framework.Game.Task
             UserId = userId;
             _isUsedPy = InitTask();
         }
-		/// <summary>
-		/// Inits the task.
-		/// </summary>
-		/// <returns><c>true</c>, if task was inited, <c>false</c> otherwise.</returns>
+        /// <summary>
+        /// Inits the task.
+        /// </summary>
+        /// <returns><c>true</c>, if task was inited, <c>false</c> otherwise.</returns>
         protected bool InitTask()
         {
-            string path;
-            var manager = PythonScriptManager.Current;
-            if (manager.TryGetLib("task", out path))
-            {
-                if (manager.TryLoadPython(path, out _taskContext))
-                {
-                    return true;
-                }
-            }
-            path = Path.Combine("Lib", "Task.py");
-            return manager.TryLoadPython(path, out _taskContext);
+            _taskScope = ScriptEngines.Execute("Task.py", null);
+            return _taskScope != null;
         }
 
         /// <summary>
@@ -98,7 +83,7 @@ namespace ZyGames.Framework.Game.Task
             List<T> taskList = new List<T>();
             if (_isUsedPy)
             {
-                IronPython.Runtime.List list = _taskContext.Scope.get(UserId, currTaskId);
+                IronPython.Runtime.List list = _taskScope.get(UserId, currTaskId);
                 foreach (var item in list)
                 {
                     taskList.Add((T)item);
@@ -115,7 +100,7 @@ namespace ZyGames.Framework.Game.Task
         {
             if (_isUsedPy)
             {
-                return _taskContext.Scope.acceptTask(UserId, taskId);
+                return _taskScope.acceptTask(UserId, taskId);
             }
             return false;
         }
@@ -128,7 +113,7 @@ namespace ZyGames.Framework.Game.Task
         {
             if (_isUsedPy)
             {
-                return _taskContext.Scope.deliveryTask(UserId, taskId);
+                return _taskScope.deliveryTask(UserId, taskId);
             }
             return false;
         }
@@ -140,7 +125,7 @@ namespace ZyGames.Framework.Game.Task
         {
             if (_isUsedPy)
             {
-                return _taskContext.Scope.receivePrize(UserId, taskId);
+                return _taskScope.receivePrize(UserId, taskId);
             }
             return false;
         }
