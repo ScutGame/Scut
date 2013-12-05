@@ -36,11 +36,14 @@ def takeAction(urlParam, parent):
     ranking = cache.Find( match = lambda m : m.UserName==urlParam.UserName )
     if not ranking:
         ranking = UserRanking()
-        ranking.UserID = UserSet.GenerateId()
+        ranking.UserID = cache.GetNextNo()
         ranking.UserName = urlParam.UserName
         ranking.Score = urlParam.Score
         cache.Add(ranking)
-        cache.Update()
+    else:
+        ranking.UserName = urlParam.UserName
+        ranking.Score = urlParam.Score
+
     return actionResult
 
 def buildPacket(writer, urlParam, actionResult):

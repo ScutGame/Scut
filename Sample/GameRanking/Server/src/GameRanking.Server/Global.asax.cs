@@ -1,9 +1,10 @@
 ﻿using System;
 using System.Reflection;
 using GameRanking.Model;
-using ZyGames.Framework.Cache.Generic;
+using ZyGames.Framework.Game.Contract;
 using ZyGames.Framework.Common.Log;
 using ZyGames.Framework.Game.Runtime;
+using ZyGames.Framework.Script;
 
 namespace GameRanking.Server
 {
@@ -17,7 +18,12 @@ namespace GameRanking.Server
             {
                 int cacheInterval = 600;
                 Assembly entityAssembly = Assembly.Load("GameRanking.Model");
-                GameEnvironment.Start(cacheInterval, () => { return true; }, 600, entityAssembly);
+                GameEnvironment.Start(cacheInterval, () => {
+                    ScriptEngines.AddReferencedAssembly("GameRanking.Model.dll");
+                    ActionFactory.SetActionIgnoreAuthorize(1000, 1001);
+                    return true;
+                
+                }, 600, entityAssembly);
             }
             catch (Exception ex)
             {
