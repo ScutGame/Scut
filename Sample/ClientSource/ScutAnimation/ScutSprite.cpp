@@ -23,12 +23,12 @@ THE SOFTWARE.
 ****************************************************************************/
 
 #include "ScutSprite.h"
-#include "FileHelper.h"
+//#include "FileHelper.h"
 #include "ScutAniGroup.h"
 #include "ScutAniData.h"
 #include "ScutFrame.h"
 #include "ScutTile.h"
-#include "LuaHost.h"
+#include "ScutSDK/ScutSDK.h"
 #include "cocos2d.h"
 
 using namespace ScutDataLogic;

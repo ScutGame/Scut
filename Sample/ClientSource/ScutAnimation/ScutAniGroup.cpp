@@ -23,7 +23,7 @@ THE SOFTWARE.
 ****************************************************************************/
 
 #include "ScutAniGroup.h"
-#include "FileHelper.h"
+#include "ScutSDK/ScutSDK.h"
 #include "SpriteFileStream.h"
 #include "ScutTile.h"
 #include "ScutFrame.h"

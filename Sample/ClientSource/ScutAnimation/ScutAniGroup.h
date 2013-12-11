@@ -26,7 +26,7 @@ THE SOFTWARE.
 #define __SCUT_ANI_GROUP_H__
 
 #include "cocos2d.h"
-#include "Defines.h"
+#include "ScutSDK/ScutSDK.h"
 #include "ScutTileTable.h"
 #include <vector>
 

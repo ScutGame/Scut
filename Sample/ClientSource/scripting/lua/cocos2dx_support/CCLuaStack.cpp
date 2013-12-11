@@ -39,7 +39,6 @@ extern "C" {
 #if (CC_TARGET_PLATFORM == CC_PLATFORM_IOS || CC_TARGET_PLATFORM == CC_PLATFORM_MAC)
 #include "platform/ios/CCLuaObjcBridge.h"
 #endif
-//extern int  tolua_ScutScene_open (lua_State* tolua_S);
 extern int  tolua_ScutDataLogic_open (lua_State* tolua_S);
 extern int  tolua_ScutSystem_open (lua_State* tolua_S);
 extern int  tolua_ScutUtility_open(lua_State* tolua_S);
@@ -113,7 +112,6 @@ bool CCLuaStack::init(void)
     tolua_Cocos2d_open(m_state);
     toluafix_open(m_state);
 	tolua_ScutDataLogic_open(m_state);
-	//tolua_ScutScene_open(m_state);
 	tolua_ScutSystem_open(m_state);
 	tolua_ScutUtility_open(m_state);
 	luaopen_ScutAnimation(m_state);

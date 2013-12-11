@@ -24,7 +24,7 @@ THE SOFTWARE.
 
 #include "ScutAnimationManager.h"
 #include "SpriteFileStream.h"
-#include "FileHelper.h"
+#include "ScutSDK/ScutSDK.h"
 #include "ScutAniGroup.h"
 #include "ScutSprite.h"
 

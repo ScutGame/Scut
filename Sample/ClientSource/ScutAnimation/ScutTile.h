@@ -26,7 +26,7 @@ THE SOFTWARE.
 #define __SCUT_TILE_H__
 
 #include "cocos2d.h"
-#include "Defines.h"
+#include "ScutSDK/ScutSDK.h"
 #include "ScutTileTable.h"
 
 USING_NS_CC;

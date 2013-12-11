@@ -1,11 +1,11 @@
 #include "cocos2d.h"
 #include "AppDelegate.h"
-#include "FileHelper.h"
+#include "ScutSDK/ScutSDK.h"
 #include "SimpleAudioEngine.h"
 #include "script_support/CCScriptSupport.h"
 #include "CCLuaEngine.h"
-#include "LuaHost.h"
-#include "DataRequest.h"
+//#include "LuaHost.h"
+//#include "DataRequest.h"
 USING_NS_CC;
 using namespace CocosDenshion;
 using namespace ScutDataLogic;
