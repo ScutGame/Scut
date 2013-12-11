@@ -1,0 +1,81 @@
+
+namespace ScutDataLogic
+{
+	class CNetWriter
+	{
+	public:
+		void writeInt32(const char* szKey, int nValue);
+		void writeFloat(const char* szKey, float fvalue);
+		void writeString(const char* szKey, const char* szValue);//
+		void writeInt64(const char* szKey, unsigned long long nValue);
+		void writeInt64(const char* szKey, CInt64& obj);
+		void writeWord(const char* szKey, unsigned short sValue);
+		void writeBuf(const char* szKey, unsigned char* buf, int nSize);
+		static void setUrl(const char* szUrl);
+		void url_encode(const char*str, char*dst, size_t dst_len);
+		int url_encode(unsigned char* src, int src_len, char* dst, int dst_len);
+		
+		static CNetWriter* getInstance();
+		std::string& generatePostData();
+		
+		static void resetData();
+		
+		static void setSessionID(const char* pszSessionID);
+		static void setUserID(CInt64 value);
+		static void setStime(const char* pszTime);
+
+
+	};
+
+
+	class CNetReader:public CNetStreamExport
+	{
+	public:
+		~CNetReader();
+
+		/*∏∏¿‡∑Ω∑® 
+
+		bool recordBegin();
+		void recordEnd()
+
+		unsigned char	getBYTE(void);
+		unsigned short	getWORD(void);
+		unsigned int	getDWORD(void);
+		int				getInt(void);
+		float			getFloat(void);
+		double			getDouble(void);
+		unsigned long long getInt64();
+
+		*/
+		CInt64 getCInt64();
+		void getString(CLuaString* pOutString, int nLength);
+		unsigned char	getByte(void);
+		unsigned short	getWord(void);
+
+
+		static CNetReader* getInstance();
+
+		int			getResult();
+		int			getRmId();
+		int			getActionID();
+		CLuaString*		getErrMsg();
+		CLuaString*		getStrStime();
+	
+	};
+
+	/*
+	class CLuaString
+	{
+	public:
+		CLuaString();
+		CLuaString(std::string strValue);
+		~CLuaString(void);
+		void	setString(const char* szValue);
+		const char* getCString();
+		int		getSize();
+
+	};
+	*/
+
+
+}

@@ -1,0 +1,375 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="源文件">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="头文件">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+    <Filter Include="资源文件">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="ScutUtility">
+      <UniqueIdentifier>{9def9fc2-88c7-4463-b29f-f105308fca08}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ScutSystem">
+      <UniqueIdentifier>{45a87f2d-1a1a-40b5-ae74-ba866d8f29d8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ScutNetwork">
+      <UniqueIdentifier>{40eb2c42-5361-49f0-9789-20c1c85d751f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ScutDataLogic">
+      <UniqueIdentifier>{e455d2b2-6569-4924-80f9-c345cbb427fc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ScutDataLogic\zip_support">
+      <UniqueIdentifier>{b3117d17-499f-4fd9-b2bc-68581196bc0f}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="ScutUtility\ScutUtils.cpp">
+      <Filter>ScutUtility</Filter>
+    </ClCompile>
+    <ClCompile Include="ScutUtility\PlatformProcedure.cpp">
+      <Filter>ScutUtility</Filter>
+    </ClCompile>
+    <ClCompile Include="ScutUtility\ScutLanFactory.cpp">
+      <Filter>ScutUtility</Filter>
+    </ClCompile>
+    <ClCompile Include="ScutUtility\ScutLocale.cpp">
+      <Filter>ScutUtility</Filter>
+    </ClCompile>
+    <ClCompile Include="ScutUtility\ScutLuaLan.cpp">
+      <Filter>ScutUtility</Filter>
+    </ClCompile>
+    <ClCompile Include="ScutUtility\LUA_Export\LuaScutUtility.cpp">
+      <Filter>ScutUtility</Filter>
+    </ClCompile>
+    <ClCompile Include="ScutSystem\AutoGuard.cpp">
+      <Filter>ScutSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="ScutSystem\Des91Priv.cpp">
+      <Filter>ScutSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="ScutSystem\md5.cpp">
+      <Filter>ScutSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="ScutSystem\PathUtility.cpp">
+      <Filter>ScutSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="ScutSystem\ScutSMS.cpp">
+      <Filter>ScutSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="ScutSystem\ScutString.cpp">
+      <Filter>ScutSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="ScutSystem\ScutUtility.cpp">
+      <Filter>ScutSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="ScutSystem\stdafx.cpp">
+      <Filter>ScutSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="ScutSystem\StdDES2.cpp">
+      <Filter>ScutSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="ScutSystem\Stream.cpp">
+      <Filter>ScutSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="ScutSystem\Trace.cpp">
+      <Filter>ScutSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="ScutSystem\unzip.cpp">
+      <Filter>ScutSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="ScutSystem\WjcDes.cpp">
+      <Filter>ScutSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="ScutSystem\LUA_Export\LuaScutSystem.cpp">
+      <Filter>ScutSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="ScutSystem\Markup\Markup.cpp">
+      <Filter>ScutSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="ScutSystem\tinyxml\tinystr.cpp">
+      <Filter>ScutSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="ScutSystem\tinyxml\tinyxml.cpp">
+      <Filter>ScutSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="ScutSystem\tinyxml\tinyxmlerror.cpp">
+      <Filter>ScutSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="ScutSystem\tinyxml\tinyxmlparser.cpp">
+      <Filter>ScutSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="ScutNetwork\ZipUtils.cpp">
+      <Filter>ScutNetwork</Filter>
+    </ClCompile>
+    <ClCompile Include="ScutNetwork\HttpClient.cpp">
+      <Filter>ScutNetwork</Filter>
+    </ClCompile>
+    <ClCompile Include="ScutNetwork\HttpClientRequest.cpp">
+      <Filter>ScutNetwork</Filter>
+    </ClCompile>
+    <ClCompile Include="ScutNetwork\HttpClientResponse.cpp">
+      <Filter>ScutNetwork</Filter>
+    </ClCompile>
+    <ClCompile Include="ScutNetwork\HttpSession.cpp">
+      <Filter>ScutNetwork</Filter>
+    </ClCompile>
+    <ClCompile Include="ScutNetwork\INetStatusNotify.cpp">
+      <Filter>ScutNetwork</Filter>
+    </ClCompile>
+    <ClCompile Include="ScutNetwork\LuaHelper.cpp">
+      <Filter>ScutNetwork</Filter>
+    </ClCompile>
+    <ClCompile Include="ScutNetwork\NetClientBase.cpp">
+      <Filter>ScutNetwork</Filter>
+    </ClCompile>
+    <ClCompile Include="ScutNetwork\stdafx.cpp">
+      <Filter>ScutNetwork</Filter>
+    </ClCompile>
+    <ClCompile Include="ScutNetwork\TcpClient.cpp">
+      <Filter>ScutNetwork</Filter>
+    </ClCompile>
+    <ClCompile Include="ScutNetwork\TcpSceneManager.cpp">
+      <Filter>ScutNetwork</Filter>
+    </ClCompile>
+    <ClCompile Include="ScutNetwork\LUA_Export\LuaScutNetwork.cpp">
+      <Filter>ScutNetwork</Filter>
+    </ClCompile>
+    <ClCompile Include="ScutDataLogic\DataHandler.cpp">
+      <Filter>ScutDataLogic</Filter>
+    </ClCompile>
+    <ClCompile Include="ScutDataLogic\DataRequest.cpp">
+      <Filter>ScutDataLogic</Filter>
+    </ClCompile>
+    <ClCompile Include="ScutDataLogic\FileHelper.cpp">
+      <Filter>ScutDataLogic</Filter>
+    </ClCompile>
+    <ClCompile Include="ScutDataLogic\iniEx.cpp">
+      <Filter>ScutDataLogic</Filter>
+    </ClCompile>
+    <ClCompile Include="ScutDataLogic\Int64.cpp">
+      <Filter>ScutDataLogic</Filter>
+    </ClCompile>
+    <ClCompile Include="ScutDataLogic\IPluginInfo.cpp">
+      <Filter>ScutDataLogic</Filter>
+    </ClCompile>
+    <ClCompile Include="ScutDataLogic\LuaHost.cpp">
+      <Filter>ScutDataLogic</Filter>
+    </ClCompile>
+    <ClCompile Include="ScutDataLogic\LuaIni.cpp">
+      <Filter>ScutDataLogic</Filter>
+    </ClCompile>
+    <ClCompile Include="ScutDataLogic\LuaString.cpp">
+      <Filter>ScutDataLogic</Filter>
+    </ClCompile>
+    <ClCompile Include="ScutDataLogic\NetHelper.cpp">
+      <Filter>ScutDataLogic</Filter>
+    </ClCompile>
+    <ClCompile Include="ScutDataLogic\NetStreamExport.cpp">
+      <Filter>ScutDataLogic</Filter>
+    </ClCompile>
+    <ClCompile Include="ScutDataLogic\PackageUnzipHandler.cpp">
+      <Filter>ScutDataLogic</Filter>
+    </ClCompile>
+    <ClCompile Include="ScutDataLogic\stdafx.cpp">
+      <Filter>ScutDataLogic</Filter>
+    </ClCompile>
+    <ClCompile Include="ScutDataLogic\Utility.cpp">
+      <Filter>ScutDataLogic</Filter>
+    </ClCompile>
+    <ClCompile Include="ScutDataLogic\XmlDataHandler.cpp">
+      <Filter>ScutDataLogic</Filter>
+    </ClCompile>
+    <ClCompile Include="ScutDataLogic\LUA_Export\LuaScutDataLogic.cpp">
+      <Filter>ScutDataLogic</Filter>
+    </ClCompile>
+    <ClCompile Include="ScutDataLogic\zip_support\ioapi.cpp">
+      <Filter>ScutDataLogic\zip_support</Filter>
+    </ClCompile>
+    <ClCompile Include="ScutDataLogic\zip_support\unzip.cpp">
+      <Filter>ScutDataLogic\zip_support</Filter>
+    </ClCompile>
+    <ClCompile Include="ScutDataLogic\zip_support\ZipUtils.cpp">
+      <Filter>ScutDataLogic\zip_support</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="ScutUtility\ScutUtils.h">
+      <Filter>ScutUtility</Filter>
+    </ClInclude>
+    <ClInclude Include="ScutUtility\PlatformProcedure.h">
+      <Filter>ScutUtility</Filter>
+    </ClInclude>
+    <ClInclude Include="ScutUtility\ScutLanFactory.h">
+      <Filter>ScutUtility</Filter>
+    </ClInclude>
+    <ClInclude Include="ScutUtility\ScutLocale.h">
+      <Filter>ScutUtility</Filter>
+    </ClInclude>
+    <ClInclude Include="ScutUtility\ScutLuaLan.h">
+      <Filter>ScutUtility</Filter>
+    </ClInclude>
+    <ClInclude Include="ScutSystem\AutoGuard.h">
+      <Filter>ScutSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="ScutSystem\Defines.h">
+      <Filter>ScutSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="ScutSystem\Des91Priv.h">
+      <Filter>ScutSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="ScutSystem\global.h">
+      <Filter>ScutSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="ScutSystem\md5.h">
+      <Filter>ScutSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="ScutSystem\PathUtility.h">
+      <Filter>ScutSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="ScutSystem\ScutSMS.h">
+      <Filter>ScutSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="ScutSystem\ScutString.h">
+      <Filter>ScutSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="ScutSystem\ScutUtility.h">
+      <Filter>ScutSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="ScutSystem\stdafx.h">
+      <Filter>ScutSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="ScutSystem\StdDES2.h">
+      <Filter>ScutSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="ScutSystem\StdString.h">
+      <Filter>ScutSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="ScutSystem\Stream.h">
+      <Filter>ScutSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="ScutSystem\targetver.h">
+      <Filter>ScutSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="ScutSystem\tchar.h">
+      <Filter>ScutSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="ScutSystem\Trace.h">
+      <Filter>ScutSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="ScutSystem\unzip.h">
+      <Filter>ScutSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="ScutSystem\WjcDes.h">
+      <Filter>ScutSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="ScutSystem\Markup\Markup.h">
+      <Filter>ScutSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="ScutSystem\tinyxml\tinystr.h">
+      <Filter>ScutSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="ScutSystem\tinyxml\tinyxml.h">
+      <Filter>ScutSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="ScutNetwork\TcpSceneManager.h">
+      <Filter>ScutNetwork</Filter>
+    </ClInclude>
+    <ClInclude Include="ScutNetwork\ZipUtils.h">
+      <Filter>ScutNetwork</Filter>
+    </ClInclude>
+    <ClInclude Include="ScutNetwork\HttpClient.h">
+      <Filter>ScutNetwork</Filter>
+    </ClInclude>
+    <ClInclude Include="ScutNetwork\HttpClientRequest.h">
+      <Filter>ScutNetwork</Filter>
+    </ClInclude>
+    <ClInclude Include="ScutNetwork\HttpClientResponse.h">
+      <Filter>ScutNetwork</Filter>
+    </ClInclude>
+    <ClInclude Include="ScutNetwork\HttpSession.h">
+      <Filter>ScutNetwork</Filter>
+    </ClInclude>
+    <ClInclude Include="ScutNetwork\INetStatusNotify.h">
+      <Filter>ScutNetwork</Filter>
+    </ClInclude>
+    <ClInclude Include="ScutNetwork\LuaHelper.h">
+      <Filter>ScutNetwork</Filter>
+    </ClInclude>
+    <ClInclude Include="ScutNetwork\NetClientBase.h">
+      <Filter>ScutNetwork</Filter>
+    </ClInclude>
+    <ClInclude Include="ScutNetwork\stdafx.h">
+      <Filter>ScutNetwork</Filter>
+    </ClInclude>
+    <ClInclude Include="ScutNetwork\targetver.h">
+      <Filter>ScutNetwork</Filter>
+    </ClInclude>
+    <ClInclude Include="ScutNetwork\TcpClient.h">
+      <Filter>ScutNetwork</Filter>
+    </ClInclude>
+    <ClInclude Include="ScutDataLogic\XmlDataHandler.h">
+      <Filter>ScutDataLogic</Filter>
+    </ClInclude>
+    <ClInclude Include="ScutDataLogic\DataHandler.h">
+      <Filter>ScutDataLogic</Filter>
+    </ClInclude>
+    <ClInclude Include="ScutDataLogic\DataRequest.h">
+      <Filter>ScutDataLogic</Filter>
+    </ClInclude>
+    <ClInclude Include="ScutDataLogic\FileHelper.h">
+      <Filter>ScutDataLogic</Filter>
+    </ClInclude>
+    <ClInclude Include="ScutDataLogic\iniEx.h">
+      <Filter>ScutDataLogic</Filter>
+    </ClInclude>
+    <ClInclude Include="ScutDataLogic\Int64.h">
+      <Filter>ScutDataLogic</Filter>
+    </ClInclude>
+    <ClInclude Include="ScutDataLogic\IPluginInfo.h">
+      <Filter>ScutDataLogic</Filter>
+    </ClInclude>
+    <ClInclude Include="ScutDataLogic\LuaHost.h">
+      <Filter>ScutDataLogic</Filter>
+    </ClInclude>
+    <ClInclude Include="ScutDataLogic\LuaIni.h">
+      <Filter>ScutDataLogic</Filter>
+    </ClInclude>
+    <ClInclude Include="ScutDataLogic\LuaString.h">
+      <Filter>ScutDataLogic</Filter>
+    </ClInclude>
+    <ClInclude Include="ScutDataLogic\NetHelper.h">
+      <Filter>ScutDataLogic</Filter>
+    </ClInclude>
+    <ClInclude Include="ScutDataLogic\NetStreamExport.h">
+      <Filter>ScutDataLogic</Filter>
+    </ClInclude>
+    <ClInclude Include="ScutDataLogic\PackageUnzipHandler.h">
+      <Filter>ScutDataLogic</Filter>
+    </ClInclude>
+    <ClInclude Include="ScutDataLogic\stdafx.h">
+      <Filter>ScutDataLogic</Filter>
+    </ClInclude>
+    <ClInclude Include="ScutDataLogic\targetver.h">
+      <Filter>ScutDataLogic</Filter>
+    </ClInclude>
+    <ClInclude Include="ScutDataLogic\Utility.h">
+      <Filter>ScutDataLogic</Filter>
+    </ClInclude>
+    <ClInclude Include="ScutDataLogic\zip_support\ioapi.h">
+      <Filter>ScutDataLogic\zip_support</Filter>
+    </ClInclude>
+    <ClInclude Include="ScutDataLogic\zip_support\unzip.h">
+      <Filter>ScutDataLogic\zip_support</Filter>
+    </ClInclude>
+    <ClInclude Include="ScutDataLogic\zip_support\ZipUtils.h">
+      <Filter>ScutDataLogic\zip_support</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>

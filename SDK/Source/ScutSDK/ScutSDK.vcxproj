@@ -1,0 +1,189 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="ScutDataLogic\DataHandler.cpp" />
+    <ClCompile Include="ScutDataLogic\DataRequest.cpp" />
+    <ClCompile Include="ScutDataLogic\FileHelper.cpp" />
+    <ClCompile Include="ScutDataLogic\iniEx.cpp" />
+    <ClCompile Include="ScutDataLogic\Int64.cpp" />
+    <ClCompile Include="ScutDataLogic\IPluginInfo.cpp" />
+    <ClCompile Include="ScutDataLogic\LuaHost.cpp" />
+    <ClCompile Include="ScutDataLogic\LuaIni.cpp" />
+    <ClCompile Include="ScutDataLogic\LuaString.cpp" />
+    <ClCompile Include="ScutDataLogic\LUA_Export\LuaScutDataLogic.cpp" />
+    <ClCompile Include="ScutDataLogic\NetHelper.cpp" />
+    <ClCompile Include="ScutDataLogic\NetStreamExport.cpp" />
+    <ClCompile Include="ScutDataLogic\PackageUnzipHandler.cpp" />
+    <ClCompile Include="ScutDataLogic\stdafx.cpp" />
+    <ClCompile Include="ScutDataLogic\Utility.cpp" />
+    <ClCompile Include="ScutDataLogic\XmlDataHandler.cpp" />
+    <ClCompile Include="ScutDataLogic\zip_support\ioapi.cpp" />
+    <ClCompile Include="ScutDataLogic\zip_support\unzip.cpp" />
+    <ClCompile Include="ScutDataLogic\zip_support\ZipUtils.cpp" />
+    <ClCompile Include="ScutNetwork\HttpClient.cpp" />
+    <ClCompile Include="ScutNetwork\HttpClientRequest.cpp" />
+    <ClCompile Include="ScutNetwork\HttpClientResponse.cpp" />
+    <ClCompile Include="ScutNetwork\HttpSession.cpp" />
+    <ClCompile Include="ScutNetwork\INetStatusNotify.cpp" />
+    <ClCompile Include="ScutNetwork\LuaHelper.cpp" />
+    <ClCompile Include="ScutNetwork\LUA_Export\LuaScutNetwork.cpp" />
+    <ClCompile Include="ScutNetwork\NetClientBase.cpp" />
+    <ClCompile Include="ScutNetwork\stdafx.cpp" />
+    <ClCompile Include="ScutNetwork\TcpClient.cpp" />
+    <ClCompile Include="ScutNetwork\TcpSceneManager.cpp" />
+    <ClCompile Include="ScutNetwork\ZipUtils.cpp" />
+    <ClCompile Include="ScutSystem\AutoGuard.cpp" />
+    <ClCompile Include="ScutSystem\Des91Priv.cpp" />
+    <ClCompile Include="ScutSystem\LUA_Export\LuaScutSystem.cpp" />
+    <ClCompile Include="ScutSystem\Markup\Markup.cpp" />
+    <ClCompile Include="ScutSystem\md5.cpp" />
+    <ClCompile Include="ScutSystem\PathUtility.cpp" />
+    <ClCompile Include="ScutSystem\ScutSMS.cpp" />
+    <ClCompile Include="ScutSystem\ScutString.cpp" />
+    <ClCompile Include="ScutSystem\ScutUtility.cpp" />
+    <ClCompile Include="ScutSystem\stdafx.cpp" />
+    <ClCompile Include="ScutSystem\StdDES2.cpp" />
+    <ClCompile Include="ScutSystem\Stream.cpp" />
+    <ClCompile Include="ScutSystem\tinyxml\tinystr.cpp" />
+    <ClCompile Include="ScutSystem\tinyxml\tinyxml.cpp" />
+    <ClCompile Include="ScutSystem\tinyxml\tinyxmlerror.cpp" />
+    <ClCompile Include="ScutSystem\tinyxml\tinyxmlparser.cpp" />
+    <ClCompile Include="ScutSystem\Trace.cpp" />
+    <ClCompile Include="ScutSystem\unzip.cpp" />
+    <ClCompile Include="ScutSystem\WjcDes.cpp" />
+    <ClCompile Include="ScutUtility\LUA_Export\LuaScutUtility.cpp" />
+    <ClCompile Include="ScutUtility\PlatformProcedure.cpp" />
+    <ClCompile Include="ScutUtility\ScutLanFactory.cpp" />
+    <ClCompile Include="ScutUtility\ScutLocale.cpp" />
+    <ClCompile Include="ScutUtility\ScutLuaLan.cpp" />
+    <ClCompile Include="ScutUtility\ScutUtils.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="ScutDataLogic\DataHandler.h" />
+    <ClInclude Include="ScutDataLogic\DataRequest.h" />
+    <ClInclude Include="ScutDataLogic\FileHelper.h" />
+    <ClInclude Include="ScutDataLogic\iniEx.h" />
+    <ClInclude Include="ScutDataLogic\Int64.h" />
+    <ClInclude Include="ScutDataLogic\IPluginInfo.h" />
+    <ClInclude Include="ScutDataLogic\LuaHost.h" />
+    <ClInclude Include="ScutDataLogic\LuaIni.h" />
+    <ClInclude Include="ScutDataLogic\LuaString.h" />
+    <ClInclude Include="ScutDataLogic\NetHelper.h" />
+    <ClInclude Include="ScutDataLogic\NetStreamExport.h" />
+    <ClInclude Include="ScutDataLogic\PackageUnzipHandler.h" />
+    <ClInclude Include="ScutDataLogic\stdafx.h" />
+    <ClInclude Include="ScutDataLogic\targetver.h" />
+    <ClInclude Include="ScutDataLogic\Utility.h" />
+    <ClInclude Include="ScutDataLogic\XmlDataHandler.h" />
+    <ClInclude Include="ScutDataLogic\zip_support\ioapi.h" />
+    <ClInclude Include="ScutDataLogic\zip_support\unzip.h" />
+    <ClInclude Include="ScutDataLogic\zip_support\ZipUtils.h" />
+    <ClInclude Include="ScutNetwork\HttpClient.h" />
+    <ClInclude Include="ScutNetwork\HttpClientRequest.h" />
+    <ClInclude Include="ScutNetwork\HttpClientResponse.h" />
+    <ClInclude Include="ScutNetwork\HttpSession.h" />
+    <ClInclude Include="ScutNetwork\INetStatusNotify.h" />
+    <ClInclude Include="ScutNetwork\LuaHelper.h" />
+    <ClInclude Include="ScutNetwork\NetClientBase.h" />
+    <ClInclude Include="ScutNetwork\stdafx.h" />
+    <ClInclude Include="ScutNetwork\targetver.h" />
+    <ClInclude Include="ScutNetwork\TcpClient.h" />
+    <ClInclude Include="ScutNetwork\TcpSceneManager.h" />
+    <ClInclude Include="ScutNetwork\ZipUtils.h" />
+    <ClInclude Include="ScutSystem\AutoGuard.h" />
+    <ClInclude Include="ScutSystem\Defines.h" />
+    <ClInclude Include="ScutSystem\Des91Priv.h" />
+    <ClInclude Include="ScutSystem\global.h" />
+    <ClInclude Include="ScutSystem\Markup\Markup.h" />
+    <ClInclude Include="ScutSystem\md5.h" />
+    <ClInclude Include="ScutSystem\PathUtility.h" />
+    <ClInclude Include="ScutSystem\ScutSMS.h" />
+    <ClInclude Include="ScutSystem\ScutString.h" />
+    <ClInclude Include="ScutSystem\ScutUtility.h" />
+    <ClInclude Include="ScutSystem\stdafx.h" />
+    <ClInclude Include="ScutSystem\StdDES2.h" />
+    <ClInclude Include="ScutSystem\StdString.h" />
+    <ClInclude Include="ScutSystem\Stream.h" />
+    <ClInclude Include="ScutSystem\targetver.h" />
+    <ClInclude Include="ScutSystem\tchar.h" />
+    <ClInclude Include="ScutSystem\tinyxml\tinystr.h" />
+    <ClInclude Include="ScutSystem\tinyxml\tinyxml.h" />
+    <ClInclude Include="ScutSystem\Trace.h" />
+    <ClInclude Include="ScutSystem\unzip.h" />
+    <ClInclude Include="ScutSystem\WjcDes.h" />
+    <ClInclude Include="ScutUtility\PlatformProcedure.h" />
+    <ClInclude Include="ScutUtility\ScutLanFactory.h" />
+    <ClInclude Include="ScutUtility\ScutLocale.h" />
+    <ClInclude Include="ScutUtility\ScutLuaLan.h" />
+    <ClInclude Include="ScutUtility\ScutUtils.h" />
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{C5FE06AE-D28F-49DA-A6FF-9E9103CB38DA}</ProjectGuid>
+    <RootNamespace>ScutSDK</RootNamespace>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <TargetExt>.lib</TargetExt>
+    <OutDir>$(SolutionDir)$(Configuration).win32\</OutDir>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <AdditionalIncludeDirectories>$(ProjectDir)\..\cocos2dx\platform\third_party\win32\zlib;$(ProjectDir)\..\cocos2dx\platform;$(ProjectDir)\ScutSystem\Markup\;$(ProjectDir)\ScutNetwork\;$(ProjectDir)\..\cocos2dx\layers_scenes_transitions_nodes;$(ProjectDir)\..\cocos2dx\kazmath\include;$(ProjectDir)\..\cocos2dx\platform\third_party\win32\OGLES;$(ProjectDir)\..\cocos2dx\platform\third_party\win32\OGLES\GL;$(ProjectDir)\..\cocos2dx\include;$(ProjectDir)\..\scripting\lua\lua;$(ProjectDir)\..\scripting\lua\tolua;$(ProjectDir)\ScutDataLogic\;$(ProjectDir)\ScutSystem\;$(ProjectDir)\..\cocos2dx\;$(ProjectDir)\..\cocos2dx\platform\third_party\win32\curl;$(ProjectDir)\..\scripting\lua\cocos2dx_support;$(ProjectDir)\..\cocos2dx\platform\third_party\win32;$(ProjectDir)\ScutDataLogic\zip_support;$(ProjectDir)\..\cocos2dx\platform\win32;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;_DEBUG;_LIB;_CRT_SECURE_NO_WARNINGS;_SCL_SECURE_NO_WARNINGS;SCUT_WIN32;CURL_STATICLIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
+    <Link>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <PreprocessorDefinitions>SCUT_WIN32;WIN32;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>$(ProjectDir)\..\cocos2dx\platform;$(ProjectDir)\..\cocos2dx\platform\third_party\win32\zlib;$(ProjectDir)\ScutSystem\Markup\;$(ProjectDir)\ScutNetwork\;$(ProjectDir)\..\cocos2dx\layers_scenes_transitions_nodes;$(ProjectDir)\..\cocos2dx\kazmath\include;$(ProjectDir)\..\cocos2dx\platform\third_party\win32\OGLES;$(ProjectDir)\..\cocos2dx\platform\third_party\win32\OGLES\GL;$(ProjectDir)\..\cocos2dx\include;$(ProjectDir)\..\scripting\lua\lua;$(ProjectDir)\..\scripting\lua\tolua;$(ProjectDir)\ScutDataLogic\;$(ProjectDir)\ScutSystem\;$(ProjectDir)\..\cocos2dx\;$(ProjectDir)\..\cocos2dx\platform\third_party\win32\curl;$(ProjectDir)\..\scripting\lua\cocos2dx_support;$(ProjectDir)\..\cocos2dx\platform\third_party\win32;$(ProjectDir)\ScutDataLogic\zip_support;$(ProjectDir)\..\cocos2dx\platform\win32;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
+    <Link>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+    </Link>
+  </ItemDefinitionGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

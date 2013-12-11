@@ -1,0 +1,70 @@
+
+############################################################################
+#
+#   Makefile for building : NDFarmData_Arm.TMK3
+#   Created by TMK3_V2.3, please do not modify.
+#
+#############################################################################
+
+TO_PROJECT_ROOT = ../../PRJ_TG3
+OUTPUT_FILENAME = libFarmData.a
+
+include $(TO_PROJECT_ROOT)/MakeInclude/Makefile_Base_StaticLib.ARM
+include $(TO_PROJECT_ROOT)/MakeInclude/Makefile_TOPS_Def.ARM
+
+DEFINES += -DLINUX -D_DEBUG -DNU_DEBUG -D_TRANZDA_VM_ -DSS_SHARED -DND_UPHONE
+INCLUDE_PATH += -I. -I./Res \
+               -I./ -I./Res -I./include -I../NdSystem -I../NdSystem/Markup -I../NdNetwork -I../cocos2dx/include
+
+OBJECTS_DIR = ./Debug-ARM
+DESTDIR = $(TO_PROJECT_ROOT)/$(BIN_OUTPUT_DIR)
+TARGET = $(DESTDIR)/$(OUTPUT_FILENAME)
+
+DEL_FILE = rm -f
+MKDIR = mkdir -p
+
+first: all
+
+OBJECTS = \
+	$(OBJECTS_DIR)/DataHandler.o \
+	$(OBJECTS_DIR)/DataRequest.o \
+	$(OBJECTS_DIR)/NetDialer.o \
+	$(OBJECTS_DIR)/stdafx.o \
+	$(OBJECTS_DIR)/Utility.o \
+	$(OBJECTS_DIR)/XmlDataHandler.o
+
+ADD_OBJECTS += 
+
+$(OBJECTS_DIR) :
+	$(MKDIR) $(OBJECTS_DIR)
+
+$(DESTDIR) :
+	$(MKDIR) $(DESTDIR)
+
+all : $(OBJECTS_DIR) $(DESTDIR) $(TARGET)
+
+$(TARGET) : $(OBJECTS)
+	$(LINK) $(LINK_FLAGS) -o $(TARGET) $(SYS_OBJECTS) $(OBJECTS) $(ADD_OBJECTS) $(LIBS) $(SYS_LIBS)
+
+clean : 
+	-$(DEL_FILE) $(OBJECTS)
+	-$(DEL_FILE) $(TARGET)
+
+$(OBJECTS_DIR)/DataHandler.o : ./DataHandler.cpp
+	$(CXX) -c $(CXX_FLAGS) $(INCLUDE_PATH) $(LAST_INCLUDE_PATH) -o $(OBJECTS_DIR)/DataHandler.o ./DataHandler.cpp
+
+$(OBJECTS_DIR)/DataRequest.o : ./DataRequest.cpp
+	$(CXX) -c $(CXX_FLAGS) $(INCLUDE_PATH) $(LAST_INCLUDE_PATH) -o $(OBJECTS_DIR)/DataRequest.o ./DataRequest.cpp
+
+$(OBJECTS_DIR)/NetDialer.o : ./NetDialer.cpp
+	$(CXX) -c $(CXX_FLAGS) $(INCLUDE_PATH) $(LAST_INCLUDE_PATH) -o $(OBJECTS_DIR)/NetDialer.o ./NetDialer.cpp
+
+$(OBJECTS_DIR)/stdafx.o : ./stdafx.cpp
+	$(CXX) -c $(CXX_FLAGS) $(INCLUDE_PATH) $(LAST_INCLUDE_PATH) -o $(OBJECTS_DIR)/stdafx.o ./stdafx.cpp
+
+$(OBJECTS_DIR)/Utility.o : ./Utility.cpp
+	$(CXX) -c $(CXX_FLAGS) $(INCLUDE_PATH) $(LAST_INCLUDE_PATH) -o $(OBJECTS_DIR)/Utility.o ./Utility.cpp
+
+$(OBJECTS_DIR)/XmlDataHandler.o : ./XmlDataHandler.cpp
+	$(CXX) -c $(CXX_FLAGS) $(INCLUDE_PATH) $(LAST_INCLUDE_PATH) -o $(OBJECTS_DIR)/XmlDataHandler.o ./XmlDataHandler.cpp
+
