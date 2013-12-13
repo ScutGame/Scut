@@ -1,4 +1,4 @@
-﻿
+
 Microsoft Visual Studio Solution File, Format Version 11.00
 # Visual Studio 2010
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ZyGames.Tianjiexing", "ZyGames.Tianjiexing", "{78116A50-711B-437A-95C1-1CB449B0A19F}"
@@ -17,8 +17,6 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ZyGames.Tianjiexing.Lang", "ZyGames.Tianjiexing.Lang\ZyGames.Tianjiexing.Lang.csproj", "{6B943882-3FC0-4E82-8128-0B2AEF865DDC}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ZyGames.Tianjiexing.Component", "ZyGames.Tianjiexing.Component\ZyGames.Tianjiexing.Component.csproj", "{30B3A3D7-F15D-4061-9041-CDB980F3AF04}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ServerHostApp", "ServerHostApp\ServerHostApp.csproj", "{C0A8BE98-FA31-42A4-8D50-2C70C59CDC3F}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{EEAA895B-C58C-42D5-81AC-D58CE321CEB8}"
 	ProjectSection(SolutionItems) = preProject
