@@ -1,0 +1,90 @@
+BODY {
+	BACKGROUND: #cecece; FONT-FAMILY: Arial,Helvetica;FONT-SIZE: 9pt
+}
+A:link {
+	COLOR: #4030ab
+}
+A:visited {
+	COLOR: #888888
+}
+A:hover {
+	COLOR: #ff0000
+}
+A.header:link {
+	COLOR: white; TEXT-DECORATION: none
+}
+A.header:visited {
+	COLOR: white; TEXT-DECORATION: none
+}
+A.header:hover {
+	COLOR: #ffd774; TEXT-DECORATION: underline
+}
+A.headerhl:link {
+	COLOR: #ffd774; FONT-FAMILY: Verdana, Helvetica; FONT-SIZE: 8pt; FONT-WEIGHT: bold; TEXT-ALIGN: center; TEXT-DECORATION: none
+}
+A.headerhl:visited {
+	COLOR: #ffd774; FONT-FAMILY: Verdana, Helvetica; FONT-SIZE: 8pt; FONT-WEIGHT: bold; TEXT-ALIGN: center; TEXT-DECORATION: none
+}
+A.headerhl:hover {
+	COLOR: #ffd774; FONT-FAMILY: Verdana, Helvetica; FONT-SIZE: 8pt; FONT-WEIGHT: bold; TEXT-ALIGN: center; TEXT-DECORATION: underline
+}
+.headerbg {
+	BACKGROUND-COLOR: #f0f6fb
+}
+.header {
+COLOR: white; FONT-FAMILY: "Verdana", "Helvetica"; FONT-SIZE: 8pt; FONT-WEIGHT: bold
+}
+.horizontaldivider {
+	BACKGROUND-COLOR: #000000
+}
+.articleheader {
+	BACKGROUND-COLOR: #f1f6fc; COLOR: #000000; FONT-FAMILY: Verdana, Arial, Helvetica; FONT-SIZE: 11pt; FONT-WEIGHT: bold; LINE-HEIGHT: 26px
+}
+.articleheaderrelease {
+	BACKGROUND-COLOR: #f1f6fc; COLOR: #800000; FONT-SIZE: 7pt; TEXT-ALIGN: center
+}
+.articleheaderdivider {
+	BACKGROUND-COLOR: #705a46
+}
+.subarticleheader {
+	BACKGROUND-COLOR: #f7e8d3; COLOR: #705a46; FONT-FAMILY: Verdana, Arial, Helvetica; FONT-SIZE: 10px; LINE-HEIGHT: 20px
+}
+.resourceheader {
+	BACKGROUND-COLOR: #f1f6fc; FONT-FAMILY: Verdana; FONT-SIZE: 14px; FONT-WEIGHT: bold; LINE-HEIGHT: 20px
+}
+.resourcerating {
+	BACKGROUND-COLOR: #f1f6fc; COLOR: #595959; FONT-SIZE: 11px; FONT-WEIGHT: bold; TEXT-ALIGN: center
+}
+.topresources {
+	BACKGROUND-COLOR: black; COLOR: white; FONT-SIZE: 10px
+}
+.mastertable {
+	BACKGROUND-COLOR: #ffffff
+}
+.footer {
+	BACKGROUND-COLOR: #e8e8e8; FONT-SIZE: 8pt; TEXT-ALIGN: center
+}
+.featuredbg {
+	BACKGROUND-COLOR: #f1f6fc
+}
+.featuredtable {
+	BORDER-BOTTOM: #ced8e2 2px solid; BORDER-LEFT: #ced8e2 2px solid; BORDER-RIGHT: #ced8e2 2px solid; BORDER-TOP: #ced8e2 2px solid
+}
+.featuredheader {
+	BACKGROUND-COLOR: #cfd9e3; COLOR: #800000; FONT-SIZE: 7pt; TEXT-ALIGN: center
+}
+.bg {
+	BACKGROUND-COLOR: #c5d1df
+}
+.arrow {
+	COLOR: red; FONT-SIZE: 8pt; FONT-WEIGHT: bold
+}
+.shadow {
+	BACKGROUND-COLOR: #c8c8c8
+}
+.button {
+	BACKGROUND-COLOR: #ffc800
+}
+.highlight {
+	COLOR: #999999
+}
