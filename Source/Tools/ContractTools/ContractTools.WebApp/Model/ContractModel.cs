@@ -67,6 +67,14 @@ namespace ContractTools.WebApp.Model
             set;
             get;
         }
+
+        public string Uname
+        {
+            get
+            {
+                return string.Format("{0}_{1}【{2}】", ID, Descption, Complated ? "完成" : "未完成");
+            }
+        }
     }
 
 }

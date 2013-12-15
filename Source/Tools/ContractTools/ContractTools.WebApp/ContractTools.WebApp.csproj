@@ -74,7 +74,15 @@
     <Compile Include="Base\JsonObject.cs" />
     <Compile Include="Base\JsonProperty.cs" />
     <Compile Include="Base\LuaScriptHelper.cs" />
+    <Compile Include="Base\TemplateHelper.cs" />
     <Compile Include="Base\NetHelper.cs" />
+    <Compile Include="index.aspx.cs">
+      <DependentUpon>index.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="index.aspx.designer.cs">
+      <DependentUpon>index.aspx</DependentUpon>
+    </Compile>
     <Compile Include="Model\AgreementModel.cs" />
     <Compile Include="Model\ContractModel.cs" />
     <Compile Include="Model\EnumInfoModel.cs" />
@@ -92,6 +100,7 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="index.aspx" />
     <Content Include="Template\ActionIDDefine.txt" />
     <Content Include="AgreementAdd.aspx" />
     <Content Include="AgreementList.aspx" />

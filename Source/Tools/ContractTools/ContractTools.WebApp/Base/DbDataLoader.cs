@@ -85,6 +85,14 @@ namespace ContractTools.WebApp.Base
             command.Parser();
             return _dbBaseProvider.ExecuteQuery(CommandType.Text, command.Sql, command.Parameters) > 0;
         }
+
+        public static List<SolutionModel> GetSolution()
+        {
+            return GetSolution(f =>
+            {
+            });
+        }
+
         public static SolutionModel GetSolution(int slnId)
         {
             return GetSolution(f =>
@@ -92,6 +100,20 @@ namespace ContractTools.WebApp.Base
                 f.Condition = f.FormatExpression("SlnID");
                 f.AddParam("SlnID", slnId);
             }).FirstOrDefault();
+        }
+
+        public static List<SolutionModel> GetSolution(int slnId, int agreementID)
+        {
+            return GetSolution(f =>
+            {
+                f.Condition = f.FormatExpression("SlnID");
+                f.AddParam("SlnID", slnId);
+                if (agreementID > 0)
+                {
+                    f.Condition += " AND " + f.FormatExpression("AgreementID");
+                    f.AddParam("AgreementID", agreementID);
+                }
+            });
         }
 
         public static List<SolutionModel> GetSolution(Action<CommandFilter> match)
@@ -220,6 +242,20 @@ namespace ContractTools.WebApp.Base
             return _dbBaseProvider.ExecuteQuery(CommandType.Text, command.Sql, command.Parameters);
         }
 
+        public static bool UpdateContractStatus(int id, int slnId, bool complated)
+        {
+            var command = _dbBaseProvider.CreateCommandStruct("Contract", CommandMode.Modify);
+            command.AddParameter("Complated", complated);
+            command.Filter = _dbBaseProvider.CreateCommandFilter();
+            command.Filter.Condition = string.Format("{0} AND {1}",
+                _dbBaseProvider.FormatFilterParam("ID"),
+                _dbBaseProvider.FormatFilterParam("SlnID"));
+            command.Filter.AddParam("ID", id);
+            command.Filter.AddParam("SlnID", slnId);
+            command.Parser();
+            return _dbBaseProvider.ExecuteQuery(CommandType.Text, command.Sql, command.Parameters) > 0;
+        }
+
         public static bool Update(ContractModel model)
         {
             var command = _dbBaseProvider.CreateCommandStruct("Contract", CommandMode.Modify);
@@ -239,15 +275,19 @@ namespace ContractTools.WebApp.Base
 
         public static bool Delete(ContractModel model)
         {
-            var command = _dbBaseProvider.CreateCommandStruct("Contract", CommandMode.Delete);
-            command.Filter = _dbBaseProvider.CreateCommandFilter();
-            command.Filter.Condition = string.Format("{0} AND {1}",
-                _dbBaseProvider.FormatFilterParam("ID"),
-                _dbBaseProvider.FormatFilterParam("SlnID"));
-            command.Filter.AddParam("ID", model.ID);
-            command.Filter.AddParam("SlnID", model.SlnID);
-            command.Parser();
-            return _dbBaseProvider.ExecuteQuery(CommandType.Text, command.Sql, command.Parameters) > 0;
+            if (Delete(new ParamInfoModel() { ContractID = model.ID, SlnID = model.SlnID }))
+            {
+                var command = _dbBaseProvider.CreateCommandStruct("Contract", CommandMode.Delete);
+                command.Filter = _dbBaseProvider.CreateCommandFilter();
+                command.Filter.Condition = string.Format("{0} AND {1}",
+                                                         _dbBaseProvider.FormatFilterParam("ID"),
+                                                         _dbBaseProvider.FormatFilterParam("SlnID"));
+                command.Filter.AddParam("ID", model.ID);
+                command.Filter.AddParam("SlnID", model.SlnID);
+                command.Parser();
+                return _dbBaseProvider.ExecuteQuery(CommandType.Text, command.Sql, command.Parameters) > 0;
+            }
+            return false;
         }
 
         public static List<ContractModel> GetContract(int slnId)
@@ -274,7 +314,7 @@ namespace ContractTools.WebApp.Base
         public static List<ContractModel> GetContract(Action<CommandFilter> match)
         {
             var command = _dbBaseProvider.CreateCommandStruct("Contract", CommandMode.Inquiry);
-            command.Columns = "ID,Descption,ParentID,SlnID,Complated,AgreementID,(Descption) as uname";
+            command.Columns = "ID,Descption,ParentID,SlnID,Complated,AgreementID";
             command.OrderBy = "SlnID ASC,ID ASC";
             command.Filter = _dbBaseProvider.CreateCommandFilter();
             if (match != null)
@@ -294,7 +334,6 @@ namespace ContractTools.WebApp.Base
                     model.SlnID = reader["SlnID"].ToInt();
                     model.Complated = reader["Complated"].ToBool();
                     model.AgreementID = reader["AgreementID"].ToInt();
-
                     list.Add(model);
                 }
             }
@@ -326,6 +365,17 @@ namespace ContractTools.WebApp.Base
             return _dbBaseProvider.ExecuteQuery(CommandType.Text, command.Sql, command.Parameters);
         }
 
+        public static bool UpdateParamSort(int paramID, int sortID)
+        {
+            var command = _dbBaseProvider.CreateCommandStruct("ParamInfo", CommandMode.Modify);
+            command.AddParameter("SortID", sortID);
+            command.Filter = _dbBaseProvider.CreateCommandFilter();
+            command.Filter.Condition = _dbBaseProvider.FormatFilterParam("ID");
+            command.Filter.AddParam("ID", paramID);
+            command.Parser();
+            return _dbBaseProvider.ExecuteQuery(CommandType.Text, command.Sql, command.Parameters) > 0;
+        }
+
         public static bool Update(ParamInfoModel model)
         {
             var command = _dbBaseProvider.CreateCommandStruct("ParamInfo", CommandMode.Modify);
@@ -354,8 +404,19 @@ namespace ContractTools.WebApp.Base
         {
             var command = _dbBaseProvider.CreateCommandStruct("ParamInfo", CommandMode.Delete);
             command.Filter = _dbBaseProvider.CreateCommandFilter();
-            command.Filter.Condition = _dbBaseProvider.FormatFilterParam("ID");
-            command.Filter.AddParam("ID", model.ID);
+            if (model.SlnID > 0 && model.ContractID > 0)
+            {
+                command.Filter.Condition = string.Format("{0} AND {1}",
+                    _dbBaseProvider.FormatFilterParam("ContractID"),
+                    _dbBaseProvider.FormatFilterParam("SlnID"));
+                command.Filter.AddParam("ContractID", model.ContractID);
+                command.Filter.AddParam("SlnID", model.SlnID);
+            }
+            else
+            {
+                command.Filter.Condition = _dbBaseProvider.FormatFilterParam("ID");
+                command.Filter.AddParam("ID", model.ID);
+            }
             command.Parser();
             return _dbBaseProvider.ExecuteQuery(CommandType.Text, command.Sql, command.Parameters) > 0;
         }
@@ -420,6 +481,81 @@ namespace ContractTools.WebApp.Base
                     model.ModifyDate = reader["ModifyDate"].ToDateTime();
                     model.MinValue = reader["MinValue"].ToInt();
                     model.MaxValue = reader["MaxValue"].ToInt();
+
+                    list.Add(model);
+                }
+            }
+            return list;
+        }
+
+        #endregion
+
+        #region EnumInfoModel
+        public static int Add(EnumInfoModel model)
+        {
+            var command = _dbBaseProvider.CreateCommandStruct("EnumInfo", CommandMode.Insert);
+            command.AddParameter("SlnID", model.SlnID);
+            command.AddParameter("enumName", model.enumName);
+            command.AddParameter("enumDescription", model.enumDescription);
+            command.AddParameter("enumValueInfo", model.enumValueInfo);
+            command.Parser();
+            return _dbBaseProvider.ExecuteQuery(CommandType.Text, command.Sql, command.Parameters);
+        }
+
+        public static bool Update(EnumInfoModel model)
+        {
+            var command = _dbBaseProvider.CreateCommandStruct("EnumInfo", CommandMode.Modify);
+            command.AddParameter("enumName", model.enumName);
+            command.AddParameter("enumDescription", model.enumDescription);
+            command.AddParameter("enumValueInfo", model.enumValueInfo);
+            command.Filter = _dbBaseProvider.CreateCommandFilter();
+            command.Filter.Condition = _dbBaseProvider.FormatFilterParam("ID");
+            command.Filter.AddParam("ID", model.ID);
+            command.Parser();
+            return _dbBaseProvider.ExecuteQuery(CommandType.Text, command.Sql, command.Parameters) > 0;
+        }
+
+        public static bool Delete(EnumInfoModel model)
+        {
+            var command = _dbBaseProvider.CreateCommandStruct("EnumInfo", CommandMode.Delete);
+            command.Filter = _dbBaseProvider.CreateCommandFilter();
+            command.Filter.Condition = _dbBaseProvider.FormatFilterParam("ID");
+            command.Filter.AddParam("ID", model.ID);
+            command.Parser();
+            return _dbBaseProvider.ExecuteQuery(CommandType.Text, command.Sql, command.Parameters) > 0;
+        }
+
+        public static List<EnumInfoModel> GetEnumInfo(int slnId)
+        {
+            return GetEnumInfo(f =>
+            {
+                f.Condition = f.FormatExpression("SlnID");
+                f.AddParam("SlnID", slnId);
+            });
+        }
+
+        public static List<EnumInfoModel> GetEnumInfo(Action<CommandFilter> match)
+        {
+            var command = _dbBaseProvider.CreateCommandStruct("EnumInfo", CommandMode.Inquiry);
+            command.Columns = "Id,SlnID,enumName,enumDescription,enumValueInfo";
+            command.OrderBy = "enumName ASC,Id ASC";
+            command.Filter = _dbBaseProvider.CreateCommandFilter();
+            if (match != null)
+            {
+                match(command.Filter);
+            }
+            command.Parser();
+            var list = new List<EnumInfoModel>();
+            using (var reader = _dbBaseProvider.ExecuteReader(CommandType.Text, command.Sql, command.Parameters))
+            {
+                while (reader.Read())
+                {
+                    EnumInfoModel model = new EnumInfoModel();
+                    model.ID = reader["ID"].ToInt();
+                    model.SlnID = reader["SlnID"].ToInt();
+                    model.enumName = reader["enumName"].ToNotNullString();
+                    model.enumDescription = reader["enumDescription"].ToNotNullString();
+                    model.enumValueInfo = reader["enumValueInfo"].ToNotNullString();
 
                     list.Add(model);
                 }

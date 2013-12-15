@@ -1,12 +1,17 @@
 ﻿using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Data;
+using System.Linq;
 using System.Web.UI.WebControls;
 using System.Text;
 using System.IO;
 using System.Drawing;
+using ContractTools.WebApp.Base;
+using ContractTools.WebApp.Model;
+using ZyGames.Framework.Common;
 
-namespace ZyGames.ContractTools
+namespace ContractTools.WebApp
 {
     /// <summary>
     /// 首页生成页面
@@ -108,82 +113,78 @@ namespace ZyGames.ContractTools
         public void Bind()
         {
             ddlSolution.Items.Clear();
-            DataSet ds = new SolutionBLL().GetList("");
-            ddlSolution.DataSource = ds;
+            var list = DbDataLoader.GetSolution();
+            ddlSolution.DataSource = list;
             ddlSolution.DataTextField = "SlnName";
             ddlSolution.DataValueField = "SlnID";
             ddlSolution.DataBind();
             ddlSolution.SelectedValue = SlnID;
 
-            ddlAgreement.Items.Clear();
-            ddlAgreement.Items.Add(new ListItem("全部", "0"));
-            DataSet ds2 = new AgreementBLL().GetList(" gameid=" + ddlSolution.SelectedValue, ddlSolution.SelectedValue);
-            for (int i = 0; i < ds2.Tables[0].Rows.Count; i++)
+            int gameId = ddlSolution.SelectedValue.ToInt();
+            BindAgreement(gameId);
+            BindContractTree(gameId);
+
+
+            if (ddlSolution.Text.Length > 0)
             {
-                ddlAgreement.Items.Add(new ListItem(ds2.Tables[0].Rows[i]["Title"].ToString(), ds2.Tables[0].Rows[i]["AgreementID"].ToString()));
+                BindContract(Convert.ToInt32((string)ddlSolution.Text));
             }
-            //ddlAgreement.DataSource = ds2;
-            //ddlAgreement.DataTextField = "Title";
-            //ddlAgreement.DataValueField = "AgreementID";
-            //ddlAgreement.DataBind();
-            
-            ddlAgreement.SelectedValue = "0";
-            DataSet ds3 = new AgreementBLL().GetList(" gameid=" + ddlSolution.SelectedValue, ddlSolution.SelectedValue);
-            DataSet ds4 = new ContractBLL().GetList(" SlnID=" + ddlSolution.SelectedValue);
-            TreeList.Nodes.Clear();
-            leftStyle = "display:none;";
-            for (int i = 0; i < ds3.Tables[0].Rows.Count; i++)
+        }
+
+        private void BindContractTree(int gameId)
+        {
+            var contractList = DbDataLoader.GetContract(gameId);
+            foreach (var contract in contractList)
             {
-                leftStyle = "";
-                TreeNode node = new TreeNode();
-                node.Text = ds3.Tables[0].Rows[i]["Title"].ToString();
-                node.Value = ds3.Tables[0].Rows[i]["AgreementID"].ToString();
-                node.Target = "0";
-                node.Expanded = false;
-                TreeList.Nodes.Add(node);
-                //TreeList(0, node);
-                TreeList.DataBind();
-            }
-            for (int i = 0; i < ds4.Tables[0].Rows.Count; i++)
-            {
-                if (Convert.ToInt32(ds4.Tables[0].Rows[i]["AgreementID"]) > 0)
+                if (contract.AgreementID > 0)
                 {
                     for (int j = 0; j < TreeList.Nodes.Count; j++)
                     {
                         TreeNode node = TreeList.Nodes[j];
-                        if (ds4.Tables[0].Rows[i]["AgreementID"].ToString() == node.Value)
+                        if (contract.AgreementID.ToString() == node.Value)
                         {
                             TreeNode nodes = new TreeNode();
-                            nodes.Text = ds4.Tables[0].Rows[i]["uname"].ToString();
-                            nodes.Value = ds4.Tables[0].Rows[i]["ID"].ToString();
+                            nodes.Text = contract.Uname;
+                            nodes.Value = contract.ID.ToString();
                             node.ChildNodes.Add(nodes);
 
                         }
                     }
                 }
             }
+        }
 
-            //TreeList.Attributes.Add("onclick", "HandleCheckEvent()"); 
-            //  if (!string.IsNullOrEmpty(hi_SlnId.Value))
-            //  {
-            
-            //   }
-
-            if (ddlSolution.Text.Length > 0)
+        private void BindAgreement(int gameId)
+        {
+            ddlAgreement.Items.Clear();
+            ddlAgreement.Items.Add(new ListItem("全部", "0"));
+            var agreementList = DbDataLoader.GetAgreement(gameId);
+            TreeList.Nodes.Clear();
+            leftStyle = "display:none;";
+            foreach (var agreement in agreementList)
             {
-                BindContract(Convert.ToInt32(ddlSolution.Text));
+                ddlAgreement.Items.Add(new ListItem(agreement.Title, agreement.AgreementID.ToString()));
+
+                leftStyle = "";
+                TreeNode node = new TreeNode();
+                node.Text = agreement.Title;
+                node.Value = agreement.AgreementID.ToString();
+                node.Target = "0";
+                node.Expanded = false;
+                TreeList.Nodes.Add(node);
             }
+            TreeList.DataBind();
+            ddlAgreement.SelectedValue = "0";
         }
 
         private void BindContract(int slnID)
         {
             DropGetList.Items.Clear();
-            ContractBLL BLL = new ContractBLL();
-            DataSet ds = BLL.GetList("SlnID=" + slnID);
-            if (ds.Tables[0].Rows.Count > 0)
+            var contractList = DbDataLoader.GetContract(slnID);
+            if (contractList.Count > 0)
             {
-                DropGetList.DataSource = ds;
-                DropGetList.DataTextField = "uname";
+                DropGetList.DataSource = contractList;
+                DropGetList.DataTextField = "Uname";
                 DropGetList.DataValueField = "ID";
                 DropGetList.DataBind();
             }
@@ -205,8 +206,11 @@ namespace ZyGames.ContractTools
             try
             {
                 gvGetlist.EditIndex = -1;
-                DataSet ds = BindList();
-                string parameter = string.Format("?ID={0}&slnID={1}", DropGetList.Text, ddlSolution.Text);
+                var paramList = BindList();
+                var reqParams = paramList.Where(p => p.ParamType == 1).OrderBy(p => p.SortID).ToList();
+                var respParams = paramList.Where(p => p.ParamType == 2).OrderBy(p => p.SortID).ToList();
+                int contractId = DropGetList.Text.ToInt();
+                string parameter = string.Format("?ID={0}&slnID={1}", contractId, ddlSolution.Text);
                 UnitTestLink.NavigateUrl = "UnitTest.aspx" + parameter;
                 AddRecordLink.NavigateUrl = "AddParamInfo.aspx" + parameter;
                 AddProtocolLink.NavigateUrl = "AddContract.aspx" + parameter;
@@ -215,40 +219,40 @@ namespace ZyGames.ContractTools
                 AddEnumLink.NavigateUrl = "addenum.aspx" + parameter;
                 SearchLink.NavigateUrl = "search.aspx" + parameter;
 
+                int slnId = ddlSolution.Text.ToInt();
                 if (gvGetlist.Rows.Count != 0)
                 {
                     txtContent.Visible = true;
                     txtContentto.Visible = true;
                     btnCopy.Visible = true;
                     btnCopyto.Visible = true;
-
-                    string name = Path.Combine(Server.MapPath("~"), "CustomerModel.txt");
-                    string tempContentto = Mainfun.ReadTemp(name);
-                    txtContentto.Text = Mainfun.FromatTempto(tempContentto, ds, DropGetList.SelectedItem.Text);
-                    DataSet slnRecord = new SolutionBLL().GetList("SlnID=" + ddlSolution.Text);
+                    string name = Path.Combine(Server.MapPath("~"), "Template/CustomerModel.txt");
+                    string tempContentto = TemplateHelper.ReadTemp(name);
+                    txtContentto.Text = TemplateHelper.FromatTempto(tempContentto, contractId, respParams, DropGetList.SelectedItem.Text);
+                    var slnRecord = DbDataLoader.GetSolution(slnId);
                     if (LangDropDownList.SelectedValue == "C#")
                     {
-                        string fileName = Path.Combine(Server.MapPath("~"), "model.txt");
-                        string tempContent = Mainfun.ReadTemp(fileName);
-                        string tempActionDefine = Mainfun.ReadTemp(Path.Combine(Server.MapPath("~"), "ActionIDDefine.txt"));
+                        string fileName = Path.Combine(Server.MapPath("~"), "Template/model.txt");
+                        string tempContent = TemplateHelper.ReadTemp(fileName);
+                        string tempActionDefine = TemplateHelper.ReadTemp(Path.Combine(Server.MapPath("~"), "Template/ActionIDDefine.txt"));
 
-                        txtContent.Text = Mainfun.FormatTemp(tempContent, ds, slnRecord, DropGetList.SelectedItem.Text);
-                        DataSet contractDs = new ContractBLL().GetList("slnID=" + ddlSolution.Text);
-                        txtActionDefine.Text = Mainfun.FormatActionDefineTemp(tempActionDefine, contractDs, slnRecord);
+                        txtContent.Text = TemplateHelper.FormatTemp(tempContent, contractId, respParams, reqParams, slnRecord, DropGetList.SelectedItem.Text);
+                        var contractDs = DbDataLoader.GetContract(slnId);
+                        txtActionDefine.Text = TemplateHelper.FormatActionDefineTemp(tempActionDefine, contractDs, slnRecord);
                         txtActionDefine.Visible = true;
                     }
                     else
                     {
-                        string fileName = Path.Combine(Server.MapPath("~"), "pythonmodel.txt");
-                        string tempContent = Mainfun.ReadTemp(fileName);
+                        string fileName = Path.Combine(Server.MapPath("~"), "Template/pythonmodel.txt");
+                        string tempContent = TemplateHelper.ReadTemp(fileName);
 
-                        txtContent.Text = Mainfun.FormatPython(tempContent, ds, slnRecord, DropGetList.SelectedItem.Text);
+                        txtContent.Text = TemplateHelper.FormatPython(tempContent, respParams, reqParams, slnRecord, DropGetList.SelectedItem.Text);
                         txtActionDefine.Text = string.Empty;
                         txtActionDefine.Visible = false;
                     };
 
 
-                    lblExample.Text = Mainfun.GetExampleUrl(ds, DropGetList.Text);
+                    lblExample.Text = TemplateHelper.GetExampleUrl(respParams, DropGetList.Text);
                 }
                 else
                 {
@@ -266,21 +270,20 @@ namespace ZyGames.ContractTools
             }
         }
 
-        private DataSet BindList()
+        private List<ParamInfoModel> BindList()
         {
-            DataSet ds = GetParamInfo();
-            DataTable dt = ds.Tables[0];
+            var ds = GetParamInfo();
             gvGetlist.DataSource = ds;
             gvGetlist.DataBind();
             return ds;
 
         }
 
-        private DataSet GetParamInfo()
+        private List<ParamInfoModel> GetParamInfo()
         {
-            ParamInfoBLL BLL = new ParamInfoBLL();
-            DataSet ds = BLL.GetList(string.Format("ContractID={0} and SlnID={1}", DropGetList.Text.Length == 0 ? "0" : DropGetList.Text, ddlSolution.Text.Length == 0 ? "0" : ddlSolution.Text));
-            return ds;
+            int slnId = ddlSolution.Text.ToInt();
+            int conId = DropGetList.Text.ToInt();
+            return DbDataLoader.GetParamInfo(slnId, conId);
         }
 
         protected void gvGetlist_RowEditing(object sender, GridViewEditEventArgs e)
@@ -296,7 +299,7 @@ namespace ZyGames.ContractTools
                 TableCell cell = gvGetlist.Rows[e.RowIndex].Cells[0];
                 ParamInfoModel mode = new ParamInfoModel();
                 mode.ID = Convert.ToInt32(((Label)cell.FindControl("IDLabel")).Text.ToString().Trim());
-                mode.ContractID = Convert.ToInt32(DropGetList.Text);
+                mode.ContractID = Convert.ToInt32((string)DropGetList.Text);
                 mode.ParamType = Convert.ToInt32(((DropDownList)cell.FindControl("droParamType")).SelectedValue);
                 mode.Field = ((TextBox)cell.FindControl("txtField")).Text.ToString().Trim();
                 mode.FieldType = Convert.ToInt32(((DropDownList)cell.FindControl("droFieldType")).SelectedValue.ToString().Trim());
@@ -308,8 +311,7 @@ namespace ZyGames.ContractTools
                 mode.MinValue = Convert.ToInt32(((TextBox)cell.FindControl("txtMinValue")).Text.ToString().Trim());
                 mode.MaxValue = Convert.ToInt32(((TextBox)cell.FindControl("txtMaxValue")).Text.ToString().Trim());
                 mode.ModifyDate = DateTime.Now;
-                ParamInfoBLL Pinfo = new ParamInfoBLL();
-                if (Pinfo.Update(mode))
+                if (DbDataLoader.Update(mode))
                 {
                     gvGetlist.EditIndex = -1;
                     QueryResult();
@@ -336,8 +338,7 @@ namespace ZyGames.ContractTools
         protected void LinkButton1_Command(object sender, CommandEventArgs e)
         {
             int id = Convert.ToInt32(e.CommandArgument.ToString());
-            ParamInfoBLL pinfo = new ParamInfoBLL();
-            if (pinfo.Delete(id))
+            if (DbDataLoader.Delete(new ParamInfoModel() { ID = id }))
             {
                 Response.Write("<script language=javascript>alert('删除成功！')</script>");
             }
@@ -364,14 +365,14 @@ namespace ZyGames.ContractTools
             }
             if (rowIndex > 0)
             {
-                DataSet ds = GetParamInfo();
-                DataRow preRow = ds.Tables[0].Rows[rowIndex - 1];
-                int preParamType = Convert.ToInt32(preRow["ParamType"]);
-                int preID = Convert.ToInt32(preRow["ID"]);
+                var ds = GetParamInfo();
+                var preRow = ds[rowIndex - 1];
+                int preParamType = preRow.ParamType;
+                int preID = preRow.ID;
                 if (paramType == preParamType)
                 {
-                    new ParamInfoBLL().UpdateSort(preID, sortID);
-                    new ParamInfoBLL().UpdateSort(currID, sortID - 1);
+                    DbDataLoader.UpdateParamSort(preID, sortID);
+                    DbDataLoader.UpdateParamSort(currID, sortID - 1);
                     QueryResult();
                 }
             }
@@ -392,17 +393,17 @@ namespace ZyGames.ContractTools
             }
             if (rowIndex > 0)
             {
-                DataSet ds = GetParamInfo();
-                if (rowIndex >= ds.Tables[0].Rows.Count - 1) return;
+                var ds = GetParamInfo();
+                if (rowIndex >= ds.Count - 1) return;
 
-                DataRow nextRow = ds.Tables[0].Rows[rowIndex + 1];
-                int preParamType = Convert.ToInt32(nextRow["ParamType"]);
-                int nextID = Convert.ToInt32(nextRow["ID"]);
-                int nextSortID = Convert.ToInt32(nextRow["SortID"]);
+                var nextRow = ds[rowIndex + 1];
+                int preParamType = nextRow.ParamType;
+                int nextID = nextRow.ID;
+                int nextSortID = nextRow.SortID;
                 if (paramType == preParamType)
                 {
-                    new ParamInfoBLL().UpdateSort(nextID, sortID);
-                    new ParamInfoBLL().UpdateSort(currID, sortID + 1);
+                    DbDataLoader.UpdateParamSort(nextID, sortID);
+                    DbDataLoader.UpdateParamSort(currID, sortID + 1);
                     QueryResult();
                 }
             }
@@ -499,7 +500,7 @@ namespace ZyGames.ContractTools
             catch
             {
             }
-            Hashtable ht = Mainfun.LoadEnumApplication(slnid, false);
+            Hashtable ht = TemplateHelper.LoadEnumApplication(slnid, false);
             StringBuilder sb = new StringBuilder();
             while (true)
             {
@@ -545,10 +546,10 @@ namespace ZyGames.ContractTools
 
         protected void btnDeldte_Click(object sender, EventArgs e)
         {
-            ContractBLL BLL = new ContractBLL();
             if (!DropGetList.Text.Trim().Equals(""))
             {
-                if (BLL.Delete(Convert.ToInt32(DropGetList.Text), Convert.ToInt32(ddlSolution.Text)))
+                var contractModel = new ContractModel() { ID = DropGetList.Text.ToInt(), SlnID = ddlSolution.Text.ToInt() };
+                if (DbDataLoader.Delete(contractModel))
                 {
                     Response.Write("<script language=javascript>alert('删除成功！')</script>");
                     QueryResult();
@@ -567,11 +568,11 @@ namespace ZyGames.ContractTools
         {
             if (LangDropDownList.SelectedValue == "C#")
             {
-                SaveasAttachment(txtContent.Text, String.Format("Action{0}.cs", DropGetList.Text));
+                SaveasAttachment(txtContent.Text, String.Format("Action{0}.cs", (object)DropGetList.Text));
             }
             else
             {
-                SaveasAttachment(txtContent.Text, String.Format("action{0}.py", DropGetList.Text));
+                SaveasAttachment(txtContent.Text, String.Format("action{0}.py", (object)DropGetList.Text));
             }
         }
 
@@ -586,13 +587,13 @@ namespace ZyGames.ContractTools
 
         protected void btnCopy1_Click(object sender, EventArgs e)
         {
-            SaveasAttachment(txtContentto.Text, String.Format("Action{0}.lua", DropGetList.Text));
+            SaveasAttachment(txtContentto.Text, String.Format("Action{0}.lua", (object)DropGetList.Text));
         }
 
         protected void ddlSolution_SelectedIndexChanged(object sender, EventArgs e)
         {
             SetCookies(string.Empty, ddlSolution.Text);
-            BindContract(Convert.ToInt32(ddlSolution.SelectedValue));
+            BindContract(Convert.ToInt32((string)ddlSolution.SelectedValue));
             try
             {
                 if (!string.IsNullOrEmpty(GetCookies(ddlSolution.Text)))
@@ -609,60 +610,17 @@ namespace ZyGames.ContractTools
 
             }
             QueryResult();
-            ddlAgreement.Items.Clear();
-            ddlAgreement.Items.Add(new ListItem("全部", "0"));
-            DataSet ds2 = new AgreementBLL().GetList(" gameid=" + ddlSolution.SelectedValue, ddlSolution.SelectedValue);
-            for (int i = 0; i < ds2.Tables[0].Rows.Count; i++)
-            {
-                ddlAgreement.Items.Add(new ListItem(ds2.Tables[0].Rows[i]["Title"].ToString(), ds2.Tables[0].Rows[i]["AgreementID"].ToString()));
-            }
-            DataSet ds3 = new AgreementBLL().GetList(" gameid=" + ddlSolution.SelectedValue, ddlSolution.SelectedValue);
-            DataSet ds4 = new ContractBLL().GetList(" SlnID=" + ddlSolution.SelectedValue);
-            TreeList.Nodes.Clear();
-            for (int i = 0; i < ds3.Tables[0].Rows.Count; i++)
-            {
 
-
-                TreeNode node = new TreeNode();
-
-                node.Text = ds3.Tables[0].Rows[i]["Title"].ToString();
-
-                node.Value = ds3.Tables[0].Rows[i]["AgreementID"].ToString();
-                node.Target = "0";
-                node.Expanded = false;
-
-                TreeList.Nodes.Add(node);
-
-                //TreeList(0, node);
-
-                TreeList.DataBind();
-            }
-            for (int i = 0; i < ds4.Tables[0].Rows.Count; i++)
-            {
-                if (Convert.ToInt32(ds4.Tables[0].Rows[i]["AgreementID"]) > 0)
-                {
-                    for (int j = 0; j < TreeList.Nodes.Count; j++)
-                    {
-                        TreeNode node = TreeList.Nodes[j];
-                        if (ds4.Tables[0].Rows[i]["AgreementID"].ToString() == node.Value)
-                        {
-                            TreeNode nodes = new TreeNode();
-                            nodes.Text = ds4.Tables[0].Rows[i]["uname"].ToString();
-                            nodes.Value = ds4.Tables[0].Rows[i]["ID"].ToString();
-                            node.ChildNodes.Add(nodes);
-
-                        }
-                    }
-                }
-            }
+            int gameId = ddlSolution.SelectedValue.ToInt();
+            BindAgreement(gameId);
+            BindContractTree(gameId);
         }
         protected void ddlAgreement_SelectedIndexChanged(object sender, EventArgs e)
         {
-            ContractBLL BLL = new ContractBLL();
-            DataSet ds = ddlAgreement.SelectedValue == "0" ? BLL.GetList(" SlnID=" + this.ddlSolution.SelectedValue + " and AgreementID>=0") : BLL.GetList(" SlnID=" + this.ddlSolution.SelectedValue + " and  AgreementID=" + ddlAgreement.SelectedValue);
-            if (ds.Tables[0].Rows.Count > 0)
+            var list = DbDataLoader.GetSolution(ddlSolution.SelectedValue.ToInt(), ddlAgreement.SelectedValue.ToInt());
+            if (list.Count > 0)
             {
-                DropGetList.DataSource = ds;
+                DropGetList.DataSource = list;
                 DropGetList.DataTextField = "uname";
                 DropGetList.DataValueField = "ID";
                 DropGetList.DataBind();
@@ -670,7 +628,7 @@ namespace ZyGames.ContractTools
             else
             {
                 DropGetList.Items.Clear();
-                DropGetList.Items.Add(new ListItem("无接口","0"));
+                DropGetList.Items.Add(new ListItem("无接口", "0"));
             }
         }
         protected void btnConfig_Click(object sender, EventArgs e)
@@ -696,8 +654,7 @@ namespace ZyGames.ContractTools
 
         private void UpdateStatus(bool complated)
         {
-            ContractBLL BLL = new ContractBLL();
-            if (BLL.UpdateStatus(Convert.ToInt32(DropGetList.Text), Convert.ToInt32(ddlSolution.Text), complated))
+            if (DbDataLoader.UpdateContractStatus(Convert.ToInt32((string)DropGetList.Text), Convert.ToInt32((string)ddlSolution.Text), complated))
             {
                 //Response.Write("<script language=javascript>alert('提交成功！');</script>");
                 QueryResult();
@@ -714,11 +671,19 @@ namespace ZyGames.ContractTools
             if (TreeList.SelectedNode.Target != "0")
             {
                 ddlAgreement.SelectedValue = TreeList.SelectedNode.Parent.Value;
-                ContractBLL BLL = new ContractBLL();
-                DataSet ds = ddlAgreement.SelectedValue == "0" ? BLL.GetList("AgreementID>=0") : BLL.GetList("AgreementID=" + ddlAgreement.SelectedValue);
-                if (ds.Tables[0].Rows.Count > 0)
+                //ContractBLL BLL = new ContractBLL();
+                int agreementId = ddlAgreement.SelectedValue.ToInt();
+                var list = DbDataLoader.GetContract(m =>
                 {
-                    DropGetList.DataSource = ds;
+                    if (agreementId > 0)
+                    {
+                        m.Condition = m.FormatExpression("AgreementID");
+                        m.AddParam("AgreementID", agreementId);
+                    }
+                });
+                if (list.Count > 0)
+                {
+                    DropGetList.DataSource = list;
                     DropGetList.DataTextField = "uname";
                     DropGetList.DataValueField = "ID";
                     DropGetList.DataBind();
@@ -730,7 +695,7 @@ namespace ZyGames.ContractTools
                 }
                 TreeList.SelectedNode.Checked = true;
                 TreeList.SelectedNode.Selected = true;
-               
+
                 DropGetList.SelectedValue = TreeList.SelectedValue;
                 SetCookies(ddlSolution.Text, DropGetList.Text);
                 QueryResult();
