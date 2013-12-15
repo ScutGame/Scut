@@ -191,8 +191,8 @@ CREATE TABLE `serverinfo` (
 -- ----------------------------
 -- Records of serverinfo
 -- ----------------------------
-INSERT INTO `serverinfo` VALUES ('1', '6', '红心Q', 'http://kd1.scutgame.com/Service.aspx', '0', '0', '1', '1', '1753-01-01 00:00:00', 'http://kd1.scutgame.com/Service.aspx');
-INSERT INTO `serverinfo` VALUES ('1', '7', '斗地主', 'ddz.scutgame.com:9700', '0', '0', '1', '1', '1753-01-01 00:00:00', 'ddz.scutgame.com:9700');
+INSERT INTO `serverinfo` VALUES ('1', '6', '口袋一服', 'http://kd1.scutgame.com/Service.aspx', '0', '0', '1', '1', '1753-01-01 00:00:00', 'http://kd1.scutgame.com/Service.aspx');
+INSERT INTO `serverinfo` VALUES ('1', '7', '斗地主一服', 'ddz.scutgame.com:9700', '0', '0', '1', '1', '1753-01-01 00:00:00', 'ddz.scutgame.com:9700');
 
 -- ----------------------------
 -- Table structure for `settlement`
