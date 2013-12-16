@@ -416,7 +416,7 @@ end
 
 function send(actionId)
 	if actionId == 1001 then--获取服务器列表
-    		ScutDataLogic.CNetWriter:setUrl("http://dir.scutgame.com/Service.aspx")
+    		--ScutDataLogic.CNetWriter:setUrl("http://dir.scutgame.com/Service.aspx")
     		local mMobileType, mGameType, mRetailID= accountInfo.readMoble()
     		actionLayer.Action1001(mScene,false,mGameType)	
 	elseif actionId == 1004 then--已有账号快速登录
