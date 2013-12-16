@@ -1,3 +1,27 @@
+/*
+参数:
+$dbpath 数据库存储路径
+*/
+
+/*=========================================================================================*/
+CREATE DATABASE [ContractDB] 
+ON  PRIMARY ( NAME = N'ContractDB', FILENAME = N'$(dbpath)/ContractDB.mdf' , SIZE = 3072KB , FILEGROWTH = 1024KB )
+ LOG ON ( NAME = N'ContractDB_log', FILENAME = N'$(dbpath)/ContractDB_log.ldf' , SIZE = 1024KB , FILEGROWTH = 10%)
+GO
+
+use ContractDB
+GO
+
+--pms
+IF NOT EXISTS (SELECT * FROM sys.database_principals WHERE name = N'$(gameuser)')
+	CREATE USER $(gameuser) FOR LOGIN $(gameuser) WITH DEFAULT_SCHEMA=[dbo]
+GO
+EXEC sp_addrolemember N'db_datareader', N'$(gameuser)'
+EXEC sp_addrolemember N'db_datawriter', N'$(gameuser)'
+EXEC sp_addrolemember N'db_ddladmin', N'$(gameuser)'
+GO
+
+
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -21,7 +45,7 @@ GO
 SET QUOTED_IDENTIFIER ON
 GO
 CREATE TABLE [ParamInfo](
-	[ID] [int] IDENTITY(3400,1) NOT NULL,
+	[ID] [int] IDENTITY(1,1) NOT NULL,
 	[ContractID] [int] NOT NULL,
 	[ParamType] [smallint] NOT NULL,
 	[Field] [varchar](30) NOT NULL,
