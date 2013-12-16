@@ -1,19 +1,10 @@
 ﻿using System;
-using System.Collections;
-using System.Configuration;
-using System.Data;
-using System.Linq;
-using System.Web;
-using System.Web.Security;
-using System.Web.UI;
-using System.Web.UI.HtmlControls;
 using System.Web.UI.WebControls;
-using System.Web.UI.WebControls.WebParts;
-using System.Xml.Linq;
-using BLL;
-using model;
+using ContractTools.WebApp.Base;
+using ContractTools.WebApp.Model;
+using ZyGames.Framework.Common;
 
-namespace ZyGames.ContractTools
+namespace ContractTools.WebApp
 {
     /// <summary>
     /// 增加修改协议
@@ -26,8 +17,8 @@ namespace ZyGames.ContractTools
             if (!IsPostBack)
             {
                 ddlAgreement.Items.Clear();
-                DataSet ds = SlnID == 0 ? new AgreementBLL().GetList("", "0") : new AgreementBLL().GetList(" gameid=" + SlnID, SlnID.ToString());
-                ddlAgreement.DataSource = ds;
+                var agreementList = DbDataLoader.GetAgreement(SlnID);
+                ddlAgreement.DataSource = agreementList;
                 ddlAgreement.DataTextField = "Title";
                 ddlAgreement.DataValueField = "AgreementID";
                 ddlAgreement.DataBind();
@@ -66,14 +57,13 @@ namespace ZyGames.ContractTools
             try
             {
                 
-                ContractBLL con = new ContractBLL();
                 ContractModel model = new ContractModel();
-                model.ID = Convert.ToInt32(txtID.Text.Trim());
+                model.ID = Convert.ToInt32((string) txtID.Text.Trim());
                 model.Descption = txtDescption.Text.Trim();
                 model.ParentID = 1;
                 model.SlnID = SlnID;
-                //model.AgreementID = Convert.ToInt32(ddlAgreement.SelectedValue);
-                if (con.Add(model))
+                model.AgreementID = ddlAgreement.SelectedValue.ToInt();
+                if (DbDataLoader.Add(model) > 0)
                 {
                     Response.Redirect(String.Format("index.aspx?ID={0}&slnID={1}", model.ID, model.SlnID));
                     return;

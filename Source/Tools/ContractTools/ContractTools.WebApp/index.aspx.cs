@@ -302,7 +302,7 @@ namespace ContractTools.WebApp
                 mode.ContractID = Convert.ToInt32((string)DropGetList.Text);
                 mode.ParamType = Convert.ToInt32(((DropDownList)cell.FindControl("droParamType")).SelectedValue);
                 mode.Field = ((TextBox)cell.FindControl("txtField")).Text.ToString().Trim();
-                mode.FieldType = Convert.ToInt32(((DropDownList)cell.FindControl("droFieldType")).SelectedValue.ToString().Trim());
+                mode.FieldType = ((DropDownList)cell.FindControl("droFieldType")).SelectedValue.ToEnum<FieldType>();
                 mode.Descption = ((TextBox)cell.FindControl("txtDescption")).Text.ToString().Trim();
                 mode.Required = Convert.ToBoolean(((DropDownList)cell.FindControl("droRequired")).SelectedValue);
                 mode.Remark = ((TextBox)cell.FindControl("txtRemark")).Text.ToString().Trim();
@@ -617,7 +617,7 @@ namespace ContractTools.WebApp
         }
         protected void ddlAgreement_SelectedIndexChanged(object sender, EventArgs e)
         {
-            var list = DbDataLoader.GetSolution(ddlSolution.SelectedValue.ToInt(), ddlAgreement.SelectedValue.ToInt());
+            var list = DbDataLoader.GetContractByAgreement(ddlSolution.SelectedValue.ToInt(), ddlAgreement.SelectedValue.ToInt());
             if (list.Count > 0)
             {
                 DropGetList.DataSource = list;

@@ -1,13 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-using System.Web.UI;
 using System.Web.UI.WebControls;
-using BLL;
 using System.Data;
+using ContractTools.WebApp.Base;
 
-namespace ZyGames.ContractTools
+namespace ContractTools.WebApp
 {
     public partial class Search : System.Web.UI.Page
     {
@@ -27,10 +23,16 @@ namespace ZyGames.ContractTools
         {
             if (!string.IsNullOrEmpty(SearchTextBox.Text))
             {
-                ContractBLL BLL = new ContractBLL();
-                DataSet ds = BLL.Search(SlnID, SearchTextBox.Text);
-
-                if (ds.Tables[0].Rows.Count == 0)
+                var list = DbDataLoader.GetContract(f =>
+                {
+                    f.Condition = string.Format("({0} OR {1}) AND {2}",
+                        f.FormatExpression("Descption", "LIKE", "Arg"),
+                        f.FormatExpression("ID", "LIKE", "Arg"),
+                        f.FormatExpression("SlnID"));
+                    f.AddParam("Arg", string.Format("%{0}%",SearchTextBox.Text));
+                    f.AddParam("SlnID", SlnID);
+                });
+                if (list.Count == 0)
                 {
                     ResultLiteral.Visible = true;
                     ResultLiteral.Text = "查不到任何结果";
@@ -38,7 +40,7 @@ namespace ZyGames.ContractTools
                 else
                 {
                     ResultLiteral.Visible = false;
-                    GridView.DataSource = ds;
+                    GridView.DataSource = list;
                     GridView.DataBind();
                 }
             }

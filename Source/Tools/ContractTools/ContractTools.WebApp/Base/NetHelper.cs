@@ -32,6 +32,7 @@ using System.Threading;
 using System.Web;
 using System.Web.Security;
 using ContractTools.WebApp.Model;
+using ZyGames.Framework.Common;
 using ZyGames.Framework.Common.Configuration;
 using ZyGames.Framework.RPC.IO;
 using ZyGames.Framework.RPC.Sockets;
@@ -139,9 +140,7 @@ namespace ContractTools.WebApp.Base
         private static MessageStructure DoRequest(string server, string param)
         {
             string[] serverArray = server.Split(':');
-
-            param += GetSign(param);
-            return DoRequest(serverArray[0], Convert.ToInt32(serverArray[1]), param);
+            return DoRequest(serverArray[0], Convert.ToInt32(serverArray[1]), GetSign(param));
         }
 
         private static MessageStructure DoRequest(string host, int port, string param)
@@ -170,6 +169,5 @@ namespace ContractTools.WebApp.Base
             }
             return ms;
         }
-
     }
 }

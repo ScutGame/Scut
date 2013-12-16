@@ -1,11 +1,22 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Data;
+using ContractTools.WebApp.Base;
+using ContractTools.WebApp.Model;
+using ZyGames.Framework.RPC.IO;
 
-namespace ZyGames.ContractTools
+namespace ContractTools.WebApp
 {
     public partial class ClientConfigInfo : System.Web.UI.Page
     {
+        public class LuaConfig
+        {
+            public string Key { get; set; }
+            public StringBuilder Builder { get; set; }
+        }
+
         protected int SlnID
         {
             get
@@ -34,13 +45,13 @@ namespace ZyGames.ContractTools
 
             if (!Page.IsPostBack)
             {
-                this.txtServerUrl.Text = new SolutionBLL().GetUrl(SlnID);
+                var slnModel = DbDataLoader.GetSolution(SlnID);
+                this.txtServerUrl.Text = slnModel == null ? "" : slnModel.Url;
                 ddlContract.Items.Clear();
-                ContractBLL BLL = new ContractBLL();
-                DataSet ds = BLL.GetList("SlnID=" + SlnID);
-                if (ds.Tables[0].Rows.Count > 0)
+                var contractList = DbDataLoader.GetContract(SlnID);
+                if (contractList.Count > 0)
                 {
-                    ddlContract.DataSource = ds;
+                    ddlContract.DataSource = contractList;
                     ddlContract.DataTextField = "uname";
                     ddlContract.DataValueField = "ID";
                     ddlContract.DataBind();
@@ -52,15 +63,13 @@ namespace ZyGames.ContractTools
         protected void btnTest_Click(object sender, EventArgs e)
         {
             int contractID = int.Parse(ddlContract.Text);
-            Message msg = new Message();
+            MessageHead msg = new MessageHead();
 
-            string requestParams = GetRequestParams("", "0", contractID, SlnID, txtVersion.Text);
-            //StringBuilder requestParams = new StringBuilder();
-            //requestParams.AppendFormat("Sid={0}&Uid={1}&ActionID={2}&ClientVersion={3}&rl=1", string.Empty, string.Empty, contractID, txtVersion.Text);
+            var paramList = DbDataLoader.GetParamInfo(SlnID, contractID);
+            string requestParams = GetRequestParams(paramList, contractID, txtVersion.Text);
             string serverUrl = txtServerUrl.Text;
             string[] keyNames = txtKeyName.Text.Split(new char[] { ',' });
-
-            MessageReader msgReader = MessageReader.Create(serverUrl, requestParams, ref msg, false);
+            var msgReader = NetHelper.Create(serverUrl, requestParams, out msg, false);
             if (msgReader != null)
             {
                 try
@@ -71,37 +80,31 @@ namespace ZyGames.ContractTools
                     }
                     else
                     {
-                        txtResponse.Text = new ParamInfoBLL().LuaConfig(SlnID, contractID, keyNames, msgReader);
+                        txtResponse.Text = BuildLuaFile(paramList, msgReader, keyNames);
                     }
                 }
                 catch (Exception ex)
                 {
                     txtResponse.Text = ex.ToString();
                 }
-                finally
-                {
-                    msgReader.Dispose();
-                }
             }
         }
 
-        private static string GetRequestParams(string sid, string uid, int contractId, int slnId, string clientVersion)
+        private static string GetRequestParams(List<ParamInfoModel> paramList, int contractId, string clientVersion, string sid = "", int uid = 0)
         {
             StringBuilder requestParams = new StringBuilder();
             requestParams.AppendFormat("Sid={0}&Uid={1}&ActionID={2}&ClientVersion={3}&rl=1", sid, uid, contractId, clientVersion);
 
-            DataSet reqParamList = new ParamInfoBLL().GetList(string.Format("ContractID={0} and SlnID={1} and ParamType=1", contractId, slnId));
-            DataRowCollection paramRecords = reqParamList.Tables[0].Rows;
-
+            var reqParamList = paramList.Where(p => p.ParamType == 1).OrderBy(p => p.SortID);
             int i = 0;
-            foreach (DataRow record in paramRecords)
+            foreach (var record in reqParamList)
             {
                 if (requestParams.Length > 0)
                 {
                     requestParams.Append("&");
                 }
-                string fieldName = record["Field"].ToString();
-                string fieldValue = record["FieldValue"].ToString();
+                string fieldName = record.Field;
+                string fieldValue = record.FieldValue;
 
                 requestParams.AppendFormat("{0}={1}", fieldName, fieldValue);
                 i++;
@@ -109,5 +112,267 @@ namespace ZyGames.ContractTools
             return requestParams.ToString();
         }
 
+        public static string BuildLuaFile(List<ParamInfoModel> paramList, MessageStructure msgReader, string[] keyNames)
+        {
+            var respParams = paramList.Where(p => p.ParamType == 2).OrderBy(p => p.SortID);
+            StringBuilder containerBuilder = new StringBuilder();
+            int loopDepth = 0;//循环深度
+            List<ParamInfoModel> recordQueue = new List<ParamInfoModel>();
+            foreach (var record in respParams)
+            {
+                string fieldName = record.Field;
+                FieldType fieldType = record.FieldType;
+                string fieldValue = "";
+
+                if (loopDepth > 0 && fieldType == FieldType.End)
+                {
+                    loopDepth--;
+                    recordQueue.Add(record);
+                }
+                if (loopDepth == 0 && recordQueue.Count > 0)
+                {
+                    //处理循环记录
+                    ParseRecordEnd(containerBuilder, msgReader, recordQueue, loopDepth, 0, keyNames);
+                    recordQueue.Clear();
+                }
+
+                if (loopDepth == 0)
+                {
+                    if (NetHelper.GetFieldValue(msgReader, fieldType, ref fieldValue))
+                    {
+                        //自动登录
+                    }
+                    if (fieldType == FieldType.Record)
+                    {
+                        loopDepth++;
+                        recordQueue.Add(record);
+                    }
+                }
+                else if (fieldType != FieldType.End)
+                {
+                    if (fieldType == FieldType.Record)
+                    {
+                        loopDepth++;
+                    }
+                    recordQueue.Add(record);
+                }
+            }
+            return containerBuilder.ToString();
+        }
+
+        private static void ParseRecordEnd(StringBuilder itemBuilder, MessageStructure msgReader, List<ParamInfoModel> queue, int depth, int recordNum, string[] keyNames)
+        {
+            string keyValue = string.Empty;
+            string keyName = keyNames.Length > depth ? keyNames[depth] : string.Empty;
+            List<LuaConfig> builderList = new List<LuaConfig>();
+            int recordCount = 0;
+            try
+            {
+                recordCount = msgReader.ReadInt();
+            }
+            catch { }
+            for (int i = 0; i < recordCount; i++)
+            {
+                try
+                {
+                    msgReader.RecordStart();
+                    int loopDepth = 0; //循环深度
+                    StringBuilder recordBuilder = new StringBuilder();
+                    List<ParamInfoModel> recordQueue = new List<ParamInfoModel>();
+
+                    int columnNum = 0;
+                    int childNum = 0;
+
+                    #region 遍历列取数据
+                    for (int r = 1; r < queue.Count - 1; r++)
+                    {
+                        var record = queue[r];
+                        string fieldName = record.Field;
+                        FieldType fieldType = record.FieldType;
+                        string fieldValue = "";
+                        try
+                        {
+                            if (loopDepth > 0 && fieldType == FieldType.End)
+                            {
+                                loopDepth--;
+                                recordQueue.Add(record);
+                            }
+                            if (loopDepth == 0 && recordQueue.Count > 0)
+                            {
+                                //处理循环记录
+                                childNum++;
+                                var childBuilder = new StringBuilder();
+                                ParseRecordEnd(childBuilder, msgReader, recordQueue, depth + 1, childNum, keyNames);
+                                //
+                                recordQueue.Clear();
+                                //选择输出格式
+                                FormatChildToLua(recordBuilder, childBuilder, columnNum);
+                            }
+
+                            if (loopDepth == 0)
+                            {
+                                if (NetHelper.GetFieldValue(msgReader, fieldType, ref fieldValue))
+                                {
+                                    if (columnNum > 0)
+                                    {
+                                        recordBuilder.Append(",");
+                                    }
+                                    if (fieldName.Trim().ToLower() == keyName.Trim().ToLower())
+                                    {
+                                        keyValue = fieldValue;
+                                    }
+                                    if (fieldType == FieldType.Byte || fieldType == FieldType.Short || fieldType == FieldType.Int)
+                                    {
+                                        recordBuilder.AppendFormat("{0}={1}", fieldName, fieldValue);
+                                    }
+                                    else
+                                    {
+                                        recordBuilder.AppendFormat("{0}=\"{1}\"", fieldName, fieldValue);
+                                    }
+                                    columnNum++;
+                                }
+                                if (fieldType == FieldType.Record)
+                                {
+                                    loopDepth++;
+                                    recordQueue.Add(record);
+                                }
+                            }
+                            else if (fieldType != FieldType.End)
+                            {
+                                if (fieldType == FieldType.Record)
+                                {
+                                    loopDepth++;
+                                }
+                                recordQueue.Add(record);
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            throw new Exception(string.Format("recordindex:{0},fieldName:{1} error:", i, fieldName), ex);
+                        }
+                    }
+
+                    #endregion
+                    //读取行结束
+                    msgReader.RecordEnd();
+                    builderList.Add(new LuaConfig { Key = keyValue, Builder = recordBuilder });
+                }
+                catch (Exception ex)
+                {
+                    throw new Exception(string.Format("recordindex:{0}error:", i), ex);
+                }
+            }
+
+            FormatListToLua(itemBuilder, builderList, keyName, depth, recordNum);
+
+        }
+
+        private static void FormatListToLua(StringBuilder itemBuilder, List<LuaConfig> builderList, string keyName, int depth, int recordNum)
+        {
+            if (depth == 0)
+            {
+                //选择输出格式
+                if (keyName.Length > 0)
+                {
+                    foreach (var recordBuilder in builderList)
+                    {
+                        itemBuilder.AppendFormat("RecordInfos[{0}]=", recordBuilder.Key);
+                        itemBuilder.Append("{");
+                        itemBuilder.Append(recordBuilder.Builder);
+                        itemBuilder.Append("}");
+                        itemBuilder.AppendLine();
+                        itemBuilder.AppendLine();
+                    }
+                }
+                else
+                {
+                    itemBuilder.Append("RecordInfos={");
+                    int index = 0;
+                    foreach (var recordBuilder in builderList)
+                    {
+                        if (index > 0)
+                        {
+                            itemBuilder.Append(",");
+                        }
+                        itemBuilder.AppendLine();
+                        itemBuilder.Append("{");
+                        itemBuilder.Append(recordBuilder.Builder);
+                        itemBuilder.Append("}");
+                        index++;
+                    }
+                    itemBuilder.AppendLine();
+                    itemBuilder.Append("}");
+                }
+
+            }
+            else
+            {
+                itemBuilder.AppendFormat("{0}SubInfos{1}_{2}=",
+                                           string.Empty.PadLeft(depth * 4),
+                                           depth,
+                                           recordNum);
+                if (keyName.Length > 0)
+                {
+                    itemBuilder.Append("{");
+                    int index = 0;
+                    foreach (var subBuilder in builderList)
+                    {
+                        if (index > 0)
+                        {
+                            itemBuilder.Append(",");
+                        }
+                        itemBuilder.AppendLine();
+                        itemBuilder.Append(string.Empty.PadLeft((depth + 1) * 4));
+                        itemBuilder.AppendFormat("[{0}]=", subBuilder.Key);
+                        itemBuilder.Append("{");
+                        itemBuilder.Append(subBuilder.Builder);
+                        itemBuilder.Append("}");
+                        index++;
+                    }
+                    if (index > 0)
+                    {
+                        itemBuilder.AppendLine();
+                        itemBuilder.Append(string.Empty.PadLeft(depth * 4));
+                    }
+                    itemBuilder.Append("}");
+                }
+                else
+                {
+                    itemBuilder.Append("{");
+                    int index = 0;
+                    foreach (var subBuilder in builderList)
+                    {
+                        if (index > 0)
+                        {
+                            itemBuilder.Append(",");
+                        }
+                        itemBuilder.AppendLine();
+                        itemBuilder.Append(string.Empty.PadLeft((depth + 1) * 4));
+                        itemBuilder.Append("{");
+                        itemBuilder.Append(subBuilder.Builder);
+                        itemBuilder.Append("}");
+                        index++;
+                    }
+                    if (index > 0)
+                    {
+                        itemBuilder.AppendLine();
+                        itemBuilder.Append(string.Empty.PadLeft(depth * 4));
+                    }
+                    itemBuilder.Append("}");
+                }
+            }
+
+        }
+
+        private static void FormatChildToLua(StringBuilder builder, StringBuilder childBuilder, int recordIndex)
+        {
+            bool isFirst = recordIndex == 0;
+            if (!isFirst)
+            {
+                builder.Append(",");
+                builder.AppendLine();
+            }
+            builder.Append(childBuilder);
+        }
     }
 }

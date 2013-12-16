@@ -2,7 +2,7 @@
 using ContractTools.WebApp.Base;
 using ContractTools.WebApp.Model;
 
-namespace ZyGames.ContractTools
+namespace ContractTools.WebApp
 {
     /// <summary>
     /// 增加修改协议

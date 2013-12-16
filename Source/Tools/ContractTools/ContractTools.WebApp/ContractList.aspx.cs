@@ -1,18 +1,9 @@
 ﻿using System;
-using System.Collections;
-using System.Configuration;
 using System.Data;
 using System.Linq;
-using System.Web;
-using System.Web.Security;
-using System.Web.UI;
-using System.Web.UI.HtmlControls;
-using System.Web.UI.WebControls;
-using System.Web.UI.WebControls.WebParts;
-using System.Xml.Linq;
-using BLL;
+using ContractTools.WebApp.Base;
 
-namespace ZyGames.ContractTools
+namespace ContractTools.WebApp
 {
     public partial class ContractList : System.Web.UI.Page
     {
@@ -52,27 +43,23 @@ namespace ZyGames.ContractTools
         private void Bind(int slnID)
         {
             ddlSolution.Items.Clear();
-            DataSet dssln = new SolutionBLL().GetList("");
-            ddlSolution.DataSource = dssln;
+            var slnList = DbDataLoader.GetSolution();
+            ddlSolution.DataSource = slnList;
             ddlSolution.DataTextField = "SlnName";
             ddlSolution.DataValueField = "SlnID";
             ddlSolution.DataBind();
 
-            var slnTable = dssln.Tables[0];
-
-            slnTable.PrimaryKey = new DataColumn[] { slnTable.Columns["SlnID"] };
-            var row = slnTable.Rows.Find(slnID);
-            if (row != null)
+            var slnModel = slnList.Where(p => p.SlnID == slnID).FirstOrDefault();
+            if (slnModel != null)
             {
-                lblSlnName.Text = row["SlnName"].ToString();
+                lblSlnName.Text = slnModel.SlnName;
             }
 
             ddContract.Items.Clear();
-            ContractBLL BLL = new ContractBLL();
-            DataSet ds = BLL.GetList("SlnID=" + slnID);
-            if (ds.Tables[0].Rows.Count > 0)
+            var contractList = DbDataLoader.GetContract(slnID);
+            if (contractList.Count > 0)
             {
-                ddContract.DataSource = ds;
+                ddContract.DataSource = contractList;
                 ddContract.DataTextField = "uname";
                 ddContract.DataValueField = "ID";
                 ddContract.DataBind();
@@ -90,8 +77,7 @@ namespace ZyGames.ContractTools
                 return;
             }
 
-            ContractBLL con = new ContractBLL();
-            if (con.Copy(int.Parse(txtSlnID.Text), int.Parse(ddContract.Text), int.Parse(ddlSolution.Text), int.Parse(txtCopyID.Text)))
+            if (DbDataLoader.CopyContract(int.Parse(txtSlnID.Text), int.Parse(ddContract.Text), int.Parse(ddlSolution.Text), int.Parse(txtCopyID.Text)))
             {
                 Page.RegisterStartupScript("", "<script language=javascript>alert('复制成功！')</script>");
             }

@@ -1,19 +1,11 @@
 ﻿using System;
-using System.Collections;
-using System.Configuration;
 using System.Data;
 using System.Linq;
-using System.Web;
-using System.Web.Security;
-using System.Web.UI;
-using System.Web.UI.HtmlControls;
 using System.Web.UI.WebControls;
-using System.Web.UI.WebControls.WebParts;
-using System.Xml.Linq;
-using BLL;
-using model;
+using ContractTools.WebApp.Base;
+using ContractTools.WebApp.Model;
 
-namespace ZyGames.ContractTools
+namespace ContractTools.WebApp
 {
     /// <summary>
     /// 修改协议
@@ -59,13 +51,12 @@ namespace ZyGames.ContractTools
         }
         protected void butSubmit_Click(object sender, EventArgs e)
         {
-            ContractBLL BLL = new ContractBLL();
             ContractModel model = new ContractModel();
             model.ID = ContractID;
             model.SlnID = SlnID;
             model.Descption = txtDescption.Text.Trim();
-            model.AgreementID = Convert.ToInt32(ddlAgreement.SelectedValue);
-            if (BLL.Update(model))
+            model.AgreementID = Convert.ToInt32((string) ddlAgreement.SelectedValue);
+            if (DbDataLoader.Update(model))
             {
                 Response.Write("<script language=javascript>alert('修改成功！')</script>");
             }
@@ -76,8 +67,8 @@ namespace ZyGames.ContractTools
         public void Bind()
         {
             ddlAgreement.Items.Clear();
-            DataSet ds = SlnID == 0 ? new AgreementBLL().GetList("", "0") : new AgreementBLL().GetList(" gameid=" + SlnID, SlnID.ToString());
-            ddlAgreement.DataSource = ds;
+            var list = DbDataLoader.GetAgreement(SlnID);
+            ddlAgreement.DataSource = list;
             ddlAgreement.DataTextField = "Title";
             ddlAgreement.DataValueField = "AgreementID";
             ddlAgreement.DataBind();
@@ -88,13 +79,12 @@ namespace ZyGames.ContractTools
             }
             if (!Request.QueryString["ID"].Equals(""))
             {
-                int ID = Convert.ToInt32(Request.QueryString["ID"]);
-                int slnID = Convert.ToInt32(Request.QueryString["slnID"]);
-                ContractBLL BLL = new ContractBLL();
-                ContractModel model = new ContractModel();
-                model = BLL.GetModel(ContractID, SlnID);
-                txtDescption.Text = model.Descption;
-                ddlAgreement.SelectedValue = model.AgreementID.ToString();
+                ContractModel model = DbDataLoader.GetContract(SlnID, ContractID);
+                if (model != null)
+                {
+                    txtDescption.Text = model.Descption;
+                    ddlAgreement.SelectedValue = model.AgreementID.ToString();
+                }
             }
 
 

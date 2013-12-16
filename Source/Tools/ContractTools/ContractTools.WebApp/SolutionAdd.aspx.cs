@@ -1,19 +1,8 @@
 ﻿using System;
-using System.Collections;
-using System.Configuration;
-using System.Data;
-using System.Linq;
-using System.Web;
-using System.Web.Security;
-using System.Web.UI;
-using System.Web.UI.HtmlControls;
-using System.Web.UI.WebControls;
-using System.Web.UI.WebControls.WebParts;
-using System.Xml.Linq;
-using BLL;
-using model;
+using ContractTools.WebApp.Base;
+using ContractTools.WebApp.Model;
 
-namespace ZyGames.ContractTools
+namespace ContractTools.WebApp
 {
     /// <summary>
     /// 增加修改协议
@@ -33,14 +22,13 @@ namespace ZyGames.ContractTools
         {
             try
             {
-                SolutionBLL con = new SolutionBLL();
                 SolutionModel model = new SolutionModel();
                 model.SlnName = txtDescption.Text.Trim();
                 model.Namespace = txtNamespace.Text.Trim();
                 model.RefNamespace = txtRefNamespace.Text.Trim();
-                model.GameID = Convert.ToInt32(txtGameID.Text);
+                model.GameID = Convert.ToInt32((string) txtGameID.Text);
                 model.Url = txtUrl.Text.Trim();
-                if (con.Add(model) > 0)
+                if (DbDataLoader.Add(model) > 0)
                 {
                     Response.Redirect("SolutionsList.aspx");
                 }

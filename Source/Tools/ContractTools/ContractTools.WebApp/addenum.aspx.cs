@@ -1,14 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Web;
-using System.Web.UI;
 using System.Web.UI.WebControls;
-using BLL;
-using model;
-using System.Data;
-using System.Collections;
-namespace ZyGames.ContractTools
+using ContractTools.WebApp.Base;
+using ContractTools.WebApp.Model;
+
+namespace ContractTools.WebApp
 {
     public partial class addenum : System.Web.UI.Page
     {
@@ -19,10 +15,9 @@ namespace ZyGames.ContractTools
                 Bind();
                 if (!string.IsNullOrEmpty(Request["enum"]))
                 {
-                    string enumName = Request["enum"].Trim(new char[]{'【','】'});
+                    string enumName = Request["enum"].Trim(new char[] { '【', '】' });
                     txtName.Text = enumName;
-                    EnuminfoBLL dal = new EnuminfoBLL();
-                    EnumInfoModel info = dal.GetModel(enumName, SlnID.ToString());
+                    EnumInfoModel info = DbDataLoader.GetEnumInfo(SlnID, enumName).FirstOrDefault();
                     if (info != null)
                     {
                         txtDescription.Text = info.enumDescription;
@@ -41,8 +36,7 @@ namespace ZyGames.ContractTools
 
         private void Bind()
         {
-            EnuminfoBLL dal = new EnuminfoBLL();
-            GridView.DataSource = dal.GetList(SlnID);
+            GridView.DataSource = DbDataLoader.GetEnumInfo(SlnID);
             GridView.DataBind();
         }
 
@@ -76,13 +70,12 @@ namespace ZyGames.ContractTools
             {
                 try
                 {
-                    EnuminfoBLL con = new EnuminfoBLL();
                     EnumInfoModel model = new EnumInfoModel();
                     model.enumName = txtName.Text;
                     model.enumDescription = txtDescription.Text;
                     model.enumValueInfo = txtValueInfo.Text;
                     model.SlnID = SlnID;
-                    if (con.Add(model))
+                    if (DbDataLoader.Add(model) > 0)
                     {
                         Bind();
                         btCancelButton_Click(null, null);
@@ -99,14 +92,13 @@ namespace ZyGames.ContractTools
                 try
                 {
 
-                    EnuminfoBLL con = new EnuminfoBLL();
                     EnumInfoModel model = new EnumInfoModel();
                     model.enumName = txtName.Text;
                     model.enumDescription = txtDescription.Text;
                     model.enumValueInfo = txtValueInfo.Text;
                     model.SlnID = SlnID;
                     model.ID = int.Parse(EditKey.Text);
-                    if (con.Update(model))
+                    if (DbDataLoader.Update(model))
                     {
                         Bind();
                         btCancelButton_Click(null, null);
@@ -154,8 +146,11 @@ namespace ZyGames.ContractTools
             {
                 case "sel":
                     {
-                        EnuminfoBLL con = new EnuminfoBLL();
-                        EnumInfoModel info = con.GetModel(id);
+                        EnumInfoModel info = DbDataLoader.GetEnumInfo(f =>
+                        {
+                            f.Condition = f.FormatExpression("ID");
+                            f.AddParam("ID", id);
+                        }).FirstOrDefault();
                         txtName.Text = info.enumName;
                         txtDescription.Text = info.enumDescription;
                         txtValueInfo.Text = info.enumValueInfo;
@@ -165,8 +160,7 @@ namespace ZyGames.ContractTools
                     break;
                 case "del":
                     {
-                        EnuminfoBLL con = new EnuminfoBLL();
-                        con.Delete(id);
+                        DbDataLoader.Delete(new EnumInfoModel() { ID = id });
                         Bind();
                     }
                     break;
@@ -175,7 +169,7 @@ namespace ZyGames.ContractTools
 
         protected void btRefreshCache_Click(object sender, EventArgs e)
         {
-            Mainfun.LoadEnumApplication(SlnID,true);
+            TemplateHelper.LoadEnumApplication(SlnID, true);
         }
     }
 }

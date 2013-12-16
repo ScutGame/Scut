@@ -7,7 +7,7 @@
 // </自动生成>
 //------------------------------------------------------------------------------
 
-namespace ZyGames.ContractTools {
+namespace ContractTools.WebApp {
     
     
     public partial class UnitTest {

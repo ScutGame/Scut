@@ -31,7 +31,7 @@ namespace ContractTools.WebApp.Model
 {
     public class ParamInfoModel
     {
-       public int ID
+        public int ID
         {
             get;
             set;
@@ -66,10 +66,16 @@ namespace ContractTools.WebApp.Model
             get;
             set;
         }
+
+        public int FieldTypeId
+        {
+            get { return (int)FieldType; }
+        }
+
         /// <summary>
         /// 
         /// </summary>
-        public int FieldType
+        public FieldType FieldType
         {
             get;
             set;

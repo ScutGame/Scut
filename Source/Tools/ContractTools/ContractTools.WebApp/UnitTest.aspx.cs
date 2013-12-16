@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data;
 using System.Text;
 using System.Web;
 using ContractTools.WebApp.Base;
@@ -9,12 +8,12 @@ using ZyGames.Framework.Common;
 using ZyGames.Framework.Common.Security;
 using ZyGames.Framework.RPC.IO;
 
-namespace ZyGames.ContractTools
+namespace ContractTools.WebApp
 {
     public partial class UnitTest : System.Web.UI.Page
     {
+        public const int LoginActionId = 1004;
         public const int ErrorCode = 10000;
-        private static bool IsSocket = false;
         private string GetCookesKey(string str)
         {
             return string.Format("{0}_{1}", SlnID, str);
@@ -97,90 +96,25 @@ namespace ZyGames.ContractTools
         }
         protected void btnTest_Click(object sender, EventArgs e)
         {
-            SetCookies(ddlContract.SelectedValue, ParamListTextBox.Text);
-            SetCookies(string.Empty, txtServerUrl.Text);
-            IsSocket = false;
-            try
-            {
-                if (string.IsNullOrEmpty(txtPassport.Text.TrimEnd()))
-                {
-                    Response.Write("<script language=javascript>alert('PassportID为空！')</script>");
-                    return;
-                }
-                if (string.IsNullOrEmpty(txtPassword.Text.TrimEnd()))
-                {
-                    Response.Write("<script language=javascript>alert('Password为空！')</script>");
-                    return;
-                }
-                string serverUrl = txtServerUrl.Text.Trim();
-                string sid = txtSessionID.Text.Trim();
-                string uid = txtUserID.Text.Trim();
-                string contractId = ddlContract.Text;
-                string pid = txtPassport.Text.TrimEnd();
-                string pwd = txtPassword.Text.TrimEnd();
-                string respSID = "";
-                string respUID = "";
-                string responseStr = "";
-                string requestParams = "";
-                string[] contractList = txtMoreContrats.Text.Trim().Split(',');
-
-                foreach (var tempId in contractList)
-                {
-                    if (string.IsNullOrEmpty(tempId)) continue;
-
-                    requestParams = GetRequestParams(sid, uid, tempId, SlnID, pid, pwd, null);
-                    responseStr += PostGameServer(tempId, SlnID, serverUrl, requestParams, out respSID, out respUID);
-                    if (!string.IsNullOrEmpty(respSID))
-                    {
-                        txtSessionID.Text = respSID;
-                        txtUserID.Text = respUID;
-                        sid = respSID;
-                        uid = respUID;
-                    }
-                }
-                requestParams = GetRequestParams(sid, uid, contractId, SlnID, pid, pwd, ParamListTextBox.Text);
-                LinkUrlLiteral.Text = requestParams;
-                if (this.ckResponse.Checked)
-                {
-                    responseStr += PostGameServer(contractId, SlnID, serverUrl, requestParams, out respSID, out respUID);
-                }
-                else
-                {
-                    responseStr = PostGameServer(contractId, SlnID, serverUrl, requestParams, out respSID, out respUID);
-                }
-                if (!string.IsNullOrEmpty(respSID))
-                {
-                    txtSessionID.Text = respSID;
-                    txtUserID.Text = respUID;
-                }
-                this.lblResponse.Text = responseStr;
-            }
-            catch (Exception ex)
-            {
-                lblResponse.Text = ex.ToString().Replace("\r\n", "<br>").Replace("\n", "<br>");
-            }
+            DoRequest(false);
         }
+
         protected void socketBtn_Click(object sender, EventArgs e)
+        {
+            DoRequest(true);
+        }
+
+        private void DoRequest(bool isSocket)
         {
             SetCookies(ddlContract.SelectedValue, ParamListTextBox.Text);
             SetCookies(string.Empty, txtServerUrl.Text);
+
             try
             {
-                IsSocket = true;
-                if (string.IsNullOrEmpty(txtPassport.Text.TrimEnd()))
-                {
-                    Response.Write("<script language=javascript>alert('PassportID为空！')</script>");
-                    return;
-                }
-                if (string.IsNullOrEmpty(txtPassword.Text.TrimEnd()))
-                {
-                    Response.Write("<script language=javascript>alert('Password为空！')</script>");
-                    return;
-                }
                 string serverUrl = txtServerUrl.Text.Trim();
                 string sid = txtSessionID.Text.Trim();
                 string uid = txtUserID.Text.Trim();
-                string contractId = ddlContract.Text;
+                int contractId = ddlContract.Text.Trim().ToInt();
                 string pid = txtPassport.Text.TrimEnd();
                 string pwd = txtPassword.Text.TrimEnd();
                 string respSID = "";
@@ -188,14 +122,16 @@ namespace ZyGames.ContractTools
                 string responseStr = "";
                 string requestParams = "";
                 string[] contractList = txtMoreContrats.Text.Trim().Split(',');
+                int gameId = lbtGmeID.Text.ToInt();
                 int serverId = txtServerID.Text.ToInt();
+
                 foreach (var tempId in contractList)
                 {
-                    if (string.IsNullOrEmpty(tempId)) continue;
+                    int conId = tempId.Trim().ToInt();
+                    if (conId == 0) continue;
 
-                    requestParams = GetRequestParams(sid, uid, tempId, SlnID, pid, pwd, null);
-                    requestParams += string.Format("&MsgId=1&GameType={0}&ServerID={1}", lbtGmeID.Text, serverId);
-                    responseStr += PostGameServer(tempId, SlnID, serverUrl, requestParams, out respSID, out respUID);
+                    requestParams = GetRequestParams(sid, uid, conId, SlnID, pid, pwd, gameId, serverId);
+                    responseStr += PostGameServer(conId, SlnID, serverUrl, requestParams, isSocket, out respSID, out respUID);
                     if (!string.IsNullOrEmpty(respSID))
                     {
                         txtSessionID.Text = respSID;
@@ -204,18 +140,15 @@ namespace ZyGames.ContractTools
                         uid = respUID;
                     }
                 }
-                requestParams = GetRequestParams(sid, uid, contractId, SlnID, pid, pwd, ParamListTextBox.Text);
-                //requestParams += string.Format("&GameType={0}&ServerID={1}", lbtGmeID.Text, ddlServerID.SelectedValue);
+                requestParams = GetRequestParams(sid, uid, contractId, SlnID, pid, pwd, gameId, serverId, ParamListTextBox.Text);
                 LinkUrlLiteral.Text = requestParams;
                 if (this.ckResponse.Checked)
                 {
-                    requestParams += string.Format("&MsgId=1&GameType={0}&ServerID={1}", lbtGmeID.Text, serverId);
-                    responseStr += PostGameServer(contractId, SlnID, serverUrl, requestParams, out respSID, out respUID);
+                    responseStr += PostGameServer(contractId, SlnID, serverUrl, requestParams, isSocket, out respSID, out respUID);
                 }
                 else
                 {
-                    requestParams += string.Format("&MsgId=1&GameType={0}&ServerID={1}", lbtGmeID.Text, serverId);
-                    responseStr = PostGameServer(contractId, SlnID, serverUrl, requestParams, out respSID, out respUID);
+                    responseStr = PostGameServer(contractId, SlnID, serverUrl, requestParams, isSocket, out respSID, out respUID);
                 }
                 if (!string.IsNullOrEmpty(respSID))
                 {
@@ -230,8 +163,7 @@ namespace ZyGames.ContractTools
             }
         }
 
-
-        private static string GetRequestParams(string sid, string uid, string contractId, int slnId, string pid, string pwd, string paramList)
+        private static string GetRequestParams(string sid, string uid, int contractId, int slnId, string pid, string pwd, int gameId, int serverId, string paramList = "")
         {
             string[] paramArray = null;
             if (paramList != null)
@@ -240,9 +172,17 @@ namespace ZyGames.ContractTools
             }
 
             StringBuilder requestParams = new StringBuilder();
-            requestParams.AppendFormat("Sid={0}&Uid={1}&ActionID={2}", sid, uid, contractId);
+            requestParams.AppendFormat("MsgId=1&Sid={0}&Uid={1}&ActionID={2}", sid, uid, contractId);
+            if (gameId > 0)
+            {
+                requestParams.AppendFormat("&GameType={0}", gameId);
+            }
+            if (serverId > 0)
+            {
+                requestParams.AppendFormat("&ServerID={0}", serverId);
+            }
             int paramType = 1;
-            var paramRecords = DbDataLoader.GetParamInfo(slnId, contractId.ToInt(), paramType);
+            var paramRecords = DbDataLoader.GetParamInfo(slnId, contractId, paramType);
 
             int i = 0;
             foreach (var record in paramRecords)
@@ -254,7 +194,7 @@ namespace ZyGames.ContractTools
                 string fieldName = record.Field;
                 string fieldValue = record.FieldValue;
 
-                if (contractId == "1004")
+                if (contractId == LoginActionId)
                 {
                     if (fieldName.ToLower().Equals("pid"))
                     {
@@ -284,20 +224,20 @@ namespace ZyGames.ContractTools
             return requestParams.ToString();
         }
 
-        private static List<ParamInfoModel> GetResponseFields(string contractId, int slnId)
+        private static List<ParamInfoModel> GetResponseFields(int contractId, int slnId)
         {
             int paramType = 2;
-            return DbDataLoader.GetParamInfo(slnId, contractId.ToInt(), paramType);
+            return DbDataLoader.GetParamInfo(slnId, contractId, paramType);
         }
 
 
-        private static string PostGameServer(string contractId, int slnId, string serverUrl, string requestParams, out string sid, out string uid)
+        private static string PostGameServer(int contractId, int slnId, string serverUrl, string requestParams, bool isSocket, out string sid, out string uid)
         {
             sid = "";
             uid = "";
             StringBuilder respContent = new StringBuilder();
             MessageHead msg = new MessageHead();
-            MessageStructure msgReader = NetHelper.Create(serverUrl, requestParams, out msg, IsSocket);
+            MessageStructure msgReader = NetHelper.Create(serverUrl, requestParams, out msg, isSocket);
             if (msgReader != null)
             {
                 ProcessResult(contractId, slnId, respContent, msg, msgReader, out sid, out uid);
@@ -305,7 +245,7 @@ namespace ZyGames.ContractTools
             return respContent.ToString();
         }
 
-        private static void ProcessResult(string contractId, int slnId, StringBuilder respContent, MessageHead msg, MessageStructure msgReader, out string sid, out string uid)
+        private static void ProcessResult(int contractId, int slnId, StringBuilder respContent, MessageHead msg, MessageStructure msgReader, out string sid, out string uid)
         {
             sid = "";
             uid = "";
@@ -334,7 +274,7 @@ namespace ZyGames.ContractTools
                 foreach (var record in respRecords)
                 {
                     string fieldName = record.Field;
-                    FieldType fieldType = record.FieldType.ToEnum<FieldType>();
+                    FieldType fieldType = record.FieldType;
                     string fieldValue = "";
                     try
                     {
@@ -445,7 +385,7 @@ namespace ZyGames.ContractTools
                     {
                         var record = queue[r];
                         string fieldName = record.Field;
-                        FieldType fieldType = record.FieldType.ToEnum<FieldType>();
+                        FieldType fieldType = record.FieldType;
                         string fieldValue = "";
                         try
                         {

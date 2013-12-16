@@ -1,19 +1,10 @@
 ﻿using System;
-using System.Collections;
-using System.Configuration;
 using System.Data;
-using System.Linq;
-using System.Web;
-using System.Web.Security;
-using System.Web.UI;
-using System.Web.UI.HtmlControls;
-using System.Web.UI.WebControls;
-using System.Web.UI.WebControls.WebParts;
-using System.Xml.Linq;
-using BLL;
-using model;
+using ContractTools.WebApp.Base;
+using ContractTools.WebApp.Model;
+using ZyGames.Framework.Common;
 
-namespace ZyGames.ContractTools
+namespace ContractTools.WebApp
 {
     /// <summary>
     /// 增加字段
@@ -25,7 +16,6 @@ namespace ZyGames.ContractTools
         {
             if (!IsPostBack)
             {
-                //ViewState["slnID"] = Request.Params["slnID"];
                 Bind();
             }
             UID = LabType.Text;
@@ -84,33 +74,32 @@ namespace ZyGames.ContractTools
         protected void btnSubmit_Click(object sender, EventArgs e)
         {
             ParamInfoModel mode = new ParamInfoModel();
-            ParamInfoBLL BLL = new ParamInfoBLL();
             mode.Field = txtField.Text.Trim();
             mode.FieldValue = txtFieldValue.Text.Trim();
             mode.Remark = txtRemark.Text.Trim();
             mode.ContractID = ContractID;
-            mode.FieldType = Convert.ToInt32(droFieldType.SelectedValue);
-            mode.ParamType = Convert.ToInt32(droParamType.SelectedValue);
-            mode.Required = Convert.ToBoolean(droRrequired.SelectedValue);
+            mode.FieldType = droFieldType.SelectedValue.ToEnum<FieldType>();
+            mode.ParamType = Convert.ToInt32((string)droParamType.SelectedValue);
+            mode.Required = Convert.ToBoolean((string)droRrequired.SelectedValue);
             mode.Descption = txtDescption.Text.Trim();
             mode.SlnID = SlnID;
-            mode.MinValue = Convert.ToInt32(txtMinValue.Text.Trim());
-            mode.MaxValue = Convert.ToInt32(txtMaxValue.Text.Trim());
+            mode.MinValue = Convert.ToInt32((string)txtMinValue.Text.Trim());
+            mode.MaxValue = Convert.ToInt32((string)txtMaxValue.Text.Trim());
 
-            DataSet ds = BLL.GetID(string.Format("ContractID={0} and slnid={1} and ParamType={2}", ContractID, SlnID, mode.ParamType));
-            if (ds.Tables[0].Rows[0]["SortID"].ToString() == "")
+            var paramList = DbDataLoader.GetParamInfo(SlnID, ContractID, mode.ParamType);
+            if (paramList.Count == 0 || paramList[0].SortID == 0)
             {
                 mode.SortID = 1;
             }
             else
             {
-                int SortID = Convert.ToInt32(ds.Tables[0].Rows[0]["SortID"]);
+                int SortID = paramList[0].SortID;
                 SortID++;
                 mode.SortID = SortID;
 
             }
 
-            if (BLL.Add(mode) != 0)
+            if (DbDataLoader.Add(mode) > 0)
             {
                 Response.Redirect(String.Format("index.aspx?ID={0}&slnID={1}", ContractID, mode.SlnID));
             }

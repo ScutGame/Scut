@@ -102,20 +102,6 @@ namespace ContractTools.WebApp.Base
             }).FirstOrDefault();
         }
 
-        public static List<SolutionModel> GetSolution(int slnId, int agreementID)
-        {
-            return GetSolution(f =>
-            {
-                f.Condition = f.FormatExpression("SlnID");
-                f.AddParam("SlnID", slnId);
-                if (agreementID > 0)
-                {
-                    f.Condition += " AND " + f.FormatExpression("AgreementID");
-                    f.AddParam("AgreementID", agreementID);
-                }
-            });
-        }
-
         public static List<SolutionModel> GetSolution(Action<CommandFilter> match)
         {
             var command = _dbBaseProvider.CreateCommandStruct("Solutions", CommandMode.Inquiry);
@@ -262,7 +248,10 @@ namespace ContractTools.WebApp.Base
             command.AddParameter("Descption", model.Descption);
             command.AddParameter("ParentID", model.ParentID);
             command.AddParameter("Complated", model.Complated);
-            command.AddParameter("AgreementID", model.AgreementID);
+            if (model.AgreementID > 0)
+            {
+                command.AddParameter("AgreementID", model.AgreementID);
+            }
             command.Filter = _dbBaseProvider.CreateCommandFilter();
             command.Filter.Condition = string.Format("{0} AND {1}",
                 _dbBaseProvider.FormatFilterParam("ID"),
@@ -299,7 +288,7 @@ namespace ContractTools.WebApp.Base
             });
         }
 
-        public static List<ContractModel> GetContract(int slnId, int contractId)
+        public static ContractModel GetContract(int slnId, int contractId)
         {
             return GetContract(f =>
             {
@@ -308,8 +297,23 @@ namespace ContractTools.WebApp.Base
                     f.FormatExpression("SlnID"));
                 f.AddParam("ID", contractId);
                 f.AddParam("SlnID", slnId);
+            }).FirstOrDefault();
+        }
+
+        public static List<ContractModel> GetContractByAgreement(int slnId, int agreementID)
+        {
+            return GetContract(f =>
+            {
+                f.Condition = f.FormatExpression("SlnID");
+                f.AddParam("SlnID", slnId);
+                if (agreementID > 0)
+                {
+                    f.Condition += " AND " + f.FormatExpression("AgreementID");
+                    f.AddParam("AgreementID", agreementID);
+                }
             });
         }
+
 
         public static List<ContractModel> GetContract(Action<CommandFilter> match)
         {
@@ -338,6 +342,54 @@ namespace ContractTools.WebApp.Base
                 }
             }
             return list;
+        }
+
+        public static bool CopyContract(int slnID, int contractID, int copySlnID, int copyContractID)
+        {
+            var contract = GetContract(slnID, contractID);
+            if (contract == null)
+            {
+                return false;
+            }
+
+            var contractcopy = new ContractModel()
+            {
+                ID = copyContractID,
+                SlnID = copySlnID,
+                AgreementID = contract.AgreementID,
+                Complated = false,
+                Descption = contract.Descption,
+                ParentID = contract.ParentID
+            };
+
+            if (Add(contractcopy) > 0)
+            {
+                var paramList = GetParamInfo(slnID, contractID);
+                foreach (var paramInfo in paramList)
+                {
+                    var info = new ParamInfoModel()
+                    {
+                        ContractID = contractcopy.ID,
+                        SlnID = contractcopy.SlnID,
+                        CreateDate = MathUtils.Now,
+                        Creator = paramInfo.Creator,
+                        Descption = paramInfo.Descption,
+                        Field = paramInfo.Field,
+                        FieldType = paramInfo.FieldType,
+                        FieldValue = paramInfo.FieldValue,
+                        MinValue = paramInfo.MinValue,
+                        MaxValue = paramInfo.MaxValue,
+                        Remark = paramInfo.Remark,
+                        Required = paramInfo.Required,
+                        ParamType = paramInfo.ParamType,
+                        SortID = paramInfo.SortID
+                    };
+                    Add(info);
+                }
+                return true;
+            }
+
+            return false;
         }
 
         #endregion
@@ -379,7 +431,10 @@ namespace ContractTools.WebApp.Base
         public static bool Update(ParamInfoModel model)
         {
             var command = _dbBaseProvider.CreateCommandStruct("ParamInfo", CommandMode.Modify);
-            command.AddParameter("SlnID", model.SlnID);
+            if (model.SlnID > 0)
+            {
+                command.AddParameter("SlnID", model.SlnID);
+            }
             command.AddParameter("ContractID", model.ContractID);
             command.AddParameter("ParamType", model.ParamType);
             command.AddParameter("Field", model.Field);
@@ -469,7 +524,7 @@ namespace ContractTools.WebApp.Base
                     model.ContractID = reader["ContractID"].ToInt();
                     model.ParamType = reader["ParamType"].ToInt();
                     model.Field = reader["Field"].ToNotNullString();
-                    model.FieldType = reader["FieldType"].ToInt();
+                    model.FieldType = reader["FieldType"].ToEnum<FieldType>();
                     model.Descption = reader["Descption"].ToNotNullString();
                     model.FieldValue = reader["FieldValue"].ToNotNullString();
                     model.Required = reader["Required"].ToBool();
@@ -525,12 +580,17 @@ namespace ContractTools.WebApp.Base
             return _dbBaseProvider.ExecuteQuery(CommandType.Text, command.Sql, command.Parameters) > 0;
         }
 
-        public static List<EnumInfoModel> GetEnumInfo(int slnId)
+        public static List<EnumInfoModel> GetEnumInfo(int slnId, string enumName = "")
         {
             return GetEnumInfo(f =>
             {
                 f.Condition = f.FormatExpression("SlnID");
                 f.AddParam("SlnID", slnId);
+                if (!string.IsNullOrEmpty(enumName))
+                {
+                    f.Condition += " AND " + f.FormatExpression("enumName");
+                    f.AddParam("enumName", enumName);
+                }
             });
         }
 

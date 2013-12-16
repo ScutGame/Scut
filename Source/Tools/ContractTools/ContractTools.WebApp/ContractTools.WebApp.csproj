@@ -56,6 +56,27 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AddContract.aspx.cs">
+      <DependentUpon>AddContract.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="AddContract.aspx.designer.cs">
+      <DependentUpon>AddContract.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="addenum.aspx.cs">
+      <DependentUpon>addenum.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="addenum.aspx.designer.cs">
+      <DependentUpon>addenum.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="AddParamInfo.aspx.cs">
+      <DependentUpon>AddParamInfo.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="AddParamInfo.aspx.designer.cs">
+      <DependentUpon>AddParamInfo.aspx</DependentUpon>
+    </Compile>
     <Compile Include="AgreementAdd.aspx.cs">
       <DependentUpon>AgreementAdd.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
@@ -76,6 +97,20 @@
     <Compile Include="Base\LuaScriptHelper.cs" />
     <Compile Include="Base\TemplateHelper.cs" />
     <Compile Include="Base\NetHelper.cs" />
+    <Compile Include="ClientConfigInfo.aspx.cs">
+      <DependentUpon>ClientConfigInfo.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="ClientConfigInfo.aspx.designer.cs">
+      <DependentUpon>ClientConfigInfo.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="ContractList.aspx.cs">
+      <DependentUpon>ContractList.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="ContractList.aspx.designer.cs">
+      <DependentUpon>ContractList.aspx</DependentUpon>
+    </Compile>
     <Compile Include="index.aspx.cs">
       <DependentUpon>index.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
@@ -91,6 +126,27 @@
     <Compile Include="Model\ParamType.cs" />
     <Compile Include="Model\SolutionModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Search.aspx.cs">
+      <DependentUpon>Search.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Search.aspx.designer.cs">
+      <DependentUpon>Search.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="SolutionAdd.aspx.cs">
+      <DependentUpon>SolutionAdd.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="SolutionAdd.aspx.designer.cs">
+      <DependentUpon>SolutionAdd.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="SolutionsList.aspx.cs">
+      <DependentUpon>SolutionsList.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="SolutionsList.aspx.designer.cs">
+      <DependentUpon>SolutionsList.aspx</DependentUpon>
+    </Compile>
     <Compile Include="UnitTest.aspx.cs">
       <DependentUpon>UnitTest.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
@@ -98,9 +154,24 @@
     <Compile Include="UnitTest.aspx.designer.cs">
       <DependentUpon>UnitTest.aspx</DependentUpon>
     </Compile>
+    <Compile Include="UpParamInfo.aspx.cs">
+      <DependentUpon>UpParamInfo.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="UpParamInfo.aspx.designer.cs">
+      <DependentUpon>UpParamInfo.aspx</DependentUpon>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="AddContract.aspx" />
+    <Content Include="addenum.aspx" />
+    <Content Include="AddParamInfo.aspx" />
+    <Content Include="ClientConfigInfo.aspx" />
+    <Content Include="ContractList.aspx" />
     <Content Include="index.aspx" />
+    <Content Include="Search.aspx" />
+    <Content Include="SolutionAdd.aspx" />
+    <Content Include="SolutionsList.aspx" />
     <Content Include="Template\ActionIDDefine.txt" />
     <Content Include="AgreementAdd.aspx" />
     <Content Include="AgreementList.aspx" />
@@ -110,7 +181,10 @@
     <Content Include="Template\model.txt" />
     <Content Include="Template\pythonmodel.txt" />
     <Content Include="UnitTest.aspx" />
-    <Content Include="Web.config" />
+    <Content Include="UpParamInfo.aspx" />
+    <Content Include="Web.config">
+      <SubType>Designer</SubType>
+    </Content>
     <Content Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </Content>

@@ -254,7 +254,7 @@
                             </asp:TemplateField>
                             <asp:TemplateField HeaderText="字段类型" ItemStyle-Width="5%" ItemStyle-HorizontalAlign="Left">
                                 <EditItemTemplate>
-                                    <asp:DropDownList ID="droFieldType" runat="server" SelectedValue='<%# Bind("FieldType") %>'
+                                    <asp:DropDownList ID="droFieldType" runat="server" SelectedValue='<%# Bind("FieldTypeId") %>'
                                         Width="100%">
                                         <asp:ListItem Value="1">Int</asp:ListItem>
                                         <asp:ListItem Value="2">String</asp:ListItem>
@@ -266,7 +266,7 @@
                                     </asp:DropDownList>
                                 </EditItemTemplate>
                                 <ItemTemplate>
-                                    <asp:Label ID="LabFieldType" runat="server" Text='<%# Bind("FieldType") %>'></asp:Label>
+                                    <asp:Label ID="LabFieldType" runat="server" Text='<%# Bind("FieldTypeId") %>'></asp:Label>
                                 </ItemTemplate>
                                 <ItemStyle Width="5%"></ItemStyle>
                             </asp:TemplateField>
@@ -384,8 +384,8 @@
                 <td style="width: 49%">
                     <asp:DropDownList ID="LangDropDownList" runat="server" AutoPostBack="True" 
                         onselectedindexchanged="LangDropDownList_SelectedIndexChanged">
-                        <asp:ListItem Value="C#">C#</asp:ListItem>
-                        <asp:ListItem Value="Python" Selected="True">Python</asp:ListItem>
+                        <asp:ListItem Value="C#" Selected="True">C#</asp:ListItem>
+                        <asp:ListItem Value="Python">Python</asp:ListItem>
                     </asp:DropDownList>
                     <asp:Button ID="btnCopy" OnClientClick="setTxt()" runat="server" Text="复制" Width="91px" />&nbsp;<asp:Button
                         ID="btnCopy0" runat="server" Text="生成文件" OnClick="btnCopy0_Click" 

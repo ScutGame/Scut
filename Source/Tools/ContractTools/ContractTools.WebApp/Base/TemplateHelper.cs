@@ -145,7 +145,7 @@ namespace ContractTools.WebApp.Base
             int n = 8;
             foreach (var paramInfo in paramList)
             {
-                FieldType fieldType = (FieldType)Enum.ToObject(typeof(FieldType), paramInfo.FieldType);
+                FieldType fieldType = paramInfo.FieldType;
                 if (fieldType.Equals(FieldType.Record))
                 {
 
@@ -341,7 +341,7 @@ namespace ContractTools.WebApp.Base
                         {
                             foreach (var paramInfo in paramList)
                             {
-                                FieldType fieldType = (FieldType)Enum.ToObject(typeof(FieldType), paramInfo.FieldType);
+                                FieldType fieldType = paramInfo.FieldType;
                                 if (FieldType.Record.Equals(fieldType) || FieldType.End.Equals(fieldType))
                                 {
                                     continue;
@@ -392,7 +392,7 @@ namespace ContractTools.WebApp.Base
             string itemVar = "DsItemCollect";
             foreach (var paramInfo in paramList)
             {
-                FieldType fieldType = (FieldType)Enum.ToObject(typeof(FieldType), paramInfo.FieldType);
+                FieldType fieldType = paramInfo.FieldType;
                 string fieldValue = paramInfo.Field;
                 if (fieldType.Equals(FieldType.Record))
                 {
@@ -427,7 +427,7 @@ namespace ContractTools.WebApp.Base
                 StringBuilder strTemp = new StringBuilder();
                 if (paramInfo.ParamType == 1)
                 {
-                    FieldType fieldType = (FieldType)Enum.ToObject(typeof(FieldType), paramInfo.FieldType);
+                    FieldType fieldType = paramInfo.FieldType;
                     int minValue = paramInfo.MinValue;
                     int maxValue = paramInfo.MaxValue;
                     stNotMust.Append(GetspaceIndent(n * 2));
@@ -540,7 +540,7 @@ namespace ContractTools.WebApp.Base
             string preItemVar = "writer";
             foreach (var paramInfo in paramList)
             {
-                FieldType fieldType = (FieldType)Enum.ToObject(typeof(FieldType), paramInfo.FieldType);
+                FieldType fieldType = paramInfo.FieldType;
                 string fieldValue = paramInfo.Field;
                 if (fieldType.Equals(FieldType.Record))
                 {
@@ -666,7 +666,7 @@ namespace ContractTools.WebApp.Base
                     foreach (var paramInfo in paramList)
                     {
 
-                        FieldType fieldType = (FieldType)Enum.ToObject(typeof(FieldType), paramInfo.FieldType);
+                        FieldType fieldType = paramInfo.FieldType;
                         if (FieldType.Record.Equals(fieldType) || FieldType.End.Equals(fieldType))
                         {
                             continue;
@@ -711,7 +711,7 @@ namespace ContractTools.WebApp.Base
                 StringBuilder strTemp = new StringBuilder();
                 if (paramInfo.ParamType == 1)
                 {
-                    FieldType fieldType = (FieldType)Enum.ToObject(typeof(FieldType), paramInfo.FieldType);
+                    FieldType fieldType = paramInfo.FieldType;
                     int minValue = paramInfo.MinValue;
                     int maxValue = paramInfo.MaxValue;
                     string fieldname = paramInfo.Field;
@@ -814,7 +814,7 @@ namespace ContractTools.WebApp.Base
 
             foreach (var paramInfo in paramList)
             {
-                FieldType fieldType = (FieldType)Enum.ToObject(typeof(FieldType), paramInfo.FieldType);
+                FieldType fieldType = paramInfo.FieldType;
                 if (fieldType.Equals(FieldType.Record))
                 {
                     if (depth > 0)
@@ -897,7 +897,7 @@ namespace ContractTools.WebApp.Base
             foreach (var paramInfo in paramList)
             {
 
-                FieldType fieldType = (FieldType)Enum.ToObject(typeof(FieldType), paramInfo.FieldType);
+                FieldType fieldType = paramInfo.FieldType;
                 int paramType = paramInfo.ParamType;
                 bool required = paramInfo.Required;
                 if (FieldType.Record.Equals(fieldType) ||

@@ -1,12 +1,10 @@
 ﻿using System;
-using System.Data;
 using System.Web.UI.WebControls;
 using ContractTools.WebApp.Base;
 using ContractTools.WebApp.Model;
 using ZyGames.Framework.Common;
-using ZyGames.Framework.RPC.IO;
 
-namespace ZyGames.ContractTools
+namespace ContractTools.WebApp
 {
     public partial class AgreementList : System.Web.UI.Page
     {
