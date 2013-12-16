@@ -1,0 +1,45 @@
+$#include "ScutExt.h"
+$#include <string>
+$#include "ScutUtility/ScutLocale.h"
+$#include "ScutUtility/ScutUtils.h"
+$#include "ScutUtility/ScutLuaLan.h"
+$#include "ScutUtility/ScutLanFactory.h"
+$#include "ScutSystem/md5.h"
+$#include "ScutSystem/ScutUtility.h"
+$#include "ScutSystem/Stream.h"
+$#include "ScutNetwork/NetClientBase.h"
+$#include "ScutNetwork/HttpClient.h"
+$#include "ScutNetwork/TcpClient.h"
+$#include "ScutNetwork/HttpClientResponse.h"
+$#include "ScutNetwork/HttpSession.h"
+$#include "ScutDataLogic/FileHelper.h"
+$#include "ScutDataLogic/LuaIni.h"
+$#include "ScutDataLogic/NetHelper.h"
+$#include "ScutDataLogic/LuaString.h"
+$#include "ScutDataLogic/Int64.h"
+
+$pfile "LuaString.pkg"
+$pfile "NetHelper.pkg"
+$pfile "FileHelper.pkg"
+$pfile "DataRequest.pkg"
+$pfile "NetStreamExport.pkg"
+$pfile "Int64.pkg"
+
+
+$pfile "NetClientBase.pkg"
+$pfile "HttpClient.pkg"
+$pfile "TcpClient.pkg"
+$pfile "HttpClientResponse.pkg"
+$pfile "HttpSession.pkg"
+
+
+$pfile "md5.pkg"
+$pfile "ScutUtility.pkg"
+$pfile "Stream.pkg"
+
+
+$pfile "ScutUtils.pkg"
+$pfile "ScutLocale.pkg"
+$pfile "ScutLuaLan.pkg"
+$pfile "ScutLanFactory.pkg"
+$pfile "ScutExt.tolua"

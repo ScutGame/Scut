@@ -1,0 +1,45 @@
+namespace ScutDataLogic
+{
+	class CInt64
+	{
+	public:
+		CInt64(void);
+		~CInt64(void);
+		CInt64(unsigned long long value);
+		CInt64(const CInt64& other);
+		
+		CInt64 operator+ (int value) const;
+		CInt64 operator+ (const CInt64& value) const;
+
+		CInt64 operator- (int value) const;
+		CInt64 operator- (const CInt64& value) const;
+
+		CInt64 operator* (int value) const;
+		CInt64 operator* (const CInt64& value) const;
+
+		CInt64 operator/ (int value) const;
+		CInt64 operator/ (const CInt64& value) const;
+
+		bool operator== (const CInt64& value) const;
+		bool operator<= (const CInt64& value) const;
+		bool operator< (const CInt64& value) const;
+		bool equal(const CInt64& value) const;
+		std::string str();
+		CInt64 mod(int value) const;
+		CInt64 mod(const CInt64& value) const;
+		
+		
+		
+		/*****************以下接口Lua中不支持********************/
+		//CInt64 operator% (int value) const;
+		//CInt64 operator% (const CInt64& value) const;
+		
+		//CInt64& operator= (const CInt64& value);
+		//CInt64& operator= (int value);
+		//bool operator> (const CInt64& value) const;
+		//bool operator>= (const CInt64& value) const;
+		//unsigned long long getValue()const;
+
+	};
+
+}
