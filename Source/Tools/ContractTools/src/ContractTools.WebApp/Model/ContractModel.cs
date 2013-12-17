@@ -72,7 +72,7 @@ namespace ContractTools.WebApp.Model
         {
             get
             {
-                return string.Format("{0}_{1}��{2}��", ID, Descption, Complated ? "���" : "δ���");
+                return string.Format("{0}_{1}【{2}】", ID, Descption, Complated ? "已完成" : "未完成");
             }
         }
     }

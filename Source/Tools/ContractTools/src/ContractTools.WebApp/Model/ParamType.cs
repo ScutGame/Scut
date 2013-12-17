@@ -32,12 +32,12 @@ namespace ContractTools.WebApp.Model
     public class ParamType
     {
         /// <summary>
-        /// ����
+        /// request
         /// </summary>
-        public static string sts = "����";
+        public static string sts = "请求";
         /// <summary>
-        /// ����
+        /// response
         /// </summary>
-        public static string stc = "����";
+        public static string stc = "返回";
     }
 }
