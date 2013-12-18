@@ -313,11 +313,7 @@ namespace ScutDataLogic
 			ScutLog("pushNetStream return false");
 			return false;
 		}		
-		
-		////ÌØÊâ±àÒë¸ø³Â²¨
-		//return true;
-		////end
-		
+	
 		m_nResult = getInt();
 
 		m_nRmId = getInt();
@@ -351,9 +347,6 @@ namespace ScutDataLogic
 	//getMethod
 	int			CNetReader::getResult()
 	{		
-		////ÌØÊâ±àÒë¸ø³Â²¨
-		//return m_nSize;
-		////end
 		return m_nResult;
 	}
 	int			CNetReader::getRmId()
