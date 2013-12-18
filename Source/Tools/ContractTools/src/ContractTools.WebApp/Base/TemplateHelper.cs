@@ -663,7 +663,9 @@ namespace ContractTools.WebApp.Base
                 {
 
                     fieldBuilder.Remove(0, fieldBuilder.Length);
-                    foreach (var paramInfo in paramList)
+                    var list = new List<ParamInfoModel>(reqParams);
+                    list.AddRange(paramList);
+                    foreach (var paramInfo in list)
                     {
 
                         FieldType fieldType = paramInfo.FieldType;
