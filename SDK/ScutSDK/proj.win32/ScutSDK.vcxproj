@@ -25,9 +25,6 @@
     <ClCompile Include="..\ScutDataLogic\NetStreamExport.cpp" />
     <ClCompile Include="..\ScutDataLogic\PackageUnzipHandler.cpp" />
     <ClCompile Include="..\ScutDataLogic\XmlDataHandler.cpp" />
-    <ClCompile Include="..\ScutDataLogic\zip_support\ioapi.cpp" />
-    <ClCompile Include="..\ScutDataLogic\zip_support\unzip.cpp" />
-    <ClCompile Include="..\ScutDataLogic\zip_support\ZipUtils.cpp" />
     <ClCompile Include="..\ScutExt.cpp" />
     <ClCompile Include="..\ScutNetwork\HttpClient.cpp" />
     <ClCompile Include="..\ScutNetwork\HttpClientRequest.cpp" />
@@ -54,7 +51,6 @@
     <ClCompile Include="..\ScutSystem\tinyxml\tinyxmlerror.cpp" />
     <ClCompile Include="..\ScutSystem\tinyxml\tinyxmlparser.cpp" />
     <ClCompile Include="..\ScutSystem\Trace.cpp" />
-    <ClCompile Include="..\ScutSystem\unzip.cpp" />
     <ClCompile Include="..\ScutSystem\WjcDes.cpp" />
     <ClCompile Include="..\ScutUtility\PlatformProcedure.cpp" />
     <ClCompile Include="..\ScutUtility\ScutLanFactory.cpp" />
@@ -76,9 +72,6 @@
     <ClInclude Include="..\ScutDataLogic\NetStreamExport.h" />
     <ClInclude Include="..\ScutDataLogic\PackageUnzipHandler.h" />
     <ClInclude Include="..\ScutDataLogic\XmlDataHandler.h" />
-    <ClInclude Include="..\ScutDataLogic\zip_support\ioapi.h" />
-    <ClInclude Include="..\ScutDataLogic\zip_support\unzip.h" />
-    <ClInclude Include="..\ScutDataLogic\zip_support\ZipUtils.h" />
     <ClInclude Include="..\ScutExt.h" />
     <ClInclude Include="..\ScutNetwork\HttpClient.h" />
     <ClInclude Include="..\ScutNetwork\HttpClientRequest.h" />
@@ -107,7 +100,6 @@
     <ClInclude Include="..\ScutSystem\tinyxml\tinystr.h" />
     <ClInclude Include="..\ScutSystem\tinyxml\tinyxml.h" />
     <ClInclude Include="..\ScutSystem\Trace.h" />
-    <ClInclude Include="..\ScutSystem\unzip.h" />
     <ClInclude Include="..\ScutSystem\WjcDes.h" />
     <ClInclude Include="..\ScutUtility\PlatformProcedure.h" />
     <ClInclude Include="..\ScutUtility\ScutLanFactory.h" />

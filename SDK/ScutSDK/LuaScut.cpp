@@ -1,6 +1,6 @@
 /*
 ** Lua binding: Scut
-** Generated automatically by tolua++-1.0.92 on 12/15/13 10:11:34.
+** Generated automatically by tolua++-1.0.92 on 12/18/13 22:27:25.
 */
 
 #ifndef __cplusplus
@@ -1644,36 +1644,6 @@ static int tolua_Scut_ScutDataLogic_CFileHelper_freeFileData00(lua_State* tolua_
 #ifndef TOLUA_RELEASE
  tolua_lerror:
  tolua_error(tolua_S,"#ferror in function 'freeFileData'.",&tolua_err);
- return 0;
-#endif
-}
-#endif //#ifndef TOLUA_DISABLE
-
-/* method: executeScriptFile of class  ScutDataLogic::CFileHelper */
-#ifndef TOLUA_DISABLE_tolua_Scut_ScutDataLogic_CFileHelper_executeScriptFile00
-static int tolua_Scut_ScutDataLogic_CFileHelper_executeScriptFile00(lua_State* tolua_S)
-{
-#ifndef TOLUA_RELEASE
- tolua_Error tolua_err;
- if (
-     !tolua_isusertable(tolua_S,1,"ScutDataLogic::CFileHelper",0,&tolua_err) ||
-     !tolua_isstring(tolua_S,2,0,&tolua_err) ||
-     !tolua_isnoobj(tolua_S,3,&tolua_err)
- )
-  goto tolua_lerror;
- else
-#endif
- {
-  const char* pszFile = ((const char*)  tolua_tostring(tolua_S,2,0));
-  {
-   bool tolua_ret = (bool)  ScutDataLogic::CFileHelper::executeScriptFile(pszFile);
-   tolua_pushboolean(tolua_S,(bool)tolua_ret);
-  }
- }
- return 1;
-#ifndef TOLUA_RELEASE
- tolua_lerror:
- tolua_error(tolua_S,"#ferror in function 'executeScriptFile'.",&tolua_err);
  return 0;
 #endif
 }
@@ -10365,7 +10335,6 @@ TOLUA_API int tolua_Scut_open (lua_State* tolua_S)
     tolua_function(tolua_S,"setAndroidResourcePath",tolua_Scut_ScutDataLogic_CFileHelper_setAndroidResourcePath00);
     tolua_function(tolua_S,"getFileData",tolua_Scut_ScutDataLogic_CFileHelper_getFileData00);
     tolua_function(tolua_S,"freeFileData",tolua_Scut_ScutDataLogic_CFileHelper_freeFileData00);
-    tolua_function(tolua_S,"executeScriptFile",tolua_Scut_ScutDataLogic_CFileHelper_executeScriptFile00);
     tolua_function(tolua_S,"encryptPwd",tolua_Scut_ScutDataLogic_CFileHelper_encryptPwd00);
     tolua_function(tolua_S,"getFileState",tolua_Scut_ScutDataLogic_CFileHelper_getFileState00);
     tolua_function(tolua_S,"createDirs",tolua_Scut_ScutDataLogic_CFileHelper_createDirs00);

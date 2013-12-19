@@ -13,9 +13,6 @@
     <Filter Include="ScutDataLogic">
       <UniqueIdentifier>{e455d2b2-6569-4924-80f9-c345cbb427fc}</UniqueIdentifier>
     </Filter>
-    <Filter Include="ScutDataLogic\zip_support">
-      <UniqueIdentifier>{b3117d17-499f-4fd9-b2bc-68581196bc0f}</UniqueIdentifier>
-    </Filter>
     <Filter Include="ScutExt">
       <UniqueIdentifier>{9e05c1ee-edb6-4d9f-9448-1c167ee13952}</UniqueIdentifier>
     </Filter>
@@ -59,9 +56,6 @@
     </ClCompile>
     <ClCompile Include="..\ScutDataLogic\Int64.cpp">
       <Filter>ScutDataLogic</Filter>
-    </ClCompile>
-    <ClCompile Include="..\ScutDataLogic\zip_support\ioapi.cpp">
-      <Filter>ScutDataLogic\zip_support</Filter>
     </ClCompile>
     <ClCompile Include="..\ScutDataLogic\IPluginInfo.cpp">
       <Filter>ScutDataLogic</Filter>
@@ -138,16 +132,7 @@
     <ClCompile Include="..\ScutNetwork\TcpClient.cpp">
       <Filter>ScutNetwork</Filter>
     </ClCompile>
-    <ClCompile Include="..\ScutDataLogic\zip_support\ZipUtils.cpp">
-      <Filter>ScutDataLogic\zip_support</Filter>
-    </ClCompile>
     <ClCompile Include="..\ScutSystem\Stream.cpp">
-      <Filter>ScutSystem</Filter>
-    </ClCompile>
-    <ClCompile Include="..\ScutDataLogic\zip_support\unzip.cpp">
-      <Filter>ScutDataLogic\zip_support</Filter>
-    </ClCompile>
-    <ClCompile Include="..\ScutSystem\unzip.cpp">
       <Filter>ScutSystem</Filter>
     </ClCompile>
     <ClCompile Include="..\ScutSystem\Trace.cpp">
@@ -155,9 +140,6 @@
     </ClCompile>
     <ClCompile Include="..\ScutSystem\WjcDes.cpp">
       <Filter>ScutSystem</Filter>
-    </ClCompile>
-    <ClCompile Include="..\ScutNetwork\ZipUtils.cpp">
-      <Filter>ScutNetwork</Filter>
     </ClCompile>
     <ClCompile Include="..\ScutDataLogic\XmlDataHandler.cpp">
       <Filter>ScutDataLogic</Filter>
@@ -173,6 +155,9 @@
     </ClCompile>
     <ClCompile Include="..\ScutSystem\tinyxml\tinyxmlerror.cpp">
       <Filter>tinyxml</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ScutNetwork\ZipUtils.cpp">
+      <Filter>ScutNetwork</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -217,9 +202,6 @@
     </ClInclude>
     <ClInclude Include="..\ScutDataLogic\Int64.h">
       <Filter>ScutDataLogic</Filter>
-    </ClInclude>
-    <ClInclude Include="..\ScutDataLogic\zip_support\ioapi.h">
-      <Filter>ScutDataLogic\zip_support</Filter>
     </ClInclude>
     <ClInclude Include="..\ScutDataLogic\IPluginInfo.h">
       <Filter>ScutDataLogic</Filter>
@@ -293,16 +275,7 @@
     <ClInclude Include="..\ScutNetwork\TcpClient.h">
       <Filter>ScutNetwork</Filter>
     </ClInclude>
-    <ClInclude Include="..\ScutDataLogic\zip_support\ZipUtils.h">
-      <Filter>ScutDataLogic\zip_support</Filter>
-    </ClInclude>
     <ClInclude Include="..\ScutSystem\Stream.h">
-      <Filter>ScutSystem</Filter>
-    </ClInclude>
-    <ClInclude Include="..\ScutDataLogic\zip_support\unzip.h">
-      <Filter>ScutDataLogic\zip_support</Filter>
-    </ClInclude>
-    <ClInclude Include="..\ScutSystem\unzip.h">
       <Filter>ScutSystem</Filter>
     </ClInclude>
     <ClInclude Include="..\ScutSystem\Trace.h">
@@ -310,9 +283,6 @@
     </ClInclude>
     <ClInclude Include="..\ScutSystem\WjcDes.h">
       <Filter>ScutSystem</Filter>
-    </ClInclude>
-    <ClInclude Include="..\ScutNetwork\ZipUtils.h">
-      <Filter>ScutNetwork</Filter>
     </ClInclude>
     <ClInclude Include="..\ScutDataLogic\XmlDataHandler.h">
       <Filter>ScutDataLogic</Filter>
@@ -328,6 +298,9 @@
     </ClInclude>
     <ClInclude Include="..\ScutSystem\tchar.h">
       <Filter>ScutSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ScutNetwork\ZipUtils.h">
+      <Filter>ScutNetwork</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -54,21 +54,21 @@ CPackageUnzipHandler* CPackageUnzipHandler::sharedPackageUnzipHandler()
 
 bool CPackageUnzipHandler::unzipFlag()
 {
-	ScutLog("CPackageUnzipHandler::unzipFlag begin");
-	if (!getUnzipFlag())
-	{
-		ScutLog("CPackageUnzipHandler::unzipFlag unZipByFolder begin");
-		//ScutLog("CFileHelper::unzipFlag szZipFile=%s  pszOutPutDir=%s %d errorMsg=%s", ScutDataLogic::CFileHelper::getANDROIDResourcePath(), ScutDataLogic::CFileHelper::getANDROIDSDCardDirPath(), __LINE__,strerror(errno));
-		bool bUnzip = ScutDataLogic::CFileHelper::unZipByFolder(ScutDataLogic::CFileHelper::getAndroidResourcePath(), "assets", "lua", ScutDataLogic::CFileHelper::getAndroidSDCardDirPath());
-		ScutLog("CPackageUnzipHandler::unzipFlag unZipByFolder end");
-		setunzipFlag(bUnzip);
-	}
-	else
-	{
-		ScutLog("getUnzipFlag() == false");
-	}
+	//ScutLog("CPackageUnzipHandler::unzipFlag begin");
+	//if (!getUnzipFlag())
+	//{
+	//	ScutLog("CPackageUnzipHandler::unzipFlag unZipByFolder begin");
+	//	//ScutLog("CFileHelper::unzipFlag szZipFile=%s  pszOutPutDir=%s %d errorMsg=%s", ScutDataLogic::CFileHelper::getANDROIDResourcePath(), ScutDataLogic::CFileHelper::getANDROIDSDCardDirPath(), __LINE__,strerror(errno));
+	//	bool bUnzip = ScutDataLogic::CFileHelper::unZipByFolder(ScutDataLogic::CFileHelper::getAndroidResourcePath(), "assets", "lua", ScutDataLogic::CFileHelper::getAndroidSDCardDirPath());
+	//	ScutLog("CPackageUnzipHandler::unzipFlag unZipByFolder end");
+	//	setunzipFlag(bUnzip);
+	//}
+	//else
+	//{
+	//	ScutLog("getUnzipFlag() == false");
+	//}
 
-	ScutLog("CPackageUnzipHandler::unzipFlag end");
+	//ScutLog("CPackageUnzipHandler::unzipFlag end");
 
 	return true;
 }

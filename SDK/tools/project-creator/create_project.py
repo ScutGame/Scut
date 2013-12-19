@@ -72,10 +72,20 @@ def checkParams(context):
         sys.exit()
                                  
     # fill in src_project_name and src_package_name according to "language"
-    if ("scutlua" == context["language"]):
+    if ("scutlua-2.1.5" == context["language"]):
         context["src_project_name"] = "HelloLua"
         context["src_package_name"] = "org.cocos2dx.hellolua"
-        context["src_project_path"] = os.getcwd() + "/../../template/multi-platform-scutlua"
+        context["src_project_path"] = os.getcwd() + "/../../template/multi-platform-scutlua-2.1.5"
+        platforms_list = ["ios",
+                          "android",
+                          "win32",
+                          "blackberry",
+                          "linux",
+                          "marmalade"]					  
+    elif ("scutlua-2.2.1" == context["language"]):
+        context["src_project_name"] = "HelloLua"
+        context["src_package_name"] = "org.cocos2dx.hellolua"
+        context["src_project_path"] = os.getcwd() + "/../../template/multi-platform-scutlua-2.2.1"
         platforms_list = ["ios",
                           "android",
                           "win32",

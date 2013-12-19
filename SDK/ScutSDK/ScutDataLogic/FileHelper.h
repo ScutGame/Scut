@@ -49,8 +49,6 @@ namespace  ScutDataLogic
 		static unsigned char* getFileData(const char* pszFileName, const char* pszMode, unsigned long *pSize);
 		static void freeFileData(unsigned char* pFileDataPtr);
 
-		static bool executeScriptFile(const char * pszFile);
-
 		//添加不同分辨率读取不同目录下的资源
 		//iphone --->resource 
 		//ANDROID --->480*320 resource   否则都读resource480_800
@@ -67,12 +65,6 @@ namespace  ScutDataLogic
 
 		static std::string getWritablePath(const char* szFileName);
 		static CLuaString encryptPwd(const char* pPwd, const char*key);
-		static bool unZip(const char* szZipFile, const char* pszOutPutDir);
-		static bool unZipToMemory(const char* szZipFile, unsigned char **out, unsigned int *outLengh);
-		static int unZipMemory(unsigned char* in, unsigned int inLengh, unsigned char **out, unsigned int *outLength);
-		static bool zipMemory(unsigned char* in, unsigned int inLengh, unsigned char **out, unsigned int *outLength);
-		static bool unZipByFolder(const char* szZipFile, const char* szAssetsName, const char* szFolderName, const char* pszOutPutDir, const char* excludeExt = NULL);	
-		static void parseSubFoldersListFromZip(std::vector<std::string>& retVector, const char* szZipFile, const char* szAssetsName, const char* szRootFolderName);
 	private:
 		static int s_width;
 		static int s_height;

@@ -16,7 +16,6 @@ namespace  ScutDataLogic
 		static void setAndroidResourcePath(const char* pszPath);
 		static unsigned char* getFileData(const char* pszFileName, const char* pszMode, unsigned long *pSize);
 		static void freeFileData(unsigned char* pFileDataPtr);
-		static bool executeScriptFile(const char * pszFile);
 		static CLuaString encryptPwd(const char* pPwd, const char*key);
 
 		static int getFileState(const char* pszFileName);
