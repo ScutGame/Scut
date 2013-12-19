@@ -1,0 +1,32 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2012
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "HelloLua", "HelloLua.vcxproj", "{4E6A7A0E-DDD8-4BAA-8B22-C964069364ED}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "cocos2dx_2012", "..\..\..\quick-cocos2d-x\lib\proj.win32\cocos2dx_2012.vcxproj", "{9E05AA4B-1A09-433C-B1DF-BCE6675EC0D5}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ScutSDK_2012", "..\..\..\SDK\ScutSDK\proj.win32\ScutSDK_2012.vcxproj", "{C5FE06AE-D28F-49DA-A6FF-9E9103CB38DA}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Win32 = Debug|Win32
+		Release|Win32 = Release|Win32
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{4E6A7A0E-DDD8-4BAA-8B22-C964069364ED}.Debug|Win32.ActiveCfg = Debug|Win32
+		{4E6A7A0E-DDD8-4BAA-8B22-C964069364ED}.Debug|Win32.Build.0 = Debug|Win32
+		{4E6A7A0E-DDD8-4BAA-8B22-C964069364ED}.Release|Win32.ActiveCfg = Release|Win32
+		{4E6A7A0E-DDD8-4BAA-8B22-C964069364ED}.Release|Win32.Build.0 = Release|Win32
+		{9E05AA4B-1A09-433C-B1DF-BCE6675EC0D5}.Debug|Win32.ActiveCfg = Debug|Win32
+		{9E05AA4B-1A09-433C-B1DF-BCE6675EC0D5}.Debug|Win32.Build.0 = Debug|Win32
+		{9E05AA4B-1A09-433C-B1DF-BCE6675EC0D5}.Release|Win32.ActiveCfg = Release|Win32
+		{9E05AA4B-1A09-433C-B1DF-BCE6675EC0D5}.Release|Win32.Build.0 = Release|Win32
+		{C5FE06AE-D28F-49DA-A6FF-9E9103CB38DA}.Debug|Win32.ActiveCfg = Debug|Win32
+		{C5FE06AE-D28F-49DA-A6FF-9E9103CB38DA}.Debug|Win32.Build.0 = Debug|Win32
+		{C5FE06AE-D28F-49DA-A6FF-9E9103CB38DA}.Release|Win32.ActiveCfg = Release|Win32
+		{C5FE06AE-D28F-49DA-A6FF-9E9103CB38DA}.Release|Win32.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

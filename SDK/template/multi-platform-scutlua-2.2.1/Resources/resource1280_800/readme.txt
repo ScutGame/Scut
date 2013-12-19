@@ -1,1 +1,0 @@
-images res for 1280*800
