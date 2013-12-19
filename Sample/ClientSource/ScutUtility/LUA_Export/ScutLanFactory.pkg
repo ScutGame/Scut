@@ -1,0 +1,25 @@
+namespace ScutUtility
+{
+	class CScutLanFactory
+	{
+	public:
+		static CScutLan* GetLanInstance();
+	};
+
+	class CScutLan
+	{
+	public:
+		std::string m_szOK;
+		std::string m_szCancel;
+		std::string m_szKnown;
+		std::string m_szTimeOut;
+		std::string m_szFalseConnect;
+		std::string m_szUpdateError;
+		std::string m_szDownload;
+		std::string m_szExit;
+		std::string m_szSDNotExist;
+		std::string m_szSDReadError;
+		std::string m_szResPackageLoadingTip;
+		std::string m_szResPackageFinishTip;
+	};
+}

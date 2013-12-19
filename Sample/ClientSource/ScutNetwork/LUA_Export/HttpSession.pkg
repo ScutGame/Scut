@@ -1,0 +1,19 @@
+
+namespace ScutNetwork
+{
+	class CHttpClient;
+	class CHttpClientResponse;
+
+	class CHttpSession
+	{
+	public:
+		void DeleteCookies();
+		CScutString cookieJar;
+		void Initialize(const char *username);
+		CScutString GetCookies(CHttpClient *req);
+		void AddCookie(const char *value);
+
+		CHttpSession();
+		virtual ~CHttpSession();
+	};
+}

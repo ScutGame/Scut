@@ -25,7 +25,7 @@ THE SOFTWARE.
 #ifndef __SPRITE_FILE_STREAM_H__
 #define __SPRITE_FILE_STREAM_H__
 
-#include "ScutSDK/ScutSDK.h"
+#include "Stream.h"
 #include <string>
 using std::string;
 

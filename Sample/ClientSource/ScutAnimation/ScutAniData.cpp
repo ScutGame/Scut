@@ -23,7 +23,7 @@ THE SOFTWARE.
 ****************************************************************************/
 
 #include "ScutAniData.h"
-#include "ScutSDK/ScutSDK.h"
+#include "Defines.h"
 #include "ScutFrame.h"
 
 namespace ScutAnimation

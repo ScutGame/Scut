@@ -1,7 +1,7 @@
 #include "main.h"
 #include "AppDelegate.h"
 #include "CCEGLView.h"
-#include "ScutSDK/ScutSDK.h"
+#include "FileHelper.h"
 
 USING_NS_CC;
 
