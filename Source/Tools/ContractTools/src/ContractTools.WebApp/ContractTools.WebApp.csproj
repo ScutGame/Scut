@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -48,11 +48,13 @@
     <Reference Include="System.Configuration" />
     <Reference Include="System.Web.Services" />
     <Reference Include="System.EnterpriseServices" />
-    <Reference Include="ZyGames.Framework">
-      <HintPath>..\..\..\..\..\Release\6.0.5.2\Lib\ZyGames.Framework.dll</HintPath>
+    <Reference Include="ZyGames.Framework, Version=6.0.0.30457, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\..\Release\6.1.5.3\Lib\ZyGames.Framework.dll</HintPath>
     </Reference>
-    <Reference Include="ZyGames.Framework.Common">
-      <HintPath>..\..\..\..\..\Release\6.0.5.2\Lib\ZyGames.Framework.Common.dll</HintPath>
+    <Reference Include="ZyGames.Framework.Common, Version=6.0.0.33063, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\..\Release\6.1.5.3\Lib\ZyGames.Framework.Common.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -97,6 +99,7 @@
     <Compile Include="Base\LuaScriptHelper.cs" />
     <Compile Include="Base\TemplateHelper.cs" />
     <Compile Include="Base\NetHelper.cs" />
+    <Compile Include="Class1.cs" />
     <Compile Include="ClientConfigInfo.aspx.cs">
       <DependentUpon>ClientConfigInfo.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
@@ -147,6 +150,13 @@
     <Compile Include="SolutionsList.aspx.designer.cs">
       <DependentUpon>SolutionsList.aspx</DependentUpon>
     </Compile>
+    <Compile Include="SyncModelInfo.aspx.cs">
+      <DependentUpon>SyncModelInfo.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="SyncModelInfo.aspx.designer.cs">
+      <DependentUpon>SyncModelInfo.aspx</DependentUpon>
+    </Compile>
     <Compile Include="UnitTest.aspx.cs">
       <DependentUpon>UnitTest.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
@@ -172,6 +182,7 @@
     <Content Include="Search.aspx" />
     <Content Include="SolutionAdd.aspx" />
     <Content Include="SolutionsList.aspx" />
+    <Content Include="SyncModelInfo.aspx" />
     <Content Include="Template\ActionIDDefine.txt" />
     <Content Include="AgreementAdd.aspx" />
     <Content Include="AgreementList.aspx" />

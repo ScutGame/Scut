@@ -14,7 +14,7 @@
             <a href="SolutionAdd.aspx">增加</a>
         </div>
         <br>
-        <asp:GridView ID="GridView1" runat="server" CellPadding="4" ForeColor="#333333" GridLines="None"
+        <asp:GridView ID="GridView1" runat="server" CellPadding="4" ForeColor="#333333" GridLines="None" BorderColor="#3E5B76"
             AutoGenerateColumns="False" Width="100%" DataKeyNames="SlnID,SlnName" OnRowCancelingEdit="GridView1_RowCancelingEdit"
             OnRowEditing="GridView1_RowEditing" OnRowUpdating="GridView1_RowUpdating" OnRowDeleting="GridView1_RowDeleting">
             <RowStyle BackColor="#E3EAEB" />
@@ -76,7 +76,7 @@
             <FooterStyle BackColor="#1C5E55" Font-Bold="True" ForeColor="White" />
             <PagerStyle BackColor="#666666" ForeColor="White" HorizontalAlign="Center" />
             <SelectedRowStyle BackColor="#C5BBAF" Font-Bold="True" ForeColor="#333333" />
-            <HeaderStyle BackColor="#1C5E55" Font-Bold="True" ForeColor="White" />
+            <HeaderStyle BackColor="#628DB6" Font-Bold="True" ForeColor="White" />
             <EditRowStyle BackColor="#7C6F57" />
             <AlternatingRowStyle BackColor="White" />
         </asp:GridView>

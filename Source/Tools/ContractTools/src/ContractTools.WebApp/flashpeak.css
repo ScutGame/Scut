@@ -5,10 +5,10 @@ A:link {
 	COLOR: #4030ab
 }
 A:visited {
-	COLOR: #888888
+	COLOR: #4030ab
 }
 A:hover {
-	COLOR: #ff0000
+	COLOR: #888888
 }
 A.header:link {
 	COLOR: white; TEXT-DECORATION: none

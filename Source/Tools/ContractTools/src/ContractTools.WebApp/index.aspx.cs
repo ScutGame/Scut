@@ -241,6 +241,8 @@ namespace ContractTools.WebApp
                 btnCopyContract.NavigateUrl = "ContractList.aspx" + parameter;
                 AddEnumLink.NavigateUrl = "addenum.aspx" + parameter;
                 SearchLink.NavigateUrl = "search.aspx" + parameter;
+                syncLink.Target = "_blank";
+                syncLink.NavigateUrl = "SyncModelInfo.aspx" + parameter;
 
                 int slnId = ddlSolution.Text.ToInt();
                 if (gvGetlist.Rows.Count != 0)
@@ -483,11 +485,11 @@ namespace ContractTools.WebApp
                     {
                         control.Font.Bold = true;
                     }
-                    DataRowView view = e.Row.DataItem as DataRowView;//定义一个DataRowView的实例
+                    var paramInfo = e.Row.DataItem as ParamInfoModel;//定义一个DataRowView的实例
 
-                    if (view != null)
+                    if (paramInfo != null)
                     {
-                        DateTime modifyTime = (DateTime)view["ModifyDate"];
+                        DateTime modifyTime = (DateTime)paramInfo.ModifyDate;
                         if (DateTime.Now - modifyTime < TimeSpan.FromDays(3))
                         {
                             e.Row.BackColor = Color.Yellow;
@@ -602,8 +604,10 @@ namespace ContractTools.WebApp
         private void SaveasAttachment(string txtContent, string filename)
         {
             Response.ContentType = "text/plain";
+            Response.ContentEncoding = Encoding.UTF8;
+            Response.AppendHeader("Content-Encoding", "UTF-8");
             Response.AppendHeader("Content-Disposition", "attachment; filename=" + filename);
-            byte[] o = Encoding.GetEncoding("gb2312").GetBytes(txtContent);
+            byte[] o = Encoding.UTF8.GetBytes(txtContent);
             Response.OutputStream.Write(o, 0, o.Length);
             Response.End();
         }

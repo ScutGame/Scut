@@ -410,6 +410,7 @@ namespace ContractTools.WebApp.Base
             command.AddParameter("Remark", model.Remark);
             command.AddParameter("SortID", model.SortID);
             command.AddParameter("Creator", model.Creator);
+            command.AddParameter("CreateDate", model.CreateDate);
             command.AddParameter("Modifier", model.Modifier);
             command.AddParameter("MinValue", model.MinValue);
             command.AddParameter("MaxValue", model.MaxValue);
@@ -448,6 +449,7 @@ namespace ContractTools.WebApp.Base
             command.AddParameter("Modifier", model.Modifier);
             command.AddParameter("MinValue", model.MinValue);
             command.AddParameter("MaxValue", model.MaxValue);
+            command.AddParameter("ModifyDate", model.ModifyDate);
             command.Filter = _dbBaseProvider.CreateCommandFilter();
             command.Filter.Condition = _dbBaseProvider.FormatFilterParam("ID");
             command.Filter.AddParam("ID", model.ID);
