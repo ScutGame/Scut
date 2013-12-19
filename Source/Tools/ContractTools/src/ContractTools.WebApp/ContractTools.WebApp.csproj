@@ -33,6 +33,22 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Microsoft.CSharp" />
+    <Reference Include="MySql.Data, Version=6.7.4.0, Culture=neutral, PublicKeyToken=c5687fc88969c44d, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\..\Release\6.1.5.3\Lib\MySql.Data.dll</HintPath>
+    </Reference>
+    <Reference Include="Newtonsoft.Json, Version=4.5.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\..\Release\6.1.5.3\Lib\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="NLog, Version=2.0.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\..\Release\6.1.5.3\Lib\NLog.dll</HintPath>
+    </Reference>
+    <Reference Include="protobuf-net, Version=2.0.0.594, Culture=neutral, PublicKeyToken=257b51d87d2e4d67, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\..\Release\6.1.5.3\Lib\protobuf-net.dll</HintPath>
+    </Reference>
     <Reference Include="System.Web.DynamicData" />
     <Reference Include="System.Web.Entity" />
     <Reference Include="System.Web.ApplicationServices" />
@@ -55,6 +71,9 @@
     <Reference Include="ZyGames.Framework.Common, Version=6.0.0.33063, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\..\..\Release\6.1.5.3\Lib\ZyGames.Framework.Common.dll</HintPath>
+    </Reference>
+    <Reference Include="ZyGames.Framework.Game">
+      <HintPath>..\..\..\..\..\Release\6.1.5.3\Lib\ZyGames.Framework.Game.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -99,7 +118,6 @@
     <Compile Include="Base\LuaScriptHelper.cs" />
     <Compile Include="Base\TemplateHelper.cs" />
     <Compile Include="Base\NetHelper.cs" />
-    <Compile Include="Class1.cs" />
     <Compile Include="ClientConfigInfo.aspx.cs">
       <DependentUpon>ClientConfigInfo.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
