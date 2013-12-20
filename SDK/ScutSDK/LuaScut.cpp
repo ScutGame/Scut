@@ -32,12 +32,12 @@ TOLUA_API int  tolua_Scut_open (lua_State* tolua_S);
 #include "ScutDataLogic/NetHelper.h"
 #include "ScutDataLogic/LuaString.h"
 #include "ScutDataLogic/Int64.h"
-#include"../FileHelper.h"
-#include"../LuaIni.h"
-#include"../LuaString.h"
+//#include"../FileHelper.h"
+//#include"../LuaIni.h"
+//#include"../LuaString.h"
 #include"DataRequest.h"
 #include "NetStreamExport.h"
-#include "../Defines.h"
+#include "ScutSystem/Defines.h"
 
 /* function to release collected object via destructor */
 #ifdef __cplusplus

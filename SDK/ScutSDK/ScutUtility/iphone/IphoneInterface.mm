@@ -7,8 +7,8 @@
 #ifndef ND_IPHONE_APPSTORE
 #include <dlfcn.h>
 #endif
-#import "../../scripting/lua/ScutControls/Ihpone/iosWebView.h"
-//#import "NdReachability.h"
+//#import "../../scripting/lua/ScutControls/Ihpone/iosWebView.h"
+
 
 namespace ScutUtility
 {
@@ -413,8 +413,8 @@ extern "C" {
     
     void iosRegisterWebviewCallback(std::string strFun)
     {
-        NSLog(@"iosRegisterWebviewCallback, %s", strFun.c_str());
-        [iosWebView setWebviewCallback:[NSString stringWithCString:strFun.c_str() encoding:NSUTF8StringEncoding]];
+//        NSLog(@"iosRegisterWebviewCallback, %s", strFun.c_str());
+//        [iosWebView setWebviewCallback:[NSString stringWithCString:strFun.c_str() encoding:NSUTF8StringEncoding]];
     }
     
     void excWebviewCallback(std::string strFun, int code, std::string strParam)

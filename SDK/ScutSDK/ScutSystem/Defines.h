@@ -29,7 +29,7 @@ THE SOFTWARE.
 #if defined(BOOL) 
 #undef BOOL
 #endif
-//	typedef signed char BOOL;
+	typedef signed char BOOL;
 
 	typedef unsigned int UINT;
 	typedef void* HANDLE;
@@ -94,7 +94,7 @@ THE SOFTWARE.
 		typedef wchar_t* LPTSTR;
 		#endif
 
-		#ifndef TCHAR
+		#ifndef TCHAR  
 				typedef wchar_t TCHAR;
 		#endif
 	#else
