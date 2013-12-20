@@ -12,7 +12,7 @@ function MyApp:ctor()
 end
 
 function MyApp:run()
-    CCFileUtils:sharedFileUtils():addSearchPath("resource/")
+    CCFileUtils:sharedFileUtils():addSearchPath("res/")
     display.addSpriteFramesWithFile(GAME_TEXTURE_DATA_FILENAME, GAME_TEXTURE_IMAGE_FILENAME)
 
     -- preload all sounds

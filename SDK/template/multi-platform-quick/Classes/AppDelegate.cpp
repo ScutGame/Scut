@@ -53,7 +53,8 @@ bool AppDelegate::applicationDidFinishLaunching()
     CCFileUtils::sharedFileUtils()->addSearchPath("script");
 #endif
 
-	std::string lua_entry = "lua/main.lua";
+	pStack->loadChunksFromZip("res/framework_precompiled.zip");
+	std::string lua_entry = "scripts/main.lua";
 	initLuaGlobalVariables(lua_entry);
 	std::string path = CCFileUtils::sharedFileUtils()->fullPathForFilename(lua_entry.c_str());
 	pEngine->executeScriptFile(path.c_str());
