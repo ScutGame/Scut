@@ -62,7 +62,7 @@
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
-      <AdditionalIncludeDirectories>$(ProjectDir)..\Classes;$(ProjectDir)..\..\..\cocos2d-x-2.2.1\scripting\lua\cocos2dx_support;$(ProjectDir)..\..\..\cocos2d-x-2.2.1\scripting\lua\lua;$(ProjectDir)..\..\..\cocos2d-x-2.2.1\scripting\lua\tolua;$(ProjectDir)..\..\..\cocos2d-x-2.2.1\scripting\lua\src;$(ProjectDir)..\..\..\cocos2d-x-2.2.1\cocos2dx;$(ProjectDir)..\..\..\cocos2d-x-2.2.1\cocos2dx\include;$(ProjectDir)..\..\..\cocos2d-x-2.2.1\cocos2dx\kazmath\include;$(ProjectDir)..\..\..\cocos2d-x-2.2.1\cocos2dx\platform\win32;$(ProjectDir)..\..\..\cocos2d-x-2.2.1\cocos2dx\platform\third_party\win32;$(ProjectDir)..\..\..\cocos2d-x-2.2.1\cocos2dx\platform\third_party\win32\OGLES;$(ProjectDir)..\..\..\cocos2d-x-2.2.1\external;$(ProjectDir)..\..\..\cocos2d-x-2.2.1\external\chipmunk\include\chipmunk;$(ProjectDir)..\..\..\cocos2d-x-2.2.1\CocosDenshion\include;$(ProjectDir)..\..\..\SDK\ScutSDK;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)..\Classes;$(ProjectDir)..\..\..\cocos2d-x\scripting\lua\cocos2dx_support;$(ProjectDir)..\..\..\cocos2d-x\scripting\lua\lua;$(ProjectDir)..\..\..\cocos2d-x\scripting\lua\tolua;$(ProjectDir)..\..\..\cocos2d-x\scripting\lua\src;$(ProjectDir)..\..\..\cocos2d-x\cocos2dx;$(ProjectDir)..\..\..\cocos2d-x\cocos2dx\include;$(ProjectDir)..\..\..\cocos2d-x\cocos2dx\kazmath\include;$(ProjectDir)..\..\..\cocos2d-x\cocos2dx\platform\win32;$(ProjectDir)..\..\..\cocos2d-x\cocos2dx\platform\third_party\win32;$(ProjectDir)..\..\..\cocos2d-x\cocos2dx\platform\third_party\win32\OGLES;$(ProjectDir)..\..\..\cocos2d-x\external;$(ProjectDir)..\..\..\cocos2d-x\external\chipmunk\include\chipmunk;$(ProjectDir)..\..\..\cocos2d-x\CocosDenshion\include;$(ProjectDir)..\..\..\SDK\ScutSDK;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PrecompiledHeader>
       </PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
@@ -99,18 +99,18 @@
       </DllDataFileName>
     </Midl>
     <PreBuildEvent>
-      <Command>xcopy "$(ProjectDir)..\..\..\cocos2d-x-2.2.1\scripting\lua\script" "$(ProjectDir)..\Resources" /e /Y</Command>
+      <Command>xcopy "$(ProjectDir)..\..\..\cocos2d-x\scripting\lua\script" "$(ProjectDir)..\Resources" /e /Y</Command>
       <Message>
       </Message>
     </PreBuildEvent>
     <PreLinkEvent>
       <Command>if not exist "$(OutDir)" mkdir "$(OutDir)"
-xcopy /Y /Q "$(ProjectDir)..\..\..\cocos2d-x-2.2.1\external\libwebsockets\win32\lib\*.*" "$(OutDir)"</Command>
+xcopy /Y /Q "$(ProjectDir)..\..\..\cocos2d-x\external\libwebsockets\win32\lib\*.*" "$(OutDir)"</Command>
     </PreLinkEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
-      <AdditionalIncludeDirectories>$(ProjectDir)..\Classes;$(ProjectDir)..\..\..\cocos2d-x-2.2.1\scripting\lua\cocos2dx_support;$(ProjectDir)..\..\..\cocos2d-x-2.2.1\scripting\lua\lua;$(ProjectDir)..\..\..\cocos2d-x-2.2.1\scripting\lua\tolua;$(ProjectDir)..\..\..\cocos2d-x-2.2.1\scripting\lua\src;$(ProjectDir)..\..\..\cocos2d-x-2.2.1\cocos2dx;$(ProjectDir)..\..\..\cocos2d-x-2.2.1\cocos2dx\include;$(ProjectDir)..\..\..\cocos2d-x-2.2.1\cocos2dx\kazmath\include;$(ProjectDir)..\..\..\cocos2d-x-2.2.1\cocos2dx\platform\win32;$(ProjectDir)..\..\..\cocos2d-x-2.2.1\cocos2dx\platform\third_party\win32;$(ProjectDir)..\..\..\cocos2d-x-2.2.1\cocos2dx\platform\third_party\win32\OGLES;$(ProjectDir)..\..\..\cocos2d-x-2.2.1\external;$(ProjectDir)..\..\..\cocos2d-x-2.2.1\external\chipmunk\include\chipmunk;$(ProjectDir)..\..\..\cocos2d-x-2.2.1\CocosDenshion\include;$(ProjectDir)..\..\..\SDK\ScutSDK;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)..\Classes;$(ProjectDir)..\..\..\cocos2d-x\scripting\lua\cocos2dx_support;$(ProjectDir)..\..\..\cocos2d-x\scripting\lua\lua;$(ProjectDir)..\..\..\cocos2d-x\scripting\lua\tolua;$(ProjectDir)..\..\..\cocos2d-x\scripting\lua\src;$(ProjectDir)..\..\..\cocos2d-x\cocos2dx;$(ProjectDir)..\..\..\cocos2d-x\cocos2dx\include;$(ProjectDir)..\..\..\cocos2d-x\cocos2dx\kazmath\include;$(ProjectDir)..\..\..\cocos2d-x\cocos2dx\platform\win32;$(ProjectDir)..\..\..\cocos2d-x\cocos2dx\platform\third_party\win32;$(ProjectDir)..\..\..\cocos2d-x\cocos2dx\platform\third_party\win32\OGLES;$(ProjectDir)..\..\..\cocos2d-x\external;$(ProjectDir)..\..\..\cocos2d-x\external\chipmunk\include\chipmunk;$(ProjectDir)..\..\..\cocos2d-x\CocosDenshion\include;$(ProjectDir)..\..\..\SDK\ScutSDK;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PrecompiledHeader>
       </PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
@@ -153,7 +153,7 @@ xcopy /Y /Q "$(ProjectDir)..\..\..\cocos2d-x-2.2.1\external\libwebsockets\win32\
     </PreBuildEvent>
     <PreLinkEvent>
       <Command>if not exist "$(OutDir)" mkdir "$(OutDir)"
-xcopy /Y /Q "$(ProjectDir)..\..\..\cocos2d-x-2.2.1\external\libwebsockets\win32\lib\*.*" "$(OutDir)"</Command>
+xcopy /Y /Q "$(ProjectDir)..\..\..\cocos2d-x\external\libwebsockets\win32\lib\*.*" "$(OutDir)"</Command>
     </PreLinkEvent>
   </ItemDefinitionGroup>
   <ItemGroup>

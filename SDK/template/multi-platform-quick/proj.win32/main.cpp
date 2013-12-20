@@ -25,8 +25,8 @@ int APIENTRY _tWinMain(HINSTANCE hInstance,
     // create the application instance
     AppDelegate app;
     CCEGLView* eglView = CCEGLView::sharedOpenGLView();
-    eglView->setViewName("gameranking");
-    eglView->setFrameSize(960, 640);
+    eglView->setViewName("coinflip");
+    eglView->setFrameSize(640, 960);
 
     int ret = CCApplication::sharedApplication()->run();
 

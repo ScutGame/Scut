@@ -141,7 +141,7 @@
     <IntDir>$(Configuration)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <IntDir>$(Configuration).win32\</IntDir>
+    <IntDir>$(Configuration)\</IntDir>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -161,7 +161,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>SCUT_WIN32;WIN32;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(ProjectDir)\..\..\..\cocos2d-x-2.2.1\cocos2dx\platform\third_party\win32\zlib;$(ProjectDir)\..\..\..\cocos2d-x-2.2.1\cocos2dx\platform;$(ProjectDir)\..\..\..\cocos2d-x-2.2.1\cocos2dx\layers_scenes_transitions_nodes;$(ProjectDir)\..\..\..\cocos2d-x-2.2.1\cocos2dx\kazmath\include;$(ProjectDir)\..\..\..\cocos2d-x-2.2.1\cocos2dx\platform\third_party\win32\OGLES;$(ProjectDir)\..\..\..\cocos2d-x-2.2.1\cocos2dx\platform\third_party\win32\OGLES\GL;$(ProjectDir)\..\..\..\cocos2d-x-2.2.1\cocos2dx\script_support;$(ProjectDir)\..\..\..\cocos2d-x-2.2.1\cocos2dx\include;$(ProjectDir)\..\..\..\cocos2d-x-2.2.1\scripting\lua\lua;$(ProjectDir)\..\..\..\cocos2d-x-2.2.1\scripting\lua\tolua;$(ProjectDir)\..\ScutSystem\Markup\;$(ProjectDir)\..\ScutDataLogic\zip_support;$(ProjectDir)\..\ScutNetwork\;$(ProjectDir)\..\ScutDataLogic\;$(ProjectDir)\..\ScutSystem\;$(ProjectDir)\..\..\..\cocos2d-x-2.2.1\cocos2dx\;$(ProjectDir)\..\..\..\cocos2d-x-2.2.1\cocos2dx\platform\third_party\win32\curl;$(ProjectDir)\..\..\..\cocos2d-x-2.2.1\scripting\lua\cocos2dx_support;$(ProjectDir)\..\..\..\cocos2d-x-2.2.1\cocos2dx\platform\third_party\win32;$(ProjectDir)\..\..\..\cocos2d-x-2.2.1\cocos2dx\platform\win32;$(ProjectDir)\..;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(QUICK_COCOS2DX_ROOT)\lib\cocos2d-x\cocos2dx\platform\third_party\win32\zlib;$(QUICK_COCOS2DX_ROOT)\lib\cocos2d-x\cocos2dx\platform;$(QUICK_COCOS2DX_ROOT)\lib\cocos2d-x\cocos2dx\layers_scenes_transitions_nodes;$(QUICK_COCOS2DX_ROOT)\lib\cocos2d-x\cocos2dx\kazmath\include;$(QUICK_COCOS2DX_ROOT)\lib\cocos2d-x\cocos2dx\platform\third_party\win32\OGLES;$(QUICK_COCOS2DX_ROOT)\lib\cocos2d-x\cocos2dx\platform\third_party\win32\OGLES\GL;$(QUICK_COCOS2DX_ROOT)\lib\cocos2d-x\cocos2dx\script_support;$(QUICK_COCOS2DX_ROOT)\lib\cocos2d-x\cocos2dx\include;$(QUICK_COCOS2DX_ROOT)\lib\cocos2d-x\scripting\lua\luajit\include;$(QUICK_COCOS2DX_ROOT)\lib\cocos2d-x\scripting\lua\tolua;$(ProjectDir)\..\ScutSystem\Markup\;$(ProjectDir)\..\ScutDataLogic\zip_support;$(ProjectDir)\..\ScutNetwork\;$(ProjectDir)\..\ScutDataLogic\;$(ProjectDir)\..\ScutSystem\;$(QUICK_COCOS2DX_ROOT)\lib\cocos2d-x\cocos2dx\;$(QUICK_COCOS2DX_ROOT)\lib\cocos2d-x\cocos2dx\platform\third_party\win32\curl;$(QUICK_COCOS2DX_ROOT)\lib\cocos2d-x\scripting\lua\cocos2dx_support;$(QUICK_COCOS2DX_ROOT)\lib\cocos2d-x\cocos2dx\platform\third_party\win32;$(QUICK_COCOS2DX_ROOT)\lib\cocos2d-x\cocos2dx\platform\win32;$(ProjectDir)\..;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
