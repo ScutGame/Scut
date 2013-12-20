@@ -1,10 +1,4 @@
-Scut开源游戏服务器引擎客户端SDK
+Scut开源游戏客户端ScutSDK
 =================
-
-Cocos2d-x
-----------------
-运行如下命令行，也可以直接点击create.bat
-cd SDK/tools/project-creator
-python create_project.py -project gameranking -package com.scut.gameranking -language scutlua
-
-详细请参考Document目录
+什么是ScutSDK
+Scut开源游戏服务器引擎开发的宗旨是为了能让网游开发和单机一样简单，以便于降低有志于游戏开发的小伙伴们进入网络游戏开发的门槛。ScutSDK是和Scut开源游戏服务器引擎，简化客户端开发的配套SDK，她彻底打通了Scut开源游戏服务器引擎与客户端引擎（如Cocos2d-x/Quick-x/Unity3D）项目间的通信，进而实现整套的网络游戏解决方案。
