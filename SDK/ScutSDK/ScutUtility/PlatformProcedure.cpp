@@ -25,17 +25,16 @@ THE SOFTWARE.
 #include "FileHelper.h"
 #include "PathUtility.h"
 #include "Trace.h"
-//#include "cocos2d.h"
-#ifdef SCUT_ANDROID
-//#include "UpUtility.h"
-#endif
+#include "cocos2d.h"
+
 #ifdef SCUT_WIN32
 #define  FILE_SEP '\\'
 
 #else
 #define  FILE_SEP '/'
 #endif
-//using namespace cocos2d;
+using namespace cocos2d;
+
 namespace ScutUtility
 {
 
@@ -71,8 +70,8 @@ namespace ScutUtility
 		strApkFullPath += pszProcessFile;
 
 		unsigned long nSize = 0;
-		unsigned char* pApkData = ScutDataLogic::CFileHelper::getFileDataFromZip(
-			ScutDataLogic::CFileHelper::getAndroidResourcePath(), strApkFullPath.c_str(), &nSize);
+		unsigned char* pApkData = NULL;/*ScutDataLogic::CFileHelper::getFileDataFromZip(
+			ScutDataLogic::CFileHelper::getAndroidResourcePath(), strApkFullPath.c_str(), &nSize);*/
 		int nApkVersion = 0;
 		//std::string strSDPath;
 		if (pApkData)

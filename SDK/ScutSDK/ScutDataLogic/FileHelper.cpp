@@ -540,11 +540,6 @@ namespace ScutDataLogic
 			} while (0);
 			if (pBuffer == NULL)
 			{
-				std::string strFilenName = s_strRelativePath + pszFileName;
-				pBuffer =  getFileDataFromZip(s_strAndroidPackagePath.c_str(), strFilenName.c_str(), pSize);
-			}
-			if (pBuffer == NULL)
-			{
 				ScutLog("getFileData Error fileName=%s", pszFileName);
 			}
 
@@ -566,58 +561,6 @@ namespace ScutDataLogic
 		
 		return pBuffer;
 	}
-
-#ifdef SCUT_ANDROID
-	unsigned char* CFileHelper::getFileDataFromZip(const char* pszZipFilePath, const char* pszFileName, unsigned long * pSize)
-	{
-		unsigned char * pBuffer = NULL;
-		unzFile pFile = NULL;
-		*pSize = 0;
-
-		do 
-		{
-			if(!pszZipFilePath || !pszFileName)
-				break;
-			if ((strlen(pszZipFilePath) == 0))
-			{
-				break;
-			}
-		
-			pFile = unzOpen(pszZipFilePath);
-			if(!pFile)break;
-
-			int nRet = unzLocateFile(pFile, pszFileName, 1);
-			if(UNZ_OK != nRet)break;
-	
-			char szFilePathA[260];
-			unz_file_info FileInfo;
-			nRet = unzGetCurrentFileInfo(pFile, &FileInfo, szFilePathA, sizeof(szFilePathA), NULL, 0, NULL, 0);
-			if(UNZ_OK != nRet)break;
-
-
-			nRet = unzOpenCurrentFile(pFile);
-			if(UNZ_OK != nRet)break;
-
-
-			pBuffer = new unsigned char[FileInfo.uncompressed_size];
-			int nSize = 0;
-			nSize = unzReadCurrentFile(pFile, pBuffer, FileInfo.uncompressed_size);
-			//assert(nSize == 0 || nSize == FileInfo.uncompressed_size);
-
-			*pSize = FileInfo.uncompressed_size;
-			unzCloseCurrentFile(pFile);
-		} while (0);
-
-		if (pFile)
-		{
-			unzClose(pFile);
-		}
-
-
-		return pBuffer;
-	}
-
-#endif
 
 	int CFileHelper::getFileState(const char*szfilePath)
 	{
@@ -789,43 +732,6 @@ namespace ScutDataLogic
 		}		
 #elif CC_TARGET_PLATFORM == CC_PLATFORM_ANDROID
 		bool bfind = true;
-		do 
-		{
-			struct stat buf;
-			int n = stat(szFilePath, &buf);
-			if ((0 != n)
-				|| !(buf.st_mode&S_IFMT))	
-			{
-				bfind = false;
-			}
-		} while (0);
-		if (!bfind)
-		{
-			std::string strFilenName = ScutDataLogic::CFileHelper::getAndroidRelativeDir();
-			strFilenName += szFilePath;
-			unsigned char * pBuffer = NULL;
-			unzFile pFile = NULL;
-			unsigned long pSize = 0;
-			do 
-			{
-				pFile = unzOpen(ScutDataLogic::CFileHelper::getAndroidResourcePath());
-				if(!pFile)break;
-
-				int nRet = unzLocateFile(pFile, strFilenName.c_str(), 1);
-				if(UNZ_OK != nRet)
-				{
-					bfind = false;
-				}
-				else
-					bfind = true;
-			} while (0);
-
-			if (pFile)
-			{
-				unzClose(pFile);
-			}
-		}
-
 		return bfind;
 #else
 		struct stat buf;

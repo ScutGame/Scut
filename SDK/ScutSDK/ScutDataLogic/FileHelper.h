@@ -43,9 +43,6 @@ namespace  ScutDataLogic
 		static const char* getAndroidResourcePath(){return s_strAndroidPackagePath.c_str();}
 		static void setAndroidRelativeDir(const char* pszPath);
 		static const char* getAndroidRelativeDir(){return s_strRelativePath.c_str();}
-#ifdef SCUT_ANDROID
-		static unsigned char* getFileDataFromZip(const char* pszZipFilePath, const char* pszFileName, unsigned long * pSize);
-#endif
 		static unsigned char* getFileData(const char* pszFileName, const char* pszMode, unsigned long *pSize);
 		static void freeFileData(unsigned char* pFileDataPtr);
 

@@ -184,7 +184,7 @@ unsigned long ScutGetTickCount()
 	return now.tv_sec*1000000 + now.tv_nsec/1000;
 #elif defined(SCUT_IPHONE) || defined(SCUT_MAC)
 	return clock();
-#else	
+#else
 	return ::GetTickCount();
 #endif // SCUT_ANDROID
 }

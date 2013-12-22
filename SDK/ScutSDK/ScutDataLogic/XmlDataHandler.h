@@ -38,8 +38,5 @@ namespace ScutDataLogic
 		virtual bool HandleProgress(int nTag, int nProgress, LPVOID lpData);
 	protected:
 		virtual bool DoHandleData(int nTag, CMarkup* pMarkup, LPVOID lpData);
-	private:
-		//½âÎöXmlÊı¾İ
-		CMarkup* ParseMarkupData(CStream& dataStream);
 	};
 }

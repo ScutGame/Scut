@@ -37,50 +37,18 @@ CXmlDataHandler::~CXmlDataHandler(void)
 bool ScutDataLogic::CXmlDataHandler::HandleData( int nTag, CStream& dataStream, LPVOID lpData )
 {
 	bool bRet = false;
-	CMarkup* pMarkup = this->ParseMarkupData(dataStream);
-	if (pMarkup)
-	{
-		bRet = DoHandleData(nTag, pMarkup, lpData);
-		delete pMarkup;
-	}
+	//CMarkup* pMarkup = this->ParseMarkupData(dataStream);
+	//if (pMarkup)
+	//{
+	//	bRet = DoHandleData(nTag, pMarkup, lpData);
+	//	delete pMarkup;
+	//}
 	return bRet;
 }
 
 bool ScutDataLogic::CXmlDataHandler::HandleProgress( int nTag, int nProgress, LPVOID lpData )
 {
 	return false;
-}
-
-CMarkup* ScutDataLogic::CXmlDataHandler::ParseMarkupData( CStream& dataStream )
-{
-	int nSize = dataStream.GetSize();
-	if (nSize == 0)
-	{
-		return NULL;
-	}
-    
-	CMarkup* pMarkup = new CMarkup();
-	char* pBuffer = new char[nSize + 1];
-	dataStream.SetPosition(0);
-    
-	if (dataStream.ReadBuffer(pBuffer, nSize))
-	{
-		pBuffer[nSize] = '\0';
-#ifdef WIN32
-		if (pMarkup->DetectUTF8(pBuffer, nSize))
-		{
-			std::string temp = pMarkup->UTF8ToA(pBuffer);
-            //std::string temp = utf8ToGB2312(pBuffer, nSize);
-			pMarkup->SetDoc(temp.c_str());
-		}	
-		else
-			pMarkup->SetDoc(pBuffer, nSize);
-#else
-		pMarkup->SetDoc(pBuffer, nSize);
-#endif        		
-	}
-	delete []pBuffer;
-	return pMarkup;
 }
 
 bool ScutDataLogic::CXmlDataHandler::DoHandleData( int nTag, CMarkup* pMarkup, LPVOID lpData )

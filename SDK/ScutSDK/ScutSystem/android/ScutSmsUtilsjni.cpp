@@ -8,8 +8,9 @@
 #endif
 
 #define  LOG_TAG    "SmsUtils"
-#include "Cocos2dJni.h"
-#define  LOGE(...)  __android_log_print(ANDROID_LOG_ERROR,LOG_TAG,__VA_ARGS__)
+//#include "Cocos2dJni.h"
+
+#define  LOGE(...)  //__android_log_print(ANDROID_LOG_ERROR,LOG_TAG,__VA_ARGS__)
 /* Header for class com_nd_lib_NdUitilityJni */
 extern JavaVM *gJavaVM;
 /*
