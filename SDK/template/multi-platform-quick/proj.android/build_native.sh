@@ -37,7 +37,7 @@ fi
 
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 # ... use paths relative to current directory
-COCOS2DX_ROOT="$DIR/../../.."
+COCOS2DX_ROOT="$DIR/../../../quick-cocos2d-x/lib/cocos2d-x"
 APP_ROOT="$DIR/.."
 APP_ANDROID_ROOT="$DIR"
 
@@ -80,9 +80,9 @@ done
 if [[ "$buildexternalsfromsource" ]]; then
     echo "Building external dependencies from source"
     "$NDK_ROOT"/ndk-build -C "$APP_ANDROID_ROOT" $* \
-        "NDK_MODULE_PATH=${COCOS2DX_ROOT}:${COCOS2DX_ROOT}/cocos2dx/platform/third_party/android/source"
+        "NDK_MODULE_PATH=${COCOS2DX_ROOT}/../../../:${COCOS2DX_ROOT}/../../:${COCOS2DX_ROOT}/:${COCOS2DX_ROOT}/cocos2dx/platform/third_party/android/prebuilt"
 else
     echo "Using prebuilt externals"
     "$NDK_ROOT"/ndk-build -C "$APP_ANDROID_ROOT" $* \
-        "NDK_MODULE_PATH=${COCOS2DX_ROOT}:${COCOS2DX_ROOT}/cocos2dx/platform/third_party/android/prebuilt"
+        "NDK_MODULE_PATH=${COCOS2DX_ROOT}/../../../:${COCOS2DX_ROOT}/../../:${COCOS2DX_ROOT}/:${COCOS2DX_ROOT}/cocos2dx/platform/third_party/android/prebuilt"
 fi
