@@ -108,6 +108,7 @@ namespace ContractTools.WebApp
             mode.SlnID = SlnID;
             mode.MinValue = Convert.ToInt32((string)txtMinValue.Text.Trim());
             mode.MaxValue = Convert.ToInt32((string)txtMaxValue.Text.Trim());
+            mode.CreateDate = DateTime.Now;
 
             var paramList = DbDataLoader.GetParamInfo(SlnID, ContractID, mode.ParamType);
             if (paramList.Count == 0 || paramList[0].SortID == 0)

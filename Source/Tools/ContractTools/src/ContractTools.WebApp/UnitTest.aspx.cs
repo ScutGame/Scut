@@ -35,7 +35,6 @@ namespace ContractTools.WebApp
 {
     public partial class UnitTest : System.Web.UI.Page
     {
-        public const int LoginActionId = 1004;
         public const int ErrorCode = 10000;
         private string GetCookesKey(string str)
         {
@@ -217,7 +216,7 @@ namespace ContractTools.WebApp
                 string fieldName = record.Field;
                 string fieldValue = record.FieldValue;
 
-                if (contractId == LoginActionId)
+                if (contractId == NetHelper.LoginActionId)
                 {
                     if (fieldName.ToLower().Equals("pid"))
                     {
@@ -318,7 +317,7 @@ namespace ContractTools.WebApp
                             if (NetHelper.GetFieldValue(msgReader, fieldType, ref fieldValue))
                             {
                                 //自动登录
-                                if ("1004".Equals(contractId))
+                                if (NetHelper.LoginActionId == contractId)
                                 {
                                     if ("SessionID".Equals(fieldName)) sid = fieldValue;
                                     if ("UserID".Equals(fieldName)) uid = fieldValue;

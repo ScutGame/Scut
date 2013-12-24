@@ -164,10 +164,16 @@
                     <asp:DropDownList ID="ddlSolution" runat="server" Width="236px" AutoPostBack="True"
                         OnSelectedIndexChanged="ddlSolution_SelectedIndexChanged">
                     </asp:DropDownList>      
-                    <span style="padding-left: 40px;">&nbsp;<a href="SolutionsList.aspx" target="_blank">项目方案</a></span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                    <asp:HyperLink ID="AddEnumLink" runat="server">增加枚举</asp:HyperLink>
-                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<asp:HyperLink ID="SearchLink" runat="server">查找协议</asp:HyperLink>
-                &nbsp;&nbsp;
+                    <span style="padding-left: 40px;">&nbsp;<a href="SolutionsList.aspx" target="_blank">项目方案</a></span>
+                    <span style="padding-left: 20px;">
+                        <asp:HyperLink ID="AddEnumLink" runat="server">增加枚举</asp:HyperLink>
+                    </span>
+                    <span style="padding-left: 20px;">
+                        <asp:HyperLink ID="SearchLink" runat="server">查找协议</asp:HyperLink>
+                    </span>
+                    <span style="padding-left: 20px;">
+                        <asp:HyperLink ID="syncLink" runat="server">Sync协议</asp:HyperLink>
+                    </span>
                     </td>
             </tr>
             <tr align="left" colspan="2">
@@ -183,16 +189,19 @@
                     <asp:DropDownList ID="DropGetList" runat="server" Width="236px" AutoPostBack="True"
                         OnSelectedIndexChanged="DropGetList_SelectedIndexChanged">
                     </asp:DropDownList>
-                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;<asp:HyperLink
-                        ID="AddRecordLink" runat="server">增加字段</asp:HyperLink>
-                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                    <asp:HyperLink ID="AddProtocolLink" runat="server">增加协议</asp:HyperLink>
-                    &nbsp;&nbsp;&nbsp;&nbsp;
+                    <span style="padding-left: 40px;">&nbsp;<asp:HyperLink ID="AddRecordLink" runat="server">增加字段</asp:HyperLink></span>
+                    <span style="padding-left: 20px;">
+                        <asp:HyperLink ID="AddProtocolLink" runat="server">增加协议</asp:HyperLink>
+                    </span>
+                    <span style="padding-left: 20px;">
                     <asp:HyperLink ID="UPRecordLink" runat="server">修改协议</asp:HyperLink>
-                    &nbsp;&nbsp;&nbsp;&nbsp;
+                    </span>
+                    <span style="padding-left: 20px;">
                     <asp:HyperLink ID="btnCopyContract" runat="server">复制协议</asp:HyperLink>
-                    &nbsp;&nbsp;&nbsp;
-                    <asp:LinkButton ID="btnDeldte" runat="server" OnClick="btnDeldte_Click" OnClientClick="return confirm('是否删除')">删除</asp:LinkButton>
+                    </span>
+                    <span style="padding-left: 20px;">
+                        <asp:LinkButton ID="btnDeldte" runat="server" OnClick="btnDeldte_Click" OnClientClick="return confirm('是否删除')">删除协议</asp:LinkButton>
+                    </span>
                 </td>
             </tr>
             <tr>
@@ -203,7 +212,7 @@
             <tr>
                 <td colspan="2">
                     <asp:GridView ID="gvGetlist" runat="server" Width="100%" AutoGenerateColumns="False"
-                        CellPadding="4" ForeColor="#333333" GridLines="Both" OnRowCancelingEdit="gvGetlist_RowCancelingEdit"
+                        CellPadding="4" ForeColor="#333333" GridLines="Both" BorderColor="#3E5B76"  OnRowCancelingEdit="gvGetlist_RowCancelingEdit"
                         OnRowEditing="gvGetlist_RowEditing" OnRowUpdating="gvGetlist_RowUpdating" OnRowDataBound="gvGetlist_RowDataBound"
                         Style="margin-bottom: 0px">
                         <RowStyle BackColor="#E3EAEB" />
@@ -288,7 +297,7 @@
                                 </ItemTemplate>
                                 <ItemStyle Width="5%"></ItemStyle>
                             </asp:TemplateField>
-                            <asp:TemplateField HeaderText="最小值范围" ItemStyle-Width="5%">
+                            <asp:TemplateField HeaderText="最小值" ItemStyle-Width="5%">
                                 <EditItemTemplate>
                                     <asp:TextBox ID="txtMinValue" runat="server" Text='<%# Bind("MinValue") %>' Width="100%"></asp:TextBox>
                                 </EditItemTemplate>
@@ -297,7 +306,7 @@
                                 </ItemTemplate>
                                 <ItemStyle Width="5%"></ItemStyle>
                             </asp:TemplateField>
-                            <asp:TemplateField HeaderText="最大值范围" ItemStyle-Width="5%">
+                            <asp:TemplateField HeaderText="最大值" ItemStyle-Width="5%">
                                 <EditItemTemplate>
                                     <asp:TextBox ID="txtMaxValue" runat="server" Text='<%# Bind("MaxValue") %>' Width="100%"></asp:TextBox>
                                 </EditItemTemplate>
@@ -353,7 +362,7 @@
                         <FooterStyle BackColor="#1C5E55" Font-Bold="True" ForeColor="White" />
                         <PagerStyle BackColor="#666666" ForeColor="White" HorizontalAlign="left" />
                         <SelectedRowStyle BackColor="#C5BBAF" Font-Bold="True" ForeColor="#333333" />
-                        <HeaderStyle BackColor="#1C5E55" Font-Bold="True" ForeColor="White" />
+                        <HeaderStyle BackColor="#628DB6" Font-Bold="True" ForeColor="White" />
                         <EditRowStyle BackColor="#7C6F57" />
                         <AlternatingRowStyle BackColor="White" />
                     </asp:GridView>

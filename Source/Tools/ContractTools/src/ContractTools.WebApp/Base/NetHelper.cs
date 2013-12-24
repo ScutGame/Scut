@@ -41,6 +41,7 @@ namespace ContractTools.WebApp.Base
 {
     public static class NetHelper
     {
+        public static int LoginActionId = ConfigUtils.GetSetting("UnitTest.LoginActionId", 1004);
         private static string SignKey = ConfigUtils.GetSetting("Product.SignKey");
         public static string ClientDesDeKey = ConfigUtils.GetSetting("Product.ClientDesDeKey", "j6=9=1ac");
 
