@@ -33,6 +33,7 @@ using System.Drawing;
 using ContractTools.WebApp.Base;
 using ContractTools.WebApp.Model;
 using ZyGames.Framework.Common;
+using ZyGames.Framework.Common.Log;
 
 namespace ContractTools.WebApp
 {
@@ -291,6 +292,7 @@ namespace ContractTools.WebApp
             }
             catch (Exception ex)
             {
+                TraceLog.WriteError("QueryResult:{0}", ex);
                 Response.Write("错误信息:" + ex.Message);
             }
         }
@@ -345,11 +347,8 @@ namespace ContractTools.WebApp
 
             catch (Exception erro)
             {
+                TraceLog.WriteError("RowUpdating:{0}", erro);
                 Response.Write("错误信息:" + erro.Message);
-            }
-            finally
-            {
-
             }
 
         }

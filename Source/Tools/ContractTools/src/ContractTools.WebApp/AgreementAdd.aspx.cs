@@ -24,6 +24,7 @@ THE SOFTWARE.
 using System;
 using ContractTools.WebApp.Base;
 using ContractTools.WebApp.Model;
+using ZyGames.Framework.Common.Log;
 
 namespace ContractTools.WebApp
 {
@@ -57,6 +58,7 @@ namespace ContractTools.WebApp
             }
             catch(Exception ex)
             {
+                TraceLog.WriteError("AgreementAdd:{0}", ex);
                 Page.RegisterStartupScript("", "<script language=javascript>alert('添加失败,填写重复！')</script>");          
             }
         }

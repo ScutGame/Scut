@@ -412,6 +412,15 @@ namespace ContractTools.WebApp.Base
             command.AddParameter("Creator", model.Creator);
             command.AddParameter("CreateDate", model.CreateDate);
             command.AddParameter("Modifier", model.Modifier);
+            if (model.CreateDate == DateTime.MinValue)
+            {
+                model.CreateDate = MathUtils.Now;
+            }
+            if (model.ModifyDate == DateTime.MinValue)
+            {
+                model.ModifyDate = MathUtils.SqlMinDate;
+            }
+            command.AddParameter("ModifyDate", model.ModifyDate);
             command.AddParameter("MinValue", model.MinValue);
             command.AddParameter("MaxValue", model.MaxValue);
             command.Parser();
