@@ -254,7 +254,7 @@ namespace ContractTools.WebApp
                     btnCopyto.Visible = true;
                     string name = Path.Combine(Server.MapPath("~"), "Template/CustomerModel.txt");
                     string tempContentto = TemplateHelper.ReadTemp(name);
-                    txtContentto.Text = TemplateHelper.FromatTempto(tempContentto, contractId, respParams, DropGetList.SelectedItem.Text);
+                    txtContentto.Text = TemplateHelper.FromatTempto(tempContentto, contractId, respParams, reqParams, DropGetList.SelectedItem.Text);
                     var slnRecord = DbDataLoader.GetSolution(slnId);
                     if (LangDropDownList.SelectedValue == "C#")
                     {

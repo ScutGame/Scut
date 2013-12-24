@@ -72,14 +72,17 @@ namespace ContractTools.WebApp.Base
             }
             return temp;
         }
+
         /// <summary>
         /// 赋值客户端模板
         /// </summary>
         /// <param name="content"></param>
-        /// <param name="respParam"></param>
+        /// <param name="paramList"></param>
+        /// <param name="reqParams"></param>
         /// <param name="title"></param>
+        /// <param name="contractId"></param>
         /// <returns></returns>
-        public static string FromatTempto(string content, int contractId, List<ParamInfoModel> respParam, string title)
+        public static string FromatTempto(string content, int contractId, List<ParamInfoModel> paramList, List<ParamInfoModel> reqParams, string title)
         {
             string[] expressList = new string[] { "##ID##", "##Description##", "##Parameter##", "##Fixed##" };
             foreach (string exp in expressList)
@@ -99,7 +102,7 @@ namespace ContractTools.WebApp.Base
                 else if (fieldBuilder.ToString() == "Parameter")
                 {
                     fieldBuilder.Remove(0, fieldBuilder.Length);
-                    foreach (var paramInfo in respParam)
+                    foreach (var paramInfo in reqParams)
                     {
                         if (paramInfo.ParamType == 1)
                         {
@@ -113,7 +116,7 @@ namespace ContractTools.WebApp.Base
                 else if (fieldBuilder.ToString() == "Fixed")
                 {
                     fieldBuilder.Remove(0, fieldBuilder.Length);
-                    foreach (var paramInfo in respParam)
+                    foreach (var paramInfo in reqParams)
                     {
                         if (paramInfo.ParamType == 1)
                         {
@@ -130,7 +133,7 @@ namespace ContractTools.WebApp.Base
                 content = content.Replace(exp, fieldBuilder.ToString());
 
             }
-            return ReplaceJudgeto(content, respParam);
+            return ReplaceJudgeto(content, paramList);
         }
         public static string GetspaceIndent(int n)
         {
