@@ -25,7 +25,7 @@ THE SOFTWARE.
 #include "FileHelper.h"
 #include "ZipUtils.h"
 #include "Trace.h"
-#include "ScutSystem/ScutUtility.h"
+#include "ScutUtility.h"
 #include "ScutExt.h"
 #include "CCImage.h"
 #include <vector>

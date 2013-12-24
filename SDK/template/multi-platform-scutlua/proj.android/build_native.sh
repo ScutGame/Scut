@@ -1,4 +1,4 @@
-APPNAME="HelloLua"
+APPNAME="scuting"
 
 # options
 
