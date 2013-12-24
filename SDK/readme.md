@@ -17,6 +17,9 @@ OSChina代码库：https://git.oschina.net/scutgame/Scut<br />
 
 更新日志
 ----------------
+###版本：0.95 (2013-12-24)
+> 1. 增加对cocos2d-x的Android平台的支持
+
 ###版本：0.9 (2013-12-21)
 > 1. 支持cocos2d-x C++/Lua语言最新版本2.2.1和quick-x最新版本2.2.1
 > 2. 支持Win32/iOS平台
