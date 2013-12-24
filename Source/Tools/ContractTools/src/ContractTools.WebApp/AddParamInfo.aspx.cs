@@ -22,7 +22,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ****************************************************************************/
 using System;
-using System.Data;
+using System.Linq;
 using ContractTools.WebApp.Base;
 using ContractTools.WebApp.Model;
 using ZyGames.Framework.Common;
@@ -110,14 +110,14 @@ namespace ContractTools.WebApp
             mode.MaxValue = Convert.ToInt32((string)txtMaxValue.Text.Trim());
             mode.CreateDate = DateTime.Now;
 
-            var paramList = DbDataLoader.GetParamInfo(SlnID, ContractID, mode.ParamType);
+            var paramList = DbDataLoader.GetParamInfo(SlnID, ContractID, mode.ParamType).OrderBy(p => p.SortID).ToList();
             if (paramList.Count == 0 || paramList[0].SortID == 0)
             {
                 mode.SortID = 1;
             }
             else
             {
-                int SortID = paramList[0].SortID;
+                int SortID = paramList[paramList.Count - 1].SortID;
                 SortID++;
                 mode.SortID = SortID;
 

@@ -29,11 +29,22 @@ using System.Linq;
 using System.IO;
 using ContractTools.WebApp.Model;
 using System.Collections;
+using ZyGames.Framework.Cache.Generic;
+using ZyGames.Framework.Common.Security;
+using ZyGames.Framework.Model;
 
 namespace ContractTools.WebApp.Base
 {
+    public class TemplateInfo : MemoryEntity
+    {
+        public string Content { get; set; }
+
+    }
+
     public class TemplateHelper
     {
+        private static MemoryCacheStruct<TemplateInfo> _tempCacheSet = new MemoryCacheStruct<TemplateInfo>();
+
         public static Hashtable LoadEnumApplication(int slnid, bool clean)
         {
             if (System.Web.HttpContext.Current.Application[slnid.ToString()] == null || clean)
@@ -64,13 +75,16 @@ namespace ContractTools.WebApp.Base
         /// <returns></returns>
         public static string ReadTemp(string fileName)
         {
-            string temp = string.Empty;
-            using (FileStream fs = File.Open(fileName, FileMode.Open))
+            string code = Path.GetFileName(fileName);
+            TemplateInfo tempInfo;
+            if (!_tempCacheSet.TryGet(code, out tempInfo))
             {
-                StreamReader sr = new StreamReader(fs);
-                temp = sr.ReadToEnd();
+                tempInfo = new TemplateInfo();
+                tempInfo.Content = File.ReadAllText(fileName, Encoding.UTF8);
+                _tempCacheSet.TryAdd(code, tempInfo);
+
             }
-            return temp;
+            return tempInfo.Content;
         }
 
         /// <summary>
