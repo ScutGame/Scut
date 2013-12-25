@@ -9,16 +9,20 @@ Benefits Features
 ###Platform
 > Windows
 > Linux
+
 ###Data Persistence (DBs)
 > SQL: MySQL/MS SQL Server
 > NoSQL: Redis
+
 ###Protocols: http/socket
 > Transfer protocol is very lean and slim
 > Scut wraps up the networking layer of each client platform
 > Communicate cross-platform and cross-protocol
 > Code generate automaticly: forget about de-/serialization
+
 ###Server Dev Framework
 > Language: C#/Python
+
 ###Vast Support of Client Platforms
 > All client platforms interoperate(iOS vs Android vs PC)
 > Major client platforms supported
@@ -29,6 +33,7 @@ Benefits Features
 > Mac OSX
 > Mono
 > Xamarin
+
 ###Host Scut with major provider
 > PaaS: Platform as a Service
 >Selected providers
