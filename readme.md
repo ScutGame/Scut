@@ -13,38 +13,43 @@ Benefits Features
 </ul>
 
 ###Data Persistence (DBs)
-> SQL: MySQL/MS SQL Server
-> NoSQL: Redis
-
+<ul>
+<li>SQL: MySQL/MS SQL Server
+<li>NoSQL: Redis
+</ul>
 
 ###Protocols: http/socket
-> Transfer protocol is very lean and slim
-> Scut wraps up the networking layer of each client platform
-> Communicate cross-platform and cross-protocol
-> Code generate automaticly: forget about de-/serialization
-
+<ul>
+<li>Transfer protocol is very lean and slim
+<li>Scut wraps up the networking layer of each client platform
+<li>Communicate cross-platform and cross-protocol
+<li>Code generate automaticly: forget about de-/serialization
+</ul>
 
 ###Server Dev Framework
 > Language: C#/Python
 
 
 ###Vast Support of Client Platforms
-> All client platforms interoperate(iOS vs Android vs PC)
-> Major client platforms supported
-> Android(eg. Cocos2d-x)
-> iOS(eg. Cocos2d-x)
-> Win32
-> .NET
-> Mac OSX
-> Mono
-> Xamarin
-
+<ul>
+<li>All client platforms interoperate(iOS vs Android vs PC)
+<li>Major client platforms supported
+<li>Android(eg. Cocos2d-x)
+<li>iOS(eg. Cocos2d-x)
+<li>Win32
+<li>.NET
+<li>Mac OSX
+<li>Mono
+<li>Xamarin
+</ul>
 
 ###Host Scut with major provider
-> PaaS: Platform as a Service
+<ul>
+<li>PaaS: Platform as a Service
 >Selected providers
->> Microsoft Azure
->> Amazon EC2
+<li>Microsoft Azure
+<li>Amazon EC2
+</ul>
 
 
 Resource
