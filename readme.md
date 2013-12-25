@@ -45,8 +45,6 @@ Benefits Features
 
 ###Host Scut with major provider
 <ul>
-<li>PaaS: Platform as a Service
->Selected providers
 <li>Microsoft Azure
 <li>Amazon EC2
 </ul>
