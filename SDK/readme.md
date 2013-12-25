@@ -25,48 +25,6 @@ OSChina代码库：https://git.oschina.net/scutgame/Scut<br />
 > 2. 支持Win32/iOS平台
 
 
-What's Scut Game Server Framework？
-=================
-Scut is a free, open source, stable game server framework, which support C#/Python script. Scut's design philosophy is to "Developing online game easier"，It includes a development framework and no-sql/database storage services, and many game system modules. Save a lot of game developers working hours，it allows the user to focus on business logic. Scut Game Server Framework also provide ScutSDK(eg. for Cocos2d-x) which make communications between server and client very easy.
-
-Benefits Features
-----------------
-###Platform
-> Windows
-> Linux
-###Data Persistence (DBs)
-> SQL: MySQL/MS SQL Server
-> NoSQL: Redis
-###Protocols: http/socket
-> Transfer protocol is very lean and slim
-> Scut wraps up the networking layer of each client platform
-> Communicate cross-platform and cross-protocol
-> Code generate automaticly: forget about de-/serialization
-###Server Dev Framework
-> Language: C#/Python
-###Vast Support of Client Platforms
-> All client platforms interoperate(iOS vs Android vs PC)
-> Major client platforms supported
-> Android(eg. Cocos2d-x)
-> iOS(eg. Cocos2d-x)
-> Win32
-> .NET
-> Mac OSX
-> Mono
-> Xamarin
-###Host Scut with major provider
-> PaaS: Platform as a Service
->Selected providers
->> Microsoft Azure
->> Amazon EC2
-
-Resource
-----------------
-HomePage: http://www.scutgame.com
-Github: https://github.com/scutgame/scut
-QQ Group: 138266675
-
-
 License
 --------------
 FreeBSD License
