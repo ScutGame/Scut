@@ -1,5 +1,3 @@
-
-
 What's Scut Game Server Framework£¿
 =================
 Scut is a free, open source, stable game server framework, which support C#/Python script. Scut's design philosophy is to "Developing online game easier"£¬It includes a development framework and no-sql/database storage services, and many game system modules. Save a lot of game developers working hours£¬it allows the user to focus on business logic. Scut Game Server Framework also provide ScutSDK(eg. for Cocos2d-x) which make communications between server and client very easy.
