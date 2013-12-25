@@ -52,9 +52,9 @@ Benefits Features
 
 Resource
 ----------------
-HomePage: http://www.scutgame.com
-Github: https://github.com/scutgame/scut
-QQ Group: 138266675
+HomePage: http://www.scutgame.com<br />
+Github: https://github.com/scutgame/scut<br />
+QQ Group: 138266675<br />
 
 
 Scut开源游戏服务器引擎
