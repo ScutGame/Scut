@@ -10,9 +10,11 @@ Benefits Features
 > Windows
 > Linux
 
+
 ###Data Persistence (DBs)
 > SQL: MySQL/MS SQL Server
 > NoSQL: Redis
+
 
 ###Protocols: http/socket
 > Transfer protocol is very lean and slim
@@ -20,8 +22,10 @@ Benefits Features
 > Communicate cross-platform and cross-protocol
 > Code generate automaticly: forget about de-/serialization
 
+
 ###Server Dev Framework
 > Language: C#/Python
+
 
 ###Vast Support of Client Platforms
 > All client platforms interoperate(iOS vs Android vs PC)
@@ -34,11 +38,13 @@ Benefits Features
 > Mono
 > Xamarin
 
+
 ###Host Scut with major provider
 > PaaS: Platform as a Service
 >Selected providers
 >> Microsoft Azure
 >> Amazon EC2
+
 
 Resource
 ----------------
