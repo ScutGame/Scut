@@ -7,9 +7,10 @@ Scut is a free, open source, stable game server framework, which support C#/Pyth
 Benefits Features
 ----------------
 ###Platform
-> Windows
-> Linux
-
+<ul>
+<li>Windows
+<li>Linux
+</ul>
 
 ###Data Persistence (DBs)
 > SQL: MySQL/MS SQL Server
