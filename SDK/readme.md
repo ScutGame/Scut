@@ -24,7 +24,6 @@ OSChina代码库：https://git.oschina.net/scutgame/Scut<br />
 > 1. 支持cocos2d-x C++/Lua语言最新版本2.2.1和quick-x最新版本2.2.1
 > 2. 支持Win32/iOS平台
 
-
 License
 --------------
 FreeBSD License
