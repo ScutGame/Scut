@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:WindowedApplication xmlns:fx="http://ns.adobe.com/mxml/2009"
+					   xmlns:s="library://ns.adobe.com/flex/spark"
+					   xmlns:mx="library://ns.adobe.com/flex/mx"
+					   width="960" height="640"
+					   applicationComplete="windowedapplication1_applicationCompleteHandler(event)"
+					   backgroundColor="#ECEBEB">
+	<fx:Script>
+		<![CDATA[
+			import mx.events.FlexEvent;
+			
+			protected function windowedapplication1_applicationCompleteHandler(event:FlexEvent):void
+			{
+				GameInit();
+			}
+		]]>
+	</fx:Script>
+	<fx:Script source="Main.as" />
+	<fx:Declarations>
+		<!-- 将非可视元素（例如服务、值对象）放在此处 -->
+	</fx:Declarations>
+	<s:Label y="44" color="#FF9600" fontFamily="Arial" fontSize="19" fontWeight="bold"
+			 horizontalCenter="-2" text="排行榜"/>
+	<s:TextArea id="rankList" x="51" y="131" width="321" height="406"/>
+	<s:Label x="166" y="107" fontSize="16" text="分数排行榜"/>
+	<s:TextArea id="rankPage" x="68" y="545" width="30" height="28" fontSize="16" text="1"/>
+	<s:Label x="102" y="547" fontSize="24" text="页"/>
+	<s:Label x="134" y="558" height="13" color="#717171" text="每页显示25个"/>
+	<s:Button x="302" y="550" label="请求" click="onClickRequestRank(event)"/>
+	<s:Label x="552" y="181" fontSize="16" text="玩家名字："/>
+	<s:Label x="552" y="241" fontSize="16" text="玩家分数："/>
+	<s:TextArea id="nameLabel" x="640" y="171" height="34" fontSize="16" maxChars="12"/>
+	<s:TextArea id="scoreLabel" x="641" y="231" height="34" fontSize="16" maxChars="12" restrict="0-9"/>
+	<s:TextArea id="tipLabel" x="552" y="291" width="337" height="40" color="#DD0C0C" fontSize="20"
+				text="输入分数，提交成绩"/>
+	<s:Button id="submitBtn" x="819" y="376" label="提交" click="onClickSubmit(event)"/>
+</s:WindowedApplication>
