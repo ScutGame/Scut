@@ -1,0 +1,27 @@
+﻿<Properties>
+  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
+  <MonoDevelop.Ide.Workbench ActiveDocument="Assets\TestGUI.cs">
+    <Files>
+      <File FileName="Assets\TestGUI.cs" Line="30" Column="6" />
+      <File FileName="Assets\GameNet\ServerResonse.cs" Line="15" Column="5" />
+      <File FileName="Assets\GameNet\Net.cs" Line="321" Column="12" />
+      <File FileName="Assets\Net\NetReader.cs" Line="51" Column="1" />
+      <File FileName="Assets\GameNet\ResponseCommonData.cs" Line="1" Column="1" />
+      <File FileName="Assets\GameNet\NetDelegate.cs" Line="1" Column="1" />
+      <File FileName="Assets\Net\Http.cs" Line="1" Column="1" />
+      <File FileName="Assets\Net\IHttpCallBack.cs" Line="1" Column="1" />
+      <File FileName="Assets\Net\NetWriter.cs" Line="1" Column="1" />
+      <File FileName="Assets\Net\SocketPackage.cs" Line="1" Column="1" />
+      <File FileName="Assets\Net\SocketConnect.cs" Line="31" Column="51" />
+    </Files>
+  </MonoDevelop.Ide.Workbench>
+  <MonoDevelop.Ide.DebuggingService.Breakpoints>
+    <BreakpointStore>
+      <Breakpoint file="E:\zhanguo3D\3dWar\4.0Android\TestNet\Assets\Net\Connection.cs" line="273" />
+      <Breakpoint file="E:\zhanguo3D\3dWar\4.0Android\TestNet\Assets\Net\Connection.cs" line="281" />
+      <Breakpoint file="E:\zhanguo3D\3dWar\4.0Android\TestNet\Assets\Net\Connection.cs" line="286" />
+      <Breakpoint file="E:\zhanguo3D\3dWar\4.0Android\TestNet\Assets\GameNet\Net.cs" line="191" />
+    </BreakpointStore>
+  </MonoDevelop.Ide.DebuggingService.Breakpoints>
+  <MonoDevelop.Ide.DebuggingService.PinnedWatches />
+</Properties>
