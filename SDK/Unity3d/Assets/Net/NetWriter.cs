@@ -179,6 +179,10 @@ public partial class NetWriter
             return s_Counter; 
         } 
     }
+    public static void SetMd5Key(string value)
+    {
+        s_md5Key = value;
+    }
     private static ulong s_userID = 0;
     private static string s_strSessionID = "";
     private static string s_strSt = "";
@@ -187,7 +191,7 @@ public partial class NetWriter
     private static string s_strPostData = "";
     private static string s_strUserData = "";
     private static int s_Counter = 1;
-    private static string s_md5Key = "44CAC8ED53714BF18D60C5C7B6296000";
+    private static string s_md5Key = "";
     // Key value
     private byte[] key = new byte[8] { 0x70, 0x06, 0x09, 0x21, 0x3A, 0x8B, 0x4F, 0x1D };
 }
