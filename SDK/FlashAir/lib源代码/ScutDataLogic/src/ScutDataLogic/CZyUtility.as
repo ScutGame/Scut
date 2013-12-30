@@ -4,14 +4,14 @@ package ScutDataLogic
 	
 	import cmodule.DesEncrypt.CLibInit;
 
-	public class CNdUtility
+	public class CZyUtility
 	{
 		public static var loader:CLibInit;
 		public static var lib:Object; 
 		public static var initialized:Boolean = false;
 		
 		
-		public function CNdUtility()
+		public function CZyUtility()
 		{
 		}
 		

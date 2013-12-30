@@ -33,7 +33,7 @@ package ScutDataLogic
 		public static function encryptPwd(pPwd:String, key:String):CLuaString
 		{
 			var DES_KEY:String="n7=7=7dk";
-			var strRet:String=CNdUtility.DesEncrypt(DES_KEY, pPwd);
+			var strRet:String=CZyUtility.DesEncrypt(DES_KEY, pPwd);
 			return new CLuaString(strRet);
 		}
 	}
