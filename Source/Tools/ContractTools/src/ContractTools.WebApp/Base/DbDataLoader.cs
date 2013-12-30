@@ -52,6 +52,7 @@ namespace ContractTools.WebApp.Base
             var command = _dbBaseProvider.CreateCommandStruct("Solutions", CommandMode.Insert);
             command.AddParameter("SlnName", model.SlnName);
             command.AddParameter("Namespace", model.Namespace);
+            command.AddParameter("RefNamespace", model.RefNamespace);
             command.AddParameter("Url", model.Url);
             command.AddParameter("GameID", model.GameID);
             command.ReturnIdentity = true;
@@ -64,6 +65,7 @@ namespace ContractTools.WebApp.Base
             var command = _dbBaseProvider.CreateCommandStruct("Solutions", CommandMode.Modify);
             command.AddParameter("SlnName", model.SlnName);
             command.AddParameter("Namespace", model.Namespace);
+            command.AddParameter("RefNamespace", model.RefNamespace);
             command.AddParameter("Url", model.Url);
             command.AddParameter("GameID", model.GameID);
             command.Filter = _dbBaseProvider.CreateCommandFilter();
