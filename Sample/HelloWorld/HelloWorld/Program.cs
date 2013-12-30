@@ -22,6 +22,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ****************************************************************************/
 using System;
+using ZyGames.Framework.Game.Context;
 using ZyGames.Framework.Game.Contract;
 using ZyGames.Framework.Game.Runtime;
 using ZyGames.Framework.Game.Service;
@@ -47,13 +48,17 @@ namespace HelloWorld
             ActionFactory.Request(httpGet, response, null);
         }
 
+        protected override BaseUser GetUser(int userId)
+        {
+            return null;
+        }
+
         protected override void OnStartAffer()
         {
             try
             {
-                //时间间隔更新库
-                int cacheInterval = 600;
-                GameEnvironment.Start(cacheInterval, () => true);
+                EnvironmentSetting setting = new EnvironmentSetting();
+                GameEnvironment.Start(setting);
                 Console.WriteLine("The server is staring...");
             }
             catch (Exception ex)

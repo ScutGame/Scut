@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -37,25 +37,25 @@
   <ItemGroup>
     <Reference Include="Microsoft.Dynamic, Version=1.1.0.20, Culture=neutral, PublicKeyToken=7f709c5b713576e1, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\Release\6.0.5.2\Lib\Microsoft.Dynamic.dll</HintPath>
+      <HintPath>..\..\..\Release\6.1.5.3\Lib\Microsoft.Dynamic.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Microsoft.Scripting, Version=1.1.0.20, Culture=neutral, PublicKeyToken=7f709c5b713576e1, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\Release\6.0.5.2\Lib\Microsoft.Scripting.dll</HintPath>
+      <HintPath>..\..\..\Release\6.1.5.3\Lib\Microsoft.Scripting.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="NLog">
-      <HintPath>..\..\..\Release\6.0.5.2\Lib\NLog.dll</HintPath>
+      <HintPath>..\..\..\Release\6.1.5.3\Lib\NLog.dll</HintPath>
     </Reference>
     <Reference Include="protobuf-net">
-      <HintPath>..\..\..\Release\6.0.5.2\Lib\protobuf-net.dll</HintPath>
+      <HintPath>..\..\..\Release\6.1.5.3\Lib\protobuf-net.dll</HintPath>
     </Reference>
     <Reference Include="ServiceStack.Common">
-      <HintPath>..\..\..\Release\6.0.5.2\Lib\ServiceStack.Common.dll</HintPath>
+      <HintPath>..\..\..\Release\6.1.5.3\Lib\ServiceStack.Common.dll</HintPath>
     </Reference>
     <Reference Include="ServiceStack.Redis">
-      <HintPath>..\..\..\Release\6.0.5.2\Lib\ServiceStack.Redis.dll</HintPath>
+      <HintPath>..\..\..\Release\6.1.5.3\Lib\ServiceStack.Redis.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -67,19 +67,25 @@
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
     <Reference Include="ZyGames.Framework">
-      <HintPath>..\..\..\Release\6.0.5.2\Lib\ZyGames.Framework.dll</HintPath>
+      <HintPath>..\..\..\Release\6.1.5.3\Lib\ZyGames.Framework.dll</HintPath>
     </Reference>
     <Reference Include="ZyGames.Framework.Common">
-      <HintPath>..\..\..\Release\6.0.5.2\Lib\ZyGames.Framework.Common.dll</HintPath>
+      <HintPath>..\..\..\Release\6.1.5.3\Lib\ZyGames.Framework.Common.dll</HintPath>
     </Reference>
     <Reference Include="ZyGames.Framework.Game">
-      <HintPath>..\..\..\Release\6.0.5.2\Lib\ZyGames.Framework.Game.dll</HintPath>
+      <HintPath>..\..\..\Release\6.1.5.3\Lib\ZyGames.Framework.Game.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Content Include="Script\Action\Action1001.cs">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Script\Action\ActionIDDefine.cs">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Script\Action\BaseAction.cs">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
