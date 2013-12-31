@@ -7839,7 +7839,7 @@
         </member>
         <member name="T:ZyGames.Framework.Model.EntityHistory">
             <summary>
-            ʵ��������ʷ��¼
+            Redis backup entity
             </summary>
         </member>
         <member name="T:ZyGames.Framework.Model.ShareEntity">
@@ -7874,7 +7874,7 @@
         </member>
         <member name="M:ZyGames.Framework.Model.EntityHistory.#ctor">
             <summary>
-            
+            init
             </summary>
         </member>
         <member name="P:ZyGames.Framework.Model.EntityHistory.Key">
