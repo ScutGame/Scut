@@ -10,6 +10,7 @@ using ZyGames.Framework.Common.Log;
 using ZyGames.Framework.Data;
 using ZyGames.Framework.Game.Cache;
 using ZyGames.Framework.Game.Com.Rank;
+using ZyGames.Framework.Game.Context;
 using ZyGames.Framework.Game.Contract;
 using ZyGames.Framework.Game.Runtime;
 using ZyGames.Framework.Game.Service;
@@ -49,7 +50,7 @@ namespace ZyGames.Doudizhu.Bll
                 var actionId = httpGet.ActionId;
                 var uid = httpGet.GetString("uid");
                 Console.WriteLine("Action{0} from {1} {2}", actionId, httpGet.RemoteAddress, uid);
-                ActionFactory.Request(httpGet, response, userId => new GameDataCacheSet<GameUser>().FindKey(userId.ToNotNullString()));
+                ActionFactory.Request(httpGet, response, GetUser);
 
             }
             catch (Exception ex)
@@ -58,17 +59,19 @@ namespace ZyGames.Doudizhu.Bll
             }
         }
 
+        protected override BaseUser GetUser(int userId)
+        {
+            return new GameDataCacheSet<GameUser>().FindKey(userId.ToNotNullString());
+        }
+
         protected override void OnStartAffer()
         {
-            //时间间隔更新库
-            int cacheInterval = 600;
-            BaseLog log = null;
             try
             {
-                GameEnvironment.ClientDesDeKey = "j6=9=1ac";
-                log = new BaseLog();
-                var assembly = Assembly.Load("ZyGames.Doudizhu.Model");
-                GameEnvironment.Start(cacheInterval, () =>
+                var setting = new EnvironmentSetting();
+                setting.ClientDesDeKey = "j6=9=1ac";
+                setting.EntityAssembly = Assembly.Load("ZyGames.Doudizhu.Model");
+                setting.ScriptStartBeforeHandle += () =>
                 {
                     ScriptEngines.AddReferencedAssembly(new string[] {
                         "ZyGames.Doudizhu.Lang.dll",
@@ -80,41 +83,13 @@ namespace ZyGames.Doudizhu.Bll
                     AppstoreClientManager.Current.InitConfig();
                     LoadUnlineUser();
                     InitRanking();
+                };
+                GameEnvironment.Start(setting);
 
-                    ////todo 广播
-                    //var list = new ShareCacheStruct<GameNotice>().FindAll(
-                    //    s => (s.IsBroadcast &&
-                    //            (s.ExpiryDate <= MathUtils.SqlMinDate) ||
-                    //                (s.ExpiryDate > MathUtils.SqlMinDate && s.ExpiryDate >= DateTime.Now))
-                    //          );
-                    //foreach (var notice in list)
-                    //{
-                    //    DdzBroadcastService.Send(notice.Content);
-                    //}
-                    return true;
-                }, 600, assembly);
-
-                //HttpGet httpGet = new HttpGet("d=", "11", "127.0.0.1");
-                //var script = (CSharpFileInfo)ScriptEngines.LoadScript("action1004.cs");
-                //var scriptType = script.Assembly.GetType("ZyGames.Doudizhu.Script.Action.Action1004", false, true);
-                //if (scriptType.CreateInstance<BaseStruct>(httpGet) == null)
-                //{
-
-                //}
-                //todo test
-                //CacheFactory.RemoveToDatabase("ZyGames.Doudizhu.Model.UserNickName_1380003");
-                //UserNickName u = new ShareCacheStruct<UserNickName>().FindKey(1380003);
-                //if (u == null)
-                //{
-
-                //}
             }
             catch (Exception ex)
             {
-                if (log != null)
-                {
-                    log.SaveLog(ex);
-                }
+                TraceLog.WriteError("OnStartAffer error:{0}", ex);
             }
         }
 
