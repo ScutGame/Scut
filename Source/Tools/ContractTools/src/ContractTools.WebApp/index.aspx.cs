@@ -337,7 +337,7 @@ namespace ContractTools.WebApp
                 mode.FieldValue = ((TextBox)cell.FindControl("txtFieldValue")).Text.ToString().Trim();
                 mode.MinValue = Convert.ToInt32(((TextBox)cell.FindControl("txtMinValue")).Text.ToString().Trim());
                 mode.MaxValue = Convert.ToInt32(((TextBox)cell.FindControl("txtMaxValue")).Text.ToString().Trim());
-                mode.ModifyDate = DateTime.Now;
+                mode.ModifyDate = MathUtils.Now;
                 if (DbDataLoader.Update(mode))
                 {
                     gvGetlist.EditIndex = -1;
