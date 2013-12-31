@@ -147,7 +147,7 @@ namespace ZyGames.Tianjiexing.BLL.Action
                 CurrExperience = 0,
                 CreateDate = DateTime.Now,
             };
-            new ShareCacheStruct<UserGuild>().Add(userGuild, GameEnvironment.CacheGlobalPeriod);
+            new ShareCacheStruct<UserGuild>().Add(userGuild);
 
 
             GuildMember member = new GuildMember()
@@ -163,7 +163,7 @@ namespace ZyGames.Tianjiexing.BLL.Action
                 IncenseNum = 0,
                 InsertDate = DateTime.Now
             };
-            new ShareCacheStruct<GuildMember>().Add(member, GameEnvironment.CacheGlobalPeriod);
+            new ShareCacheStruct<GuildMember>().Add(member);
             var temp = new ShareCacheStruct<GuildMember>().FindKey(guildID, ContextUser.UserID);
             if (temp.HasChanged)
             {
@@ -175,7 +175,7 @@ namespace ZyGames.Tianjiexing.BLL.Action
                 IdolLv = 1,
                 CurrExperience = 0
             };
-            new ShareCacheStruct<GuildIdol>().Add(idolInfo, GameEnvironment.CacheGlobalPeriod);
+            new ShareCacheStruct<GuildIdol>().Add(idolInfo);
             return true;
         }
     }

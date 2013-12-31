@@ -119,7 +119,7 @@ namespace ZyGames.Tianjiexing.BLL.Action
                 land.IsGain = 1;
                 land.PlantQuality = userPlantQuality.PlantQuality;
                 land.GainDate = MathUtils.SqlMinDate;
-                cacheSet.Add(land, GameEnvironment.CacheUserPeriod);
+                cacheSet.Add(land);
             }
 
             if (land.IsGain > 1 && ((DateTime.Now - land.GainDate).TotalSeconds > 28800))

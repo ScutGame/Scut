@@ -92,7 +92,7 @@ namespace ZyGames.Tianjiexing.BLL.Action
                             ChallengeNum = 1,
                             InsertDate = DateTime.Now
                         };
-                        new GameDataCacheSet<UserChallengeNum>().Add(userChallengeNum, GameEnvironment.CacheUserPeriod);
+                        new GameDataCacheSet<UserChallengeNum>().Add(userChallengeNum);
                     }
                     else
                     {

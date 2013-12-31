@@ -80,7 +80,7 @@ namespace ZyGames.Tianjiexing.BLL.Base
                                 userFun.UserID = user.UserID;
                                 userFun.FunEnum = fun.ToEnum<FunctionEnum>();
                                 userFun.CreateDate = DateTime.Now;
-                                _cacheSetUserFun.Add(userFun, GameEnvironment.CacheUserPeriod);
+                                _cacheSetUserFun.Add(userFun);
                                 _cacheSetUserFun.Update();
                                 user.OpenFun.Add(userFun);
                             }
@@ -129,7 +129,7 @@ namespace ZyGames.Tianjiexing.BLL.Base
                         userFun.UserID = user.UserID;
                         userFun.FunEnum = fun.ToEnum<FunctionEnum>();
                         userFun.CreateDate = DateTime.Now;
-                        _cacheSetUserFun.Add(userFun, GameEnvironment.CacheUserPeriod);
+                        _cacheSetUserFun.Add(userFun);
                         _cacheSetUserFun.Update();
                        
                     }

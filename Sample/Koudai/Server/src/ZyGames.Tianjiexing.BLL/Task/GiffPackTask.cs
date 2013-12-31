@@ -89,7 +89,7 @@ namespace ZyGames.Tianjiexing.BLL.Task
                     receive.UserID = userID;
                     receive.IsReceive = false;
                     receive.ReceiveDate = DateTime.Now;
-                    new GameDataCacheSet<PackageReceive>().Add(receive, GameEnvironment.CacheUserPeriod);
+                    new GameDataCacheSet<PackageReceive>().Add(receive);
                 }
             }
         }

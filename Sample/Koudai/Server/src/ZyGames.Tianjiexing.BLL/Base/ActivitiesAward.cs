@@ -117,7 +117,7 @@ namespace ZyGames.Tianjiexing.BLL.Base
                                            RefreashDate = DateTime.Now,
                                            RestrainNum = 1,
                                        };
-                        new GameDataCacheSet<FestivalRestrain>().Add(restrain, GameEnvironment.CacheUserPeriod);
+                        new GameDataCacheSet<FestivalRestrain>().Add(restrain);
                     }
                 }
             }
@@ -336,7 +336,7 @@ namespace ZyGames.Tianjiexing.BLL.Base
                                            RefreashDate = DateTime.Now,
                                            RestrainNum = 1,
                                        };
-                        new GameDataCacheSet<FestivalRestrain>().Add(restrain, GameEnvironment.CacheUserPeriod);
+                        new GameDataCacheSet<FestivalRestrain>().Add(restrain);
                     }
                 }
             }

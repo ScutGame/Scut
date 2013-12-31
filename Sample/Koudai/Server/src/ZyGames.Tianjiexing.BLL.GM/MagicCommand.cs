@@ -55,7 +55,7 @@ namespace ZyGames.Tianjiexing.BLL.GM
                     IsEnabled = false,
                     MagicType = magic.MagicType,
                 };
-                cacheSet.Add(userMagic, GameEnvironment.CacheUserPeriod);
+                cacheSet.Add(userMagic);
             }
             else
             {

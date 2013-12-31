@@ -306,7 +306,7 @@ namespace ZyGames.Tianjiexing.BLL.Action
                     UserID = ContextUser.UserID,
                     PlotNpcID = PlotNpcID
                 };
-                cacheSet.Add(userPlotCombat, GameEnvironment.CacheUserPeriod);
+                cacheSet.Add(userPlotCombat);
                 userPlotCombat = cacheSet.FindKey(ContextUser.UserID, PlotNpcID);
             }
             userPlotCombat.PlotID = npcInfo.PlotID;
@@ -461,7 +461,7 @@ namespace ZyGames.Tianjiexing.BLL.Action
             if (userRestrain == null)
             {
                 userRestrain = new UserDailyRestrain() { UserID = Uid };
-                cacheSet.Add(userRestrain, GameEnvironment.CacheUserPeriod);
+                cacheSet.Add(userRestrain);
                 userRestrain = cacheSet.FindKey(Uid);
             }
             if (userRestrain.UserExtend == null)

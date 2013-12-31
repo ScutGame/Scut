@@ -122,7 +122,7 @@ namespace ZyGames.Tianjiexing.BLL.Action
                             userRestrain.UserID = ContextUser.UserID;
                             userRestrain.RefreshDate = DateTime.Now;
                             userRestrain.Funtion4 = 1;
-                            cacheSet.Add(userRestrain, GameEnvironment.CacheUserPeriod);
+                            cacheSet.Add(userRestrain);
                         }
                     }
 
@@ -167,7 +167,7 @@ namespace ZyGames.Tianjiexing.BLL.Action
                         userRestrain.UserID = ContextUser.UserID;
                         userRestrain.RefreshDate = DateTime.Now;
                         userRestrain.Funtion4 = 1;
-                        cacheSet.Add(userRestrain, GameEnvironment.CacheUserPeriod);
+                        cacheSet.Add(userRestrain);
                     }
 
                     UserLogHelper.AppenUseGoldLog(ContextUser.UserID, 1, userRestrain.Funtion4, 1, useGold, ContextUser.GoldNum, MathUtils.Addition(ContextUser.GoldNum, useGold, int.MaxValue));

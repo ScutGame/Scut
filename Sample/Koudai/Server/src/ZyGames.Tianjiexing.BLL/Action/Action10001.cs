@@ -95,7 +95,7 @@ namespace ZyGames.Tianjiexing.BLL.Action
                     DewNum = ConfigEnvSet.GetInt("UserQueue.ShengShuiMaxNum"),
                     PayDewTime = 0,
                 };
-                cacheSet.Add(uPlant, GameEnvironment.CacheUserPeriod);
+                cacheSet.Add(uPlant);
             }
             if (landArray.Count == 0)
             {
@@ -108,7 +108,7 @@ namespace ZyGames.Tianjiexing.BLL.Action
                     IsBlackLand = 2,
                     IsGain = 2
                 };
-                landCacheSet.Add(userLand, GameEnvironment.CacheUserPeriod);
+                landCacheSet.Add(userLand);
             }
 
             if (new GameDataCacheSet<UserFunction>().FindKey(ContextUser.UserID, FunctionEnum.Zhongzhijingqianshu) == null)
@@ -160,7 +160,7 @@ namespace ZyGames.Tianjiexing.BLL.Action
                     IsSuspend = false,
                     StrengNum = 0
                 };
-                queueCacheSet.Add(queue, GameEnvironment.CacheUserPeriod);
+                queueCacheSet.Add(queue);
             }
 
             return true;

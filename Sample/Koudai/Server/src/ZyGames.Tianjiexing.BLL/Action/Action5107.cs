@@ -298,7 +298,7 @@ namespace ZyGames.Tianjiexing.BLL.Action
                 //        TotalColdTime = codeTime,
                 //        Timing = DateTime.Now
                 //    };
-                //    userQueueCache.Add(queue, GameEnvironment.CacheUserPeriod);
+                //    userQueueCache.Add(queue);
                 //    //queue.Append();
                 //}
                 //次数限制修改
@@ -378,7 +378,7 @@ namespace ZyGames.Tianjiexing.BLL.Action
                 userFriends.FightTime = DateTime.Now;
                 userFriends.FriendType = FriendType.ChouDi;
                 userFriends.ChatTime = DateTime.Now;
-                cacheSet.Add(userFriends, GameEnvironment.CacheGlobalPeriod);
+                cacheSet.Add(userFriends);
             }
 
         }

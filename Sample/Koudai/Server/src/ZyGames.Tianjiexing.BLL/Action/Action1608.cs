@@ -136,7 +136,7 @@ namespace ZyGames.Tianjiexing.BLL.Action
                                            SurplusNum = itemInfo.EffectNum,
                                            ChangeTime = DateTime.Now
                                        };
-                new GameDataCacheSet<UserProps>().Add(uProps, GameEnvironment.CacheUserPeriod);
+                new GameDataCacheSet<UserProps>().Add(uProps);
             }
             return true;
         }
@@ -183,7 +183,7 @@ namespace ZyGames.Tianjiexing.BLL.Action
                     SurplusNum = itemInfo.EffectNum,
                     ChangeTime = DateTime.Now
                 };
-                new GameDataCacheSet<UserProps>().Add(uProps, GameEnvironment.CacheUserPeriod);
+                new GameDataCacheSet<UserProps>().Add(uProps);
             }
             return true;
         }

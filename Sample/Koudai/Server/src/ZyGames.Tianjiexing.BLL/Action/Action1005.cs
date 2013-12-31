@@ -207,7 +207,7 @@ namespace ZyGames.Tianjiexing.BLL.Action
                     userFun.UserID = Uid;
                     userFun.FunEnum = fun.ToEnum<FunctionEnum>();
                     userFun.CreateDate = DateTime.Now;
-                    cacheSet.Add(userFun, GameEnvironment.CacheUserPeriod);
+                    cacheSet.Add(userFun);
                     cacheSet.Update();
                 }
             }
@@ -231,7 +231,7 @@ namespace ZyGames.Tianjiexing.BLL.Action
                 dailyRestrain.Funtion8 = 0;
                 dailyRestrain.Funtion9 = 0;
                 var cacheSet = new GameDataCacheSet<UserDailyRestrain>();
-                cacheSet.Add(dailyRestrain, GameEnvironment.CacheUserPeriod);
+                cacheSet.Add(dailyRestrain);
                 cacheSet.Update();
             }
         }
@@ -247,7 +247,7 @@ namespace ZyGames.Tianjiexing.BLL.Action
                 MagicType = MagicType.MoFaZhen
             };
             var cacheUserMagic = new GameDataCacheSet<UserMagic>();
-            cacheUserMagic.Add(userMagic, GameEnvironment.CacheUserPeriod);
+            cacheUserMagic.Add(userMagic);
             cacheUserMagic.Update();
 
             //初始阵法
@@ -264,7 +264,7 @@ namespace ZyGames.Tianjiexing.BLL.Action
 
                 };
                 var cacheEmbattle = new GameDataCacheSet<UserEmbattle>();
-                cacheEmbattle.Add(userEmbattle, GameEnvironment.CacheUserPeriod);
+                cacheEmbattle.Add(userEmbattle);
                 cacheEmbattle.Update();
             }
         }
@@ -306,7 +306,7 @@ namespace ZyGames.Tianjiexing.BLL.Action
             userGeneral.HeritageType = HeritageType.Normal;
             userGeneral.AbilityNum = 3;
             var cacheSet = new GameDataCacheSet<UserGeneral>();
-            cacheSet.Add(userGeneral, GameEnvironment.CacheUserPeriod);
+            cacheSet.Add(userGeneral);
             cacheSet.Update();
             UserAbilityHelper.AddUserAbility(general.AbilityID, Uid.ToInt(), generalID, 1);
           
@@ -358,20 +358,20 @@ namespace ZyGames.Tianjiexing.BLL.Action
                 DailyLoginTime = DateTime.Now
             };
             var cacheSet = new GameDataCacheSet<GameUser>();
-            cacheSet.Add(userEntity, GameEnvironment.CacheUserPeriod);
+            cacheSet.Add(userEntity);
             cacheSet.Update();
             //增加初始背包、灵件、水晶
-            new GameDataCacheSet<UserItemPackage>().Add(new UserItemPackage { UserID = userEntity.UserID }, GameEnvironment.CacheUserPeriod);
-            new GameDataCacheSet<UserCrystalPackage>().Add(new UserCrystalPackage() { UserID = userEntity.UserID }, GameEnvironment.CacheUserPeriod);
-            new GameDataCacheSet<UserSparePackage>().Add(new UserSparePackage() { UserID = userEntity.UserID }, GameEnvironment.CacheUserPeriod);
+            new GameDataCacheSet<UserItemPackage>().Add(new UserItemPackage { UserID = userEntity.UserID });
+            new GameDataCacheSet<UserCrystalPackage>().Add(new UserCrystalPackage() { UserID = userEntity.UserID });
+            new GameDataCacheSet<UserSparePackage>().Add(new UserSparePackage() { UserID = userEntity.UserID });
             //增加初始附魔符
-            new GameDataCacheSet<UserEnchant>().Add(new UserEnchant(userEntity.UserID), GameEnvironment.CacheUserPeriod);
+            new GameDataCacheSet<UserEnchant>().Add(new UserEnchant(userEntity.UserID));
             //增加初始副本
-            new GameDataCacheSet<UserPlotPackage>().Add(new UserPlotPackage(userEntity.UserID), GameEnvironment.CacheUserPeriod);
+            new GameDataCacheSet<UserPlotPackage>().Add(new UserPlotPackage(userEntity.UserID));
             // 增加初始集邮册
-            new GameDataCacheSet<UserAlbum>().Add(new UserAlbum(userEntity.UserID), GameEnvironment.CacheUserPeriod);
+            new GameDataCacheSet<UserAlbum>().Add(new UserAlbum(userEntity.UserID));
             // 玩家圣吉塔
-            new GameDataCacheSet<UserShengJiTa>().Add(new UserShengJiTa(userEntity.UserID.ToInt()), GameEnvironment.CacheUserPeriod);
+            new GameDataCacheSet<UserShengJiTa>().Add(new UserShengJiTa(userEntity.UserID.ToInt()));
 
             return userEntity;
         }

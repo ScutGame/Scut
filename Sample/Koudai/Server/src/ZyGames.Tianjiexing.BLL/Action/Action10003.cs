@@ -98,7 +98,7 @@ namespace ZyGames.Tianjiexing.BLL.Action
                     RefreshNum = 0,
                     RefreshDate = DateTime.Now,
                 };
-                new GameDataCacheSet<UserPlantQuality>().Add(plant, GameEnvironment.CacheUserPeriod);
+                new GameDataCacheSet<UserPlantQuality>().Add(plant);
                 plantQualityType = 1;
             }
             PlantQualityType qualityType = (PlantQualityType)Enum.Parse(typeof(PlantQualityType), plantQualityType.ToString());

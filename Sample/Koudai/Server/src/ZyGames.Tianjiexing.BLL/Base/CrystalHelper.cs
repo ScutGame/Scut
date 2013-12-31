@@ -384,7 +384,7 @@ namespace ZyGames.Tianjiexing.BLL.Base
                         HuntingID = huntingID2,
                         IsLight = 1
                     };
-                    lightCacheSet.Add(userLight, GameEnvironment.CacheUserPeriod);
+                    lightCacheSet.Add(userLight);
                 }
             }
 

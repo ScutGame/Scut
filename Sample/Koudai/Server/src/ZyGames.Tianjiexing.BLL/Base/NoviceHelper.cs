@@ -107,7 +107,7 @@ namespace ZyGames.Tianjiexing.BLL.Base
                     RestrainNum = 0,
                     RefreashDate = DateTime.Now
                 };
-                cacheSet.Add(restrain, GameEnvironment.CacheUserPeriod);
+                cacheSet.Add(restrain);
             }
         }
 
@@ -275,7 +275,7 @@ namespace ZyGames.Tianjiexing.BLL.Base
             if (noviceRestrain == null)
             {
                 noviceRestrain = new NoviceRestrain { UserID = user.UserID };
-                cacheSet.Add(noviceRestrain, GameEnvironment.CacheUserPeriod);
+                cacheSet.Add(noviceRestrain);
             }
             if (noviceRestrain.EnergyNum < _onlinePrizeConfig.Count)
             {
@@ -680,7 +680,7 @@ namespace ZyGames.Tianjiexing.BLL.Base
                                    FunEnum = FunctionEnum.MorePlotCoin,
                                    CreateDate = DateTime.Now
                                };
-                cacheSet.Add(function, GameEnvironment.CacheUserPeriod);
+                cacheSet.Add(function);
             }
             function = cacheSet.FindKey(userID, FunctionEnum.MorePlotEnergy);
             if (function == null)
@@ -692,7 +692,7 @@ namespace ZyGames.Tianjiexing.BLL.Base
                     CreateDate = DateTime.Now
                 };
 
-                cacheSet.Add(function, GameEnvironment.CacheUserPeriod);
+                cacheSet.Add(function);
             }
         }
 
@@ -974,7 +974,7 @@ namespace ZyGames.Tianjiexing.BLL.Base
                                             RestrainNum = 1,
                                             RefreashDate = DateTime.Now,
                                         };
-                                cacheSet.Add(restrain, GameEnvironment.CacheUserPeriod);
+                                cacheSet.Add(restrain);
 
                                 systemContent = ActivitiesAward.GameUserUniversalNocite(user.UserID, reward.Type, itemID, reward.Num, LanguageManager.GetLang().St_AugustSecondWeek);
                                 break;
@@ -1065,7 +1065,7 @@ namespace ZyGames.Tianjiexing.BLL.Base
                                 RefreashDate = DateTime.Now,
                             };
 
-                            cacheSet.Add(restrain, GameEnvironment.CacheUserPeriod);
+                            cacheSet.Add(restrain);
 
                         }
                     }
@@ -1167,7 +1167,7 @@ namespace ZyGames.Tianjiexing.BLL.Base
                                 RefreashDate = DateTime.Now,
                                 RestrainNum = 1
                             };
-                            cacheSet.Add(restrain, GameEnvironment.CacheUserPeriod);
+                            cacheSet.Add(restrain);
                         }
                     }
                 }
@@ -1214,7 +1214,7 @@ namespace ZyGames.Tianjiexing.BLL.Base
                                                 SurplusNum = 0
                                             };
 
-                                cacheSet.Add(props, GameEnvironment.CacheUserPeriod);
+                                cacheSet.Add(props);
 
                                 restrain = new FestivalRestrain()
                                 {
@@ -1223,7 +1223,7 @@ namespace ZyGames.Tianjiexing.BLL.Base
                                     RefreashDate = DateTime.Now,
                                     RestrainNum = 1
                                 };
-                                new GameDataCacheSet<FestivalRestrain>().Add(restrain, GameEnvironment.CacheUserPeriod);
+                                new GameDataCacheSet<FestivalRestrain>().Add(restrain);
                             }
                         }
                     }
@@ -1287,7 +1287,7 @@ namespace ZyGames.Tianjiexing.BLL.Base
                                                        RefreashDate = DateTime.Now,
                                                        RestrainNum = victoryNum
                                                    };
-                            cacheSet.Add(festivalRestrain, GameEnvironment.CacheUserPeriod);
+                            cacheSet.Add(festivalRestrain);
                         }
                         else
                         {
@@ -1501,7 +1501,7 @@ namespace ZyGames.Tianjiexing.BLL.Base
                             if (prize.RefreshDate.Date == DateTime.Now.Date)
                             {
                                 UserTakePrize userTask = PrizeHelper.GetUserTake(prize, user.UserID, info);
-                                new ShareCacheStruct<UserTakePrize>().Add(userTask, GameEnvironment.CacheGlobalPeriod);
+                                new ShareCacheStruct<UserTakePrize>().Add(userTask);
                             }
                         }
                         if (fRest == null)
@@ -1511,7 +1511,7 @@ namespace ZyGames.Tianjiexing.BLL.Base
                             fRest.RefreashDate = DateTime.Now;
                             fRest.RestrainNum = 1;
                             fRest.UserID = user.UserID;
-                            cacheSet.Add(fRest, GameEnvironment.CacheUserPeriod);
+                            cacheSet.Add(fRest);
                         }
                         else
                         {
@@ -1569,7 +1569,7 @@ namespace ZyGames.Tianjiexing.BLL.Base
                                         RestrainNum = 1,
                                         RefreashDate = DateTime.Now
                                     };
-                                    cacheSet.Add(festivalRestrain, GameEnvironment.CacheUserPeriod);
+                                    cacheSet.Add(festivalRestrain);
                                 }
                             }
                         }
@@ -1660,7 +1660,7 @@ namespace ZyGames.Tianjiexing.BLL.Base
                     RestrainNum = 1,
                     RefreashDate = DateTime.Now
                 };
-                cacheSet.Add(festivalRestrain, GameEnvironment.CacheUserPeriod);
+                cacheSet.Add(festivalRestrain);
                 festivalRestrain = cacheSet.FindKey(user.UserID, festivalID);
             }
 
@@ -1751,7 +1751,7 @@ namespace ZyGames.Tianjiexing.BLL.Base
                                     RefreashDate = DateTime.Now,
                                     RestrainNum = 1,
                                 };
-                                new GameDataCacheSet<FestivalRestrain>().Add(restrain, GameEnvironment.CacheUserPeriod);
+                                new GameDataCacheSet<FestivalRestrain>().Add(restrain);
                             }
                         }
                     }
@@ -1787,7 +1787,7 @@ namespace ZyGames.Tianjiexing.BLL.Base
                 userPrize.TaskDate = MathUtils.SqlMinDate;
                 userPrize.OpUserID = 10000;
                 userPrize.CreateDate = DateTime.Now;
-                new ShareCacheStruct<UserTakePrize>().Add(userPrize, GameEnvironment.CacheGlobalPeriod);
+                new ShareCacheStruct<UserTakePrize>().Add(userPrize);
             }
         }
     }

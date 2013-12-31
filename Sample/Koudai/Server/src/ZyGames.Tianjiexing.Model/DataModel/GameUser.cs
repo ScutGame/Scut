@@ -1764,7 +1764,7 @@ namespace ZyGames.Tianjiexing.Model
             if (cacheSet.FindKey(UserID) == null)
             {
                 package = new UserSparePackage() { UserID = UserID };
-                cacheSet.Add(package, GameEnvironment.CacheUserPeriod);
+                cacheSet.Add(package);
             }
             package = cacheSet.FindKey(UserID);
             package.SparePackage.Add(sparePart);

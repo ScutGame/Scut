@@ -167,7 +167,7 @@ namespace ZyGames.Tianjiexing.BLL.Action
                 //        StrengNum = 1,
                 //        IsSuspend = false
                 //    };
-                //    new GameDataCacheSet<UserQueue>().Add(userQueue, GameEnvironment.CacheUserPeriod);
+                //    new GameDataCacheSet<UserQueue>().Add(userQueue);
                 //}
             }
 
@@ -189,7 +189,7 @@ namespace ZyGames.Tianjiexing.BLL.Action
                                 Position = gridRange.ToShort(),
                                 GeneralID = 0
                             };
-                            new GameDataCacheSet<UserEmbattle>().Add(embattle, GameEnvironment.CacheUserPeriod);
+                            new GameDataCacheSet<UserEmbattle>().Add(embattle);
                         }
                     }
                 }

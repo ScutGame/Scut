@@ -54,7 +54,7 @@ namespace ZyGames.Tianjiexing.BLL.GM
                     FunEnum = funEnum,
                     CreateDate = DateTime.Now
                 };
-                cacheSet.Add(userFunction, GameEnvironment.CacheUserPeriod);
+                cacheSet.Add(userFunction);
             }
         }
     }

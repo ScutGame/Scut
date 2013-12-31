@@ -106,7 +106,7 @@ namespace ZyGames.Tianjiexing.BLL.Action
                 userGeneral.Experience1 = 0;
                 userGeneral.Experience2 = 0;
                 var cacheSet = new GameDataCacheSet<UserGeneral>();
-                cacheSet.Add(userGeneral, GameEnvironment.CacheUserPeriod);
+                cacheSet.Add(userGeneral);
             }
             ErrorCode = 0;
             ErrorInfo = LanguageManager.GetLang().St1434_RecruitmentErfolg;

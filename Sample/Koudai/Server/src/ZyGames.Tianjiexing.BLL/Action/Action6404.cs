@@ -144,7 +144,7 @@ namespace ZyGames.Tianjiexing.BLL.Action
             fight.ApplyDate = DateTime.Now;
             fight.IsRemove = false;
             fight.IsBanner = false;
-            cacheSet.Add(fight, GameEnvironment.CacheGlobalPeriod);
+            cacheSet.Add(fight);
             ErrorCode = 0;
             ErrorInfo = LanguageManager.GetLang().St6401_SuccessfulRegistration;
             return true;

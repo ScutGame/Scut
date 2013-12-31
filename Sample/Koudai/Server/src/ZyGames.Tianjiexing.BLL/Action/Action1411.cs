@@ -130,7 +130,7 @@ namespace ZyGames.Tianjiexing.BLL.Action
                             IsSuspend = false,
                             StrengNum = 0
                         };
-                        new GameDataCacheSet<UserQueue>().Add(userQueue, GameEnvironment.CacheUserPeriod);
+                        new GameDataCacheSet<UserQueue>().Add(userQueue);
                     }
                     else
                     {

@@ -111,7 +111,7 @@ namespace ZyGames.Tianjiexing.BLL.Action
                                           FriendID = _friendId,
                                           FriendType = FriendType.Attention
                                       };
-                    cacheSet.Add(friends, GameEnvironment.CacheGlobalPeriod);
+                    cacheSet.Add(friends);
                     //todo test
                     friends.ChatTime = DateTime.Now;
 
@@ -152,7 +152,7 @@ namespace ZyGames.Tianjiexing.BLL.Action
                         FriendID = ContextUser.UserID,
                         FriendType = FriendType.Fans,
                     };
-                    cacheSet.Add(friends2, GameEnvironment.CacheGlobalPeriod);
+                    cacheSet.Add(friends2);
                     //todo test
                     friends2.ChatTime = DateTime.Now;
                 }
@@ -231,7 +231,7 @@ namespace ZyGames.Tianjiexing.BLL.Action
                         FriendID = gameUser.UserID,
                         FriendType = FriendType.Attention
                     };
-                    cacheSet.Add(friends, GameEnvironment.CacheGlobalPeriod);
+                    cacheSet.Add(friends);
 
                     UserFriends friends2 = new UserFriends()
                     {
@@ -239,7 +239,7 @@ namespace ZyGames.Tianjiexing.BLL.Action
                         FriendID = ContextUser.UserID,
                         FriendType = FriendType.Fans,
                     };
-                    cacheSet.Add(friends2, GameEnvironment.CacheGlobalPeriod);
+                    cacheSet.Add(friends2);
                 }
                 else
                 {

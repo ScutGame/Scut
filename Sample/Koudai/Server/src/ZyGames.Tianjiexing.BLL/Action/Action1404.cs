@@ -102,7 +102,7 @@ namespace ZyGames.Tianjiexing.BLL.Action
                 {
                     userGeneral = new UserGeneral();
                     userGeneral.UserID = ContextUser.UserID;
-                    cacheSet.Add(userGeneral, GameEnvironment.CacheUserPeriod);
+                    cacheSet.Add(userGeneral);
                     userGeneral.GeneralID = general.GeneralID;
                     userGeneral.GeneralName = general.GeneralName;
                     userGeneral.HeadID = general.HeadID;
@@ -189,7 +189,7 @@ namespace ZyGames.Tianjiexing.BLL.Action
                             userGeneral.UserID = ContextUser.UserID;
                             userGeneral.GeneralID = currSoulID;
                             generalType = GeneralType.Soul;
-                            cacheSet.Add(userGeneral, GameEnvironment.CacheUserPeriod);
+                            cacheSet.Add(userGeneral);
                             UserAbilityHelper.AddUserAbility(general.AbilityID, ContextUser.UserID.ToInt(), general.GeneralID,1);
                         }
                     }
@@ -199,7 +199,7 @@ namespace ZyGames.Tianjiexing.BLL.Action
                         userGeneral.UserID = ContextUser.UserID;
                         userGeneral.GeneralID = general.GeneralID;
                         generalType = GeneralType.YongBing;
-                        cacheSet.Add(userGeneral, GameEnvironment.CacheUserPeriod);
+                        cacheSet.Add(userGeneral);
                         UserAbilityHelper.AddUserAbility(general.AbilityID, ContextUser.UserID.ToInt(), general.GeneralID,1);
                     }
                     userGeneral.GeneralName = general.GeneralName;

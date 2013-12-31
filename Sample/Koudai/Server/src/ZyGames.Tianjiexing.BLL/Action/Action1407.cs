@@ -135,7 +135,7 @@ namespace ZyGames.Tianjiexing.BLL.Action
                     BaseNum = (int)baseNum
                 };
                 var cacheSet = new GameDataCacheSet<GeneralMedicine>();
-                cacheSet.Add(generalMedicine, GameEnvironment.CacheUserPeriod);
+                cacheSet.Add(generalMedicine);
 
                 UserItemHelper.UseUserItem(ContextUser.UserID, itemInfo.ItemID, 1);
 
@@ -177,7 +177,7 @@ namespace ZyGames.Tianjiexing.BLL.Action
                     BaseNum = (int)baseNum
                 };
                 var cacheSet = new GameDataCacheSet<GeneralMedicine>();
-                cacheSet.Add(generalMedicine, GameEnvironment.CacheUserPeriod);
+                cacheSet.Add(generalMedicine);
 
                 ContextUser.UseGold = MathUtils.Addition(ContextUser.UseGold, useGold, int.MaxValue);
                 //ContextUser.Update();

@@ -116,7 +116,7 @@ namespace ZyGames.Tianjiexing.BLL.Action
                            FriendID = _friendId,
                            FriendType = FriendType.Friend
                        };
-                       cacheSet.Add(friends, GameEnvironment.CacheGlobalPeriod);
+                       cacheSet.Add(friends);
                        //todo test
                        friends.ChatTime = DateTime.Now;
 
@@ -142,7 +142,7 @@ namespace ZyGames.Tianjiexing.BLL.Action
                            FriendID = ContextUser.UserID,
                            FriendType = FriendType.Friend,
                        };
-                       cacheSet.Add(friends2, GameEnvironment.CacheGlobalPeriod);
+                       cacheSet.Add(friends2);
                        //todo test
                        friends2.ChatTime = DateTime.Now;
                    }

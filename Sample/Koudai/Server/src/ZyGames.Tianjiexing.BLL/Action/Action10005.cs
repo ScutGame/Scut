@@ -222,7 +222,7 @@ namespace ZyGames.Tianjiexing.BLL.Action
                                              RefreshNum = 1,
                                              RefreshDate = DateTime.Now
                                          };
-            new GameDataCacheSet<UserPlantQuality>().Add(plant, GameEnvironment.CacheUserPeriod);
+            new GameDataCacheSet<UserPlantQuality>().Add(plant);
         }
 
         //刷新所需晶石

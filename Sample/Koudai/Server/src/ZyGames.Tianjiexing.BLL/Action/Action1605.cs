@@ -120,7 +120,7 @@ namespace ZyGames.Tianjiexing.BLL.Action
                 {
                     SurplusNum = effectNum
                 };
-                cacheSet.Add(props, GameEnvironment.CacheUserPeriod);
+                cacheSet.Add(props);
             }
 
             ContextUser.IsUseupItem = false;

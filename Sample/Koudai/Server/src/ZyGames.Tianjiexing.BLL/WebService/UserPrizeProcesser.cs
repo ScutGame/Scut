@@ -149,7 +149,7 @@ namespace ZyGames.Tianjiexing.BLL.WebService
                         
                     };
                     var cacheSet = new ShareCacheStruct<UserTakePrize>();
-                    cacheSet.Add(userPrizeLog, GameEnvironment.CacheGlobalPeriod);
+                    cacheSet.Add(userPrizeLog);
                     cacheSet.Update();
                     PutCrystal(crystalList.Split(','), str);
 

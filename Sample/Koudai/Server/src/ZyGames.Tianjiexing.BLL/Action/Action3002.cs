@@ -118,7 +118,7 @@ namespace ZyGames.Tianjiexing.BLL.Action
                         CompleteNum = 0,
                         CreateDate = DateTime.Now
                     };
-                    new GameDataCacheSet<UserTask>().Add(usertask, GameEnvironment.CacheUserPeriod);
+                    new GameDataCacheSet<UserTask>().Add(usertask);
                 }
                 else
                 {

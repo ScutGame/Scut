@@ -100,7 +100,7 @@ namespace ZyGames.Tianjiexing.BLL.Action
                 userTrump.Zodiac = TrumpHelper.GetZodiacType(ZodiacType.NoZodiac);
                 //userTrump.SkillInfo = new List<SkillInfo>();
                 //userTrump.PropertyInfo = new List<GeneralProperty>();
-                cacheTrump.Add(userTrump, GameEnvironment.CacheUserPeriod);
+                cacheTrump.Add(userTrump);
                 cacheTrump.Update();
             }
             var cacheSet = new GameDataCacheSet<UserFunction>();
@@ -113,7 +113,7 @@ namespace ZyGames.Tianjiexing.BLL.Action
                     UserID = ContextUser.UserID,
                     CreateDate = DateTime.Now,
                 };
-                cacheSet.Add(function, GameEnvironment.CacheUserPeriod);
+                cacheSet.Add(function);
                 cacheSet.Update();
             }
             var usergeneral = UserGeneral.GetMainGeneral(ContextUser.UserID);

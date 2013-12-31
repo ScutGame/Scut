@@ -36,8 +36,6 @@ namespace ZyGames.Tianjiexing.BLL.Action
     /// </summary>
     public class Action1505 : BaseAction
     {
-        private int ClientVersion;
-        private int _abilityId;
         private List<AbilityInfo> abilityList = new List<AbilityInfo>();
 
 

@@ -152,7 +152,7 @@ namespace ZyGames.Tianjiexing.BLL.Action
                                 GeneralID = 0
                             };
                             var cacheSet = new GameDataCacheSet<UserEmbattle>();
-                            cacheSet.Add(embattle, GameEnvironment.CacheUserPeriod);
+                            cacheSet.Add(embattle);
                         }
                     }
                 }

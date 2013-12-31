@@ -69,7 +69,6 @@ namespace ZyGames.Tianjiexing.BLL.Base
             }
             Stopwatch stopwatch = new Stopwatch();
             stopwatch.Start();
-            RegisterCacheSet();
             ConfigCacheGlobal.Load();
             LoadGlobalData();
             LoadUser();
@@ -105,26 +104,7 @@ namespace ZyGames.Tianjiexing.BLL.Base
             RankingFactory.Start(timeOut);
             var a = 1;
         }
-
-        private static void RegisterCacheSet()
-        {
-            //todo 注释掉，由底层自动注册
-        }
-
-        private static void InitProtoBufType()
-        {
-            try
-            {
-                var assembly = Assembly.Load("ZyGames.Tianjiexing.Model");
-                ProtoBufUtils.LoadProtobufType(assembly);
-            }
-            catch (Exception ex)
-            {
-                throw new ApplicationException("Init protobuf class error", ex);
-            }
-        }
-
-
+        
         private static void LoadUser()
         {
             Stopwatch stopwatch = new Stopwatch();
@@ -163,7 +143,6 @@ namespace ZyGames.Tianjiexing.BLL.Base
 
         public static void LoadGlobalData()
         {
-            int periodTime = GameEnvironment.CacheGlobalPeriod;
             new BaseLog().SaveLog("系统加载单服配置开始...");
             Stopwatch stopwatch = new Stopwatch();
             stopwatch.Start();
@@ -193,36 +172,6 @@ namespace ZyGames.Tianjiexing.BLL.Base
 
         }
 
-        //private static void LoadServerCombatUser()
-        //{
-        //    try
-        //    {
-        //        new BaseLog().SaveLog("系统跨服战用户加载开始...");
-        //        Stopwatch stopwatch = new Stopwatch();
-        //        stopwatch.Start();
-        //        int periodTime = GameEnvironment.CacheGlobalPeriod;
-        //        int capacity = int.MaxValue;
-        //        int FastID = ServerCombatHelper.GetFastID();
-        //        DbDataFilter filter = new DbDataFilter(capacity);
-        //        filter.Condition = "FastID = @FastID";
-        //        filter.Parameters.Add("@FastID", FastID);
-        //        var cacheSet = new ShareCacheStruct<UserServerCombatApply>();
-        //        cacheSet.AutoLoad(filter, periodTime, false);
-        //        List<UserServerCombatApply> applyList = cacheSet.FindAll();
-        //        new BaseLog().SaveLog(string.Format("系统跨服战加载用户数{0}", applyList.Count));
-        //        foreach (var item in applyList)
-        //        {
-        //            UserCacheGlobal.LoadOffline(item.UserID);
-        //        }
-        //        stopwatch.Stop();
-        //        new BaseLog().SaveLog(string.Format("系统跨服战用户加载时间:{0}ms", stopwatch.Elapsed.TotalMilliseconds));
-
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        new BaseLog().SaveLog("跨服战服务器出错", ex);
-        //    }
-        //}
 
         public static void Stop()
         {

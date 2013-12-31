@@ -132,7 +132,7 @@ namespace ZyGames.Tianjiexing.BLL.Action
             if (petRunPool == null)
             {
                 petRunPool = new PetRunPool(Uid);
-                petCacheSet.Add(petRunPool, GameEnvironment.CacheGlobalPeriod);
+                petCacheSet.Add(petRunPool);
                 petRunPool = petCacheSet.FindKey(Uid);
             }
             petRunPool.FriendID = _friendId;

@@ -269,7 +269,7 @@ namespace ZyGames.Tianjiexing.Model
                 ability.ExperienceNum = experienceNum;
                 ability.Position = position;
                 userAbility.AbilityList.Add(ability);
-                cacheSetAbility.Add(userAbility, GameEnvironment.CacheUserPeriod);
+                cacheSetAbility.Add(userAbility);
                 // 添加到玩家集邮册
                 UserAlbumHelper.AddUserAlbum(userId.ToString(), AlbumType.Ability, abilityId);
             }
@@ -513,7 +513,7 @@ namespace ZyGames.Tianjiexing.Model
                     userGeneral.Experience1 = 0;
                     userGeneral.Experience2 = 0;
                     userGeneral.AbilityNum = 3;
-                    cacheSetGeneral.Add(userGeneral, GameEnvironment.CacheUserPeriod);
+                    cacheSetGeneral.Add(userGeneral);
                 }
             }
         }

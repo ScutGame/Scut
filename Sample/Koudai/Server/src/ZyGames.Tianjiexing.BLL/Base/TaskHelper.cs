@@ -76,7 +76,7 @@ namespace ZyGames.Tianjiexing.BLL.Base
                         CompleteNum = 0,
                         CreateDate = DateTime.Now
                     };
-                    cacheSet.Add(userTask, GameEnvironment.CacheUserPeriod);
+                    cacheSet.Add(userTask);
                     userTask = cacheSet.FindKey(user.UserID, taskInfo.TaskID);
                     userTaskList.Add(userTask);
                 }
@@ -116,7 +116,7 @@ namespace ZyGames.Tianjiexing.BLL.Base
                     CreateDate = DateTime.Now
                 };
 
-                cacheSet.Add(uf, GameEnvironment.CacheUserPeriod);
+                cacheSet.Add(uf);
                 uf = cacheSet.FindKey(user.UserID, functionEnum);
             }
 
@@ -177,7 +177,7 @@ namespace ZyGames.Tianjiexing.BLL.Base
                         MagicType = magicInfo.MagicType,
                         IsEnabled = false
                     };
-                    new GameDataCacheSet<UserMagic>().Add(userMagic, GameEnvironment.CacheUserPeriod);
+                    new GameDataCacheSet<UserMagic>().Add(userMagic);
                     MagicLvInfo magicLvInfo = new ConfigCacheSet<MagicLvInfo>().FindKey(magicInfo.MagicID, magicInfo.MagicLv);
                     short position = magicLvInfo.GetFirstGrid();
                     var userEmbattle = new UserEmbattle
@@ -187,7 +187,7 @@ namespace ZyGames.Tianjiexing.BLL.Base
                         MagicID = magicInfo.MagicID,
                         Position = position
                     };
-                    new GameDataCacheSet<UserEmbattle>().Add(userEmbattle, GameEnvironment.CacheUserPeriod);
+                    new GameDataCacheSet<UserEmbattle>().Add(userEmbattle);
                 }
             }
             //UserEmbattle
@@ -433,7 +433,7 @@ namespace ZyGames.Tianjiexing.BLL.Base
                         CompleteNum = 0,
                         CreateDate = DateTime.Now
                     };
-                    new GameDataCacheSet<UserTask>().Add(tempTask, GameEnvironment.CacheUserPeriod);
+                    new GameDataCacheSet<UserTask>().Add(tempTask);
                 }
                 else
                 {
@@ -522,7 +522,7 @@ namespace ZyGames.Tianjiexing.BLL.Base
                     DewNum = ConfigEnvSet.GetInt("UserQueue.ShengShuiMaxNum"),
                     PayDewTime = 0,
                 };
-                new GameDataCacheSet<UserPlant>().Add(userPlant, GameEnvironment.CacheUserPeriod);
+                new GameDataCacheSet<UserPlant>().Add(userPlant);
             }
             int postion = 1;
             UserLand land = new GameDataCacheSet<UserLand>().FindKey(userID, postion);
@@ -539,7 +539,7 @@ namespace ZyGames.Tianjiexing.BLL.Base
                                           PlantQuality = PlantQualityType.PuTong,
                                           GeneralID = 0,
                                       };
-                new GameDataCacheSet<UserLand>().Add(userLand, GameEnvironment.CacheUserPeriod);
+                new GameDataCacheSet<UserLand>().Add(userLand);
 
             }
         }
@@ -565,7 +565,7 @@ namespace ZyGames.Tianjiexing.BLL.Base
                     IsSuspend = false,
                     StrengNum = 0
                 };
-                new GameDataCacheSet<UserQueue>().Add(queue, GameEnvironment.CacheUserPeriod);
+                new GameDataCacheSet<UserQueue>().Add(queue);
             }
         }
 

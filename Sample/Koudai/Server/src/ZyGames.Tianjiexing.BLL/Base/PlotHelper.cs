@@ -302,7 +302,7 @@ namespace ZyGames.Tianjiexing.BLL.Base
             sweepPool.IsSend = false;
             if (cacheSet.FindKey(userID, turnsNum, battleNum) == null)
             {
-                cacheSet.Add(sweepPool, GameEnvironment.CacheUserPeriod);
+                cacheSet.Add(sweepPool);
             }
             //else
             //{
@@ -355,7 +355,7 @@ namespace ZyGames.Tianjiexing.BLL.Base
                 }
                 if (cacheSet.FindKey(userID, turnsNum, tempNum) == null)
                 {
-                    cacheSet.Add(sweepPool, GameEnvironment.CacheUserPeriod);
+                    cacheSet.Add(sweepPool);
                 }
 
                 user.ExpNum = MathUtils.Addition(user.ExpNum, sweepPool.ExpNum, int.MaxValue);

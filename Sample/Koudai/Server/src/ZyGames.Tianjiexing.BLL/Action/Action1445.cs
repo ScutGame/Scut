@@ -21,13 +21,10 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ****************************************************************************/
-using System;
-using System.Data;
 using ZyGames.Tianjiexing.Lang;
 using ZyGames.Tianjiexing.Model;
 using ZyGames.Framework.Game.Service;
 using ZyGames.Framework.Game.Cache;
-using ZyGames.Tianjiexing.Model;
 
 namespace ZyGames.Tianjiexing.BLL.Action
 {

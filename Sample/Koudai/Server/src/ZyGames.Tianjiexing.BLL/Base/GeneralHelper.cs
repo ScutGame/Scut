@@ -129,7 +129,7 @@ namespace ZyGames.Tianjiexing.BLL.Base
             foreach (PrizeInfo info in prizeList)
             {
                 var takePrize = GetUserTake(info, user.UserID);
-                cachePrize.Add(takePrize, GameEnvironment.CacheGlobalPeriod);
+                cachePrize.Add(takePrize);
             }
             var chatService = new TjxChatService(user);
             chatService.SystemSendWhisper(user, content);
@@ -773,7 +773,7 @@ THE SOFTWARE.
                 }
                 userGeneral.HeritageType = HeritageType.Normal;
                 userGeneral.AbilityNum = 3;
-                cacheSet.Add(userGeneral, GameEnvironment.CacheUserPeriod);
+                cacheSet.Add(userGeneral);
             }
         }
 

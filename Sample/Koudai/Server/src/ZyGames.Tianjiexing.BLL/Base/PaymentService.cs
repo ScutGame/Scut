@@ -147,7 +147,7 @@ namespace ZyGames.Tianjiexing.BLL.Base
                 packType = 1;
                 recharge.FirstNum = order.GameCoins;
                 TriggerReceivePack(userID, packType, recharge.FirstNum);
-                rechargeCacheSet.Add(recharge, GameEnvironment.CacheUserPeriod);
+                rechargeCacheSet.Add(recharge);
                 FestivalHelper.GetFirstReward(userID, FestivalType.FirstReward);
                 GameUser userInfo = new GameDataCacheSet<GameUser>().FindKey(userID);
                 if (userInfo != null)
@@ -208,7 +208,7 @@ namespace ZyGames.Tianjiexing.BLL.Base
                         receive.UserID = userID;
                         receive.IsReceive = false;
                         receive.ReceiveDate = DateTime.Now;
-                        new GameDataCacheSet<PackageReceive>().Add(receive, GameEnvironment.CacheUserPeriod);
+                        new GameDataCacheSet<PackageReceive>().Add(receive);
                     }
                 }
             }
@@ -232,7 +232,7 @@ namespace ZyGames.Tianjiexing.BLL.Base
                         receive.UserID = userID;
                         receive.IsReceive = false;
                         receive.ReceiveDate = DateTime.Now;
-                        packCacheSet.Add(receive, GameEnvironment.CacheUserPeriod);
+                        packCacheSet.Add(receive);
                     }
                     else if (!IsHaveWeek(packageReceivess))
                     {
@@ -270,7 +270,7 @@ namespace ZyGames.Tianjiexing.BLL.Base
                         receive.UserID = userID;
                         receive.IsReceive = false;
                         receive.ReceiveDate = DateTime.Now;
-                        new GameDataCacheSet<PackageReceive>().Add(receive, GameEnvironment.CacheUserPeriod);
+                        new GameDataCacheSet<PackageReceive>().Add(receive);
                     }
                     else if (!IsHaveMonth(packageReceivess))
                     {

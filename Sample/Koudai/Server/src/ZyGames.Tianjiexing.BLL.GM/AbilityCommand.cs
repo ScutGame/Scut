@@ -68,7 +68,7 @@ namespace ZyGames.Tianjiexing.BLL.GM
                 ability.ExperienceNum = experienceNum;
                 ability.Position = position;
                 userAbility.AbilityList.Add(ability);
-                _cacheSetAbility.Add(userAbility, GameEnvironment.CacheUserPeriod);
+                _cacheSetAbility.Add(userAbility);
             }
             else
             {

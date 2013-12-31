@@ -108,7 +108,7 @@ namespace ZyGames.Tianjiexing.BLL.Action
                                             PlantQuality = PlantQualityType.PuTong
                                         };
                     var cacheSet = new GameDataCacheSet<UserLand>();
-                    cacheSet.Add(land, GameEnvironment.CacheUserPeriod);
+                    cacheSet.Add(land);
                     UserLogHelper.AppenLandLog(ContextUser.UserID, 1, 0, landPostion, sumGold, 0, 0, 0);
                 }
             }

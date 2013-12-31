@@ -96,7 +96,7 @@ namespace ZyGames.Tianjiexing.Service.WebService
                     {
                         gameNotice = new GameNotice();
                         gameNotice.NoticeID = Guid.NewGuid().ToString();
-                        cacheSet.Add(gameNotice, GameEnvironment.CacheGlobalPeriod);
+                        cacheSet.Add(gameNotice);
                         gameNotice = cacheSet.FindKey(gameNotice.NoticeID);
                     }
                     gameNotice.Title = notice.Title;

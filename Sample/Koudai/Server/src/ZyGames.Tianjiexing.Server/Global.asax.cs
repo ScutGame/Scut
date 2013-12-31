@@ -40,10 +40,10 @@ namespace ZyGames.Tianjiexing.Service
         {
             try
             {
-                GameEnvironment.ClientDesDeKey = "j6=9=1ac";
-                int cacheInterval = 600;
-                var assembly = Assembly.Load("ZyGames.Tianjiexing.Model");
-                GameEnvironment.Start(cacheInterval, () =>
+                var setting = new EnvironmentSetting();
+                setting.ClientDesDeKey = "j6=9=1ac";
+                setting.EntityAssembly = Assembly.Load("ZyGames.Tianjiexing.Model");
+                setting.ScriptStartBeforeHandle += () =>
                 {
                     SystemGlobal.Run();
 
@@ -55,11 +55,9 @@ namespace ZyGames.Tianjiexing.Service
                         "ZyGames.Tianjiexing.BLL.GM.dll",
                         "ZyGames.Tianjiexing.BLL.dll"
                     });
+                };
 
-                    //ActionFactory.SetActionIgnoreAuthorize(404);
-
-                    return true;
-                }, 600, assembly);
+                GameEnvironment.Start(setting);
 
 
 #if(DEBUG)
@@ -70,7 +68,7 @@ namespace ZyGames.Tianjiexing.Service
             }
             catch (Exception ex)
             {
-                TraceLog.WriteError("global start error:{0}",ex);
+                TraceLog.WriteError("global start error:{0}", ex);
             }
 
 

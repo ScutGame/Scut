@@ -59,7 +59,7 @@ namespace ZyGames.Tianjiexing.BLL.GM
                         TaskState = TaskState.AllowTake,
                         CreateDate = DateTime.Now
                     };
-                    cacheSet.Add(userTask, GameEnvironment.CacheUserPeriod);
+                    cacheSet.Add(userTask);
                 }
                 else
                 {

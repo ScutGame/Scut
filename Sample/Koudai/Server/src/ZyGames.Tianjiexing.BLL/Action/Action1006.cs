@@ -52,7 +52,7 @@ namespace ZyGames.Tianjiexing.BLL.Action
             try
             {
                 DESAlgorithmNew des = new DESAlgorithmNew();
-                password = des.DecodePwd(password, GameEnvironment.ClientDesDeKey);
+                password = des.DecodePwd(password, GameEnvironment.Setting.ClientDesDeKey);
                 if (password.Length > 12 || password.Length < 4)
                 {
                     this.ErrorCode = LanguageManager.GetLang().ErrorCode;
@@ -66,7 +66,7 @@ namespace ZyGames.Tianjiexing.BLL.Action
                     ErrorInfo = LanguageManager.GetLang().St1006_PasswordExceptional;
                     return false;
                 }
-                password = CryptoHelper.DES_Encrypt(password, GameEnvironment.ProductDesEnKey);
+                password = CryptoHelper.DES_Encrypt(password, GameEnvironment.Setting.ProductDesEnKey);
                 if (SnsManager.ChangePass(Uid, password) <= 0)
                 {
                     this.ErrorCode = LanguageManager.GetLang().ErrorCode;

@@ -82,7 +82,7 @@ namespace ZyGames.Tianjiexing.BLL.Action
             {
                 string[] userList = SnsManager.GetRegPassport(deviceID);
                 passport = userList[0];
-                password = CryptoHelper.DES_Decrypt(userList[1], GameEnvironment.ProductDesEnKey);
+                password = CryptoHelper.DES_Decrypt(userList[1], GameEnvironment.Setting.ProductDesEnKey);
                 return true;
             }
             catch (Exception ex)

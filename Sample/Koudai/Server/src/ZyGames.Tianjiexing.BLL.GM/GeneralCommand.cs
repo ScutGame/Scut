@@ -72,7 +72,7 @@ namespace ZyGames.Tianjiexing.BLL.GM
                         CurrExperience = 0,
                         Description = string.Empty,
                     };
-                    cacheSet.Add(usergeneral, GameEnvironment.CacheUserPeriod);
+                    cacheSet.Add(usergeneral);
                 }
             }
         }

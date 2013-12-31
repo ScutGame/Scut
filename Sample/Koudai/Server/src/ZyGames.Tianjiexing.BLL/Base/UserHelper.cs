@@ -537,7 +537,7 @@ namespace ZyGames.Tianjiexing.BLL.Base
                 HuntingID = huntingID,
                 IsLight = isLight
             };
-            cacheSet.Add(light, GameEnvironment.CacheUserPeriod);
+            cacheSet.Add(light);
         }
 
 
@@ -730,7 +730,7 @@ namespace ZyGames.Tianjiexing.BLL.Base
                                              MagicType = magicInfo.MagicType,
                                              IsEnabled = false
                                          };
-                    magicCacheSet.Add(magic, GameEnvironment.CacheUserPeriod);
+                    magicCacheSet.Add(magic);
 
                     if (magicInfo.MagicType == MagicType.MoFaZhen)
                     {
@@ -747,7 +747,7 @@ namespace ZyGames.Tianjiexing.BLL.Base
                                                                 Position = Convert.ToInt16(magicRang[0]),
                                                                 GeneralID = 0 // LanguageManager.GetLang().GameUserGeneralID
                                                             };
-                                embattleCacheSet.Add(embattle, GameEnvironment.CacheUserPeriod);
+                                embattleCacheSet.Add(embattle);
                             }
                         }
                     }
@@ -1213,7 +1213,7 @@ namespace ZyGames.Tianjiexing.BLL.Base
                     {
                         SurplusNum = effectNum
                     };
-                    propsCacheSet.Add(props, GameEnvironment.CacheUserPeriod);
+                    propsCacheSet.Add(props);
                     user.IsUseupItem = false;
                     UserItemHelper.UseUserItem(user.UserID, itemInfo.ItemID, 1);
                 }

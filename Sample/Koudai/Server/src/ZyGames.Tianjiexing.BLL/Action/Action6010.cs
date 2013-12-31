@@ -118,7 +118,7 @@ namespace ZyGames.Tianjiexing.BLL.Action
                         IsSuspend = false,
                         UserID = ContextUser.UserID
                     };
-                    new GameDataCacheSet<UserQueue>().Add(userQueue, GameEnvironment.CacheUserPeriod);
+                    new GameDataCacheSet<UserQueue>().Add(userQueue);
                 }
             }
             return true;

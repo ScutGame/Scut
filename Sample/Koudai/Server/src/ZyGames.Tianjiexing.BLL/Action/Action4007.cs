@@ -157,7 +157,7 @@ namespace ZyGames.Tianjiexing.BLL.Action
                     ColdTime = coldTime,
                     IsSuspend = false
                 };
-                new GameDataCacheSet<UserQueue>().Add(userQueue, GameEnvironment.CacheUserPeriod);
+                new GameDataCacheSet<UserQueue>().Add(userQueue);
 
             }
             return true;

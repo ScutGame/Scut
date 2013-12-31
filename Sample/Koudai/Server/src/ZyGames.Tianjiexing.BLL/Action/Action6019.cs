@@ -120,7 +120,7 @@ namespace ZyGames.Tianjiexing.BLL.Action
                 IsDevil = 0,
                 InsertDate = DateTime.Now
             };
-            new ShareCacheStruct<GuildMember>().Add(gMember, GameEnvironment.CacheGlobalPeriod);
+            new ShareCacheStruct<GuildMember>().Add(gMember);
             userInfo.MercenariesID = guildID;
             CombatHelper.LoadGuildAbility(userInfo.UserID); //加载公会技能
 

@@ -687,7 +687,7 @@ THE SOFTWARE.
                                               CombatProcess = process,
                                               IsRemove = false,
                                           };
-            cacheSet.Add(memberGroup, GameEnvironment.CacheGlobalPeriod);
+            cacheSet.Add(memberGroup);
         }
 
         /// <summary>
@@ -809,7 +809,7 @@ THE SOFTWARE.
             string guildAName = guildA == null ? string.Empty : guildA.GuildName;
             string guildBName = guildB == null ? string.Empty : guildB.GuildName;
             TraceLog.ReleaseWriteFatal("Round={0},NameA={1},NameB={2},No={3},cityID={4}", 1, guildAName, guildBName, No, cityID);
-            cacheSet.Add(group, GameEnvironment.CacheGlobalPeriod);
+            cacheSet.Add(group);
         }
 
         /// <summary>
@@ -883,7 +883,7 @@ THE SOFTWARE.
                         against.GuildIDB = againstB.GuildIDB;
                     }
                     against.IsRemove = false;
-                    new ShareCacheStruct<ServerFightGroup>().Add(against, GameEnvironment.CacheGlobalPeriod);
+                    new ShareCacheStruct<ServerFightGroup>().Add(against);
                 }
             }
         }
@@ -957,7 +957,7 @@ THE SOFTWARE.
                 string guildBName = guildB == null ? string.Empty : guildB.GuildName;
                 TraceLog.ReleaseWriteFatal("Round={0},IndexA={1},IndexB={2},NameA={3},NameB={4},No={5},cityID={6}",
                     round, indexA, indexB, guildAName, guildBName, No, cityID);
-                cacheSet.Add(group, GameEnvironment.CacheGlobalPeriod);
+                cacheSet.Add(group);
                 guildLenght = guildLenght - subNum;
                 No++;
             }
@@ -1145,7 +1145,7 @@ THE SOFTWARE.
                 UserID = UserID.ToInt(),
                 VipLv = 0,
             };
-            cacheset.Add(takeprize, GameEnvironment.CacheGlobalPeriod);
+            cacheset.Add(takeprize);
         }
 
         /// <summary>
@@ -1170,7 +1170,7 @@ THE SOFTWARE.
                 }
                 var cachePrize = new ShareCacheStruct<UserTakePrize>();
                 var takePrize = GetUserTake(fightInfo.Coefficient, user.UserID, user.UserLv, cityInfo.CityName);
-                cachePrize.Add(takePrize, GameEnvironment.CacheGlobalPeriod);
+                cachePrize.Add(takePrize);
             }
         }
 
@@ -1540,7 +1540,7 @@ THE SOFTWARE.
             group.GuildIDB = guildIDB;
             group.CityID = cityID;
             group.WinGuildID = guildIDA;
-            cacheSet.Add(group, GameEnvironment.CacheGlobalPeriod);
+            cacheSet.Add(group);
         }
     }
 }

@@ -66,7 +66,7 @@ namespace ZyGames.Tianjiexing.BLL.Base
                 ability.ExperienceNum = experienceNum;
                 ability.Position = position;
                 userAbility.AbilityList.Add(ability);
-                _cacheSetAbility.Add(userAbility, GameEnvironment.CacheUserPeriod);
+                _cacheSetAbility.Add(userAbility);
                 // 添加到玩家集邮册
                 UserAlbumHelper.AddUserAlbum(userId.ToString(), AlbumType.Ability, abilityId);
             }

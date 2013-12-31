@@ -378,7 +378,7 @@ namespace ZyGames.Tianjiexing.BLL.Action
                                                  UserID = ContextUser.UserID,
                                                  PlotNpcID = PlotNpcID
                                              };
-                        cacheSet.Add(userPlotCombat, GameEnvironment.CacheUserPeriod);
+                        cacheSet.Add(userPlotCombat);
                         userPlotCombat = cacheSet.FindKey(ContextUser.UserID, PlotNpcID);
                     }
                     userPlotCombat.PlotID = npcInfo.PlotID;

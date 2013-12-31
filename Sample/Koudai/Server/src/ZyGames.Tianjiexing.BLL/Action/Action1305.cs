@@ -177,7 +177,7 @@ namespace ZyGames.Tianjiexing.BLL.Action
                             HuntingID = huntingID2,
                             IsLight = 1
                         };
-                        lightCacheSet.Add(userLight, GameEnvironment.CacheUserPeriod);
+                        lightCacheSet.Add(userLight);
                     }
                 }
 
@@ -245,7 +245,7 @@ namespace ZyGames.Tianjiexing.BLL.Action
                         HuntingID = probabilityInfo.GoldHunting,
                         IsLight = 1
                     };
-                    new GameDataCacheSet<UserLight>().Add(uLightInfo, GameEnvironment.CacheUserPeriod);
+                    new GameDataCacheSet<UserLight>().Add(uLightInfo);
                 }
 
                 ContextUser.UseGold = MathUtils.Addition(ContextUser.UseGold, probabilityInfo.Price, int.MaxValue);

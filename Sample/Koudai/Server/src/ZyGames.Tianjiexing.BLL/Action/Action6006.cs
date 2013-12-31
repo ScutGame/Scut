@@ -106,7 +106,7 @@ namespace ZyGames.Tianjiexing.BLL.Action
                 UserID = ContextUser.UserID,
                 ApplyDate = DateTime.Now
             };
-            new ShareCacheStruct<UserApply>().Add(userApply, GameEnvironment.CacheGlobalPeriod);
+            new ShareCacheStruct<UserApply>().Add(userApply);
             return true;
         }
     }

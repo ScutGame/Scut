@@ -63,7 +63,7 @@ namespace ZyGames.Tianjiexing.BLL.Base
                 userDial.HeadID = string.Empty;
                 userDial.ReturnRatio = 0;
                 userDial.DialNum = 0;
-                cacheSet.Add(userDial, GameEnvironment.CacheUserPeriod);
+                cacheSet.Add(userDial);
             }
         }
 
@@ -211,7 +211,7 @@ namespace ZyGames.Tianjiexing.BLL.Base
         //        userDial.HeadID = string.Empty;
         //        userDial.ReturnRatio = 0;
         //        userDial.DialNum = 0;
-        //        cacheSet.Add(userDial, GameEnvironment.CacheUserPeriod);
+        //        cacheSet.Add(userDial);
         //    }
         //    userDial.GroupID = groupID;
         //    userDial.RefreshDate = DateTime.Now;
@@ -260,7 +260,7 @@ namespace ZyGames.Tianjiexing.BLL.Base
         //        {
         //            serverEnvSet = new ServerEnvSet();
         //            serverEnvSet.EnvKey = ServerEnvKey.UserTreasure;
-        //            cacheSet.Add(serverEnvSet, GameEnvironment.CacheGlobalPeriod);
+        //            cacheSet.Add(serverEnvSet);
         //        }
         //        var treasureInfoList = ServerEnvSetTreasure(treasure);
         //        serverEnvSet.EnvValue = JsonUtils.Serialize(treasureInfoList);
@@ -286,7 +286,7 @@ namespace ZyGames.Tianjiexing.BLL.Base
         //    }
         //    var cachePrize = new ShareCacheStruct<UserTakePrize>();
         //    var takePrize = GetUserTake(treasure, userID);
-        //    cachePrize.Add(takePrize, GameEnvironment.CacheGlobalPeriod);
+        //    cachePrize.Add(takePrize);
         //}
 
         private static List<TreasureInfo> ServerEnvSetTreasure(TreasureInfo treasure)
@@ -420,7 +420,7 @@ namespace ZyGames.Tianjiexing.BLL.Base
                 userPrize.EnergyNum = 0;
                 userPrize.Gold = giftGold;
                 userDial.ReturnRatio = 0;
-                cachePrize.Add(userPrize, GameEnvironment.CacheGlobalPeriod);
+                cachePrize.Add(userPrize);
             }
         }
 
@@ -527,7 +527,7 @@ namespace ZyGames.Tianjiexing.BLL.Base
                 userDial = new UserDial();
                 userDial.UserID = userID;
                 var cacheSet = new GameDataCacheSet<UserDial>();
-                cacheSet.Add(userDial, GameEnvironment.CacheUserPeriod);
+                cacheSet.Add(userDial);
             }
             int postion = RandomUtils.GetRandom(0, dialFreeList.Count);
             var dialpostion = dialFreeList[postion];
@@ -652,7 +652,7 @@ namespace ZyGames.Tianjiexing.BLL.Base
                 {
                     serverEnvSet = new ServerEnvSet();
                     serverEnvSet.EnvKey = ServerEnvKey.UserTreasure;
-                    cacheSet.Add(serverEnvSet, GameEnvironment.CacheGlobalPeriod);
+                    cacheSet.Add(serverEnvSet);
                 }
                 var treasureInfoList = ServerEnvSetTreasure(treasure);
                 serverEnvSet.EnvValue = JsonUtils.Serialize(treasureInfoList);
