@@ -2,6 +2,7 @@
 using GameNotice.Model;
 using ZyGames.Framework.Cache.Generic;
 using ZyGames.Framework.Common.Log;
+using ZyGames.Framework.Game.Context;
 using ZyGames.Framework.Game.Contract;
 using ZyGames.Framework.Game.Runtime;
 using ZyGames.Framework.Game.Service;
@@ -38,7 +39,7 @@ namespace GameNotice
         {
             try
             {
-                ActionFactory.Request(httpGet, response, null);
+                ActionFactory.Request(httpGet, response, GetUser);
             }
             catch (Exception ex)
             {
@@ -46,18 +47,22 @@ namespace GameNotice
             }
         }
 
+        protected override BaseUser GetUser(int userId)
+        {
+            return null;
+        }
+
         protected override void OnStartAffer()
         {
             try
             {
-                //时间间隔更新库
-                int cacheInterval = 600;
-                GameEnvironment.Start(cacheInterval, () =>
+                var setting = new EnvironmentSetting(); 
+                setting.ScriptStartBeforeHandle += () =>
                 {
                     ActionFactory.SetActionIgnoreAuthorize(2001, 404);
                     InitNotice();
-                    return true;
-                });
+                };
+                GameEnvironment.Start(setting);
                 Console.WriteLine("The server is staring...");
 
             }
