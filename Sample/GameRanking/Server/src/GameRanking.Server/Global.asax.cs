@@ -16,14 +16,14 @@ namespace GameRanking.Server
 
             try
             {
-                int cacheInterval = 600;
-                Assembly entityAssembly = Assembly.Load("GameRanking.Model");
-                GameEnvironment.Start(cacheInterval, () => {
+                var setting = new EnvironmentSetting();
+                setting.EntityAssembly = Assembly.Load("GameRanking.Model");
+                setting.ScriptStartBeforeHandle += () =>
+                {
                     ScriptEngines.AddReferencedAssembly("GameRanking.Model.dll");
                     ActionFactory.SetActionIgnoreAuthorize(1000, 1001);
-                    return true;
-                
-                }, 600, entityAssembly);
+                };
+                GameEnvironment.Start(setting);
             }
             catch (Exception ex)
             {

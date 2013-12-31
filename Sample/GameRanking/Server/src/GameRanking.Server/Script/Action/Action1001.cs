@@ -74,7 +74,6 @@ namespace GameRanking.Server.Script.Action
 
         public override bool TakeAction()
         {
-            GameRanking.Server.Script.Lib.TestHelper.Test();
             var cache = new ShareCacheStruct<UserRanking>();
             rankingList = cache.FindAll();
             rankingList = MathUtils.QuickSort<UserRanking>(rankingList, compareTo);
