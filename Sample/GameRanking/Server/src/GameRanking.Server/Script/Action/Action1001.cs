@@ -75,7 +75,7 @@ namespace GameRanking.Server.Script.Action
         public override bool TakeAction()
         {
             var cache = new ShareCacheStruct<UserRanking>();
-            rankingList = cache.FindAll();
+            rankingList = cache.FindAll(false);
             rankingList = MathUtils.QuickSort<UserRanking>(rankingList, compareTo);
             rankingList = rankingList.GetPaging(PageIndex, PageSize, out PageCount);
             return true;
