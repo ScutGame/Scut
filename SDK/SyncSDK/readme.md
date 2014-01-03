@@ -3,7 +3,7 @@ SyncSDK
 
 SyncSDK 使用
 ----------------
-> 1.复制SyncSDK目录至游戏项目的Client/lua目录下；
+> 1.复制SyncSDK目录至游戏项目的Client/lua目录下
 > 2.在lua目录下的mainapp.lua文件中修改
 <ul>
     <li>导入ScutDataSync.lua文件，require("SyncSDK.ScutDataSync")
