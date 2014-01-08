@@ -1,60 +1,3 @@
-What's Scut Game Server Framework？
-=================
-Scut is a free, open source, stable game server framework, which support C#/Python script. Scut's design philosophy is to "Developing online game easier"，It includes a development framework and no-sql/database storage services, and many game system modules. Save a lot of game developers working hours，it allows the user to focus on business logic. Scut Game Server Framework also provide ScutSDK(eg. for Cocos2d-x) which make communications between server and client very easy.
-
-Benefits Features
-----------------
-###Platform
-<ul>
-<li>Windows
-<li>Linux
-</ul>
-
-###Data Persistence (DBs)
-<ul>
-<li>SQL: MySQL/MS SQL Server
-<li>NoSQL: Redis
-</ul>
-
-###Protocols: http/socket
-<ul>
-<li>Transfer protocol is very lean and slim
-<li>Scut wraps up the networking layer of each client platform
-<li>Communicate cross-platform and cross-protocol
-<li>Code generate automaticly: forget about de-/serialization
-</ul>
-
-###Server Dev Framework
-> Language: C#/Python
-
-
-###Vast Support of Client Platforms
-<ul>
-<li>All client platforms interoperate(iOS vs Android vs PC)
-<li>Major client platforms supported
-<li>Android(eg. Cocos2d-x)
-<li>iOS(eg. Cocos2d-x)
-<li>Win32
-<li>.NET
-<li>Mac OSX
-<li>Mono
-<li>Xamarin
-</ul>
-
-###Host Scut with major provider
-<ul>
-<li>Microsoft Azure
-<li>Amazon EC2
-</ul>
-
-
-Resource
-----------------
-HomePage: http://www.scutgame.com<br />
-Github: https://github.com/scutgame/scut<br />
-QQ Group: 138266675<br />
-
-
 Scut开源游戏服务器引擎
 =================
 
@@ -154,6 +97,65 @@ OSChina代码库：https://git.oschina.net/scutgame/Scut<br />
 > 1. 增加通过定义实体类生成数据库的表结构
 > 2. 优化获取或设置实体类属性的反射方法
 > 3. 增加静态注入AOP，简化实体类属性的写法
+
+
+
+What's Scut Game Server Framework？
+=================
+Scut is a free, open source, stable game server framework, which support C#/Python script. Scut's design philosophy is to "Developing online game easier"，It includes a development framework and no-sql/database storage services, and many game system modules. Save a lot of game developers working hours，it allows the user to focus on business logic. Scut Game Server Framework also provide ScutSDK(eg. for Cocos2d-x) which make communications between server and client very easy.
+
+Benefits Features
+----------------
+###Platform
+<ul>
+<li>Windows
+<li>Linux
+</ul>
+
+###Data Persistence (DBs)
+<ul>
+<li>SQL: MySQL/MS SQL Server
+<li>NoSQL: Redis
+</ul>
+
+###Protocols: http/socket
+<ul>
+<li>Transfer protocol is very lean and slim
+<li>Scut wraps up the networking layer of each client platform
+<li>Communicate cross-platform and cross-protocol
+<li>Code generate automaticly: forget about de-/serialization
+</ul>
+
+###Server Dev Framework
+> Language: C#/Python
+
+
+###Vast Support of Client Platforms
+<ul>
+<li>All client platforms interoperate(iOS vs Android vs PC)
+<li>Major client platforms supported
+<li>Android(eg. Cocos2d-x)
+<li>iOS(eg. Cocos2d-x)
+<li>Win32
+<li>.NET
+<li>Mac OSX
+<li>Mono
+<li>Xamarin
+</ul>
+
+###Host Scut with major provider
+<ul>
+<li>Microsoft Azure
+<li>Amazon EC2
+</ul>
+
+
+Resource
+----------------
+HomePage: http://www.scutgame.com<br />
+Github: https://github.com/scutgame/scut<br />
+QQ Group: 138266675<br />
+
 
 
 License
