@@ -40,7 +40,7 @@ Linux：支持Mysql<br />
 资源
 ----------------
 官网地址：http://www.scutgame.com<br />
-Github代码库：https://github.com/scutgame/scut<br />
+Github代码库：https://github.com/scutgame/scut.git<br />
 OSChina代码库：https://git.oschina.net/scutgame/Scut<br />
 博客园地址：http://www.cnblogs.com/scut/<br />
 
