@@ -46,13 +46,9 @@ function ZyExecRequest(pScutScene, lpData, bShowLoading,type)
     if lpData then
         table.insert(ZyRequestParam.param, ZyRequestCounter, lpData)
     end
+	-- tcp连接实例后期加入
     if type then
         ScutDataLogic.CDataRequest:Instance():AsyncExecRequest(pScutScene, ZyWriter:generatePostData(), ZyRequestCounter, nil)
-    else
-        local lenth=string.len(ZyWriter:generatePostData())
-        local addressPath="ddz.36you.net:9700"
-        ScutDataLogic.CDataRequest:Instance():AsyncExecTcpRequest(pScutScene,addressPath, 1, nil, ZyWriter:generatePostData(), lenth)
-        ScutDataLogic.CNetWriter:resetData()
     end
 
     ScutDataLogic.CNetWriter:resetData()
