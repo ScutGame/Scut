@@ -17,6 +17,10 @@ OSChina代码库：https://git.oschina.net/scutgame/Scut<br />
 
 更新日志
 ----------------
+###版本：0.98 (2013-1-20)
+> 1. 简化Lua代码，减少无用脚本
+> 2. 默认场景使用socket进行通讯
+
 ###版本：0.95 (2013-12-24)
 > 1. 增加对cocos2d-x的Android平台的支持
 
