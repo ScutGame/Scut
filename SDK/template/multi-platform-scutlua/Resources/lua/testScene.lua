@@ -22,6 +22,10 @@ IDS_SUBMIT = "提交成绩"
 IDS_CANCLE="取消"
 IDS_EMPTY_TIP = "输入不能为空"
 IDS_ORDER = "名次"
+IDS_TEST = "请按右下角排行按钮进行TCP连接"
+IDS_TCP_CONNECTING = "TCP连接建立中"
+IDS_TCP_CONNECTED = "TCP连接已建立，接受数据中"
+IDS_CONNECT_COUNT = "收到服务器推送数据%d次"
 
 -----图片资源路径-------------------------
 image_background_sm="common/list_1002_1.9.png"--背景图 
@@ -58,6 +62,8 @@ panle_1019_1_9="button/panle_1019_1.9.png"--list中单个对应的背景框
 
 panle_1014_1="common/panle_1014_1.png"--说明框背景框先用这张
 
+
+
 MB_STYLE_TITLE      = 1
 MB_STYLE_MESSAGE    = 2
 MB_STYLE_LBUTTON    = 3
@@ -73,7 +79,7 @@ MB_STYLE_RENAME     = 10
 ID_MBOK         = 1
 ID_MBCANCEL     = 2
 MB_THEME_NORMAL     = 1
-
+mConnectNum = 0;
 pWinSize=CCDirector:sharedDirector():getWinSize()
 
 function PT(x,y)
@@ -915,6 +921,13 @@ function showRank()
     ScutDataLogic.CNetWriter:getInstance():writeString("PageIndex",1  )
     ScutDataLogic.CNetWriter:getInstance():writeString("PageSize",30)
     ZyExecRequest(mScene, nil,false,addressPath )
+	if labelIds1 then 
+	    labelIds1:setVisible(false)
+	end
+	labelIds2 = CCLabelTTF:create(IDS_TCP_CONNECTING, "fsfe", FONT_SM_SIZE);
+	labelIds2:setPosition(labelIds1:getPosition());
+	mScene:addChild(labelIds2, 99);
+	
 end
 
 function submitOK()    
@@ -926,11 +939,11 @@ function submitOK()
             mNameEdit:setVisible(false);
             mScoreEdit:setVisible(false);
         else
-	
+	    local addressPath="ph.scutgame.com:9001"
         ScutDataLogic.CNetWriter:getInstance():writeString("ActionId",1000)
         ScutDataLogic.CNetWriter:getInstance():writeString("UserName",name )
         ScutDataLogic.CNetWriter:getInstance():writeString("Score",sorce)    
-        ZyExecRequest(mScene, nil,false,nil) 
+        ZyExecRequest(mScene, nil,false,addressPath) 
         end
 end
 
@@ -1093,6 +1106,8 @@ function init()
     mLayer:setAnchorPoint(CCPoint(0,0))
     mLayer:setPosition(CCPoint(0,0))
     mScene:addChild(mLayer, 0)
+	
+	
     
     mRankLayer = CCLayer:create();
     mRankLayer:setAnchorPoint(PT(0.5, 0.5));
@@ -1106,8 +1121,8 @@ function init()
     bgSprite:setAnchorPoint(CCPoint(0.5,0.5))
     bgSprite:setPosition(CCPoint(pWinSize.width/2,pWinSize.height/2));
     mScene:addChild(bgSprite);
-    ScutDataLogic.CNetWriter:setUrl("http://ph.scutgame.com/service.aspx")
-    --ScutDataLogic.CNetWriter:setUrl("http://115.29.163.76:8101/Service.aspx")
+    --ScutDataLogic.CNetWriter:setUrl("http://ph.scutgame.com/service.aspx")
+    
 
     local button = ZyButton:new("icon_1011.png");
     button:addto(mScene,0);
@@ -1118,14 +1133,38 @@ function init()
     button2:setPosition(PT(pWinSize.width/2 - button2:getContentSize().width/2 ,SY(10)));
     button2:addto(mScene,0)
     button2:registerScriptTapHandler(submit);
+	
+	
+	-- 请按右下角排行按钮进行TCP连接
+	labelIds1 = CCLabelTTF:create(IDS_TEST,"sfeew", FONT_SM_SIZE);
+	labelIds1:setPosition(PT(SX(20) + labelIds1:getContentSize().width/2 , pWinSize.height - SY(18)));
+	labelIds1:setAnchorPoint(PT(0.5,0.5));
+	mScene:addChild(labelIds1,99);
 end
 
-function netCallback(pZyScene, lpExternalData)
+function netCallback(pZyScene, lpExternalData, isTcp)
     local actionID = ZyReader:getActionID()
     local lpExternalData = lpExternalData or 0
     local userData = ZyRequestParam:getParamData(lpExternalData)
     if actionID==1001 then
         local table = _1001Callback(pZyScene, lpExternalData);
+		if labelIds2 then 
+			labelIds2:setVisible(false)
+		end
+		labelIds3 = CCLabelTTF:create(IDS_TCP_CONNECTED, "xxxx", FONT_SM_SIZE);
+		labelIds3:setPosition(labelIds2:getPosition());
+		mScene:addChild(labelIds3);
+		if isTcp == true then 
+			mConnectNum = mConnectNum + 1 ;
+		end 
+		if labelIds4 == nil  then 
+			labelIds4 = CCLabelTTF:create(string.format(IDS_CONNECT_COUNT,mConnectNum), "xxxx", FONT_SM_SIZE);
+			labelIds4:setPosition(PT(labelIds3:getPositionX() , labelIds3:getPositionY() - SY(15)));
+			mScene:addChild(labelIds4, 99);
+		else
+			labelIds4:setString(string.format(IDS_CONNECT_COUNT,mConnectNum));
+		end
+		
         if table then
 		    if bgLayer == nil then 
 				bgLayer= createUIBg(nil,nil,ccc3(255,255,255),nil,true)
@@ -1143,11 +1182,13 @@ function netCallback(pZyScene, lpExternalData)
 end
 
 function showLayout(data)
+    --[[
     if layoutLayer then
         mLayer:removeChild(layoutLayer,true)
         layoutLayer=nil;
 		return
     end
+	]]
     layoutLayer=CCLayer:create()
     bgLayer:addChild(layoutLayer,1)
     local simpleW=(pWinSize.width*0.8)/3

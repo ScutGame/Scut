@@ -12,7 +12,7 @@ CCLuaLog("Module ".. strModuleName.. " loaded.")
 strModuleName = nil
 
 function PushReceiverCallback(pScutScene, lpExternalData)
-    testScene.netCallback(pScutScene, lpExternalData)
+    testScene.netCallback(pScutScene, lpExternalData, true)
 end
 
 local function ScutMain()
