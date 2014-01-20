@@ -1,0 +1,17 @@
+module("commonString", package.seeall)
+
+IDS_TIP1 = "正在获取数据."
+IDS_TIP2 = "正在获取数据.."
+IDS_TIP3 = "正在获取数据..."
+IDS_JINDOU = "金豆"
+IDS_JIFEN = "积分"
+IDS_JINGYAN = "经验"
+IDS_SORCE = "分数:"
+IDS_NICKNAME = "昵称:"
+IDS_SORCE1 = "分数"
+IDS_NICKNAME1 = "昵称"
+IDS_OK="确认"
+IDS_SUBMIT = "提交成绩"
+IDS_CANCLE="取消"
+IDS_EMPTY_TIP = "输入不能为空"
+IDS_ORDER = "名次"
