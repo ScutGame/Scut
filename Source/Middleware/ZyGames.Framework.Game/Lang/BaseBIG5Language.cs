@@ -28,6 +28,7 @@ namespace ZyGames.Framework.Game.Lang
     /// <summary>
     /// 
     /// </summary>
+    [Obsolete]
     public class BaseBIG5Language : ILanguage
     {
 		/// <summary>

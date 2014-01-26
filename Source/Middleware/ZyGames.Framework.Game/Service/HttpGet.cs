@@ -565,7 +565,7 @@ namespace ZyGames.Framework.Game.Service
         /// <returns></returns>
         public bool CheckSign()
         {
-            string signKey = GameEnvironment.ProductSignKey;
+            string signKey = GameEnvironment.Setting.ProductSignKey;
             if (string.IsNullOrEmpty(signKey))
             {
                 return true;
@@ -595,7 +595,7 @@ namespace ZyGames.Framework.Game.Service
             {
                 _error.Append(",");
             }
-            _error.AppendFormat(LanguageHelper.GetLang().UrlNoParam, param);
+            _error.AppendFormat(Language.Instance.UrlNoParam, param);
         }
 
         private void WriteRangOutError(string param, int min, int max)
@@ -604,7 +604,7 @@ namespace ZyGames.Framework.Game.Service
             {
                 _error.Append(",");
             }
-            _error.AppendFormat(LanguageHelper.GetLang().UrlParamOutRange, param, min, max);
+            _error.AppendFormat(Language.Instance.UrlParamOutRange, param, min, max);
         }
 
     }

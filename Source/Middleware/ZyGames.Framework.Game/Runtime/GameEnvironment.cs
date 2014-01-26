@@ -26,11 +26,15 @@ using System.Reflection;
 using System.Threading;
 using ZyGames.Framework.Cache.Generic;
 using ZyGames.Framework.Common.Configuration;
+using ZyGames.Framework.Common.Log;
 using ZyGames.Framework.Common.Serialization;
 using ZyGames.Framework.Data;
 using ZyGames.Framework.Game.Cache;
 using ZyGames.Framework.Game.Configuration;
+using ZyGames.Framework.Game.Contract;
+using ZyGames.Framework.Game.Lang;
 using ZyGames.Framework.Game.Message;
+using ZyGames.Framework.Game.Pay;
 using ZyGames.Framework.Model;
 using ZyGames.Framework.Script;
 
@@ -53,28 +57,31 @@ namespace ZyGames.Framework.Game.Runtime
 
         private static int _isRunning;
 
-        static GameEnvironment()
-        {
-            ProductDesEnKey = "BF3856AD";
-            ClientDesDeKey = "n7=7=7dk";
-            ProductSignKey = ConfigUtils.GetSetting("Product.SignKey", "");
-            ProductCode = ConfigUtils.GetSetting("Product.Code", 1);
-            ProductName = ConfigUtils.GetSetting("Product.Name", "Game");
-            ProductServerId = ConfigUtils.GetSetting("Product.ServerId", 1);
-            CacheGlobalPeriod = ConfigUtils.GetSetting("Cache.global.period", 3 * 86400); //72小时
-            CacheUserPeriod = ConfigUtils.GetSetting("Cache.user.period", 86400); //24小时
-        }
+        //static GameEnvironment()
+        //{
+        //    _setting = new EnvironmentSetting();
+        //    _setting.EnableCacheListener = true;
+        //    _setting.ProductDesEnKey = "BF3856AD";
+        //    _setting.ClientDesDeKey = "n7=7=7dk";
+        //    _setting.ProductSignKey = ConfigUtils.GetSetting("Product.SignKey", "");
+        //    _setting.ProductCode = ConfigUtils.GetSetting("Product.Code", 1);
+        //    _setting.ProductName = ConfigUtils.GetSetting("Product.Name", "Game");
+        //    _setting.ProductServerId = ConfigUtils.GetSetting("Product.ServerId", 1);
+        //    _setting.CacheGlobalPeriod = ConfigUtils.GetSetting("Cache.global.period", 3 * 86400); //72 hour
+        //    _setting.CacheUserPeriod = ConfigUtils.GetSetting("Cache.user.period", 86400); //24 hour
+        //}
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="expiredInterval">定时清理过期缓存时间</param>
-        /// <param name="updateInterval">定时更新缓存时间</param>
-        public static void InitializeCache(int expiredInterval, int updateInterval)
+        private static EnvironmentSetting _setting;
+        ///<summary>
+        /// The environment configuration information.
+        ///</summary>
+        public static EnvironmentSetting Setting
         {
-            CacheFactory.Initialize(expiredInterval, updateInterval);
+            get
+            {
+                return _setting;
+            }
         }
-
         /// <summary>
         /// 全局变量集合
         /// </summary>
@@ -85,43 +92,19 @@ namespace ZyGames.Framework.Game.Runtime
         }
 
         /// <summary>
-        /// 签名密钥
-        /// </summary>
-        public static string ProductSignKey { get; set; }
-
-        /// <summary>
-        /// 帐户密码的8位长度Des加密密钥
-        /// </summary>
-        public static string ProductDesEnKey { get; set; }
-
-        /// <summary>
-        /// 客户端的8位长度Des解密密钥
-        /// </summary>
-        public static string ClientDesDeKey { get; set; }
-
-        /// <summary>
-        /// 全局缓存生命周期
-        /// </summary>
-        public static int CacheGlobalPeriod { get; set; }
-        /// <summary>
-        /// 玩家缓存生命周期
-        /// </summary>
-        public static int CacheUserPeriod { get; set; }
-
-        /// <summary>
         /// 产品代码
         /// </summary>
-        public static int ProductCode { get; set; }
+        public static int ProductCode { get { return _setting.ProductCode; } }
 
         /// <summary>
         /// 产品名称
         /// </summary>
-        public static string ProductName { get; set; }
+        public static string ProductName { get { return _setting.ProductName; } }
 
         /// <summary>
         /// 游戏服代码
         /// </summary>
-        public static int ProductServerId { get; set; }
+        public static int ProductServerId { get { return _setting.ProductServerId; } }
 
         /// <summary>
         /// 
@@ -132,46 +115,107 @@ namespace ZyGames.Framework.Game.Runtime
         }
 
         /// <summary>
-        /// 
+        /// Initialize entity cache.
         /// </summary>
-        /// <param name="cacheInterval"></param>
-        /// <param name="loadDataFactory"></param>
-        /// <param name="expiredInterval">定时清理过期缓存时间</param>
-        /// <param name="entityAssembly">数据实体的程序集</param>
-        /// <param name="changedHandle"></param>
-        public static void Start(int cacheInterval, Func<bool> loadDataFactory, int expiredInterval = 600, Assembly entityAssembly = null, EntityChangedNotifyEvent changedHandle = null)
+        public static void InitializeCache()
         {
-            bool result = false;
+            CacheFactory.Initialize(new CacheSetting());
+        }
+
+        /// <summary>
+        /// The game service start.
+        /// </summary>
+        /// <param name="setting">Environment setting.</param>
+        public static void Start(EnvironmentSetting setting)
+        {
+            CacheSetting cacheSetting = new CacheSetting();
+            cacheSetting.ChangedHandle += EntitySyncManger.OnChange;
+            Start(setting, cacheSetting);
+        }
+
+        /// <summary>
+        /// The game service start.
+        /// </summary>
+        /// <param name="setting">Environment setting.</param>
+        /// <param name="cacheSetting">Cache setting.</param>
+        public static void Start(EnvironmentSetting setting, CacheSetting cacheSetting)
+        {
+            _setting = setting;
             DbConnectionProvider.Initialize();
-            EntitySchemaSet.CacheGlobalPeriod = CacheGlobalPeriod;
-            EntitySchemaSet.CacheUserPeriod = CacheUserPeriod;
-            ZyGameBaseConfigManager.Intialize();
-            CacheFactory.Initialize(expiredInterval, cacheInterval, true, changedHandle);
-            SensitiveWordService.LoadSchema();
-            if (entityAssembly != null)
+            EntitySchemaSet.CacheGlobalPeriod = _setting.CacheGlobalPeriod;
+            EntitySchemaSet.CacheUserPeriod = _setting.CacheUserPeriod;
+            if (_setting.EntityAssembly != null)
             {
-                ProtoBufUtils.LoadProtobufType(entityAssembly);
-                EntitySchemaSet.LoadAssembly(entityAssembly);
+                ProtoBufUtils.LoadProtobufType(_setting.EntityAssembly);
+                EntitySchemaSet.LoadAssembly(_setting.EntityAssembly);
             }
-            ScriptEngines.SetPythonDebug = ConfigUtils.GetSetting("Python_IsDebug", false);
-            ScriptEngines.AddReferencedAssembly("ZyGames.Framework.Game.dll");
             EntitySchemaSet.StartCheckTableTimer();
+            LoadGameEntitySchema();
+            ZyGameBaseConfigManager.Intialize();
+            CacheFactory.Initialize(cacheSetting);
             Global = new ContextCacheSet<CacheItem>("__gameenvironment_global");
-
-            if (loadDataFactory != null)
-            {
-                result = loadDataFactory();
-            }
+            //init script.
+            ScriptEngines.AddReferencedAssembly("ZyGames.Framework.Game.dll");
+            ScriptEngines.RegisterModelChangedBefore(OnModelChangeBefore);
+            ScriptEngines.RegisterModelChangedAfter(OnModelChangeAtfer);
+            _setting.OnScriptStartBefore();
             ScriptEngines.Initialize();
+            Interlocked.Exchange(ref _isRunning, 1);
+        }
 
-            if (result)
+        private static void OnModelChangeBefore(Assembly assembly)
+        {
+            try
             {
+                Interlocked.Exchange(ref _isRunning, 0);
+                TraceLog.ReleaseWrite("Updating model script...");
+                CacheFactory.UpdateNotify(true);
+                var task = System.Threading.Tasks.Task.Factory.StartNew(() =>
+                {
+                    while (!CacheFactory.CheckCompleted())
+                    {
+                        Thread.Sleep(100);
+                    }
+                });
+                System.Threading.Tasks.Task.WaitAll(task);
+            }
+            catch (Exception ex)
+            {
+                TraceLog.WriteError("OnModelChangeBefore error:{0}", ex);
+            }
+        }
+
+        private static void OnModelChangeAtfer(Assembly assembly)
+        {
+            if (assembly == null) return;
+            try
+            {
+                ProtoBufUtils.Initialize();
+                ProtoBufUtils.LoadProtobufType(assembly);
+                EntitySchemaSet.LoadAssembly(assembly);
+                Language.Reset();
+                TraceLog.ReleaseWrite("Update Model script success.");
                 Interlocked.Exchange(ref _isRunning, 1);
+            }
+            catch (Exception ex)
+            {
+                TraceLog.WriteError("OnModelChangeAtfer error:{0}", ex);
+            }
+        }
+
+
+        private static void LoadGameEntitySchema()
+        {
+            SchemaTable schema;
+            if (EntitySchemaSet.TryGet<SensitiveWord>(out schema))
+            {
+                schema.ConnectionProviderType = ConfigManger.Provider.ConnectionSetting.ProviderTypeName;
+                schema.ConnectionString = ConfigManger.Provider.ConnectionString;
             }
         }
 
         /// <summary>
-        /// 
+        /// The game service stop.
         /// </summary>
         public static void Stop()
         {

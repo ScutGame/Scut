@@ -28,6 +28,7 @@ namespace ZyGames.Framework.Game.Lang
     /// <summary>
 	/// BaseENLanguage.
     /// </summary>
+    [Obsolete]
     public class BaseENLanguage : ILanguage
     {
 		/// <summary>

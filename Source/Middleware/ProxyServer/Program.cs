@@ -22,6 +22,8 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ****************************************************************************/
 using System;
+using ZyGames.Framework.Cache.Generic;
+using ZyGames.Framework.Common;
 using ZyGames.Framework.Common.Log;
 
 namespace ProxyServer
@@ -32,6 +34,14 @@ namespace ProxyServer
         {
             try
             {
+                var dict = new CacheList<int>();
+                dict.Add(1);
+                string js = dict.ToJson();
+                var temp = js.ParseJson<CacheList<int>>();
+                if(temp == null)
+                {
+                    
+                }
                 GameServerListManager.Initialize();
                 var server = new GameProxy();
 				Console.WriteLine("Press Enter to exit...");

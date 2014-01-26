@@ -29,6 +29,7 @@ namespace ZyGames.Framework.Game.Lang
     /// <summary>
     /// 
     /// </summary>
+    [Obsolete]
     public class BaseZHLanguage : ILanguage
     {
 		/// <summary>

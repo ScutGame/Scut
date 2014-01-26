@@ -21,13 +21,15 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ****************************************************************************/
+using System;
 using System.Collections.Generic;
 
 namespace ZyGames.Framework.Game.Lang
 {
 	/// <summary>
 	/// Lang enum.
-	/// </summary>
+    /// </summary>
+    [Obsolete]
     public enum LangEnum
     {
         /// <summary>
@@ -51,6 +53,7 @@ namespace ZyGames.Framework.Game.Lang
     /// <summary>
     /// 多语言
     /// </summary>
+    [Obsolete("Use Language.Instance call.")]
     public class LanguageHelper
     {
         private static object thisLock = new object();

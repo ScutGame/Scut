@@ -83,10 +83,10 @@ namespace ZyGames.Framework.Game.Contract.Action
             bool result =  _scriptScope.buildPacket(dataStruct, _urlParam, _actionResult);
             if (!result)
             {
-                ErrorCode = LanguageHelper.GetLang().ErrorCode;
+                ErrorCode = Language.Instance.ErrorCode;
                 if (IsRealse)
                 {
-                    ErrorInfo = LanguageHelper.GetLang().ServerBusy;
+                    ErrorInfo = Language.Instance.ServerBusy;
                 }
             }
         }

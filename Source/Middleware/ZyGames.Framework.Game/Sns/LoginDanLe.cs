@@ -54,7 +54,7 @@ namespace ZyGames.Framework.Game.Sns
         public LoginDanLe(string retailID, string retailUser, string password, string passportId)
         {
             this._retailID = retailID;
-            this.Password = new DESAlgorithmNew().DecodePwd(password, GameEnvironment.ClientDesDeKey);
+            this.Password = new DESAlgorithmNew().DecodePwd(password, GameEnvironment.Setting.ClientDesDeKey);
             this.username = HttpUtility.UrlEncode(retailUser, Encoding.UTF8).ToUpper();
             _mid = passportId.Equals("0") ? string.Empty : passportId;
         }

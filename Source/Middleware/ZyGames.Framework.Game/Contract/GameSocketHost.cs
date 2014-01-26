@@ -33,6 +33,7 @@ using ZyGames.Framework.Common;
 using ZyGames.Framework.Common.Configuration;
 using ZyGames.Framework.Common.Log;
 using ZyGames.Framework.Game.Context;
+using ZyGames.Framework.Game.Lang;
 using ZyGames.Framework.Game.Runtime;
 using ZyGames.Framework.Game.Service;
 using ZyGames.Framework.Net;
@@ -411,7 +412,10 @@ namespace ZyGames.Framework.Game.Contract
         /// </summary>
         /// <param name="sender">Sender.</param>
         /// <param name="e">E.</param>
-        protected abstract void OnConnectCompleted(object sender, ConnectionEventArgs e);
+        protected virtual void OnConnectCompleted(object sender, ConnectionEventArgs e)
+        {
+
+        }
         /// <summary>
         /// Raises the disconnected event.
         /// </summary>
@@ -568,6 +572,7 @@ namespace ZyGames.Framework.Game.Contract
                 httpListener.Start();
                 httpListener.BeginGetContext(OnHttpRequest, httpListener);
             }
+            EntitySyncManger.SendHandle += SendAsync;
             OnStartAffer();
         }
 
@@ -679,6 +684,26 @@ namespace ZyGames.Framework.Game.Contract
         }
 
         /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <param name="data"></param>
+        /// <returns></returns>
+        public bool SendAsync(int userId, byte[] data)
+        {
+            string sessionId;
+            if (globalUid2SidMap.TryGetValue(userId, out sessionId))
+            {
+                GameSession session;
+                if (globalSessions.TryGetValue(sessionId, out session))
+                {
+                    return SendAsync(session, data);
+                }
+            }
+            return false;
+        }
+
+        /// <summary>
         /// 发送消息
         /// </summary>
         /// <param name="sessionId"></param>
@@ -743,6 +768,7 @@ namespace ZyGames.Framework.Game.Contract
                 TraceLog.WriteError("{0}", ex);
             }
         }
+
         /// <summary>
         /// Checks the remote.
         /// </summary>
@@ -753,12 +779,31 @@ namespace ZyGames.Framework.Game.Contract
         {
             return true;
         }
+
         /// <summary>
         /// Raises the requested event.
         /// </summary>
         /// <param name="httpGet">Http get.</param>
         /// <param name="response">Response.</param>
-        protected abstract void OnRequested(HttpGet httpGet, IGameResponse response);
+        protected virtual void OnRequested(HttpGet httpGet, IGameResponse response)
+        {
+            if (GameEnvironment.IsRunning)
+            {
+                ActionFactory.Request(httpGet, response, GetUser);
+            }
+            else
+            {
+                ActionFactory.RequestError(response, httpGet.ActionId, Language.Instance.ServerMaintain);
+            }
+        }
+
+        /// <summary>
+        /// Get user object by userid
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <returns></returns>
+        protected abstract BaseUser GetUser(int userId);
+
         /// <summary>
         /// Raises the start affer event.
         /// </summary>

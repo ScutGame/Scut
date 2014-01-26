@@ -167,8 +167,8 @@ namespace ZyGames.Framework.Game.Service
             strategy = Current.MonitorLock.Lock();
             if (strategy == null || !strategy.TryEnterLock())
             {
-                ErrorCode = LanguageHelper.GetLang().ErrorCode;
-                if (!IsRealse) ErrorInfo = LanguageHelper.GetLang().ServerBusy;
+                ErrorCode = Language.Instance.ErrorCode;
+                if (!IsRealse) ErrorInfo = Language.Instance.ServerBusy;
                 TraceLog.WriteError("Action-{0} Uid:{1} locked timeout.", actionId, UserId);
             }
             return strategy;
@@ -218,10 +218,10 @@ namespace ZyGames.Framework.Game.Service
             catch (Exception ex)
             {
                 SaveLog(ex);
-                ErrorCode = LanguageHelper.GetLang().ErrorCode;
+                ErrorCode = Language.Instance.ErrorCode;
                 if (!IsRealse)
                 {
-                    ErrorInfo = LanguageHelper.GetLang().ServerBusy;
+                    ErrorInfo = Language.Instance.ServerBusy;
                 }
                 return false;
             }
@@ -245,10 +245,10 @@ namespace ZyGames.Framework.Game.Service
                 }
                 else if (ErrorCode == 0)
                 {
-                    ErrorCode = LanguageHelper.GetLang().ValidateCode;
+                    ErrorCode = Language.Instance.ValidateCode;
                     if (!IsRealse)
                     {
-                        ErrorInfo = LanguageHelper.GetLang().ValidateError;
+                        ErrorInfo = Language.Instance.ValidateError;
                     }
                 }
             }
@@ -256,10 +256,10 @@ namespace ZyGames.Framework.Game.Service
             {
                 if (ErrorCode == 0)
                 {
-                    ErrorCode = LanguageHelper.GetLang().ErrorCode;
+                    ErrorCode = Language.Instance.ErrorCode;
                     if (!IsRealse)
                     {
-                        ErrorInfo = LanguageHelper.GetLang().UrlElement + httpGet.ErrorMsg;
+                        ErrorInfo = Language.Instance.UrlElement + httpGet.ErrorMsg;
                     }
                 }
             }
@@ -271,7 +271,7 @@ namespace ZyGames.Framework.Game.Service
         /// <param name="errorInfo"></param>
         public void DebugTips(string errorInfo)
         {
-            DebugTips(errorInfo, LanguageHelper.GetLang().ErrorCode);
+            DebugTips(errorInfo, Language.Instance.ErrorCode);
         }
         /// <summary>
         /// 
@@ -292,7 +292,7 @@ namespace ZyGames.Framework.Game.Service
         /// <param name="errorInfo"></param>
         public void Tips(string errorInfo)
         {
-            Tips(errorInfo, LanguageHelper.GetLang().ErrorCode);
+            Tips(errorInfo, Language.Instance.ErrorCode);
         }
         /// <summary>
         /// 

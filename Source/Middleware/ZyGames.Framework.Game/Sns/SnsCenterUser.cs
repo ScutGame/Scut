@@ -194,7 +194,7 @@ namespace ZyGames.Framework.Game.Sns
             {
                 if (pwdType == PwdType.MD5)
                 {
-                    password = CryptoHelper.DES_Decrypt(password, GameEnvironment.ProductDesEnKey);
+                    password = CryptoHelper.DES_Decrypt(password, GameEnvironment.Setting.ProductDesEnKey);
                     password = PasswordEncryptMd5(password);
                 }
                 command.Filter.Condition = string.Format("{0} AND {1}",
@@ -208,7 +208,7 @@ namespace ZyGames.Framework.Game.Sns
             {
                 if (pwdType == PwdType.MD5)
                 {
-                    password = CryptoHelper.DES_Decrypt(password, GameEnvironment.ProductDesEnKey);
+                    password = CryptoHelper.DES_Decrypt(password, GameEnvironment.Setting.ProductDesEnKey);
                     if (password.Length != 32)
                     {
                         //判断是否已经MD5加密
@@ -344,7 +344,7 @@ namespace ZyGames.Framework.Game.Sns
             //自动获取通行证
             SnsPassport passport = new SnsPassport();
             this._PassportId = passport.GetRegPassport();
-            this._PassportPwd = CryptoHelper.DES_Encrypt(passport.GetRandomPwd(), GameEnvironment.ProductDesEnKey);
+            this._PassportPwd = CryptoHelper.DES_Encrypt(passport.GetRandomPwd(), GameEnvironment.Setting.ProductDesEnKey);
             return false;
         }
 
@@ -411,7 +411,7 @@ namespace ZyGames.Framework.Game.Sns
                     string password = Convert.ToString(aReader["PassportPwd"]);
                     if (pwdType == PwdType.MD5)
                     {
-                        password = CryptoHelper.DES_Encrypt(password, GameEnvironment.ProductDesEnKey);
+                        password = CryptoHelper.DES_Encrypt(password, GameEnvironment.Setting.ProductDesEnKey);
                     }
 
                     SnsCenterUser user = new SnsCenterUser(Convert.ToString(aReader["PassportId"]), password, deviceID);
@@ -435,7 +435,7 @@ namespace ZyGames.Framework.Game.Sns
                 return 0;
             }
             //md5加密
-            string password = CryptoHelper.DES_Decrypt(_PassportPwd, GameEnvironment.ProductDesEnKey);
+            string password = CryptoHelper.DES_Decrypt(_PassportPwd, GameEnvironment.Setting.ProductDesEnKey);
             password = PasswordEncryptMd5(password);
 
             var command = ConnectManager.Provider.CreateCommandStruct("SnsUserInfo", CommandMode.Insert);
@@ -493,7 +493,7 @@ namespace ZyGames.Framework.Game.Sns
             try
             {
                 //md5加密
-                string password = CryptoHelper.DES_Decrypt(_PassportPwd, GameEnvironment.ProductDesEnKey);
+                string password = CryptoHelper.DES_Decrypt(_PassportPwd, GameEnvironment.Setting.ProductDesEnKey);
                 password = PasswordEncryptMd5(password);
 
                 var command = ConnectManager.Provider.CreateCommandStruct("SnsUserInfo", CommandMode.Modify);

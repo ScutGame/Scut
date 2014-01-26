@@ -105,14 +105,14 @@ namespace ZyGames.Framework.Game.Contract.Action
             catch (Exception ex)
             {
                 this.SaveLog(ex);
-                ErrorCode = LanguageHelper.GetLang().ErrorCode;
-                ErrorInfo = LanguageHelper.GetLang().LoadDataError;
+                ErrorCode = Language.Instance.ErrorCode;
+                ErrorInfo = Language.Instance.LoadDataError;
                 return false;
             }
             if (appStoreInfo.status != 0)
             {
-                ErrorCode = LanguageHelper.GetLang().ErrorCode;
-                ErrorInfo = LanguageHelper.GetLang().AppStorePayError;
+                ErrorCode = Language.Instance.ErrorCode;
+                ErrorInfo = Language.Instance.AppStorePayError;
                 return false;
             }
             var paySection = AppStoreFactory.GetPaySection();

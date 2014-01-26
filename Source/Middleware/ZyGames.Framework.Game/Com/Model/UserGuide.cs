@@ -76,8 +76,11 @@ namespace ZyGames.Framework.Game.Com.Model
             get { return _guideId; }
             set
             {
-                _guideId = value;
-                NotifyByModify();
+                if (!Equals(_guideId, value))
+                {
+                    _guideId = value;
+                    BindAndNotify(_guideId);
+                }
             }
         }
 
@@ -92,8 +95,11 @@ namespace ZyGames.Framework.Game.Com.Model
             get { return _status; }
             set
             {
-                _status = value;
-                NotifyByModify();
+                if (!Equals(_status, value))
+                {
+                    _status = value;
+                    BindAndNotify(_status);
+                }
             }
         }
     }

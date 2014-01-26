@@ -22,6 +22,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ****************************************************************************/
 using System;
+using System.Configuration;
 using ZyGames.Framework.Common.Configuration;
 using ZyGames.Framework.Common.Security;
 using ZyGames.Framework.Data;
@@ -32,31 +33,34 @@ namespace ZyGames.Framework.Game.Pay
     internal class ConfigManger
     {
         private static readonly DbBaseProvider _dbBaseProvider;
+        private const string ConnectKey = "PayCenter";
 
         static ConfigManger()
         {
-            string providerType = ConfigUtils.GetSetting("PayDB_ProviderType");
-            string connectionFormat = ConfigUtils.GetSetting("PayDB_ConnectionString");
-            string dataSource = string.Empty;
-            string userInfo = string.Empty;
-            try
+            _dbBaseProvider = DbConnectionProvider.CreateDbProvider(ConnectKey);
+            if (_dbBaseProvider == null)
             {
-                dataSource = ConfigUtils.GetSetting("PayDB_Server");
-                userInfo = ConfigUtils.GetSetting("PayDB_Acount");
-                if (!string.IsNullOrEmpty(userInfo))
+                string providerType = ConfigUtils.GetSetting("PayDB_ProviderType");
+                string connectionFormat = ConfigUtils.GetSetting("PayDB_ConnectionString");
+                string dataSource = string.Empty;
+                string userInfo = string.Empty;
+                try
                 {
-                    userInfo = CryptoHelper.DES_Decrypt(userInfo, GameEnvironment.ProductDesEnKey);
+                    dataSource = ConfigUtils.GetSetting("PayDB_Server");
+                    userInfo = ConfigUtils.GetSetting("PayDB_Acount");
+                    if (!string.IsNullOrEmpty(userInfo))
+                    {
+                        userInfo = CryptoHelper.DES_Decrypt(userInfo, GameEnvironment.Setting.ProductDesEnKey);
+                    }
                 }
+                catch (Exception) { }
+                string connectionString = "";
+                if (!string.IsNullOrEmpty(dataSource) && !string.IsNullOrEmpty(userInfo))
+                {
+                    connectionString = string.Format(connectionFormat, dataSource, userInfo);
+                }
+                _dbBaseProvider = DbConnectionProvider.CreateDbProvider(ConnectKey, providerType, connectionString);
             }
-            catch (Exception)
-            {
-            }
-            string connectionString = "";
-            if (!string.IsNullOrEmpty(dataSource) && !string.IsNullOrEmpty(userInfo))
-            {
-                connectionString = string.Format(connectionFormat, dataSource, userInfo);
-            }
-            _dbBaseProvider = DbConnectionProvider.CreateDbProvider("PayDB", providerType, connectionString);
         }
 
         public static DbBaseProvider Provider

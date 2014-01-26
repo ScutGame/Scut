@@ -157,8 +157,8 @@ namespace ZyGames.Framework.Game.Contract.Action
         {
             if (!GameEnvironment.IsRunning)
             {
-                ErrorCode = LanguageHelper.GetLang().ErrorCode;
-                ErrorInfo = LanguageHelper.GetLang().ServerLoading;
+                ErrorCode = Language.Instance.ErrorCode;
+                ErrorInfo = Language.Instance.ServerLoading;
                 return false;
             }
             return true;
@@ -198,8 +198,8 @@ namespace ZyGames.Framework.Game.Contract.Action
             {
                 Uid = string.Empty;
                 Sid = string.Empty;
-                ErrorCode = LanguageHelper.GetLang().ErrorCode;
-                ErrorInfo = LanguageHelper.GetLang().PasswordError;
+                ErrorCode = Language.Instance.ErrorCode;
+                ErrorInfo = Language.Instance.PasswordError;
             }
             return false;
         }

@@ -84,8 +84,8 @@ namespace ZyGames.Framework.Game.Contract.Action
         {
             if (!GameEnvironment.IsRunning)
             {
-                ErrorCode = LanguageHelper.GetLang().ErrorCode;
-                ErrorInfo = LanguageHelper.GetLang().ServerLoading;
+                ErrorCode = Language.Instance.ErrorCode;
+                ErrorInfo = Language.Instance.ServerLoading;
                 return false;
             }
             return true;
@@ -126,8 +126,8 @@ namespace ZyGames.Framework.Game.Contract.Action
 
             if (getToken != null && !string.IsNullOrEmpty(getToken.error_code))
             {
-                ErrorCode = LanguageHelper.GetLang().ErrorCode;
-                ErrorInfo = LanguageHelper.GetLang().GetAccessFailure;
+                ErrorCode = Language.Instance.ErrorCode;
+                ErrorInfo = Language.Instance.GetAccessFailure;
                 TraceLog.WriteError("获取360 access_token 失败：url={0},result={1},error_code={2},error={3}", url, result,
                                     getToken.error_code, getToken.error);
                 return false;

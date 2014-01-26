@@ -68,8 +68,8 @@ namespace ZyGames.Framework.Game.Contract.Action
 
             if (!GameEnvironment.IsRunning)
             {
-                ErrorCode = LanguageHelper.GetLang().ErrorCode;
-                ErrorInfo = LanguageHelper.GetLang().ServerLoading;
+                ErrorCode = Language.Instance.ErrorCode;
+                ErrorInfo = Language.Instance.ServerLoading;
                 return false;
             }
             if (IgnoreActionId)
@@ -86,13 +86,13 @@ namespace ZyGames.Framework.Game.Contract.Action
             switch (status)
             {
                 case LoginStatus.NoLogin:
-                    ErrorCode = LanguageHelper.GetLang().TimeoutCode;
-                    ErrorInfo = LanguageHelper.GetLang().AcountNoLogin;
+                    ErrorCode = Language.Instance.TimeoutCode;
+                    ErrorInfo = Language.Instance.AcountNoLogin;
                     result = false;
                     break;
                 case LoginStatus.Logined:
-                    ErrorCode = LanguageHelper.GetLang().TimeoutCode;
-                    ErrorInfo = LanguageHelper.GetLang().AcountLogined;
+                    ErrorCode = Language.Instance.TimeoutCode;
+                    ErrorInfo = Language.Instance.AcountLogined;
                     result = false;
                     break;
                 case LoginStatus.Success:
@@ -107,8 +107,8 @@ namespace ZyGames.Framework.Game.Contract.Action
             }
             if (gameUser != null && gameUser.IsFengJinStatus)
             {
-                ErrorCode = LanguageHelper.GetLang().TimeoutCode;
-                ErrorInfo = LanguageHelper.GetLang().AcountIsLocked;
+                ErrorCode = Language.Instance.TimeoutCode;
+                ErrorInfo = Language.Instance.AcountIsLocked;
                 result = false;
             }
             if (result && IsRefresh)

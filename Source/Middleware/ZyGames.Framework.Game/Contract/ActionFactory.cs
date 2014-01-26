@@ -186,27 +186,24 @@ namespace ZyGames.Framework.Game.Contract
         /// <param name="httpGet"></param>
         public static void Request(string typeName, HttpGet httpGet, IGameResponse response, Func<int, BaseUser> userFactory)
         {
+            int actionID = httpGet.ActionId;
             string tempName = string.Format(typeName, httpGet.ActionId);
-            int actionID = 0;
             string errorInfo = "";
             try
             {
                 bool isRL = BaseStruct.CheckRunloader(httpGet);
                 if (isRL || httpGet.CheckSign())
                 {
-                    if (httpGet.GetInt("ActionID", ref actionID))
+                    BaseStruct action = FindRoute(typeName, httpGet, actionID);
+                    Process(action, httpGet, response, userFactory);
+                    if (action != null)
                     {
-                        BaseStruct action = FindRoute(typeName, httpGet, actionID);
-                        Process(action, httpGet, response, userFactory);
-                        if (action != null)
-                        {
-                            return;
-                        }
+                        return;
                     }
                 }
                 else
                 {
-                    errorInfo = "签名验证失败";
+                    errorInfo = "Sign Error";
                     TraceLog.WriteError("Action request {3} error:{2},rl:{0},param:{1}", isRL, httpGet.ParamString, errorInfo, tempName);
                 }
             }
@@ -252,7 +249,7 @@ namespace ZyGames.Framework.Game.Contract
                 }
                 else
                 {
-                    errorInfo = "签名验证失败";
+                    errorInfo = "Sign Error";
                     TraceLog.WriteError("Action request error:{2},rl:{0},param:{1}", isRl, httpGet.ParamString, errorInfo);
                 }
             }
@@ -393,10 +390,10 @@ namespace ZyGames.Framework.Game.Contract
                 }
                 catch (Exception ex)
                 {
-                    throw ex;
+                    throw new Exception(string.Format("The {0} action init error",actionID), ex);
                 }
             }
-            throw new NullReferenceException(string.Format("未找到Action处理对象的类型:{0}!", typeName));
+            throw new NotSupportedException(string.Format("Not found {0} action Interface.", actionID));
         }
     }
 }

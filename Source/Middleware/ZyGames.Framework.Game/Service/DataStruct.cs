@@ -50,6 +50,16 @@ namespace ZyGames.Framework.Game.Service
         /// 跟踪BUFFER
         /// </summary>
         protected StringBuilder _traceBuffer = new StringBuilder();
+
+        /// <summary>
+        /// long类型
+        /// </summary>
+        /// <param name="obj"></param>
+        public void PushIntoStack(long obj)
+        {
+            PushIntoStackObj(obj);
+        }
+
         /// <summary>
         /// Int类型
         /// </summary>
@@ -83,10 +93,36 @@ namespace ZyGames.Framework.Game.Service
             PushIntoStackObj((byte)obj);
         }
         /// <summary>
+        /// bool类型
+        /// </summary>
+        /// <param name="obj"></param>
+        public void PushIntoStack(bool obj)
+        {
+            PushIntoStackObj(obj);
+        }
+        /// <summary>
         /// byte类型
         /// </summary>
         /// <param name="obj"></param>
         public void PushIntoStack(byte obj)
+        {
+            PushIntoStackObj(obj);
+        }
+
+        /// <summary>
+        /// float类型
+        /// </summary>
+        /// <param name="obj"></param>
+        public void PushIntoStack(float obj)
+        {
+            PushIntoStackObj(obj);
+        }
+
+        /// <summary>
+        /// double类型
+        /// </summary>
+        /// <param name="obj"></param>
+        public void PushIntoStack(double obj)
         {
             PushIntoStackObj(obj);
         }
@@ -186,30 +222,46 @@ namespace ZyGames.Framework.Game.Service
         /// <returns>占用字节数</returns>
         protected int GetObjLength(object obj)
         {
-            if (obj.GetType() == typeof(String))
+            Type type = obj.GetType();
+            if (type == typeof(String))
             {
                 return GetStringLen(Convert.ToString(obj));
             }
-            else if (obj.GetType() == typeof(Int32))
+            else if (type == typeof(double))
+            {
+                return GetDoubleLen();
+            }
+            else if (type == typeof(float))
+            {
+                return GetFloatLen();
+            }
+            else if (type == typeof(Int64))
+            {
+                return GetLongLen();
+            }
+            else if (type == typeof(Int32) || type.IsEnum)
             {
                 return GetDWordLen();
             }
-            else if (obj.GetType() == typeof(Int16))
+            else if (type == typeof(Int16))
             {
                 return GetWordLen();
             }
-            else if (obj.GetType() == typeof(Byte))
+            else if (type == typeof(Byte))
             {
                 return GetByteLen();
             }
-            else if (obj.GetType() == typeof(DataStruct))
+            else if (type == typeof(Boolean))
+            {
+                return GetBoolLen();
+            }
+            else if (type == typeof(DataStruct))
             {
                 return ((DataStruct)obj).GetContentLen();
             }
             else
             {
-                Type t = obj.GetType();
-                throw new Exception();
+                throw new ArgumentOutOfRangeException("obj", "The " + type.FullName + " type not be supported.");
                 //return 0;
             }
         }
@@ -221,23 +273,40 @@ namespace ZyGames.Framework.Game.Service
         {
             foreach (object obj in arrayList)
             {
-                if (obj.GetType() == typeof(String))
+                Type type = obj.GetType();
+                if (type == typeof(String))
                 {
                     WriteString(response, Convert.ToString(obj));
                 }
-                else if (obj.GetType() == typeof(Int32))
+                else if (type == typeof(double))
+                {
+                    WriteDouble(response, Convert.ToDouble(obj));
+                }
+                else if (type == typeof(float))
+                {
+                    WriteFloat(response, Convert.ToSingle(obj));
+                }
+                else if (type == typeof(Int64))
+                {
+                    WriteLong(response, Convert.ToInt64(obj));
+                }
+                else if (type == typeof(Int32) || type.IsEnum)
                 {
                     WriteDWord(response, Convert.ToInt32(obj));
                 }
-                else if (obj.GetType() == typeof(Int16))
+                else if (type == typeof(Int16))
                 {
                     WriteWord(response, Convert.ToInt16(obj));
                 }
-                else if (obj.GetType() == typeof(Byte))
+                else if (type == typeof(Byte))
                 {
                     WriteByte(response, Convert.ToByte(obj));
                 }
-                else if (obj.GetType() == typeof(DataStruct))
+                else if (type == typeof(bool))
+                {
+                    WriteBool(response, Convert.ToBoolean(obj));
+                }
+                else if (type == typeof(DataStruct))
                 {
                     DataStruct ds = ((DataStruct)obj);
                     ds.WriteActionNum(response);
@@ -301,6 +370,47 @@ namespace ZyGames.Framework.Game.Service
             }
         }
         /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="response"></param>
+        /// <param name="aValue"></param>
+        protected static void WriteDouble(IGameResponse response, double aValue)
+        {
+            byte[] outputStream = BitConverter.GetBytes(aValue);
+            response.Write(outputStream);
+        }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="response"></param>
+        /// <param name="aValue"></param>
+        protected static void WriteFloat(IGameResponse response, float aValue)
+        {
+            byte[] outputStream = BitConverter.GetBytes(aValue);
+            response.Write(outputStream);
+        }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="response"></param>
+        /// <param name="aValue"></param>
+        protected static void WriteLong(IGameResponse response, Int64 aValue)
+        {
+            byte[] outputStream = BitConverter.GetBytes(aValue);
+            response.Write(outputStream);
+        }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="response"></param>
+        /// <param name="aValue"></param>
+        protected static void WriteBool(IGameResponse response, Boolean aValue)
+        {
+            byte[] outputStream = BitConverter.GetBytes(aValue);
+            response.Write(outputStream);
+        }
+
+        /// <summary>
         /// 写入字节流
         /// </summary>
         /// <param name="aValue"></param>
@@ -343,6 +453,33 @@ namespace ZyGames.Framework.Game.Service
             byte[] outputStream = System.Text.Encoding.UTF8.GetBytes(str);
             return outputStream.Length + 4;
         }
+
+        /// <summary>
+        /// 计算Double型数据下发时，占用的字节长度
+        /// </summary>
+        /// <returns></returns>
+        public static int GetDoubleLen()
+        {
+            return 8;
+        }
+        /// <summary>
+        /// 计算Float型数据下发时，占用的字节长度
+        /// </summary>
+        /// <returns></returns>
+        public static int GetFloatLen()
+        {
+            return 4;
+        }
+
+        /// <summary>
+        /// 计算int64型数据下发时，占用的字节长度
+        /// </summary>
+        /// <returns></returns>
+        public static int GetLongLen()
+        {
+            return 8;
+        }
+
         /// <summary>
         /// 计算int型数据下发时，占用的字节长度
         /// </summary>
@@ -364,6 +501,14 @@ namespace ZyGames.Framework.Game.Service
         /// </summary>
         /// <returns></returns>
         public static int GetByteLen()
+        {
+            return 1;
+        }
+        /// <summary>
+        /// 计算Bool型数据下发时，占用的字节长度
+        /// </summary>
+        /// <returns></returns>
+        public static int GetBoolLen()
         {
             return 1;
         }

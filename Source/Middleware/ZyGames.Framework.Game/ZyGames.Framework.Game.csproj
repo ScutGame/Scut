@@ -46,31 +46,31 @@
     <Reference Include="System.Xml" />
     <Reference Include="System.Configuration" />
     <Reference Include="IronPython">
-      <HintPath>..\..\..\Release\6.0.5.1\Lib\IronPython.dll</HintPath>
+      <HintPath>..\..\..\Release\6.1.5.6\Lib\IronPython.dll</HintPath>
     </Reference>
     <Reference Include="IronPython.Modules">
-      <HintPath>..\..\..\Release\6.0.5.1\Lib\IronPython.Modules.dll</HintPath>
+      <HintPath>..\..\..\Release\6.1.5.6\Lib\IronPython.Modules.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.Dynamic">
-      <HintPath>..\..\..\Release\6.0.5.1\Lib\Microsoft.Dynamic.dll</HintPath>
+      <HintPath>..\..\..\Release\6.1.5.6\Lib\Microsoft.Dynamic.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.Scripting">
-      <HintPath>..\..\..\Release\6.0.5.1\Lib\Microsoft.Scripting.dll</HintPath>
+      <HintPath>..\..\..\Release\6.1.5.6\Lib\Microsoft.Scripting.dll</HintPath>
     </Reference>
     <Reference Include="Newtonsoft.Json">
-      <HintPath>..\..\..\Release\6.0.5.1\Lib\Newtonsoft.Json.dll</HintPath>
+      <HintPath>..\..\..\Release\6.1.5.6\Lib\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="NLog">
-      <HintPath>..\..\..\Release\6.0.5.1\Lib\NLog.dll</HintPath>
+      <HintPath>..\..\..\Release\6.1.5.6\Lib\NLog.dll</HintPath>
     </Reference>
     <Reference Include="protobuf-net">
-      <HintPath>..\..\..\Release\6.0.5.1\Lib\protobuf-net.dll</HintPath>
-    </Reference>
-    <Reference Include="ZyGames.Framework.Common">
-      <HintPath>..\..\..\Release\6.0.5.1\Lib\ZyGames.Framework.Common.dll</HintPath>
+      <HintPath>..\..\..\Release\6.1.5.6\Lib\protobuf-net.dll</HintPath>
     </Reference>
     <Reference Include="ZyGames.Framework">
-      <HintPath>..\..\..\Release\6.0.5.1\Lib\ZyGames.Framework.dll</HintPath>
+      <HintPath>..\..\..\Release\6.1.5.6\Lib\ZyGames.Framework.dll</HintPath>
+    </Reference>
+    <Reference Include="ZyGames.Framework.Common">
+      <HintPath>..\..\..\Release\6.1.5.6\Lib\ZyGames.Framework.Common.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -147,6 +147,7 @@
     <Compile Include="Contract\Action\RegisterAction.cs" />
     <Compile Include="Contract\Action\ScriptAction.cs" />
     <Compile Include="Contract\Action\Sdk91PayAction.cs" />
+    <Compile Include="Contract\EntitySyncManger.cs" />
     <Compile Include="Contract\GameHostSetting.cs" />
     <Compile Include="Contract\GameSession.cs" />
     <Compile Include="Contract\GameSocketHost.cs" />
@@ -158,6 +159,7 @@
     <Compile Include="Lang\BaseKoreanLanguage.cs" />
     <Compile Include="Lang\BaseZHLanguage.cs" />
     <Compile Include="Lang\ILanguage.cs" />
+    <Compile Include="Lang\Language.cs" />
     <Compile Include="Lang\LanguageHelper.cs" />
     <Compile Include="Message\BroadcastService.cs" />
     <Compile Include="Message\BroadcastTimer.cs" />
@@ -175,6 +177,7 @@
     <Compile Include="Pay\Section\AppStorePayCollection.cs" />
     <Compile Include="Pay\Section\AppStorePayElement.cs" />
     <Compile Include="Pay\Section\AppStorePaySection.cs" />
+    <Compile Include="Runtime\EnvironmentSetting.cs" />
     <Compile Include="Runtime\HttpRequest.cs" />
     <Compile Include="Service\HttpGameResponse.cs" />
     <Compile Include="Service\LoginStatus.cs" />

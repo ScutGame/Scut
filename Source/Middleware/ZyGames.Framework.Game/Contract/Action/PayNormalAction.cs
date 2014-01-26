@@ -166,8 +166,8 @@ namespace ZyGames.Framework.Game.Contract.Action
                 TraceLog.ReleaseWriteFatal(string.Format("PayNormal Order:{0},pid:{1} successfully!", _orderNo, _passportID));
                 return true;
             }
-            ErrorCode = LanguageHelper.GetLang().ErrorCode;
-            ErrorInfo = LanguageHelper.GetLang().AppStorePayError;
+            ErrorCode = Language.Instance.ErrorCode;
+            ErrorInfo = Language.Instance.AppStorePayError;
             TraceLog.ReleaseWriteFatal(string.Format("PayNormal Order:{0},pid:{1} faild!", _orderNo, _passportID));
             return false;
         }

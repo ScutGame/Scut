@@ -38,31 +38,36 @@ namespace ZyGames.Framework.Game.Sns
     internal class ConnectManager
     {
         private static readonly DbBaseProvider _dbBaseProvider;
+        private const string ConnectKey = "SnsCenter";
 
         static ConnectManager()
         {
-            string providerType = ConfigUtils.GetSetting("Snscenter_ProviderType");
-            string connectionFormat = ConfigUtils.GetSetting("Snscenter_ConnectionString");
-            string dataSource = string.Empty;
-            string userInfo = string.Empty;
-            try
+            _dbBaseProvider = DbConnectionProvider.CreateDbProvider(ConnectKey);
+            if (_dbBaseProvider == null)
             {
-                dataSource = ConfigUtils.GetSetting("Snscenter_Server");
-                userInfo = ConfigUtils.GetSetting("Snscenter_Acount");
-                if (!string.IsNullOrEmpty(userInfo))
+                string providerType = ConfigUtils.GetSetting("Snscenter_ProviderType");
+                string connectionFormat = ConfigUtils.GetSetting("Snscenter_ConnectionString");
+                string dataSource = string.Empty;
+                string userInfo = string.Empty;
+                try
                 {
-                    userInfo = CryptoHelper.DES_Decrypt(userInfo, GameEnvironment.ProductDesEnKey);
+                    dataSource = ConfigUtils.GetSetting("Snscenter_Server");
+                    userInfo = ConfigUtils.GetSetting("Snscenter_Acount");
+                    if (!string.IsNullOrEmpty(userInfo))
+                    {
+                        userInfo = CryptoHelper.DES_Decrypt(userInfo, GameEnvironment.Setting.ProductDesEnKey);
+                    }
                 }
+                catch (Exception)
+                {
+                }
+                string connectionString = "";
+                if (!string.IsNullOrEmpty(dataSource) && !string.IsNullOrEmpty(userInfo))
+                {
+                    connectionString = string.Format(connectionFormat, dataSource, userInfo);
+                }
+                _dbBaseProvider = DbConnectionProvider.CreateDbProvider(ConnectKey, providerType, connectionString);
             }
-            catch (Exception)
-            {
-            }
-            string connectionString = "";
-            if (!string.IsNullOrEmpty(dataSource) && !string.IsNullOrEmpty(userInfo))
-            {
-                connectionString = string.Format(connectionFormat, dataSource, userInfo);
-            }
-            _dbBaseProvider = DbConnectionProvider.CreateDbProvider("Snscenter", providerType, connectionString);
         }
 
         public static DbBaseProvider Provider

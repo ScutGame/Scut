@@ -138,14 +138,14 @@ namespace ZyGames.Framework.Game.Contract.Action
         {
             if (!GameEnvironment.IsRunning)
             {
-                ErrorCode = LanguageHelper.GetLang().ErrorCode;
-                ErrorInfo = LanguageHelper.GetLang().ServerLoading;
+                ErrorCode = Language.Instance.ErrorCode;
+                ErrorInfo = Language.Instance.ServerLoading;
                 return false;
             }
             if (UserId <= 0)
             {
-                ErrorCode = LanguageHelper.GetLang().ErrorCode;
-                ErrorInfo = LanguageHelper.GetLang().UrlElement;
+                ErrorCode = Language.Instance.ErrorCode;
+                ErrorInfo = Language.Instance.UrlElement;
                 return false;
             }
 

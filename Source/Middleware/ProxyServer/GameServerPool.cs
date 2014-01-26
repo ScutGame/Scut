@@ -63,7 +63,7 @@ namespace ProxyServer
             try
             {
                 string[] gameIds = ConfigUtils.GetSetting("GameIds", "").Split(',');
-                DirService dirClient = new DirService();
+                DirServiceSoapClient dirClient = new DirServiceSoapClient();
                 ServicePointManager.ServerCertificateValidationCallback += (se, cert, chain, sslerror) => true;
 
                 string keyCode = "";
