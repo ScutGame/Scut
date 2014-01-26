@@ -34,9 +34,9 @@ namespace ZyGames.Framework.Net.Sql
 {
     internal class SqlDataSender : IDataSender
     {
-        public void Send<T>(T data) where T : AbstractEntity
+        public void Send<T>(T data, bool isChange = true) where T : AbstractEntity
         {
-            Send(new T[] { data }, true, null, null);
+            Send(new T[] { data }, isChange, null, null);
         }
 
         public void Send<T>(T[] dataList) where T : AbstractEntity
@@ -87,7 +87,7 @@ namespace ZyGames.Framework.Net.Sql
             DbBaseProvider dbProvider = DbConnectionProvider.CreateDbProvider(connectKey ?? schemaTable.ConnectKey);
             if (dbProvider == null)
             {
-                TraceLog.WriteError("DbBaseProvider:{0} is null.", (connectKey ?? schemaTable.ConnectKey));
+                //TraceLog.WriteError("DbBaseProvider:{0} is null.", (connectKey ?? schemaTable.ConnectKey));
                 return;
             }
             CommandStruct command = null;
@@ -103,8 +103,8 @@ namespace ZyGames.Framework.Net.Sql
             {
                 command = dbProvider.CreateCommandStruct(schemaTable.Name, CommandMode.ModifyInsert);
             }
-            StringBuilder changeLog = new StringBuilder();
-            changeLog.AppendFormat("\"Keys\":\"{0}\"", data.GetKeyCode());
+            //StringBuilder changeLog = new StringBuilder();
+            //changeLog.AppendFormat("\"Keys\":\"{0}\"", data.GetKeyCode());
             //处理列
             foreach (string columnName in columns)
             {
@@ -125,7 +125,7 @@ namespace ZyGames.Framework.Net.Sql
                     }
                     if (CovertDataValue(schemaTable, schemaColumn, ref value))
                     {
-                        changeLog.AppendFormat(",\"{0}\":\"{1}\"", columnName, value);
+                        //changeLog.AppendFormat(",\"{0}\":\"{1}\"", columnName, value);
                         IDataParameter parameter = CreateParameter(dbProvider, columnName, schemaColumn.DbType, value);
                         command.AddParameter(parameter);
                     }
@@ -146,8 +146,8 @@ namespace ZyGames.Framework.Net.Sql
                 {
                     string keyName = columnName;
                     string paramName = "F_" + columnName;
-                    if (condition.Length > 0) condition += " and ";
-                    condition += dbProvider.FormatFilterParam(schemaColumn.Name, paramName);
+                    if (condition.Length > 0) condition += " AND ";
+                    condition += dbProvider.FormatFilterParam(schemaColumn.Name, "", paramName);
 
                     object value = data.GetPropertyValue(schemaColumn.CanRead, columnName);
                     if (handle != null)
@@ -168,10 +168,10 @@ namespace ZyGames.Framework.Net.Sql
             }
             command.Filter.Condition = condition;
             command.Parser();
-            if (schemaTable.AccessLevel == AccessLevel.ReadWrite)
-            {
-                TraceLog.ReleaseWriteDebug("Update change \"{0}\" data:{1}", data.GetType().FullName, changeLog.ToString());
-            }
+            //if (schemaTable.AccessLevel == AccessLevel.ReadWrite)
+            //{
+            //    TraceLog.ReleaseWriteDebug("Update change \"{0}\" data:{1}", data.GetType().FullName, changeLog.ToString());
+            //}
             dbProvider.ExecuteNonQuery(data.GetIdentityId(), CommandType.Text, command.Sql, command.Parameters);
             data.OnUnNew();
         }

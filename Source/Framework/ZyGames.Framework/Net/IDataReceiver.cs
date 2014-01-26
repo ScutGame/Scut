@@ -23,14 +23,12 @@ THE SOFTWARE.
 ****************************************************************************/
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using ZyGames.Framework.Model;
 
 namespace ZyGames.Framework.Net
 {
     /// <summary>
-    /// 
+    /// 数据接收处理接口
     /// </summary>
     public interface IDataReceiver : IDisposable
     {
@@ -39,6 +37,6 @@ namespace ZyGames.Framework.Net
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <returns></returns>
-        List<T> Receive<T>() where T : AbstractEntity, new();
+        bool TryReceive<T>(out List<T> dataList) where T : AbstractEntity, new();
     }
 }

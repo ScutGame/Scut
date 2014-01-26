@@ -24,8 +24,10 @@ THE SOFTWARE.
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.IO;
 using System.Text;
 using System.Threading;
+using ZyGames.Framework.Common;
 
 namespace ZyGames.Framework.RPC.IO
 {
@@ -59,11 +61,39 @@ namespace ZyGames.Framework.RPC.IO
         /// <summary>
         /// 
         /// </summary>
+        /// <param name="stream"></param>
+        /// <param name="encoding"></param>
+        public static MessageStructure Create(Stream stream, Encoding encoding = null)
+        {
+            List<byte> data = new List<byte>();
+            BinaryReader readStream = encoding == null
+                ? new BinaryReader(stream)
+                : new BinaryReader(stream, encoding);
+            int size = 0;
+            while (true)
+            {
+                var buffer = new byte[512];
+                size = readStream.Read(buffer, 0, buffer.Length);
+                if (size == 0)
+                {
+                    break;
+                }
+                byte[] temp = new byte[size];
+                Buffer.BlockCopy(buffer, 0, temp, 0, size);
+                data.AddRange(temp);
+            }
+            return new MessageStructure(data);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
         public MessageStructure()
         {
             EnableGzip = true;
             _buffers = new ConcurrentQueue<byte>();
         }
+
         /// <summary>
         /// 
         /// </summary>
@@ -519,6 +549,62 @@ namespace ZyGames.Framework.RPC.IO
         }
 
         /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="type"></param>
+        /// <param name="obj"></param>
+        public void PushIntoStack(Type type, object obj)
+        {
+            if (type == typeof(string))
+            {
+                PushIntoStack(obj.ToNotNullString());
+            }
+            else if (type == typeof(long))
+            {
+                PushIntoStack(obj.ToLong());
+            }
+            else if (type == typeof(int))
+            {
+                PushIntoStack(obj.ToInt());
+            }
+            else if (type == typeof(short))
+            {
+                PushIntoStack(obj.ToShort());
+            }
+            else if (type == typeof(byte))
+            {
+                PushIntoStack(obj.ToByte());
+            }
+            else if (type == typeof(bool))
+            {
+                PushIntoStack(obj.ToBool());
+            }
+            else if (type == typeof(double))
+            {
+                PushIntoStack(obj.ToDouble());
+            }
+            else if (type == typeof(float))
+            {
+                PushIntoStack((float)Convert.ChangeType(obj, type));
+            }
+            else if (type == typeof(decimal))
+            {
+                PushIntoStack(obj.ToNotNullString());
+            }
+            else if (type == typeof(DateTime))
+            {
+                PushIntoStack(obj.ToDateTime().ToString("yyyy-MM-dd HH:mm:ss"));
+            }
+            else if (type.IsEnum)
+            {
+                PushIntoStack((int)obj);
+            }
+            else if (type == typeof(MessageStructure))
+            {
+                PushIntoStack(obj as MessageStructure);
+            }
+        }
+        /// <summary>
         /// 写入启用Gzip压缩的字节流，格式： Len(4) + gzip(buffer)
         /// </summary>
         /// <param name="buffer">未压缩的字节流</param>
@@ -631,6 +717,10 @@ namespace ZyGames.Framework.RPC.IO
                     {
                         WriteByte(Convert.ToString(item));
                     }
+                    else if (item is long)
+                    {
+                        WriteByte(Convert.ToInt64(item));
+                    }
                     else if (item is int)
                     {
                         WriteByte(Convert.ToInt32(item));
@@ -695,6 +785,10 @@ namespace ZyGames.Framework.RPC.IO
             {
                 byte[] bytes = Encoding.UTF8.GetBytes(item.ToString());
                 length += bytes.Length + IntSize;
+            }
+            else if (item is long)
+            {
+                length += LongSize;
             }
             else if (item is int)
             {

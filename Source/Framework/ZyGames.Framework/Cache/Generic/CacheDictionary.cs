@@ -25,10 +25,7 @@ using System;
 using System.Collections;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using ProtoBuf;
-using ZyGames.Framework.Common;
 using ZyGames.Framework.Event;
 
 namespace ZyGames.Framework.Cache.Generic
@@ -134,7 +131,11 @@ namespace ZyGames.Framework.Cache.Generic
         /// <param name="item"></param>
         public void Add(KeyValuePair<T, V> item)
         {
-            _cacheStruct.TryAdd(item.Key, item.Value);
+            if (_cacheStruct.TryAdd(item.Key, item.Value))
+            {
+                AddChildrenListener(item.Value);
+                Notify(item.Value, CacheItemChangeType.Add, PropertyName);
+            }
         }
         /// <summary>
         /// 
@@ -142,6 +143,8 @@ namespace ZyGames.Framework.Cache.Generic
         public void Clear()
         {
             _cacheStruct.Clear();
+            Notify(this, CacheItemChangeType.Clear, PropertyName);
+            ClearChildrenEvent();
         }
         /// <summary>
         /// 
@@ -178,7 +181,13 @@ namespace ZyGames.Framework.Cache.Generic
         public bool Remove(KeyValuePair<T, V> item)
         {
             V value;
-            return _cacheStruct.TryRemove(item.Key, out value);
+            if (_cacheStruct.TryRemove(item.Key, out value))
+            {
+                Notify(value, CacheItemChangeType.Remove, PropertyName);
+                RemoveChildrenListener(value);
+                return true;
+            }
+            return false;
         }
         /// <summary>
         /// 
@@ -210,7 +219,11 @@ namespace ZyGames.Framework.Cache.Generic
         /// <param name="value"></param>
         public void Add(T key, V value)
         {
-            _cacheStruct.TryAdd(key, value);
+            if (_cacheStruct.TryAdd(key, value))
+            {
+                AddChildrenListener(value);
+                Notify(value, CacheItemChangeType.Add, PropertyName);
+            }
         }
         /// <summary>
         /// 
@@ -220,7 +233,13 @@ namespace ZyGames.Framework.Cache.Generic
         public bool Remove(T key)
         {
             V value;
-            return _cacheStruct.TryRemove(key, out value);
+            if (_cacheStruct.TryRemove(key, out value))
+            {
+                Notify(value, CacheItemChangeType.Remove, PropertyName);
+                RemoveChildrenListener(value);
+                return true;
+            }
+            return false;
         }
         /// <summary>
         /// 
@@ -240,7 +259,17 @@ namespace ZyGames.Framework.Cache.Generic
         public V this[T key]
         {
             get { return _cacheStruct[key]; }
-            set { _cacheStruct[key] = value; }
+            set
+            {
+                V old;
+                if (TryGetValue(key, out old))
+                {
+                    RemoveChildrenListener(old);
+                }
+                _cacheStruct[key] = value;
+                AddChildrenListener(value);
+                Notify(value, CacheItemChangeType.Modify, PropertyName);
+            }
         }
         /// <summary>
         /// 

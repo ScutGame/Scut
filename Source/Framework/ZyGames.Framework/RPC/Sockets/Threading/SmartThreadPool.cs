@@ -1466,7 +1466,10 @@ namespace ZyGames.Framework.RPC.Sockets.Threading
                 return _stpStartInfo.AsReadOnly(); 
             }
         }
-
+		/// <summary>
+		/// Gets a value indicating whether this instance is shuttingdown.
+		/// </summary>
+		/// <value><c>true</c> if this instance is shuttingdown; otherwise, <c>false</c>.</value>
 	    public bool IsShuttingdown
 	    {
             get { return _shutdown;  }
@@ -1484,7 +1487,15 @@ namespace ZyGames.Framework.RPC.Sockets.Threading
         #endregion
 
         #region IDisposable Members
-
+		/// <summary>
+		/// Releases all resource used by the <see cref="ZyGames.Framework.RPC.Sockets.Threading.SmartThreadPool"/> object.
+		/// </summary>
+		/// <remarks>Call <see cref="Dispose"/> when you are finished using the
+		/// <see cref="ZyGames.Framework.RPC.Sockets.Threading.SmartThreadPool"/>. The <see cref="Dispose"/> method leaves the
+		/// <see cref="ZyGames.Framework.RPC.Sockets.Threading.SmartThreadPool"/> in an unusable state. After calling
+		/// <see cref="Dispose"/>, you must release all references to the
+		/// <see cref="ZyGames.Framework.RPC.Sockets.Threading.SmartThreadPool"/> so the garbage collector can reclaim the
+		/// memory that the <see cref="ZyGames.Framework.RPC.Sockets.Threading.SmartThreadPool"/> was occupying.</remarks>
         public void Dispose()
         {
             if (!_isDisposed)

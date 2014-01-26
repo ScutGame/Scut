@@ -61,7 +61,9 @@ namespace ZyGames.Framework.RPC.Sockets.Threading
 		#endregion
 
 		#region Contructor
-
+		/// <summary>
+		/// Initializes a new instance of the <see cref="ZyGames.Framework.RPC.Sockets.Threading.PriorityQueue"/> class.
+		/// </summary>
 		public PriorityQueue()
 		{
 			for(int i = 0; i < _queues.Length; ++i)

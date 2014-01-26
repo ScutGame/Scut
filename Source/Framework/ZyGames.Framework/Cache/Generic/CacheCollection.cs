@@ -25,8 +25,8 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using ProtoBuf;
-using ServiceStack.Net30.Collections.Concurrent;
 using ZyGames.Framework.Event;
+using System.Collections.Concurrent;
 
 namespace ZyGames.Framework.Cache.Generic
 {
@@ -73,7 +73,7 @@ namespace ZyGames.Framework.Cache.Generic
 
                 _cacheStruct[key] = value;
                 AddChildrenListener(value);
-                Notify(CacheItemChangeType.Modify, PropertyName);
+                Notify(value, CacheItemChangeType.Modify, PropertyName);
             }
         }
         /// <summary>
@@ -105,7 +105,7 @@ namespace ZyGames.Framework.Cache.Generic
             };
             T temp = (T)_cacheStruct.AddOrUpdate(key, data, func);
             AddChildrenListener(temp);
-            Notify(changeType, PropertyName);
+            Notify(temp, changeType, PropertyName);
             return temp;
         }
         /// <summary>
@@ -149,7 +149,7 @@ namespace ZyGames.Framework.Cache.Generic
             if (_cacheStruct.TryAdd(key, data))
             {
                 AddChildrenListener(data);
-                Notify(CacheItemChangeType.Add, PropertyName);
+                Notify(data, CacheItemChangeType.Add, PropertyName);
                 return true;
             }
             return false;
@@ -168,7 +168,7 @@ namespace ZyGames.Framework.Cache.Generic
             {
                 var value = valueFactory(updateKey);
                 AddChildrenListener(value);
-                Notify(CacheItemChangeType.Add, PropertyName);
+                Notify(value, CacheItemChangeType.Add, PropertyName);
                 return value;
             };
             return (T)_cacheStruct.GetOrAdd(key, func);
@@ -206,7 +206,7 @@ namespace ZyGames.Framework.Cache.Generic
             if (_cacheStruct.TryUpdate(key, newData, compData))
             {
                 AddChildrenListener(newData);
-                Notify(CacheItemChangeType.Modify, PropertyName);
+                Notify(newData, CacheItemChangeType.Modify, PropertyName);
                 return true;
             }
             return false;
@@ -226,7 +226,7 @@ namespace ZyGames.Framework.Cache.Generic
             if (_cacheStruct.TryRemove(key, out temp))
             {
                 data = (T)temp;
-                Notify(CacheItemChangeType.Remove, PropertyName);
+                Notify(data, CacheItemChangeType.Remove, PropertyName);
                 RemoveChildrenListener(data);
                 return true;
             }
@@ -245,10 +245,9 @@ namespace ZyGames.Framework.Cache.Generic
         /// </summary>
         public override void Clear()
         {
-
             _cacheStruct.Clear();
-            ClearChangeEvent();
-            Notify(CacheItemChangeType.Clear, PropertyName);
+            ClearChildrenEvent();
+            Notify(this, CacheItemChangeType.Clear, PropertyName);
         }
         /// <summary>
         /// 

@@ -23,9 +23,6 @@ THE SOFTWARE.
 ****************************************************************************/
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using MySql.Data.MySqlClient;
 
 namespace ZyGames.Framework.Data.MySql
@@ -40,6 +37,34 @@ namespace ZyGames.Framework.Data.MySql
         /// </summary>
         public MySqlCommandFilter()
         {
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="paramName"></param>
+        /// <param name="value"></param>
+        public override void AddParam(string paramName, object value)
+        {
+            AddParam(MySqlParamHelper.MakeInParam(paramName, value));
+        }
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="fieldName"></param>
+		/// <param name="compareChar"></param>
+		/// <param name="paramName"></param>
+		/// <returns>The expression.</returns>
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="fieldName"></param>
+		/// <param name="compareChar"></param>
+		/// <param name="paramName"></param>
+		/// <returns>The expression.</returns>
+        public override string FormatExpression(string fieldName, string compareChar = "", string paramName = "")
+        {
+            return MySqlParamHelper.FormatFilterParam(fieldName, compareChar, paramName);
         }
     }
 }

@@ -45,13 +45,22 @@ namespace ZyGames.Framework.RPC.IO
         /// <param name="stream"></param>
         public BufferReader(Stream stream)
         {
-            StreamReader sr = new StreamReader(stream);
-            List<char> respData = new List<char>();
-            while (sr.Peek() > -1)
+            BinaryReader readStream = new BinaryReader(stream);
+            List<byte> data = new List<byte>();
+            int size = 0;
+            while (true)
             {
-                respData.Add((char)sr.Read());
+                var buffer = new byte[512];
+                size = readStream.Read(buffer, 0, buffer.Length);
+                if (size == 0)
+                {
+                    break;
+                }
+                byte[] temp = new byte[size];
+                Buffer.BlockCopy(buffer, 0, temp, 0, size);
+                data.AddRange(temp);
             }
-            _buffer = Encoding.ASCII.GetBytes(respData.ToArray());
+            _buffer = data.ToArray();
             _offset = 0;
             _length = _buffer.Length;
         }

@@ -52,15 +52,17 @@ namespace ZyGames.Framework.Common.Log
         /// <param name="args"></param>
         public static void Write(string message, params object[] args)
         {
-#if DEBUG
             string str = message;
             if (args.Length > 0)
             {
                 str = string.Format("Trace>>" + message, args);
             }
+#if DEBUG
             log.SaveDebugLog(str);
             Trace.WriteLine(str);
             Console.WriteLine(str);
+#else
+            log.SaveDebugLog(str);
 #endif
         }
 
@@ -71,15 +73,17 @@ namespace ZyGames.Framework.Common.Log
         /// <param name="args"></param>
         public static void WriteInfo(string message, params object[] args)
         {
-#if DEBUG
             string str = message;
             if (args.Length > 0)
             {
                 str = string.Format("Trace>>" + message, args);
             }
+#if DEBUG
             log.SaveLog(str);
             Trace.WriteLine(str);
             Console.WriteLine(str);
+#else
+            log.SaveLog(str);
 #endif
         }
 

@@ -22,25 +22,20 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ****************************************************************************/
 using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.IO;
 using System.Linq;
 using System.Reflection;
-using System.Text;
 using System.Threading;
-using System.Web;
-using System.Web.Caching;
-using IronPython.Hosting;
 using Microsoft.Scripting;
 using Microsoft.Scripting.Hosting;
+using ZyGames.Framework.Common.Log;
 
 namespace ZyGames.Framework.Plugin.PythonScript
 {
     /// <summary>
     /// Python运行环境上下方对象
     /// </summary>
+    [Obsolete("使用ZyGames.Framework.Script.ScriptEngines替代")]
     public class PythonContext : IDisposable
     {
         #region static methond
@@ -62,11 +57,18 @@ namespace ZyGames.Framework.Plugin.PythonScript
         /// <returns></returns>
         public static PythonContext CreateInstance(string moduleName)
         {
-            dynamic scope;
-            if (PythonScriptHost.GetScriptScope(moduleName, out scope))
-            {
-                return new PythonContext(scope);
-            }
+			try
+			{
+	            dynamic scope;
+	            if (PythonScriptHost.GetScriptScope(moduleName, out scope))
+	            {
+	                return new PythonContext(scope);
+	            }
+			}
+			catch(Exception ex)
+			{
+				TraceLog.WriteError ("Create instance of PythonContext error:{0}\r\n{1}", moduleName, ex);
+			}
             return null;
         }
         #endregion

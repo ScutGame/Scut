@@ -101,7 +101,12 @@ namespace ZyGames.Framework.RPC.Sockets.Threading
 		#endregion 
 
 		#region Construction
-
+		/// <summary>
+		/// Initializes a new instance of the <see cref="ZyGames.Framework.RPC.Sockets.Threading.WorkItemsGroup"/> class.
+		/// </summary>
+		/// <param name="stp">Stp.</param>
+		/// <param name="concurrency">Concurrency.</param>
+		/// <param name="wigStartInfo">Wig start info.</param>
 	    public WorkItemsGroup(
 			SmartThreadPool stp, 
 			int concurrency, 
@@ -132,7 +137,10 @@ namespace ZyGames.Framework.RPC.Sockets.Threading
 		#endregion 
 
         #region WorkItemsGroupBase Overrides
-
+		/// <summary>
+		/// Get/Set the maximum number of workitem that execute cocurrency on the thread pool
+		/// </summary>
+		/// <value>The concurrency.</value>
         public override int Concurrency
         {
             get { return _concurrency; }
@@ -148,12 +156,19 @@ namespace ZyGames.Framework.RPC.Sockets.Threading
                 }
             }
         }
-
+		/// <summary>
+		/// Get the number of work items waiting in the queue.
+		/// </summary>
+		/// <value>The waiting callbacks.</value>
         public override int WaitingCallbacks
         {
             get { return _workItemsQueue.Count; }
         }
-
+		/// <summary>
+		/// Get an array with all the state objects of the currently running items.
+		/// The array represents a snap shot and impact performance.
+		/// </summary>
+		/// <returns>The states.</returns>
         public override object[] GetStates()
         {
             lock (_lock)
@@ -191,7 +206,11 @@ namespace ZyGames.Framework.RPC.Sockets.Threading
             
 	        EnqueueToSTPNextNWorkItem(Math.Min(_workItemsQueue.Count, _concurrency));
 	    }
-
+		/// <summary>
+		/// Cancel all work items using thread abortion
+		/// </summary>
+		/// <param name="abortExecution">True to stop work items by raising ThreadAbortException</param>
+		/// <returns><c>true</c> if this instance cancel abortExecution; otherwise, <c>false</c>.</returns>
 	    public override void Cancel(bool abortExecution)
 	    {
 	        lock (_lock)
@@ -216,7 +235,12 @@ namespace ZyGames.Framework.RPC.Sockets.Threading
             SmartThreadPool.ValidateWorkItemsGroupWaitForIdle(this);
             return STPEventWaitHandle.WaitOne(_isIdleWaitHandle, millisecondsTimeout, false);
         }
-
+		/// <summary>
+		/// This event is fired when all work items are completed.
+		/// (When IsIdle changes to true)
+		/// This event only work on WorkItemsGroup. On SmartThreadPool
+		/// it throws the NotImplementedException.
+		/// </summary>
 	    public override event WorkItemsGroupIdleHandler OnIdle
 		{
 			add { _onIdle += value; }
@@ -233,7 +257,9 @@ namespace ZyGames.Framework.RPC.Sockets.Threading
 			iwir.OnWorkItemStarted += OnWorkItemStartedCallback;
 			iwir.OnWorkItemCompleted += OnWorkItemCompletedCallback;
 		}
-
+		/// <summary>
+		/// Raises the STP is starting event.
+		/// </summary>
 	    public void OnSTPIsStarting()
 		{
             if (_isSuspended)
@@ -243,7 +269,10 @@ namespace ZyGames.Framework.RPC.Sockets.Threading
 			
             EnqueueToSTPNextNWorkItem(_concurrency);
 		}
-
+		/// <summary>
+		/// Enqueues to STP next N work item.
+		/// </summary>
+		/// <param name="count">Count.</param>
 	    public void EnqueueToSTPNextNWorkItem(int count)
         {
             for (int i = 0; i < count; ++i)

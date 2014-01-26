@@ -82,8 +82,18 @@ namespace ZyGames.Framework.Common.Security
             {
                 source += addKey;
             }
-            MD5 mD = new MD5CryptoServiceProvider();
             byte[] bytes = encoding.GetBytes(source);
+            return MD5_Encrypt(bytes);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="bytes"></param>
+        /// <returns></returns>
+        public static string MD5_Encrypt(byte[] bytes)
+        {
+            MD5 mD = new MD5CryptoServiceProvider();
             byte[] array = mD.ComputeHash(bytes);
             string text = null;
             for (int i = 0; i < array.Length; i++)
@@ -97,6 +107,68 @@ namespace ZyGames.Framework.Common.Security
             }
             return text;
         }
+
+        /// <summary>
+        /// 获取文件的MD5 Hash值
+        /// </summary>
+        /// <param name="fileName"></param>
+        /// <returns></returns>
+        public static string ToFileMd5Hash(string fileName)
+        {
+            String hashMD5 = String.Empty;
+            if (File.Exists(fileName))
+            {
+                using (FileStream fs = new FileStream(fileName, FileMode.Open, FileAccess.Read))
+                {
+                    //计算文件的MD5值
+                    MD5 calculator = MD5.Create();
+                    Byte[] buffer = calculator.ComputeHash(fs);
+                    calculator.Clear();
+                    //将字节数组转换成十六进制的字符串形式
+                    StringBuilder stringBuilder = new StringBuilder();
+                    for (int i = 0; i < buffer.Length; i++)
+                    {
+                        stringBuilder.Append(buffer[i].ToString("x2"));
+                    }
+                    hashMD5 = stringBuilder.ToString();
+                }
+            }
+            return hashMD5;
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="str"></param>
+        /// <returns></returns>
+        public static string ToMd5Hash(string str)
+        {
+            return ToMd5Hash(Encoding.UTF8.GetBytes(str));
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="bytes"></param>
+        /// <returns></returns>
+        public static string ToMd5Hash(byte[] bytes)
+        {
+            String hashMD5;
+
+            //计算文件的MD5值
+            MD5 calculator = MD5.Create();
+            Byte[] buffer = calculator.ComputeHash(bytes);
+            calculator.Clear();
+            //将字节数组转换成十六进制的字符串形式
+            StringBuilder stringBuilder = new StringBuilder();
+            for (int i = 0; i < buffer.Length; i++)
+            {
+                stringBuilder.Append(buffer[i].ToString("x2"));
+            }
+            hashMD5 = stringBuilder.ToString();
+            return hashMD5;
+        }
+
         /// <summary>
         /// 
         /// </summary>

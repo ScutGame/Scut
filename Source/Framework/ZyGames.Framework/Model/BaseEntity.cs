@@ -22,9 +22,6 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ****************************************************************************/
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace ZyGames.Framework.Model
 {
@@ -40,7 +37,10 @@ namespace ZyGames.Framework.Model
         {
 
         }
-
+		/// <summary>
+		/// Initializes a new instance of the <see cref="ZyGames.Framework.Model.BaseEntity"/> class.
+		/// </summary>
+		/// <param name="isReadonly">If set to <c>true</c> is readonly.</param>
         protected BaseEntity(bool isReadonly)
             : base(isReadonly)
         {

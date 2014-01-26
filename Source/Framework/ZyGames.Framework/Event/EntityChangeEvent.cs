@@ -22,12 +22,8 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ****************************************************************************/
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using Newtonsoft.Json;
 using ProtoBuf;
-using ZyGames.Framework.Common;
 using ZyGames.Framework.Common.Serialization;
 
 namespace ZyGames.Framework.Event
@@ -36,9 +32,18 @@ namespace ZyGames.Framework.Event
     /// 实体变更事件,定义属性时不要使用get;set简写方式，在WebService调用时只读时会有异常
     /// </summary>
     [ProtoContract, Serializable]
-    public class EntityChangeEvent : BaseDisposable, IItemChangeEvent
+    public class EntityChangeEvent : IItemChangeEvent
     {
         private bool _isDisableEvent;
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public EntityChangeEvent()
+            : this(false)
+        {
+
+        }
         /// <summary>
         /// 
         /// </summary>
@@ -79,17 +84,17 @@ namespace ZyGames.Framework.Event
         }
 
         /// <summary>
-        /// 清除绑定
+        /// 清除子类事件句柄
         /// </summary>
-        internal void ClearChangeEvent()
+        internal void ClearChildrenEvent()
         {
-            InitializeChangeEvent();
+            _childrenEvent = new CacheItemChangeEvent();
         }
         /// <summary>
         /// 实体映射的字段名
         /// </summary>
         [JsonIgnore]
-        public string PropertyName
+        internal override string PropertyName
         {
             get;
             set;
@@ -101,7 +106,7 @@ namespace ZyGames.Framework.Event
         /// 当前对象绑定的Chang事件
         /// </summary>
         [JsonIgnore]
-        public CacheItemChangeEvent ItemEvent
+        internal override CacheItemChangeEvent ItemEvent
         {
             get { return _itemEvent; }
         }
@@ -112,7 +117,7 @@ namespace ZyGames.Framework.Event
         /// 当前对象绑定的Chang事件
         /// </summary>
         [JsonIgnore]
-        public CacheItemChangeEvent ChildrenEvent
+        internal override CacheItemChangeEvent ChildrenEvent
         {
             get { return _childrenEvent; }
         }
@@ -125,7 +130,7 @@ namespace ZyGames.Framework.Event
         /// 是否有改变
         /// </summary>
         [JsonIgnore]
-        public bool HasChanged
+        public override bool HasChanged
         {
             get { return _hasChanged; }
         }
@@ -133,7 +138,7 @@ namespace ZyGames.Framework.Event
         /// <summary>
         /// 禁用子类事件通知
         /// </summary>
-        public void DisableChildNotify()
+        internal override void DisableChildNotify()
         {
             UnChangeNotify(this, new CacheItemEventArgs(CacheItemChangeType.DisableEvent, PropertyName));
         }
@@ -141,16 +146,16 @@ namespace ZyGames.Framework.Event
         /// <summary>
         /// 添加子对象监听
         /// </summary>
-        public virtual void AddChildrenListener(object changeEvent)
+        public override void AddChildrenListener(object changeEvent)
         {
             if (!_isDisableEvent && ChildrenEvent != null && changeEvent is IItemChangeEvent)
             {
                 var child = (IItemChangeEvent)changeEvent;
-                ChildrenEvent.AddItemEvent(child.UnChangeNotify);
+                ChildrenEvent.AddSingleItemEvent(child.UnChangeNotify);
                 var e = child.ItemEvent;
                 if (e != null)
                 {
-                    e.AddItemEvent(NotifyByChildren);
+                    e.AddSingleItemEvent(NotifyByChildren);
                 }
             }
         }
@@ -158,7 +163,7 @@ namespace ZyGames.Framework.Event
         /// <summary>
         /// 移除子对象监听
         /// </summary>
-        public virtual void RemoveChildrenListener(object changeEvent)
+        internal override void RemoveChildrenListener(object changeEvent)
         {
             if (!_isDisableEvent && ChildrenEvent != null && changeEvent is IItemChangeEvent)
             {
@@ -175,7 +180,7 @@ namespace ZyGames.Framework.Event
         /// <summary>
         /// 触发UnChange事件通知
         /// </summary>
-        public virtual void UnChangeNotify(object sender, CacheItemEventArgs eventArgs)
+        internal override void UnChangeNotify(object sender, CacheItemEventArgs eventArgs)
         {
             if (ChildrenEvent != null)
             {
@@ -196,35 +201,65 @@ namespace ZyGames.Framework.Event
         /// 更新通知
         /// </summary>
         /// <param name="updateHandle"></param>
-        public void UpdateNotify(Func<IItemChangeEvent, bool> updateHandle)
+        public override void UpdateNotify(Func<IItemChangeEvent, bool> updateHandle)
         {
             if (updateHandle != null)
             {
                 if (updateHandle(this))
                 {
-                    Notify(CacheItemChangeType.Modify, PropertyName);
+                    Notify(this, CacheItemChangeType.Modify, PropertyName);
                 }
             }
         }
+
         /// <summary>
         /// 触发修改通知事件
         /// </summary>
+        [Obsolete("not used")]
         protected virtual void NotifyByModify()
         {
-            Notify(CacheItemChangeType.Modify, PropertyName);
+            Notify(this, CacheItemChangeType.Modify, PropertyName);
+        }
+
+        /// <summary>
+        /// 绑定事件且通知
+        /// </summary>
+        /// <param name="obj"></param>
+        protected void BindAndNotify(object obj)
+        {
+            IItemChangeEvent val = obj as IItemChangeEvent;
+            if (val != null)
+            {
+                val.PropertyName = PropertyName;
+                AddChildrenListener(val);
+            }
+            Notify(this, CacheItemChangeType.Modify, PropertyName);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="changeType"></param>
+        /// <param name="propertyName"></param>
+        protected void Notify(object sender, CacheItemChangeType changeType, string propertyName)
+        {
+            Notify(sender, new CacheItemEventArgs(changeType, propertyName));
         }
 
         /// <summary>
         /// 当前对象(包括继承)的属性触发通知事件
         /// </summary>
-        protected virtual void Notify(CacheItemChangeType changeType, string propertyName)
+        /// <param name="sender">触发事件源</param>
+        /// <param name="eventArgs"></param>
+        protected virtual void Notify(object sender, CacheItemEventArgs eventArgs)
         {
             if (!_isDisableEvent)
             {
                 _hasChanged = true;
                 if (ItemEvent != null)
                 {
-                    ItemEvent.Notify(this, new CacheItemEventArgs(changeType, propertyName));
+                    ItemEvent.Notify(sender, eventArgs);
                 }
             }
         }
@@ -232,7 +267,7 @@ namespace ZyGames.Framework.Event
         /// <summary>
         /// 当前对象中的属性包含的子类触发通知事件
         /// </summary>
-        /// <param name="sender"></param>
+        /// <param name="sender">触发事件源</param>
         /// <param name="eventArgs"></param>
         protected virtual void NotifyByChildren(object sender, CacheItemEventArgs eventArgs)
         {
@@ -268,7 +303,7 @@ namespace ZyGames.Framework.Event
         /// 序列化Json
         /// </summary>
         /// <returns></returns>
-        public string ToJson()
+        public override string ToJson()
         {
             return JsonUtils.SerializeCustom(this);
         }

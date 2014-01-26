@@ -23,12 +23,12 @@ THE SOFTWARE.
 ****************************************************************************/
 using System;
 using System.Collections.Generic;
-using ZyGames.Framework.Cache.Generic.Pool;
 using ZyGames.Framework.Collection.Generic;
 using ZyGames.Framework.Common;
 using ZyGames.Framework.Common.Log;
 using ZyGames.Framework.Model;
 using ZyGames.Framework.Net;
+using ZyGames.Framework.Redis;
 
 namespace ZyGames.Framework.Cache.Generic
 {
@@ -65,15 +65,21 @@ namespace ZyGames.Framework.Cache.Generic
         /// <summary>
         /// 创建Redis主键
         /// </summary>
-        /// <param name="key"></param>
+        /// <param name="personalKey"></param>
         /// <returns></returns>
-        public string CreateRedisKey(string key = "")
+        public string CreateRedisKey(string personalKey = "")
         {
-            if (string.IsNullOrEmpty(key))
-            {
-                return string.Format("{0}", typeof(T).FullName);
-            }
-            return string.Format("{0}_{1}", typeof(T).FullName, key);
+            return EntitySchemaSet.GenerateRedisKey<T>(personalKey);
+        }
+
+        /// <summary>
+        /// 获取实体的下个编号
+        /// </summary>
+        /// <returns></returns>
+        public long GetNextNo()
+        {
+            string key = "EntityPrimaryKey_" + typeof(T).Name;
+            return RedisManager.GetNextNo(key);
         }
 
         /// <summary>
@@ -282,7 +288,6 @@ namespace ZyGames.Framework.Cache.Generic
             if (DataContainer.TryReceiveData(receiveParam, out dataList))
             {
                 if (dataList.Count == 0) return true;
-                //todo trace loadcache
                 TraceLog.ReleaseWrite("The data:\"{0}\" has been loaded {1}.", DataContainer.RootKey, dataList.Count);
                 return InitCache(dataList, periodTime);
             }

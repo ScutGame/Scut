@@ -26,7 +26,6 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Concurrent;
 using ProtoBuf;
-using ZyGames.Framework.Common;
 using ZyGames.Framework.Event;
 
 namespace ZyGames.Framework.Cache.Generic

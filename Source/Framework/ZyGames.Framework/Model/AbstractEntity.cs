@@ -63,7 +63,10 @@ namespace ZyGames.Framework.Model
             : this(false)
         {
         }
-
+		/// <summary>
+		/// Initializes a new instance of the <see cref="ZyGames.Framework.Model.AbstractEntity"/> class.
+		/// </summary>
+		/// <param name="access">Access.</param>
         protected AbstractEntity(AccessLevel access)
             : this(access == AccessLevel.ReadOnly)
         {
@@ -87,6 +90,16 @@ namespace ZyGames.Framework.Model
         internal void Init()
         {
             _typeAccessor = ObjectAccessor.Create(this, true);
+        }
+
+        /// <summary>
+        /// 重置状态
+        /// </summary>
+        internal void Reset()
+        {
+            OnUnNew();
+            DequeueChangePropertys();
+            CompleteUpdate();
         }
 
         private ObjectAccessor GetAccessor()
@@ -197,18 +210,7 @@ namespace ZyGames.Framework.Model
         //{
         //    get { return _access; }
         //}
-
-        /// <summary>
-        /// 作为Redis存储分组的KEY值
-        /// </summary>
-        [Obsolete("", true)]
-        [ProtoMember(1000020)]
-        public int RedisId
-        {
-            get;
-            set;
-        }
-
+        
         /// <summary>
         /// 分组Key
         /// </summary>
@@ -232,15 +234,16 @@ namespace ZyGames.Framework.Model
         /// 标识ID，消息队列分发
         /// </summary>
         internal protected abstract int GetIdentityId();
+
         /// <summary>
-        /// 
+        /// 当前对象(包括继承)的属性触发通知事件
         /// </summary>
-        /// <param name="changeType"></param>
-        /// <param name="propertyName"></param>
-        protected override void Notify(CacheItemChangeType changeType, string propertyName)
+        /// <param name="sender">触发事件源</param>
+        /// <param name="eventArgs"></param>
+        protected override void Notify(object sender, CacheItemEventArgs eventArgs)
         {
-            AddChangePropertys(propertyName);
-            base.Notify(changeType, propertyName);
+            AddChangePropertys(eventArgs.PropertyName);
+            base.Notify(this, eventArgs);
         }
 
         /// <summary>
@@ -251,7 +254,8 @@ namespace ZyGames.Framework.Model
         protected override void NotifyByChildren(object sender, CacheItemEventArgs eventArgs)
         {
             AddChangePropertys(eventArgs.PropertyName);
-            base.NotifyByChildren(sender, eventArgs);
+            //更改子类事件触发者
+            base.NotifyByChildren(this, eventArgs);
         }
 
         /// <summary>
@@ -259,7 +263,7 @@ namespace ZyGames.Framework.Model
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="eventArgs"></param>
-        public override void UnChangeNotify(object sender, CacheItemEventArgs eventArgs)
+        internal override void UnChangeNotify(object sender, CacheItemEventArgs eventArgs)
         {
             if (HasChangePropertys)
             {
@@ -288,7 +292,7 @@ namespace ZyGames.Framework.Model
         /// <param name="canRead"></param>
         /// <param name="property"></param>
         /// <returns></returns>
-        public object GetPropertyValue(bool canRead, string property)
+        internal object GetPropertyValue(bool canRead, string property)
         {
             if (canRead)
             {
@@ -298,17 +302,32 @@ namespace ZyGames.Framework.Model
         }
 
         /// <summary>
-        /// 获得属性
+        /// Get property value.
         /// </summary>
         /// <param name="property"></param>
         /// <returns></returns>
         public object GetPropertyValue(string property)
-        {
-            return GetAccessor()[property];
+		{ 
+			try
+			{
+            	return GetAccessor()[property];
+			}
+			catch (Exception ex)
+			{
+				try
+				{
+					return this[property];
+				} 
+				catch
+				{
+					TraceLog.WriteError("The {0} get property:{1}\r\n{2}", GetType().Name, property, ex);
+					return null;
+				}
+			}
         }
 
         /// <summary>
-        /// 
+        /// Set property value.
         /// </summary>
         /// <param name="property"></param>
         /// <param name="value"></param>
@@ -319,8 +338,15 @@ namespace ZyGames.Framework.Model
                 GetAccessor()[property] = value;
             }
             catch (Exception ex)
-            {
-                TraceLog.WriteError("The {0} set property:{1} value:{2}\r\n{3}", GetType().FullName, property, value, ex);
+			{
+				try
+				{
+					this[property] = value;
+				} 
+				catch
+				{
+					TraceLog.WriteError("The {0} set property:{1} value:{2}\r\n{3}", GetType().Name, property, value, ex);
+				}
             }
         }
 
@@ -329,7 +355,7 @@ namespace ZyGames.Framework.Model
         /// </summary>
         /// <param name="name"></param>
         /// <param name="value"></param>
-        public void SetFieldValue(string name, object value)
+        internal void SetFieldValue(string name, object value)
         {
             this[name] = value;
         }
@@ -418,7 +444,7 @@ namespace ZyGames.Framework.Model
         public virtual void OnRemove()
         {
             _isRemoveFlag = true;
-            Notify(CacheItemChangeType.Remove, PropertyName);
+            Notify(this, CacheItemChangeType.Remove, PropertyName);
         }
 
         /// <summary>
@@ -427,7 +453,7 @@ namespace ZyGames.Framework.Model
         public void OnDelete()
         {
             _isDelete = true;
-            Notify(CacheItemChangeType.Remove, PropertyName);
+            Notify(this, CacheItemChangeType.Remove, PropertyName);
         }
 
         /// <summary>
@@ -445,16 +471,17 @@ namespace ZyGames.Framework.Model
         protected void SetChange(string propertyName, object value)
         {
             this[propertyName] = value;
-            Notify(CacheItemChangeType.Modify, propertyName);
+            Notify(this, CacheItemChangeType.Modify, propertyName);
         }
 
         /// <summary>
-        /// 设置变更的属性
+        /// 绑定事件且通知
         /// </summary>
+        /// <param name="obj"></param>
         /// <param name="propertyName"></param>
-        public void SetChangeProperty(string propertyName)
+        protected void BindAndChangeProperty(object obj, string propertyName)
         {
-            IItemChangeEvent val = GetAccessor()[propertyName] as IItemChangeEvent;
+            IItemChangeEvent val = obj as IItemChangeEvent;
             if (val != null)
             {
                 val.PropertyName = propertyName;
@@ -464,7 +491,41 @@ namespace ZyGames.Framework.Model
                 }
                 AddChildrenListener(val);
             }
-            Notify(CacheItemChangeType.Modify, propertyName);
+            Notify(this, CacheItemChangeType.Modify, propertyName);
+        }
+
+        /// <summary>
+        /// 设置变更的属性
+        /// </summary>
+        /// <param name="propertyName"></param>
+        public void SetChangeProperty(string propertyName)
+        {
+			IItemChangeEvent val = null;
+			try
+			{
+				val = GetAccessor()[propertyName] as IItemChangeEvent;
+			} 
+			catch(Exception ex)
+			{
+				try
+				{
+					val = this[propertyName] as IItemChangeEvent;
+				}
+				catch
+				{
+					throw new Exception ("Get property:" + GetType ().Name + "." + propertyName, ex);
+				}
+			}
+            if (val != null)
+            {
+                val.PropertyName = propertyName;
+                if (IsReadOnly)
+                {
+                    val.DisableChildNotify();
+                }
+                AddChildrenListener(val);
+            }
+            Notify(this, CacheItemChangeType.Modify, propertyName);
         }
 
         private void AddChangePropertys(string propertyName)
@@ -500,7 +561,7 @@ namespace ZyGames.Framework.Model
         /// 取出改变的字段属性
         /// </summary>
         /// <returns></returns>
-        public string[] DequeueChangePropertys()
+        internal string[] DequeueChangePropertys()
         {
             while (_changePropertys.Count > 0)
             {
@@ -516,7 +577,7 @@ namespace ZyGames.Framework.Model
         /// <summary>
         /// 获取等待更新的属性列表
         /// </summary>
-        public string[] GetWaitUpdateList()
+        internal string[] GetWaitUpdateList()
         {
             string[] columns = new string[_waitUpdateList.Count];
             _waitUpdateList.CopyTo(columns, 0);
@@ -527,7 +588,7 @@ namespace ZyGames.Framework.Model
         /// 获取改变的字段属性
         /// </summary>
         /// <returns></returns>
-        public string[] GetChangePropertys()
+        internal string[] GetChangePropertys()
         {
             string[] columns = new string[_changePropertys.Count];
             _changePropertys.CopyTo(columns, 0);
@@ -565,6 +626,7 @@ namespace ZyGames.Framework.Model
             }
             throw new Exception(string.Format("Conver column:\"{0}\" object to \"{1}\" error.", propertyName, typeof(T).FullName));
         }
+        
         /// <summary>
         /// 移除过期的键
         /// </summary>
@@ -640,5 +702,6 @@ namespace ZyGames.Framework.Model
             }
             base.Dispose(disposing);
         }
+
     }
 }

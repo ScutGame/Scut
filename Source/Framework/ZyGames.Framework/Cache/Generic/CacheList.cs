@@ -109,15 +109,15 @@ namespace ZyGames.Framework.Cache.Generic
                 {
                     if (index < _list.Count)
                     {
+                        RemoveChildrenListener(_list[index]);
                         _list[index] = value;
                     }
                     else
                     {
                         _list.Add(value);
                     }
-                    RemoveChildrenListener(_list[index]);
                     AddChildrenListener(value);
-                    Notify(CacheItemChangeType.Modify, PropertyName);
+                    Notify(value, CacheItemChangeType.Modify, PropertyName);
                 }
             }
         }
@@ -145,7 +145,7 @@ namespace ZyGames.Framework.Cache.Generic
             {
                 _list.Add(item);
                 AddChildrenListener(item);
-                Notify(CacheItemChangeType.Add, PropertyName);
+                Notify(item, CacheItemChangeType.Add, PropertyName);
             }
         }
 
@@ -162,7 +162,7 @@ namespace ZyGames.Framework.Cache.Generic
                 {
                     _list.Add(item);
                     AddChildrenListener(item);
-                    Notify(CacheItemChangeType.Add, PropertyName);
+                    Notify(item, CacheItemChangeType.Add, PropertyName);
                     return true;
                 }
             }
@@ -177,8 +177,8 @@ namespace ZyGames.Framework.Cache.Generic
             lock (_list)
             {
                 _list.Clear();
-                Notify(CacheItemChangeType.Clear, PropertyName);
-                ClearChangeEvent();
+                Notify(this, CacheItemChangeType.Clear, PropertyName);
+                ClearChildrenEvent();
             }
         }
 
@@ -251,7 +251,7 @@ namespace ZyGames.Framework.Cache.Generic
             {
                 if (_list.Remove(item))
                 {
-                    Notify(CacheItemChangeType.Remove, PropertyName);
+                    Notify(item, CacheItemChangeType.Remove, PropertyName);
                     RemoveChildrenListener(item);
                     return true;
                 }
@@ -278,7 +278,7 @@ namespace ZyGames.Framework.Cache.Generic
             {
                 _list.Insert(index, item);
                 AddChildrenListener(item);
-                Notify(CacheItemChangeType.Remove, PropertyName);
+                Notify(item, CacheItemChangeType.Remove, PropertyName);
             }
         }
 
@@ -293,7 +293,7 @@ namespace ZyGames.Framework.Cache.Generic
             {
                 var temp = _list[index];
                 _list.RemoveAt(index);
-                Notify(CacheItemChangeType.Remove, PropertyName);
+                Notify(temp, CacheItemChangeType.Remove, PropertyName);
                 RemoveChildrenListener(temp);
                 return true;
             }
@@ -319,7 +319,7 @@ namespace ZyGames.Framework.Cache.Generic
                 }
                 if (count > 0)
                 {
-                    Notify(CacheItemChangeType.Remove, PropertyName);
+                    Notify(this, CacheItemChangeType.RemoveAll, PropertyName);
                 }
                 return count;
             }
@@ -365,7 +365,7 @@ namespace ZyGames.Framework.Cache.Generic
             {
                 _list.InsertSort(item, comparison);
                 AddChildrenListener(item);
-                Notify(CacheItemChangeType.Add, PropertyName);
+                Notify(item, CacheItemChangeType.Add, PropertyName);
             }
         }
 

@@ -22,10 +22,6 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ****************************************************************************/
 using System;
-using System.Collections.Generic;
-using System.Data;
-using System.Linq;
-using System.Text;
 
 namespace ZyGames.Framework.Data
 {
@@ -61,7 +57,7 @@ namespace ZyGames.Framework.Data
         /// <summary>
         /// 长度
         /// </summary>
-        public int Length { get; set; }
+        public long Length { get; set; }
         /// <summary>
         /// decimal类型指精度范围
         /// </summary>
@@ -75,6 +71,11 @@ namespace ZyGames.Framework.Data
         /// </summary>
         public bool IsModify { get; set; }
 
+		/// <summary>
+		/// 是否是自增列
+		/// </summary>
+		/// <value><c>true</c> if this instance is identity; otherwise, <c>false</c>.</value>
+		public bool IsIdentity{ get; set; }
 
         /// <summary>
         /// Db映射类型

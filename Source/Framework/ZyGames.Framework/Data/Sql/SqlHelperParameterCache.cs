@@ -23,7 +23,6 @@ THE SOFTWARE.
 ****************************************************************************/
 using System;
 using System.Collections;
-using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
 
@@ -32,7 +31,7 @@ namespace ZyGames.Framework.Data.Sql
     ///<summary>
     /// MSSQL数据库参数缓存
     ///</summary>
-    public sealed class SqlHelperParameterCache
+    internal sealed class SqlHelperParameterCache
     {
         private static Hashtable paramCache = Hashtable.Synchronized(new Hashtable());
         private SqlHelperParameterCache()

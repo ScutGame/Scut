@@ -24,10 +24,8 @@ THE SOFTWARE.
 using System;
 using ProtoBuf;
 using ZyGames.Framework.Common;
-using ZyGames.Framework.Common.Locking;
 using ZyGames.Framework.Common.Log;
 using ZyGames.Framework.Model;
-using ZyGames.Framework.Net;
 
 namespace ZyGames.Framework.Cache.Generic
 {
@@ -67,7 +65,7 @@ namespace ZyGames.Framework.Cache.Generic
         /// <summary>
         /// 数据是否为空
         /// </summary>
-        public bool IsEmpyt
+        public bool IsEmpty
         {
             get
             {
@@ -113,8 +111,10 @@ namespace ZyGames.Framework.Cache.Generic
             base.Dispose(disposing);
         }
 
-
-        internal void OnRemove()
+        /// <summary>
+        /// 设置移除状态
+        /// </summary>
+        internal void SetRemoveStatus()
         {
             if (_collection == null)
             {

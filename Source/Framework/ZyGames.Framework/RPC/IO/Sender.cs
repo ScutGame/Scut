@@ -55,7 +55,10 @@ namespace ZyGames.Framework.RPC.IO
         {
             DoDispose(true);
         }
-
+		/// <summary>
+		/// Dos the dispose.
+		/// </summary>
+		/// <param name="disposing">If set to <c>true</c> disposing.</param>
         protected virtual void DoDispose(bool disposing)
         {
             if (disposing)

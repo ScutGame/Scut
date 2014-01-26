@@ -26,6 +26,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Runtime.InteropServices;
 using System.Threading;
+using ZyGames.Framework.Common.Log;
 
 namespace ZyGames.Framework.Common.Timing
 {
@@ -58,47 +59,13 @@ namespace ZyGames.Framework.Common.Timing
             return _TaskDispatch;
         }
 
-        private Thread thread;
-        private long clockFrequency;
-        private long intevalTicks;
-        private long nextTriggerTime;
+        private Timer thread;
+        private long intevalTicks = 100;
         private bool running = false;
         private List<BaseTask> taskList = new List<BaseTask>();
-        /// <summary>
-        /// 计数器
-        /// </summary>
-        /// <param name="lpPerformanceCount"></param>
-        /// <returns></returns>
-        [DllImport("Kernel32.dll")]
-        private static extern bool QueryPerformanceCounter(out long lpPerformanceCount);
-
-        /// <summary>
-        /// 频率次数
-        /// </summary>
-        /// <param name="lpFrequency"></param>
-        /// <returns></returns>
-        [DllImport("Kernel32.dll")]
-        private static extern bool QueryPerformanceFrequency(out  long lpFrequency);
-
-        private static bool GetTick(out long currentTickCount)
-        {
-            if (QueryPerformanceCounter(out currentTickCount) == false)
-                throw new Win32Exception("任务计数器异常!");
-            else
-                return true;
-        }
 
         private TaskDispatch()
         {
-            if (QueryPerformanceFrequency(out clockFrequency) == false)
-            {
-                throw new Win32Exception("QueryPerformanceFrequency方法不支持!");
-            }
-
-            thread = new Thread(new ThreadStart(ThreadProcess));
-            thread.Name = "TaskDispatch";
-            //thread.Priority = ThreadPriority.Highest;
-            Interval = 1000;
         }
         /// <summary>
         /// 
@@ -106,78 +73,50 @@ namespace ZyGames.Framework.Common.Timing
         /// <param name="task"></param>
         public void Add(BaseTask task)
         {
-            lock (threadLock)
-            {
-                task.IntevalTicks = GetIntevalTicks(task.Interval);
-                taskList.Add(task);
-            }
-        }
-
-        private int intervalMs;
-
-        /// <summary>
-        /// 间隔时间(毫秒)
-        /// </summary>
-        public int Interval
-        {
-            get { return intervalMs; }
-            set
-            {
-                intervalMs = value;
-                intevalTicks = GetIntevalTicks(value);
-            }
-        }
-
-        private long GetIntevalTicks(int value)
-        {
-            return (long)((double)value * (double)clockFrequency / (double)1000);
+            taskList.Add(task);
         }
 
 
-        private void ThreadProcess()
+        private void ThreadProcess(object state)
         {
-            long currTime;
-            GetTick(out currTime);
-            nextTriggerTime = currTime + intevalTicks;
-            while (running)
+            try
             {
-                while (currTime < nextTriggerTime)
+                if (Monitor.TryEnter(threadLock, 100))
                 {
-                    Thread.Sleep((int)(Interval / 4));
-                    GetTick(out currTime);
-                }
-                nextTriggerTime = currTime + intevalTicks;
-
-                lock (threadLock)
-                {
-                    //Console.WriteLine("任务主线程正在执行中...");
-                    //Loger.SaveLog("任务主线程正在执行中...");
-
-                    foreach (BaseTask task in taskList)
+                    try
                     {
-                        if (task == null) continue;
-                        bool isRun = task.Running;
-                        if (isRun || currTime < task.NextTriggerTime)
+                        long currTime = DateTime.Now.Ticks;
+                        foreach (BaseTask task in taskList)
                         {
-                            continue;
-                        }
-                        DateTime timing = task.GetTiming();
-                        if (timing > DateTime.MinValue)
-                        {
-                            TimeSpan tt = DateTime.Now - timing;
-                            if (tt.TotalMilliseconds < 0 || tt.TotalMilliseconds >= (double)task.Interval)
+                            if (task == null) continue;
+                            bool isRun = task.Running;
+                            if (isRun || currTime < task.NextTriggerTime)
                             {
                                 continue;
                             }
-                            else
+                            DateTime timing = task.GetTiming();
+                            if (timing > DateTime.MinValue)
                             {
-
+                                //定时在几点运行
+                                TimeSpan tt = DateTime.Now - timing;
+                                if (tt.TotalMilliseconds < 0 || tt.TotalMilliseconds >= (double)task.Interval)
+                                {
+                                    continue;
+                                }
                             }
+                            task.SetNextTrigger(currTime + task.IntevalTicks);
+                            ThreadPool.QueueUserWorkItem(new WaitCallback(task.Proccess), task.TaskName);
                         }
-                        task.SetNextTrigger(currTime + task.IntevalTicks);
-                        ThreadPool.QueueUserWorkItem(new WaitCallback(task.Proccess), task.TaskName);
+                    }
+                    finally
+                    {
+                        Monitor.Exit(threadLock);
                     }
                 }
+            }
+            catch (Exception ex)
+            {
+                TraceLog.WriteError("TaskDispatch process error:{0}", ex);
             }
         }
         /// <summary>
@@ -185,41 +124,27 @@ namespace ZyGames.Framework.Common.Timing
         /// </summary>
         public void Start()
         {
-            //Console.WriteLine("任务主线程启动!");
-            //Loger.SaveLog("任务主线程启动!");
-            lock (threadLock)
+            if (thread == null)
             {
-                if (!running)
-                {
-                    running = true;
-                }
+                thread = new Timer(ThreadProcess, null, 100, intevalTicks);
+                running = true;
             }
-            thread.Start();
         }
         /// <summary>
         /// 
         /// </summary>
         public void Stop()
         {
-            lock (threadLock)
-            {
-                running = false;
-            }
-            //Console.WriteLine("任务主线程停止!");
-            //Loger.SaveLog("任务主线程停止!");
+            thread.Change(-1, Timeout.Infinite);
+            running = false;
         }
         /// <summary>
         /// 
         /// </summary>
         ~TaskDispatch()
         {
-            lock (threadLock)
-            {
-                running = false;
-            }
-            thread.Abort();
-            //Console.WriteLine("任务主线程关闭!");
-            //Loger.SaveLog("任务主线程关闭!");
+            running = false;
+            thread.Dispose();
         }
     }
 }

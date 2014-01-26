@@ -184,7 +184,10 @@ namespace ZyGames.Framework.RPC.Sockets.Threading
         #endregion
 
         #region Properties
-
+		/// <summary>
+		/// Gets the waiting time.
+		/// </summary>
+		/// <value>The waiting time.</value>
         public TimeSpan WaitingTime
         {
             get
@@ -192,7 +195,10 @@ namespace ZyGames.Framework.RPC.Sockets.Threading
                 return _waitingOnQueueStopwatch.Elapsed;
             }
         }
-
+		/// <summary>
+		/// Gets the process time.
+		/// </summary>
+		/// <value>The process time.</value>
         public TimeSpan ProcessTime
         {
             get
@@ -998,7 +1004,9 @@ namespace ZyGames.Framework.RPC.Sockets.Threading
                 _workItemCompletedEvent -= value;
             }
         }
-
+		/// <summary>
+		/// Disposes the state of the of.
+		/// </summary>
         public void DisposeOfState()
         {
             if (_workItemInfo.DisposeOfStateObjects)

@@ -24,6 +24,7 @@ THE SOFTWARE.
 using System;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
+using ZyGames.Framework.Common.Security;
 using ZyGames.Framework.Common.Serialization;
 
 namespace ZyGames.Framework.Common
@@ -69,6 +70,61 @@ namespace ZyGames.Framework.Common
         {
             return date1 - date2;
         }
+
+        /// <summary>
+        /// Convert to default value by type.
+        /// </summary>
+        /// <param name="type"></param>
+        /// <returns></returns>
+        public static object ToDefaultValue(Type type)
+        {
+            return type.IsValueType ? Activator.CreateInstance(type) : "";
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="str"></param>
+        /// <returns></returns>
+        public static string ToHexMd5Hash(string str)
+        {
+            return CryptoHelper.ToMd5Hash(str);
+        }
+
+        /// <summary>
+        /// 转换成16进制编码字串
+        /// </summary>
+        /// <param name="bytes">The bytes.</param>
+        /// <returns></returns>
+        public static string ToHex(byte[] bytes)
+        {
+            return ToHex(bytes, 0, bytes.Length);
+        }
+
+        /// <summary>
+        /// 转换成16进制编码字串
+        /// </summary>
+        /// <param name="bytes">The bytes.</param>
+        /// <param name="offset">The offset.</param>
+        /// <param name="count">The count.</param>
+        /// <returns></returns>
+        public static string ToHex(byte[] bytes, int offset, int count)
+        {
+            char[] c = new char[count * 2];
+            byte b;
+
+            for (int bx = 0, cx = 0; bx < count; ++bx, ++cx)
+            {
+                b = ((byte)(bytes[offset + bx] >> 4));
+                c[cx] = (char)(b > 9 ? b + 0x37 + 0x20 : b + 0x30);
+
+                b = ((byte)(bytes[offset + bx] & 0x0F));
+                c[++cx] = (char)(b > 9 ? b + 0x37 + 0x20 : b + 0x30);
+            }
+
+            return new string(c);
+        }
+
         /// <summary>
         /// 四舍五入
         /// </summary>

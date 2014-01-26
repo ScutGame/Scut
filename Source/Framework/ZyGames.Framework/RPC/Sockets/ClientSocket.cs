@@ -33,15 +33,30 @@ using NLog;
 
 namespace ZyGames.Framework.RPC.Sockets
 {
+	/// <summary>
+	/// Socket event arguments.
+	/// </summary>
     public class SocketEventArgs : EventArgs
     {
+		/// <summary>
+		/// Gets or sets the data.
+		/// </summary>
+		/// <value>The data.</value>
         public byte[] Data { get; set; }
 
+		/// <summary>
+		/// The empty.
+		/// </summary>
         public new static SocketEventArgs Empty = new SocketEventArgs();
     }
-
+	/// <summary>
+	/// Socket event handler.
+	/// </summary>
     public delegate void SocketEventHandler(object sender, SocketEventArgs e);
 
+	/// <summary>
+	/// Client socket.
+	/// </summary>
     public class ClientSocket
     {
         #region 事件
@@ -81,16 +96,24 @@ namespace ZyGames.Framework.RPC.Sockets
         ConcurrentQueue<byte[]> sendQueue = new ConcurrentQueue<byte[]>();
         int isInSending;
         bool connected;
-
+		/// <summary>
+		/// Gets a value indicating whether this <see cref="ZyGames.Framework.RPC.Sockets.ClientSocket"/> is connected.
+		/// </summary>
+		/// <value><c>true</c> if connected; otherwise, <c>false</c>.</value>
         public bool Connected { get { return connected; } }
-
+		/// <summary>
+		/// Initializes a new instance of the <see cref="ZyGames.Framework.RPC.Sockets.ClientSocket"/> class.
+		/// </summary>
+		/// <param name="clientSettings">Client settings.</param>
         public ClientSocket(ClientSocketSettings clientSettings)
         {
             this.clientSettings = clientSettings;
             this.prefixHandler = new PrefixHandler();
             this.messageHandler = new MessageHandler();
         }
-
+		/// <summary>
+		/// Connect this instance.
+		/// </summary>
         public void Connect()
         {
             socket = new Socket(this.clientSettings.RemoteEndPoint.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
@@ -258,7 +281,12 @@ namespace ZyGames.Framework.RPC.Sockets
                 ResetSendFlag();
             }
         }
-
+		/// <summary>
+		/// Posts the send.
+		/// </summary>
+		/// <param name="data">Data.</param>
+		/// <param name="offset">Offset.</param>
+		/// <param name="count">Count.</param>
         public void PostSend(byte[] data, int offset, int count)
         {
             if (!connected) throw new ObjectDisposedException("socket");
@@ -366,7 +394,9 @@ namespace ZyGames.Framework.RPC.Sockets
                 }
             }
         }
-
+		/// <summary>
+		/// Close this instance.
+		/// </summary>
         public void Close()
         {
             HandleCloseSocket();

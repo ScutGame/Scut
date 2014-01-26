@@ -21,10 +21,10 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ****************************************************************************/
-
 using System;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using Microsoft.Build.Utilities;
 using Microsoft.Build.Framework;
 using Mono.Cecil;
@@ -51,7 +51,13 @@ namespace ZyGames.Framework.Common.Build
         {
             try
             {
-                var pathList = Directory.GetFiles(SolutionDir, (FilePattern ?? "*.dll"), SearchOption.AllDirectories);
+                bool hasBuild = false;
+                FilePattern = (FilePattern ?? "*.dll");
+                if (!FilePattern.EndsWith(".dll", StringComparison.CurrentCultureIgnoreCase))
+                {
+                    FilePattern = FilePattern + ".dll";
+                }
+                var pathList = Directory.GetFiles(SolutionDir, FilePattern, SearchOption.AllDirectories);
                 foreach (string assemblyPath in pathList)
                 {
                     bool setSuccess = false;
@@ -65,28 +71,25 @@ namespace ZyGames.Framework.Common.Build
                     if (setSuccess)
                     {
                         ass.Write(assemblyPath);
-                        Log.LogMessage("重建实体" + assemblyPath + "成功！");
+                        hasBuild = true;
                         break;
                     }
+                }
+                if (!hasBuild)
+                {
+                    Log.LogWarning("The model:\"" + FilePattern + "\" has not be builded.");
                 }
             }
             catch (Exception ex)
             {
-                Log.LogError("重建实体dll异常:" + ex.Message + "\r\n" + ex.StackTrace);
+                Log.LogError("The model:\"" + FilePattern + "\" build error:" + ex.Message + "\r\n" + ex.StackTrace);
             }
         }
 
         private bool ProcessEntityType(TypeDefinition type, bool setSuccess)
         {
-            if (type.BaseType != null && type.BaseType.Name == "EntityChangeEvent")
-            {
-                //子类定义模式
-                foreach (PropertyDefinition prop in type.Properties)
-                {
-                    setSuccess = SetChildNotifyMethod(type, prop, setSuccess);
-                }
-            }
-            else
+            TypeDefinition baseType = FindBaseTypeDefinition(type.BaseType, "AbstractEntity");
+            if (baseType != null)
             {
                 foreach (PropertyDefinition prop in type.Properties)
                 {
@@ -96,124 +99,138 @@ namespace ZyGames.Framework.Common.Build
                             attribute.Constructor.DeclaringType != null &&
                             attribute.Constructor.DeclaringType.Name == "EntityFieldAttribute")
                         {
-                            setSuccess = SetChangePropertyMethod(type, prop, setSuccess);
+                            setSuccess = SetChangePropertyMethod(type, baseType, prop, setSuccess);
                         }
                     }
                 }
+                return setSuccess;
             }
-            return setSuccess;
-        }
 
-        private bool SetChildNotifyMethod(TypeDefinition type, PropertyDefinition prop, bool setSuccess)
-        {
-            TypeDefinition typeDefinition = FindBaseTypeDefinition(type.BaseType, "EntityChangeEvent");
-            if (typeDefinition == null)
+            baseType = FindBaseTypeDefinition(type.BaseType, "EntityChangeEvent");
+            if (baseType != null)
             {
-                return setSuccess;
-            }
-            MethodDefinition baseMethod = typeDefinition.Methods.First(m => m.Name == "NotifyByModify");
-            if (baseMethod == null)
-            {
-                return setSuccess;
-            }
-            MethodReference method = type.Module.Import(baseMethod);
-            Instruction ins = null;
-            if (prop.SetMethod == null)
-            {
-                return setSuccess;
-            }
-            if (prop.SetMethod.Body.Instructions.Count <= 4)
-            {
-                ILProcessor worker = prop.SetMethod.Body.GetILProcessor();
-                ins = prop.SetMethod.Body.Instructions[prop.SetMethod.Body.Instructions.Count - 1];
-
-                //定义这个字符
-                worker.InsertBefore(ins, worker.Create(OpCodes.Ldarg_0));
-                //写入通知
-                worker.InsertBefore(ins, worker.Create(OpCodes.Call, method));
-                setSuccess = true;
-            }
-            return setSuccess;
-        }
-
-        private bool SetChangePropertyMethod(TypeDefinition type, PropertyDefinition prop, bool setSuccess)
-        {
-            string propName = prop.Name;
-            ILProcessor worker = null;
-            TypeDefinition typeDefinition = FindBaseTypeDefinition(type.BaseType, "AbstractEntity");
-            if (typeDefinition == null)
-            {
-                return setSuccess;
-            }
-            MethodDefinition baseMethod = typeDefinition.Methods.First(m => m.Name == "SetChangeProperty");
-            if (baseMethod == null)
-            {
-                return setSuccess;
-            }
-            MethodReference method = type.Module.Import(baseMethod);
-            Instruction ins = null;
-
-            if (prop.SetMethod == null)
-            {
-                return setSuccess;
-                //MethodDefinition setMethod = new MethodDefinition("set_" + propName,
-                //                                                  MethodAttributes.Private,
-                //                                                  prop.GetMethod.ReturnType);
-                //MethodBody setBody = new MethodBody(setMethod);
-                //prop.SetMethod = setMethod;
-                //worker = setBody.GetILProcessor();
-                //prop.SetMethod.Body.Instructions.Add(worker.Create(OpCodes.Ret));
-                //ins = prop.SetMethod.Body.Instructions[0];
-                //FieldDefinition field = type.Fields.FirstOrDefault(p => p.FullName.EndsWith(propName, StringComparison.CurrentCultureIgnoreCase));
-                //if (field != null)
-                //{
-                //    worker.InsertBefore(ins, worker.Create(OpCodes.Ldarg_0));
-                //    worker.InsertBefore(ins, worker.Create(OpCodes.Ldarg_1));
-                //    worker.InsertBefore(ins, worker.Create(OpCodes.Stfld, field));
-                //    ins = prop.SetMethod.Body.Instructions[prop.SetMethod.Body.Instructions.Count - 1];
-                //}
-            }
-            else
-            {
-                worker = prop.SetMethod.Body.GetILProcessor();
-                ins = prop.SetMethod.Body.Instructions[prop.SetMethod.Body.Instructions.Count - 1];
-                if (prop.SetMethod.Body.Instructions.Count > 4)
+                //子类定义模式
+                foreach (PropertyDefinition prop in type.Properties)
                 {
-                    FieldDefinition field = type.Fields.FirstOrDefault(p => p.Name.Equals("_" + propName, StringComparison.CurrentCultureIgnoreCase));
-                    if (field != null)
-                    {
-                        while (prop.SetMethod.Body.Instructions.Count > 1)
-                        {
-                            prop.SetMethod.Body.Instructions.RemoveAt(0);
-                        }
-                        ins = prop.SetMethod.Body.Instructions[0];
-
-                        worker.InsertBefore(ins, worker.Create(OpCodes.Ldarg_0));
-                        worker.InsertBefore(ins, worker.Create(OpCodes.Ldarg_1));
-                        worker.InsertBefore(ins, worker.Create(OpCodes.Stfld, field));
-
-                        ins = prop.SetMethod.Body.Instructions[prop.SetMethod.Body.Instructions.Count - 1];
-                    }
-                    else
-                    {
-                        return setSuccess;
-                    }
+                    setSuccess = SetChildNotifyMethod(type, baseType, prop, setSuccess);
                 }
             }
-
-            //定义这个字符
-            worker.InsertBefore(ins, worker.Create(OpCodes.Ldarg_0));
-            //定义这个字符
-            worker.InsertBefore(ins, worker.Create(OpCodes.Ldstr, prop.Name));
-            //写入通知
-            worker.InsertBefore(ins, worker.Create(OpCodes.Call, method));
-            setSuccess = true;
             return setSuccess;
         }
+
+        private bool SetChildNotifyMethod(TypeDefinition type, TypeDefinition baseType, PropertyDefinition prop, bool setSuccess)
+        {
+            MethodDefinition notifyMethod = baseType.Methods.First(m => m.Name == "BindAndNotify");
+            if (notifyMethod == null)
+            {
+                return setSuccess;
+            }
+            if (prop.SetMethod == null)
+            {
+                return setSuccess;
+            }
+            WriteAopCode(type, prop, notifyMethod, prop.Name);
+            return true;
+        }
+
+        private bool SetChangePropertyMethod(TypeDefinition type, TypeDefinition baseType, PropertyDefinition prop, bool setSuccess)
+        {
+            MethodDefinition notifyMethod = baseType.Methods.First(m => m.Name == "BindAndChangeProperty");
+            if (notifyMethod == null || prop.SetMethod == null)
+            {
+                return setSuccess;
+            }
+            WriteAopCode(type, prop, notifyMethod, prop.Name);
+            return true;
+        }
+
+        private void WriteAopCode(TypeDefinition type, PropertyDefinition prop, MethodDefinition method, string propName)
+        {
+            try
+            {
+
+                MethodDefinition setMethod = prop.SetMethod;
+                if (setMethod.Body.Instructions.Count > 5)
+                {
+                    return;
+                }
+                var field = type.Fields.FirstOrDefault(p => p.Name.StartsWith("<" + propName + ">") ||
+                    p.Name.Equals("_" + propName, StringComparison.CurrentCultureIgnoreCase));
+                if (field == null)
+                {
+                    return;
+                }
+                while (setMethod.Body.Instructions.Count > 1)
+                {
+                    setMethod.Body.Instructions.RemoveAt(0);
+                }
+                MethodReference notifyMethod = type.Module.Import(method);
+                var paramType = setMethod.Parameters[0].ParameterType;
+                bool isDateTime = paramType.Name == "DateTime";
+                var fieldRefType = Type.GetType("System.Object&");
+                var fieldType = Type.GetType("System.Object");
+                var exchangeMethod = type.Module.Import(typeof(Interlocked).GetMethod("Exchange", new Type[] { fieldRefType, fieldType }));
+                ILProcessor worker = setMethod.Body.GetILProcessor();
+                Instruction ins = setMethod.Body.Instructions[setMethod.Body.Instructions.Count - 1];
+                var equalsMethod = type.Module.Import(typeof(Object).GetMethod("Equals", new Type[] { typeof(object), typeof(object) }));
+                setMethod.Body.Variables.Add(new VariableDefinition(equalsMethod.ReturnType));
+                worker.InsertBefore(setMethod.Body.Instructions[0], worker.Create(OpCodes.Nop));
+
+                worker.InsertBefore(ins, worker.Create(OpCodes.Ldarg_0));
+                worker.InsertBefore(ins, worker.Create(OpCodes.Ldfld, field));
+                worker.InsertBefore(ins, worker.Create(OpCodes.Box, paramType));
+                worker.InsertBefore(ins, worker.Create(OpCodes.Ldarg_1));
+                worker.InsertBefore(ins, worker.Create(OpCodes.Box, paramType));
+                worker.InsertBefore(ins, worker.Create(OpCodes.Call, equalsMethod));
+
+                worker.InsertBefore(ins, worker.Create(OpCodes.Stloc_0));
+                worker.InsertBefore(ins, worker.Create(OpCodes.Ldloc_0));
+                worker.InsertBefore(ins, worker.Create(OpCodes.Brtrue_S, ins));
+
+                //exchange field value
+                worker.InsertBefore(ins, worker.Create(OpCodes.Nop));
+                worker.InsertBefore(ins, worker.Create(OpCodes.Ldarg_0));
+                if (isDateTime)
+                {
+                    worker.InsertBefore(ins, worker.Create(OpCodes.Ldarg_1));
+                    worker.InsertBefore(ins, worker.Create(OpCodes.Stfld, field));
+                }
+                else
+                {
+                    worker.InsertBefore(ins, worker.Create(OpCodes.Ldflda, field));
+                    worker.InsertBefore(ins, worker.Create(OpCodes.Ldarg_1));
+                    worker.InsertBefore(ins, worker.Create(OpCodes.Call, exchangeMethod));
+                    worker.InsertBefore(ins, worker.Create(OpCodes.Pop));
+                }
+
+                worker.InsertBefore(ins, worker.Create(OpCodes.Ldarg_0));
+                worker.InsertBefore(ins, worker.Create(OpCodes.Ldarg_0));
+                worker.InsertBefore(ins, worker.Create(OpCodes.Ldfld, field));
+                worker.InsertBefore(ins, worker.Create(OpCodes.Box, paramType));
+                if (notifyMethod.Parameters.Count == 2)
+                {
+                    worker.InsertBefore(ins, worker.Create(OpCodes.Ldstr, propName));
+                }
+                worker.InsertBefore(ins, worker.Create(OpCodes.Call, notifyMethod));
+
+                worker.InsertBefore(ins, worker.Create(OpCodes.Nop));
+                worker.InsertBefore(ins, worker.Create(OpCodes.Nop));
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(string.Format("at type:{0},propName:{1}", type.FullName, propName), ex);
+            }
+        }
+
 
         private static TypeDefinition FindBaseTypeDefinition(TypeReference type, string name)
         {
-            if (type == null || type.Module == null) return null;
+            if (type == null ||
+                type.Module == null ||
+                type.Name == typeof(object).Name)
+            {
+                return null;
+            }
             TypeDefinition typeDefinition = null;
 
             string fileName = new FileInfo(type.Module.FullyQualifiedName).DirectoryName + "\\" + type.Scope.Name;
@@ -234,6 +251,7 @@ namespace ZyGames.Framework.Common.Build
                 {
                     return typeDefinition;
                 }
+
                 if (typeDefinition.BaseType != null)
                 {
                     return FindBaseTypeDefinition(typeDefinition.BaseType, name);
@@ -241,6 +259,10 @@ namespace ZyGames.Framework.Common.Build
             }
             return typeDefinition;
         }
+        /// <summary>
+        /// Gets or sets the solution dir.
+        /// </summary>
+        /// <value>The solution dir.</value>
         [Required]
         public string SolutionDir { get; set; }
 

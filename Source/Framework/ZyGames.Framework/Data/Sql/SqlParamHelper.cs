@@ -22,6 +22,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ****************************************************************************/
 using System;
+using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
 using ZyGames.Framework.Common;
@@ -32,7 +33,7 @@ namespace ZyGames.Framework.Data.Sql
     ///<summary>
     /// MSSQL数据库参数辅助类
     ///</summary>
-    public class SqlParamHelper
+    internal class SqlParamHelper
     {
 
         /// <summary>
@@ -101,6 +102,7 @@ namespace ZyGames.Framework.Data.Sql
         {
             return MakeParam(paramName, dbType, size, ParameterDirection.Input, value);
         }
+
         ///<summary>
         ///</summary>
         ///<param name="paramName"></param>
@@ -108,7 +110,52 @@ namespace ZyGames.Framework.Data.Sql
         ///<returns></returns>
         public static SqlParameter MakeInParam(string paramName, object value)
         {
-            return MakeParam(paramName, SqlDbType.VarChar, 0, ParameterDirection.Input, value);
+            return MakeParam(paramName, GetDbType(value), 0, ParameterDirection.Input, value);
+        }
+
+        static SqlDbType GetDbType(object value)
+        {
+            if (value is DateTime)
+            {
+                return SqlDbType.DateTime;
+            }
+            else if (value is bool)
+            {
+                return SqlDbType.Bit;
+            }
+            else if (value is Byte[])
+            {
+                return SqlDbType.Binary;
+            }
+            else if (value is long)
+            {
+                return SqlDbType.BigInt;
+            }
+            else if (value is Decimal)
+            {
+                return SqlDbType.Decimal;
+            }
+            else if (value is Double)
+            {
+                return SqlDbType.Float;
+            }
+            else if (value is Int32)
+            {
+                return SqlDbType.Int;
+            }
+            else if (value is short)
+            {
+                return SqlDbType.SmallInt;
+            }
+            else if (value is Byte)
+            {
+                return SqlDbType.TinyInt;
+            }
+            else if (value is Enum)
+            {
+                return SqlDbType.Int;
+            }
+            return SqlDbType.VarChar;
         }
 
         /// <summary>
@@ -123,6 +170,58 @@ namespace ZyGames.Framework.Data.Sql
                 return paramName;
             }
             return PreParamChar + paramName;
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="fieldName"></param>
+        /// <param name="compareChar"></param>
+        /// <param name="paramName"></param>
+        /// <returns></returns>
+        public static string FormatFilterParam(string fieldName, string compareChar = "", string paramName = "")
+        {
+            return string.Format("{0} {2} {1}",
+                FormatName(fieldName),
+                FormatParamName(string.IsNullOrEmpty(paramName) ? fieldName : paramName),
+                string.IsNullOrEmpty(compareChar) ? "=" : compareChar);
+        }
+
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="splitChat"></param>
+        /// <param name="columns"></param>
+        /// <returns></returns>
+        public static string FormatQueryColumn(string splitChat, ICollection<string> columns)
+        {
+            string str = "";
+            foreach (var column in columns)
+            {
+                if (str.Length > 0)
+                {
+                    str += splitChat;
+                }
+                string temp = column.Trim();
+                if (string.IsNullOrEmpty(temp)) continue;
+                str += FormatName(temp);
+            }
+            return str;
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="name"></param>
+        /// <returns></returns>
+        public static string FormatName(string name)
+        {
+            if (name.StartsWith("[") || name.IndexOf("(") != -1)
+            {
+                return name;
+            }
+            return string.Format("[{0}]", name);
         }
     }
 }

@@ -26,10 +26,12 @@ using System.Collections.Generic;
 using System.Linq;
 using ZyGames.Framework.Common;
 using ZyGames.Framework.Common.Log;
+using ZyGames.Framework.Common.Serialization;
+using ZyGames.Framework.Data;
 using ZyGames.Framework.Event;
 using ZyGames.Framework.Model;
 using ZyGames.Framework.Net;
-using ZyGames.Framework.Net.Redis;
+using ZyGames.Framework.Redis;
 
 namespace ZyGames.Framework.Cache.Generic.Pool
 {
@@ -51,17 +53,20 @@ namespace ZyGames.Framework.Cache.Generic.Pool
             _redisTransponder = redisTransponder;
         }
 
+
+        internal CacheSetting Setting { get; set; }
+
         /// <summary>
         /// 初始化容器
         /// </summary>
         /// <param name="containerKey">空器主键</param>
-        public void InitContainer(string containerKey)
+        public CacheContainer InitContainer(string containerKey)
         {
             if (string.IsNullOrEmpty(containerKey))
             {
                 throw new ArgumentNullException("containerKey");
             }
-            GetOrAdd<CacheContainer>(containerKey);
+            return GetOrAdd<CacheContainer>(containerKey);
         }
 
         /// <summary>
@@ -167,40 +172,112 @@ namespace ZyGames.Framework.Cache.Generic.Pool
         /// 是否为空
         /// </summary>
         public abstract bool IsEmpty { get; }
+
         /// <summary>
         /// 尝试接收数据
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="receiveParam"></param>
         /// <param name="dataList"></param>
-        /// <returns></returns>
+        /// <returns>return null is load error</returns>
         public bool TryReceiveData<T>(TransReceiveParam receiveParam, out List<T> dataList) where T : AbstractEntity, new()
         {
-
-            if (!string.IsNullOrEmpty(receiveParam.RedisKey) &&
-                RedisConnectionPool.EnableRedis)
-            {
-                dataList = _redisTransponder.ReceiveData<T>(receiveParam);
-                if (dataList != null)
-                {
-                    return true;
-                }
-            }
+            bool result = false;
+            dataList = null;
             //表为空时，不加载数据
             if (receiveParam.Schema != null && string.IsNullOrEmpty(receiveParam.Schema.Name))
             {
                 dataList = new List<T>();
                 return true;
             }
-            dataList = _dbTransponder.ReceiveData<T>(receiveParam);
+
             if (!string.IsNullOrEmpty(receiveParam.RedisKey) &&
-                RedisConnectionPool.EnableRedis)
+                _redisTransponder.TryReceiveData(receiveParam, out dataList))
             {
-                var sendParam = new TransSendParam(receiveParam.RedisKey);
-                _redisTransponder.SendData(dataList.ToArray(), sendParam);
+                if (dataList.Count > 0)
+                {
+                    return true;
+                }
+                if (receiveParam.Schema == null || DbConnectionProvider.CreateDbProvider(receiveParam.Schema) == null)
+                {
+                    //DB is optional and can no DB configuration
+                    dataList = new List<T>();
+                    return true;
+                }
+
+                //配置库不放到Redis，尝试从DB加载
+                if (receiveParam.Schema.AccessLevel == AccessLevel.ReadOnly)
+                {
+                    return _dbTransponder.TryReceiveData(receiveParam, out dataList);
+                }
+                //从Redis历史记录表中加载
+                result = TryLoadHistory(receiveParam.RedisKey, out dataList);
             }
-            return dataList != null;
+
+            return result;
+
         }
+
+        public bool TryLoadHistory<T>(string redisKey, out List<T> dataList)
+        {
+            bool result = false;
+            dataList = null;
+            SchemaTable schemaTable;
+            if (EntitySchemaSet.TryGet<EntityHistory>(out schemaTable))
+            {
+                try
+                {
+                    var provider = DbConnectionProvider.CreateDbProvider(schemaTable);
+                    if (provider == null)
+                    {
+                        //DB is optional and can no DB configuration
+                        dataList = new List<T>();
+                        return true;
+                    }
+                    TransReceiveParam receiveParam = new TransReceiveParam(redisKey);
+                    receiveParam.Schema = schemaTable;
+                    int maxCount = receiveParam.Schema.Capacity;
+                    var filter = new DbDataFilter(maxCount);
+                    string key = schemaTable.Keys[0];
+                    filter.Condition = provider.FormatFilterParam(key);
+                    filter.Parameters.Add(key, redisKey);
+                    receiveParam.DbFilter = filter;
+                    receiveParam.Capacity = maxCount;
+
+                    List<EntityHistory> historyList;
+                    if (_dbTransponder.TryReceiveData(receiveParam, out historyList))
+                    {
+                        if (historyList.Count == 0)
+                        {
+                            dataList = new List<T>();
+                            result = true;
+                        }
+                        else
+                        {
+                            EntityHistory history = historyList[0];
+                            RedisManager.Process(client => client.Set(redisKey, history.Value));
+                            var dataSet = ProtoBufUtils.Deserialize<Dictionary<string, T>>(history.Value);
+                            if (dataSet != null)
+                            {
+                                dataList = dataSet.Values.ToList();
+                                result = true;
+                            }
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    TraceLog.WriteError("Try load Redis's history key:{0}\r\nerror:{1}", redisKey, ex);
+                }
+            }
+            else
+            {
+                dataList = new List<T>();
+                result = true;
+            }
+            return result;
+        }
+
         /// <summary>
         /// 尝试发送数据
         /// </summary>
@@ -209,12 +286,13 @@ namespace ZyGames.Framework.Cache.Generic.Pool
         /// <param name="sendParam"></param>
         public void SendData<T>(T[] dataList, TransSendParam sendParam) where T : AbstractEntity, new()
         {
-
-            if (!sendParam.OnlyRedis)
-            {
-                _dbTransponder.SendData(dataList, sendParam);
-            }
-            _redisTransponder.SendData(dataList, sendParam);
+            //todo modify use redis
+            CacheChangeManager.Current.SetEntity(dataList);
+            //if (!sendParam.OnlyRedis)
+            //{
+            //    _dbTransponder.SendData(dataList, sendParam);
+            //}
+            //_redisTransponder.SendData(dataList, sendParam);
         }
 
         /// <summary>
@@ -310,9 +388,13 @@ namespace ZyGames.Framework.Cache.Generic.Pool
                         TraceLog.ReleaseWrite("Cache item:{0} key:{1} expired has been removed.",
                             containerPair.Key,
                             itemPair.Key);
-                        itemSet.OnRemove();
+                        itemSet.SetRemoveStatus();
                         itemSet.Dispose();
                     }
+                }
+                if (containerPair.Value.Collection.Count == 0)
+                {
+                    containerPair.Value.SetRemoveStatus();
                 }
             }
         }

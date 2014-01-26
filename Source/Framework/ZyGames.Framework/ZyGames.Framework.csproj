@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -10,15 +10,13 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>ZyGames.Framework</RootNamespace>
     <AssemblyName>ZyGames.Framework</AssemblyName>
-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
-    <StartupObject>
-    </StartupObject>
     <FileUpgradeFlags>
     </FileUpgradeFlags>
     <OldToolsVersion>3.5</OldToolsVersion>
     <UpgradeBackupLocation />
     <TargetFrameworkProfile />
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -41,66 +39,8 @@
     <DocumentationFile>bin\Release\ZyGames.Framework.XML</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="IronPython, Version=2.7.0.40, Culture=neutral, PublicKeyToken=7f709c5b713576e1, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\Lib\IronPython.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="IronPython.Modules, Version=2.7.0.40, Culture=neutral, PublicKeyToken=7f709c5b713576e1, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\Lib\IronPython.Modules.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="Microsoft.CSharp">
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="Microsoft.Dynamic, Version=1.1.0.20, Culture=neutral, PublicKeyToken=7f709c5b713576e1, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\Lib\Microsoft.Dynamic.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="Microsoft.Scripting, Version=1.1.0.20, Culture=neutral, PublicKeyToken=7f709c5b713576e1, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\Lib\Microsoft.Scripting.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="MySql.Data">
-      <HintPath>..\Lib\MySql.Data.dll</HintPath>
-    </Reference>
-    <Reference Include="Newtonsoft.Json, Version=3.5.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\Lib\Newtonsoft.Json.dll</HintPath>
-    </Reference>
-    <Reference Include="NLog, Version=2.0.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\Lib\NLog.dll</HintPath>
-    </Reference>
-    <Reference Include="protobuf-net, Version=2.0.0.594, Culture=neutral, PublicKeyToken=257b51d87d2e4d67, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\Lib\protobuf-net.dll</HintPath>
-    </Reference>
-    <Reference Include="ServiceStack, Version=3.7.3.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\Lib\ServiceStack.dll</HintPath>
-    </Reference>
-    <Reference Include="ServiceStack.Common, Version=3.7.3.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\Lib\ServiceStack.Common.dll</HintPath>
-    </Reference>
-    <Reference Include="ServiceStack.Interfaces, Version=3.7.3.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\Lib\ServiceStack.Interfaces.dll</HintPath>
-    </Reference>
-    <Reference Include="ServiceStack.Redis, Version=3.7.4.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\Lib\ServiceStack.Redis.dll</HintPath>
-    </Reference>
-    <Reference Include="ServiceStack.Text, Version=3.6.9.2502, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\Lib\ServiceStack.Text.dll</HintPath>
-    </Reference>
+    <Reference Include="Microsoft.CSharp" />
     <Reference Include="System" />
-    <Reference Include="System.configuration" />
     <Reference Include="System.Core">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
@@ -115,6 +55,49 @@
     </Reference>
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
+    <Reference Include="System.Configuration" />
+    <Reference Include="ICSharpCode.SharpZipLib">
+      <HintPath>..\Lib\ICSharpCode.SharpZipLib.dll</HintPath>
+    </Reference>
+    <Reference Include="IronPython">
+      <HintPath>..\Lib\IronPython.dll</HintPath>
+    </Reference>
+    <Reference Include="IronPython.Modules">
+      <HintPath>..\Lib\IronPython.Modules.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Dynamic">
+      <HintPath>..\Lib\Microsoft.Dynamic.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Scripting">
+      <HintPath>..\Lib\Microsoft.Scripting.dll</HintPath>
+    </Reference>
+    <Reference Include="MySql.Data">
+      <HintPath>..\Lib\MySql.Data.dll</HintPath>
+    </Reference>
+    <Reference Include="Newtonsoft.Json">
+      <HintPath>..\Lib\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="NLog">
+      <HintPath>..\Lib\NLog.dll</HintPath>
+    </Reference>
+    <Reference Include="protobuf-net">
+      <HintPath>..\Lib\protobuf-net.dll</HintPath>
+    </Reference>
+    <Reference Include="ServiceStack.Common">
+      <HintPath>..\Lib\ServiceStack.Common.dll</HintPath>
+    </Reference>
+    <Reference Include="ServiceStack">
+      <HintPath>..\Lib\ServiceStack.dll</HintPath>
+    </Reference>
+    <Reference Include="ServiceStack.Interfaces">
+      <HintPath>..\Lib\ServiceStack.Interfaces.dll</HintPath>
+    </Reference>
+    <Reference Include="ServiceStack.Redis">
+      <HintPath>..\Lib\ServiceStack.Redis.dll</HintPath>
+    </Reference>
+    <Reference Include="ServiceStack.Text">
+      <HintPath>..\Lib\ServiceStack.Text.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="..\Solution Items\GlobalAssemblyInfo.cs">
@@ -124,15 +107,19 @@
     <Compile Include="Cache\Generic\CacheContainer.cs" />
     <Compile Include="Cache\Generic\CacheItem.cs" />
     <Compile Include="Cache\Generic\CacheItemSet.cs" />
+    <Compile Include="Cache\Generic\CacheSetting.cs" />
     <Compile Include="Cache\Generic\DefaultCacheStruct.cs" />
     <Compile Include="Cache\Generic\MemoryCacheStruct.cs" />
     <Compile Include="Collection\Generic\DictionaryExtend.cs" />
     <Compile Include="Collection\Generic\HashtableExtend.cs" />
+    <Compile Include="Data\SqlParam.cs" />
+    <Compile Include="Data\SqlStatement.cs" />
     <Compile Include="Data\DbColumn.cs" />
     <Compile Include="Data\MySql\MySqlCommandFilter.cs" />
     <Compile Include="Data\MySql\MySqlCommandStruct.cs" />
     <Compile Include="Data\MySql\MySqlDataProvider.cs" />
     <Compile Include="Data\MySql\MySqlParamHelper.cs" />
+    <Compile Include="Data\SqlStatementManager.cs" />
     <Compile Include="Model\CacheType.cs" />
     <Compile Include="Cache\Generic\CachePeriod.cs" />
     <Compile Include="Cache\Generic\CacheList.cs" />
@@ -158,7 +145,10 @@
     <Compile Include="Model\AbstractEntity.cs" />
     <Compile Include="Model\BaseEntity.cs" />
     <Compile Include="Model\ColumnDbType.cs" />
+    <Compile Include="Model\EntityHistory.cs" />
+    <Compile Include="Model\EntitySyncAttribute.cs" />
     <Compile Include="Model\LoadingStatus.cs" />
+    <Compile Include="Model\LogEntity.cs" />
     <Compile Include="Model\ShareEntity.cs" />
     <Compile Include="Model\MemoryEntity.cs" />
     <Compile Include="Net\DataSyncType.cs" />
@@ -167,12 +157,11 @@
     <Compile Include="Net\ITransponder.cs" />
     <Compile Include="Net\Parameters.cs" />
     <Compile Include="Net\RedisTransponder.cs" />
-    <Compile Include="Net\Redis\RedisConnection.cs" />
-    <Compile Include="Net\Redis\RedisConnectionPool.cs" />
+    <Compile Include="Redis\RedisConnection.cs" />
+    <Compile Include="Redis\RedisConnectionPool.cs" />
     <Compile Include="Net\Redis\RedisDataGetter.cs" />
     <Compile Include="Net\Redis\RedisDataSender.cs" />
-    <Compile Include="Net\Redis\RedisManager.cs" />
-    <Compile Include="Net\Redis\RedisClientPoolManager.cs" />
+    <Compile Include="Redis\RedisManager.cs" />
     <Compile Include="Data\CommandFilter.cs" />
     <Compile Include="Data\CommandStruct.cs" />
     <Compile Include="Data\DbBaseProvider.cs" />
@@ -184,10 +173,6 @@
     <Compile Include="Model\EntityFieldAttribute.cs" />
     <Compile Include="Model\EntityTableAttribute.cs" />
     <Compile Include="Model\SchemaColumn.cs" />
-    <Compile Include="MSMQ\ActionMSMQ.cs" />
-    <Compile Include="MSMQ\AppConfig.cs" />
-    <Compile Include="MSMQ\BaseMsmqAction.cs" />
-    <Compile Include="MSMQ\SourceText.cs" />
     <Compile Include="Net\DataSyncManager.cs" />
     <Compile Include="Net\IDataSender.cs" />
     <Compile Include="Net\DbDataFilter.cs" />
@@ -254,8 +239,13 @@
     <Compile Include="RPC\Sockets\SocketListener.cs" />
     <Compile Include="RPC\Sockets\SocketSettings.cs" />
     <Compile Include="RPC\Sockets\ThreadSafeStack.cs" />
-    <Compile Include="RPC\Sockets\Util.cs" />
+    <Compile Include="Script\CSharpFileInfo.cs" />
+    <Compile Include="Script\PythonFileInfo.cs" />
+    <Compile Include="Script\ScriptEngines.cs" />
+    <Compile Include="Script\ScriptFileInfo.cs" />
     <Compile Include="SyncThreading\SyncHelper.cs" />
+    <Compile Include="Data\ConnectionSetting.cs" />
+    <Compile Include="Cache\Generic\CacheChangeManager.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ZyGames.Framework.Common\ZyGames.Framework.Common.csproj">
@@ -272,4 +262,5 @@
   <Target Name="AfterBuild">
   </Target>
   -->
+  <ItemGroup />
 </Project>

@@ -26,7 +26,9 @@ using System;
 namespace ZyGames.Framework.RPC.Sockets.Threading
 {
 	#region WorkItemFactory class 
-
+	/// <summary>
+	/// Work item factory.
+	/// </summary>
 	public class WorkItemFactory
 	{
 		/// <summary>

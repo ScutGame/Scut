@@ -28,15 +28,30 @@ using System.Text;
 
 namespace ZyGames.Framework.RPC.Sockets
 {
+	/// <summary>
+	/// Client socket settings.
+	/// </summary>
     public class ClientSocketSettings
     {
+		/// <summary>
+		/// Initializes a new instance of the <see cref="ZyGames.Framework.RPC.Sockets.ClientSocketSettings"/> class.
+		/// </summary>
+		/// <param name="bufferSize">Buffer size.</param>
+		/// <param name="remoteEndPoint">Remote end point.</param>
         public ClientSocketSettings(int bufferSize, IPEndPoint remoteEndPoint)
         {
             this.BufferSize = bufferSize;
             this.RemoteEndPoint = remoteEndPoint;
         }
-
+		/// <summary>
+		/// Gets the size of the buffer.
+		/// </summary>
+		/// <value>The size of the buffer.</value>
         public int BufferSize { get; private set; }
-        public IPEndPoint RemoteEndPoint { get; private set; }
+        /// <summary>
+        /// Gets the remote end point.
+        /// </summary>
+        /// <value>The remote end point.</value>
+		public IPEndPoint RemoteEndPoint { get; private set; }
     }
 }

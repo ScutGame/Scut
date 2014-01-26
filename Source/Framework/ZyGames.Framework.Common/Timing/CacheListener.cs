@@ -23,22 +23,49 @@ THE SOFTWARE.
 ****************************************************************************/
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
-using System.Web;
-using System.Web.Caching;
+using System.Runtime.Caching;
+using System.Threading;
 using ZyGames.Framework.Common.Locking;
 using ZyGames.Framework.Common.Log;
 
 namespace ZyGames.Framework.Common.Timing
 {
     /// <summary>
+    /// Cachey removed reason.
+    /// </summary>
+    public enum CacheRemovedReason
+    {
+        /// <summary>
+        /// The none.
+        /// </summary>
+        None = 0,
+        /// <summary>
+        /// The expired.
+        /// </summary>
+        Expired = 1,
+        /// <summary>
+        /// The append.
+        /// </summary>
+        Append,
+        /// <summary>
+        /// The changed.
+        /// </summary>
+        Changed,
+        /// <summary>
+        /// The removed.
+        /// </summary>
+        Removed,
+    }
+    /// <summary>
     /// 
     /// </summary>
     /// <param name="key"></param>
     /// <param name="value"></param>
     /// <param name="reason"></param>
-    public delegate void CacheListenerHandle(string key, object value, CacheItemRemovedReason reason);
+    public delegate void CacheListenerHandle(string key, object value, CacheRemovedReason reason);
 
     /// <summary>
     /// 缓存定时监听器,
@@ -46,18 +73,28 @@ namespace ZyGames.Framework.Common.Timing
     /// </summary>
     public class CacheListener
     {
-        private static IMonitorStrategy _monitorStrategy;
-        private static Cache _cacheListener;
+        private static ObjectCache _cacheListener;
         private readonly string _cacheKey;
         private readonly int _expireTime;
         private readonly CacheListenerHandle _listenerHandle;
         private readonly string _dependency;
+        private CacheListenerHandle _callback;
+        private Thread _dueThread;
 
         static CacheListener()
         {
-            _monitorStrategy = new MonitorLockStrategy(3000);
-            _cacheListener = HttpRuntime.Cache;
+            //_cacheListener = HttpRuntime.Cache;
+            _cacheListener = MemoryCache.Default;
         }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public static ObjectCache Items
+        {
+            get { return _cacheListener; }
+        }
+
         /// <summary>
         /// 
         /// </summary>
@@ -78,38 +115,105 @@ namespace ZyGames.Framework.Common.Timing
         /// <param name="dependency">缓存文件依赖</param>
         public CacheListener(string cacheKey, int secondsTimeOut, CacheListenerHandle listenerHandle, string dependency)
         {
+            DueTime = 100;
             _cacheKey = cacheKey;
             _expireTime = secondsTimeOut > 0 ? secondsTimeOut : 0;
             _listenerHandle = listenerHandle;
             _dependency = dependency;
+            _callback += OnRemoveCallback;
         }
+
+        /// <summary>
+        /// 延迟执行时间，单位毫秒
+        /// </summary>
+        public int DueTime { get; set; }
+
         /// <summary>
         /// 
         /// </summary>
         public void Start()
         {
-            if (_cacheListener[_cacheKey] != null) return;
-            using (var l = _monitorStrategy.Lock())
+            _dueThread = new Thread(new ParameterizedThreadStart(OnDueFirstRun));
+            _dueThread.Start();
+
+        }
+
+        private void OnDueFirstRun(object obj)
+        {
+            Thread.Sleep(DueTime);
+
+            try
             {
-                if (l != null && l.TryEnterLock())
+                if (_listenerHandle != null)
                 {
-                    _cacheListener.Insert(_cacheKey, true,
-                        string.IsNullOrEmpty(_dependency) ? null : new CacheDependency(_dependency),
-                        _expireTime == 0 ? DateTime.MaxValue : DateTime.Now.AddSeconds(_expireTime),
-                        TimeSpan.Zero,//Cache.NoSlidingExpiration,
-                        CacheItemPriority.High,
-                        CacheItemOnRemoved);
+                    try
+                    {
+                        _listenerHandle(_cacheKey, true, CacheRemovedReason.Append);
+                    }
+                    catch (Exception er)
+                    {
+                        TraceLog.WriteError("cache listener callback {0} error:{1}", _cacheKey, er);
+                    }
+                }
+
+                if (_cacheListener[_cacheKey] != null)
+                {
+                    return;
+                }
+
+                CacheItemPolicy policy = new CacheItemPolicy();
+                policy.AbsoluteExpiration = _expireTime == 0 ? DateTime.MaxValue : DateTime.Now.AddSeconds(_expireTime);
+                policy.RemovedCallback += new CacheEntryRemovedCallback(OnCacheEntryRemoved);
+                if (!string.IsNullOrEmpty(_dependency) && File.Exists(_dependency))
+                {
+                    List<string> paths = new List<string>();
+                    paths.Add(_dependency);
+                    policy.ChangeMonitors.Add(new HostFileChangeMonitor(paths));
+                }
+                _cacheListener.Set(_cacheKey, true, policy);
+
+            }
+            catch (Exception ex)
+            {
+                TraceLog.WriteError("OnDueFirstRun {0} error:{1}", _cacheKey, ex);
+            }
+            finally
+            {
+                try
+                {
+                    _dueThread.Abort();
+                }
+                catch (Exception)
+                {
                 }
             }
         }
 
-        /// <summary>
-        /// 缓存过期的回调函数
-        /// </summary>
-        /// <param name="key">缓存的名字</param>
-        /// <param name="value">缓存的值</param>
-        /// <param name="reason">缓存原因</param>
-        protected virtual void CacheItemOnRemoved(string key, object value, CacheItemRemovedReason reason)
+        private void OnCacheEntryRemoved(CacheEntryRemovedArguments arg)
+        {
+            string key = arg.CacheItem.Key;
+            CacheRemovedReason reason = CacheRemovedReason.None;
+            switch (arg.RemovedReason)
+            {
+                case CacheEntryRemovedReason.Removed:
+                    reason = CacheRemovedReason.Removed;
+                    break;
+                case CacheEntryRemovedReason.Expired:
+                    reason = CacheRemovedReason.Expired;
+                    break;
+                case CacheEntryRemovedReason.ChangeMonitorChanged:
+                    reason = CacheRemovedReason.Changed;
+                    break;
+                case CacheEntryRemovedReason.Evicted:
+                case CacheEntryRemovedReason.CacheSpecificEviction:
+                    break;
+                default:
+                    break;
+            }
+            this._callback.BeginInvoke(key, arg.CacheItem.Value, reason, null, null);
+        }
+
+        private void OnRemoveCallback(string key, object value, CacheRemovedReason reason)
         {
             try
             {
@@ -134,20 +238,16 @@ namespace ZyGames.Framework.Common.Timing
                 TraceLog.WriteError("Cache listener expire key:\"{0}\",reason:{1},error:{2}", key, reason, ex);
             }
         }
+
         /// <summary>
         /// 
         /// </summary>
         public void Stop()
         {
-            if (_cacheListener[_cacheKey] != null) return;
-            using (var l = _monitorStrategy.Lock())
-            {
-                if (l != null && l.TryEnterLock())
-                {
-                    _cacheListener[_cacheKey] = false;
-                    _cacheListener.Remove(_cacheKey);
-                }
-            }
+            if (_cacheListener[_cacheKey] != null)
+                return;
+            _cacheListener[_cacheKey] = false;
+            _cacheListener.Remove(_cacheKey);
         }
     }
 }

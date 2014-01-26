@@ -25,8 +25,6 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
-using System.Diagnostics;
-using ZyGames.Framework.Common.Log;
 using ZyGames.Framework.Data.Sql;
 
 namespace ZyGames.Framework.Data
@@ -47,22 +45,27 @@ namespace ZyGames.Framework.Data
         /// </summary>
         /// <param name="tableName"></param>
         /// <param name="editType"></param>
-        public CommandStruct(string tableName, CommandMode editType)
+        /// <param name="columns">Inquiry table columns</param>
+        public CommandStruct(string tableName, CommandMode editType, string columns = "")
         {
             TableName = tableName;
             EntityType = editType;
+            Columns = columns;
             Filter = new CommandFilter();
             Parameters = new IDataParameter[0];
         }
+
+        private string _tableName;
 
         /// <summary>
         /// 
         /// </summary>
         public string TableName
         {
-            get;
-            set;
+            get { return _tableName; }
+            set { _tableName = FormatName(value); }
         }
+
         /// <summary>
         /// 
         /// </summary>
@@ -71,6 +74,57 @@ namespace ZyGames.Framework.Data
             get;
             set;
         }
+
+        private string _columns;
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public string Columns
+        {
+            get { return _columns; }
+            set { _columns = FormatQueryColumn(",", value.Split(',')); }
+        }
+
+        /// <summary>
+        /// Set top record.
+        /// </summary>
+        public int Top
+        {
+            set
+            {
+                FromIndex = 0;
+                ToIndex = value;
+            }
+        }
+
+        /// <summary>
+        /// 是否返回自增ID值
+        /// </summary>
+        public bool ReturnIdentity { get; set; }
+
+        /// <summary>
+        /// Gets or sets the index of the from.
+        /// </summary>
+        /// <value>The index of the from.</value>
+        public int FromIndex { get; set; }
+
+        /// <summary>
+        /// Gets or sets the index of the to.
+        /// </summary>
+        /// <value>The index of the to.</value>
+        public int ToIndex { get; set; }
+
+        /// <summary>
+        /// Gets or sets the order by.
+        /// </summary>
+        /// <value>The order by.</value>
+        public string OrderBy
+        {
+            get;
+            set;
+        }
+
         /// <summary>
         /// 
         /// </summary>
@@ -82,11 +136,6 @@ namespace ZyGames.Framework.Data
                 return;
             }
             string paramKey = parameter.GetFieldName();
-            //todo 修正：多个@参数
-            //if (!parameter.ParameterName.StartsWith(_preParamChar))
-            //{
-            //    parameter.ParameterName = _preParamChar + parameter.ParameterName;
-            //}
             if (_keyList.ContainsKey(paramKey))
             {
                 _keyList[paramKey] = parameter;
@@ -110,7 +159,7 @@ namespace ZyGames.Framework.Data
         public string Sql
         {
             get;
-            private set;
+            protected set;
         }
         /// <summary>
         /// 
@@ -118,12 +167,13 @@ namespace ZyGames.Framework.Data
         public IDataParameter[] Parameters
         {
             get;
-            private set;
+            protected set;
         }
 
         /// <summary>
         /// 
         /// </summary>
+        [Obsolete]
         public SqlParameter[] SqlParameters
         {
             get
@@ -150,10 +200,20 @@ namespace ZyGames.Framework.Data
         /// 
         /// </summary>
         /// <param name="paramName"></param>
+        /// <param name="value"></param>
+        public virtual void AddExpressParam(string paramName, object value)
+        {
+            AddExpressParam(SqlParamHelper.MakeInParam(paramName, value));
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="paramName"></param>
         /// <param name="dbType"></param>
         /// <param name="size"></param>
         /// <param name="value"></param>
-        public virtual void AddExpressParam(string paramName, int dbType, int size, object value)
+        protected virtual void AddExpressParam(string paramName, int dbType, int size, object value)
         {
             AddExpressParam(SqlParamHelper.MakeInParam(paramName, (SqlDbType)dbType, size, value));
         }
@@ -165,11 +225,6 @@ namespace ZyGames.Framework.Data
         public void AddExpressParam(IDataParameter param)
         {
             string paramKey = param.GetFieldName();
-            //todo 修正：多个@参数
-            //if (!param.ParameterName.StartsWith(_preParamChar))
-            //{
-            //    param.ParameterName = _preParamChar + param.ParameterName;
-            //}
             if (_parameter.ContainsKey(paramKey))
             {
                 _parameter[paramKey] = param;
@@ -187,7 +242,7 @@ namespace ZyGames.Framework.Data
         /// <param name="value">参数</param>
         public virtual void AddParameter(string field, object value)
         {
-            AddParameter(field, (int)SqlDbType.VarChar, value);
+            AddParameter(SqlParamHelper.MakeInParam(field, value));
         }
 
         /// <summary>
@@ -196,6 +251,7 @@ namespace ZyGames.Framework.Data
         /// <param name="field"></param>
         /// <param name="sqlDbType"></param>
         /// <param name="value"></param>
+        [Obsolete]
         public void AddParameter(string field, SqlDbType sqlDbType, object value)
         {
             AddParameter(field, (int)sqlDbType, value);
@@ -207,7 +263,7 @@ namespace ZyGames.Framework.Data
         /// <param name="field">字段名称</param>
         /// <param name="sqlDbType">数据类型</param>
         /// <param name="value">参数</param>
-        public void AddParameter(string field, int sqlDbType, object value)
+        protected void AddParameter(string field, int sqlDbType, object value)
         {
             AddParameter(field, sqlDbType, 0, value);
         }
@@ -219,9 +275,32 @@ namespace ZyGames.Framework.Data
         /// <param name="sqlDbType"></param>
         /// <param name="size"></param>
         /// <param name="value"></param>
+        [Obsolete]
         public void AddParameter(string field, SqlDbType sqlDbType, int size, object value)
         {
             AddParameter(field, (int)sqlDbType, size, value);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="paramName"></param>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        public virtual void AddParameterByGuid(string paramName, object value)
+        {
+            AddParameter(SqlParamHelper.MakeInParam(paramName, SqlDbType.UniqueIdentifier, 0, value));
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="paramName"></param>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        public virtual void AddParameterByText(string paramName, object value)
+        {
+            AddParameter(SqlParamHelper.MakeInParam(paramName, SqlDbType.Text, 0, value));
         }
 
         /// <summary>
@@ -231,10 +310,11 @@ namespace ZyGames.Framework.Data
         /// <param name="sqlDbType">数据类型</param>
         /// <param name="size">长度</param>
         /// <param name="value">参数</param>
-        public virtual void AddParameter(string field, int sqlDbType, int size, object value)
+        protected virtual void AddParameter(string field, int sqlDbType, int size, object value)
         {
             AddParameter(SqlParamHelper.MakeInParam(field, (SqlDbType)sqlDbType, size, value));
         }
+
 
         /// <summary>
         /// 添加参数
@@ -247,11 +327,6 @@ namespace ZyGames.Framework.Data
                 return;
             }
             string paramKey = param.GetFieldName();
-            //todo 修正：多个@参数
-            //if (!param.ParameterName.StartsWith(_preParamChar))
-            //{
-            //    param.ParameterName = _preParamChar + param.ParameterName;
-            //}
             if (_fieldList.ContainsKey(paramKey))
             {
                 _fieldList[paramKey] = param;
@@ -268,23 +343,89 @@ namespace ZyGames.Framework.Data
         /// </summary>
         public void Parser()
         {
-            if (EntityType == CommandMode.Insert)
+            switch (EntityType)
             {
-                ParserInsert();
+                case CommandMode.Insert:
+                    ParserInsert();
+                    break;
+                case CommandMode.Modify:
+                    ParserUpdate();
+                    break;
+                case CommandMode.Delete:
+                    ParserDelete();
+                    break;
+                case CommandMode.ModifyInsert:
+                    ParserUpdateInsert();
+                    break;
+                case CommandMode.Inquiry:
+                    ParserInquiry();
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
             }
-            else if (EntityType == CommandMode.Modify)
-            {
-                ParserUpdate();
-            }
-            else if (EntityType == CommandMode.Delete)
-            {
-                ParserDelete();
-            }
-            else if (EntityType == CommandMode.ModifyInsert)
-            {
-                ParserUpdateInsert();
-            }
+
         }
+        /// <summary>
+        /// Parsers the inquiry.
+        /// </summary>
+        protected virtual void ParserInquiry()
+        {
+            List<IDataParameter> paramList = new List<IDataParameter>();
+            string condition = Filter == null ? "" : Filter.Condition.Trim();
+            if (condition.Trim().Length > 0)
+            {
+                if (!condition.StartsWith("WHERE", true, null))
+                {
+                    condition = "WHERE " + condition;
+                }
+                if (Filter != null && Filter.Parameters != null && Filter.Parameters.Length > 0)
+                {
+                    AppendToDataParam(paramList, Filter.Parameters);
+                }
+            }
+            bool isTop = false;
+            if (FromIndex == 0 && ToIndex > 0)
+            {
+                isTop = true;
+            }
+            string orderBy = OrderBy ?? "";
+            if (!string.IsNullOrEmpty(orderBy) && !orderBy.StartsWith("ORDER BY", true, null))
+            {
+                orderBy = " ORDER BY " + orderBy;
+            }
+
+            if (isTop)
+            {
+                Sql = string.Format("SELECT TOP {3} {1},ROW_NUMBER() OVER ({4})AS RowNumber FROM {0} {2}",
+                    TableName,
+                    Columns,
+                    condition,
+                    ToIndex,
+                    orderBy);
+            }
+            else if (FromIndex > 0 && ToIndex > 0)
+            {
+                Sql = string.Format(@"SELECT * FROM (SELECT {1},ROW_NUMBER() OVER ({3})AS RowNumber FROM {0} {2}) AS TMPTABLE
+    WHERE RowNumber BETWEEN {4} AND {5}",
+                    TableName,
+                    Columns,
+                    condition,
+                    OrderBy,
+                    FromIndex,
+                    ToIndex);
+            }
+            else
+            {
+                Sql = string.Format("SELECT {1} FROM {0} {2} {3}",
+                    TableName,
+                    Columns,
+                    condition,
+                    orderBy);
+            }
+
+            Parameters = paramList.ToArray();
+        }
+
         /// <summary>
         /// 
         /// </summary>
@@ -296,7 +437,7 @@ namespace ZyGames.Framework.Data
 
             foreach (string field in _keyList.Keys)
             {
-                string fieldName = FormatFieldName(field);
+                string fieldName = FormatName(field);
                 string parmName = _keyList.ContainsKey(field) ? _keyList[field].ParameterName : string.Empty;
                 if (!string.IsNullOrEmpty(parmName) && !insertFieldNames.Contains(fieldName))
                 {
@@ -307,7 +448,7 @@ namespace ZyGames.Framework.Data
             }
             foreach (string field in _fieldList.Keys)
             {
-                string fieldName = FormatFieldName(field);
+                string fieldName = FormatName(field);
                 string parmName = _fieldList.ContainsKey(field) ? _fieldList[field].ParameterName : string.Empty;
                 if (!string.IsNullOrEmpty(parmName) && !insertFieldNames.Contains(fieldName))
                 {
@@ -323,15 +464,13 @@ namespace ZyGames.Framework.Data
             insertFieldNames.CopyTo(tempArray1, 0);
             insertParamNames.CopyTo(tempArray2, 0);
 
-            Sql = string.Format("INSERT INTO {0}({1})VALUES({2})", TableName,
-                string.Join(",", tempArray1), string.Join(",", tempArray2));
+            Sql = string.Format("INSERT INTO {0}({1})VALUES({2}){3}",
+                    TableName,
+                    string.Join(",", tempArray1),
+                    string.Join(",", tempArray2),
+                    ReturnIdentity ? ";SELECT @@IDENTITY;" : "");
         }
-
-        protected virtual string FormatFieldName(string field)
-        {
-            return string.Format("[{0}]", field);
-        }
-
+    
         /// <summary>
         /// 
         /// </summary>
@@ -344,7 +483,7 @@ namespace ZyGames.Framework.Data
 
             foreach (string field in _keyList.Keys)
             {
-                string fieldName = FormatFieldName(field);
+                string fieldName = FormatName(field);
                 string paramName = _keyList.ContainsKey(field) ? _keyList[field].ParameterName : string.Empty;
                 if (!string.IsNullOrEmpty(paramName) && !insertFieldNames.Contains(fieldName))
                 {
@@ -357,7 +496,7 @@ namespace ZyGames.Framework.Data
 
             foreach (string field in _fieldList.Keys)
             {
-                string fieldName = FormatFieldName(field);
+                string fieldName = FormatName(field);
                 string paramName = _fieldList.ContainsKey(field) ? _fieldList[field].ParameterName : string.Empty;
                 //修改原因：如果是Key，则排除
                 if (!string.IsNullOrEmpty(paramName) && !_keyList.ContainsKey(field))
@@ -407,19 +546,30 @@ namespace ZyGames.Framework.Data
                 string.Join(",", tempArray1),
                 string.Join(",", tempArray2)
                 );
-            //todo trace updateinsert sql
             //TraceLog.WriteComplement(Sql);
             Parameters = updateFieldParams.ToArray();
         }
-
-        private void AppendToDataParam(List<IDataParameter> paramList, params IDataParameter[] dataParameters)
+        /// <summary>
+        /// Appends to data parameter.
+        /// </summary>
+        /// <param name="paramList">Parameter list.</param>
+        /// <param name="dataParameters">Data parameters.</param>
+        protected void AppendToDataParam(List<IDataParameter> paramList, params IDataParameter[] dataParameters)
         {
             foreach (var dataParameter in dataParameters)
             {
                 paramList.Add(dataParameter);
             }
         }
-
+        /// <summary>
+        /// Formats the update insert sql.
+        /// </summary>
+        /// <returns>The update insert sql.</returns>
+        /// <param name="tableName">Table name.</param>
+        /// <param name="updateSets">Update sets.</param>
+        /// <param name="condition">Condition.</param>
+        /// <param name="insertFields">Insert fields.</param>
+        /// <param name="insertValues">Insert values.</param>
         protected virtual string FormatUpdateInsertSql(string tableName, string updateSets, string condition, string insertFields, string insertValues)
         {
             return string.Format(@"UPDATE {0} SET {1} {2}
@@ -431,17 +581,20 @@ INSERT INTO {0}({3})VALUES({4})",
                                 insertFields,
                                 insertValues);
         }
-
+        /// <summary>
+        /// Parsers the update.
+        /// </summary>
         protected virtual void ParserUpdate()
         {
             List<string> updateFieldNames = new List<string>();
             List<IDataParameter> updateFieldParams = new List<IDataParameter>();
             foreach (string field in _fieldList.Keys)
             {
+                string fieldName = FormatName(field);
                 //修改原因：如果是Key，则排除
                 if (!_keyList.ContainsKey(field))
                 {
-                    updateFieldNames.Add(string.Format("{0} = {1}", field, _fieldList[field].ParameterName));
+                    updateFieldNames.Add(string.Format("{0} = {1}", fieldName, _fieldList[field].ParameterName));
                     updateFieldParams.Add(_fieldList[field]);
                 }
             }
@@ -470,7 +623,9 @@ INSERT INTO {0}({3})VALUES({4})",
             Sql = string.Format("UPDATE {0} SET {1} {2}", TableName, string.Join(",", updateFieldNames.ToArray()), condition);
             Parameters = updateFieldParams.ToArray();
         }
-
+        /// <summary>
+        /// Parsers the delete.
+        /// </summary>
         protected virtual void ParserDelete()
         {
             List<IDataParameter> fieldParams = new List<IDataParameter>();
@@ -491,5 +646,25 @@ INSERT INTO {0}({3})VALUES({4})",
             Parameters = fieldParams.ToArray();
         }
 
+        /// <summary>
+        /// 格式化Select语句中的列名
+        /// </summary>
+        /// <param name="splitChat"></param>
+        /// <param name="columns"></param>
+        /// <returns></returns>
+        protected virtual string FormatQueryColumn(string splitChat, ICollection<string> columns)
+        {
+            return SqlParamHelper.FormatQueryColumn(splitChat, columns);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="name"></param>
+        /// <returns></returns>
+        protected virtual string FormatName(string name)
+        {
+            return SqlParamHelper.FormatName(name);
+        }
     }
 }

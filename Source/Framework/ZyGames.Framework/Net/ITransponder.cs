@@ -23,8 +23,6 @@ THE SOFTWARE.
 ****************************************************************************/
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using ZyGames.Framework.Model;
 
 namespace ZyGames.Framework.Net
@@ -39,8 +37,9 @@ namespace ZyGames.Framework.Net
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="receiveParam"></param>
+        /// <param name="dataList"></param>
         /// <returns></returns>
-        List<T> ReceiveData<T>(TransReceiveParam receiveParam) where T : AbstractEntity, new();
+        bool TryReceiveData<T>(TransReceiveParam receiveParam, out List<T> dataList) where T : AbstractEntity, new();
         /// <summary>
         /// 
         /// </summary>

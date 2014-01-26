@@ -23,8 +23,6 @@ THE SOFTWARE.
 ****************************************************************************/
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using ZyGames.Framework.Collection.Generic;
 using ZyGames.Framework.Common;
 using ZyGames.Framework.Common.Log;
@@ -294,8 +292,7 @@ namespace ZyGames.Framework.Cache.Generic
                 throw new ArgumentNullException("t", "t.PersonalId is null");
             }
             string key = t.GetKeyCode();
-            SchemaTable schemaTable = SchemaTable();
-            int periodTime = schemaTable == null ? 0 : schemaTable.PeriodTime;
+            int periodTime = 0;
             return TryAddGroup(t.PersonalId, key, t, periodTime);
         }
 
@@ -343,11 +340,14 @@ namespace ZyGames.Framework.Cache.Generic
             string paramName = receiveParam.Schema.PersonalName;
             int periodTime = receiveParam.Schema.PeriodTime;
             int maxCount = receiveParam.Schema.Capacity;
-            var filter = new DbDataFilter(maxCount);
             var provider = DbConnectionProvider.CreateDbProvider(receiveParam.Schema);
-            filter.Condition = provider.FormatFilterParam(paramName, paramName);
-            filter.Parameters.Add(paramName, personalId);
-            receiveParam.DbFilter = filter;
+            if (provider != null)
+            {
+                var filter = new DbDataFilter(maxCount);
+                filter.Condition = provider.FormatFilterParam(paramName);
+                filter.Parameters.Add(paramName, personalId);
+                receiveParam.DbFilter = filter;
+            }
             receiveParam.Capacity = maxCount;
             return TryLoadCache(personalId, receiveParam, periodTime);
         }

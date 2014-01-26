@@ -22,9 +22,6 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ****************************************************************************/
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace ZyGames.Framework.Model
 {
@@ -143,6 +140,11 @@ namespace ZyGames.Framework.Model
             get;
             set;
         }
+
+        /// <summary>
+        /// 是否持久化到DB，当从Redis内存移除后
+        /// </summary>
+        public bool IsPersistence { get; set; }
 
         ///// <summary>
         ///// 生命周期，单位秒

@@ -23,8 +23,8 @@ THE SOFTWARE.
 ****************************************************************************/
 using System;
 using System.Collections.Generic;
-using ZyGames.Framework.Common;
 using ZyGames.Framework.Model;
+using ZyGames.Framework.Redis;
 
 namespace ZyGames.Framework.Net.Redis
 {
@@ -37,39 +37,16 @@ namespace ZyGames.Framework.Net.Redis
             _redisKey = redisKey;
         }
 
-        #region IDataGetter 成员
+        #region IDataReceiver 成员
 
-        public int Capacity { get; set; }
-
-        public object Get<T>() where T : AbstractEntity, new()
+        public bool TryReceive<T>(out List<T> dataList) where T : AbstractEntity, new()
         {
-            return Receive<T>();
+            return RedisManager.TryGet<T>(_redisKey, out dataList);
         }
 
         public void Dispose()
         {
 
-        }
-
-        #endregion
-
-
-        #region IDataReceiver 成员
-
-        public List<T> Receive<T>() where T : AbstractEntity, new()
-        {
-            if (RedisConnectionPool.EnableRedis)
-            {
-                using (var client = RedisConnectionPool.GetReadOnlyClient())
-                {
-                    if (client != null && client.IsConnected)
-                    {
-                        return RedisManager.GetRedisCache<T>(client, _redisKey);
-                    }
-                    RedisConnectionPool.IncreaseError();
-                }
-            }
-            return null;
         }
 
         #endregion

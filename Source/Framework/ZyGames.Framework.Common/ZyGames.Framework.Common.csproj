@@ -10,9 +10,9 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>ZyGames.Framework.Common</RootNamespace>
     <AssemblyName>ZyGames.Framework.Common</AssemblyName>
-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile />
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -36,23 +36,7 @@
     <Reference Include="Microsoft.Build.Framework" />
     <Reference Include="Microsoft.Build.Utilities.v4.0" />
     <Reference Include="Microsoft.CSharp" />
-    <Reference Include="Mono.Cecil">
-      <HintPath>..\Lib\Mono.Cecil.dll</HintPath>
-    </Reference>
-    <Reference Include="Newtonsoft.Json, Version=3.5.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\Lib\Newtonsoft.Json.dll</HintPath>
-    </Reference>
-    <Reference Include="NLog, Version=2.0.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\Lib\NLog.dll</HintPath>
-    </Reference>
-    <Reference Include="protobuf-net, Version=2.0.0.594, Culture=neutral, PublicKeyToken=257b51d87d2e4d67, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\Lib\protobuf-net.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
-    <Reference Include="System.configuration" />
     <Reference Include="System.Core" />
     <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.Web" />
@@ -60,6 +44,20 @@
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
+    <Reference Include="System.Configuration" />
+    <Reference Include="System.Runtime.Caching" />
+    <Reference Include="Mono.Cecil">
+      <HintPath>..\Lib\Mono.Cecil.dll</HintPath>
+    </Reference>
+    <Reference Include="Newtonsoft.Json">
+      <HintPath>..\Lib\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="NLog">
+      <HintPath>..\Lib\NLog.dll</HintPath>
+    </Reference>
+    <Reference Include="protobuf-net">
+      <HintPath>..\Lib\protobuf-net.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="..\Solution Items\GlobalAssemblyInfo.cs">
@@ -93,6 +91,7 @@
     <Compile Include="Security\DesCopy.cs" />
     <Compile Include="Serialization\JsonUtils.cs" />
     <Compile Include="Serialization\ProtoBufUtils.cs" />
+    <Compile Include="Serialization\ProtoObject.cs" />
     <Compile Include="Timing\BaseTask.cs" />
     <Compile Include="Timing\PlanConfig.cs" />
     <Compile Include="Timing\RunTimeWatch.cs" />

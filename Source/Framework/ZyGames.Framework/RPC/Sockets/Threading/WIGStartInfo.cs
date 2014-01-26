@@ -38,9 +38,13 @@ namespace ZyGames.Framework.RPC.Sockets.Threading
         private bool _startSuspended;
         private WorkItemPriority _workItemPriority;
         private bool _fillStateWithArgs;
-
+		/// <summary>
+		/// The _read only.
+		/// </summary>
         protected bool _readOnly;
-
+		/// <summary>
+		/// Initializes a new instance of the <see cref="ZyGames.Framework.RPC.Sockets.Threading.WIGStartInfo"/> class.
+		/// </summary>
 	    public WIGStartInfo()
         {
 	        _fillStateWithArgs = SmartThreadPool.DefaultFillStateWithArgs;
@@ -52,7 +56,10 @@ namespace ZyGames.Framework.RPC.Sockets.Threading
             _useCallerHttpContext = SmartThreadPool.DefaultUseCallerHttpContext;
             _useCallerCallContext = SmartThreadPool.DefaultUseCallerCallContext;
         }
-
+		/// <summary>
+		/// Initializes a new instance of the <see cref="ZyGames.Framework.RPC.Sockets.Threading.WIGStartInfo"/> class.
+		/// </summary>
+		/// <param name="wigStartInfo">Wig start info.</param>
 	    public WIGStartInfo(WIGStartInfo wigStartInfo)
         {
             _useCallerCallContext = wigStartInfo.UseCallerCallContext;
@@ -64,7 +71,9 @@ namespace ZyGames.Framework.RPC.Sockets.Threading
             _startSuspended = wigStartInfo.StartSuspended;
             _fillStateWithArgs = wigStartInfo.FillStateWithArgs;
         }
-
+		/// <summary>
+		/// Throws if read only.
+		/// </summary>
         protected void ThrowIfReadOnly()
         {
             if (_readOnly)

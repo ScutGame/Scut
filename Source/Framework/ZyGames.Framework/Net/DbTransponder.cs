@@ -41,18 +41,20 @@ namespace ZyGames.Framework.Net
         public DbTransponder()
         {
         }
+
         /// <summary>
         /// 
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="receiveParam"></param>
+        /// <param name="dataList"></param>
         /// <returns></returns>
-        public List<T> ReceiveData<T>(TransReceiveParam receiveParam) where T : AbstractEntity, new()
+        public bool TryReceiveData<T>(TransReceiveParam receiveParam, out List<T> dataList) where T : AbstractEntity, new()
         {
             
             using (IDataReceiver getter = new SqlDataReceiver(receiveParam.Schema, receiveParam.Capacity, receiveParam.DbFilter))
             {
-                return getter.Receive<T>();
+                return getter.TryReceive<T>(out dataList);
             }
         }
         /// <summary>

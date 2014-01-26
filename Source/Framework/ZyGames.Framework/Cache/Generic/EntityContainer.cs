@@ -24,11 +24,9 @@ THE SOFTWARE.
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using ProtoBuf;
 using ZyGames.Framework.Cache.Generic.Pool;
 using ZyGames.Framework.Common;
-using ZyGames.Framework.Common.Log;
 using ZyGames.Framework.Event;
 using ZyGames.Framework.Model;
 using ZyGames.Framework.Net;
@@ -54,7 +52,7 @@ namespace ZyGames.Framework.Cache.Generic
             _loadFactory = loadFactory;
             _loadItemFactory = loadItemFactory;
             _containerKey = typeof(T).FullName;
-            if (!_cachePool.TryGetValue(_containerKey, out _container))
+            if (_cachePool != null && !_cachePool.TryGetValue(_containerKey, out _container))
             {
                 Initialize();
                 _cachePool.TryGetValue(_containerKey, out _container);
@@ -116,7 +114,7 @@ namespace ZyGames.Framework.Cache.Generic
         private void CheckLoad()
         {
             //兼容调用AutoLoad方法时加载的部分数据
-            if (_container != null && _container.Collection.IsEmpty && !_container.HasLoadSuccess)
+            if (_container != null && !_container.HasLoadSuccess)
             {
                 Load();
             }
@@ -264,7 +262,7 @@ namespace ZyGames.Framework.Cache.Generic
             if (_container != null && _loadFactory != null)
             {
                 //修正刷新缓存中已删除的数据问题
-                if (_container.IsEmpyt)
+                if (_container.IsEmpty)
                 {
                     Initialize();
                 }
@@ -286,12 +284,13 @@ namespace ZyGames.Framework.Cache.Generic
         {
             if (_container != null && _loadFactory != null)
             {
-                if (_container.IsEmpyt)
+                if (_container.IsEmpty)
                 {
                     Initialize();
                 }
-                else
+                if (_container.LoadingStatus != LoadingStatus.None)
                 {
+                    //ReLoad时需要清除掉之前的
                     _container.Collection.Clear();
                 }
                 _container.OnLoadFactory(_loadFactory, false);
@@ -337,7 +336,7 @@ namespace ZyGames.Framework.Cache.Generic
             CacheItemSet itemSet;
             if (Container.TryGetValue(key, out itemSet))
             {
-                itemSet.OnRemove();
+                itemSet.SetRemoveStatus();
             }
             return LoadItem(key);
         }
@@ -351,7 +350,7 @@ namespace ZyGames.Framework.Cache.Generic
         public bool TryGetEntity(string entityKey, out T entityData)
         {
             LoadingStatus loadStatus;
-            return TryGetCacheItem(entityKey, false, out entityData, out loadStatus);
+            return TryGetCacheItem(entityKey, true, out entityData, out loadStatus);
         }
         /// <summary>
         /// 
@@ -365,7 +364,8 @@ namespace ZyGames.Framework.Cache.Generic
             CacheItemSet itemSet;
             if (!Container.TryGetValue(entityKey, out itemSet))
             {
-                itemSet = new CacheItemSet(CacheType.Entity, periodTime, IsReadonly);
+                itemSet = CreateItemSet(CacheType.Entity, periodTime);
+
                 if (!Container.TryAdd(entityKey, itemSet))
                 {
                     return false;
@@ -374,6 +374,16 @@ namespace ZyGames.Framework.Cache.Generic
             itemSet.SetItem(entityData);
             itemSet.OnLoadSuccess();
             return true;
+        }
+
+        private CacheItemSet CreateItemSet(CacheType cacheType, int periodTime)
+        {
+            CacheItemSet itemSet = new CacheItemSet(cacheType, periodTime, IsReadonly);
+            if (!IsReadonly && _cachePool.Setting != null)
+            {
+                itemSet.OnChangedNotify += _cachePool.Setting.OnChangedNotify;
+            }
+            return itemSet;
         }
 
         /// <summary>
@@ -385,7 +395,7 @@ namespace ZyGames.Framework.Cache.Generic
         /// <returns></returns>
         public bool TryAddEntity(string entityKey, T entityData, int periodTime)
         {
-            var itemSet = new CacheItemSet(CacheType.Entity, periodTime, IsReadonly);
+            var itemSet = CreateItemSet(CacheType.Entity, periodTime);
             itemSet.SetItem(entityData);
             if (Container.TryAdd(entityKey, itemSet))
             {
@@ -463,9 +473,9 @@ namespace ZyGames.Framework.Cache.Generic
                 BaseCollection itemData = IsReadonly
                     ? (BaseCollection)new ReadonlyCacheCollection()
                     : new CacheCollection();
-                var itemset = new CacheItemSet(CacheType.Dictionary, periodTime, IsReadonly);
-                itemset.SetItem(itemData);
-                return itemset;
+                var itemSet = CreateItemSet(CacheType.Dictionary, periodTime);
+                itemSet.SetItem(itemData);
+                return itemSet;
             });
 
             return Container.GetOrAdd(groupKey, name => lazy.Value);
@@ -528,7 +538,7 @@ namespace ZyGames.Framework.Cache.Generic
                 }
                 if (result)
                 {
-                    itemSet.OnRemove();
+                    itemSet.SetRemoveStatus();
                     itemSet.Dispose();
                 }
                 return result;
@@ -575,7 +585,7 @@ namespace ZyGames.Framework.Cache.Generic
             CacheContainer container;
             if (_cachePool.TryRemove(_containerKey, out container, callback))
             {
-                container.OnRemove();
+                container.SetRemoveStatus();
                 container.Dispose();
                 return true;
             }
@@ -585,6 +595,11 @@ namespace ZyGames.Framework.Cache.Generic
         public bool TryReceiveData<V>(TransReceiveParam receiveParam, out List<V> dataList) where V : AbstractEntity, new()
         {
             return _cachePool.TryReceiveData(receiveParam, out dataList);
+        }
+
+        public bool TryLoadHistory<V>(string redisKey, out List<V> dataList) where V : AbstractEntity, new()
+        {
+            return _cachePool.TryLoadHistory(redisKey, out dataList);
         }
 
         public void SendData<V>(V[] dataList, TransSendParam sendParam) where V : AbstractEntity, new()

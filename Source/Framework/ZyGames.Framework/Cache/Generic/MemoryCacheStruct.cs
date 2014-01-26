@@ -24,7 +24,7 @@ THE SOFTWARE.
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
+using ZyGames.Framework.Cache.Generic.Pool;
 using ZyGames.Framework.Common;
 using ZyGames.Framework.Model;
 
@@ -36,18 +36,40 @@ namespace ZyGames.Framework.Cache.Generic
     public class MemoryCacheStruct<T> : BaseDisposable
         where T : MemoryEntity, new()
     {
+        private static BaseCachePool _momoryPools;
 
-        /// <summary>
-        /// 
-        /// </summary>
-        protected IDataContainer<T> DataContainer;
+        static MemoryCacheStruct()
+        {
+            _momoryPools = new CachePool(null, null, false);
+        }
+
+        private CacheContainer _container;
+        private string containerKey;
 
         /// <summary>
         /// 
         /// </summary>
         public MemoryCacheStruct()
         {
-            DataContainer = CacheFactory.GetOrCreate<T>();
+            containerKey = typeof(T).FullName;
+            _container = _momoryPools.InitContainer(containerKey);
+            Initialize();
+        }
+
+        private void Initialize()
+        {
+            _container.OnLoadFactory(InitCache, false);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public string ContainerKey
+        {
+            get
+            {
+                return containerKey;
+            }
         }
 
         /// <summary>
@@ -55,7 +77,7 @@ namespace ZyGames.Framework.Cache.Generic
         /// </summary>
         public bool IsEmpty
         {
-            get { return DataContainer.IsEmpty; }
+            get { return _container.IsEmpty; }
         }
 
         /// <summary>
@@ -63,129 +85,96 @@ namespace ZyGames.Framework.Cache.Generic
         /// </summary>
         public int Count
         {
-            get { return DataContainer.Count; }
+            get { return _container.Collection.Count; }
         }
 
         /// <summary>
         /// 
         /// </summary>
         /// <param name="func"></param>
-        public void Foreach(Func<string, string, T, bool> func)
+        public void Foreach(Func<string, T, bool> func)
         {
-            DataContainer.ForeachGroup(func);
+            _container.Collection.Foreach(func);
         }
 
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="groupKey"></param>
-        /// <param name="subKey"></param>
+        /// <param name="key"></param>
         /// <param name="value"></param>
-        /// <param name="periodTime"></param>
         /// <returns></returns>
-        public bool TryAdd(string groupKey, string subKey, T value, int periodTime = 0)
+        public bool TryAdd(string key, T value)
         {
-            return DataContainer.TryAddGroup(groupKey, subKey, value, periodTime);
+            return _container.Collection.TryAdd(key, value);
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="key"></param>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        public bool AddOrUpdate(string key, T value)
+        {
+            return _container.Collection.AddOrUpdate(key, value, (k, t) => value) == value;
+        }
         /// <summary>
         /// 尝试移除
         /// </summary>
-        /// <param name="groupKey"></param>
-        /// <param name="subKey"></param>
+        /// <param name="key"></param>
         /// <param name="callback">移除成功回调</param>
         /// <returns></returns>
-        public bool TryRemove(string groupKey, string subKey, Func<T, bool> callback)
+        public bool TryRemove(string key, Func<T, bool> callback = null)
         {
-            return DataContainer.TryRemove(groupKey, subKey, callback);
-        }
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="groupKey"></param>
-        /// <param name="callback"></param>
-        /// <returns></returns>
-        public bool TryRemove(string groupKey, Func<CacheItemSet, bool> callback)
-        {
-            return DataContainer.TryRemove(groupKey, callback);
-        }
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="groupKey"></param>
-        /// <param name="collection"></param>
-        /// <returns></returns>
-        public bool TryGet(string groupKey, out BaseCollection collection)
-        {
-            LoadingStatus loadStatus;
-            return DataContainer.TryGetGroup(groupKey, out collection, out loadStatus);
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="groupKey"></param>
-        /// <param name="subKey"></param>
-        /// <param name="value"></param>
-        /// <returns></returns>
-        public bool TryGet(string groupKey, string subKey, out T value)
-        {
-            value = default(T);
-            BaseCollection collection;
-            LoadingStatus loadStatus;
-            if (DataContainer.TryGetGroup(groupKey, out collection, out loadStatus))
+            T data;
+            if (_container.Collection.TryRemove<T>(key, out  data))
             {
-                return collection.TryGetValue(subKey, out value);
+                if (callback != null)
+                {
+                    return callback(data);
+                }
+                return true;
             }
             return false;
         }
 
         /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="key"></param>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        public bool TryGet(string key, out T value)
+        {
+            return _container.Collection.TryGetValue(key, out value);
+        }
+
+        /// <summary>
         /// 查找第一个匹配数据
         /// </summary>
-        /// <param name="personalId"></param>
         /// <param name="match"></param>
         /// <returns></returns>
-        public T Find(string personalId, Predicate<T> match)
+        public T Find(Predicate<T> match)
         {
-            T t = default(T);
-            BaseCollection collection;
-            if (TryGet(personalId, out collection))
-            {
-                collection.Foreach<T>((key, value) =>
-                {
-                    if (match == null || match(value))
-                    {
-                        t = value;
-                        return false;
-                    }
-                    return true;
-                });
-            }
-            return t;
+            return _container.Collection.Find(match).FirstOrDefault();
         }
+
         /// <summary>
         /// 查找所有匹配数据
         /// </summary>
-        /// <param name="groupKey"></param>
         /// <param name="match"></param>
         /// <returns></returns>
-        public List<T> FindAll(string groupKey, Predicate<T> match)
+        public List<T> FindAll(Predicate<T> match)
         {
-            List<T> list = new List<T>();
-            BaseCollection collection;
-            if (TryGet(groupKey, out collection))
-            {
-                collection.Foreach<T>((key, value) =>
-                {
-                    if (match == null || match(value))
-                    {
-                        list.Add(value);
-                    }
-                    return true;
-                });
-            }
-            return list;
+            return _container.Collection.Find(match);
+        }
+		/// <summary>
+		/// Inits the cache.
+		/// </summary>
+		/// <returns><c>true</c>, if cache was inited, <c>false</c> otherwise.</returns>
+        protected virtual bool InitCache()
+        {
+            return true;
         }
     }
 }

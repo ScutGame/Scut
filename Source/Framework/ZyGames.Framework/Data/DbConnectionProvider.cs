@@ -22,9 +22,10 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ****************************************************************************/
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Collections.Concurrent;
 using System.Configuration;
-using ZyGames.Framework.Collection;
 using ZyGames.Framework.Common;
 using ZyGames.Framework.Common.Log;
 using ZyGames.Framework.Data.Sql;
@@ -39,6 +40,55 @@ namespace ZyGames.Framework.Data
     public sealed class DbConnectionProvider
     {
         private static ConcurrentDictionary<string, DbBaseProvider> dbProviders = new ConcurrentDictionary<string, DbBaseProvider>();
+
+        /// <summary>
+        /// 初始化DB连接
+        /// </summary>
+        public static void Initialize()
+        {
+            DbBaseProvider dbBaseProvider = null;
+            var er = ConfigurationManager.ConnectionStrings.GetEnumerator();
+            while (er.MoveNext())
+            {
+                ConnectionStringSettings connSetting = er.Current as ConnectionStringSettings;
+                if (connSetting != null)
+                {
+                    try
+                    {
+                        dbBaseProvider = CreateDbProvider(connSetting.Name, connSetting.ProviderName, connSetting.ConnectionString.Trim());
+                        dbProviders.TryAdd(connSetting.Name, dbBaseProvider);
+                    }
+                    catch
+                    {
+                        TraceLog.WriteError("ProviderName:{0} instance failed.", connSetting.ProviderName);
+                    }
+                }
+            }
+
+        }
+
+        /// <summary>
+        /// 查找库连接
+        /// </summary>
+        /// <returns></returns>
+        public static KeyValuePair<string, DbBaseProvider> Find(DbLevel dbLevel)
+        {
+            return dbProviders.Where(pair => pair.Value.ConnectionSetting.DbLevel == dbLevel).FirstOrDefault();
+        }
+
+        /// <summary>
+        /// 取第一个
+        /// </summary>
+        /// <returns></returns>
+        public static KeyValuePair<string, DbBaseProvider> FindFirst()
+        {
+            var providers = dbProviders.Where(
+                pair => pair.Value.ConnectionSetting.DbLevel != DbLevel.LocalSql &&
+                    pair.Value.ConnectionSetting.DbLevel != DbLevel.LocalMysql)
+                .ToList();
+            return providers.FirstOrDefault();
+        }
+
         /// <summary>
         /// 
         /// </summary>
@@ -55,26 +105,19 @@ namespace ZyGames.Framework.Data
             {
                 return dbBaseProvider;
             }
-            else
+
+            ConnectionStringSettings connSetting = ConfigurationManager.ConnectionStrings[connectKey];
+            if (connSetting != null)
             {
-                ConnectionStringSettings connSetting = ConfigurationManager.ConnectionStrings[connectKey];
-                if (connSetting != null)
+                string connectionString = connSetting.ConnectionString;
+                try
                 {
-                    string connectionString = connSetting.ConnectionString;
-                    try
-                    {
-                        Type type = TryGetProviderType(connSetting.ProviderName);
-                        dbBaseProvider = CreateDbProvider(type, connectionString);
-                        dbProviders.TryAdd(connectKey, dbBaseProvider);
-                    }
-                    catch
-                    {
-                        TraceLog.WriteError("ProviderName:{0} instance failed.", connSetting.ProviderName);
-                    }
+                    dbBaseProvider = CreateDbProvider(connSetting.Name, connSetting.ProviderName, connectionString);
+                    dbProviders.TryAdd(connectKey, dbBaseProvider);
                 }
-                else
+                catch
                 {
-                    TraceLog.WriteError("Connection:{0} config is not exist.", connectKey);
+                    TraceLog.WriteError("ProviderName:{0} instance failed.", connSetting.ProviderName);
                 }
             }
 
@@ -94,8 +137,7 @@ namespace ZyGames.Framework.Data
             }
             if (!string.IsNullOrEmpty(schema.ConnectionString))
             {
-                Type type = TryGetProviderType(schema.ConnectionProviderType);
-                return CreateDbProvider(type, schema.ConnectionString);
+                return CreateDbProvider(schema.ConnectKey, schema.ConnectionProviderType, schema.ConnectionString);
             }
             return null;
         }
@@ -103,16 +145,18 @@ namespace ZyGames.Framework.Data
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="type"></param>
+        /// <param name="name"></param>
+        /// <param name="providerTypeName"></param>
         /// <param name="connectionString"></param>
         /// <returns></returns>
-        public static DbBaseProvider CreateDbProvider(Type type, string connectionString)
+        public static DbBaseProvider CreateDbProvider(string name, string providerTypeName, string connectionString)
         {
+            Type type = TryGetProviderType(providerTypeName);
             if (type == null)
             {
                 type = typeof(SqlDataProvider);
             }
-            return type.CreateInstance<DbBaseProvider>(connectionString);
+            return type.CreateInstance<DbBaseProvider>(ConnectionSetting.Create(name, providerTypeName, connectionString));
         }
 
         private static Type TryGetProviderType(string providerTypeName)

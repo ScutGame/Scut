@@ -44,6 +44,18 @@ namespace ZyGames.Framework.Common
         {
             return (T)FastActivator.Create(type, args);
         }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="type"></param>
+        /// <param name="args"></param>
+        /// <returns></returns>
+        public static object CreateInstance(this Type type, params object[] args)
+        {
+            return FastActivator.Create(type, args);
+        }
+
         /// <summary>
         /// 同string.IsNullOrEmpty
         /// </summary>
@@ -192,6 +204,16 @@ namespace ZyGames.Framework.Common
         public static int ToFloorInt(this object value)
         {
             return MathUtils.ToFloorInt(value);
+        }
+
+        /// <summary>
+        /// 将对象转换成整型值
+        /// </summary>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        public static long ToLong(this object value)
+        {
+            return MathUtils.ToLong(value);
         }
 
         /// <summary>

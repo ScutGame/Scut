@@ -34,6 +34,9 @@ namespace ZyGames.Framework.RPC.IO
     /// </summary>
     public sealed class SignUtils
     {
+		/// <summary>
+		/// The default key.
+		/// </summary>
         public const string DefaultKey = "44CAC8ED53714BF18D60C5C7B6296000";
 
         /// <summary>

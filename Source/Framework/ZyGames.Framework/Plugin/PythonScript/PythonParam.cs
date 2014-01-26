@@ -22,15 +22,13 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ****************************************************************************/
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace ZyGames.Framework.Plugin.PythonScript
 {
     /// <summary>
     /// python bariable
     /// </summary>
+    [Obsolete("使用ZyGames.Framework.Script.ScriptEngines替代")]
     public class PythonParam
     {
         /// <summary>

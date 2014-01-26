@@ -21,12 +21,8 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ****************************************************************************/
-using System;
-using ServiceStack.Redis.Support;
-using ZyGames.Framework.Collection;
-using ZyGames.Framework.Common;
 using ZyGames.Framework.Model;
-using ServiceStack.Redis;
+using ZyGames.Framework.Redis;
 
 namespace ZyGames.Framework.Net.Redis
 {
@@ -40,14 +36,13 @@ namespace ZyGames.Framework.Net.Redis
         public RedisDataSender(string redisKey)
         {
             _redisKey = redisKey;
-            //string redisKey = string.Format("{0}_{1}", data.GetType().FullName, data.GetIdentityId());
         }
 
         #region IDataSender 成员
 
-        public void Send<T>(T data) where T : AbstractEntity
+        public void Send<T>(T data, bool isChange = true) where T : AbstractEntity
         {
-            Send(new T[] { data }, true, null, null);
+            Send(new T[] { data }, isChange, null, null);
         }
 
         public void Send<T>(T[] dataList) where T : AbstractEntity
@@ -62,7 +57,7 @@ namespace ZyGames.Framework.Net.Redis
 
         public void Send<T>(T[] dataList, bool isChange, string connectKey, EntityBeforeProcess handle) where T : AbstractEntity
         {
-            SetEntity(_redisKey, dataList);
+            RedisManager.AppendToDict(_redisKey, dataList);
         }
 
         public void Dispose()
@@ -70,24 +65,6 @@ namespace ZyGames.Framework.Net.Redis
         }
 
         #endregion
-
-        private void SetEntity<T>(string redisKey, T[] dataList) where T : AbstractEntity
-        {
-            if (RedisConnectionPool.EnableRedis)
-            {
-                using (var client = RedisConnectionPool.GetClient())
-                {
-                    if (client != null && client.IsConnected)
-                    {
-                        RedisManager.SetRedisCache(client, redisKey, dataList);
-                    }
-                    else
-                    {
-                        RedisConnectionPool.IncreaseError();
-                    }
-                }
-            }
-        }
 
     }
 }

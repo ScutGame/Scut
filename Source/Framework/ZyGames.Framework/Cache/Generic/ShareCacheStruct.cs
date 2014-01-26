@@ -23,12 +23,9 @@ THE SOFTWARE.
 ****************************************************************************/
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using ZyGames.Framework.Collection.Generic;
 using ZyGames.Framework.Common;
 using ZyGames.Framework.Common.Log;
-using ZyGames.Framework.Event;
 using ZyGames.Framework.Model;
 using ZyGames.Framework.Net;
 
@@ -45,7 +42,7 @@ namespace ZyGames.Framework.Cache.Generic
         public ShareCacheStruct()
         {
         }
-
+        
         /// <summary>
         /// 遍历数据
         /// </summary>
@@ -256,6 +253,22 @@ namespace ZyGames.Framework.Cache.Generic
         /// <returns></returns>
         protected override bool LoadItemFactory(string key)
         {
+            //string redisKey = CreateRedisKey(key);
+            //var schema = SchemaTable();
+            //if (schema != null && schema.AccessLevel == AccessLevel.ReadWrite)
+            //{
+            //    int periodTime = schema.PeriodTime;
+            //    List<T> dataList;
+            //    if (DataContainer.TryLoadHistory(redisKey, out dataList))
+            //    {
+            //        InitCache(dataList, periodTime);
+            //        return true;
+            //    }
+            //    else
+            //    {
+            //        return false;
+            //    }
+            //}
             return true;
         }
 

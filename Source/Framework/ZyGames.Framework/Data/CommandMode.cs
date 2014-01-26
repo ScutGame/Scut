@@ -22,9 +22,6 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ****************************************************************************/
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace ZyGames.Framework.Data
 {
@@ -48,6 +45,10 @@ namespace ZyGames.Framework.Data
         /// <summary>
         /// 
         /// </summary>
-        ModifyInsert
+        ModifyInsert,
+		/// <summary>
+		/// The inquiry.
+		/// </summary>
+		Inquiry
     }
 }

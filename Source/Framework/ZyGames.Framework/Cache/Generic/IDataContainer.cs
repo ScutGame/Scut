@@ -221,6 +221,14 @@ namespace ZyGames.Framework.Cache.Generic
         bool TryReceiveData<V>(TransReceiveParam receiveParam, out List<V> dataList) where V : AbstractEntity, new();
 
         /// <summary>
+        /// 尝试从Redis历史记录数中检索
+        /// </summary>
+        /// <typeparam name="V">实体类型</typeparam>
+        /// <param name="redisKey">redis Key</param>
+        /// <param name="dataList"></param>
+        /// <returns></returns>
+        bool TryLoadHistory<V>(string redisKey, out List<V> dataList) where V : AbstractEntity, new();
+        /// <summary>
         /// 传送数据
         /// </summary>
         /// <typeparam name="V">实体类型</typeparam>

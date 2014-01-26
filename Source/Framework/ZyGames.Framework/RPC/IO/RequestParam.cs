@@ -57,23 +57,34 @@ namespace ZyGames.Framework.RPC.IO
         private Hashtable _params;
         private string _content;
         private Encoding _encoding;
-
+		/// <summary>
+		/// Initializes a new instance of the <see cref="ZyGames.Framework.RPC.IO.RequestParam"/> class.
+		/// </summary>
         public RequestParam()
         {
             _params = new Hashtable(3, (float).8, new myCultureComparer());
             _encoding = Encoding.UTF8;
         }
-
+		/// <summary>
+		/// Gets the content.
+		/// </summary>
+		/// <value>The content.</value>
         public string Content
         {
             get { return _content; }
         }
-
+		/// <summary>
+		/// Gets the count.
+		/// </summary>
+		/// <value>The count.</value>
         public int Count
         {
             get { return _params.Count; }
         }
-
+		/// <summary>
+		/// Sets the chat set.
+		/// </summary>
+		/// <param name="encoding">Encoding.</param>
         public void SetChatSet(Encoding encoding)
         {
             _encoding = encoding;
@@ -194,9 +205,9 @@ namespace ZyGames.Framework.RPC.IO
         }
 
         /// <summary>
-        /// 转换以&间隔的参数键值对，同Http请求参数
+        /// Tos the post string.
         /// </summary>
-        /// <returns></returns>
+        /// <returns>The post string.</returns>
         public string ToPostString()
         {
             StringBuilder sb = new StringBuilder();

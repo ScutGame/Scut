@@ -22,6 +22,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ****************************************************************************/
 using System;
+using System.Collections.Generic;
 
 namespace ZyGames.Framework.Model
 {
@@ -40,6 +41,8 @@ namespace ZyGames.Framework.Model
             CanRead = true;
             CanWrite = true;
         }
+
+        internal int GenericArgs { get; set; }
 
         /// <summary>
         /// 编号
@@ -164,6 +167,38 @@ namespace ZyGames.Framework.Model
         {
             get;
             set;
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public bool HasChild { get { return Children != null && Children.Count > 0; } }
+
+        /// <summary>
+        /// 子类集合
+        /// </summary>
+        public List<SchemaColumn> Children { get; set; }
+
+
+        /// <summary>
+        /// The column Is list child type.
+        /// </summary>
+        public bool IsList
+        {
+            get
+            {
+                return GenericArgs == 1;
+            }
+        }
+        /// <summary>
+        /// The column Is dictionary child type.
+        /// </summary>
+        public bool IsDictionary
+        {
+            get
+            {
+                return GenericArgs == 2;
+            }
         }
     }
 }

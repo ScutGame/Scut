@@ -23,8 +23,6 @@ THE SOFTWARE.
 ****************************************************************************/
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using ZyGames.Framework.Model;
 using ZyGames.Framework.Net.Redis;
 
@@ -40,13 +38,14 @@ namespace ZyGames.Framework.Net
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="receiveParam"></param>
+        /// <param name="dataList"></param>
         /// <returns></returns>
-        public List<T> ReceiveData<T>(TransReceiveParam receiveParam) where T : AbstractEntity, new()
+        public bool TryReceiveData<T>(TransReceiveParam receiveParam, out List<T> dataList) where T : AbstractEntity, new()
         {
             
             using (IDataReceiver getter = new RedisDataGetter(receiveParam.RedisKey))
             {
-                return getter.Receive<T>();
+                return getter.TryReceive<T>(out dataList);
             }
         }
         /// <summary>

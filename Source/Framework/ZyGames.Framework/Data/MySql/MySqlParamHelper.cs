@@ -22,8 +22,8 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ****************************************************************************/
 using System;
+using System.Collections.Generic;
 using System.Data;
-using System.Data.SqlClient;
 using ZyGames.Framework.Common;
 using ZyGames.Framework.Common.Log;
 using MySql.Data.MySqlClient;
@@ -33,7 +33,7 @@ namespace ZyGames.Framework.Data.MySql
     ///<summary>
     /// MySQL数据库参数辅助类
     ///</summary>
-    public class MySqlParamHelper
+    internal class MySqlParamHelper
     {
         /// <summary>
         /// 参数前缀字符
@@ -101,6 +101,52 @@ namespace ZyGames.Framework.Data.MySql
         {
             return MakeParam(paramName, dbType, size, ParameterDirection.Input, value);
         }
+
+        static MySqlDbType GetDbType(object value)
+        {
+            if (value is DateTime)
+            {
+                return MySqlDbType.DateTime;
+            }
+            else if (value is bool)
+            {
+                return MySqlDbType.Bit;
+            }
+            else if (value is Byte[])
+            {
+                return MySqlDbType.Binary;
+            }
+            else if (value is long)
+            {
+                return MySqlDbType.Int64;
+            }
+            else if (value is Decimal)
+            {
+                return MySqlDbType.Decimal;
+            }
+            else if (value is Double)
+            {
+                return MySqlDbType.Float;
+            }
+            else if (value is Int32)
+            {
+                return MySqlDbType.Int32;
+            }
+            else if (value is short)
+            {
+                return MySqlDbType.Int24;
+            }
+            else if (value is Byte)
+            {
+                return MySqlDbType.Int16;
+            }
+            else if (value is Enum)
+            {
+                return MySqlDbType.Int32;
+            }
+            return MySqlDbType.VarChar;
+        }
+
         ///<summary>
         ///</summary>
         ///<param name="paramName"></param>
@@ -108,7 +154,8 @@ namespace ZyGames.Framework.Data.MySql
         ///<returns></returns>
         public static MySqlParameter MakeInParam(string paramName, object value)
         {
-            return MakeParam(paramName, MySqlDbType.VarChar, 0, ParameterDirection.Input, value);
+            MySqlDbType dbType = GetDbType(value);
+            return MakeParam(paramName, dbType, 0, ParameterDirection.Input, value);
         }
 
         /// <summary>
@@ -127,6 +174,57 @@ namespace ZyGames.Framework.Data.MySql
                 return paramName;
             }
             return PreParamChar + paramName;
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="fieldName"></param>
+        /// <param name="compareChar"></param>
+        /// <param name="paramName"></param>
+        /// <returns></returns>
+        public static string FormatFilterParam(string fieldName, string compareChar = "", string paramName = "")
+        {
+            return string.Format("{0} {2} {1}",
+                FormatName(fieldName),
+                FormatParamName(string.IsNullOrEmpty(paramName) ? fieldName : paramName),
+                string.IsNullOrEmpty(compareChar) ? "=" : compareChar);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="splitChat"></param>
+        /// <param name="columns"></param>
+        /// <returns></returns>
+        public static string FormatQueryColumn(string splitChat, ICollection<string> columns)
+        {
+            string str = "";
+            foreach (var column in columns)
+            {
+                if (str.Length > 0)
+                {
+                    str += splitChat;
+                }
+                string temp = column.Trim();
+                if (string.IsNullOrEmpty(temp)) continue;
+                str += FormatName(temp);
+            }
+            return str;
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="name"></param>
+        /// <returns></returns>
+        public static string FormatName(string name)
+        {
+            if (name.StartsWith("`") || name.IndexOf("(") != -1)
+            {
+                return name;
+            }
+            return string.Format("`{0}`", name);
         }
     }
 }

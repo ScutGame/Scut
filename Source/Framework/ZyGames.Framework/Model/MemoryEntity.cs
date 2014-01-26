@@ -22,17 +22,16 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ****************************************************************************/
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using ZyGames.Framework.Cache.Generic;
 using ZyGames.Framework.Event;
+using ProtoBuf;
 
 namespace ZyGames.Framework.Model
 {
     /// <summary>
     /// 内存中一定时间存在的实体，不存储数据库
-    /// </summary>
+	/// </summary>
+	[ProtoContract, Serializable]
     public class MemoryEntity : EntityChangeEvent, IDataExpired
     {
         /// <summary>
@@ -51,7 +50,7 @@ namespace ZyGames.Framework.Model
             //禁用Change事件绑定
         }
 
-        /// <summary>
+        /// <summary>k
         /// 
         /// </summary>
         /// <param name="key"></param>

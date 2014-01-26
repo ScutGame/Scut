@@ -22,7 +22,6 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ****************************************************************************/
 using System;
-using ZyGames.Framework.Common;
 using ZyGames.Framework.Common.Event;
 
 namespace ZyGames.Framework.Event
@@ -48,6 +47,10 @@ namespace ZyGames.Framework.Event
         /// 移除
         /// </summary>
         Remove,
+        /// <summary>
+        /// 移除指定
+        /// </summary>
+        RemoveAll,
         /// <summary>
         /// 清除
         /// </summary>

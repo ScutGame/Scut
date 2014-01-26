@@ -41,9 +41,15 @@ namespace ZyGames.Framework.RPC.Sockets.Threading
         /// </summary>   
         IWorkItemResult GetWorkItemResult();
     }
-
+	/// <summary>
+	/// I has work item priority.
+	/// </summary>
     public interface IHasWorkItemPriority
     {
+		/// <summary>
+		/// Gets the work item priority.
+		/// </summary>
+		/// <value>The work item priority.</value>
         WorkItemPriority WorkItemPriority { get; }
     }
 }

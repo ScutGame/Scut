@@ -42,7 +42,9 @@ namespace ZyGames.Framework.RPC.Sockets.Threading
         private bool _enableLocalPerformanceCounters;
         private string _threadPoolName = SmartThreadPool.DefaultThreadPoolName;
         private int? _maxStackSize = SmartThreadPool.DefaultMaxStackSize;
-
+		/// <summary>
+		/// Initializes a new instance of the <see cref="ZyGames.Framework.RPC.Sockets.Threading.STPStartInfo"/> class.
+		/// </summary>
         public STPStartInfo()
         {
             _performanceCounterInstanceName = SmartThreadPool.DefaultPerformanceCounterInstanceName;
@@ -53,7 +55,10 @@ namespace ZyGames.Framework.RPC.Sockets.Threading
             _idleTimeout = SmartThreadPool.DefaultIdleTimeout;
             _minWorkerThreads = SmartThreadPool.DefaultMinWorkerThreads;
         }
-
+		/// <summary>
+		/// Initializes a new instance of the <see cref="ZyGames.Framework.RPC.Sockets.Threading.STPStartInfo"/> class.
+		/// </summary>
+		/// <param name="stpStartInfo">Stp start info.</param>
 	    public STPStartInfo(STPStartInfo stpStartInfo)
             : base(stpStartInfo)
         {

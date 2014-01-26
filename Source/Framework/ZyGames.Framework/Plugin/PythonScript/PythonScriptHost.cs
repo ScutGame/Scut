@@ -1,11 +1,30 @@
-﻿using System;
+﻿/****************************************************************************
+Copyright (c) 2013-2015 scutgame.com
+
+http://www.scutgame.com
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+THE SOFTWARE.
+****************************************************************************/
+using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Web;
-using System.Web.Caching;
 using IronPython.Hosting;
 using Microsoft.Scripting.Hosting;
 using ZyGames.Framework.Common.Log;
@@ -15,17 +34,18 @@ namespace ZyGames.Framework.Plugin.PythonScript
     /// <summary>
     /// 
     /// </summary>
-    /// <remarks>
-    /// <![CDATA[
-    /// 
-    /// ]]>
-    /// </remarks>
+	/// <example>
+	/// <code>
+	/// </code>
+    /// </example>
+    [Obsolete("使用ZyGames.Framework.Script.ScriptEngines替代")]
     public static class PythonScriptHost
     {
         private static readonly object syncRoot = new object();
         private static ScriptRuntime _pyRuntime;
         private static ScriptEngine _pyEngine;
         private static ConcurrentDictionary<string, dynamic> _pythonScopes = new ConcurrentDictionary<string, dynamic>();
+
         private static FileSystemWatcher _pythonWatcher = new FileSystemWatcher();
 
         /// <summary>
@@ -67,14 +87,23 @@ namespace ZyGames.Framework.Plugin.PythonScript
         /// <param name="options"></param>
         public static void Initialize(string pythonRuntimePath, string pythonLibPath, Dictionary<string, object> options)
         {
-            RuntimePath = pythonRuntimePath;
-            LibPath = pythonLibPath;
-            _pyEngine = options == null || options.Count == 0
-                ? Python.CreateEngine()
-                : Python.CreateEngine(options);
-            _pyRuntime = _pyEngine.Runtime;
-            SetPythonSearchPath(RuntimePath);
-            RuntimePathWatcher(RuntimePath, true);
+			try
+			{
+	            RuntimePath = (pythonRuntimePath??"").Replace(@"\", "/");
+	            LibPath = pythonLibPath;
+	            _pyEngine = options == null || options.Count == 0
+	                ? Python.CreateEngine()
+	                : Python.CreateEngine(options);
+	            _pyRuntime = _pyEngine.Runtime;
+	            SetPythonSearchPath(RuntimePath);
+
+	            RuntimePathWatcher(RuntimePath, true);
+				
+			}
+			catch(Exception ex)
+			{
+				TraceLog.WriteError ("PythonScriptHost Initialize path:{0} error:{1}", pythonRuntimePath, ex);
+			}
         }
 
         /// <summary>
@@ -102,16 +131,22 @@ namespace ZyGames.Framework.Plugin.PythonScript
         /// <param name="path"></param>
         public static void SetPythonSearchPath(string path)
         {
+			path = (path ?? "").Replace(@"\", "/");
+			if(!path.EndsWith("/"))
+			{
+				path = path + "/";
+			}
             DirectoryInfo rootDir = new DirectoryInfo(path);
-            var itemDirs = rootDir.GetDirectories(".", SearchOption.AllDirectories);
+            var itemDirs = rootDir.GetDirectories("*", SearchOption.AllDirectories);
             var searchPaths = new List<string>();
-            searchPaths.Add(".");
+            searchPaths.Add("*");
             searchPaths.Add(LibPath);
             searchPaths.Add(rootDir.FullName);
             foreach (var itemDir in itemDirs)
             {
                 searchPaths.Add(itemDir.FullName);
             }
+			TraceLog.ReleaseWrite("Python search path:{0}\r\n{1}",path, string.Join(";\r\n", searchPaths));
             SetSearchPaths(searchPaths);
         }
 
@@ -135,19 +170,22 @@ namespace ZyGames.Framework.Plugin.PythonScript
         /// <returns></returns>
         public static bool GetScriptScope(string moduleName, out dynamic scope)
         {
-            if (_pythonScopes.TryGetValue(moduleName, out scope))
-            {
-                return true;
-            }
-            if (TryReLoadScript(moduleName, out scope))
-            {
-                dynamic old;
-                if (_pythonScopes.TryGetValue(moduleName, out old))
-                {
-                    return _pythonScopes.TryUpdate(moduleName, scope, old);
-                }
-                return _pythonScopes.TryAdd(moduleName, scope);
-            }
+			moduleName = (moduleName ?? "").Replace(@"\", "/");
+
+			if (_pythonScopes.TryGetValue(moduleName, out scope))
+			{
+				return true;
+			}
+			if (TryReLoadScript(moduleName, out scope))
+			{
+				dynamic old;
+				if (_pythonScopes.TryGetValue(moduleName, out old))
+				{
+					return _pythonScopes.TryUpdate(moduleName, scope, old);
+				}
+				return _pythonScopes.TryAdd(moduleName, scope);
+			}
+
             return false;
         }
 
@@ -157,7 +195,8 @@ namespace ZyGames.Framework.Plugin.PythonScript
         /// <param name="moduleName"></param>
         /// <returns></returns>
         public static bool TryRemoveScript(string moduleName)
-        {
+		{
+			moduleName = (moduleName ?? "").Replace(@"\", "/");
             dynamic scope;
             return _pythonScopes.TryRemove(moduleName, out scope);
         }
@@ -170,6 +209,7 @@ namespace ZyGames.Framework.Plugin.PythonScript
         /// <returns></returns>
         public static bool TryReLoadScript(string moduleName, out dynamic scope)
         {
+			moduleName = (moduleName ?? "").Replace(@"\", "/");
             scope = null;
             string fileName = Path.Combine(RuntimePath, moduleName);
             try
@@ -187,7 +227,7 @@ namespace ZyGames.Framework.Plugin.PythonScript
             }
             catch (Exception ex)
             {
-                TraceLog.WriteError("Python script import \"{0}\" error\r\n{1}", moduleName, ex);
+				TraceLog.WriteError("Python script import \"{0}\" error\r\n{1}", fileName, ex);
             }
             return false;
         }
@@ -195,29 +235,6 @@ namespace ZyGames.Framework.Plugin.PythonScript
         private static void RuntimePathWatcher(string runtimePath, bool isInclude)
         {
             _pythonWatcher.Path = runtimePath;
-            /****************************************************************************
-Copyright (c) 2013-2015 scutgame.com
-
-http://www.scutgame.com
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in
-all copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-THE SOFTWARE.
-****************************************************************************/
             _pythonWatcher.NotifyFilter = NotifyFilters.LastAccess | NotifyFilters.LastWrite
                                    | NotifyFilters.FileName | NotifyFilters.DirectoryName;
             // 只监控.py文件  

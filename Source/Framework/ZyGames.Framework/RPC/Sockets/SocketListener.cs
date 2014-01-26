@@ -29,18 +29,34 @@ using System.Diagnostics;
 using System.Collections.Generic;
 using System.Threading;
 using System.Collections.Concurrent;
+using ZyGames.Framework.Common.Log;
 using NLog;
 
 namespace ZyGames.Framework.RPC.Sockets
 {
+	/// <summary>
+	/// Connection event arguments.
+	/// </summary>
     public class ConnectionEventArgs : EventArgs
     {
+		/// <summary>
+		/// Gets or sets the socket.
+		/// </summary>
+		/// <value>The socket.</value>
         public ExSocket Socket { get; set; }
-        public byte[] Data { get; set; }
+       /// <summary>
+       /// Gets or sets the data.
+       /// </summary>
+       /// <value>The data.</value>
+		 public byte[] Data { get; set; }
     }
-
+	/// <summary>
+	/// Connection event handler.
+	/// </summary>
     public delegate void ConnectionEventHandler(object sender, ConnectionEventArgs e);
-
+	/// <summary>
+	/// Ex socket.
+	/// </summary>
     public class ExSocket
     {
         private Socket socket;
@@ -48,11 +64,25 @@ namespace ZyGames.Framework.RPC.Sockets
         private ConcurrentQueue<byte[]> sendQueue;
         private int isInSending;
         internal DateTime LastAccessTime;
-
+		/// <summary>
+		/// Gets the work socket.
+		/// </summary>
+		/// <value>The work socket.</value>
         public Socket WorkSocket { get { return socket; } }
-        public EndPoint RemoteEndPoint { get { return remoteEndPoint; } }
-        public int QueueLength { get { return sendQueue.Count; } }
-
+        /// <summary>
+        /// Gets the remote end point.
+        /// </summary>
+        /// <value>The remote end point.</value>
+		public EndPoint RemoteEndPoint { get { return remoteEndPoint; } }
+        /// <summary>
+        /// Gets the length of the queue.
+        /// </summary>
+        /// <value>The length of the queue.</value>
+		public int QueueLength { get { return sendQueue.Count; } }
+		/// <summary>
+		/// Initializes a new instance of the <see cref="ZyGames.Framework.RPC.Sockets.ExSocket"/> class.
+		/// </summary>
+		/// <param name="socket">Socket.</param>
         public ExSocket(Socket socket)
         {
             this.socket = socket;
@@ -77,7 +107,9 @@ namespace ZyGames.Framework.RPC.Sockets
             Interlocked.Exchange(ref isInSending, 0);
         }
     }
-
+	/// <summary>
+	/// Socket listener.
+	/// </summary>
     public class SocketListener
     {
         #region 事件
@@ -127,12 +159,18 @@ namespace ZyGames.Framework.RPC.Sockets
         ThreadSafeStack<SocketAsyncEventArgs> acceptEventArgsPool;
         ThreadSafeStack<SocketAsyncEventArgs> ioEventArgsPool;
         Timer expireTimer;
-
+		/// <summary>
+		/// Gets the connections.
+		/// </summary>
+		/// <value>The connections.</value>
         public int Connections
         {
             get { return clientSockets.Count; }
         }
-
+		/// <summary>
+		/// Initializes a new instance of the <see cref="ZyGames.Framework.RPC.Sockets.SocketListener"/> class.
+		/// </summary>
+		/// <param name="socketSettings">Socket settings.</param>
         public SocketListener(SocketSettings socketSettings)
         {
             this.socketSettings = socketSettings;
@@ -200,7 +238,9 @@ namespace ZyGames.Framework.RPC.Sockets
             acceptEventArg.Completed += new EventHandler<SocketAsyncEventArgs>(Accept_Completed);
             return acceptEventArg;
         }
-
+		/// <summary>
+		/// Starts the listen.
+		/// </summary>
         public void StartListen()
         {
             listenSocket = new Socket(this.socketSettings.LocalEndPoint.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
@@ -314,7 +354,7 @@ namespace ZyGames.Framework.RPC.Sockets
             }
             catch (Exception ex)
             {
-                logger.Error("OnConnected", ex);
+				TraceLog.WriteError("OnConnected error:{0}", ex);
             }
 
             PostReceive(ioEventArgs);
@@ -423,7 +463,7 @@ namespace ZyGames.Framework.RPC.Sockets
                 }
                 catch (Exception ex)
                 {
-                    logger.Error("OnDataReceived", ex);
+					TraceLog.WriteError("OnDataReceived error:{0}", ex);
                 }
             }
         }
@@ -460,7 +500,13 @@ namespace ZyGames.Framework.RPC.Sockets
                 socket.ResetSendFlag();
             }
         }
-
+		/// <summary>
+		/// Posts the send.
+		/// </summary>
+		/// <param name="socket">Socket.</param>
+		/// <param name="data">Data.</param>
+		/// <param name="offset">Offset.</param>
+		/// <param name="count">Count.</param>
         public void PostSend(ExSocket socket, byte[] data, int offset, int count)
         {
             byte[] buffer = new byte[count + 4];
@@ -552,7 +598,7 @@ namespace ZyGames.Framework.RPC.Sockets
                 }
                 catch (Exception ex)
                 {
-                    logger.Error("OnDisconnected", ex);
+					TraceLog.WriteError("OnDisconnected error:{0}", ex);
                 }
                 ioEventArgs.AcceptSocket.Close();
             }
@@ -567,6 +613,10 @@ namespace ZyGames.Framework.RPC.Sockets
             maxConnectionsEnforcer.Release();
         }
 
+		/// <summary>
+		/// Closes the socket.
+		/// </summary>
+		/// <param name="socket">Socket.</param>
         public void CloseSocket(ExSocket socket)
         {
             try
@@ -577,6 +627,9 @@ namespace ZyGames.Framework.RPC.Sockets
             socket.WorkSocket.Close();
         }
 
+		/// <summary>
+		/// Close this instance.
+		/// </summary>
         public void Close()
         {
             listenSocket.Close();

@@ -45,27 +45,49 @@ namespace ZyGames.Framework.Data
             return fieldName;
         }
     }
+
     /// <summary>
     /// 提供数据访问基类
     /// </summary>
     public abstract class DbBaseProvider
     {
         /// <summary>
-        /// 
+        /// Initializes a new instance of the <see cref="DbBaseProvider"/> class.
         /// </summary>
-        /// <param name="connectionString"></param>
-        protected DbBaseProvider(string connectionString)
+        /// <param name="connectionSetting"></param>
+        protected DbBaseProvider(ConnectionSetting connectionSetting)
         {
-            this.ConnectionString = connectionString;
+            this.ConnectionSetting = connectionSetting;
+        }
+
+        /// <summary>
+        /// 提供者
+        /// </summary>
+        public string ProviderTypeName
+        {
+            get { return ConnectionSetting.ProviderTypeName; }
         }
         /// <summary>
         /// 连接数据库字符串
         /// </summary>
         public string ConnectionString
         {
+            get
+            {
+                return ConnectionSetting.ConnectionString;
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets the connection setting.
+        /// </summary>
+        /// <value>The connection setting.</value>
+        public ConnectionSetting ConnectionSetting
+        {
             get;
             private set;
         }
+
 
         /// <summary>
         /// 执行Sql语句
@@ -92,7 +114,7 @@ namespace ZyGames.Framework.Data
         /// <returns></returns>
         public abstract int ExecuteQuery(CommandType commandType, string commandText, params IDataParameter[] parameters);
         /// <summary>
-        /// 执行Sql语句
+        /// 写入消息队列
         /// </summary>
         /// <param name="identityID"></param>
         /// <param name="commandType"></param>
@@ -132,6 +154,17 @@ namespace ZyGames.Framework.Data
         /// <param name="value"></param>
         /// <returns></returns>
         public abstract IDataParameter CreateParameter(string paramName, object value);
+
+        /// <summary>
+        /// 创建参数
+        /// </summary>
+        /// <param name="paramName"></param>
+        /// <param name="dbType"></param>
+        /// <param name="size"></param>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        public abstract IDataParameter CreateParameter(string paramName, int dbType, int size, object value);
+
         /// <summary>
         /// 创建Guid类型的参数
         /// </summary>
@@ -152,8 +185,9 @@ namespace ZyGames.Framework.Data
         /// </summary>
         /// <param name="tableName"></param>
         /// <param name="editType"></param>
+        /// <param name="columns">查询列</param>
         /// <returns></returns>
-        public abstract CommandStruct CreateCommandStruct(string tableName, CommandMode editType);
+        public abstract CommandStruct CreateCommandStruct(string tableName, CommandMode editType, string columns = "");
 
         /// <summary>
         /// 创建CommandFilter对象
@@ -187,10 +221,11 @@ namespace ZyGames.Framework.Data
         /// <summary>
         /// 格式化条件语句中的参数
         /// </summary>
-        /// <param name="fieldNname"></param>
+        /// <param name="fieldName"></param>
+        /// <param name="compareChar">比较字符,大于、等于、小于等</param>
         /// <param name="paramName"></param>
         /// <returns></returns>
-        public abstract string FormatFilterParam(string fieldNname, string paramName);
+        public abstract string FormatFilterParam(string fieldName, string compareChar = "", string paramName = "");
 
         /// <summary>
         /// 格式化Select语句中的列名
@@ -198,6 +233,13 @@ namespace ZyGames.Framework.Data
         /// <param name="splitChat"></param>
         /// <param name="columns"></param>
         /// <returns></returns>
-        public abstract string FormatQueryColumn(string splitChat, string[] columns);
+        public abstract string FormatQueryColumn(string splitChat, ICollection<string> columns);
+
+        /// <summary>
+        /// 格式化关键词
+        /// </summary>
+        /// <param name="name"></param>
+        /// <returns></returns>
+        public abstract string FormatName(string name);
     }
 }

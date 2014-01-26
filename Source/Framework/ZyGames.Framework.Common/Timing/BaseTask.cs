@@ -33,17 +33,15 @@ namespace ZyGames.Framework.Common.Timing
     {
         private object threadLock = new object();
 
-        static BaseTask()
-        {
-        }
         /// <summary>
         /// 
         /// </summary>
         /// <param name="interval"></param>
-        public BaseTask(int interval)
+        protected BaseTask(int interval)
         {
             Running = false;
-            Interval = interval;
+            IntevalTicks = new TimeSpan(0, 0, 0, 0, interval).Ticks;
+            Interval = 1000;
         }
         /// <summary>
         /// 
@@ -134,11 +132,7 @@ namespace ZyGames.Framework.Common.Timing
                 lock (threadLock)
                 {
                     Running = true;
-                }
-                DoExecute(obj);
-
-                lock (threadLock)
-                {
+                    DoExecute(obj);
                     Running = false;
                 }
 

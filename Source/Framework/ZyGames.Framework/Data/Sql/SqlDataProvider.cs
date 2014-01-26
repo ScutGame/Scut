@@ -27,7 +27,6 @@ using System.Data;
 using System.Data.SqlClient;
 using System.Text;
 using ZyGames.Framework.Common;
-using ZyGames.Framework.MSMQ;
 
 namespace ZyGames.Framework.Data.Sql
 {
@@ -39,9 +38,9 @@ namespace ZyGames.Framework.Data.Sql
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="connectionString"></param>
-        public SqlDataProvider(string connectionString)
-            : base(connectionString)
+        /// <param name="connectionSetting">connection setting</param>
+        public SqlDataProvider(ConnectionSetting connectionSetting)
+            : base(connectionSetting)
         {
         }
         /// <summary>
@@ -87,9 +86,24 @@ namespace ZyGames.Framework.Data.Sql
         /// <returns></returns>
         public override int ExecuteNonQuery(int identityID, CommandType commandType, string commandText, params IDataParameter[] parameters)
         {
-            ActionMSMQ.Instance().SendSqlCmd(identityID, "SqlDataProvider", ConnectionString, commandType, commandText, ConvertParam<SqlParameter>(parameters));
+            SqlStatement statement = new SqlStatement();
+            statement.IdentityID = identityID;
+            statement.ConnectionString = ConnectionString;
+            statement.ProviderType = "SqlDataProvider";
+            statement.CommandType = commandType;
+            statement.CommandText = commandText;
+            statement.Params = SqlStatementManager.ConvertSqlParam(parameters);
+            return SqlStatementManager.Put(statement) ? 1 : 0;
+        }
 
-            return 1;
+        private string GetParametersToString(IDataParameter[] parameters)
+        {
+            string str = "";
+            foreach (var param in parameters)
+            {
+                str += string.Format("{0}={1}\r\n,", param.ParameterName, param.Value);
+            }
+            return str;
         }
 
         /// <summary>
@@ -115,7 +129,7 @@ namespace ZyGames.Framework.Data.Sql
                         column.Name = dataReader[0].ToNotNullString();
                         column.DbType = dataReader[1].ToNotNullString();
                         column.Scale = dataReader[2].ToInt();
-                        column.Length = dataReader[3].ToInt();
+                        column.Length = dataReader[3].ToLong();
                         column.Type = ConvertToObjectType(ConvertToDbType(column.DbType));
                         list.Add(column);
                     }
@@ -275,7 +289,7 @@ namespace ZyGames.Framework.Data.Sql
             return dbType;
         }
 
-        private string ConvertToDbType(Type type, string dbType, int length, int scale, bool isKey)
+        private string ConvertToDbType(Type type, string dbType, long length, int scale, bool isKey)
         {
             if (type.Equals(typeof(Int64)))
             {
@@ -297,7 +311,7 @@ namespace ZyGames.Framework.Data.Sql
             {
                 return "Float";
             }
-            if (type.Equals(typeof(Int32)))
+            if (type.IsEnum || type.Equals(typeof(Int32)))
             {
                 return "Int";
             }
@@ -305,7 +319,7 @@ namespace ZyGames.Framework.Data.Sql
             {
                 return "Real";
             }
-            if (type.IsEnum || type.Equals(typeof(Int16)))
+            if (type.Equals(typeof(Int16)))
             {
                 return "SmallInt";
             }
@@ -315,7 +329,7 @@ namespace ZyGames.Framework.Data.Sql
             }
             if (type.Equals(typeof(Byte[])))
             {
-                return "Binary";
+                return "sql_variant";
             }
 
             if (string.Equals(dbType, "uniqueidentifier", StringComparison.CurrentCultureIgnoreCase) ||
@@ -331,8 +345,8 @@ namespace ZyGames.Framework.Data.Sql
                     return "VarChar(100)";
                 }
                 return length > 0
-                    ? length >= 4000 ? "VarChar(max)" : "VarChar(" + length + ")" 
-                    : "VarChar(1000)";
+                    ? length >= 4000 ? "text" : "VarChar(" + length + ")"
+                    : "VarChar(255)";
             }
 
             if (string.Equals(dbType, "text", StringComparison.CurrentCultureIgnoreCase))
@@ -354,14 +368,14 @@ namespace ZyGames.Framework.Data.Sql
             StringBuilder command = new StringBuilder();
             try
             {
-                command.AppendLine("Create Table " + tableName);
+                command.AppendFormat("Create Table {0}", FormatName(tableName));
                 command.AppendLine("(");
                 List<string> keys;
                 bool hasColumn = CheckProcessColumns(command, columns, out keys);
                 if (keys.Count > 0)
                 {
                     command.AppendLine(",");
-                    command.AppendFormat("constraint PK_{0} primary key({1})", tableName, string.Join(",", keys));
+                    command.AppendFormat("constraint PK_{0} primary key({1})", tableName, FormatQueryColumn(",", keys));
                 }
                 command.AppendLine("");
                 command.AppendLine(")");
@@ -392,12 +406,13 @@ namespace ZyGames.Framework.Data.Sql
                 }
                 if (dbColumn.IsKey)
                 {
-                    keys.Add(dbColumn.Name);
+                    keys.Add(FormatName(dbColumn.Name));
                 }
-                command.AppendFormat("    {0} {1}{2}",
-                                     dbColumn.Name,
+                command.AppendFormat("    {0} {1}{2}{3}",
+                                     FormatName(dbColumn.Name),
                                      ConvertToDbType(dbColumn.Type, dbColumn.DbType, dbColumn.Length, dbColumn.Scale, dbColumn.IsKey),
-                                     dbColumn.Isnullable ? "" : " not null");
+                                     (dbColumn.Isnullable ? "" : " not null"),
+                                     (dbColumn.IsIdentity ? " IDENTITY(1,1)" : ""));
                 index++;
             }
 
@@ -416,7 +431,7 @@ namespace ZyGames.Framework.Data.Sql
             StringBuilder command = new StringBuilder();
             try
             {
-                command.Append("Alter Table " + tableName);
+                command.AppendFormat("Alter Table {0}", FormatName(tableName));
                 command.AppendLine(" Add");
                 List<string> keys;
                 bool hasColumn = CheckProcessColumns(command, columns, out keys);
@@ -444,31 +459,34 @@ namespace ZyGames.Framework.Data.Sql
                     {
                         command.AppendLine("");
                     }
-                    command.AppendFormat("Alter Table {0} ALTER COLUMN {1} {2}{3};",
-                                         tableName,
-                                         dbColumn.Name,
+                    command.AppendFormat("Alter Table {0} ALTER COLUMN {1} {2}{3}{4};",
+                                         FormatName(tableName),
+                                         FormatName(dbColumn.Name),
                                          ConvertToDbType(dbColumn.Type, dbColumn.DbType, dbColumn.Length, dbColumn.Scale, dbColumn.IsKey),
-                                         dbColumn.Isnullable ? "" : " not null");
+                                         dbColumn.Isnullable ? "" : " not null",
+                                         (dbColumn.IsIdentity ? " IDENTITY(1,1)" : ""));
                     index++;
                 }
                 if (keyColumns.Count > 0)
                 {
                     string[] keyArray = new string[keyColumns.Count];
-                    command.AppendFormat("ALTER TABLE {0} DROP CONSTRAINT PK_{0};", tableName);
+                    command.AppendFormat("ALTER TABLE {0} DROP CONSTRAINT PK_{0};", FormatName(tableName));
                     command.AppendLine();
                     int i = 0;
                     foreach (var keyColumn in keyColumns)
                     {
-                        keyArray[i] = keyColumn.Name;
+                        keyArray[i] = FormatName(keyColumn.Name);
                         command.AppendFormat("Alter Table {0} ALTER COLUMN {1} {2} not null;",
-                                             tableName,
-                                             keyColumn.Name,
+                                             FormatName(tableName),
+                                             FormatName(keyColumn.Name),
                                              ConvertToDbType(keyColumn.Type, keyColumn.DbType, keyColumn.Length, keyColumn.Scale, keyColumn.IsKey));
                         command.AppendLine();
                         i++;
                         index++;
                     }
-                    command.AppendFormat("ALTER TABLE {0} ADD CONSTRAINT PK_{0} PRIMARY KEY({1});", tableName, string.Join(",", keyArray));
+                    command.AppendFormat("ALTER TABLE {0} ADD CONSTRAINT PK_{0} PRIMARY KEY({1});", 
+                        FormatName(tableName), 
+                        FormatQueryColumn(",", keyArray));
                 }
                 if (index > 0)
                 {
@@ -491,6 +509,19 @@ namespace ZyGames.Framework.Data.Sql
         {
             return SqlParamHelper.MakeInParam(paramName, value);
         }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="paramName"></param>
+        /// <param name="dbType"></param>
+        /// <param name="size"></param>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        public override IDataParameter CreateParameter(string paramName, int dbType, int size, object value)
+        {
+            return SqlParamHelper.MakeInParam(paramName, (SqlDbType)dbType, size, value);
+        }
         /// <summary>
         /// 
         /// </summary>
@@ -512,24 +543,56 @@ namespace ZyGames.Framework.Data.Sql
             return SqlParamHelper.MakeInParam(paramName, SqlDbType.Text, 0, value);
         }
 
-        public override CommandStruct CreateCommandStruct(string tableName, CommandMode editType)
+        /// <summary>
+        /// 创建CommandStruct对象
+        /// </summary>
+        /// <param name="tableName"></param>
+        /// <param name="editType"></param>
+        /// <param name="columns"></param>
+        /// <returns></returns>
+        public override CommandStruct CreateCommandStruct(string tableName, CommandMode editType, string columns)
         {
-            return new CommandStruct(tableName, editType);
+            return new CommandStruct(tableName, editType, columns);
         }
-
+        /// <summary>
+        /// 创建CommandFilter对象
+        /// </summary>
+        /// <returns></returns>
         public override CommandFilter CreateCommandFilter()
         {
             return new CommandFilter();
         }
 
-        public override string FormatFilterParam(string fieldNname, string paramName)
+        /// <summary>
+        /// 格式化条件语句中的参数
+        /// </summary>
+        /// <param name="fieldName"></param>
+        /// <param name="compareChar"></param>
+        /// <param name="paramName"></param>
+        /// <returns></returns>
+        public override string FormatFilterParam(string fieldName, string compareChar = "", string paramName = "")
         {
-            return string.Format("[{0}]={1}", fieldNname, SqlParamHelper.FormatParamName(paramName));
+            return SqlParamHelper.FormatFilterParam(fieldName, compareChar, paramName);
+        }
+        /// <summary>
+        /// 格式化Select语句中的列名
+        /// </summary>
+        /// <param name="splitChat"></param>
+        /// <param name="columns"></param>
+        /// <returns></returns>
+        public override string FormatQueryColumn(string splitChat, ICollection<string> columns)
+        {
+            return SqlParamHelper.FormatQueryColumn(splitChat, columns);
         }
 
-        public override string FormatQueryColumn(string splitChat, string[] columns)
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="name"></param>
+        /// <returns></returns>
+        public override string FormatName(string name)
         {
-            return string.Format("[{0}]", string.Join("]" + splitChat + "[", columns));
+            return SqlParamHelper.FormatName(name);
         }
     }
 }

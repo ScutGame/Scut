@@ -62,7 +62,8 @@ namespace ZyGames.Framework.Net
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="data"></param>
-        void Send<T>(T data) where T : AbstractEntity;
+        /// <param name="isChange"></param>
+        void Send<T>(T data, bool isChange = true) where T : AbstractEntity;
 
         /// <summary>
         /// 

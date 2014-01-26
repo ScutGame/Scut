@@ -33,7 +33,7 @@ namespace ZyGames.Framework.Common.Log
         private static bool isinit;
         private static bool LogInfoEnable;
         private static bool LogErrorEnable;
-        private static bool LogExceptionEnable;
+        private static bool LogWarnEnable;
         private static bool LogComplementEnable;
         private static bool LogDubugEnable;
         private static bool LogFatalEnabled;
@@ -43,7 +43,7 @@ namespace ZyGames.Framework.Common.Log
             LogHelper.isinit = false;
             LogHelper.LogInfoEnable = false;
             LogHelper.LogErrorEnable = false;
-            LogHelper.LogExceptionEnable = false;
+            LogHelper.LogWarnEnable = false;
             LogHelper.LogComplementEnable = false;
             LogHelper.LogDubugEnable = false;
             LogHelper.LogFatalEnabled = false;
@@ -58,7 +58,7 @@ namespace ZyGames.Framework.Common.Log
         {
             LogHelper.LogInfoEnable = LogHelper.logger.IsInfoEnabled;
             LogHelper.LogErrorEnable = LogHelper.logger.IsErrorEnabled;
-            LogHelper.LogExceptionEnable = LogHelper.logger.IsErrorEnabled;
+            LogHelper.LogWarnEnable = LogHelper.logger.IsWarnEnabled;
             LogHelper.LogComplementEnable = LogHelper.logger.IsTraceEnabled;
             LogHelper.LogFatalEnabled = LogHelper.logger.IsFatalEnabled;
             LogHelper.LogDubugEnable = LogHelper.logger.IsDebugEnabled;
@@ -86,28 +86,28 @@ namespace ZyGames.Framework.Common.Log
         }
         public static void WriteException(string info, Exception ex)
         {
-            if (LogHelper.LogExceptionEnable)
+            if (LogHelper.LogErrorEnable)
             {
                 LogHelper.logger.Error(LogHelper.BuildMessage(info, ex));
             }
         }
         public static void WriteWarn(string info)
         {
-            if (LogHelper.LogErrorEnable)
+            if (LogHelper.LogWarnEnable)
             {
                 LogHelper.logger.Warn(LogHelper.BuildMessage(info));
             }
         }
         public static void WriteWarn(string info, Exception ex)
         {
-            if (LogHelper.LogErrorEnable)
+            if (LogHelper.LogWarnEnable)
             {
                 LogHelper.logger.Warn(LogHelper.BuildMessage(info, ex));
             }
         }
         public static void WriteFatal(string info)
         {
-            if (LogHelper.LogErrorEnable)
+            if (LogHelper.LogFatalEnabled)
             {
                 LogHelper.logger.Fatal(LogHelper.BuildMessage(info));
             }

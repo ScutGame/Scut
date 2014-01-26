@@ -29,6 +29,11 @@ using ZyGames.Framework.Model;
 namespace ZyGames.Framework.Cache.Generic
 {
     /// <summary>
+    /// 实体改变通知事件
+    /// </summary>
+    public delegate void EntityChangedNotifyEvent(AbstractEntity sender, CacheItemEventArgs eventArgs);
+
+    /// <summary>
     /// 缓存项集合,缓存改变事件通知到此层为根，不需要再向上触发(父亲容器Change事件监听已禁用)
     /// </summary>
     [ProtoContract, Serializable]
@@ -57,6 +62,8 @@ namespace ZyGames.Framework.Cache.Generic
             }
 
         }
+
+        internal event EntityChangedNotifyEvent OnChangedNotify;
 
         /// <summary>
         /// 是否数据已加载成功
@@ -124,7 +131,7 @@ namespace ZyGames.Framework.Cache.Generic
             if (!_isReadOnly)
             {
                 BindEvent(_itemData);
-                Notify(CacheItemChangeType.Modify, PropertyName);
+                Notify(itemData, CacheItemChangeType.Modify, PropertyName);
             }
         }
 
@@ -137,13 +144,15 @@ namespace ZyGames.Framework.Cache.Generic
         }
 
         /// <summary>
-        /// 当前对象(包括继承)的属性触发通知事件,通知到此层为根
+        /// 当前对象(包括继承)的属性触发通知事件
         /// </summary>
-        /// <param name="changeType"></param>
-        /// <param name="propertyName"></param>
-        protected override void Notify(CacheItemChangeType changeType, string propertyName)
+        /// <param name="sender">触发事件源</param>
+        /// <param name="eventArgs"></param>
+        protected override void Notify(object sender, CacheItemEventArgs eventArgs)
         {
             _hasChanged = true;
+            PutToChangeKeys(sender);
+            DoChangedNotify(sender as AbstractEntity, eventArgs);
         }
 
         /// <summary>
@@ -154,6 +163,26 @@ namespace ZyGames.Framework.Cache.Generic
         protected override void NotifyByChildren(object sender, CacheItemEventArgs eventArgs)
         {
             _hasChanged = true;
+            PutToChangeKeys(sender);
+            DoChangedNotify(sender as AbstractEntity, eventArgs);
+        }
+
+        private void DoChangedNotify(AbstractEntity sender, CacheItemEventArgs eventArgs)
+        {
+            if (OnChangedNotify != null)
+            {
+                OnChangedNotify.BeginInvoke(sender, eventArgs, null, null);
+            }
+        }
+
+        internal void SetUnChange()
+        {
+            _hasChanged = false;
+        }
+
+        private void PutToChangeKeys(object sender)
+        {
+            CacheChangeManager.Current.SetEntity(sender as AbstractEntity);
         }
 
         /// <summary>
@@ -220,7 +249,7 @@ namespace ZyGames.Framework.Cache.Generic
         /// <summary>
         /// 
         /// </summary>
-        internal void OnRemove()
+        internal void SetRemoveStatus()
         {
             LoadingStatus = LoadingStatus.Remove;
         }

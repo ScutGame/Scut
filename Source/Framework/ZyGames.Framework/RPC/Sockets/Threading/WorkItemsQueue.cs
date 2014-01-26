@@ -341,7 +341,10 @@ namespace ZyGames.Framework.RPC.Sockets.Threading
 				}
             }
         }
-
+		/// <summary>
+		/// Gets the states.
+		/// </summary>
+		/// <returns>The states.</returns>
         public object[] GetStates()
         {
             lock (this)
@@ -494,8 +497,9 @@ namespace ZyGames.Framework.RPC.Sockets.Threading
 		#endregion
 
 		#region WaiterEntry class 
-
-		// A waiter entry in the _waiters queue.
+		///<summary>
+		/// A waiter entry in the _waiters queue.
+		///</summary>
 		public sealed class WaiterEntry : IDisposable
 		{
 			#region Member variables
@@ -532,7 +536,9 @@ namespace ZyGames.Framework.RPC.Sockets.Threading
 			#endregion
 
 			#region Construction
-
+			/// <summary>
+			/// Initializes a new instance of the
+			/// </summary>
 			public WaiterEntry()
 			{
 				Reset();
@@ -541,12 +547,18 @@ namespace ZyGames.Framework.RPC.Sockets.Threading
 			#endregion
 
 			#region Public methods
-
+			/// <summary>
+			/// Gets the wait handle.
+			/// </summary>
+			/// <value>The wait handle.</value>
 			public WaitHandle WaitHandle
 			{
 				get { return _waitHandle; }
 			}
-
+			/// <summary>
+			/// Gets the work item.
+			/// </summary>
+			/// <value>The work item.</value>
 			public WorkItem WorkItem
 			{
 				get
@@ -623,7 +635,9 @@ namespace ZyGames.Framework.RPC.Sockets.Threading
 			#endregion
 
 			#region IDisposable Members
-
+			/// <summary>
+			/// Releases all resource used by the
+			/// </summary>
 			public void Dispose()
 			{
                 lock (this)
@@ -642,7 +656,15 @@ namespace ZyGames.Framework.RPC.Sockets.Threading
 		#endregion
 
         #region IDisposable Members
-
+		/// <summary>
+		/// Releases all resource used by the <see cref="ZyGames.Framework.RPC.Sockets.Threading.WorkItemsQueue"/> object.
+		/// </summary>
+		/// <remarks>Call <see cref="Dispose"/> when you are finished using the
+		/// <see cref="ZyGames.Framework.RPC.Sockets.Threading.WorkItemsQueue"/>. The <see cref="Dispose"/> method leaves the
+		/// <see cref="ZyGames.Framework.RPC.Sockets.Threading.WorkItemsQueue"/> in an unusable state. After calling
+		/// <see cref="Dispose"/>, you must release all references to the
+		/// <see cref="ZyGames.Framework.RPC.Sockets.Threading.WorkItemsQueue"/> so the garbage collector can reclaim the
+		/// memory that the <see cref="ZyGames.Framework.RPC.Sockets.Threading.WorkItemsQueue"/> was occupying.</remarks>
         public void Dispose()
         {
             if (!_isDisposed)

@@ -23,19 +23,14 @@ THE SOFTWARE.
 ****************************************************************************/
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
-using System.Text;
-using IronPython;
-using IronPython.Hosting;
 using Microsoft.Scripting;
-using Microsoft.Scripting.Hosting;
 
 namespace ZyGames.Framework.Plugin.PythonScript
 {
     /// <summary>
     /// Python工具
     /// </summary>
+    [Obsolete("使用ZyGames.Framework.Script.ScriptEngines替代")]
     public class PythonUtils
     {
         /// <summary>

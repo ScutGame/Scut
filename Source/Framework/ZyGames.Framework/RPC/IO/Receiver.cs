@@ -49,12 +49,22 @@ namespace ZyGames.Framework.RPC.IO
         /// </summary>
         /// <returns></returns>
         public abstract void Process();
-
+		/// <summary>
+		/// Releases all resource used by the <see cref="ZyGames.Framework.RPC.IO.Receiver"/> object.
+		/// </summary>
+		/// <remarks>Call <see cref="Dispose"/> when you are finished using the <see cref="ZyGames.Framework.RPC.IO.Receiver"/>. The
+		/// <see cref="Dispose"/> method leaves the <see cref="ZyGames.Framework.RPC.IO.Receiver"/> in an unusable state.
+		/// After calling <see cref="Dispose"/>, you must release all references to the
+		/// <see cref="ZyGames.Framework.RPC.IO.Receiver"/> so the garbage collector can reclaim the memory that the
+		/// <see cref="ZyGames.Framework.RPC.IO.Receiver"/> was occupying.</remarks>
         public void Dispose()
         {
             DoDispose(true);
         }
-
+		/// <summary>
+		/// Dos the dispose.
+		/// </summary>
+		/// <param name="disposing">If set to <c>true</c> disposing.</param>
         protected virtual void DoDispose(bool disposing)
         {
             if (disposing)

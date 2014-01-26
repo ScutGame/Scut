@@ -33,7 +33,7 @@ namespace ZyGames.Framework.Data.Sql
     /// <summary>
     /// MSSQL数据库查询、删除、更新操作辅助类
     /// </summary>
-    public sealed class SqlHelper
+    internal sealed class SqlHelper
     {
         private enum SqlConnectionOwnership
         {

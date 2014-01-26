@@ -22,13 +22,8 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ****************************************************************************/
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Data;
-using System.Data.SqlClient;
-using System.Linq;
-using System.Text;
-using ZyGames.Framework.Collection;
 using ZyGames.Framework.Common;
 using ZyGames.Framework.Common.Log;
 using ZyGames.Framework.Common.Serialization;
@@ -56,17 +51,26 @@ namespace ZyGames.Framework.Net.Sql
             _filter = null;
         }
 
-        public List<T> Receive<T>() where T : AbstractEntity, new()
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="dataList"></param>
+        /// <returns></returns>
+        public bool TryReceive<T>(out List<T> dataList) where T : AbstractEntity, new()
         {
+            bool result = false;
+            dataList = null;
             if (string.IsNullOrEmpty(_schema.ConnectKey) && string.IsNullOrEmpty(_schema.ConnectionString))
             {
-                return new List<T>();
+                dataList = new List<T>();
+                return true;
             }
             using (IDataReader reader = GetReader<T>())
             {
                 if (reader != null)
                 {
-                    var list = new List<T>();
+                    dataList = new List<T>();
                     while (reader.Read())
                     {
                         T entity = new T();
@@ -74,12 +78,12 @@ namespace ZyGames.Framework.Net.Sql
                         entity.SetValueBefore();
                         SetEntityValue(_schema, reader, entity);
                         entity.SetValueAfter();
-                        list.Add(entity);
+                        dataList.Add(entity);
                     }
-                    return list;
+                    result = true;
                 }
             }
-            return null;
+            return result;
         }
 
         public int Capacity { get; set; }
@@ -107,46 +111,42 @@ namespace ZyGames.Framework.Net.Sql
                     TraceLog.WriteError("The {0} ConnectKey:{1} is empty.", _schema.EntityType.FullName, _schema.ConnectKey);
                     return null;
                 }
-
-                string[] columns = new string[_schema.Columns.Count];
-                _schema.Columns.Keys.CopyTo(columns, 0);
-                string condition = string.IsNullOrEmpty(_filter.Condition)
-                    ? _schema.Condition
-                    : MergerCondition(_filter.Condition, _schema.Condition);
-                string order = string.IsNullOrEmpty(_filter.OrderColumn) ? _schema.OrderColumn : _filter.OrderColumn;
-                order = string.IsNullOrEmpty(order) ? string.Empty : " ORDER BY " + order;
-
-                if (!string.IsNullOrEmpty(condition))
+                var command = dbprovider.CreateCommandStruct(_schema.Name, CommandMode.Inquiry);
+                var columns = _schema.GetColumnNames();
+                command.Columns = string.Join(",", columns);
+                command.OrderBy = (string.IsNullOrEmpty(_filter.OrderColumn) ? _schema.OrderColumn : _filter.OrderColumn) ?? "";
+                if (Capacity != int.MaxValue && Capacity > 0)
                 {
-                    condition = condition.ToLower().StartsWith("where")
-                        ? condition
-                        : " Where " + condition;
+                    command.Top = Capacity;
+                    if (string.IsNullOrEmpty(command.OrderBy))
+                    {
+                        string orderStr = "";
+                        foreach (var key in _schema.Keys)
+                        {
+                            if (orderStr.Length > 0)
+                            {
+                                orderStr += ",";
+                            }
+                            orderStr += string.Format("{0}", dbprovider.FormatName(key));
+                        }
+                        command.OrderBy = orderStr;
+                    }
                 }
+                command.Filter = dbprovider.CreateCommandFilter();
 
-                sql = string.Format("SELECT {1} {2} FROM {0}{3}{4}"
-                    , _schema.Name
-                    , Capacity == int.MaxValue || Capacity == 0 ? "" : "TOP " + Capacity
-                    , dbprovider.FormatQueryColumn(",", columns)
-                    , condition
-                    , order);
+                command.Filter.Condition = MergerCondition(_filter.Condition, _schema.Condition);
+                ParseDataParameter(command.Filter);
 
-                IDataParameter[] parameters = CreateDataParameter(dbprovider);
+                command.Parser();
+                sql = command.Sql;
                 try
                 {
-                    if (parameters.Length > 0)
-                    {
-                        return dbprovider.ExecuteReader(CommandType.Text, sql, parameters);
-                    }
-                    return dbprovider.ExecuteReader(CommandType.Text, sql);
+                    return dbprovider.ExecuteReader(CommandType.Text, command.Sql, command.Parameters);
                 }
                 catch (Exception)
                 {
                     //重执行一次
-                    if (parameters.Length > 0)
-                    {
-                        return dbprovider.ExecuteReader(CommandType.Text, sql, parameters);
-                    }
-                    return dbprovider.ExecuteReader(CommandType.Text, sql);
+                    return dbprovider.ExecuteReader(CommandType.Text, command.Sql, command.Parameters);
                 }
             }
             catch (Exception ex)
@@ -156,11 +156,12 @@ namespace ZyGames.Framework.Net.Sql
             return null;
         }
 
+
         private string MergerCondition(string cond1, string cond2)
         {
             if (!string.IsNullOrEmpty(cond1) && !string.IsNullOrEmpty(cond2))
             {
-                return cond1 + " and " + cond2;
+                return cond1 + " AND " + cond2;
             }
             if (string.IsNullOrEmpty(cond1) && !string.IsNullOrEmpty(cond2))
             {
@@ -173,21 +174,17 @@ namespace ZyGames.Framework.Net.Sql
             return "";
         }
 
-        private IDataParameter[] CreateDataParameter(DbBaseProvider dbprovider)
+        private void ParseDataParameter(CommandFilter filter)
         {
-            var list = new List<IDataParameter>(_filter.Parameters.Count);
             foreach (var parameter in _filter.Parameters)
             {
-                var param = dbprovider.CreateParameter(parameter.Key, parameter.Value);
-                list.Add(param);
+                filter.AddParam(parameter.Key, parameter.Value);
             }
-            return list.ToArray();
         }
 
         private void SetEntityValue(SchemaTable schemaTable, IDataReader reader, AbstractEntity entity)
         {
-            string[] columns = new string[schemaTable.Columns.Count];
-            schemaTable.Columns.Keys.CopyTo(columns, 0);
+            var columns = schemaTable.GetColumnNames();
             foreach (var columnName in columns)
             {
                 SchemaColumn fieldAttr;
@@ -199,7 +196,7 @@ namespace ZyGames.Framework.Net.Sql
                 if (fieldAttr.IsJson)
                 {
                     var value = reader[columnName];
-                    if (fieldAttr.ColumnType.BaseType == typeof(Array))
+                    if (fieldAttr.ColumnType.IsSubclassOf(typeof(Array)))
                     {
                         value = value.ToString().StartsWith("[") ? value : "[" + value + "]";
                     }
@@ -218,8 +215,9 @@ namespace ZyGames.Framework.Net.Sql
                     }
                     catch (Exception ex)
                     {
-                        TraceLog.WriteError("Table:{0} column:{1} deserialize json error:{2} to {3}\r\nException:{4}",
+                        TraceLog.WriteError("Table:{0} key:{1} column:{2} deserialize json error:{3} to {4}\r\nException:{5}",
                             schemaTable.Name,
+                            entity.GetKeyCode(),
                             columnName,
                             fieldValue,
                             fieldAttr.ColumnType.FullName,
@@ -238,7 +236,7 @@ namespace ZyGames.Framework.Net.Sql
                     }
                     catch (Exception ex)
                     {
-                        TraceLog.WriteError("Table:{0} column:{1} parse value error:\r\n{0}", schemaTable.Name,columnName, ex);
+                        TraceLog.WriteError("Table:{0} column:{1} parse value error:\r\n{0}", schemaTable.Name, columnName, ex);
                     }
                 }
                 if (fieldAttr.CanWrite)

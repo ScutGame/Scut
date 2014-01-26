@@ -67,16 +67,7 @@ namespace ZyGames.Framework.Net
 
 
         #region Redis
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="identityId"></param>
-        /// <returns></returns>
-        public static string CreateRedisKey<T>(int identityId)
-        {
-            return string.Format("{0}_{1}", typeof(T).FullName, identityId);
-        }
+        
         /// <summary>
         /// 
         /// </summary>
@@ -98,4 +89,5 @@ namespace ZyGames.Framework.Net
         }
         #endregion
     }
+
 }

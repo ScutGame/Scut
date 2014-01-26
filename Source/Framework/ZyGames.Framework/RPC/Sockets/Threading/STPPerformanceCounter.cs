@@ -27,12 +27,31 @@ using System.Threading;
 
 namespace ZyGames.Framework.RPC.Sockets.Threading
 {
+	/// <summary>
+	/// ISTP performance counters reader.
+	/// </summary>
     public interface ISTPPerformanceCountersReader
     {
+		/// <summary>
+		/// Gets the in use threads.
+		/// </summary>
+		/// <value>The in use threads.</value>
         long InUseThreads { get; }
-        long ActiveThreads { get; }
-        long WorkItemsQueued { get; }
-        long WorkItemsProcessed { get; }
+        /// <summary>
+        /// Gets the active threads.
+        /// </summary>
+        /// <value>The active threads.</value>
+		long ActiveThreads { get; }
+        /// <summary>
+        /// Gets the work items queued.
+        /// </summary>
+        /// <value>The work items queued.</value>
+		long WorkItemsQueued { get; }
+        /// <summary>
+        /// Gets the work items processed.
+        /// </summary>
+        /// <value>The work items processed.</value>
+		long WorkItemsProcessed { get; }
     }
 }
 

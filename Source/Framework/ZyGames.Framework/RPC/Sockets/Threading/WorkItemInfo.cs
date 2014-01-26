@@ -30,6 +30,9 @@ namespace ZyGames.Framework.RPC.Sockets.Threading
 	/// </summary>
 	public class WorkItemInfo
 	{
+		/// <summary>
+		/// Initializes a new instance of the <see cref="ZyGames.Framework.RPC.Sockets.Threading.WorkItemInfo"/> class.
+		/// </summary>
 	    public WorkItemInfo()
 		{
 			UseCallerCallContext = SmartThreadPool.DefaultUseCallerCallContext;
@@ -39,7 +42,10 @@ namespace ZyGames.Framework.RPC.Sockets.Threading
 			PostExecuteWorkItemCallback = SmartThreadPool.DefaultPostExecuteWorkItemCallback;
 			WorkItemPriority = SmartThreadPool.DefaultWorkItemPriority;
 		}
-
+		/// <summary>
+		/// Initializes a new instance of the <see cref="ZyGames.Framework.RPC.Sockets.Threading.WorkItemInfo"/> class.
+		/// </summary>
+		/// <param name="workItemInfo">Work item info.</param>
 		public WorkItemInfo(WorkItemInfo workItemInfo)
 		{
 			UseCallerCallContext = workItemInfo.UseCallerCallContext;

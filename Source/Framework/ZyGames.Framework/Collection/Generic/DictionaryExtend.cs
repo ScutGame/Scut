@@ -205,7 +205,7 @@ namespace ZyGames.Framework.Collection.Generic
         /// <returns></returns>
         public TValue this[TKey key]
         {
-            get { return _cacheStruct[key]; }
+            get { return _cacheStruct.ContainsKey(key) ? _cacheStruct[key] : default(TValue); }
             set { _cacheStruct[key] = value; }
         }
         /// <summary>

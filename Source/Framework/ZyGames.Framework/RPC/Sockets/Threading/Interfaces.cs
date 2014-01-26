@@ -75,10 +75,25 @@ namespace ZyGames.Framework.RPC.Sockets.Threading
     /// </summary>
 	public enum WorkItemPriority
 	{
+		/// <summary>
+		/// The lowest.
+		/// </summary>
 		Lowest,
+		/// <summary>
+		/// The below normal.
+		/// </summary>
 		BelowNormal,
+		/// <summary>
+		/// The normal.
+		/// </summary>
 		Normal,
+		/// <summary>
+		/// The above normal.
+		/// </summary>
 		AboveNormal,
+		/// <summary>
+		/// The highest.
+		/// </summary>
 		Highest,
 	}
 
@@ -389,7 +404,9 @@ namespace ZyGames.Framework.RPC.Sockets.Threading
 	#endregion
 
 	#region CallToPostExecute enumerator
-
+	/// <summary>
+	/// Call to post execute.
+	/// </summary>
 	[Flags]
 	public enum CallToPostExecute
 	{
@@ -635,17 +652,42 @@ namespace ZyGames.Framework.RPC.Sockets.Threading
 
     // All these delegate are built-in .NET 3.5
     // Comment/Remove them when compiling to .NET 3.5 to avoid ambiguity.
-
+	/// <summary>
+	/// Action.
+	/// </summary>
     public delegate void Action();
-    public delegate void Action<T1, T2>(T1 arg1, T2 arg2);
-    public delegate void Action<T1, T2, T3>(T1 arg1, T2 arg2, T3 arg3);
-    public delegate void Action<T1, T2, T3, T4>(T1 arg1, T2 arg2, T3 arg3, T4 arg4);
-
+   /// <summary>
+   /// Action.
+   /// </summary>
+	public delegate void Action<T1, T2>(T1 arg1, T2 arg2);
+    /// <summary>
+    /// Action.
+    /// </summary>
+	public delegate void Action<T1, T2, T3>(T1 arg1, T2 arg2, T3 arg3);
+    /// <summary>
+    /// Action.
+    /// </summary>
+	public delegate void Action<T1, T2, T3, T4>(T1 arg1, T2 arg2, T3 arg3, T4 arg4);
+	/// <summary>
+	/// Func.
+	/// </summary>
     public delegate TResult Func<TResult>();
-    public delegate TResult Func<T, TResult>(T arg1);
-    public delegate TResult Func<T1, T2, TResult>(T1 arg1, T2 arg2);
-    public delegate TResult Func<T1, T2, T3, TResult>(T1 arg1, T2 arg2, T3 arg3);
-    public delegate TResult Func<T1, T2, T3, T4, TResult>(T1 arg1, T2 arg2, T3 arg3, T4 arg4);
+    /// <summary>
+    /// Func.
+    /// </summary>
+	public delegate TResult Func<T, TResult>(T arg1);
+    /// <summary>
+    /// Func.
+    /// </summary>
+	public delegate TResult Func<T1, T2, TResult>(T1 arg1, T2 arg2);
+    /// <summary>
+    /// Func.
+    /// </summary>
+	public delegate TResult Func<T1, T2, T3, TResult>(T1 arg1, T2 arg2, T3 arg3);
+    /// <summary>
+    /// Func.
+    /// </summary>
+	public delegate TResult Func<T1, T2, T3, T4, TResult>(T1 arg1, T2 arg2, T3 arg3, T4 arg4);
 
     #endregion
 }

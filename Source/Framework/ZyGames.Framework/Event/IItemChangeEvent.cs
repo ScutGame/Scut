@@ -28,60 +28,82 @@ namespace ZyGames.Framework.Event
     /// <summary>
     /// 变更事件接口
     /// </summary>
-    public interface IItemChangeEvent : IDisposable
+    public abstract class IItemChangeEvent : IDisposable
     {
         /// <summary>
         /// 是否有变更
         /// </summary>
-        bool HasChanged { get; }
+        public abstract bool HasChanged { get; }
 
         /// <summary>
         /// 绑定实体类的属性名（表的列名）
         /// </summary>
-        string PropertyName { get; set; }
+        internal abstract string PropertyName { get; set; }
 
         /// <summary>
         /// 当前对象变更事件对象
         /// </summary>
-        CacheItemChangeEvent ItemEvent { get; }
+        internal abstract CacheItemChangeEvent ItemEvent { get; }
 
         /// <summary>
         /// 当前对象的子类变更事件对象
         /// </summary>
-        CacheItemChangeEvent ChildrenEvent { get; }
+        internal abstract CacheItemChangeEvent ChildrenEvent { get; }
         
         /// <summary>
         /// 禁用子类事件通知
         /// </summary>
-        void DisableChildNotify();
+        internal abstract void DisableChildNotify();
         /// <summary>
         /// 增加子类监听
         /// </summary>
         /// <param name="changeEvent"></param>
-        void AddChildrenListener(object changeEvent);
+        public abstract void AddChildrenListener(object changeEvent);
 
         /// <summary>
         /// 移除子类监听
         /// </summary>
         /// <param name="changeEvent"></param>
-        void RemoveChildrenListener(object changeEvent);
+        internal abstract void RemoveChildrenListener(object changeEvent);
 
         /// <summary>
         /// 解除变更事件通知
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="eventArgs"></param>
-        void UnChangeNotify(object sender, CacheItemEventArgs eventArgs);
+        internal abstract void UnChangeNotify(object sender, CacheItemEventArgs eventArgs);
 
         /// <summary>
         /// 对象更新时通知事件
         /// </summary>
         /// <param name="updateHandle"></param>
-        void UpdateNotify(Func<IItemChangeEvent, bool> updateHandle);
+        public abstract void UpdateNotify(Func<IItemChangeEvent, bool> updateHandle);
+
         /// <summary>
         /// 序列化Json
         /// </summary>
         /// <returns></returns>
-        string ToJson();
+        public abstract string ToJson();
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public void Dispose()
+        {
+            Dispose(true);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="disposing"></param>
+        protected virtual void Dispose(bool disposing)
+        {
+            //释放非托管资源 
+            if (disposing)
+            {
+                GC.SuppressFinalize(this);
+            }
+        }
     }
 }

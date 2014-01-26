@@ -51,6 +51,18 @@ namespace ZyGames.Framework.Data
             get;
             set;
         }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="fieldName"></param>
+        /// <param name="compareChar"></param>
+        /// <param name="paramName"></param>
+        public virtual string FormatExpression(string fieldName, string compareChar = "", string paramName = "")
+        {
+            return SqlParamHelper.FormatFilterParam(fieldName, compareChar, paramName);
+        }
+
         /// <summary>
         /// 
         /// </summary>
@@ -73,9 +85,20 @@ namespace ZyGames.Framework.Data
         /// 
         /// </summary>
         /// <param name="paramName"></param>
+        /// <param name="value"></param>
+        public virtual void AddParam(string paramName, object value)
+        {
+            AddParam(SqlParamHelper.MakeInParam(paramName, value));
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="paramName"></param>
         /// <param name="dbType"></param>
         /// <param name="size"></param>
         /// <param name="value"></param>
+        [Obsolete]
         public void AddParam(string paramName, SqlDbType dbType, int size, object value)
         {
             AddParam(SqlParamHelper.MakeInParam(paramName, dbType, size, value));
@@ -90,11 +113,6 @@ namespace ZyGames.Framework.Data
             if (param != null)
             {
                 string paramKey = param.GetFieldName();
-                //todo 修正：多个@参数
-                //if (!param.ParameterName.StartsWith(_preParamChar))
-                //{
-                //    param.ParameterName = _preParamChar + param.ParameterName;
-                //}
                 if (_parameter.ContainsKey(paramKey))
                 {
                     _parameter[paramKey] = param;

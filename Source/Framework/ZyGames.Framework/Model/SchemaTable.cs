@@ -22,7 +22,9 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ****************************************************************************/
 using System;
+using System.Linq;
 using System.Collections.Concurrent;
+using System.Collections.Generic;
 
 namespace ZyGames.Framework.Model
 {
@@ -51,7 +53,7 @@ namespace ZyGames.Framework.Model
             CacheType = cacheType;
             IsStoreInDb = isStoreInDb;
             Keys = new string[0];
-            Columns = new ConcurrentDictionary<string, SchemaColumn>();
+            _columns = new ConcurrentDictionary<string, SchemaColumn>();
         }
 
         /// <summary>
@@ -74,6 +76,11 @@ namespace ZyGames.Framework.Model
         public CacheType CacheType { get; set; }
 
         /// <summary>
+        /// Whether synchronous entity.
+        /// </summary>
+        public bool IsEntitySync { get; set; }
+
+        /// <summary>
         /// 是否存储到DB（可从Db取数据，但不能更新回DB）
         /// </summary>
         public bool IsStoreInDb
@@ -81,6 +88,11 @@ namespace ZyGames.Framework.Model
             get;
             set;
         }
+
+        /// <summary>
+        /// 是否持久化到DB，当从Redis内存移除后
+        /// </summary>
+        public bool IsPersistence { get; set; }
 
         /// <summary>
         /// 生命周期，单位秒
@@ -119,6 +131,11 @@ namespace ZyGames.Framework.Model
         }
 
         /// <summary>
+        /// 是否是日志表
+        /// </summary>
+        public bool IsLog { get; set; }
+
+        /// <summary>
         /// 主键
         /// </summary>
         public string[] Keys
@@ -132,8 +149,29 @@ namespace ZyGames.Framework.Model
         /// </summary>
         public string Name
         {
+            get
+            {
+                if (IsLog)
+                {
+                    string format = EntitySchemaSet.LogTableNameFormat.Replace("$date", DateTime.Now.ToString("yyyyMM"));
+                    return string.Format(format, SpecialName);
+                }
+                return SpecialName;
+            }
+            set
+            {
+                SpecialName = value;
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets the name of the special.
+        /// </summary>
+        /// <value>The name of the special.</value>
+        internal string SpecialName
+        {
             get;
-            set;
+            private set;
         }
 
         /// <summary>
@@ -145,13 +183,32 @@ namespace ZyGames.Framework.Model
             set;
         }
 
+        private ConcurrentDictionary<string, SchemaColumn> _columns;
+
         /// <summary>
-        /// 
+        /// Get schema column.
         /// </summary>
-        public ConcurrentDictionary<string, SchemaColumn> Columns
+        internal ConcurrentDictionary<string, SchemaColumn> Columns
         {
-            get;
-            set;
+            get { return _columns; }
+        }
+
+        /// <summary>
+        /// Get schema column to list.
+        /// </summary>
+        /// <returns></returns>
+        public List<SchemaColumn> GetColumns()
+        {
+            return _columns.Values.OrderBy(col => col.Id).ToList();
+        }
+
+        /// <summary>
+        /// Get schema column name to list.
+        /// </summary>
+        /// <returns></returns>
+        public List<string> GetColumnNames()
+        {
+            return _columns.Values.OrderBy(col => col.Id).Select(col => col.Name).ToList();
         }
 
         /// <summary>

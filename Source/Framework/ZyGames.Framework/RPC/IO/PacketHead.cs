@@ -43,6 +43,10 @@ namespace ZyGames.Framework.RPC.IO
     ///</summary>
     public class PacketHead : PacketBaseHead
     {
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <returns></returns>
         public override byte[] ToByte()
         {
             return new byte[0];
