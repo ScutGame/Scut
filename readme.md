@@ -52,9 +52,10 @@ OSChina代码库：https://git.oschina.net/scutgame/Scut<br />
 ###版本：6.1.5.6 (2014-1-26) Unstable
 > 1. 增加exe版(console），web版本(IIS)的安装包
 > 2. 增加Model支持脚本化，实现不停服更新
-> 3. 修改Sns与Pay Center组件的数据库连接字符串
-> 4. 修改输出Log异常信息重复问题
-> 5. 修改消息队列写MSSQL数据库时SqlParamter被占用问题
+> 3. 增加Language支持脚本化
+> 4. 修改Sns与Pay Center组件的数据库连接字符串
+> 5. 修改输出Log异常信息重复问题
+> 6. 修改消息队列写MSSQL数据库时SqlParamter被占用问题
 
 
 ###版本：6.1.5.5 (2014-1-10) Unstable
