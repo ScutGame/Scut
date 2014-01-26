@@ -45,40 +45,40 @@
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
     <Reference Include="IronPython">
-      <HintPath>..\..\..\..\..\Release\6.1.5.3\Lib\IronPython.dll</HintPath>
+      <HintPath>..\..\..\..\..\Release\6.1.5.6\Lib\IronPython.dll</HintPath>
     </Reference>
     <Reference Include="IronPython.Modules">
-      <HintPath>..\..\..\..\..\Release\6.1.5.3\Lib\IronPython.Modules.dll</HintPath>
+      <HintPath>..\..\..\..\..\Release\6.1.5.6\Lib\IronPython.Modules.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.Dynamic">
-      <HintPath>..\..\..\..\..\Release\6.1.5.3\Lib\Microsoft.Dynamic.dll</HintPath>
+      <HintPath>..\..\..\..\..\Release\6.1.5.6\Lib\Microsoft.Dynamic.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.Scripting">
-      <HintPath>..\..\..\..\..\Release\6.1.5.3\Lib\Microsoft.Scripting.dll</HintPath>
+      <HintPath>..\..\..\..\..\Release\6.1.5.6\Lib\Microsoft.Scripting.dll</HintPath>
     </Reference>
     <Reference Include="Newtonsoft.Json">
-      <HintPath>..\..\..\..\..\Release\6.1.5.3\Lib\Newtonsoft.Json.dll</HintPath>
+      <HintPath>..\..\..\..\..\Release\6.1.5.6\Lib\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="NLog">
-      <HintPath>..\..\..\..\..\Release\6.1.5.3\Lib\NLog.dll</HintPath>
+      <HintPath>..\..\..\..\..\Release\6.1.5.6\Lib\NLog.dll</HintPath>
     </Reference>
     <Reference Include="protobuf-net">
-      <HintPath>..\..\..\..\..\Release\6.1.5.3\Lib\protobuf-net.dll</HintPath>
+      <HintPath>..\..\..\..\..\Release\6.1.5.6\Lib\protobuf-net.dll</HintPath>
     </Reference>
     <Reference Include="ServiceStack.Common">
-      <HintPath>..\..\..\..\..\Release\6.1.5.3\Lib\ServiceStack.Common.dll</HintPath>
+      <HintPath>..\..\..\..\..\Release\6.1.5.6\Lib\ServiceStack.Common.dll</HintPath>
     </Reference>
     <Reference Include="ServiceStack">
-      <HintPath>..\..\..\..\..\Release\6.1.5.3\Lib\ServiceStack.dll</HintPath>
+      <HintPath>..\..\..\..\..\Release\6.1.5.6\Lib\ServiceStack.dll</HintPath>
     </Reference>
     <Reference Include="ZyGames.Framework.Common">
-      <HintPath>..\..\..\..\..\Release\6.1.5.3\Lib\ZyGames.Framework.Common.dll</HintPath>
-    </Reference>
-    <Reference Include="ZyGames.Framework">
-      <HintPath>..\..\..\..\..\Release\6.1.5.3\Lib\ZyGames.Framework.dll</HintPath>
+      <HintPath>..\..\..\..\..\Release\6.1.5.6\Lib\ZyGames.Framework.Common.dll</HintPath>
     </Reference>
     <Reference Include="ZyGames.Framework.Game">
-      <HintPath>..\..\..\..\..\Release\6.1.5.3\Lib\ZyGames.Framework.Game.dll</HintPath>
+      <HintPath>..\..\..\..\..\Release\6.1.5.6\Lib\ZyGames.Framework.Game.dll</HintPath>
+    </Reference>
+    <Reference Include="ZyGames.Framework">
+      <HintPath>..\..\..\..\..\Release\6.1.5.6\Lib\ZyGames.Framework.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>

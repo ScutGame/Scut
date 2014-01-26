@@ -30,13 +30,11 @@ end
 
 function PushReceiverCallback(pScutScene, lpExternalData)
 	local actionId = ScutDataLogic.CNetReader:getInstance():getActionID()
-          
+	pScutScene= CCDirector:sharedDirector():getRunningScene()
+            
     if actionId == g__syncActionId then
         local result = ScutDataLogic.CNetReader:getInstance():getResult()
 	    if result then
-	        pScutScene= CCDirector:sharedDirector():getRunningScene()
-	        local box = ZyMessageBoxEx:new()
-            box:doPrompt(pScutScene, nil, actionId, "OK")
 	        PushParseEntity(pScutScene, lpExternalData)
 	    end
     else

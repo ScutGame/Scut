@@ -24,6 +24,7 @@ THE SOFTWARE.
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 using System.Text;
@@ -77,6 +78,16 @@ namespace GameRanking.Host
                 {
                     ScriptEngines.AddReferencedAssembly("GameRanking.Model.dll");
                     ActionFactory.SetActionIgnoreAuthorize(1000, 1001);
+
+                    var cache = new ShareCacheStruct<UserRanking>();
+                    Stopwatch t = new Stopwatch();
+                    t.Start();
+                    var list = cache.FindAll(false);
+                    t.Stop();
+                    if(list.Count > 0)
+                    {
+                        
+                    }
                 };
 
                 var cacheSetting = new CacheSetting();
