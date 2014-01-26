@@ -1,5 +1,6 @@
-﻿using System;
+using System;
 using ZyGames.Framework.Common.Log;
+using ZyGames.Framework.Game.Runtime;
 
 namespace GameWebServer.Script
 {
@@ -7,7 +8,8 @@ namespace GameWebServer.Script
     {
         public void Start()
         {
-            TraceLog.ReleaseWriteDebug("App star...");
+            var setting = new EnvironmentSetting();
+            GameEnvironment.Start(setting);
         }
     }
 }

@@ -1,12 +1,29 @@
-﻿using System;
+using System;
+using ZyGames.Framework.Game.Context;
+using ZyGames.Framework.Game.Contract;
+using ZyGames.Framework.Game.Runtime;
 
 namespace GameServer.Script
 {
-    public class MainClass
+    public class MainClass : GameSocketHost
     {
-        public void Start()
+        public MainClass()
         {
-            //Console.WriteLine("This do...");
+        }
+        
+        protected override BaseUser GetUser(int userId)
+        {
+            return null;
+        }
+
+        protected override void OnStartAffer()
+        {
+            var setting = new EnvironmentSetting();
+            GameEnvironment.Start(setting);
+        }
+
+        protected override void OnServiceStop()
+        {
         }
     }
 }
