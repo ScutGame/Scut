@@ -72,6 +72,6 @@
   -->
   <UsingTask TaskName="ZyGames.Framework.Common.Build.WeavingEntityTask" AssemblyFile="bin\$(Configuration)\ZyGames.Framework.Common.dll" />
   <Target Name="AfterBuild">
-    <WeavingEntityTask SolutionDir=".\\bin\$(Configuration)" FilePattern="GameRanking.Model.dll" />
+    <WeavingEntityTask SolutionDir="bin\$(Configuration)\" FilePattern="GameRanking.Model.dll" />
   </Target>
 </Project>
