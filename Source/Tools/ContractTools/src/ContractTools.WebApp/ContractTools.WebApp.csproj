@@ -175,6 +175,13 @@
     <Compile Include="SyncModelInfo.aspx.designer.cs">
       <DependentUpon>SyncModelInfo.aspx</DependentUpon>
     </Compile>
+    <Compile Include="TestCase.aspx.cs">
+      <DependentUpon>TestCase.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="TestCase.aspx.designer.cs">
+      <DependentUpon>TestCase.aspx</DependentUpon>
+    </Compile>
     <Compile Include="UnitTest.aspx.cs">
       <DependentUpon>UnitTest.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
@@ -209,6 +216,7 @@
     <Content Include="js\jquery-1.10.2.min.js" />
     <Content Include="Template\model.txt" />
     <Content Include="Template\pythonmodel.txt" />
+    <Content Include="TestCase.aspx" />
     <Content Include="UnitTest.aspx" />
     <Content Include="UpParamInfo.aspx" />
     <Content Include="Web.config">

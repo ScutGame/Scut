@@ -244,6 +244,8 @@ namespace ContractTools.WebApp
                 SearchLink.NavigateUrl = "search.aspx" + parameter;
                 syncLink.Target = "_blank";
                 syncLink.NavigateUrl = "SyncModelInfo.aspx" + parameter;
+                btnTestCase.NavigateUrl = "TestCase.aspx" + parameter;
+                btnTestCase.Target = "_blank";
 
                 int slnId = ddlSolution.Text.ToInt();
                 if (gvGetlist.Rows.Count != 0)
