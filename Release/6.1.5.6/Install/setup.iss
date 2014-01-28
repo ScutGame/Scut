@@ -57,14 +57,25 @@ Source: "..\Console\ZyGames.Framework.Common.dll"; DestDir: "{app}\Console"; Fla
 Source: "..\Console\ZyGames.Framework.dll"; DestDir: "{app}\Console"; Flags: ignoreversion
 Source: "..\Console\ZyGames.Framework.Game.dll"; DestDir: "{app}\Console"; Flags: ignoreversion
 Source: "..\Console\Script\MainClass.cs"; DestDir: "{app}\Console\Script"; Flags: ignoreversion
+
+Source: "..\..\..\Document\API\SCUT Server Framework API.chm"; DestDir: "{app}\Doc"; Flags: ignoreversion
+Source: "..\..\..\Document\API\SCUT Server Middleware API.chm"; DestDir: "{app}\Doc"; Flags: ignoreversion
+
+Source: "Redis\x32\redis.conf"; DestDir: "{app}\Redis\x32"; Flags: ignoreversion
+Source: "Redis\x32\redis-server.exe"; DestDir: "{app}\Redis\x32"; Flags: ignoreversion    
+Source: "Redis\x64\redis.conf"; DestDir: "{app}\Redis\x64"; Flags: ignoreversion
+Source: "Redis\x64\redis-server.exe"; DestDir: "{app}\Redis\x64"; Flags: ignoreversion
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
 
 [Icons]
-Name: "{group}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"
+Name: "{group}\{#MyAppName}"; Filename: "{app}\Console\{#MyAppExeName}"        
+Name: "{group}\Redis Server(x64)"; Filename: "{app}\redis\x64\redis-server.exe"  
 Name: "{group}\{cm:ProgramOnTheWeb,{#MyAppName}}"; Filename: "{#MyAppURL}"
 Name: "{group}\SCUT Server Management Studio"; Filename: "{app}\console\ScutSMS.exe"
+Name: "{group}\Document\SCUT Server Framework API"; Filename: "{app}\Doc\SCUT Server Framework API.chm" 
+Name: "{group}\Document\SCUT Server Middleware API"; Filename: "{app}\Doc\SCUT Server Middleware API.chm"
 Name: "{commondesktop}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"; Tasks: desktopicon
 
 [Run]
-Filename: "{app}\Console\{#MyAppExeName}"; Description: "{cm:LaunchProgram,{#StringChange(MyAppName, '&', '&&')}}"; Flags: nowait postinstall skipifsilent
+;Filename: "{app}\Console\{#MyAppExeName}"; Description: "{cm:LaunchProgram,{#StringChange(MyAppName, '&', '&&')}}"; Flags: nowait postinstall skipifsilent
 
