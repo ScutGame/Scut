@@ -2,6 +2,7 @@ package ScutDataLogic
 {
 	import flash.events.Event;
 	import flash.events.EventDispatcher;
+	import flash.utils.ByteArray;
 	
 	import ScutNetwork.CMemoryStream;
 	import ScutNetwork.CStream;
@@ -14,9 +15,15 @@ package ScutDataLogic
 		{
 		}
 		
-		public static function netDataDispatch(evtName:String, nTag:int, nNet:int, lpData:CStream, lpExternal:*):void
+		public static function netDataDispatch(evtName:String, nTag:int, nNet:int, lpData:*, lpExternal:*):void
 		{
-			var bValue:Boolean = CNetReader.getInstance().pushNetStream((lpData as CMemoryStream).GetMemory(), (lpData as CMemoryStream).GetSize());
+			var bValue:Boolean;
+			if(lpData is ByteArray){
+				bValue = CNetReader.getInstance().pushNetStream(lpData, (lpData as ByteArray).length);
+			}else{
+				bValue = CNetReader.getInstance().pushNetStream((lpData as CMemoryStream).GetMemory(), (lpData as CMemoryStream).GetSize());
+			}
+			
 			if (!bValue)
 			{
 				return ;

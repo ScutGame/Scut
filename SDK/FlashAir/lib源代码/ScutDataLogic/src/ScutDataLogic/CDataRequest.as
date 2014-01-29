@@ -1,7 +1,10 @@
 package ScutDataLogic
 {
+	import flash.events.ProgressEvent;
+	import flash.net.Socket;
 	import flash.utils.ByteArray;
 	import flash.utils.Dictionary;
+	import flash.utils.Endian;
 	
 	import ScutDataLogic.CDataHandler;
 	import ScutDataLogic.RequestInfo;
@@ -12,7 +15,6 @@ package ScutDataLogic
 	import ScutNetwork.CHttpClientResponse;
 	import ScutNetwork.CHttpSession;
 	import ScutNetwork.CMemoryStream;
-	import ScutNetwork.CStream;
 	import ScutNetwork.INetStatusNotify;
 
 	public class CDataRequest implements INetStatusNotify
@@ -43,25 +45,10 @@ package ScutDataLogic
 		public function Dispose():void
 		{
 			//释放剩下的请求
-//			AUTO_GUARD(m_ThreadMutex);
-//			if (m_pMapRequestInfos)
-//			{
-//				map<CHttpClient*, PRequestInfo>::iterator it = m_pMapRequestInfos->begin();
-//				for (; it != m_pMapRequestInfos->end(); it++)
-//				{
-//					FreeRequestInfo(it->second);
-//				}
-//				delete m_pMapRequestInfos;
-//			}
 			
 			if(m_pMapRequestInfos)
 			{
 				m_pMapRequestInfos = null;
-//				for each(var key:* in m_pMapRequestInfos)
-//				{
-//					m_pMapRequestInfos[key]=null;
-//					delete m_pMapRequestInfos[key];
-//				}
 			}
 			
 			if (m_pOnlyOneClient)
@@ -127,7 +114,6 @@ package ScutDataLogic
 				pRi.Url = lpszUrl;
 				pRi.LPData = lpData;
 				pRi.pScene = pScene;
-				pRi.HttpClient.SetNetStautsNotify(this);
 				m_pMapRequestInfos[pRi.HttpClient] = pRi;
 				//				(*m_pMapRequestInfos)[pRi.HttpClient] = pRi;
 				//执行异步网络请求
@@ -140,6 +126,67 @@ package ScutDataLogic
 			return dwRet;
 		}
 		
+		private var socket:Socket;
+		private var resultByteAry:ByteArray;
+		public function AsyncExecTcpRequest(evtName:String,lpszUrl:String,nTag:int,lpData:ByteArray,pScene:Object,lpSendData:String, nDataLen:int):Number
+		{
+			var host:String = lpszUrl.split(":")[0];
+			var port:int = int(lpszUrl.split(":")[1]);
+			
+			if(nDataLen==0){
+				trace("请求的数据为空");
+				return 0;
+			}
+			
+			var pRi:RequestInfo = new RequestInfo();
+			pRi.EventName = evtName;
+			pRi.Handler = null;
+			pRi.HandlerTag = nTag;
+			pRi.HttpResponse = new CHttpClientResponse();
+			pRi.HttpResponse.SetTarget(new CMemoryStream());
+			m_pMapRequestInfos["TCP_"+evtName] = pRi;
+			
+			
+			//发送请求
+			resultByteAry = new ByteArray();
+			resultByteAry.writeByte(nDataLen & 0x000000ff);
+			resultByteAry.writeByte((nDataLen & 0x0000ff00) >> 8);
+			resultByteAry.writeByte((nDataLen & 0x00ff0000) >> 16);
+			resultByteAry.writeByte(nDataLen >> 24);
+			resultByteAry.writeUTFBytes(lpSendData);
+			
+			
+			CTcpClient.Ins().SetDispatchFun(dispatchLuaHandleData);
+			CTcpClient.Ins().SocketClient().writeBytes(resultByteAry);
+			CTcpClient.Ins().Send(evtName);
+			
+			return 0;
+		}
+		
+		private function dispatchLuaHandleData(evtName:String,dataArray:ByteArray):void
+		{
+			LuaHandleData(evtName, 1, 200, dataArray, null);
+		}
+		
+		
+		protected function onSocketData(event:ProgressEvent):void
+		{
+			//总包
+			var totalAry:ByteArray = new ByteArray();
+			socket.readBytes(totalAry);
+			totalAry.position=0;
+			totalAry.endian=Endian.LITTLE_ENDIAN;
+			//读出包长
+			var packageSize:int = totalAry.readInt();//总体包长；
+			
+			//内容包体
+			var contentArray:ByteArray = new ByteArray();
+			contentArray.writeBytes(totalAry,4);
+			contentArray.position = 0;
+			contentArray.endian=Endian.LITTLE_ENDIAN;
+			
+			LuaHandleData("Event_Get_Rank", 1, 200, contentArray, null);
+		}
 		///////////////////////////C++ 模式相关函数//////////////////////
 		
 		//同步执行请求
@@ -151,7 +198,7 @@ package ScutDataLogic
 		public function AsyncExecRequest1(pHandler:CDataHandler, nTag:int, lpszUrl:String, lpData:ByteArray, pScene:Object=null):Number
 		{
 			var dwRet:Number = 0;
-			if (/*pHandler && ShouldRequest(pHandler, nTag, lpszUrl)*/1)
+			if (1)
 			{
 				//加入请求列表
 //				AUTO_GUARD(m_ThreadMutex);
@@ -187,6 +234,7 @@ package ScutDataLogic
 			}
 			return dwRet;
 		}
+		
 		
 		/********测试用*******************************************/
 		private var currentRequstInfo:RequestInfo=new RequestInfo();
@@ -248,7 +296,7 @@ package ScutDataLogic
 			m_RequestInfos.length=0;
 		}
 		
-		private function LuaHandleData(evtName:String,nTag:int,nNetRet:int,lpData:CStream,lpExternal:ByteArray):void
+		private function LuaHandleData(evtName:String,nTag:int,nNetRet:int,lpData:*,lpExternal:ByteArray):void
 		{
 			if (m_pLuaDataHandleCallBack!=null)
 			{
@@ -264,15 +312,7 @@ package ScutDataLogic
 			{
 				return;
 			}
-//			map<CHttpClient*, PRequestInfo>::iterator it;
-//			it = m_pMapRequestInfos->find(pAi.Sender); 
-//			if (it != m_pMapRequestInfos->end())
-//			{
-//				PRequestInfo pRi = it->second;
-//				m_pMapRequestInfos.erase(it);
-//				pRi.Status = pAi.Status;
-//				m_RequestInfos.push(pRi);
-//			}
+			//HTTP相关
 			if(m_pMapRequestInfos[pAi.Sender])
 			{
 				var pRi:RequestInfo=m_pMapRequestInfos[pAi.Sender];
@@ -281,7 +321,6 @@ package ScutDataLogic
 				m_pMapRequestInfos[pAi.Sender]=null;
 				delete m_pMapRequestInfos[pAi.Sender];
 			}
-			
 		}
 		
 		

@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:WindowedApplication xmlns:fx="http://ns.adobe.com/mxml/2009"
+					   xmlns:s="library://ns.adobe.com/flex/spark"
+					   xmlns:mx="library://ns.adobe.com/flex/mx"
+					   width="940" height="600"
+					   applicationComplete="windowedapplication1_applicationCompleteHandler(event)"
+					   backgroundColor="#ECEBEB">
+	<fx:Script>
+		<![CDATA[
+			import mx.events.FlexEvent;
+			
+			protected function windowedapplication1_applicationCompleteHandler(event:FlexEvent):void
+			{
+				GameInit();
+			}
+			
+		]]>
+	</fx:Script>
+	<fx:Script source="Main.as" />
+	<fx:Declarations>
+		<!-- 将非可视元素（例如服务、值对象）放在此处 -->
+	</fx:Declarations>
+	<s:Label y="34" width="379" height="29" fontSize="24" horizontalCenter="0"
+			 text="ScutGame TCP GameRank Demo"/>
+	<s:Button id="connectBtn" x="46" y="148" width="127" height="31" label="启动Socket连接"
+			  click="onClickConnect(event)"/>
+	<s:Button id="closeBtn" x="46" y="188" width="127" height="31" label="断开Socket连接"
+			  click="onClickClose(event)"/>
+	<s:Label x="270" y="136" fontSize="20" text="状态信息"/>
+	<s:TextArea id="statusInfo" x="270" y="164" width="217" height="283"/>
+	<s:Label x="575" y="136" fontSize="20" text="数据信息"/>
+	<s:TextArea id="dataInfo" x="575" y="164" width="231" height="283"/>
+	<s:Label x="31" y="236" width="213" color="#393838" fontSize="18" text="启动连接后，会直接请求排行榜数据。"/>
+	<s:Label x="31" y="284" width="213" color="#393838" fontSize="18" text="之后，服务器每隔一分钟会主动push一次排行榜数据。"/>
+</s:WindowedApplication>
