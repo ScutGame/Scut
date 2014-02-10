@@ -150,6 +150,11 @@ namespace ZyGames.Framework.Cache.Generic
         /// <param name="eventArgs"></param>
         protected override void Notify(object sender, CacheItemEventArgs eventArgs)
         {
+            IItemChangeEvent val = sender as IItemChangeEvent;
+            if (val != null && !val.HasChanged)
+            {
+                return;
+            }
             _hasChanged = true;
             PutToChangeKeys(sender);
             DoChangedNotify(sender as AbstractEntity, eventArgs);

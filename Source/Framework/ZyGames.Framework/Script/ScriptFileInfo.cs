@@ -93,6 +93,11 @@ namespace ZyGames.Framework.Script
         }
 
         /// <summary>
+        /// 
+        /// </summary>
+        public string GroupName { get; set; }
+
+        /// <summary>
         /// MD5¹þÏ£Code
         /// </summary>
         public string HashCode { get; set; }

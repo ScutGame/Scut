@@ -36,7 +36,7 @@ namespace ZyGames.Framework.Cache.Generic
     /// </summary>
     internal class CacheChangeManager
     {
-        private static readonly string GlobalRedisKey = "__GLOBAL_SQL_CHANGE_KEYS";
+        public static readonly string GlobalRedisKey = "__GLOBAL_SQL_CHANGE_KEYS";
         private static CacheChangeManager instance = new CacheChangeManager();
 
         /// <summary>
@@ -93,7 +93,7 @@ namespace ZyGames.Framework.Cache.Generic
                 string setId = GlobalRedisKey + "_temp";
                 bool hasKey = client.ContainsKey(GlobalRedisKey);
                 bool hasSetId = client.ContainsKey(setId);
-                if(!hasSetId && !hasKey)
+                if (!hasSetId && !hasKey)
                 {
                     return;
                 }
@@ -133,6 +133,11 @@ namespace ZyGames.Framework.Cache.Generic
             return _changeKeys.Keys.Take(count).ToList();
         }
 
+        internal int ChangeKeys
+        {
+            get { return _changeKeys.Count; }
+        }
+
         /// <summary>
         /// remove entity key
         /// </summary>
@@ -167,7 +172,7 @@ namespace ZyGames.Framework.Cache.Generic
                         key = string.Format("{0}_{1}|{2}", entity.GetType(), entity.PersonalId, entity.GetKeyCode());
                     }
                     SetKey(key);
-                    if(entity.IsDelete || entity.IsRemoveFlag())
+                    if (entity.IsDelete)
                     {
                         _removeDict[key] = entity;
                     }
@@ -198,5 +203,7 @@ namespace ZyGames.Framework.Cache.Generic
             dynamic entity;
             _removeDict.TryRemove(key, out entity);
         }
+
+
     }
 }

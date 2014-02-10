@@ -100,6 +100,30 @@ namespace ZyGames.Framework.Data
         }
 
         /// <summary>
+        /// put error sql
+        /// </summary>
+        /// <param name="statement"></param>
+        /// <returns></returns>
+        public static bool PutError(SqlStatement statement)
+        {
+            bool result = false;
+            RedisManager.Process(client =>
+            {
+                try
+                {
+                    string key = GetStatementKey(statement.IdentityID) + "_error";
+                    byte[] value = ProtoBufUtils.Serialize(statement);
+                    client.ZAdd(key, value);
+                    result = true;
+                }
+                catch (Exception ex)
+                {
+                    TraceLog.WriteError("Sql statement put to redis error:{0}\r\n{1}", ex, JsonUtils.SerializeCustom(statement));
+                }
+            });
+            return result;
+        }
+        /// <summary>
         /// 从Redis队列中取出Sql命令
         /// </summary>
         /// <param name="keyIndex">Redis队列的Index，默认从0开始</param>
@@ -108,7 +132,7 @@ namespace ZyGames.Framework.Data
         /// <returns></returns>
         public static List<SqlStatement> Pop(int keyIndex = 0, int min = 0, int max = 0)
         {
-            if(max == 0)
+            if (max == 0)
             {
                 max = int.MaxValue;
             }
@@ -151,7 +175,7 @@ namespace ZyGames.Framework.Data
             return GetKey(index);
         }
 
-        private static string GetKey(int index)
+        internal static string GetKey(int index)
         {
             return string.Format("{0}_{1}", GlobalRedisKey, index);
         }

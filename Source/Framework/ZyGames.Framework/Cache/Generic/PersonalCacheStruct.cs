@@ -361,7 +361,7 @@ namespace ZyGames.Framework.Cache.Generic
             UpdateGroup(isChange);
         }
         /// <summary>
-        /// 移出缓存
+        /// The value has be removed from the cache
         /// </summary>
         /// <param name="value"></param>
         /// <returns></returns>
@@ -369,15 +369,7 @@ namespace ZyGames.Framework.Cache.Generic
         {
             string key = value.GetKeyCode();
             string personalId = value.PersonalId;
-            return TryRemove(personalId, key, entity =>
-            {
-                entity.OnRemove();
-                var groupList = new GroupList<string, T>();
-                groupList.TryAdd(personalId, entity);
-                TransSendParam sendParam = new TransSendParam() { IsChange = true };
-                DoSend(groupList, sendParam);
-                return true;
-            });
+            return TryRemove(personalId, key, entity => true);
         }
 
         /// <summary>

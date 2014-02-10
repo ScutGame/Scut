@@ -22,6 +22,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ****************************************************************************/
 using System;
+using System.Threading;
 using Newtonsoft.Json;
 using ProtoBuf;
 using ZyGames.Framework.Common.Serialization;
@@ -35,6 +36,7 @@ namespace ZyGames.Framework.Event
     public class EntityChangeEvent : IItemChangeEvent
     {
         private bool _isDisableEvent;
+        private int _lockFlag;
 
         /// <summary>
         /// 
@@ -213,6 +215,28 @@ namespace ZyGames.Framework.Event
         }
 
         /// <summary>
+        /// Get exclusive modify entity property.
+        /// </summary>
+        /// <param name="modifyHandle"></param>
+        public override void ExclusiveModify(Action modifyHandle)
+        {
+            if (modifyHandle != null)
+            {
+                try
+                {
+                    EnterLock();
+                    modifyHandle();
+                    Notify(this, CacheItemChangeType.Modify, PropertyName);
+                }
+                finally
+                {
+                    ExitLock();
+                }
+            }
+        }
+
+
+        /// <summary>
         /// 触发修改通知事件
         /// </summary>
         [Obsolete("not used")]
@@ -292,6 +316,7 @@ namespace ZyGames.Framework.Event
         {
             if (disposing)
             {
+                Interlocked.Exchange(ref _lockFlag, 0);
                 //释放 托管资源 
                 _itemEvent = null;
                 _childrenEvent = null;
@@ -300,7 +325,28 @@ namespace ZyGames.Framework.Event
         }
 
         /// <summary>
-        /// 序列化Json
+        /// Enter lock
+        /// </summary>
+        public void EnterLock()
+        {
+            while (true)
+            {
+                if (Interlocked.CompareExchange(ref _lockFlag, 1, 0) == 0)
+                {
+                    break;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Exit lock
+        /// </summary>
+        public void ExitLock()
+        {
+            Interlocked.Exchange(ref _lockFlag, 0);
+        }
+        /// <summary>
+        /// To json string.
         /// </summary>
         /// <returns></returns>
         public override string ToJson()

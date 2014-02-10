@@ -49,31 +49,67 @@ namespace ZyGames.Framework.Redis
             {
                 try
                 {
-                    var dataSet = GetDict<T>(client, redisKey);
-                    List<T> removeList = new List<T>();
-                    foreach (var data in dataList)
+                    var schema = EntitySchemaSet.Get<T>();
+                    if (schema != null && schema.CacheType == CacheType.Entity)
                     {
-                        string dateKey = data.GetKeyCode();
-                        if (data.IsDelete || data.IsRemoveFlag())
-                        {
-                            removeList.Add(data);
-                            dataSet.Remove(dateKey);
-                            TraceLog.ReleaseWriteDebug("Save to redis \"{0}\" remove key:\"{1}\"", typeof(T).FullName, dateKey);
-                        }
-                        else
-                        {
-                            dataSet[dateKey] = data;
-                            data.Reset();
-                        }
+                        result = SaveEntity(client, redisKey, dataList);
                     }
-                    result = SetDict(client, redisKey, dataSet);
-                    SetRemoveDict(client, redisKey, removeList);
+                    else
+                    {
+                        var dataSet = GetDict<T>(client, redisKey);
+                        List<T> removeList = new List<T>();
+                        foreach (var data in dataList)
+                        {
+                            string dateKey = data.GetKeyCode();
+                            if (data.IsDelete)
+                            {
+                                removeList.Add(data);
+                                dataSet.Remove(dateKey);
+                                TraceLog.ReleaseWriteDebug("Save to redis \"{0}\" remove key:\"{1}\"",
+                                                           typeof(T).FullName, dateKey);
+                            }
+                            else
+                            {
+                                dataSet[dateKey] = data;
+                                data.Reset();
+                            }
+                        }
+                        result = SetDict(client, redisKey, dataSet);
+                        SetRemoveDict(client, redisKey, removeList);
+                    }
                 }
                 catch (Exception ex)
                 {
                     TraceLog.WriteError("The key:{0} AppendToDict error:{1}", redisKey, ex);
                 }
             });
+            return result;
+        }
+
+        private static bool SaveEntity<T>(RedisConnection client, string redisKey, params T[] dataList) where T : AbstractEntity
+        {
+            bool result = true;
+            List<T> removeList = new List<T>();
+            foreach (var data in dataList)
+            {
+                string dataKey = string.Format("{0}_{1}", redisKey, data.GetKeyCode());
+                if (data.IsDelete)
+                {
+                    removeList.Add(data);
+                    client.Remove(dataKey);
+                    TraceLog.ReleaseWriteDebug("Save to redis remove key:\"{0}\"", dataKey);
+                }
+                else
+                {
+                    data.Reset();
+                    var buffer = ProtoBufUtils.Serialize(data);
+                    if (!client.Set(dataKey, buffer))
+                    {
+                        result = false;
+                    }
+                }
+            }
+            SetRemoveDict(client, redisKey, removeList);
             return result;
         }
 
@@ -100,7 +136,7 @@ namespace ZyGames.Framework.Redis
         /// <param name="redisKey"></param>
         /// <param name="dataList"></param>
         /// <returns>返回是否加载成功</returns>
-        public static bool TryGet<T>(string redisKey, out List<T> dataList)
+        public static bool TryGet<T>(string redisKey, out List<T> dataList) where T : AbstractEntity
         {
             bool result = false;
             List<T> list = null;
@@ -108,9 +144,36 @@ namespace ZyGames.Framework.Redis
             {
                 try
                 {
-                    byte[] buffer = client.Get<byte[]>(redisKey);
-                    if (buffer != null)
+                    //modify: check gload key
+                    var schema = EntitySchemaSet.Get<T>();
+                    if (schema != null && schema.CacheType == CacheType.Entity)
                     {
+                        var keyList = client.SearchKeys(string.Format("{0}_*", redisKey));
+                        if (keyList.Count > 0)
+                        {
+                            var buffers = client.MGet(keyList.ToArray());
+                            list = new List<T>();
+                            foreach (var buffer in buffers)
+                            {
+                                var temp = ProtoBufUtils.Deserialize<T>(buffer);
+                                list.Add(temp);
+                            }
+                            result = true;
+                            return;
+                        }
+                        //convert store type
+                        byte[] data = client.Get<byte[]>(redisKey) ?? new byte[0];
+                        var dataSet = ProtoBufUtils.Deserialize<Dictionary<string, T>>(data);
+                        if (dataSet != null)
+                        {
+                            list = dataSet.Values.ToList();
+                            SaveEntity(client, redisKey, list.ToArray());
+                            client.Remove(redisKey);
+                        }
+                    }
+                    else
+                    {
+                        byte[] buffer = client.Get<byte[]>(redisKey) ?? new byte[0];
                         var dataSet = ProtoBufUtils.Deserialize<Dictionary<string, T>>(buffer);
                         if (dataSet != null)
                         {

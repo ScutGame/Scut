@@ -106,6 +106,11 @@ namespace ZyGames.Framework.Event
             get;
             set;
         }
+
+        /// <summary>
+        /// The event source.
+        /// </summary>
+        public object Source { get; set; }
     }
 
     /// <summary>

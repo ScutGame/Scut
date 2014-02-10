@@ -421,10 +421,11 @@ namespace ZyGames.Framework.Model
             {
                 throw new ArgumentNullException("type");
             }
-            if (Exits(type))
-            {
-                return;
-            }
+            //modify if exits then update.
+            //if (Exits(type))
+            //{
+            //    return;
+            //}
 
             if (type.IsSubclassOf(typeof(LogEntity)))
             {

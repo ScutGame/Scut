@@ -22,6 +22,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ****************************************************************************/
 using System;
+using System.Collections.Generic;
 using ServiceStack.Redis;
 using ZyGames.Framework.Common;
 
@@ -55,7 +56,7 @@ namespace ZyGames.Framework.Redis
             _redisClient = string.IsNullOrEmpty(_password)
                                ? new RedisClient(_host, _port)
                                : new RedisClient(_host, _port, _password);
-            
+
             _isConnected = _redisClient.DbSize > -1;
 
             if (_redisClient.Db < _db || _redisClient.Db > _db)
@@ -113,7 +114,16 @@ namespace ZyGames.Framework.Redis
         }
 
         /// <summary>
-        /// 获取
+        /// Serach keys
+        /// </summary>
+        /// <returns></returns>
+        public List<string> SearchKeys(string pattern)
+        {
+            return _redisClient.SearchKeys(pattern);
+        }
+
+        /// <summary>
+        /// Get key
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="key"></param>
@@ -122,8 +132,18 @@ namespace ZyGames.Framework.Redis
         {
             return _redisClient.Get<T>(key);
         }
+
         /// <summary>
-        /// 设置
+        /// Get multi keys.
+        /// </summary>
+        /// <param name="key"></param>
+        /// <returns></returns>
+        public byte[][] MGet(params string[] key)
+        {
+            return _redisClient.MGet(key);
+        }
+        /// <summary>
+        /// Set value.
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="key"></param>

@@ -63,10 +63,10 @@ namespace ZyGames.Framework.Model
             : this(false)
         {
         }
-		/// <summary>
-		/// Initializes a new instance of the <see cref="ZyGames.Framework.Model.AbstractEntity"/> class.
-		/// </summary>
-		/// <param name="access">Access.</param>
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ZyGames.Framework.Model.AbstractEntity"/> class.
+        /// </summary>
+        /// <param name="access">Access.</param>
         protected AbstractEntity(AccessLevel access)
             : this(access == AccessLevel.ReadOnly)
         {
@@ -100,6 +100,8 @@ namespace ZyGames.Framework.Model
             OnUnNew();
             DequeueChangePropertys();
             CompleteUpdate();
+            var e = new CacheItemEventArgs { ChangeType = CacheItemChangeType.UnChange };
+            UnChangeNotify(this, e);
         }
 
         private ObjectAccessor GetAccessor()
@@ -138,7 +140,7 @@ namespace ZyGames.Framework.Model
         /// <summary>
         /// 
         /// </summary>
-        [ProtoMember(100002)]
+        [ProtoMember(100020)]
         protected bool _isReadOnly;
         /// <summary>
         /// 
@@ -181,6 +183,28 @@ namespace ZyGames.Framework.Model
                 return _isNew;
             }
         }
+
+        [ProtoMember(100022)]
+        private bool _isRemoveFlag;
+
+        /// <summary>
+        /// Is remoce flag.
+        /// </summary>
+        [JsonIgnore]
+        public virtual bool IsRemoveFlag
+        {
+            get { return _isRemoveFlag; }
+            protected set
+            {
+                if (!Equals(_isRemoveFlag, value))
+                {
+                    _isRemoveFlag = value;
+                    Notify(this, CacheItemChangeType.Remove, PropertyName);
+                }
+            }
+        }
+
+
         /// <summary>
         /// 
         /// </summary>
@@ -210,7 +234,7 @@ namespace ZyGames.Framework.Model
         //{
         //    get { return _access; }
         //}
-        
+
         /// <summary>
         /// 分组Key
         /// </summary>
@@ -242,6 +266,7 @@ namespace ZyGames.Framework.Model
         /// <param name="eventArgs"></param>
         protected override void Notify(object sender, CacheItemEventArgs eventArgs)
         {
+            eventArgs.Source = sender;
             AddChangePropertys(eventArgs.PropertyName);
             base.Notify(this, eventArgs);
         }
@@ -253,6 +278,7 @@ namespace ZyGames.Framework.Model
         /// <param name="eventArgs"></param>
         protected override void NotifyByChildren(object sender, CacheItemEventArgs eventArgs)
         {
+            eventArgs.Source = sender;
             AddChangePropertys(eventArgs.PropertyName);
             //更改子类事件触发者
             base.NotifyByChildren(this, eventArgs);
@@ -307,23 +333,23 @@ namespace ZyGames.Framework.Model
         /// <param name="property"></param>
         /// <returns></returns>
         public object GetPropertyValue(string property)
-		{ 
-			try
-			{
-            	return GetAccessor()[property];
-			}
-			catch (Exception ex)
-			{
-				try
-				{
-					return this[property];
-				} 
-				catch
-				{
-					TraceLog.WriteError("The {0} get property:{1}\r\n{2}", GetType().Name, property, ex);
-					return null;
-				}
-			}
+        {
+            try
+            {
+                return GetAccessor()[property];
+            }
+            catch (Exception ex)
+            {
+                try
+                {
+                    return this[property];
+                }
+                catch
+                {
+                    TraceLog.WriteError("The {0} get property:{1}\r\n{2}", GetType().Name, property, ex);
+                    return null;
+                }
+            }
         }
 
         /// <summary>
@@ -338,15 +364,15 @@ namespace ZyGames.Framework.Model
                 GetAccessor()[property] = value;
             }
             catch (Exception ex)
-			{
-				try
-				{
-					this[property] = value;
-				} 
-				catch
-				{
-					TraceLog.WriteError("The {0} set property:{1} value:{2}\r\n{3}", GetType().Name, property, value, ex);
-				}
+            {
+                try
+                {
+                    this[property] = value;
+                }
+                catch
+                {
+                    TraceLog.WriteError("The {0} set property:{1} value:{2}\r\n{3}", GetType().Name, property, value, ex);
+                }
             }
         }
 
@@ -426,29 +452,16 @@ namespace ZyGames.Framework.Model
             return schemaTable;
         }
 
-        [ProtoMember(1000021)]
-        private bool _isRemoveFlag;
-
         /// <summary>
-        /// 获取是否移除标记
+        /// Mark entity remove state.
         /// </summary>
-        /// <returns></returns>
-        public virtual bool IsRemoveFlag()
+        public virtual void OnRemoveFlag()
         {
-            return _isRemoveFlag;
+            IsRemoveFlag = true;
         }
 
         /// <summary>
-        /// 触发从内存中移除
-        /// </summary>
-        public virtual void OnRemove()
-        {
-            _isRemoveFlag = true;
-            Notify(this, CacheItemChangeType.Remove, PropertyName);
-        }
-
-        /// <summary>
-        /// 删除实体，将从源数据（DB、Redis）中删除
+        /// The entity has be delete from DB and Redis.
         /// </summary>
         public void OnDelete()
         {
@@ -500,22 +513,22 @@ namespace ZyGames.Framework.Model
         /// <param name="propertyName"></param>
         public void SetChangeProperty(string propertyName)
         {
-			IItemChangeEvent val = null;
-			try
-			{
-				val = GetAccessor()[propertyName] as IItemChangeEvent;
-			} 
-			catch(Exception ex)
-			{
-				try
-				{
-					val = this[propertyName] as IItemChangeEvent;
-				}
-				catch
-				{
-					throw new Exception ("Get property:" + GetType ().Name + "." + propertyName, ex);
-				}
-			}
+            IItemChangeEvent val = null;
+            try
+            {
+                val = GetAccessor()[propertyName] as IItemChangeEvent;
+            }
+            catch (Exception ex)
+            {
+                try
+                {
+                    val = this[propertyName] as IItemChangeEvent;
+                }
+                catch
+                {
+                    throw new Exception("Get property:" + GetType().Name + "." + propertyName, ex);
+                }
+            }
             if (val != null)
             {
                 val.PropertyName = propertyName;
@@ -626,7 +639,7 @@ namespace ZyGames.Framework.Model
             }
             throw new Exception(string.Format("Conver column:\"{0}\" object to \"{1}\" error.", propertyName, typeof(T).FullName));
         }
-        
+
         /// <summary>
         /// 移除过期的键
         /// </summary>

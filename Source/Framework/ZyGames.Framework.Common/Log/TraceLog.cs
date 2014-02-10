@@ -43,8 +43,6 @@ namespace ZyGames.Framework.Common.Log
     /// </example>
     public static class TraceLog
     {
-        private static BaseLog log = new BaseLog();
-
         /// <summary>
         /// 只在编译器的DEBUG下输出到Debug目录
         /// </summary>
@@ -57,13 +55,7 @@ namespace ZyGames.Framework.Common.Log
             {
                 str = string.Format("Trace>>" + message, args);
             }
-#if DEBUG
-            log.SaveDebugLog(str);
-            Trace.WriteLine(str);
-            Console.WriteLine(str);
-#else
-            log.SaveDebugLog(str);
-#endif
+            LogHelper.WriteDebug(str);
         }
 
         /// <summary>
@@ -78,13 +70,7 @@ namespace ZyGames.Framework.Common.Log
             {
                 str = string.Format("Trace>>" + message, args);
             }
-#if DEBUG
-            log.SaveLog(str);
-            Trace.WriteLine(str);
-            Console.WriteLine(str);
-#else
-            log.SaveLog(str);
-#endif
+            LogHelper.WriteInfo(str);
         }
 
         /// <summary>
@@ -99,13 +85,7 @@ namespace ZyGames.Framework.Common.Log
             {
                 str = string.Format("Trace>>" + message, args);
             }
-#if DEBUG
-            log.SaveLog(new Exception(str));
-            Trace.WriteLine(str);
-            Console.WriteLine(str);
-#else
-            log.SaveLog(new Exception(str));
-#endif
+            LogHelper.WriteError(str);
         }
 
         /// <summary>
@@ -120,13 +100,7 @@ namespace ZyGames.Framework.Common.Log
             {
                 str = string.Format("Trace>>" + message, args);
             }
-#if DEBUG
-            log.SaveWarnLog(str);
-            Trace.WriteLine(str);
-            Console.WriteLine(str);
-#else
-            log.SaveWarnLog(str);
-#endif
+            LogHelper.WriteWarn(str);
         }
         /// <summary>
         /// 记录出错日志到Complement目录下
@@ -140,13 +114,7 @@ namespace ZyGames.Framework.Common.Log
             {
                 str = string.Format("Trace>>" + message, args);
             }
-#if DEBUG
-            log.SaveComplementLog(str);
-            Trace.WriteLine(str);
-            Console.WriteLine(str);
-#else
-            log.SaveComplementLog(str);
-#endif
+            LogHelper.WriteComplement(str);
         }
 
         /// <summary>
@@ -161,13 +129,7 @@ namespace ZyGames.Framework.Common.Log
             {
                 str = string.Format("Trace>>" + message, args);
             }
-#if DEBUG
-            log.SaveLog(str);
-            Trace.WriteLine(str);
-            Console.WriteLine(str);
-#else
-            log.SaveLog(str);
-#endif
+            LogHelper.WriteInfo(str);
         }
         /// <summary>
         /// 记录出错日志到Debug目录下
@@ -181,13 +143,7 @@ namespace ZyGames.Framework.Common.Log
             {
                 str = string.Format("Trace>>" + message, args);
             }
-#if DEBUG
-            log.SaveDebugLog(str);
-            Trace.WriteLine(str);
-            Console.WriteLine(str);
-#else
-            log.SaveDebugLog(str);
-#endif
+            LogHelper.WriteDebug(str);
         }
         /// <summary>
         /// 记录出错日志到Fatal目录下
@@ -201,13 +157,7 @@ namespace ZyGames.Framework.Common.Log
             {
                 str = string.Format("Trace>>" + message, args);
             }
-#if DEBUG
-            log.SaveDebugLog(str);
-            Trace.WriteLine(str);
-            Console.WriteLine(str);
-#else
-            log.SaveFatalLog(str);
-#endif
+            LogHelper.WriteFatal(str);
         }
     }
 }

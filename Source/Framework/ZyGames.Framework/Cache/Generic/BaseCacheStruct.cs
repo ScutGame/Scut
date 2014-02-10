@@ -375,6 +375,7 @@ namespace ZyGames.Framework.Cache.Generic
                 {
                     throw new NotImplementedException(string.Format("The entity {0} \"PersonalId\" not implemented", DataContainer.RootKey));
                 }
+                data.Reset();
                 string key = data.GetKeyCode();
                 bool result = DataContainer.AddOrUpdateGroup(personalId, key, data, periodTime);
                 if (!result)

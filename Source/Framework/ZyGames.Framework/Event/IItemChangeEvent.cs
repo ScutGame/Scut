@@ -80,6 +80,12 @@ namespace ZyGames.Framework.Event
         public abstract void UpdateNotify(Func<IItemChangeEvent, bool> updateHandle);
 
         /// <summary>
+        /// Get exclusive modify entity property.
+        /// </summary>
+        /// <param name="modifyHandle"></param>
+        public abstract void ExclusiveModify(Action modifyHandle);
+
+        /// <summary>
         /// 序列化Json
         /// </summary>
         /// <returns></returns>

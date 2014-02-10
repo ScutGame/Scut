@@ -82,6 +82,22 @@ namespace ZyGames.Framework.Common
         }
 
         /// <summary>
+        /// Get runtime bin path.
+        /// </summary>
+        public static string RuntimeBinPath
+        {
+            get { return AppDomain.CurrentDomain.SetupInformation.PrivateBinPath; }
+        }
+
+        /// <summary>
+        /// Get runtime path.
+        /// </summary>
+        public static string RuntimePath
+        {
+            get { return AppDomain.CurrentDomain.SetupInformation.ApplicationBase; }
+        }
+
+        /// <summary>
         /// 
         /// </summary>
         /// <param name="str"></param>
@@ -719,7 +735,7 @@ namespace ZyGames.Framework.Common
             }
             catch
             {
-                throw new ArgumentException(string.Format("值\"{0}\"转换成long异常!", value));
+                throw new ArgumentException(string.Format("\"{0}\" converted to type long fail.", value));
             }
         }
         /// <summary>
@@ -793,7 +809,7 @@ namespace ZyGames.Framework.Common
             }
             catch
             {
-                throw new ArgumentException(string.Format("值\"{0}\"转换成int异常!", value));
+                throw new ArgumentException(string.Format("\"{0}\" converted to type int fail.", value));
             }
         }
 
@@ -810,7 +826,7 @@ namespace ZyGames.Framework.Common
             }
             catch
             {
-                throw new ArgumentException(string.Format("值\"{0}\"转换成short异常!", value));
+                throw new ArgumentException(string.Format("\"{0}\" converted to type short fail.", value));
             }
         }
 
@@ -827,7 +843,7 @@ namespace ZyGames.Framework.Common
             }
             catch
             {
-                throw new ArgumentException(string.Format("值\"{0}\"转换成double异常!", value));
+                throw new ArgumentException(string.Format("\"{0}\" converted to type double fail.", value));
             }
         }
         /// <summary>
@@ -843,7 +859,7 @@ namespace ZyGames.Framework.Common
             }
             catch
             {
-                throw new ArgumentException(string.Format("值\"{0}\"转换成decimal异常!", value));
+                throw new ArgumentException(string.Format("\"{0}\" converted to type decimal fail.", value));
             }
         }
         /// <summary>
@@ -867,7 +883,7 @@ namespace ZyGames.Framework.Common
             }
             catch
             {
-                throw new ArgumentException(string.Format("值\"{0}\"转换成bool异常!", value));
+                throw new ArgumentException(string.Format("\"{0}\" converted to type bool fail.", value));
             }
         }
         /// <summary>
@@ -883,7 +899,7 @@ namespace ZyGames.Framework.Common
             }
             catch
             {
-                throw new ArgumentException(string.Format("值\"{0}\"转换成Byte异常!", value));
+                throw new ArgumentException(string.Format("\"{0}\" converted to type byte fail.", value));
             }
         }
         /// <summary>
@@ -911,7 +927,7 @@ namespace ZyGames.Framework.Common
             }
             catch
             {
-                throw new ArgumentException(string.Format("值\"{0}\"转换成DateTime异常!", value));
+                throw new ArgumentException(string.Format("\"{0}\" converted to type datetime fail.", value));
             }
         }
 
@@ -923,15 +939,7 @@ namespace ZyGames.Framework.Common
         /// <returns></returns>
         public static T ToEnum<T>(object value)
         {
-            try
-            {
-                string tempValue = value.ToNotNullString();
-                return tempValue.IsEmpty() ? default(T) : (T)Enum.Parse(typeof(T), tempValue, false);
-            }
-            catch
-            {
-                throw new ArgumentException(string.Format("值\"{0}\"转换成Enum异常!", value));
-            }
+            return (T)ToEnum(value, typeof(T));
         }
 
         /// <summary>
@@ -944,12 +952,16 @@ namespace ZyGames.Framework.Common
         {
             try
             {
-                string tempValue = value.ToNotNullString();
-                return tempValue.IsEmpty() ? 0 : Enum.Parse(type, tempValue, false);
+                if (value is string)
+                {
+                    string tempValue = value.ToNotNullString();
+                    return tempValue.IsEmpty() ? 0 : Enum.Parse(type, tempValue, true);
+                }
+                return Enum.ToObject(type, value);
             }
             catch
             {
-                throw new ArgumentException(string.Format("值\"{0}\"转换成Enum异常!", value));
+                throw new ArgumentException(string.Format("\"{0}\" converted to Enum {1} fail.", value, type.Name));
             }
         }
         /// <summary>

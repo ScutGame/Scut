@@ -380,6 +380,7 @@ namespace ZyGames.Framework.Cache.Generic
         {
             get { return _cacheStruct.IsEmpty; }
         }
+
         /// <summary>
         /// 
         /// </summary>
@@ -387,6 +388,17 @@ namespace ZyGames.Framework.Cache.Generic
         IEnumerator IEnumerable.GetEnumerator()
         {
             return GetEnumerator();
+        }
+
+        protected override void Notify(object sender, CacheItemEventArgs eventArgs)
+        {
+            //check data is init.
+            IItemChangeEvent val = sender as IItemChangeEvent;
+            if (val != null && !val.HasChanged)
+            {
+                return;
+            }
+            base.Notify(sender, eventArgs);
         }
         /// <summary>
         /// 
@@ -400,5 +412,6 @@ namespace ZyGames.Framework.Cache.Generic
             }
             base.Dispose(disposing);
         }
+
     }
 }

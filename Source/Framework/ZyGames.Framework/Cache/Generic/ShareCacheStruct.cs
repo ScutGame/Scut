@@ -195,23 +195,14 @@ namespace ZyGames.Framework.Cache.Generic
             return TryAddEntity(key, t, periodTime);
         }
         /// <summary>
-        /// 移出缓存
+        /// The value has be removed from the cache
         /// </summary>
         /// <param name="value"></param>
         /// <returns></returns>
         public bool RemoveCache(T value)
         {
             string key = value.GetKeyCode();
-            return TryRemove(key, item =>
-            {
-                var entity = (T)item.ItemData;
-                entity.OnRemove();
-                var groupList = new GroupList<string, T>();
-                groupList.TryAdd(key, entity);
-                TransSendParam sendParam = new TransSendParam() { IsChange = true };
-                DoSend(groupList, sendParam);
-                return true;
-            });
+            return TryRemove(key, item => true);
         }
         /// <summary>
         /// 删除数据并移出缓存
@@ -282,6 +273,7 @@ namespace ZyGames.Framework.Cache.Generic
         {
             foreach (var data in dataList)
             {
+                data.Reset();
                 string key = data.GetKeyCode();
                 bool result = AddOrUpdateEntity(key, data, periodTime);
                 if (!result)

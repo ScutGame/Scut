@@ -37,7 +37,7 @@ namespace ZyGames.Framework.Common.Serialization
     /// </summary>
     public static class ProtoBufUtils
     {
-        private static readonly RuntimeTypeModel typeModel;
+        private static RuntimeTypeModel typeModel;
 
         /// <summary>
         /// byte数组压缩超出限制长度
@@ -47,7 +47,16 @@ namespace ZyGames.Framework.Common.Serialization
         static ProtoBufUtils()
         {
             CompressOutLength = 10240;
-            typeModel = RuntimeTypeModel.Default;
+            Initialize();
+        }
+
+        /// <summary>
+        /// Initialize RuntimeTypeModel.
+        /// </summary>
+        public static void Initialize()
+        {
+            typeModel = TypeModel.Create();
+            typeModel.UseImplicitZeroDefaults = false;
         }
 
         /// <summary>
@@ -116,7 +125,7 @@ namespace ZyGames.Framework.Common.Serialization
         /// <typeparam name="T">需要反序列化的对象类型，必须声明[ProtoContract]特征，且相应属性必须声明[ProtoMember(序号)]特征</typeparam>
         /// <param name="data">二进字节数据</param>
         /// <returns></returns>
-        public static T Deserialize<T>(Byte[] data) where T : class
+        public static T Deserialize<T>(Byte[] data)
         {
             return (T)Deserialize(data, typeof(T));
         }
@@ -219,10 +228,9 @@ namespace ZyGames.Framework.Common.Serialization
                 try
                 {
 
-                    if (typeModel.CanSerializeContractType(myEntity) &&
-                        typeModel[myEntity] == null)
+                    if (typeModel.CanSerializeContractType(myEntity))
                     {
-                        var metaType = typeModel.Add(myEntity, false);
+                        var metaType = typeModel.Add(myEntity, true);
                         Properties.ForEach((o) =>
                         {
                             try

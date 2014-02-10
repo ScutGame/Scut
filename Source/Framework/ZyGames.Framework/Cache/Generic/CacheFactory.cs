@@ -87,17 +87,19 @@ namespace ZyGames.Framework.Cache.Generic
                                 {
                                     dbProvider.ExecuteQuery(statement.CommandType, statement.CommandText, paramList);
                                 }
-                                catch
+                                catch (Exception e)
                                 {
-                                    try
-                                    {
-                                        dbProvider.ExecuteQuery(statement.CommandType, statement.CommandText, paramList);
-                                    }
-                                    catch (Exception e)
-                                    {
-                                        TraceLog.WriteError("Error:{0}\r\nSql:{1}", e, statement.CommandText);
-                                        TraceLog.WriteComplement("sql:{0}", e, JsonUtils.Serialize(statement));
-                                    }
+                                    TraceLog.WriteComplement("Error:{0}\r\nSql:{1}", e, statement.CommandText);
+                                    SqlStatementManager.PutError(statement);
+                                    //try
+                                    //{
+                                    //    dbProvider.ExecuteQuery(statement.CommandType, statement.CommandText, paramList);
+                                    //}
+                                    //catch (Exception e)
+                                    //{
+                                    //    
+                                    //    TraceLog.WriteComplement("sql:{0}", e, JsonUtils.Serialize(statement));
+                                    //}
                                 }
                             }
                         }
@@ -121,29 +123,36 @@ namespace ZyGames.Framework.Cache.Generic
                     {
                         try
                         {
-                            var list = CacheChangeManager.Current.PopSql(1000);
-                            foreach (var key in list)
+                            while (true)
                             {
-                                string redisKey = key;
-                                try
+                                var list = CacheChangeManager.Current.PopSql(100);
+                                if (list.Count == 0)
                                 {
-                                    dynamic entity = CacheFactory.GetEntityFromRedis(redisKey);
-                                    SchemaTable schemaTable = entity.GetSchema();
-                                    if (entity != null && schemaTable != null)
+                                    break;
+                                }
+                                foreach (var key in list)
+                                {
+                                    string redisKey = key;
+                                    try
                                     {
-                                        DbBaseProvider dbProvider = DbConnectionProvider.CreateDbProvider(schemaTable);
-                                        if (dbProvider != null)
+                                        dynamic entity = CacheFactory.GetEntityFromRedis(redisKey);
+                                        SchemaTable schemaTable = entity.GetSchema();
+                                        if (entity != null && schemaTable != null)
                                         {
-                                            DataSyncManager.GetDataSender().Send(entity, false);
+                                            DbBaseProvider dbProvider = DbConnectionProvider.CreateDbProvider(schemaTable);
+                                            if (dbProvider != null)
+                                            {
+                                                DataSyncManager.GetDataSender().Send(entity, false);
+                                            }
                                         }
                                     }
+                                    catch (Exception e)
+                                    {
+                                        TraceLog.WriteError("Sync to db {0} error:{1}", redisKey, e);
+                                    }
                                 }
-                                catch (Exception e)
-                                {
-                                    TraceLog.WriteError("Sync to db {0} error:{1}", redisKey, e);
-                                }
-                            }
 
+                            }
                         }
                         finally
                         {
@@ -236,6 +245,7 @@ namespace ZyGames.Framework.Cache.Generic
                 }
                 return list;
             }
+
         }
 
         private delegate bool UpdateEvent(bool isChange);
@@ -268,7 +278,7 @@ namespace ZyGames.Framework.Cache.Generic
         public static void Initialize(ITransponder dbTransponder, ITransponder redisTransponder, CacheSetting setting)
         {
             _readonlyPools = new CachePool(dbTransponder, redisTransponder, true);
-            _writePools = new CachePool(dbTransponder, redisTransponder, false) {Setting = setting};
+            _writePools = new CachePool(dbTransponder, redisTransponder, false) { Setting = setting };
 
             RedisConnectionPool.Initialize();
             EntitySchemaSet.InitSchema(typeof(EntityHistory));
@@ -282,6 +292,36 @@ namespace ZyGames.Framework.Cache.Generic
         }
 
         /// <summary>
+        /// Check queue is completed.
+        /// </summary>
+        /// <param name="keyIndex"></param>
+        /// <returns></returns>
+        public static bool CheckCompleted(int keyIndex = 0)
+        {
+            bool result = false;
+            RedisManager.Process(client =>
+            {
+                string sqlChangeKey = CacheChangeManager.GlobalRedisKey + "_temp";
+                string sqlkey = SqlStatementManager.GetKey(keyIndex) + "_temp";
+                if (CacheChangeManager.Current.ChangeKeys == 0 &&
+                    !client.ContainsKey(sqlChangeKey) &&
+                    !client.ContainsKey(sqlkey))
+                {
+                    result = true;
+                }
+            });
+            return result;
+        }
+        /// <summary>
+        /// Reset cache.
+        /// </summary>
+        public static void ResetCache()
+        {
+            _readonlyPools.Clear();
+            _writePools.Clear();
+        }
+
+        /// <summary>
         /// 通过Redis键获取实体对象
         /// </summary>
         /// <param name="key"></param>
@@ -292,6 +332,7 @@ namespace ZyGames.Framework.Cache.Generic
             int index = key.IndexOf(',');
             var arr = (index > -1 ? key.Substring(0, index) : key).Split('_');
             string typeName = arr[0];
+            string assName = key.Substring(index, key.Length - index);
             string persionKey = string.Empty;
             string entityKey = string.Empty;
             if (arr.Length > 1)
@@ -304,40 +345,89 @@ namespace ZyGames.Framework.Cache.Generic
                     entityKey = tempArr[1];
                 }
             }
-
-            string redisKey = string.IsNullOrEmpty(persionKey) ? typeName : typeName + "_" + persionKey;
+            bool isEntityType = false;
+            string redisKey;
+            if (string.IsNullOrEmpty(persionKey))
+            {
+                isEntityType = true;
+                redisKey = string.Format("{0}_{1}", typeName, entityKey);
+            }
+            else
+            {
+                redisKey = string.Format("{0}_{1}", typeName, persionKey);
+            }
 
             if (type == null && index > -1)
             {
-                type = Type.GetType(string.Format("System.Collections.Generic.Dictionary`2[[System.String],[{0}{1}]]",
-                     typeName,
-                     key.Substring(index, key.Length - index)));
+                string typeNameFormat = string.Format("System.Collections.Generic.Dictionary`2[[System.String],[{0}{1}]]",
+                    typeName,
+                    assName);
+                type = Type.GetType(typeNameFormat);
             }
             dynamic entity = null;
             RedisManager.Process(client =>
             {
-                var data = client.Get<byte[]>(redisKey);
-                var dict = (IDictionary)ProtoBufUtils.Deserialize(data, type);
-                entity = dict[entityKey];
-                if (entity == null)
+                if (isEntityType)
                 {
-                    string setId = redisKey + ":remove";
-                    data = client.Get<byte[]>(setId) ?? new byte[0];
-                    dict = (IDictionary)ProtoBufUtils.Deserialize(data, type);
-                    entity = dict[entityKey];
-                    dict.Remove(entityKey);
-                    if (dict.Count > 0)
+                    var data = client.Get<byte[]>(redisKey);
+                    if (data != null)
                     {
-                        client.Set(setId, ProtoBufUtils.Serialize(dict));
-                    }
-                    else
-                    {
-                        client.Remove(setId);
+                        var entityType = Type.GetType(string.Format("{0}{1}", typeName, assName));
+                        entity = ProtoBufUtils.Deserialize(data, entityType);
                     }
                 }
+                else
+                {
+                    var data = client.Get<byte[]>(redisKey);
+                    if (data != null)
+                    {
+                        var dict = (IDictionary)ProtoBufUtils.Deserialize(data, type);
+                        entity = dict[entityKey];
+                    }
+                }
+                if (entity == null)
+                {
+                    string setId = (isEntityType ? typeName : redisKey) + ":remove";
+                    var data = client.Get<byte[]>(setId);
+                    if (data != null)
+                    {
+                        var dict = (IDictionary)ProtoBufUtils.Deserialize(data, type);
+                        entity = dict[entityKey];
+                        dict.Remove(entityKey);
+                        if (dict.Count > 0)
+                        {
+                            client.Set(setId, ProtoBufUtils.Serialize(dict));
+                        }
+                        else
+                        {
+                            client.Remove(setId);
+                        }
+                    }
+                }
+
             });
             return entity;
         }
+
+        /// <summary>
+        /// Get entity of personal object
+        /// </summary>
+        /// <param name="entityType"></param>
+        /// <param name="personalId"></param>
+        /// <param name="keys"></param>
+        /// <returns></returns>
+        public static dynamic GetPersonalEntity(string entityType, string personalId, params object[] keys)
+        {
+            string key = personalId;
+            if (keys.Length > 0)
+            {
+                key += "|" + AbstractEntity.CreateKeyCode(keys);
+            }
+            string redisKey = string.Format("{0}_{1}", entityType, key);
+            CacheItemSet itemSet;
+            return GetPersonalEntity(redisKey, out itemSet);
+        }
+
 
         /// <summary>
         /// 通过Redis键获取实体对象
@@ -392,8 +482,8 @@ namespace ZyGames.Framework.Cache.Generic
             }
             if (entity == null)
             {
-                //todo trace
-                TraceLog.WriteComplement("GetPersonalEntity key:{0} is empty.", redisKey);
+                //while is remove entity is empty.
+                //TraceLog.WriteComplement("GetPersonalEntity key:{0} is empty.", redisKey);
             }
             return entity;
         }
@@ -595,6 +685,7 @@ namespace ZyGames.Framework.Cache.Generic
         /// 注册全局共享缓存变更通知事件
         /// </summary>
         /// <typeparam name="T">实体类型</typeparam>
+        [Obsolete]
         internal static void RegistShareUpdateNotify<T>() where T : ShareEntity, new()
         {
             UpdateCallbackHandle += isChange =>
@@ -608,6 +699,7 @@ namespace ZyGames.Framework.Cache.Generic
         /// 注册私有缓存变更通知事件（如单个玩家的数据）
         /// </summary>
         /// <typeparam name="T">实体类型</typeparam>
+        [Obsolete]
         internal static void RegistPersonalUpdateNotify<T>() where T : BaseEntity, new()
         {
             UpdateCallbackHandle += isChange =>
