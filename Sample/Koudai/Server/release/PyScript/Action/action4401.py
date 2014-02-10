@@ -63,7 +63,7 @@ def takeAction(urlParam, parent):
     if actionResult.UserLv>=10:       
         userShengJiTa = GameDataCacheSet[UserShengJiTa]().FindKey(userId)    #获取玩家信息
         if userShengJiTa == None:
-            GameDataCacheSet[UserShengJiTa]().Add(UserShengJiTa(MathUtils.ToInt(userId)), GameEnvironment.CacheUserPeriod)
+            GameDataCacheSet[UserShengJiTa]().Add(UserShengJiTa(MathUtils.ToInt(userId)))
             userShengJiTa = GameDataCacheSet[UserShengJiTa]().FindKey(userId)    #获取玩家信息
         if userShengJiTa.EndTime==None or DateTime.Now.Date!=userShengJiTa.EndTime.Date:  #判断时间是否同一天
             userShengJiTa.MaxTierNum = 0;

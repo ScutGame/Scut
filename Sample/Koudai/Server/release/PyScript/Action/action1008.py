@@ -180,7 +180,7 @@ def takeAction(urlParam, parent):
         queue.TotalColdTime = 0;
         queue.IsSuspend = False;
         queue.StrengNum = 0;
-        GameDataCacheSet[UserQueue]().Add(queue, GameEnvironment.CacheUserPeriod);
+        GameDataCacheSet[UserQueue]().Add(queue);
     lvInfo = ConfigCacheSet[VipLvInfo]().FindKey(MathUtils.Addition(contextUser.VipLv, 1, int.MaxValue));
     if lvInfo:
         actionResult.demandGold = MathUtils.Subtraction(lvInfo.PayGold, contextUser.PayGold, 0);

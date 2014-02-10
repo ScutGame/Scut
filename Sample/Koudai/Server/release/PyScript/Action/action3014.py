@@ -88,7 +88,7 @@ def takeAction(urlParam, parent):
             fRest.RefreashDate = MathUtils.Now;
             fRest.RestrainNum = info.RestrainNum;
             fRest.IsReceive = True;
-            cacheSet.Add(fRest, GameEnvironment.CacheUserPeriod);
+            cacheSet.Add(fRest);
     #需要实现
     return actionResult;
 
