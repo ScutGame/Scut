@@ -56,7 +56,13 @@ Source: "..\Console\ServiceStack.Text.dll"; DestDir: "{app}\Console"; Flags: ign
 Source: "..\Console\ZyGames.Framework.Common.dll"; DestDir: "{app}\Console"; Flags: ignoreversion
 Source: "..\Console\ZyGames.Framework.dll"; DestDir: "{app}\Console"; Flags: ignoreversion
 Source: "..\Console\ZyGames.Framework.Game.dll"; DestDir: "{app}\Console"; Flags: ignoreversion
-Source: "..\Console\Script\MainClass.cs"; DestDir: "{app}\Console\Script"; Flags: ignoreversion
+Source: "..\Console\Script\MainClass.cs"; DestDir: "{app}\Console\Script"; Flags: ignoreversion   
+
+Source: "..\Console\Script\Model\GuestUser.cs"; DestDir: "{app}\Console\Script\Model"; Flags: ignoreversion      
+Source: "..\Console\Script\Model\UserRanking.cs"; DestDir: "{app}\Console\Script\Model"; Flags: ignoreversion
+Source: "..\Console\Script\CsScript\Locale\SimplifiedLanguage.cs"; DestDir: "{app}\Console\Script\CsScript\Locale"; Flags: ignoreversion
+Source: "..\Console\Script\CsScript\Action\Action1000.cs"; DestDir: "{app}\Console\Script\CsScript\Action"; Flags: ignoreversion
+Source: "..\Console\Script\CsScript\Action\Action1001.cs"; DestDir: "{app}\Console\Script\CsScript\Action"; Flags: ignoreversion
 
 Source: "..\..\..\Document\API\SCUT Server Framework API.chm"; DestDir: "{app}\Doc"; Flags: ignoreversion
 Source: "..\..\..\Document\API\SCUT Server Middleware API.chm"; DestDir: "{app}\Doc"; Flags: ignoreversion

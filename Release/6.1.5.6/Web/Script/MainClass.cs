@@ -1,6 +1,5 @@
-using System;
+﻿using System;
 using ZyGames.Framework.Common.Log;
-using ZyGames.Framework.Game.Runtime;
 
 namespace GameWebServer.Script
 {
