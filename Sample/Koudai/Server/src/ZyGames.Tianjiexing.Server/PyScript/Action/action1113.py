@@ -118,7 +118,7 @@ def takeAction(urlParam, parent):
         userGeneral.Experience1 = 0;
         userGeneral.Experience2 = 0;
         userGeneral.AbilityNum = 3;
-        cacheSet.Add(userGeneral, GameEnvironment.CacheUserPeriod);
+        cacheSet.Add(userGeneral);
         actionResult.GeneralName=generalInfo.GeneralName;
     else:
         if(urlParam.Ops == 0):

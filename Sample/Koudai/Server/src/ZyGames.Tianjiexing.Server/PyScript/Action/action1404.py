@@ -139,7 +139,7 @@ def takeAction(urlParam, parent):
             userGeneral.Experience1 = 0;
             userGeneral.Experience2 = 0;
             userGeneral.AbilityNum = 3;
-            cacheSet.Add(userGeneral, GameEnvironment.CacheUserPeriod);
+            cacheSet.Add(userGeneral);
             UserAbilityHelper.AddUserAbility(urlParam.general.AbilityID, MathUtils.ToInt(userId), urlParam.general.GeneralID,1);
             # 添加集邮卡牌
             UserAlbumHelper.AddUserAlbum(userId, AlbumType.General, urlParam.general.GeneralID);
@@ -226,7 +226,7 @@ def takeAction(urlParam, parent):
                     userGeneral.GeneralID = urlParam.currSoulID;
                     urlParam.generalType = GeneralType.Soul;
                     userGeneral.AtmanNum = MathUtils.Addition(userGeneral.AtmanNum, urlParam.gainNum);
-                    cacheSet.Add(userGeneral, GameEnvironment.CacheUserPeriod);
+                    cacheSet.Add(userGeneral);
                     UserAbilityHelper.AddUserAbility(general.AbilityID,  MathUtils.ToInt(userId), general.GeneralID,1);
                     # 添加集邮卡牌
                     UserAlbumHelper.AddUserAlbum(userId, AlbumType.General, urlParam.general.GeneralID);
@@ -235,7 +235,7 @@ def takeAction(urlParam, parent):
                 userGeneral.UserID = userId;
                 userGeneral.GeneralID = general.GeneralID;
                 urlParam.generalType = GeneralType.YongBing;
-                cacheSet.Add(userGeneral, GameEnvironment.CacheUserPeriod);
+                cacheSet.Add(userGeneral);
                 UserAbilityHelper.AddUserAbility(urlParam.general.AbilityID, MathUtils.ToInt(userId), urlParam.general.GeneralID,1);
                 # 添加集邮卡牌
             UserAlbumHelper.AddUserAlbum(userId, AlbumType.General, urlParam.general.GeneralID);

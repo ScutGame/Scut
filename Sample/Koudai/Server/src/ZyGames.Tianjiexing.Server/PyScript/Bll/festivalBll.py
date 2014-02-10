@@ -63,7 +63,7 @@ class FestivalBll():
                 restrain.RestrainNum = 0;
                 restrain.RefreashDate = DateTime.Now;
                 restrain.IsReceive = False;
-                cacheSet.Add(restrain, GameEnvironment.CacheUserPeriod);
+                cacheSet.Add(restrain);
             userExtend = restrain.UserExtend.Find(lambda s:s.ID == npcinfoID);
             if userExtend:
                 userExtend.Num = MathUtils.Addition(userExtend.Num, 1);
