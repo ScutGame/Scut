@@ -148,7 +148,7 @@ function manInfo()
 	height = height-space
 
 	--上阵佣兵
-	creatLabel(layer, Language.BASICE_INGROUP, personInfo._BattleNum.."/"..personInfo._TotalBattle , startX, height)	
+	creatLabel(layer, Language.BASICE_INGROUP, (personInfo._BattleNum or 0) .."/"..(personInfo._TotalBattle or 0) , startX, height)	
 	height = height-space
 
 	--晶石
@@ -168,7 +168,7 @@ function manInfo()
 	height = height-space
 	
 	--荣誉
-	creatLabel(layer, Language.BASICE_HENOUR, personInfo._HonourNum.."/"..personInfo._NextHonourNum, startX, height)
+	creatLabel(layer, Language.BASICE_HENOUR, (personInfo._HonourNum or 0).."/"..(personInfo._NextHonourNum or 0), startX, height)
 	height = height-space	
 	
 	--下一点体力恢复

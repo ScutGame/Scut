@@ -221,7 +221,7 @@ function ZyMessageBoxEx:initMessageBox()
 	local rBtn=nil
 	if self._rButton   then
 		local button=ZyButton:new(ButtonNor,ButtonClk,nil,self._rButton,FONT_NAME,FONT_SM_SIZE)
-		button:registerScriptHandler(function () actionMessageboxLeftButton(button._menuItem) end )
+		button:registerScriptHandler(function () actionMessageboxRightButton(button._menuItem) end )
 		local item=button._menuItem
 		gClassPool[item] = self
 		button:addto(layer,0)

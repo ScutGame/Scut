@@ -282,7 +282,7 @@ function  loginGoSwitch(layertype)
     		else
     			local mPassportID, mPassWord=accountInfo.readAccount()
 			local mServerID,mServerPath,mServerName,mServerState=accountInfo.readServerId()
-			if mPassportID and mServerPath then
+			if mPassportID and mServerPath and mPassportID~="1" then
 				ScutDataLogic.CNetWriter:setUrl(mServerPath)
 				send(1004)
 			else
@@ -367,47 +367,21 @@ end
 
 --点击服务器列表按钮
 function choiceServer(pNode)
-    local index = pNode:getTag()
-    if index and  index>0 then
-       local choiceServerInfo=serverTabel[index]
-       accountInfo.setServerID(choiceServerInfo.ID)
-       accountInfo.setServerName(choiceServerInfo.Name)
-       accountInfo.setServerState(choiceServerInfo.Status)
-       accountInfo.setServerPath(choiceServerInfo.BaseUrl)
+  --  local index = pNode:getTag()
+   -- if index and  index>0 then
+      -- local choiceServerInfo=serverTabel[index]
+       accountInfo.setServerID(1)
+       accountInfo.setServerName(1)
+       accountInfo.setServerState(1)
+       accountInfo.setServerPath("http://kd1.scutgame.com/Service.aspx")
 	       
-    --  accountInfo.mServerPath="http://192.168.1.99:90/Service.aspx"
+    --  accountInfo.mServerPath="http://kd1.scutgame.com/Service.aspx"
        accountInfo.saveServerId()
        ScutDataLogic.CNetWriter:setUrl(accountInfo.mServerPath)
-    	local nType = ScutUtility.ScutUtils:GetPlatformType();
-        if accountInfo.mRetailID=="2008"  then
-        	 channelEngine.login()
-        elseif accountInfo.mRetailID=="0070"  then     
-        	 channelEngine.login()        
-        elseif accountInfo.mRetailID=="0021"  then     
-        	loginType=8
-        	 channelEngine.login()        	
-        elseif accountInfo.mRetailID=="0036"  then
-        	if nType == ScutUtility.ptAndroid then	
-        		 channelEngine.login()
-        	else
-        		loginUC()
-        	end
-        elseif accountInfo.mRetailID=="0037"  then
-        	if nType == ScutUtility.ptAndroid then
-        		 channelEngine.login()
-        	else
-			loginDangLe()
-        	end
-        elseif accountInfo.mRetailID=="0001"  then
-        	if nType == ScutUtility.ptAndroid then
-        		 channelEngine.login()
-        	else
-        		logining91()
-        	end
-        else
+
      	 	goto_lan()
-    	 end
-    end
+
+  --  end
 end
 
 function goto_lan()
@@ -416,9 +390,12 @@ end
 
 function send(actionId)
 	if actionId == 1001 then--获取服务器列表
+				choiceServer()
     		--ScutDataLogic.CNetWriter:setUrl("http://dir.scutgame.com/Service.aspx")
+    		--[[
     		local mMobileType, mGameType, mRetailID= accountInfo.readMoble()
     		actionLayer.Action1001(mScene,false,mGameType)	
+    		--]]
 	elseif actionId == 1004 then--已有账号快速登录
 		local mMobileType, mGameType, mRetailID = accountInfo.readMoble()
 		local mPassportID, mPassWord = accountInfo.readAccount()
@@ -485,6 +462,7 @@ function netCallback(pScutScene, lpExternalData)
 		       if LoginResponse.StatusCode==1005 then
 				CreatNewMan.pushScene()
 			else
+			    onExit()
 				progressLayer.replaceScene()
 			end
 		else

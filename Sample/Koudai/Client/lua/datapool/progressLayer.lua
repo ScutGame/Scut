@@ -79,7 +79,7 @@ end;
 
 function nextScene()
 
-
+	onExit ()
 	
 	MainScene.setNotice(true)
 	if _firstLogin then
@@ -88,7 +88,7 @@ function nextScene()
 		MainScene.init()
 --		businessStore.pushScene()
 	end
-	
+
 end;
 
 -- ´´½¨³¡¾°

@@ -641,7 +641,8 @@ function  createBar(picPath,currentValue,maxValue,pos,father)
 	if maxValue==0 then
 		maxValue=100
 	end
-
+    currentValue=currentValue or 0
+    maxValue=maxValue or 1 
 	local scale=currentValue/maxValue
 	if scale>1 then
 		scale=1
@@ -757,7 +758,9 @@ function showHero()
 	local row = 5
 	local nAmount = _personalInfo._TotalBattle
 
-
+    if not nAmount then
+        return 
+    end
 	btnTable.hero={}
 	for i=1,nAmount do
 	  	local listItem = ScutCxListItem:itemWithColor(ccc3(25,57,45))
@@ -1055,7 +1058,7 @@ function creatLetter()
 		
 		
 		
-		if _personalInfo._unReadCount > 0 then
+		if _personalInfo._unReadCount and _personalInfo._unReadCount > 0 then
 			letterBtn:setVisible(false)
 			
 			--иак╦
