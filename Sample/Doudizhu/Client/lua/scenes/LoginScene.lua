@@ -271,11 +271,12 @@ end;
 function key_serve_button_ok(index)
 	--local tag=item:getTag()
 	
-	local serverInfo=serverTabel[index]
-	accountInfo.setServerID(serverInfo.ID)
-	accountInfo.setServerName(serverInfo.Name)
-	accountInfo.setServerState(serverInfo.Status)
-	accountInfo.setServerPath(serverInfo.BaseUrl)
+	--local serverInfo=serverTabel[index]
+	accountInfo.setServerID(1)
+	accountInfo.setServerName(1)
+	accountInfo.setServerState(1)
+	accountInfo.setServerPath("ddz.scutgame.com:9700")
+	
 	accountInfo.saveServerId()
 	ScutDataLogic.CNetWriter:setUrl(accountInfo.mServerPath)
 
@@ -950,9 +951,13 @@ end;
 function send(actionID)
 --请求服务器列表
 	if  actionID==1001 then
+	
+		 key_serve_button_ok()
+		--[[
     		ScutDataLogic.CNetWriter:setUrl("http://dir.scutgame.com/Service.aspx")
     		local mMobileType ,mGameType,mRetailID= accountInfo.readMoble()
     		actionLayer.Action1001(mScene,false,mGameType)
+    		--]]
 	elseif  actionID==1002 then
 		accountInfo.readMoble()
 		actionLayer.Action1002(mScene,false,
