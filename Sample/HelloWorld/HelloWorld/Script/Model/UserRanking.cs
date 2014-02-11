@@ -21,46 +21,60 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ****************************************************************************/
-
 using System;
-using System.Data;
-using ZyGames.Framework.Game.Service;
+using ProtoBuf;
+using ZyGames.Framework.Model;
 
-namespace HelloWorld.Script.Action
+namespace GameServer.Model
 {
     /// <summary>
-    /// 1001_hello【已完成】
+    /// 鐜╁鎺掕姒滃疄浣撶被
     /// </summary>
-    public class Action1001 : BaseAction
+    [Serializable, ProtoContract]
+    [EntityTable(CacheType.Entity, "ConnData")]
+    public class UserRanking : ShareEntity
     {
-        private string content;
-
-
-        public Action1001(HttpGet httpGet)
-            : base(ActionIDDefine.Cst_Action1001, httpGet)
+        public UserRanking()
+            : base(false)
         {
-
+            CreateDate = DateTime.Now;
         }
 
-        public override void BuildPacket()
+        [ProtoMember(1)]
+        [EntityField(true)]
+        public int UserID
         {
-            this.PushIntoStack(content);
-
+            get;
+            set;
         }
 
-        public override bool GetUrlElement()
+        [ProtoMember(2)]
+        [EntityField]
+        public string UserName
         {
-            if (true)
-            {
-                return true;
-            }
-            return false;
+            get;
+            set;
         }
 
-        public override bool TakeAction()
+        [ProtoMember(3)]
+        [EntityField]
+        public int Score
         {
-            content = "Hello World";
-            return true;
+            get;
+            set;
+        }
+
+        [ProtoMember(4)]
+        [EntityField]
+        public DateTime CreateDate
+        {
+            get;
+            set;
+        }
+
+        protected override int GetIdentityId()
+        {
+            return UserID;
         }
     }
 }

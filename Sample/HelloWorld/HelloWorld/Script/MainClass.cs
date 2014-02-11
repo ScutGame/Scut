@@ -1,4 +1,4 @@
-/****************************************************************************
+﻿/****************************************************************************
 Copyright (c) 2013-2015 scutgame.com
 
 http://www.scutgame.com
@@ -22,21 +22,30 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ****************************************************************************/
 using System;
-using System.Data;
+using ZyGames.Framework.Cache.Generic;
+using ZyGames.Framework.Game.Context;
+using ZyGames.Framework.Game.Contract;
+using ZyGames.Framework.Game.Runtime;
 
-namespace HelloWorld.Script.Action
+namespace GameServer.Script
 {
-
-    /// <summary>
-    /// ActionID定义描述
-    /// </summary>
-    public class ActionIDDefine
+    public class MainClass : GameSocketHost
     {
-        ///<summary>
-        ///hello
-        ///</summary>
-        public const Int16 Cst_Action1001 = 1001;
 
+        protected override BaseUser GetUser(int userId)
+        {
+            return (BaseUser)CacheFactory.GetPersonalEntity("GameServer.Model.GameUser", userId.ToString(), userId);
+        }
 
+        protected override void OnStartAffer()
+        {
+            var setting = new EnvironmentSetting();
+            GameEnvironment.Start(setting);
+        }
+
+        protected override void OnServiceStop()
+        {
+            GameEnvironment.Stop();
+        }
     }
 }
