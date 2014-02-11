@@ -1,5 +1,6 @@
 ﻿using System;
 using ZyGames.Framework.Common.Log;
+using ZyGames.Framework.Game.Runtime;
 using ZyGames.Framework.Script;
 
 namespace GameWebServer
@@ -11,10 +12,13 @@ namespace GameWebServer
         {
             try
             {
-                string str = AppDomain.CurrentDomain.SetupInformation.ApplicationBase;
                 string mainClass = "MainClass";
                 ScriptEngines.AddReferencedAssembly("ZyGames.Framework.Game.dll");
-                ScriptEngines.RunMainClass(mainClass);
+                dynamic instance;
+                if(ScriptEngines.RunMainClass(mainClass, out instance))
+                {
+                    instance.Start();
+                }
             }
             catch (Exception ex)
             {
@@ -49,7 +53,7 @@ namespace GameWebServer
 
         protected void Application_End(object sender, EventArgs e)
         {
-
+            GameEnvironment.Stop();
         }
     }
 }

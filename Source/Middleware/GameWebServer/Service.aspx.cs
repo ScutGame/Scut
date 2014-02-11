@@ -1,5 +1,7 @@
 ﻿using System;
+using ZyGames.Framework.Cache.Generic;
 using ZyGames.Framework.Common.Log;
+using ZyGames.Framework.Game.Context;
 using ZyGames.Framework.Game.Contract;
 
 namespace GameWebServer
@@ -10,12 +12,17 @@ namespace GameWebServer
         {
             try
             {
-                ActionFactory.RequestScript();
+                ActionFactory.RequestScript(GetUser);
             }
             catch (Exception ex)
             {
                 TraceLog.WriteError("Service error:{0}", ex);
             }
+        }
+
+        private BaseUser GetUser(int userId)
+        {
+            return (BaseUser) CacheFactory.GetPersonalEntity("GameServer.Model.GameUser", userId.ToString(), userId);
         }
     }
 }

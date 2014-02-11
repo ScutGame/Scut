@@ -585,7 +585,24 @@ namespace ZyGames.Framework.Game.Contract
             {
                 httpListener.Stop();
             }
+            socketLintener.Close();
             OnServiceStop();
+            try
+            {
+                threadPool.Dispose();
+                queueProcessThread.Abort();
+                _LockedQueueChecker.Dispose();
+                singal.Dispose();
+
+                threadPool = null;
+                queueProcessThread = null;
+                _LockedQueueChecker = null;
+                singal = null;
+            }
+            catch
+            {
+            }
+            GC.SuppressFinalize(this);
         }
 
         /// <summary>
@@ -718,12 +735,24 @@ namespace ZyGames.Framework.Game.Contract
             return false;
         }
 
+        /// <summary>
+        /// Post send to queue.
+        /// </summary>
+        /// <param name="socket"></param>
+        /// <param name="data"></param>
+        /// <param name="offset"></param>
+        /// <param name="count"></param>
+        public void PostSend(ExSocket socket, byte[] data, int offset, int count)
+        {
+            socketLintener.PostSend(socket, data, offset, count);
+        }
+
         private bool SendAsync(GameSession session, byte[] data)
         {
             if (session.Connected)
             {
                 data = CheckAdditionalHead(data, session.SSId);
-                socketLintener.PostSend(session.Channel, data, 0, data.Length);
+                PostSend(session.Channel, data, 0, data.Length);
                 return true;
             }
             return false;

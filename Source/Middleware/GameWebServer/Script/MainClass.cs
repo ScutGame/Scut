@@ -7,7 +7,8 @@ namespace GameWebServer.Script
     {
         public void Start()
         {
-            TraceLog.ReleaseWriteDebug("App star...");
+            var setting = new EnvironmentSetting();
+            GameEnvironment.Start(setting);
         }
     }
 }
