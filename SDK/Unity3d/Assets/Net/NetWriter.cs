@@ -131,7 +131,7 @@ public partial class NetWriter
 
     public byte[] PostData()
     {
-        s_strPostData = "d=";
+        s_strPostData = "?d=";
         string str = s_strUserData + "&sign="
             + getMd5String(s_strUserData + s_md5Key);
 

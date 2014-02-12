@@ -49,7 +49,7 @@ public class TestGUI : MonoBehaviour {
 			
 			///////
 			Debug.Log("set url first");
-			NetWriter.SetUrl("ddz.36you.net:9700");
+			NetWriter.SetUrl("ph.scutgame.com:9001");
             NetWriter writer =  NetWriter.Instance;
             writer.writeString("PageIndex", "1");
             writer.writeInt32("PageSize", 10);
