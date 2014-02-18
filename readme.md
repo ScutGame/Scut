@@ -49,6 +49,15 @@ OSChina代码库：https://git.oschina.net/scutgame/Scut<br />
 
 更新日志
 ----------------
+###版本：6.1.5.8 (2014-2-19) Unstable
+> 1. 增加通讯协议写入流支持可Protobuf序列化的对象
+> 2. 增加Action通讯流可支持Gzip压缩
+> 3. 修改语言包为空异常的问题
+> 4. 修改Python脚本不能调用CSharp脚本问题
+> 5. 修改Socket Push消息的调用方式
+> 6. 修改生成Sql表结构语句BUG
+> 7. 修改渠道登录中间件不能正常登录问题
+
 ###版本：6.1.5.6 (2014-1-26) Unstable
 > 1. 增加exe版(console），web版本(IIS)的游戏服宿主程序
 > 2. 增加Model支持脚本化，实现不停服更新
