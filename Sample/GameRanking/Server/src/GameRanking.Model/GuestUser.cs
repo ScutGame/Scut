@@ -40,6 +40,11 @@ namespace GameRanking.Model
         {
         }
 
+        public GuestUser(int userId)
+        {
+            UserId = userId;
+        }
+
         public void Init()
         {
             UserId = UserConfig.NextId;

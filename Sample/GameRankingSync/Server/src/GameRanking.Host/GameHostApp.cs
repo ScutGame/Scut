@@ -74,25 +74,20 @@ namespace GameRanking.Host
             {
                 var setting = new EnvironmentSetting();
                 setting.EntityAssembly = Assembly.Load("GameRanking.Model");
-                setting.ScriptStartBeforeHandle += () =>
-                {
-                    ScriptEngines.AddReferencedAssembly("GameRanking.Model.dll");
-                    ActionFactory.SetActionIgnoreAuthorize(1000, 1001);
-
-                    var cache = new ShareCacheStruct<UserRanking>();
-                    Stopwatch t = new Stopwatch();
-                    t.Start();
-                    var list = cache.FindAll(false);
-                    t.Stop();
-                    if(list.Count > 0)
-                    {
-                        
-                    }
-                };
-
+                ScriptEngines.AddReferencedAssembly("GameRanking.Model.dll");
+                ActionFactory.SetActionIgnoreAuthorize(1000, 1001);
                 var cacheSetting = new CacheSetting();
                 cacheSetting.ChangedHandle += OnChangedNotify;
                 GameEnvironment.Start(setting, cacheSetting);
+                var cache = new ShareCacheStruct<UserRanking>();
+                Stopwatch t = new Stopwatch();
+                t.Start();
+                var list = cache.FindAll(false);
+                t.Stop();
+                if (list.Count > 0)
+                {
+
+                }
                 Console.WriteLine("The server is staring...");
             }
             catch (Exception ex)

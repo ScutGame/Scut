@@ -36,7 +36,7 @@ namespace GameRanking.Host
             try
             {
                 var hostApp = new GameHostApp();
-                hostApp.Start();
+                hostApp.Start(args);
                 Console.ReadLine();
             }
             catch (Exception ex)

@@ -48,49 +48,31 @@ namespace GameRanking.Host
 {
     public class GameHostApp : GameSocketHost
     {
-        private DictionaryExtend<string, GuestUser> _sessions = new DictionaryExtend<string, GuestUser>();
 
         protected override void OnConnectCompleted(object sender, ConnectionEventArgs e)
         {
-            string address = e.Socket.RemoteEndPoint.ToString();
-            if (!_sessions.ContainsKey(address))
+            var session = GameSession.Get(e.Socket.HashCode);
+            if (session != null)
             {
                 var user = new GuestUser();
                 user.Init();
-                _sessions[address] = user;
+                var p = new PersonalCacheStruct<GuestUser>();
+                p.Add(user);
+                session.BindIdentity(user.GetUserId());
             }
         }
 
-        protected override void OnDisconnected(GameSession session)
-        {
-            UnLine((int)session.UserId);
-        }
-
-        private void UnLine(int userId)
-        {
-            var pair = _sessions.Where(p => p.Value.UserId == userId).FirstOrDefault();
-            _sessions.Remove(pair);
-        }
 
         protected override BaseUser GetUser(int userId)
         {
-            return _sessions.Where(pair => pair.Value.UserId == userId).Select(s => s.Value).FirstOrDefault();
+            return new PersonalCacheStruct<GuestUser>().FindKey(userId.ToString());
         }
 
         protected override void OnRequested(HttpGet httpGet, IGameResponse response)
         {
             try
             {
-                GuestUser user = null;
-                if (_sessions.ContainsKey(httpGet.RemoteAddress))
-                {
-                    user = _sessions[httpGet.RemoteAddress];
-                }
                 ActionFactory.Request(httpGet, response, GetUser);
-                if (user != null)
-                {
-                    httpGet.LoginSuccessCallback(user.UserId);
-                }
             }
             catch (Exception ex)
             {
@@ -100,24 +82,14 @@ namespace GameRanking.Host
 
         protected override void OnStartAffer()
         {
-            try
-            {
-                var setting = new EnvironmentSetting();
-                setting.EntityAssembly = Assembly.Load("GameRanking.Model");
-                setting.ScriptStartBeforeHandle += () =>
-                {
-                    ScriptEngines.AddReferencedAssembly("GameRanking.Model.dll");
-                    ActionFactory.SetActionIgnoreAuthorize(1000, 1001);
-                };
-                GameEnvironment.Start(setting);
-                int pushInterval = ConfigUtils.GetSetting("Ranking.PushInterval", 60);
-                TimeListener.Append(new PlanConfig(DoPushRanking, true, pushInterval, "GetRanking"));
-                Console.WriteLine("The server is staring...");
-            }
-            catch (Exception ex)
-            {
-                TraceLog.WriteError("App star error:{0}", ex);
-            }
+            var setting = new EnvironmentSetting();
+            setting.EntityAssembly = Assembly.Load("GameRanking.Model");
+            ScriptEngines.AddReferencedAssembly("GameRanking.Model.dll");
+            ActionFactory.SetActionIgnoreAuthorize(1000, 1001);
+            GameEnvironment.Start(setting);
+            int pushInterval = ConfigUtils.GetSetting("Ranking.PushInterval", 60);
+            TimeListener.Append(new PlanConfig(DoPushRanking, true, pushInterval, "GetRanking"));
+            Console.WriteLine("The server is staring...");
         }
 
         private void DoPushRanking(PlanConfig planconfig)
@@ -126,18 +98,17 @@ namespace GameRanking.Host
             {
 
                 Console.WriteLine("{0}>>The server push ranking", DateTime.Now.ToString("HH:mm:ss"));
-                var sessionList = _sessions.Values.ToList();
+                var sessionList = GameSession.GetAll();
                 int actionId = 1001;
                 StringBuilder shareParam = new StringBuilder();
                 shareParam.AppendFormat("&{0}={1}", "PageIndex", "1");
                 shareParam.AppendFormat("&{0}={1}", "PageSize", "50");
                 HttpGet httpGet;
                 byte[] sendData = ActionFactory.GetActionResponse(actionId, new GuestUser(), shareParam.ToString(), out httpGet);
-                foreach (var user in sessionList)
+                foreach (var session in sessionList)
                 {
-                    if (!SendAsync(user.UserId, sendData))
+                    if (session.SendAsync(sendData, 0, sendData.Length))
                     {
-                        UnLine(user.UserId);
                     }
                 }
             }

@@ -36,13 +36,14 @@ namespace GameRanking.Host
             try
             {
                 var hostApp = new GameHostApp();
-                hostApp.Start();
+                hostApp.Start(args);
                 Console.ReadLine();
             }
             catch (Exception ex)
             {
                 Console.WriteLine(ex.Message);
                 TraceLog.WriteError("HostServer error:{0}", ex);
+                Console.ReadKey();
             }
         }
     }

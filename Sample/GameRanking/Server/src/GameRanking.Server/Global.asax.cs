@@ -18,12 +18,10 @@ namespace GameRanking.Server
             {
                 var setting = new EnvironmentSetting();
                 setting.EntityAssembly = Assembly.Load("GameRanking.Model");
-                setting.ScriptStartBeforeHandle += () =>
-                {
-                    ScriptEngines.AddReferencedAssembly("GameRanking.Model.dll");
-                    ActionFactory.SetActionIgnoreAuthorize(1000, 1001);
-                };
+                ScriptEngines.AddReferencedAssembly("GameRanking.Model.dll");
+                ActionFactory.SetActionIgnoreAuthorize(1000, 1001);
                 GameEnvironment.Start(setting);
+                GameSession.StartClear();
             }
             catch (Exception ex)
             {
