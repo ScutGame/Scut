@@ -798,6 +798,7 @@ namespace ZyGames.Framework.RPC.IO
                 head.GzipLength = WriteGzipCompressBuffer(orgData);
             }
             head.PacketLength = Length;
+            Reset();
         }
 
         /// <summary>

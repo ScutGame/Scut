@@ -160,7 +160,7 @@ namespace ZyGames.Framework.Game.Contract
 
             var head = new MessageHead(SyncActionId);
             rootWriter.WriteBuffer(head);
-            return rootWriter.ReadBuffer();
+            return rootWriter.PopBuffer();
         }
 
         private static void PushChildStack(MessageStructure parent, SchemaColumn parentColumn, object value)

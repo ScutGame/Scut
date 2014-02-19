@@ -203,7 +203,7 @@ namespace ZyGames.Framework.Game.Contract
             MessageHead head = new MessageHead(actionID, errorCode, errorInfo);
             MessageStructure sb = new MessageStructure();
             sb.WriteBuffer(head);
-            response.BinaryWrite(sb.ReadBuffer());
+            response.BinaryWrite(sb.PopBuffer());
         }
 
         /// <summary>

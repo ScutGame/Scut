@@ -323,7 +323,7 @@ namespace ZyGames.Framework.Game.Contract
                     {
                         MessageStructure response = new MessageStructure();
                         OnCallRemote(package.Route, httpGet, response);
-                        data = response.ReadBuffer();
+                        data = response.PopBuffer();
                     }
                 }
                 else
