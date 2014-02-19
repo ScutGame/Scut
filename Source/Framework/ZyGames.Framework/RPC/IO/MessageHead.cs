@@ -111,7 +111,7 @@ namespace ZyGames.Framework.RPC.IO
         /// <summary>
         /// 消息包总字节
         /// </summary>
-        public int PacketLength
+        public long PacketLength
         {
             get;
             internal set;
@@ -120,12 +120,12 @@ namespace ZyGames.Framework.RPC.IO
         /// <summary>
         /// Gzip压缩包的长度
         /// </summary>
-        public int GzipLength { get; internal set; }
+        public long GzipLength { get; internal set; }
 
         /// <summary>
         /// 消息体总字节
         /// </summary>
-        public int TotalLength
+        public long TotalLength
         {
             get;
             internal set;

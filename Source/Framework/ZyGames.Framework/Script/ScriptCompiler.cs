@@ -79,6 +79,7 @@ namespace ZyGames.Framework.Script
                 TraceLog.WriteError("ClearTemp error:{0}", ex);
             }
         }
+
         /// <summary>
         /// Compile
         /// </summary>
@@ -87,8 +88,9 @@ namespace ZyGames.Framework.Script
         /// <param name="assemblyName"></param>
         /// <param name="isDebug"></param>
         /// <param name="isInMemory"></param>
+        /// <param name="outputPath"></param>
         /// <returns></returns>
-        public static CompilerResults Compile(string[] fileNames, string[] refAssemblies, string assemblyName, bool isDebug, bool isInMemory)
+        public static CompilerResults Compile(string[] fileNames, string[] refAssemblies, string assemblyName, bool isDebug, bool isInMemory, string outputPath = "")
         {
             try
             {
@@ -103,12 +105,21 @@ namespace ZyGames.Framework.Script
                 //}
                 if (!isInMemory)
                 {
-                    string tempPath = Path.Combine(MathUtils.RuntimePath, CompileTemp, Guid.NewGuid().ToString());
+                    string tempPath = "";
+                    if (string.IsNullOrEmpty(outputPath))
+                    {
+                        tempPath = Path.Combine(MathUtils.RuntimePath, CompileTemp, Guid.NewGuid().ToString());
+                    }
+                    else
+                    {
+                        tempPath = Path.Combine(MathUtils.RuntimePath, outputPath);
+                    }
+
                     if (!Directory.Exists(tempPath))
                     {
                         Directory.CreateDirectory(tempPath);
                     }
-                    options.TempFiles = new TempFileCollection(tempPath, false);
+                    options.TempFiles = new TempFileCollection(tempPath, isDebug);//调试时保留临时文件
                 }
                 options.ReferencedAssemblies.Add("System.dll");
                 options.ReferencedAssemblies.Add("System.Core.dll");
@@ -116,6 +127,8 @@ namespace ZyGames.Framework.Script
                 options.ReferencedAssemblies.Add("System.Xml.dll");
                 options.ReferencedAssemblies.Add("System.Xml.Linq.dll");
                 options.ReferencedAssemblies.Add("Microsoft.CSharp.dll");
+                options.ReferencedAssemblies.Add("System.Configuration.dll");
+                options.ReferencedAssemblies.Add("System.Web.dll");
 
                 foreach (var assembly in refAssemblies)
                 {
@@ -165,14 +178,14 @@ namespace ZyGames.Framework.Script
                 return null;
             }
             pathToAssembly = result.PathToAssembly;
-            string outAssembly = Path.GetDirectoryName(pathToAssembly);
-            outAssembly = Path.Combine(outAssembly, "..", "..", "temp");
+            string runtimePath = MathUtils.RuntimePath;
+            string outAssembly = Path.Combine(runtimePath, ScriptAssemblyTemp);
             if (!Directory.Exists(outAssembly))
             {
                 Directory.CreateDirectory(outAssembly);
             }
             outAssembly = Path.Combine(outAssembly, Path.GetFileNameWithoutExtension(pathToAssembly) + ".dll");
-            if (AssemblyBuilder.BuildToFile(pathToAssembly, Path.Combine("."), outAssembly))
+            if (AssemblyBuilder.BuildToFile(pathToAssembly, runtimePath, outAssembly))
             {
                 var ass = AssemblyBuilder.ReadAssembly(outAssembly, result.Evidence);
                 if (ass != null) pathToAssembly = outAssembly;

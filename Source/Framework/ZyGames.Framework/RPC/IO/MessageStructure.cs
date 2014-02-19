@@ -25,9 +25,11 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text;
 using System.Threading;
 using ZyGames.Framework.Common;
+using ZyGames.Framework.Common.Serialization;
 
 namespace ZyGames.Framework.RPC.IO
 {
@@ -43,23 +45,24 @@ namespace ZyGames.Framework.RPC.IO
         private const int ShortSize = 2;
         private const int ByteSize = 1;
         private const int BoolSize = 1;
+
         /// <summary>
         /// 启用Gzip压缩的最小字节
         /// </summary>
-        private const int EnableGzipMinByte = 1024;
-        private ConcurrentQueue<byte> _buffers;
-        private ConcurrentQueue<object> _waitWriteBuffers = new ConcurrentQueue<object>();
-        private int _offset;
-        private Encoding _encoding = Encoding.UTF8;
+        public static int EnableGzipMinByte { get; set; }
 
-        private int _currRecordPos;
         /// <summary>
-        /// 当前循环体字节长度
+        /// 开启Gzip压缩
         /// </summary>
-        private int _currRecordSize;
+        public static bool EnableGzip { get; set; }
+
+        static MessageStructure()
+        {
+            EnableGzipMinByte = 10240;
+        }
 
         /// <summary>
-        /// 
+        /// Use stream create MessageStructure object.
         /// </summary>
         /// <param name="stream"></param>
         /// <param name="encoding"></param>
@@ -72,7 +75,7 @@ namespace ZyGames.Framework.RPC.IO
             int size = 0;
             while (true)
             {
-                var buffer = new byte[512];
+                var buffer = new byte[1024];
                 size = readStream.Read(buffer, 0, buffer.Length);
                 if (size == 0)
                 {
@@ -85,13 +88,28 @@ namespace ZyGames.Framework.RPC.IO
             return new MessageStructure(data);
         }
 
+        private int _bufferLength;
+        private byte[] _buffers;
+        //private ConcurrentQueue<byte> _buffersQueue;
+        private MemoryStream _msBuffers;
+        private ConcurrentQueue<object> _waitWriteObjects = new ConcurrentQueue<object>();
+        //private int _offset;
+        private Encoding _encoding = Encoding.UTF8;
+
+        private int _currRecordPos;
+        /// <summary>
+        /// 当前循环体字节长度
+        /// </summary>
+        private int _currRecordSize;
+
         /// <summary>
         /// 
         /// </summary>
         public MessageStructure()
         {
             EnableGzip = true;
-            _buffers = new ConcurrentQueue<byte>();
+            _msBuffers = new MemoryStream();
+            //_buffersQueue = new ConcurrentQueue<byte>();
         }
 
         /// <summary>
@@ -101,35 +119,52 @@ namespace ZyGames.Framework.RPC.IO
         public MessageStructure(IEnumerable<byte> buffer)
         {
             EnableGzip = true;
-            _buffers = new ConcurrentQueue<byte>(buffer);
+            _msBuffers = new MemoryStream(buffer.ToArray());
+            //_buffersQueue = new ConcurrentQueue<byte>(buffer);
         }
 
         /// <summary>
-        /// 开启Gzip压缩
-        /// </summary>
-        public bool EnableGzip { get; set; }
-        /// <summary>
         /// 缓冲数据大小
         /// </summary>
-        public int Length
+        public long Length
         {
             get
             {
-                return _buffers.Count;
+                return _msBuffers.Length;
+                //return _buffersQueue.Count;
             }
         }
         /// <summary>
         /// 读取的当前位置
         /// </summary>
-        public int Offset
+        public long Offset
         {
-            get { return _offset; }
+            get { return _msBuffers.Position; }
+            set { _msBuffers.Position = value; }
         }
 
         #region ReadByte
 
         /// <summary>
-        /// 
+        /// Reset from 0 pos start read.
+        /// </summary>
+        public void Reset()
+        {
+            _currRecordPos = 0;
+            _msBuffers.Position = 0;
+        }
+
+        /// <summary>
+        /// Clear buffer.
+        /// </summary>
+        public void Clear()
+        {
+            _msBuffers = new MemoryStream();
+            Reset();
+        }
+
+        /// <summary>
+        /// Read bool
         /// </summary>
         /// <returns></returns>
         public bool ReadBool()
@@ -139,7 +174,7 @@ namespace ZyGames.Framework.RPC.IO
         }
 
         /// <summary>
-        /// 
+        /// Read float
         /// </summary>
         /// <returns></returns>
         public float ReadFloat()
@@ -159,7 +194,7 @@ namespace ZyGames.Framework.RPC.IO
         }
 
         /// <summary>
-        /// 
+        /// Read short
         /// </summary>
         /// <returns></returns>
         public short ReadShort()
@@ -168,7 +203,7 @@ namespace ZyGames.Framework.RPC.IO
             return BitConverter.ToInt16(bytes, 0);
         }
         /// <summary>
-        /// 
+        /// Read int
         /// </summary>
         /// <returns></returns>
         public int ReadInt()
@@ -177,7 +212,7 @@ namespace ZyGames.Framework.RPC.IO
             return BitConverter.ToInt32(bytes, 0);
         }
         /// <summary>
-        /// 
+        /// Read long
         /// </summary>
         /// <returns></returns>
         public long ReadLong()
@@ -186,7 +221,7 @@ namespace ZyGames.Framework.RPC.IO
             return BitConverter.ToInt64(bytes, 0);
         }
         /// <summary>
-        /// 
+        /// Read string
         /// </summary>
         /// <returns></returns>
         public string ReadString()
@@ -197,6 +232,17 @@ namespace ZyGames.Framework.RPC.IO
         }
 
         /// <summary>
+        /// Read object of Protobuf serialize.
+        /// </summary>
+        /// <returns></returns>
+        public object ReadObject(Type type)
+        {
+            int count = ReadInt();
+            byte[] bytes = ReadByte(count);
+            return ProtoBufUtils.Deserialize(bytes, type);
+        }
+
+        /// <summary>
         /// 读取字节
         /// </summary>
         /// <returns></returns>
@@ -204,6 +250,15 @@ namespace ZyGames.Framework.RPC.IO
         {
             byte[] bytes = ReadByte(ByteSize);
             return bytes[0];
+        }
+
+        /// <summary>
+        /// Read record count.
+        /// </summary>
+        /// <returns></returns>
+        public int ReadRecordCount()
+        {
+            return ReadInt();
         }
 
         /// <summary>
@@ -235,16 +290,18 @@ namespace ZyGames.Framework.RPC.IO
         public byte[] ReadByte(int count)
         {
             byte[] bytes = new byte[count];
-            for (int i = 0; i < count; i++)
-            {
-                byte b;
-                if (_buffers.TryDequeue(out b))
-                {
-                    bytes[i] = b;
-                    Interlocked.Increment(ref _offset);
-                    Interlocked.Increment(ref _currRecordPos);
-                }
-            }
+            int len = _msBuffers.Read(bytes, 0, count);
+            _currRecordPos += len;
+            //for (int i = 0; i < count; i++)
+            //{
+            //    byte b;
+            //    if (_buffersQueue.TryDequeue(out b))
+            //    {
+            //        bytes[i] = b;
+            //        Interlocked.Increment(ref _offset);
+            //        Interlocked.Increment(ref _currRecordPos);
+            //    }
+            //}
             return bytes;
         }
 
@@ -255,29 +312,57 @@ namespace ZyGames.Framework.RPC.IO
         /// <returns></returns>
         public byte[] PeekByte(int count)
         {
-            byte[] data = new byte[count];
-            int index = 0;
-            foreach (var buffer in _buffers)
-            {
-                data[index] = buffer;
-                index++;
-                if (index >= count)
-                {
-                    break;
-                }
-            }
-            return data;
+            byte[] bytes = new byte[count];
+            int len = _msBuffers.Read(bytes, 0, count);
+            _msBuffers.Position = _msBuffers.Position - len;
+
+            //int index = 0;
+            //foreach (var buffer in _buffersQueue)
+            //{
+            //    data[index] = buffer;
+            //    index++;
+            //    if (index >= count)
+            //    {
+            //        break;
+            //    }
+            //}
+            return bytes;
         }
 
         /// <summary>
-        /// 读取缓冲区从偏移量开始到结束的字节流
+        /// 从偏移量位置开始读取缓冲区字节流
         /// </summary>
         /// <returns></returns>
         public byte[] ReadBuffer()
         {
-            return ReadByte(_buffers.Count);
+            int count = (Length - Offset).ToInt();
+            return ReadByte(count);
         }
 
+        /// <summary>
+        /// Read and remove buffer.
+        /// </summary>
+        /// <returns></returns>
+        public byte[] PopBuffer()
+        {
+            var bytes = _msBuffers.ToArray();
+            Clear();
+            return bytes;
+        }
+
+        /// <summary>
+        /// Read and remove buffer of gzip.
+        /// </summary>
+        /// <returns></returns>
+        public byte[] PosGzipBuffer()
+        {
+            var buffer = PopBuffer();
+            if (EnableGzip && buffer.Length > EnableGzipMinByte)
+            {
+                buffer = CompressGzipBuffer(buffer);
+            }
+            return buffer;
+        } 
         /// <summary>
         /// 读取缓冲数据至结尾转为字符串
         /// </summary>
@@ -323,13 +408,14 @@ namespace ZyGames.Framework.RPC.IO
             MessageHead head = new MessageHead();
             head.HasGzip = true;
             head.PacketLength = Length;
-            //head.GzipLength = ReadInt();
             if (CheckGzipBuffer())
             {
-                byte[] gzipData = ReadBuffer();
-                //格式500+gzip( 1000+ XXXXXX)
+                byte[] gzipData = PopBuffer();
+                head.GzipLength = gzipData.Length;
+                //gzip格式500+gzip( 1000+ XXXXXX)
                 byte[] deZipData = GzipUtils.DeCompress(gzipData, 0, gzipData.Length);
                 WriteByte(deZipData);
+                Reset();
             }
             head.TotalLength = ReadInt();
             head.ErrorCode = ReadInt();
@@ -346,7 +432,8 @@ namespace ZyGames.Framework.RPC.IO
         /// <returns></returns>
         private bool CheckGzipBuffer()
         {
-            return CheckEnableGzip(PeekByte(IntSize));
+            byte[] gzipHead = PeekByte(IntSize);
+            return CheckEnableGzip(gzipHead);
         }
 
         /// <summary>
@@ -367,7 +454,7 @@ namespace ZyGames.Framework.RPC.IO
 
         #region WriteByte
         /// <summary>
-        /// 
+        /// Write bool
         /// </summary>
         /// <param name="value"></param>
         public void WriteByte(bool value)
@@ -376,7 +463,7 @@ namespace ZyGames.Framework.RPC.IO
             WriteByte(bytes);
         }
         /// <summary>
-        /// 
+        /// Write float
         /// </summary>
         /// <param name="value"></param>
         public void WriteByte(float value)
@@ -385,7 +472,7 @@ namespace ZyGames.Framework.RPC.IO
             WriteByte(bytes);
         }
         /// <summary>
-        /// 
+        /// Write byte
         /// </summary>
         /// <param name="value"></param>
         public void WriteByte(double value)
@@ -394,7 +481,7 @@ namespace ZyGames.Framework.RPC.IO
             WriteByte(bytes);
         }
         /// <summary>
-        /// 写入long
+        /// Write long
         /// </summary>
         /// <param name="value"></param>
         public void WriteByte(long value)
@@ -404,7 +491,7 @@ namespace ZyGames.Framework.RPC.IO
         }
 
         /// <summary>
-        /// 写入Int
+        /// Write Int
         /// </summary>
         /// <param name="value"></param>
         public void WriteByte(int value)
@@ -413,7 +500,7 @@ namespace ZyGames.Framework.RPC.IO
             WriteByte(bytes);
         }
         /// <summary>
-        /// 
+        /// Write short
         /// </summary>
         /// <param name="value"></param>
         public void WriteByte(short value)
@@ -423,7 +510,7 @@ namespace ZyGames.Framework.RPC.IO
         }
 
         /// <summary>
-        /// 
+        /// Write string
         /// </summary>
         /// <param name="value"></param>
         public void WriteByte(string value)
@@ -439,7 +526,30 @@ namespace ZyGames.Framework.RPC.IO
         }
 
         /// <summary>
-        /// 
+        /// Write object
+        /// </summary>
+        /// <param name="obj"></param>
+        /// <param name="useGzip"></param>
+        public void WriteByte(object obj, bool useGzip = true)
+        {
+            try
+            {
+                var bytes = ProtoBufUtils.Serialize(obj, useGzip);
+                byte[] lengthBytes = BitConverter.GetBytes(bytes.Length);
+                WriteByte(lengthBytes);
+                if (bytes.Length > 0)
+                {
+                    WriteByte(bytes);
+                }
+            }
+            catch (Exception err)
+            {
+                throw new ArgumentOutOfRangeException("obj is not a valid data can be serialized.", err);
+            }
+        }
+
+        /// <summary>
+        /// Write byte
         /// </summary>
         /// <param name="value"></param>
         public void WriteByte(byte value)
@@ -449,7 +559,7 @@ namespace ZyGames.Framework.RPC.IO
         }
 
         /// <summary>
-        /// 
+        /// Write bytes
         /// </summary>
         /// <param name="buffer"></param>
         public void WriteByte(byte[] buffer)
@@ -469,13 +579,14 @@ namespace ZyGames.Framework.RPC.IO
             {
                 throw new ArgumentOutOfRangeException("count", "buffer size outof range");
             }
-            for (int i = offset; i < count; i++)
-            {
-                _buffers.Enqueue(buffer[i]);
-            }
+            _msBuffers.Write(buffer, offset, count);
+            //for (int i = offset; i < count; i++)
+            //{
+            //    _buffersQueue.Enqueue(buffer[i]);
+            //}
         }
         /// <summary>
-        /// 
+        /// Push bool
         /// </summary>
         /// <param name="value"></param>
         public void PushIntoStack(bool value)
@@ -483,7 +594,7 @@ namespace ZyGames.Framework.RPC.IO
             PushObjIntoQueue(value);
         }
         /// <summary>
-        /// 
+        /// Push byte
         /// </summary>
         /// <param name="value"></param>
         public void PushIntoStack(byte value)
@@ -491,7 +602,7 @@ namespace ZyGames.Framework.RPC.IO
             PushObjIntoQueue(value);
         }
         /// <summary>
-        /// 
+        /// Push short
         /// </summary>
         /// <param name="value"></param>
         public void PushIntoStack(short value)
@@ -499,7 +610,7 @@ namespace ZyGames.Framework.RPC.IO
             PushObjIntoQueue(value);
         }
         /// <summary>
-        /// 
+        /// Push int
         /// </summary>
         /// <param name="value"></param>
         public void PushIntoStack(int value)
@@ -507,7 +618,7 @@ namespace ZyGames.Framework.RPC.IO
             PushObjIntoQueue(value);
         }
         /// <summary>
-        /// 
+        /// Push long
         /// </summary>
         /// <param name="value"></param>
         public void PushIntoStack(long value)
@@ -515,7 +626,7 @@ namespace ZyGames.Framework.RPC.IO
             PushObjIntoQueue(value);
         }
         /// <summary>
-        /// 
+        /// Push float
         /// </summary>
         /// <param name="value"></param>
         public void PushIntoStack(float value)
@@ -523,15 +634,16 @@ namespace ZyGames.Framework.RPC.IO
             PushObjIntoQueue(value);
         }
         /// <summary>
-        /// 
+        /// Push double
         /// </summary>
         /// <param name="value"></param>
         public void PushIntoStack(double value)
         {
             PushObjIntoQueue(value);
         }
+
         /// <summary>
-        /// 
+        /// Push string
         /// </summary>
         /// <param name="value"></param>
         public void PushIntoStack(string value)
@@ -539,6 +651,25 @@ namespace ZyGames.Framework.RPC.IO
             value = value ?? "";
             PushObjIntoQueue(value);
         }
+
+        /// <summary>
+        /// Push object
+        /// </summary>
+        /// <param name="obj"></param>
+        /// <param name="useGzip"></param>
+        public void PushIntoStack(object obj, bool useGzip = true)
+        {
+            try
+            {
+                var bytes = ProtoBufUtils.Serialize(obj, useGzip);
+                PushObjIntoQueue(bytes);
+            }
+            catch (Exception err)
+            {
+                throw new ArgumentOutOfRangeException("obj is not a valid data can be serialized.", err);
+            }
+        }
+
         /// <summary>
         /// 放入缓冲队列中
         /// </summary>
@@ -603,6 +734,10 @@ namespace ZyGames.Framework.RPC.IO
             {
                 PushIntoStack(obj as MessageStructure);
             }
+            else
+            {
+                PushIntoStack(obj);
+            }
         }
         /// <summary>
         /// 写入启用Gzip压缩的字节流，格式： Len(4) + gzip(buffer)
@@ -637,7 +772,7 @@ namespace ZyGames.Framework.RPC.IO
         }
 
         /// <summary>
-        /// 将缓冲队列写入缓冲区,大于1024开始压缩
+        /// 将缓冲队列写入缓冲区,大于10k开始压缩
         /// </summary>
         /// <param name="head"></param>
         public void WriteBuffer(MessageHead head)
@@ -645,10 +780,10 @@ namespace ZyGames.Framework.RPC.IO
             int stackSize = GetHeadByteSize(head);
             stackSize += GetStackByteSize();//包括了头部长度大小
             head.TotalLength = stackSize;
-            bool result = false;
+            bool hasGzipHead = false;
             if (head.HasGzip && (!EnableGzip || (EnableGzip && stackSize <= EnableGzipMinByte)))
             {
-                result = true;
+                hasGzipHead = true;
                 head.GzipLength = stackSize;
                 WriteByte(head.GzipLength);
             }
@@ -657,9 +792,9 @@ namespace ZyGames.Framework.RPC.IO
             WriteHeadBufer(head);
             WriteStackToBuffer();
             //判断是否有启用Gzip
-            if (head.HasGzip && EnableGzip && !result && stackSize > EnableGzipMinByte)
+            if (head.HasGzip && EnableGzip && !hasGzipHead && stackSize > EnableGzipMinByte)
             {
-                byte[] orgData = ReadBuffer();
+                byte[] orgData = PopBuffer();
                 head.GzipLength = WriteGzipCompressBuffer(orgData);
             }
             head.PacketLength = Length;
@@ -671,16 +806,21 @@ namespace ZyGames.Framework.RPC.IO
         /// <returns></returns>
         private int WriteGzipCompressBuffer(byte[] orgData)
         {
-            byte[] buffer = GzipUtils.EnCompress(orgData, 0, orgData.Length);
+            byte[] buffer = CompressGzipBuffer(orgData);
             int gzipLength = buffer.Length;
-            WriteByte(gzipLength);//分包时通过此长度计算来组包
+            //这里不需要再加Len长度，在socekt传送时会统一增加包的长度
             WriteByte(buffer);
             return gzipLength;
         }
 
+        private static byte[] CompressGzipBuffer(byte[] data)
+        {
+            return GzipUtils.EnCompress(data, 0, data.Length);
+        }
+
         private void PushObjIntoQueue(object value)
         {
-            _waitWriteBuffers.Enqueue(value);
+            _waitWriteObjects.Enqueue(value);
         }
 
         private void WriteHeadBufer(MessageHead head)
@@ -708,10 +848,10 @@ namespace ZyGames.Framework.RPC.IO
         /// </summary>
         private void WriteStackToBuffer()
         {
-            while (_waitWriteBuffers.Count > 0)
+            while (_waitWriteObjects.Count > 0)
             {
                 object item;
-                if (_waitWriteBuffers.TryDequeue(out item))
+                if (_waitWriteObjects.TryDequeue(out item))
                 {
                     if (item is string)
                     {
@@ -751,7 +891,12 @@ namespace ZyGames.Framework.RPC.IO
                         int stackSize = ds.GetStackByteSize();
                         ds.WriteByte(stackSize);
                         ds.WriteStackToBuffer();
-                        WriteByte(ds.ReadBuffer());
+                        WriteByte(ds.PopBuffer());
+                    }
+                    else if (item is byte[])
+                    {
+                        //已序列化好的内容，直接写入
+                        WriteByte(item as byte[]);
                     }
                 }
             }
@@ -764,7 +909,7 @@ namespace ZyGames.Framework.RPC.IO
         private int GetStackByteSize()
         {
             int length = 0;
-            var er = _waitWriteBuffers.GetEnumerator();
+            var er = _waitWriteObjects.GetEnumerator();
             while (er.MoveNext())
             {
                 var item = er.Current;
@@ -817,6 +962,10 @@ namespace ZyGames.Framework.RPC.IO
             else if (item is MessageStructure)
             {
                 length += (item as MessageStructure).GetStackByteSize();
+            }
+            else if (item is byte[])
+            {
+                length += (item as byte[]).Length;
             }
             return length;
         }

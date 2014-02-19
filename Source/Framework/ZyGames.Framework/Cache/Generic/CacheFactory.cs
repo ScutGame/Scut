@@ -36,6 +36,7 @@ using ZyGames.Framework.Model;
 using ZyGames.Framework.Net;
 using ZyGames.Framework.Net.Redis;
 using ZyGames.Framework.Redis;
+using ZyGames.Framework.Script;
 
 namespace ZyGames.Framework.Cache.Generic
 {
@@ -211,7 +212,7 @@ namespace ZyGames.Framework.Cache.Generic
                                             }
                                             CacheChangeManager.Current.Remove(key);
                                             Type type = entity.GetType();
-                                            string entityKey = string.Format("{0},{1}", key, type.Assembly.GetName());
+                                            string entityKey = string.Format("{0},{1}", key, type.Assembly.GetName().Name);
                                             CacheChangeManager.Current.PutSql(entityKey);
                                         }
                                     }
@@ -259,6 +260,7 @@ namespace ZyGames.Framework.Cache.Generic
 
         private static bool enableUpdateListent = false;
         private static int _isDisposed;
+        private static string entityTypeNameFormat = "System.Collections.Generic.Dictionary`2[[System.String],[{0},{1}]]";
 
 
         /// <summary>
@@ -332,7 +334,7 @@ namespace ZyGames.Framework.Cache.Generic
             int index = key.IndexOf(',');
             var arr = (index > -1 ? key.Substring(0, index) : key).Split('_');
             string typeName = arr[0];
-            string assName = key.Substring(index, key.Length - index);
+            string asmName = key.Substring(index + 1, key.Length - index - 1);
             string persionKey = string.Empty;
             string entityKey = string.Empty;
             if (arr.Length > 1)
@@ -359,10 +361,17 @@ namespace ZyGames.Framework.Cache.Generic
 
             if (type == null && index > -1)
             {
-                string typeNameFormat = string.Format("System.Collections.Generic.Dictionary`2[[System.String],[{0}{1}]]",
-                    typeName,
-                    assName);
-                type = Type.GetType(typeNameFormat);
+                
+                type = Type.GetType(string.Format(entityTypeNameFormat, typeName, asmName), false, true);
+                if (Equals(type, null))
+                {
+                    var enitityAsm = ScriptEngines.GetEntityAssembly();
+                    if (enitityAsm != null)
+                    {
+                        asmName = enitityAsm.GetName().Name;
+                        type = Type.GetType(string.Format(entityTypeNameFormat, typeName, asmName), false, true);
+                    }
+                }
             }
             dynamic entity = null;
             RedisManager.Process(client =>
@@ -372,7 +381,7 @@ namespace ZyGames.Framework.Cache.Generic
                     var data = client.Get<byte[]>(redisKey);
                     if (data != null)
                     {
-                        var entityType = Type.GetType(string.Format("{0}{1}", typeName, assName));
+                        var entityType = Type.GetType(string.Format("{0},{1}", typeName, asmName));
                         entity = ProtoBufUtils.Deserialize(data, entityType);
                     }
                 }

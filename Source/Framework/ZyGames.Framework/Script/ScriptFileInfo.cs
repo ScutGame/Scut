@@ -77,6 +77,11 @@ namespace ZyGames.Framework.Script
         }
 
         /// <summary>
+        /// Object type.
+        /// </summary>
+        public Type ObjType { get; set; }
+
+        /// <summary>
         /// ÎÄ¼þ±àºÅ
         /// </summary>
         public string FileCode

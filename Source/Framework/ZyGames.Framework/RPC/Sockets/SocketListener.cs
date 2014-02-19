@@ -22,92 +22,15 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ****************************************************************************/
 using System;
-using System.IO;
 using System.Net.Sockets;
-using System.Net;
-using System.Diagnostics;
 using System.Collections.Generic;
 using System.Threading;
-using System.Collections.Concurrent;
 using ZyGames.Framework.Common.Log;
 using NLog;
 
 namespace ZyGames.Framework.RPC.Sockets
 {
-	/// <summary>
-	/// Connection event arguments.
-	/// </summary>
-    public class ConnectionEventArgs : EventArgs
-    {
-		/// <summary>
-		/// Gets or sets the socket.
-		/// </summary>
-		/// <value>The socket.</value>
-        public ExSocket Socket { get; set; }
-       /// <summary>
-       /// Gets or sets the data.
-       /// </summary>
-       /// <value>The data.</value>
-		 public byte[] Data { get; set; }
-    }
-	/// <summary>
-	/// Connection event handler.
-	/// </summary>
-    public delegate void ConnectionEventHandler(object sender, ConnectionEventArgs e);
-	/// <summary>
-	/// Ex socket.
-	/// </summary>
-    public class ExSocket
-    {
-        private Socket socket;
-        private IPEndPoint remoteEndPoint;
-        private ConcurrentQueue<byte[]> sendQueue;
-        private int isInSending;
-        internal DateTime LastAccessTime;
-		/// <summary>
-		/// Gets the work socket.
-		/// </summary>
-		/// <value>The work socket.</value>
-        public Socket WorkSocket { get { return socket; } }
-        /// <summary>
-        /// Gets the remote end point.
-        /// </summary>
-        /// <value>The remote end point.</value>
-		public EndPoint RemoteEndPoint { get { return remoteEndPoint; } }
-        /// <summary>
-        /// Gets the length of the queue.
-        /// </summary>
-        /// <value>The length of the queue.</value>
-		public int QueueLength { get { return sendQueue.Count; } }
-		/// <summary>
-		/// Initializes a new instance of the <see cref="ZyGames.Framework.RPC.Sockets.ExSocket"/> class.
-		/// </summary>
-		/// <param name="socket">Socket.</param>
-        public ExSocket(Socket socket)
-        {
-            this.socket = socket;
-            this.remoteEndPoint = (IPEndPoint)socket.RemoteEndPoint;
-            sendQueue = new ConcurrentQueue<byte[]>();
-        }
-
-        internal void Enqueue(byte[] data)
-        {
-            sendQueue.Enqueue(data);
-        }
-        internal bool TryDequeue(out byte[] result)
-        {
-            return sendQueue.TryDequeue(out result);
-        }
-        internal bool TrySetSendFlag()
-        {
-            return Interlocked.CompareExchange(ref isInSending, 1, 0) == 0;
-        }
-        internal void ResetSendFlag()
-        {
-            Interlocked.Exchange(ref isInSending, 0);
-        }
-    }
-	/// <summary>
+    /// <summary>
 	/// Socket listener.
 	/// </summary>
     public class SocketListener

@@ -470,7 +470,7 @@ namespace ZyGames.Framework.Data.Sql
                 if (keyColumns.Count > 0)
                 {
                     string[] keyArray = new string[keyColumns.Count];
-                    command.AppendFormat("ALTER TABLE {0} DROP CONSTRAINT PK_{0};", FormatName(tableName));
+                    command.AppendFormat("ALTER TABLE {0} DROP CONSTRAINT PK_{1};", FormatName(tableName), tableName);
                     command.AppendLine();
                     int i = 0;
                     foreach (var keyColumn in keyColumns)
@@ -484,8 +484,9 @@ namespace ZyGames.Framework.Data.Sql
                         i++;
                         index++;
                     }
-                    command.AppendFormat("ALTER TABLE {0} ADD CONSTRAINT PK_{0} PRIMARY KEY({1});", 
-                        FormatName(tableName), 
+                    command.AppendFormat("ALTER TABLE {0} ADD CONSTRAINT PK_{1} PRIMARY KEY({2});", 
+                        FormatName(tableName),
+                        tableName,
                         FormatQueryColumn(",", keyArray));
                 }
                 if (index > 0)

@@ -26,6 +26,7 @@ using System.IO;
 using System.IO.Compression;
 using System.Linq;
 using System.Reflection;
+using System.Runtime;
 using ProtoBuf;
 using ProtoBuf.Meta;
 using ZyGames.Framework.Common.Log;
@@ -40,7 +41,7 @@ namespace ZyGames.Framework.Common.Serialization
         private static RuntimeTypeModel typeModel;
 
         /// <summary>
-        /// byte数组压缩超出限制长度
+        /// byte数组压缩超出(默认10k)开启压缩
         /// </summary>
         public static int CompressOutLength { get; set; }
 
@@ -70,8 +71,9 @@ namespace ZyGames.Framework.Common.Serialization
             {
                 typeModel.Serialize(fs, obj);
             }
-        }
-
+        }        
+        
+ 
         /// <summary>
         /// 使用protobuf反序列化二进制文件为对象
         /// </summary>
@@ -97,14 +99,16 @@ namespace ZyGames.Framework.Common.Serialization
             return Serialize(obj);
         }
 
+        //By Seamoon
         /// <summary>
         /// 使用protobuf把对象序列化为Byte数组
         /// </summary>
         /// <param name="obj">序列化的对象</param>
+        /// <param name="autoUseGzip"> </param>
         /// <returns></returns>
-        public static Byte[] Serialize(object obj)
+        public static Byte[] Serialize(object obj, bool autoUseGzip = true)
         {
-            return SerializeAutoGZip(obj);
+            return SerializeAutoGZip(obj, autoUseGzip);
         }
 
         /// <summary>
@@ -144,26 +148,49 @@ namespace ZyGames.Framework.Common.Serialization
         /// 序列化对象为二进制数组,并gzip压缩
         /// </summary>
         /// <param name="obj">序列化的对象</param>
+        /// <param name="autoUseGzip"> </param>
         /// <returns></returns>
-        internal static Byte[] SerializeAutoGZip(object obj)
+        internal static Byte[] SerializeAutoGZip(object obj, bool autoUseGzip = true)
         {
             using (var memory = new MemoryStream())
             {
                 typeModel.Serialize(memory, obj);
                 Byte[] bytes = memory.ToArray();
-                if (CompressOutLength > 0 && bytes.Length > CompressOutLength)
+
+                if (autoUseGzip)
                 {
-                    using (var gms = new MemoryStream())
-                    using (var gzs = new GZipStream(gms, CompressionMode.Compress, true))
+                    if (CompressOutLength > 0 && bytes.Length > CompressOutLength)
                     {
-                        gms.Position = 4;
-                        gzs.Write(bytes, 0, bytes.Length);
-                        gzs.Close();
-                        return gms.ToArray();
+                        using (var gms = new MemoryStream())
+                        using (var gzs = new GZipStream(gms, CompressionMode.Compress, true))
+                        {
+                            gms.Position = 4;//这里从4位之后开始写
+                            gzs.Write(bytes, 0, bytes.Length);
+                            gzs.Close();
+                            bytes = gms.ToArray();
+                        }
                     }
                 }
+                
                 return bytes;
             }
+        }
+
+        //By Seamoon
+        /// <summary>
+        /// 用于判断指定的bytes是否处于gzip状态
+        /// </summary>
+        /// <param name="data"></param>
+        /// <returns></returns>
+        [TargetedPatchingOptOut("Performance critical to inline across NGen")]
+        public static bool IsCompressed(byte[] data)
+        {
+            if (data.Length >= 14 && data[0] == 0 && data[1] == 0 && data[2] == 0 && data[3] == 0 && data[4] == 0x1F &&
+                        data[5] == 0x8B)
+            {
+                return true;
+            }
+            return false;
         }
 
         /// <summary>
@@ -179,20 +206,18 @@ namespace ZyGames.Framework.Common.Serialization
                 using (MemoryStream stream = new MemoryStream())
                 {
                 Start:
-                    if (data.Length >= 14 && data[0] == 0 && data[1] == 0 && data[2] == 0 & data[3] == 0 && data[4] == 0x1F &&
-                        data[5] == 0x8B)
+                    if (IsCompressed(data))
                     {
                         using (MemoryStream ms = new MemoryStream(data, 4, data.Length - 4))
                         using (GZipStream gzs = new GZipStream(ms, CompressionMode.Decompress))
                         {
                             gzs.CopyTo(stream);
                             var buf = stream.GetBuffer();
-                            if (buf.Length >= 14 && buf[0] == 0 && buf[1] == 0 && buf[2] == 0 &&
-                                buf[3] == 0 & buf[4] == 0x1F && buf[5] == 0x8B)
+                            if (IsCompressed(buf)) //用于防多层gzip
                             {
                                 data = stream.ToArray();
                                 stream.SetLength(0);
-                                goto Start;
+                                goto Start; 
                             }
                         }
                     }
