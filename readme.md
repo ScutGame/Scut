@@ -58,7 +58,7 @@ OSChina代码库：https://git.oschina.net/scutgame/Scut<br />
 > 6. 修改生成Sql表结构语句BUG
 > 7. 修改渠道登录中间件不能正常登录问题
 
-###版本：6.1.5.6 (2014-1-26) Unstable
+###版本：6.1.5.6 (2014-1-26) Release
 > 1. 增加exe版(console），web版本(IIS)的游戏服宿主程序
 > 2. 增加Model支持脚本化，实现不停服更新
 > 3. 增加Language支持脚本化
@@ -67,13 +67,13 @@ OSChina代码库：https://git.oschina.net/scutgame/Scut<br />
 > 6. 修改消息队列写MSSQL数据库时SqlParamter被占用问题
 
 
-###版本：6.1.5.5 (2014-1-10) Unstable
+###版本：6.1.5.5 (2014-1-10) Release
 > 1. 增加对对象属性的原子操作方法
 > 2. 修改全局缓存序列化时存储到Redis内存溢出问题
 > 3. 修改Protobuf不能序列化私有成员的问题
 
 
-###版本：6.1.5.3 (2013-12-31) Unstable
+###版本：6.1.5.3 (2013-12-31) Release
 > 1. 增加游戏运行环境配置类
 > 2. 增加Sync模型支持，简化部分数据通讯协议
 > 3. 修改数据库为可选配置
