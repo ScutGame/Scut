@@ -56,13 +56,10 @@ namespace GameNotice
         {
             try
             {
-                var setting = new EnvironmentSetting(); 
-                setting.ScriptStartBeforeHandle += () =>
-                {
-                    ActionFactory.SetActionIgnoreAuthorize(2001, 404);
-                    InitNotice();
-                };
+                var setting = new EnvironmentSetting();
                 GameEnvironment.Start(setting);
+                ActionFactory.SetActionIgnoreAuthorize(2001, 404);
+                InitNotice();
                 Console.WriteLine("The server is staring...");
 
             }
@@ -72,19 +69,19 @@ namespace GameNotice
             }
         }
 
-    private void InitNotice()
-    {
-        var cacheSet = new ShareCacheStruct<Notice>();
-        for (int i = 0; i < 5; i++)
+        private void InitNotice()
         {
-            int id = (int)cacheSet.GetNextNo();
-            Notice notice = new Notice(id);
-            notice.Title = "tile" + id;
-            notice.Content = "Content" + id;
-            notice.CreateDate = DateTime.Now;
-            cacheSet.Add(notice);
+            var cacheSet = new ShareCacheStruct<Notice>();
+            for (int i = 0; i < 5; i++)
+            {
+                int id = (int)cacheSet.GetNextNo();
+                Notice notice = new Notice(id);
+                notice.Title = "tile" + id;
+                notice.Content = "Content" + id;
+                notice.CreateDate = DateTime.Now;
+                cacheSet.Add(notice);
+            }
         }
-    }
 
         protected override void OnServiceStop()
         {

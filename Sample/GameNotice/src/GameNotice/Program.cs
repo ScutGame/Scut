@@ -14,7 +14,7 @@ namespace GameNotice
         {
             try
             {
-                GameHostApp.Current.Start();
+                GameHostApp.Current.Start(args);
             }
             catch (Exception ex)
             {
