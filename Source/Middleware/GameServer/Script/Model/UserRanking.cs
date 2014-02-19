@@ -1,4 +1,4 @@
-﻿/****************************************************************************
+/****************************************************************************
 Copyright (c) 2013-2015 scutgame.com
 
 http://www.scutgame.com
@@ -21,20 +21,60 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ****************************************************************************/
-using System.Reflection;
-using System.Runtime.CompilerServices;
-using System.Runtime.InteropServices;
-// Version information for an assembly consists of the following four values:
-//
-//      Major Version
-//      Minor Version 
-//      Build Number
-//      Revision
-//
-//
-[assembly: AssemblyVersion("5.8.0.*")]
-[assembly: AssemblyCompany("scutgame.com")]
-[assembly: AssemblyProduct("Scut.GameEngine")]
-[assembly: AssemblyCopyright("Copyright © 2013-2015 scutgame.com")]
-[assembly: AssemblyTrademark("")]
-[assembly: AssemblyCulture("")]
+using System;
+using ProtoBuf;
+using ZyGames.Framework.Model;
+
+namespace GameServer.Model
+{
+    /// <summary>
+    /// 玩家排行榜实体类
+    /// </summary>
+    [Serializable, ProtoContract]
+    [EntityTable(CacheType.Entity, "ConnData")]
+    public class UserRanking : ShareEntity
+    {
+        public UserRanking()
+            : base(false)
+        {
+            CreateDate = DateTime.Now;
+        }
+
+        [ProtoMember(1)]
+        [EntityField(true)]
+        public int UserID
+        {
+            get;
+            set;
+        }
+
+        [ProtoMember(2)]
+        [EntityField]
+        public string UserName
+        {
+            get;
+            set;
+        }
+
+        [ProtoMember(3)]
+        [EntityField]
+        public int Score
+        {
+            get;
+            set;
+        }
+
+        [ProtoMember(4)]
+        [EntityField]
+        public DateTime CreateDate
+        {
+            get;
+            set;
+        }
+
+        protected override int GetIdentityId()
+        {
+            return UserID;
+        }
+    }
+}

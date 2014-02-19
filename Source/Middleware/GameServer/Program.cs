@@ -23,6 +23,8 @@ THE SOFTWARE.
 ****************************************************************************/
 using System;
 using ZyGames.Framework.Common.Log;
+using ZyGames.Framework.Game.Runtime;
+using ZyGames.Framework.RPC.IO;
 using ZyGames.Framework.Script;
 
 namespace GameServer
@@ -33,19 +35,19 @@ namespace GameServer
         {
             try
             {
-                string mainClass = "MainClass";
-                ScriptEngines.AddReferencedAssembly("ZyGames.Framework.Game.dll");
+                var setting = new EnvironmentSetting();
+                GameEnvironment.Start(setting);
+
                 dynamic instance;
-                if (ScriptEngines.RunMainClass(mainClass, out instance))
+                if (ScriptEngines.RunMainClass(out instance, args))
                 {
-                    instance.Start();
                     Console.WriteLine("Press any key to exit the listener!");
                     Console.ReadKey();
                     instance.Stop();
                 }
                 else
                 {
-                    Console.WriteLine("Run class " + mainClass + " fail.");
+                    Console.WriteLine("Run main class fail.");
                     Console.ReadKey();
                 }
             }

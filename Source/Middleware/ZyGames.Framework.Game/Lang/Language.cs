@@ -28,6 +28,7 @@ using System.Linq;
 using System.Text;
 using ZyGames.Framework.Common;
 using ZyGames.Framework.Common.Configuration;
+using ZyGames.Framework.Common.Log;
 using ZyGames.Framework.Script;
 
 namespace ZyGames.Framework.Game.Lang
@@ -61,6 +62,11 @@ namespace ZyGames.Framework.Game.Lang
                         if (_instance == null)
                         {
                             SetLang();
+                        }
+                        //By Seamoon if null then use default lang
+                        if (_instance == null)
+                        {
+                            _instance = new Language();
                         }
                     }
                 }
@@ -96,6 +102,10 @@ namespace ZyGames.Framework.Game.Lang
             if (obj != null)
             {
                 _instance = obj;
+            }
+            else
+            {
+                TraceLog.WriteWarn("Can not find the corresponding language configuration,typeName:{0}", typeName);//By Seamoon
             }
         }
 

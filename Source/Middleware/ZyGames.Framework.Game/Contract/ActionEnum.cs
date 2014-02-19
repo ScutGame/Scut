@@ -21,20 +21,17 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ****************************************************************************/
-using System.Reflection;
-using System.Runtime.CompilerServices;
-using System.Runtime.InteropServices;
-// Version information for an assembly consists of the following four values:
-//
-//      Major Version
-//      Minor Version 
-//      Build Number
-//      Revision
-//
-//
-[assembly: AssemblyVersion("5.8.0.*")]
-[assembly: AssemblyCompany("scutgame.com")]
-[assembly: AssemblyProduct("Scut.GameEngine")]
-[assembly: AssemblyCopyright("Copyright © 2013-2015 scutgame.com")]
-[assembly: AssemblyTrademark("")]
-[assembly: AssemblyCulture("")]
+namespace ZyGames.Framework.Game.Contract
+{
+    internal enum ActionEnum
+    {
+        /// <summary>
+        /// 心跳
+        /// </summary>
+        Heartbeat = 1,
+        /// <summary>
+        /// 中断
+        /// </summary>
+        Interrupt = 2
+    }
+}

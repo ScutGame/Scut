@@ -27,6 +27,7 @@ using ZyGames.Framework.Common.Configuration;
 using ZyGames.Framework.Common.Locking;
 using ZyGames.Framework.Common.Log;
 using ZyGames.Framework.Game.Context;
+using ZyGames.Framework.Game.Contract;
 using ZyGames.Framework.Game.Lang;
 
 namespace ZyGames.Framework.Game.Service
@@ -144,14 +145,14 @@ namespace ZyGames.Framework.Game.Service
             {
                 St = st;
             }
-            InitContext(httpGet.SessionId, actionId, UserId);
+            InitContext(httpGet.Session.SessionId, actionId, UserId);
             InitAction();
             InitChildAction();
         }
 
-        private void InitContext(string ssid, int actionId, int userId)
+        private void InitContext(string sessionId, int actionId, int userId)
         {
-            Current = GameContext.GetInstance(ssid, actionId, userId);
+            Current = GameContext.GetInstance(sessionId, actionId, userId);
             if (UserFactory != null)
             {
                 Current.User = UserFactory(userId);

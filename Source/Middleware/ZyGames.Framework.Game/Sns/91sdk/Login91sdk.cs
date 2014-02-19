@@ -52,7 +52,7 @@ namespace ZyGames.Framework.Game.Sns
             this._retailID = retailID;
             SessionID = sessionID;
             Uin = retailUser;
-            GameChannel gameChannel = ZyGameBaseConfigManager.GameSetting.GetChannelSetting(ChannelType.channelMIUI);
+            GameChannel gameChannel = ZyGameBaseConfigManager.GameSetting.GetChannelSetting(ChannelType.channel91);
             if (gameChannel != null)
             {
                 Url = gameChannel.Url;

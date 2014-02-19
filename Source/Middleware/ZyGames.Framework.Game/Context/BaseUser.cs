@@ -50,7 +50,6 @@ namespace ZyGames.Framework.Game.Context
         protected BaseUser(AccessLevel access)
             : base(access)
 		{
-		    SocketSid = string.Empty;
 		}
 
         private ContextCacheSet<CacheItem> _userData;
@@ -96,12 +95,6 @@ namespace ZyGames.Framework.Game.Context
             }
         }
 
-
-        /// <summary>
-        /// 远端SessionId
-        /// </summary>
-        [JsonIgnore]
-        public string SocketSid { get; set; }
 
         /// <summary>
         /// 

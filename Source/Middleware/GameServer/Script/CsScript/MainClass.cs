@@ -21,20 +21,29 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ****************************************************************************/
-using System.Reflection;
-using System.Runtime.CompilerServices;
-using System.Runtime.InteropServices;
-// Version information for an assembly consists of the following four values:
-//
-//      Major Version
-//      Minor Version 
-//      Build Number
-//      Revision
-//
-//
-[assembly: AssemblyVersion("5.8.0.*")]
-[assembly: AssemblyCompany("scutgame.com")]
-[assembly: AssemblyProduct("Scut.GameEngine")]
-[assembly: AssemblyCopyright("Copyright © 2013-2015 scutgame.com")]
-[assembly: AssemblyTrademark("")]
-[assembly: AssemblyCulture("")]
+using System;
+using ZyGames.Framework.Cache.Generic;
+using ZyGames.Framework.Game.Context;
+using ZyGames.Framework.Game.Contract;
+using ZyGames.Framework.Game.Runtime;
+using ZyGames.Framework.Script;
+
+namespace Game.Script
+{
+    public class MainClass : GameSocketHost, IMainScript
+    {
+        protected override BaseUser GetUser(int userId)
+        {
+            return (BaseUser)CacheFactory.GetPersonalEntity("GameServer.Model.GameUser", userId.ToString(), userId);
+        }
+
+        protected override void OnStartAffer()
+        {
+        }
+
+        protected override void OnServiceStop()
+        {
+            GameEnvironment.Stop();
+        }
+    }
+}

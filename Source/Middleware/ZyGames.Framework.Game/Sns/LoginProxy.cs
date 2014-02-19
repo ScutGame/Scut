@@ -25,6 +25,7 @@ using System;
 using System.Collections.Generic;
 using ZyGames.Framework.Common;
 using ZyGames.Framework.Game.Configuration;
+using ZyGames.Framework.Game.Contract;
 using ZyGames.Framework.Game.Service;
 
 namespace ZyGames.Framework.Game.Sns

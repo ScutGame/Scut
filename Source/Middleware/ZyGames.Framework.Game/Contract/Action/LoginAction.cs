@@ -187,8 +187,7 @@ namespace ZyGames.Framework.Game.Contract.Action
                         {
                             Current.User = user;
                             user.RemoteAddress = httpGet.RemoteAddress;
-                            user.SocketSid = Current.SessionId;
-                            httpGet.LoginSuccessCallback(UserId);
+                            httpGet.Session.BindIdentity(UserId);
                         }
                     }
                     return true;

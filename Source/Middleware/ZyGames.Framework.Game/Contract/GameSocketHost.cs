@@ -32,41 +32,19 @@ using System.Web;
 using ZyGames.Framework.Common;
 using ZyGames.Framework.Common.Configuration;
 using ZyGames.Framework.Common.Log;
+using ZyGames.Framework.Common.Reflect;
 using ZyGames.Framework.Game.Context;
 using ZyGames.Framework.Game.Lang;
 using ZyGames.Framework.Game.Runtime;
 using ZyGames.Framework.Game.Service;
 using ZyGames.Framework.Net;
 using ZyGames.Framework.RPC.Sockets;
-using NLog;
 using ZyGames.Framework.RPC.IO;
 using ZyGames.Framework.RPC.Sockets.Threading;
 using ZyGames.Framework.Script;
 
 namespace ZyGames.Framework.Game.Contract
 {
-
-    internal enum ActionEnum
-    {
-        /// <summary>
-        /// 心跳
-        /// </summary>
-        Heartbeat = 1,
-        /// <summary>
-        /// 中断
-        /// </summary>
-        Interrupt = 2
-    }
-    class RequestPackage
-    {
-        public string Route { get; set; }
-        public int ActionId { get; set; }
-        public string Param { get; set; }
-        public GameSession Session { get; set; }
-        public Guid SSID { get; set; }
-        public DateTime ReceiveTime { get; set; }
-    }
-
     /// <summary>
     /// 游戏服Socket通讯宿主基类
     /// </summary>
@@ -75,9 +53,6 @@ namespace ZyGames.Framework.Game.Contract
         private static int httpRequestTimeout = ConfigUtils.GetSetting("Game.Http.Timeout", "120000").ToInt();
         private ConcurrentQueue<RequestPackage> requestQueue = new ConcurrentQueue<RequestPackage>();
         private ConcurrentQueue<RequestPackage> lockedQueue = new ConcurrentQueue<RequestPackage>();
-        private ConcurrentDictionary<Guid, HttpClientConnection> httpRequestPool = new ConcurrentDictionary<Guid, HttpClientConnection>();
-        internal ConcurrentDictionary<string, GameSession> globalSessions = new ConcurrentDictionary<string, GameSession>();
-        internal ConcurrentDictionary<long, string> globalUid2SidMap = new ConcurrentDictionary<long, string>();
 
         private ManualResetEvent singal = new ManualResetEvent(false);
         private Thread queueProcessThread;
@@ -116,7 +91,7 @@ namespace ZyGames.Framework.Game.Contract
         /// </summary>
         protected GameSocketHost()
         {
-            int port = ActionFactory.ActionConfig.Current.Port;
+            int port = ActionConfig.Current.Port;
             IPEndPoint localEndPoint = new IPEndPoint(IPAddress.Any, port);
 
             int maxConnections = ConfigUtils.GetSetting("MaxConnections", 10000);
@@ -130,7 +105,7 @@ namespace ZyGames.Framework.Game.Contract
             var socketSettings = new SocketSettings(maxConnections, backlog, maxAcceptOps, bufferSize, localEndPoint, 3600000, 3600000);
             socketLintener = new SocketListener(socketSettings);
             socketLintener.DataReceived += new ConnectionEventHandler(socketLintener_DataReceived);
-            socketLintener.Connected += new ConnectionEventHandler(OnConnectCompleted);
+            socketLintener.Connected += new ConnectionEventHandler(socketLintener_OnConnectCompleted);
             socketLintener.Disconnected += new ConnectionEventHandler(socketLintener_Disconnected);
 
 
@@ -145,7 +120,10 @@ namespace ZyGames.Framework.Game.Contract
                 var hosts = httpHost.Split(',');
                 foreach (var host in hosts)
                 {
-                    httpListener.Prefixes.Add(string.Format("{0}:{1}/{2}/", host, httpPort, httpName));
+                    string address = host.StartsWith("http", StringComparison.InvariantCultureIgnoreCase)
+                                         ? host
+                                         : "http://" + host;
+                    httpListener.Prefixes.Add(string.Format("{0}:{1}/{2}/", address, httpPort, httpName));
                 }
             }
             queueProcessThread = new Thread(ProcessQueue);
@@ -153,11 +131,38 @@ namespace ZyGames.Framework.Game.Contract
             _LockedQueueChecker = new Timer(LockedQueueChecker, null, 100, 100);
         }
 
-        void socketLintener_Disconnected(object sender, ConnectionEventArgs e)
+        private void socketLintener_OnConnectCompleted(object sender, ConnectionEventArgs e)
         {
+            try
+            {
+                GameSession.CreateNew(e.Socket.HashCode, e.Socket, socketLintener.PostSend);
+                OnConnectCompleted(sender, e);
+            }
+            catch (Exception err)
+            {
+                TraceLog.WriteError("ConnectCompleted error:{0}", err);
+            }
         }
 
-        void socketLintener_DataReceived(object sender, ConnectionEventArgs e)
+        private void socketLintener_Disconnected(object sender, ConnectionEventArgs e)
+        {
+            try
+            {
+                GameSession session = GameSession.Get(e.Socket.HashCode);
+                if (session != null)
+                {
+                    OnDisconnected(session);
+                    session.ProxySid = Guid.Empty;
+                    session.Close();
+                }
+            }
+            catch (Exception err)
+            {
+                TraceLog.WriteError("Disconnected error:{0}", err);
+            }
+        }
+
+        private void socketLintener_DataReceived(object sender, ConnectionEventArgs e)
         {
             try
             {
@@ -191,50 +196,38 @@ namespace ZyGames.Framework.Game.Contract
                 if (!param.ContainsKey("actionid")) { Interlocked.Increment(ref errorDropNum); return; }
                 if (!param.ContainsKey("msgid")) { Interlocked.Increment(ref errorDropNum); return; }
 
-                Guid ssid;
-                if (!param.ContainsKey("ssid") || !Guid.TryParse(param["ssid"], out ssid))
+                //sessionId of proxy server
+                Guid proxySid;
+                if (!param.ContainsKey("ssid") || !Guid.TryParse(param["ssid"], out proxySid))
                 {
-                    ssid = Guid.Empty;
+                    proxySid = Guid.Empty;
                 }
                 int actionid;
                 if (!int.TryParse(param["actionid"], out actionid)) { Interlocked.Increment(ref errorDropNum); return; }
                 int msgid;
                 if (!int.TryParse(param["msgid"], out msgid)) { Interlocked.Increment(ref errorDropNum); return; }
 
-                GameSession session = null;
-                bool hasSession = false;
-                if (param.ContainsKey("sid") && !string.IsNullOrEmpty(param["sid"]))
+                //使用代理分发器时,每个ssid建立一个游服Serssion
+                GameSession session;
+                if (proxySid != Guid.Empty)
                 {
-                    if (globalSessions.TryGetValue(param["sid"], out session))
-                    {
-                        session.Channel = e.Socket;
-                        hasSession = true;
-                    }
+                    session = GameSession.Get(proxySid) ??
+                              GameSession.CreateNew(proxySid, e.Socket, socketLintener.PostSend);
+                    session.ProxySid = proxySid;
+                }
+                else
+                {
+                    session = GameSession.Get(e.Socket.HashCode);
                 }
                 if (actionid == (int)ActionEnum.Interrupt)
                 {
-                    // 客户端tcp连接断开
-                    foreach (var s in globalSessions.Values)
-                    {
-                        if (s.SSId == ssid)
-                        {
-                            OnDisconnected(s);
-                            s.SSId = Guid.Empty;
-                            s.LastActivityTime = DateTime.Now;
-                            break;
-                        }
-                    }
+                    //Proxy server notifly interrupt connect ops
+                    OnDisconnected(session);
+                    session.Close();
+                    session.ProxySid = Guid.Empty;
                     return;
                 }
 
-                if (!hasSession)
-                {
-                    session = new GameSession();
-                    session.SessionId = GenerateSid();
-                }
-
-                session.SSId = ssid;
-                session.Channel = e.Socket;
 
                 requestQueue.Enqueue(new RequestPackage
                                          {
@@ -242,7 +235,6 @@ namespace ZyGames.Framework.Game.Contract
                                              ActionId = actionid,
                                              Param = paramStr,
                                              Session = session,
-                                             SSID = ssid,
                                              ReceiveTime = DateTime.Now
                                          });
                 singal.Set();
@@ -252,6 +244,7 @@ namespace ZyGames.Framework.Game.Contract
                 TraceLog.WriteError("Received to Host:{0} error:{1}", e.Socket.RemoteEndPoint, ex);
             }
         }
+
         /// <summary>
         /// Raises the received before event.
         /// </summary>
@@ -305,23 +298,24 @@ namespace ZyGames.Framework.Game.Contract
         private void ProcessPackage(object state)
         {
             var package = (RequestPackage)state;
+            if (package == null) return;
+
             var param = package.Param;
             var session = package.Session;
-            var ssid = package.SSID;
             var actionid = package.ActionId;
-            if (actionid == (int)ActionEnum.Heartbeat)
-            {
-                // 客户端tcp心跳包
-                session.LastActivityTime = DateTime.Now;
-                OnHeartbeat(session);
-                session.ExitSession();
-                Interlocked.Decrement(ref runningNum);
-                return;
-            }
-
             try
             {
-                HttpGet httpGet = new HttpGet(param, session.SessionId, session.Channel.RemoteEndPoint.ToString(), LoginSuccessCallback, session);
+                if (actionid == (int)ActionEnum.Heartbeat)
+                {
+                    // 客户端tcp心跳包
+                    session.LastActivityTime = DateTime.Now;
+                    OnHeartbeat(session);
+                    session.ExitSession();
+                    Interlocked.Decrement(ref runningNum);
+                    return;
+                }
+
+                HttpGet httpGet = new HttpGet(param, session);
                 byte[] data = new byte[0];
                 if (!string.IsNullOrEmpty(package.Route))
                 {
@@ -338,11 +332,9 @@ namespace ZyGames.Framework.Game.Contract
                     OnRequested(httpGet, response);
                     data = response.ReadByte();
                 }
-                ExSocket channel = session.Channel;
-                byte[] buffer = CheckAdditionalHead(data, ssid);
                 try
                 {
-                    socketLintener.PostSend(channel, buffer, 0, buffer.Length);
+                    session.SendAsync(data, 0, data.Length);
                 }
                 catch (Exception ex)
                 {
@@ -369,43 +361,6 @@ namespace ZyGames.Framework.Game.Contract
         {
         }
 
-        /// <summary>
-        /// 检查加头16位ssid
-        /// </summary>
-        /// <param name="data"></param>
-        /// <param name="ssid"></param>
-        /// <returns></returns>
-        private byte[] CheckAdditionalHead(byte[] data, Guid ssid)
-        {
-            if (ssid == Guid.Empty)
-            {
-                return data;
-            }
-            var buffer = new byte[data.Length + 16];
-            Buffer.BlockCopy(ssid.ToByteArray(), 0, buffer, 0, 16);
-            Buffer.BlockCopy(data, 0, buffer, 16, data.Length);
-            return buffer;
-        }
-
-        private void LoginSuccessCallback(object obj, int userId)
-        {
-            var session = obj as GameSession;
-            session.UserId = userId;
-            string old_sid;
-            if (globalUid2SidMap.TryGetValue(userId, out old_sid))
-            {
-                if (old_sid != session.SessionId)
-                {
-                    //旧的session被踢下线
-                    GameSession old_session;
-                    if (globalSessions.TryRemove(old_sid, out old_session))
-                    {
-                    }
-                }
-            }
-            globalUid2SidMap[userId] = session.SessionId;
-            globalSessions[session.SessionId] = session;
-        }
 
         /// <summary>
         /// Raises the connect completed event.
@@ -432,10 +387,9 @@ namespace ZyGames.Framework.Game.Contract
                 HttpListener listener = (HttpListener)result.AsyncState;
                 HttpListenerContext context = listener.EndGetContext(result);
                 listener.BeginGetContext(OnHttpRequest, listener);
-
-                var ssid = Guid.NewGuid();
                 HttpListenerRequest request = context.Request;
                 HttpListenerResponse response = context.Response;
+                var session = GameSession.CreateNew(Guid.NewGuid(), request);
 
                 string data = "";
                 if (Environment.OSVersion.Platform == PlatformID.Unix)
@@ -479,14 +433,11 @@ namespace ZyGames.Framework.Game.Contract
                     return;
                 }
 
-                var clientConnection = new HttpClientConnection { Context = context, SSID = ssid, Param = param };
+                var clientConnection = new HttpClientConnection { Context = context, Session = session, Param = param };
                 clientConnection.TimeoutTimer = new Timer(OnHttpRequestTimeout, clientConnection, httpRequestTimeout, Timeout.Infinite);
-                httpRequestPool[ssid] = clientConnection;
-
-                string hostAddress = request.RemoteEndPoint == null ? "" : request.RemoteEndPoint.Address.ToString();
-                HttpGet httpGet = new HttpGet(data, GenerateSid(), hostAddress);
-                httpGet["UserHostAddress"] = hostAddress;
-                httpGet["ssid"] = ssid.ToString("N");
+                HttpGet httpGet = new HttpGet(data, session);
+                httpGet["UserHostAddress"] = session.EndAddress;
+                httpGet["ssid"] = session.KeyCode.ToString("N");
                 httpGet["http"] = "1";
                 SocketGameResponse httpresponse = new SocketGameResponse();
                 OnRequested(httpGet, httpresponse);
@@ -554,6 +505,7 @@ namespace ZyGames.Framework.Game.Contract
                 Stream output = response.OutputStream;
                 output.Write(data, offset, count);
                 output.Close();
+                connection.Close();
             }
             catch
             {
@@ -564,7 +516,7 @@ namespace ZyGames.Framework.Game.Contract
         /// <summary>
         /// 
         /// </summary>
-        public void Start()
+        public void Start(string[] args)
         {
             socketLintener.StartListen();
             if (EnableHttp)
@@ -572,7 +524,15 @@ namespace ZyGames.Framework.Game.Contract
                 httpListener.Start();
                 httpListener.BeginGetContext(OnHttpRequest, httpListener);
             }
-            EntitySyncManger.SendHandle += SendAsync;
+            EntitySyncManger.SendHandle += (userId, data) =>
+            {
+                GameSession session = GameSession.Get(userId);
+                if (session != null)
+                {
+                    return session.SendAsync(data, 0, data.Length);
+                }
+                return false;
+            };
             OnStartAffer();
         }
 
@@ -605,164 +565,6 @@ namespace ZyGames.Framework.Game.Contract
             GC.SuppressFinalize(this);
         }
 
-        /// <summary>
-        /// 将指定的Action结果广播给指定范围的玩家
-        /// </summary>
-        /// <typeparam name="T">BaseUser对象</typeparam>
-        /// <param name="actionId">指定的Action</param>
-        /// <param name="userList">指定范围的玩家</param>
-        /// <param name="parameters">请求参数</param>
-        /// <param name="successHandle">成功回调</param>
-        public void BroadcastAction<T>(int actionId, List<T> userList, Parameters parameters, Action<T> successHandle) where T : BaseUser
-        {
-            StringBuilder shareParam = new StringBuilder();
-            if (parameters != null)
-            {
-                foreach (var parameter in parameters)
-                {
-                    shareParam.AppendFormat("&{0}={1}", parameter.Key, parameter.Value);
-                }
-            }
-            HttpGet httpGet;
-            byte[] sendData = ActionFactory.GetActionResponse(actionId, null, shareParam.ToString(), out httpGet);
-            foreach (var user in userList)
-            {
-                if (user == default(T))
-                {
-                    continue;
-                }
-                try
-                {
-                    GameSession session;
-                    if (globalSessions.TryGetValue(user.SocketSid, out session))
-                    {
-                        if (SendAsync(session, sendData))
-                        {
-                            if (successHandle != null) successHandle(user);
-                        }
-                    }
-                }
-                catch (Exception ex)
-                {
-                    TraceLog.WriteError("BroadcastAction  action:{0} userId:{1} error:{2}", actionId, user.PersonalId, ex);
-                }
-            }
-        }
-
-        /// <summary>
-        /// 给指定范围的每个玩家发送指定的Action结果
-        /// </summary>
-        /// <typeparam name="T">BaseUser对象</typeparam>
-        /// <param name="userList">指定范围的玩家</param>
-        /// <param name="actionId">指定的Action</param>
-        /// <param name="parameters">请求参数</param>
-        /// <param name="successHandle">成功回调</param>
-        public void SendAsyncAction<T>(List<T> userList, int actionId, Parameters parameters, Action<HttpGet> successHandle) where T : BaseUser
-        {
-            StringBuilder shareParam = new StringBuilder();
-            if (parameters != null)
-            {
-                foreach (var parameter in parameters)
-                {
-                    shareParam.AppendFormat("&{0}={1}", parameter.Key, parameter.Value);
-                }
-            }
-            foreach (var user in userList)
-            {
-                if (user == default(T))
-                {
-                    continue;
-                }
-                if (string.IsNullOrEmpty(user.SocketSid))
-                {
-                    TraceLog.WriteError("SendToClient action:{0} userId:{1} ssid is empty.", actionId, user.PersonalId);
-                    continue;
-                }
-                try
-                {
-                    GameSession session;
-                    if (globalSessions.TryGetValue(user.SocketSid, out session))
-                    {
-                        HttpGet httpGet;
-                        byte[] sendData = ActionFactory.GetActionResponse(actionId, user, shareParam.ToString(), out httpGet);
-
-                        SendAsync(session, sendData);
-                        if (httpGet != null)
-                        {
-                            successHandle(httpGet);
-                        }
-                    }
-                }
-                catch (Exception ex)
-                {
-                    TraceLog.WriteError("SendToClient action:{0} userId:{1} error:{2}", actionId, user.PersonalId, ex);
-                }
-            }
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="userId"></param>
-        /// <param name="data"></param>
-        /// <returns></returns>
-        public bool SendAsync(int userId, byte[] data)
-        {
-            string sessionId;
-            if (globalUid2SidMap.TryGetValue(userId, out sessionId))
-            {
-                GameSession session;
-                if (globalSessions.TryGetValue(sessionId, out session))
-                {
-                    return SendAsync(session, data);
-                }
-            }
-            return false;
-        }
-
-        /// <summary>
-        /// 发送消息
-        /// </summary>
-        /// <param name="sessionId"></param>
-        /// <param name="data"></param>
-        public bool SendAsync(string sessionId, byte[] data)
-        {
-            GameSession session;
-            if (globalSessions.TryGetValue(sessionId, out session))
-            {
-                return SendAsync(session, data);
-            }
-            return false;
-        }
-
-        /// <summary>
-        /// Post send to queue.
-        /// </summary>
-        /// <param name="socket"></param>
-        /// <param name="data"></param>
-        /// <param name="offset"></param>
-        /// <param name="count"></param>
-        public void PostSend(ExSocket socket, byte[] data, int offset, int count)
-        {
-            socketLintener.PostSend(socket, data, offset, count);
-        }
-
-        private bool SendAsync(GameSession session, byte[] data)
-        {
-            if (session.Connected)
-            {
-                data = CheckAdditionalHead(data, session.SSId);
-                PostSend(session.Channel, data, 0, data.Length);
-                return true;
-            }
-            return false;
-        }
-
-        private string GenerateSid()
-        {
-            return string.Format("s_{0}|{1}|{2}", Guid.NewGuid().ToString("N"), GameEnvironment.ProductCode, GameEnvironment.ProductServerId);
-        }
-
         private delegate void RemoteHandle(HttpGet httpGet, MessageHead head, MessageStructure writer);
 
         private void OnCallRemote(string route, HttpGet httpGet, MessageStructure response)
@@ -777,19 +579,28 @@ namespace ZyGames.Framework.Game.Contract
                     funcName = mapList[mapList.Length - 1];
                     routeName = string.Join("/", mapList, 0, mapList.Length - 1);
                 }
-                string routeFile = string.Format("Remote/{0}.py", routeName);
+                string routeFile = string.Format("Remote/{0}", routeName);
                 string typeName = string.Format("Game.Script.Remote.{0}", routeName);
-                int actionId = httpGet.GetInt("actionId");
+                int actionId = httpGet.ActionId;
                 MessageHead head = new MessageHead(actionId);
-                dynamic scope = ScriptEngines.Execute(routeFile, typeName);
-                if (scope != null)
+                if (!ScriptEngines.DisablePython)
                 {
-                    var funcHandle = scope.GetVariable<RemoteHandle>(funcName);
-                    if (funcHandle != null)
+                    dynamic scope = ScriptEngines.Execute(routeFile + ".py", typeName);
+                    if (scope != null)
                     {
-                        funcHandle(httpGet, head, response);
-                        response.WriteBuffer(head);
+                        var funcHandle = scope.GetVariable<RemoteHandle>(funcName);
+                        if (funcHandle != null)
+                        {
+                            funcHandle(httpGet, head, response);
+                            response.WriteBuffer(head);
+                            return;
+                        }
                     }
+                }
+                var instance = (object)ScriptEngines.Execute(routeFile + ".cs", typeName);
+                if (instance != null)
+                {
+                    var result = ObjectAccessor.Create(instance, true)[funcName];
                 }
             }
             catch (Exception ex)
@@ -845,12 +656,14 @@ namespace ZyGames.Framework.Game.Contract
 
         private class HttpClientConnection
         {
-            public Guid SSID;
+            public GameSession Session;
             public HttpListenerContext Context;
             public Timer TimeoutTimer;
             public Dictionary<string, string> Param;
+
+            public void Close()
+            {
+            }
         }
     }
-
-
 }

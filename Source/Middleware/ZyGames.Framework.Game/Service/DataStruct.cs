@@ -25,6 +25,7 @@ using System;
 using System.Collections;
 using System.Text;
 using ZyGames.Framework.Common.Log;
+using ZyGames.Framework.Common.Serialization;
 
 namespace ZyGames.Framework.Game.Service
 {
@@ -143,6 +144,28 @@ namespace ZyGames.Framework.Game.Service
         {
             PushIntoStackObj(obj);
         }
+
+        /// <summary>
+        /// 将可序列化的对象数据追加到栈尾
+        /// By Seamoon
+        /// </summary>
+        /// <param name="obj"></param>
+        /// <param name="useGzip"></param>
+        public void PushIntoStack(object obj, bool useGzip = true)
+        {
+            //尝试进行protoBuf序列化
+            try
+            {
+                //改为只序列化一次后保存起来，不会反复浪费性能!!!
+                var bytes = ProtoBufUtils.Serialize(obj, useGzip);
+                PushIntoStackObj(bytes);
+            }
+            catch (Exception err)
+            {
+                throw new ArgumentOutOfRangeException("obj is not a valid data can be serialized.", err);
+            }
+        }
+
         /// <summary>
         /// 将数据加到栈尾
         /// </summary>
@@ -259,9 +282,15 @@ namespace ZyGames.Framework.Game.Service
             {
                 return ((DataStruct)obj).GetContentLen();
             }
+            else if (type == typeof(byte[]))
+            {
+                var bytes = (byte[])(obj);
+                return bytes.Length;
+            }
             else
             {
                 throw new ArgumentOutOfRangeException("obj", "The " + type.FullName + " type not be supported.");
+
                 //return 0;
             }
         }
@@ -311,6 +340,13 @@ namespace ZyGames.Framework.Game.Service
                     DataStruct ds = ((DataStruct)obj);
                     ds.WriteActionNum(response);
                     ds.InternalWriteAction(response);
+                }
+                else if (type == typeof(byte[]))
+                {
+                    //By Seamoon已序列化好的内容，直接写入
+                    var bytes = (byte[])(obj);
+                    WriteDWord(response, bytes.Length);
+                    response.Write(bytes);
                 }
             }
         }
@@ -514,5 +550,7 @@ namespace ZyGames.Framework.Game.Service
         }
 
         #endregion
+
+
     }
 }

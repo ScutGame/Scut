@@ -210,12 +210,11 @@ namespace ZyGames.Framework.Game.Contract.Action
             paramData.AppendFormat("<OrderID>{0}</OrderID>", orderInfo.OrderNO);
             paramData.AppendFormat("<OrderType>{0}</OrderType>", orderType);
             paramData.AppendFormat("</Trusted2ServQueryReq>");
-            HttpRequest request = new HttpRequest();
-            request.Post(HttpRequest.ContentTypeXml, url, paramData.ToString(), stream =>
+            HttpUtils.Post(HttpUtils.ContentTypeXml, url, paramData.ToString(), stream =>
             {
                 try
                 {
-                    var doc = request.ToXml(stream);
+                    var doc = HttpUtils.ToXml(stream);
                     TraceLog.ReleaseWriteFatal("10068 order:{0} response:{1}", orderInfo.OrderNO, doc.InnerXml);
                     var returnCode = doc.SelectSingleNode("Trusted2ServQueryResp/ReturnCode");
                     if (returnCode != null && !string.IsNullOrEmpty(returnCode.InnerText))

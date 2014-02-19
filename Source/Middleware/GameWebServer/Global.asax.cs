@@ -7,17 +7,17 @@ namespace GameWebServer
 {
     public class Global : System.Web.HttpApplication
     {
+        private dynamic _instance;
 
         protected void Application_Start(object sender, EventArgs e)
         {
             try
             {
-                string mainClass = "MainClass";
-                ScriptEngines.AddReferencedAssembly("ZyGames.Framework.Game.dll");
-                dynamic instance;
-                if(ScriptEngines.RunMainClass(mainClass, out instance))
+                var setting = new EnvironmentSetting();
+                GameEnvironment.Start(setting);
+                if (ScriptEngines.RunMainClass(out _instance))
                 {
-                    instance.Start();
+                    _instance.Start();
                 }
             }
             catch (Exception ex)
@@ -53,7 +53,7 @@ namespace GameWebServer
 
         protected void Application_End(object sender, EventArgs e)
         {
-            GameEnvironment.Stop();
+            _instance.Stop();
         }
     }
 }

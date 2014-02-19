@@ -22,19 +22,17 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ****************************************************************************/
 using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Net;
 using System.Text;
 using System.Xml;
 
-namespace ZyGames.Framework.Game.Runtime
+namespace ZyGames.Framework.Game.Contract
 {
 	/// <summary>
 	/// Http request.
 	/// </summary>
-    public class HttpRequest
+    internal static class HttpUtils
     {
 		/// <summary>
 		/// The content type xml.
@@ -47,7 +45,7 @@ namespace ZyGames.Framework.Game.Runtime
 		/// <param name="url">URL.</param>
 		/// <param name="paramData">Parameter data.</param>
 		/// <param name="successHandle">Success handle.</param>
-        public void Get(string contentType, string url, string paramData, Func<Stream, bool> successHandle)
+        public static void Get(string contentType, string url, string paramData, Func<Stream, bool> successHandle)
         {
             Send("GET", contentType, url, paramData, Encoding.UTF8, successHandle);
         }
@@ -58,7 +56,7 @@ namespace ZyGames.Framework.Game.Runtime
 		/// <param name="url">URL.</param>
 		/// <param name="paramData">Parameter data.</param>
 		/// <param name="successHandle">Success handle.</param>
-        public void Post(string contentType, string url, string paramData, Func<Stream, bool> successHandle)
+        public static void Post(string contentType, string url, string paramData, Func<Stream, bool> successHandle)
         {
             Send("POST", contentType, url, paramData, Encoding.UTF8, successHandle);
         }
@@ -71,7 +69,7 @@ namespace ZyGames.Framework.Game.Runtime
 		/// <param name="paramData">Parameter data.</param>
 		/// <param name="encoding">Encoding.</param>
 		/// <param name="successHandle">Success handle.</param>
-        public bool Send(string methodType, string contentType, string url, string paramData, Encoding encoding, Func<Stream, bool> successHandle)
+        public static bool Send(string methodType, string contentType, string url, string paramData, Encoding encoding, Func<Stream, bool> successHandle)
         {
             byte[] bytesRequestData = encoding.GetBytes(paramData);
             WebRequest myReq = WebRequest.Create(url);
@@ -102,7 +100,7 @@ namespace ZyGames.Framework.Game.Runtime
         /// </summary>
         /// <param name="stream"></param>
         /// <returns></returns>
-        public string ToString(Stream stream)
+        public static string ToString(Stream stream)
         {
             StreamReader reader = new StreamReader(stream);
             return reader.ReadToEnd();
@@ -113,7 +111,7 @@ namespace ZyGames.Framework.Game.Runtime
         /// </summary>
         /// <param name="stream"></param>
         /// <returns></returns>
-        public XmlDocument ToXml(Stream stream)
+        public static XmlDocument ToXml(Stream stream)
         {
             XmlDocument xmlDoc = new XmlDocument();
             XmlTextReader Reader = new XmlTextReader(stream);

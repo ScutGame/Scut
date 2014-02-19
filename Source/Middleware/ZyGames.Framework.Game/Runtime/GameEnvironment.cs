@@ -57,20 +57,6 @@ namespace ZyGames.Framework.Game.Runtime
 
         private static int _isRunning;
 
-        //static GameEnvironment()
-        //{
-        //    _setting = new EnvironmentSetting();
-        //    _setting.EnableCacheListener = true;
-        //    _setting.ProductDesEnKey = "BF3856AD";
-        //    _setting.ClientDesDeKey = "n7=7=7dk";
-        //    _setting.ProductSignKey = ConfigUtils.GetSetting("Product.SignKey", "");
-        //    _setting.ProductCode = ConfigUtils.GetSetting("Product.Code", 1);
-        //    _setting.ProductName = ConfigUtils.GetSetting("Product.Name", "Game");
-        //    _setting.ProductServerId = ConfigUtils.GetSetting("Product.ServerId", 1);
-        //    _setting.CacheGlobalPeriod = ConfigUtils.GetSetting("Cache.global.period", 3 * 86400); //72 hour
-        //    _setting.CacheUserPeriod = ConfigUtils.GetSetting("Cache.user.period", 86400); //24 hour
-        //}
-
         private static EnvironmentSetting _setting;
         ///<summary>
         /// The environment configuration information.
@@ -140,6 +126,8 @@ namespace ZyGames.Framework.Game.Runtime
         /// <param name="cacheSetting">Cache setting.</param>
         public static void Start(EnvironmentSetting setting, CacheSetting cacheSetting)
         {
+            if (_isRunning == 1) return;
+
             _setting = setting;
             DbConnectionProvider.Initialize();
             EntitySchemaSet.CacheGlobalPeriod = _setting.CacheGlobalPeriod;
@@ -152,14 +140,21 @@ namespace ZyGames.Framework.Game.Runtime
             EntitySchemaSet.StartCheckTableTimer();
             LoadGameEntitySchema();
             ZyGameBaseConfigManager.Intialize();
-            CacheFactory.Initialize(cacheSetting);
-            Global = new ContextCacheSet<CacheItem>("__gameenvironment_global");
             //init script.
+            if (_setting.ScriptSysAsmReferences.Length > 0)
+            {
+                ScriptEngines.AddSysReferencedAssembly(_setting.ScriptSysAsmReferences);
+            }
             ScriptEngines.AddReferencedAssembly("ZyGames.Framework.Game.dll");
+            if (_setting.ScriptAsmReferences.Length > 0)
+            {
+                ScriptEngines.AddReferencedAssembly(_setting.ScriptAsmReferences);
+            }
             ScriptEngines.RegisterModelChangedBefore(OnModelChangeBefore);
             ScriptEngines.RegisterModelChangedAfter(OnModelChangeAtfer);
-            _setting.OnScriptStartBefore();
             ScriptEngines.Initialize();
+            CacheFactory.Initialize(cacheSetting);
+            Global = new ContextCacheSet<CacheItem>("__gameenvironment_global");
             Interlocked.Exchange(ref _isRunning, 1);
         }
 

@@ -89,7 +89,7 @@ namespace ZyGames.Framework.Game.Sns
             string AppKey = "";
             string AppId = "";
             bool isOldVersion = false;
-            GameChannel gameChannel = ZyGameBaseConfigManager.GameSetting.GetChannelSetting(ChannelType.channelMIUI);
+            GameChannel gameChannel = ZyGameBaseConfigManager.GameSetting.GetChannelSetting(ChannelType.channelDanle);
             if (gameChannel != null)
             {
                 url = gameChannel.Url;

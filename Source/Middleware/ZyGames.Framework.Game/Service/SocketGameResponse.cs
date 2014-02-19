@@ -24,6 +24,8 @@ THE SOFTWARE.
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using ZyGames.Framework.Game.Runtime;
+using ZyGames.Framework.RPC.IO;
 
 namespace ZyGames.Framework.Game.Service
 {
@@ -32,15 +34,22 @@ namespace ZyGames.Framework.Game.Service
     /// </summary>
     public class SocketGameResponse : IGameResponse
     {
-        private ConcurrentQueue<byte[]> _buffers;
+        static SocketGameResponse()
+        {
+            MessageStructure.EnableGzip = GameEnvironment.Setting.ActionEnableGZip;
+            MessageStructure.EnableGzipMinByte = GameEnvironment.Setting.ActionGZipOutLength;
+        }
+
+        private MessageStructure _buffers;
 
         /// <summary>
         /// 
         /// </summary>
         public SocketGameResponse()
         {
-            _buffers = new ConcurrentQueue<byte[]>();
+            _buffers = new MessageStructure();
         }
+
         /// <summary>
         /// 
         /// </summary>
@@ -64,21 +73,12 @@ namespace ZyGames.Framework.Game.Service
         /// <returns></returns>
         public byte[] ReadByte()
         {
-            var buffer = new List<byte>();
-            while (_buffers.Count > 0)
-            {
-                byte[] b;
-                if (_buffers.TryDequeue(out b))
-                {
-                    buffer.AddRange(b);
-                }
-            }
-            return buffer.ToArray();
+            return _buffers.PosGzipBuffer();
         }
 
         private void DoWrite(byte[] buffer)
         {
-            _buffers.Enqueue(buffer);
+            _buffers.WriteByte(buffer);
         }
 
     }

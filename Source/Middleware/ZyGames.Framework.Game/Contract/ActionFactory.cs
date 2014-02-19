@@ -25,14 +25,15 @@ using System;
 using System.Collections.Generic;
 using System.Net;
 using System.Net.Sockets;
+using System.Text;
 using System.Web;
 using ZyGames.Framework.Common;
-using ZyGames.Framework.Common.Configuration;
 using ZyGames.Framework.Common.Locking;
 using ZyGames.Framework.Common.Log;
 using ZyGames.Framework.Game.Context;
 using ZyGames.Framework.Game.Service;
 using ZyGames.Framework.Game.Contract.Action;
+using ZyGames.Framework.Net;
 using ZyGames.Framework.RPC.IO;
 using ZyGames.Framework.Script;
 
@@ -48,68 +49,6 @@ namespace ZyGames.Framework.Game.Contract
         /// </summary>
         public static int ErrorCode = 10000;
 
-        internal class ActionConfig
-        {
-            private static ActionConfig instance;
-
-            static ActionConfig()
-            {
-                instance = new ActionConfig();
-                instance.TypeName = ConfigUtils.GetSetting("Game.Action.TypeName");
-                if (string.IsNullOrEmpty(instance.TypeName))
-                {
-                    string assemblyName = ConfigUtils.GetSetting("Game.Action.AssemblyName");
-                    if (!string.IsNullOrEmpty(assemblyName))
-                    {
-                        instance.TypeName = assemblyName + ".Action.Action{0}," + assemblyName;
-                    }
-                }
-                instance.ScriptTypeName = ConfigUtils.GetSetting("Game.Action.Script.TypeName", "Game.Script.Action{0}");
-                instance.IpAddress = ConfigUtils.GetSetting("Game.IpAddress");
-                if (string.IsNullOrEmpty(instance.IpAddress))
-                {
-                    instance.IpAddress = GetLocalIp();
-                }
-                instance.Port = ConfigUtils.GetSetting("Game.Port", 9101);
-                instance.IgnoreAuthorizeSet = new HashSet<int>();
-            }
-
-            public static ActionConfig Current
-            {
-                get { return instance; }
-            }
-
-            public string IpAddress
-            {
-                get;
-                private set;
-            }
-
-            public int Port
-            {
-                get;
-                private set;
-            }
-
-            public string TypeName
-            {
-                get;
-                private set;
-            }
-
-            /// <summary>
-            /// CSharp脚本类型名
-            /// </summary>
-            public string ScriptTypeName
-            {
-                get;
-                private set;
-            }
-
-            public HashSet<int> IgnoreAuthorizeSet { get; set; }
-
-        }
-
         /// <summary>
         /// 设置忽略认证Action
         /// </summary>
@@ -120,25 +59,6 @@ namespace ZyGames.Framework.Game.Contract
             {
                 ActionConfig.Current.IgnoreAuthorizeSet.Add(actionId);
             }
-        }
-
-        /// <summary>
-        /// 获取本地IP
-        /// </summary>
-        /// <returns></returns>
-        public static string GetLocalIp()
-        {
-            string localIp = "";
-            IPAddress[] addressList = Dns.GetHostEntry(Environment.MachineName).AddressList;
-            foreach (var ipAddress in addressList)
-            {
-                if (ipAddress.AddressFamily == AddressFamily.InterNetwork)
-                {
-                    localIp = ipAddress.ToString();
-                    break;
-                }
-            }
-            return localIp;
         }
 
         /// <summary>
@@ -209,6 +129,7 @@ namespace ZyGames.Framework.Game.Contract
             }
             catch (Exception ex)
             {
+                errorInfo = string.Format("Action request {0} error:{1}", tempName, ex);
                 TraceLog.WriteError("Action request {0} error:{1}\r\nparam:{2}", tempName, ex, httpGet.ParamString);
             }
             RequestError(response, actionID, errorInfo);
@@ -291,7 +212,6 @@ namespace ZyGames.Framework.Game.Contract
         /// <returns></returns>
         public static byte[] GetActionResponse(int actionId, BaseUser baseUser, string parameters, out HttpGet httpGet)
         {
-            string serverHost = string.Format("{0}:{1}", ActionConfig.Current.IpAddress, ActionConfig.Current.Port);
             string param = string.Format("MsgId={0}&St={1}&Sid={2}&Uid={3}&ActionID={4}{5}",
                 0,
                 "st",
@@ -299,7 +219,8 @@ namespace ZyGames.Framework.Game.Contract
                 baseUser.GetUserId(),
                 actionId,
                 parameters);
-            httpGet = new HttpGet(param, baseUser.SocketSid, baseUser.RemoteAddress);
+            GameSession session = GameSession.Get(baseUser.GetUserId());
+            httpGet = new HttpGet(param, session);
             BaseStruct baseStruct = FindRoute(ActionConfig.Current.TypeName, httpGet, actionId);
             SocketGameResponse response = new SocketGameResponse();
             baseStruct.UserFactory = uid => { return baseUser; };
@@ -357,18 +278,111 @@ namespace ZyGames.Framework.Game.Contract
             }
         }
 
+
+        /// <summary>
+        /// 将指定的Action结果广播给指定范围的玩家
+        /// </summary>
+        /// <typeparam name="T">BaseUser对象</typeparam>
+        /// <param name="actionId">指定的Action</param>
+        /// <param name="userList">指定范围的玩家</param>
+        /// <param name="parameters">请求参数</param>
+        /// <param name="successHandle">成功回调</param>
+        public static void BroadcastAction<T>(int actionId, List<T> userList, Parameters parameters, Action<T> successHandle) where T : BaseUser
+        {
+            StringBuilder shareParam = new StringBuilder();
+            if (parameters != null)
+            {
+                foreach (var parameter in parameters)
+                {
+                    shareParam.AppendFormat("&{0}={1}", parameter.Key, parameter.Value);
+                }
+            }
+            HttpGet httpGet;
+            byte[] sendData = GetActionResponse(actionId, null, shareParam.ToString(), out httpGet);
+            foreach (var user in userList)
+            {
+                if (user == default(T))
+                {
+                    continue;
+                }
+                try
+                {
+                    GameSession session = GameSession.Get(user.GetSessionId());
+                    if (session != null)
+                    {
+                        if (session.SendAsync(sendData, 0, sendData.Length))
+                        {
+                            if (successHandle != null) successHandle(user);
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    TraceLog.WriteError("BroadcastAction  action:{0} userId:{1} error:{2}", actionId, user.PersonalId, ex);
+                }
+            }
+        }
+
+        /// <summary>
+        /// 给指定范围的每个玩家发送指定的Action结果
+        /// </summary>
+        /// <typeparam name="T">BaseUser对象</typeparam>
+        /// <param name="userList">指定范围的玩家</param>
+        /// <param name="actionId">指定的Action</param>
+        /// <param name="parameters">请求参数</param>
+        /// <param name="successHandle">成功回调</param>
+        public static void SendAsyncAction<T>(List<T> userList, int actionId, Parameters parameters, Action<HttpGet> successHandle) where T : BaseUser
+        {
+            StringBuilder shareParam = new StringBuilder();
+            if (parameters != null)
+            {
+                foreach (var parameter in parameters)
+                {
+                    shareParam.AppendFormat("&{0}={1}", parameter.Key, parameter.Value);
+                }
+            }
+            foreach (var user in userList)
+            {
+                if (user == default(T))
+                {
+                    continue;
+                }
+                try
+                {
+                    var session = GameSession.Get(user.GetSessionId());
+                    HttpGet httpGet;
+                    byte[] sendData = GetActionResponse(actionId, user, shareParam.ToString(), out httpGet);
+                    if (session != null &&
+                        session.SendAsync(sendData, 0, sendData.Length) &&
+                        httpGet != null)
+                    {
+                        successHandle(httpGet);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    TraceLog.WriteError("SendToClient action:{0} userId:{1} error:{2}", actionId, user.PersonalId, ex);
+                }
+            }
+        }
+
+
         internal static BaseStruct FindScriptRoute(HttpGet httpGet, int actionID)
         {
-            string typeName = string.Format(ActionConfig.Current.ScriptTypeName, actionID);
+            string scriptTypeName = string.Format(ActionConfig.Current.ScriptTypeName, actionID);
             string scriptCode = string.Format("action{0}", actionID);
-            dynamic scriptScope = ScriptEngines.Execute(scriptCode + ".py", null);
-            if (scriptScope != null)
+
+            if (!ScriptEngines.DisablePython) //By Seamoon 在Python禁用的情况下，就没有必要再加载了
             {
-                bool ignoreAuthorize = ActionConfig.Current.IgnoreAuthorizeSet.Contains(actionID);
-                return new ScriptAction((short)actionID, httpGet, scriptScope, ignoreAuthorize);
+                dynamic scriptScope = ScriptEngines.Execute(scriptCode + ".py", null);
+                if (scriptScope != null)
+                {
+                    bool ignoreAuthorize = ActionConfig.Current.IgnoreAuthorizeSet.Contains(actionID);
+                    return new ScriptAction((short)actionID, httpGet, scriptScope, ignoreAuthorize);
+                }
             }
 
-            BaseStruct baseStruct = ScriptEngines.Execute(scriptCode + ".cs", typeName, httpGet);
+            BaseStruct baseStruct = ScriptEngines.Execute(scriptCode + ".cs", scriptTypeName, httpGet);
             if (baseStruct != null) return baseStruct;
             return null;
         }
@@ -380,6 +394,7 @@ namespace ZyGames.Framework.Game.Contract
             {
                 return baseStruct;
             }
+            //在没有找到对应的处理脚本的情况，转而尝试从已编译好的库中找
             string typeName = string.Format(typeExpression, actionID);
             Type actionType = Type.GetType(typeName);
             if (actionType != null)
@@ -390,7 +405,7 @@ namespace ZyGames.Framework.Game.Contract
                 }
                 catch (Exception ex)
                 {
-                    throw new Exception(string.Format("The {0} action init error",actionID), ex);
+                    throw new Exception(string.Format("The {0} action init error", actionID), ex);
                 }
             }
             throw new NotSupportedException(string.Format("Not found {0} action Interface.", actionID));

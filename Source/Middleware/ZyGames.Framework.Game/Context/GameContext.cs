@@ -72,21 +72,21 @@ namespace ZyGames.Framework.Game.Context
         /// <summary>
         /// 获得当前请求上下文
         /// </summary>
-        /// <param name="ssid"></param>
+        /// <param name="sessionId"></param>
         /// <param name="actionId"></param>
         /// <param name="userId"></param>
         /// <param name="timeOut"></param>
         /// <returns></returns>
-        public static GameContext GetInstance(string ssid, int actionId, int userId, int timeOut = TimeOut)
+        public static GameContext GetInstance(string sessionId, int actionId, int userId, int timeOut = TimeOut)
         {
-            if (string.IsNullOrEmpty(ssid))
+            if (string.IsNullOrEmpty(sessionId))
             {
-                ssid =  Guid.NewGuid().ToString("N");
+                sessionId = Guid.NewGuid().ToString("N");
             }
-            string key = CreateContextKey(ssid, actionId);
+            string key = CreateContextKey(sessionId, actionId);
             if (!_contextSet.ContainsKey(key))
             {
-                _contextSet.Add(key, new GameContext(ssid, actionId, userId, timeOut));
+                _contextSet.Add(key, new GameContext(sessionId, actionId, userId, timeOut));
             }
             var context = _contextSet[key];
             if (context != null)

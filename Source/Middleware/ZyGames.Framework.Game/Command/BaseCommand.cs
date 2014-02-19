@@ -27,6 +27,7 @@ using ZyGames.Framework.Common;
 using ZyGames.Framework.Common.Configuration;
 using ZyGames.Framework.Common.Log;
 using ZyGames.Framework.Game.Configuration;
+using ZyGames.Framework.Script;
 
 namespace ZyGames.Framework.Game.Command
 {
@@ -112,28 +113,32 @@ namespace ZyGames.Framework.Game.Command
         private static BaseCommand CreateCommand(string cmd, string assemblyName)
         {
             string typeName = "";
+            
+            var arr = cmd.Split(':');
+            string tempcmd = arr.Length > 1 ? arr[1] : arr[0];
             if (ZyGameBaseConfigManager.GameSetting.HasSetting)
             {
                 typeName = ZyGameBaseConfigManager.GameSetting.GetGmCommandType(cmd);
-                typeName = !string.IsNullOrEmpty(typeName) ? typeName : cmd + "Command";
+                typeName = !string.IsNullOrEmpty(typeName) ? typeName : tempcmd + "Command";
             }
             else
             {
                 CommandCollection cmdList = ((GmSection) ConfigurationManager.GetSection(SectionName)).Command;
                 CommandElement cmdElement = cmdList[cmd];
-                typeName = cmdElement != null ? cmdElement.TypeName : cmd + "Command";
+                typeName = cmdElement != null ? cmdElement.TypeName : tempcmd + "Command";
             }
 
+            string commandType = typeName;
             if (typeName.IndexOf(",") == -1)
             {
-                typeName = string.Format("{0}.{1},{0}", assemblyName, typeName);
+                commandType = string.Format("{0}.{1},{0}", assemblyName, typeName);
             }
-            var type = Type.GetType(typeName, false, true);
+            var type = Type.GetType(commandType, false, true);
             if (type != null)
             {
                 return type.CreateInstance<BaseCommand>();
             }
-            return null;
+            return ScriptEngines.ExecuteCSharp(string.Format("{0}.{1}", assemblyName, typeName));
         }
 
 

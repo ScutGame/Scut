@@ -45,17 +45,26 @@ namespace ZyGames.Framework.Game.Runtime
         private static readonly int productServerId;
         private static readonly int cacheGlobalPeriod;
         private static readonly int cacheUserPeriod;
+        private static readonly string[] scriptSysAsmReferences;
+        private static readonly string[] scriptAsmReferences;
+        private static readonly bool enableActionGZip;
+        private static readonly int actionGZipOutLength;
 
         static EnvironmentSetting()
         {
-            productDesEnKey = "BF3856AD";
-            clientDesDeKey = "n7=7=7dk";
+            productDesEnKey = ConfigUtils.GetSetting("Product.DesEnKey", "BF3856AD");
+            clientDesDeKey = ConfigUtils.GetSetting("Product.ClientDesDeKey", "n7=7=7dk");
             productSignKey = ConfigUtils.GetSetting("Product.SignKey", "");
             productCode = ConfigUtils.GetSetting("Product.Code", 1);
             productName = ConfigUtils.GetSetting("Product.Name", "Game");
             productServerId = ConfigUtils.GetSetting("Product.ServerId", 1);
             cacheGlobalPeriod = ConfigUtils.GetSetting("Cache.global.period", 3 * 86400); //72 hour
             cacheUserPeriod = ConfigUtils.GetSetting("Cache.user.period", 86400); //24 hour
+
+            scriptSysAsmReferences = ConfigUtils.GetSetting("ScriptSysAsmReferences", "").Split(';');
+            scriptAsmReferences = ConfigUtils.GetSetting("ScriptAsmReferences", "").Split(';');
+            enableActionGZip = ConfigUtils.GetSetting("Game.Action.EnableGZip", true);
+            actionGZipOutLength = ConfigUtils.GetSetting("Game.Action.GZipOutLength", 10240);//10k
         }
 
         /// <summary>
@@ -71,8 +80,13 @@ namespace ZyGames.Framework.Game.Runtime
             ProductServerId = productServerId;
             CacheGlobalPeriod = cacheGlobalPeriod;
             CacheUserPeriod = cacheUserPeriod;
+            
+            ScriptSysAsmReferences = scriptSysAsmReferences;
+            ScriptAsmReferences = scriptAsmReferences;
+            ActionEnableGZip = enableActionGZip;
+            ActionGZipOutLength = actionGZipOutLength;
         }
-
+        
         /// <summary>
         /// Request signature key.
         /// </summary>
@@ -119,17 +133,36 @@ namespace ZyGames.Framework.Game.Runtime
         public Assembly EntityAssembly { get; set; }
 
         /// <summary>
-        /// Before starting the script engine process.
+        /// Script use system assembly reference.
         /// </summary>
-        public event Action ScriptStartBeforeHandle;
+        public string[] ScriptSysAsmReferences { get; set; }
 
-        internal void OnScriptStartBefore()
-        {
-            if (ScriptStartBeforeHandle != null)
-            {
-                ScriptStartBeforeHandle();
-            }
-        }
+        /// <summary>
+        /// Script use other assembly reference.
+        /// </summary>
+        public string[] ScriptAsmReferences { get; set; }
+
+        /// <summary>
+        /// enable gzip
+        /// </summary>
+        public bool ActionEnableGZip { get; set; }
+
+        /// <summary>
+        /// stream out length use gzip.
+        /// </summary>
+        public int ActionGZipOutLength { get; set; }
+        ///// <summary>
+        ///// Before starting the script engine process.
+        ///// </summary>
+        //public event Action ScriptStartBeforeHandle;
+
+        //internal void OnScriptStartBefore()
+        //{
+        //    if (ScriptStartBeforeHandle != null)
+        //    {
+        //        ScriptStartBeforeHandle();
+        //    }
+        //}
 
     }
 }
