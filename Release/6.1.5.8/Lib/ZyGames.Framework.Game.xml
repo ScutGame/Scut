@@ -5907,6 +5907,19 @@
             用户会话
             </summary>
         </member>
+        <member name="M:ZyGames.Framework.Game.Contract.GameSession.StartClear">
+            <summary>
+            start clear session
+            </summary>
+        </member>
+        <member name="M:ZyGames.Framework.Game.Contract.GameSession.CreateNew(System.Guid,System.Web.HttpRequest)">
+            <summary>
+            Add session to cache
+            </summary>
+            <param name="keyCode"></param>
+            <param name="request"></param>
+            <returns></returns>
+        </member>
         <member name="M:ZyGames.Framework.Game.Contract.GameSession.CreateNew(System.Guid,System.Net.HttpListenerRequest)">
             <summary>
             Add session to cache
@@ -5983,6 +5996,11 @@
             <param name="data"></param>
             <param name="ssid"></param>
             <returns></returns>
+        </member>
+        <member name="P:ZyGames.Framework.Game.Contract.GameSession.Timeout">
+            <summary>
+            session timeout(sec).
+            </summary>
         </member>
         <member name="P:ZyGames.Framework.Game.Contract.GameSession.KeyCode">
             <summary>
@@ -7136,6 +7154,11 @@
             <param name="param">自定义参数字串</param>
             <param name="session"></param>
         </member>
+        <member name="M:ZyGames.Framework.Game.Contract.HttpGet.CloseSession">
+            <summary>
+            close session
+            </summary>
+        </member>
         <member name="M:ZyGames.Framework.Game.Contract.HttpGet.GetIntValue(System.String)">
             <summary>
             
@@ -7357,12 +7380,17 @@
         </member>
         <member name="P:ZyGames.Framework.Game.Contract.HttpGet.RemoteAddress">
             <summary>
-            
+            get address for remote
+            </summary>
+        </member>
+        <member name="P:ZyGames.Framework.Game.Contract.HttpGet.SessionId">
+            <summary>
+            get current sessionid.
             </summary>
         </member>
         <member name="P:ZyGames.Framework.Game.Contract.HttpGet.Session">
             <summary>
-            远端SessionId
+            Session
             </summary>
         </member>
         <member name="P:ZyGames.Framework.Game.Contract.HttpGet.ParamString">
