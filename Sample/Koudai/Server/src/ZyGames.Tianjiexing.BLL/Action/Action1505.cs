@@ -39,7 +39,7 @@ namespace ZyGames.Tianjiexing.BLL.Action
         private List<AbilityInfo> abilityList = new List<AbilityInfo>();
 
 
-        public Action1505(HttpGet httpGet)
+        public Action1505(ZyGames.Framework.Game.Contract.HttpGet httpGet)
             : base(ActionIDDefine.Cst_Action1505, httpGet)
         {
 

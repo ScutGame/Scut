@@ -46,7 +46,7 @@ namespace ZyGames.Tianjiexing.BLL.Action
         public short CityStatus = 1;
         private FightCombat combat = new FightCombat();
 
-        public Action2001(HttpGet httpGet)
+        public Action2001(ZyGames.Framework.Game.Contract.HttpGet httpGet)
             : base(ActionIDDefine.Cst_Action2001, httpGet)
         {
 

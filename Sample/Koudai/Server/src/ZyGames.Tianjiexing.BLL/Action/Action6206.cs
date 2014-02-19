@@ -40,7 +40,7 @@ namespace ZyGames.Tianjiexing.BLL.Action
 
         private List<GuildAbilityInfo> abilityInfoArray = new List<GuildAbilityInfo>();
 
-        public Action6206(HttpGet httpGet)
+        public Action6206(ZyGames.Framework.Game.Contract.HttpGet httpGet)
             : base(ActionIDDefine.Cst_Action6206, httpGet)
         {
 

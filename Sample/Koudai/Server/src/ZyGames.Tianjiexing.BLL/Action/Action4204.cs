@@ -38,7 +38,7 @@ namespace ZyGames.Tianjiexing.BLL.Action
         private int teamID = 0;
         private MorePlotTeam moreTeam = null;
 
-        public Action4204(HttpGet httpGet)
+        public Action4204(ZyGames.Framework.Game.Contract.HttpGet httpGet)
             : base(ActionIDDefine.Cst_Action4204, httpGet)
         {
 

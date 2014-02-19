@@ -115,7 +115,7 @@ namespace ZyGames.Tianjiexing.BLL.Action
         private List<MessageState> _statusList = new List<MessageState>();
         private int stakecount = 0;
 
-        public Action1012(HttpGet httpGet)
+        public Action1012(ZyGames.Framework.Game.Contract.HttpGet httpGet)
             : base(ActionIDDefine.Cst_Action1012, httpGet)
         {
 

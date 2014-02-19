@@ -44,7 +44,7 @@ namespace ZyGames.Tianjiexing.BLL.Action
         private int goldNum;
 
 
-        public Action1025(HttpGet httpGet)
+        public Action1025(ZyGames.Framework.Game.Contract.HttpGet httpGet)
             : base(ActionIDDefine.Cst_Action1025, httpGet)
         {
 

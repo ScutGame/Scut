@@ -43,7 +43,7 @@ namespace ZyGames.Tianjiexing.BLL.Action
         private List<UserGeneral> _userGeneralArray = new List<UserGeneral>();
         private List<UserMagic> _userMagicArray = new List<UserMagic>();//当前玩家所开启的魔法阵
 
-        public Action1901(HttpGet httpGet)
+        public Action1901(ZyGames.Framework.Game.Contract.HttpGet httpGet)
             : base(ActionIDDefine.Cst_Action1901, httpGet)
         {
 

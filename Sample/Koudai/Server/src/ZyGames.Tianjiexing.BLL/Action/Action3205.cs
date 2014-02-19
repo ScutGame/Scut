@@ -45,7 +45,7 @@ namespace ZyGames.Tianjiexing.BLL.Action
         private List<PetRunPool> _petRunPools = new List<PetRunPool>();
 
 
-        public Action3205(HttpGet httpGet)
+        public Action3205(ZyGames.Framework.Game.Contract.HttpGet httpGet)
             : base(ActionIDDefine.Cst_Action3205, httpGet)
         {
 

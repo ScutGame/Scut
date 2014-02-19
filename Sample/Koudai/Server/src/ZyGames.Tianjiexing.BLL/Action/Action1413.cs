@@ -44,7 +44,7 @@ namespace ZyGames.Tianjiexing.BLL.Action
         private int medicineType = 0;
         private List<UserItemInfo> itemArray = new List<UserItemInfo>();
 
-        public Action1413(HttpGet httpGet)
+        public Action1413(ZyGames.Framework.Game.Contract.HttpGet httpGet)
             : base(ActionIDDefine.Cst_Action1413, httpGet)
         {
 

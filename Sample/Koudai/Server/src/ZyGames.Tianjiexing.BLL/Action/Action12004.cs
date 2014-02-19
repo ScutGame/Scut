@@ -45,7 +45,7 @@ namespace ZyGames.Tianjiexing.BLL.Action
         private int hasNextBox = 0;
         
 
-        public Action12004(HttpGet httpGet)
+        public Action12004(ZyGames.Framework.Game.Contract.HttpGet httpGet)
             : base(ActionIDDefine.Cst_Action12004, httpGet)
         {
 

@@ -51,7 +51,7 @@ namespace ZyGames.Tianjiexing.BLL.Action
         private short isCoin;
         private short isObtain;
 
-        public Action1461(HttpGet httpGet)
+        public Action1461(ZyGames.Framework.Game.Contract.HttpGet httpGet)
             : base(ActionIDDefine.Cst_Action1461, httpGet)
         {
 

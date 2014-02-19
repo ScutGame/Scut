@@ -44,7 +44,7 @@ namespace ZyGames.Tianjiexing.BLL.Action
         private short isRestraint;
         private Dictionary<short, decimal> zodiacList = new Dictionary<short, decimal>();
 
-        public Action1470(HttpGet httpGet)
+        public Action1470(ZyGames.Framework.Game.Contract.HttpGet httpGet)
             : base(ActionIDDefine.Cst_Action1470, httpGet)
         {
 

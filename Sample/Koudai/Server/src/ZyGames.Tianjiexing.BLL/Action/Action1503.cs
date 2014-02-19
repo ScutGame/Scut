@@ -47,7 +47,7 @@ namespace ZyGames.Tianjiexing.BLL.Action
         private List<MagicLvInfo> magicLvInfoArray = new List<MagicLvInfo>();
         private int ops = 0;
 
-        public Action1503(HttpGet httpGet)
+        public Action1503(ZyGames.Framework.Game.Contract.HttpGet httpGet)
             : base(ActionIDDefine.Cst_Action1503, httpGet)
         {
 

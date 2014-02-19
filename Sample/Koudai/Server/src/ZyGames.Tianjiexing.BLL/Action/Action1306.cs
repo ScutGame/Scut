@@ -41,7 +41,7 @@ namespace ZyGames.Tianjiexing.BLL.Action
         private int ops = 0;
         private int totalPrice = 0;
 
-        public Action1306(HttpGet httpGet)
+        public Action1306(ZyGames.Framework.Game.Contract.HttpGet httpGet)
             : base(ActionIDDefine.Cst_Action1306, httpGet)
         {
 

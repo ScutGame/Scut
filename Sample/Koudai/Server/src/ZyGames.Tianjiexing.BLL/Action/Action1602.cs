@@ -41,7 +41,7 @@ namespace ZyGames.Tianjiexing.BLL.Action
         private int plotID = 0; //未完成
         private string plotName = string.Empty;
 
-        public Action1602(HttpGet httpGet)
+        public Action1602(ZyGames.Framework.Game.Contract.HttpGet httpGet)
             : base(ActionIDDefine.Cst_Action1602, httpGet)
         {
 

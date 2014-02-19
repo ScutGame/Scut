@@ -41,7 +41,7 @@ namespace ZyGames.Tianjiexing.BLL.Action
         private MobileType _mobileType;
         private int gameID = 0;
 
-        public Action1069(HttpGet httpGet)
+        public Action1069(ZyGames.Framework.Game.Contract.HttpGet httpGet)
             : base(ActionIDDefine.Cst_Action1069, httpGet)
         {
         }

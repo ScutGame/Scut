@@ -40,7 +40,7 @@ namespace ZyGames.Tianjiexing.BLL.Action
         private List<PetInfo> petList = new List<PetInfo>();
         private decimal minusNum = 0;
 
-        public Action3202(HttpGet httpGet)
+        public Action3202(ZyGames.Framework.Game.Contract.HttpGet httpGet)
             : base(ActionIDDefine.Cst_Action3202, httpGet)
         {
 

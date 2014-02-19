@@ -46,7 +46,7 @@ namespace ZyGames.Tianjiexing.BLL.Action
         private int ops = 0;
         private double inspirePercent = 0;
 
-        public Action5202(HttpGet httpGet)
+        public Action5202(ZyGames.Framework.Game.Contract.HttpGet httpGet)
             : base(ActionIDDefine.Cst_Action5202, httpGet)
         {
 

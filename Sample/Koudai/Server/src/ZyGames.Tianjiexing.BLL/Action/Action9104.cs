@@ -41,7 +41,7 @@ namespace ZyGames.Tianjiexing.BLL.Action
         private string friendID = string.Empty;
 
 
-        public Action9104(HttpGet httpGet)
+        public Action9104(ZyGames.Framework.Game.Contract.HttpGet httpGet)
             : base(ActionIDDefine.Cst_Action9104, httpGet)
         {
 

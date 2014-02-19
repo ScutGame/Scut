@@ -44,7 +44,7 @@ namespace ZyGames.Tianjiexing.BLL.Action
         private int _pageCount;
 
 
-        public Action5203(HttpGet httpGet)
+        public Action5203(ZyGames.Framework.Game.Contract.HttpGet httpGet)
             : base(ActionIDDefine.Cst_Action5203, httpGet)
         {
 

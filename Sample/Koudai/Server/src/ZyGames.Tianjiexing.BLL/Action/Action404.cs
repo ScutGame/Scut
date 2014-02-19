@@ -35,7 +35,7 @@ namespace ZyGames.Tianjiexing.BLL.Action
     {
         private string errorInfo = string.Empty;
 
-        public Action404(HttpGet httpGet)
+        public Action404(ZyGames.Framework.Game.Contract.HttpGet httpGet)
             : base(ActionIDDefine.Cst_Action404, httpGet)
         {
         }

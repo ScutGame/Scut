@@ -59,7 +59,7 @@ namespace ZyGames.Tianjiexing.BLL.Action
         private int skcount = 0;
         private short worshipLv;
 
-        public Action1454(HttpGet httpGet)
+        public Action1454(ZyGames.Framework.Game.Contract.HttpGet httpGet)
             : base(ActionIDDefine.Cst_Action1454, httpGet)
         {
 

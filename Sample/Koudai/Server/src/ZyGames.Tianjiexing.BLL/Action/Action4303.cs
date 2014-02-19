@@ -54,7 +54,7 @@ namespace ZyGames.Tianjiexing.BLL.Action
         private CombatProcessContainer combatProcessList = new CombatProcessContainer();
         private UniversalInfo[] universalArray = new UniversalInfo[0];
 
-        public Action4303(HttpGet httpGet)
+        public Action4303(ZyGames.Framework.Game.Contract.HttpGet httpGet)
             : base(ActionIDDefine.Cst_Action4303, httpGet)
         {
 

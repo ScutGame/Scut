@@ -53,7 +53,7 @@ namespace ZyGames.Tianjiexing.BLL.Action
         private short strongLv = 0;
         private const int StrongOnce = 1;  // 强化 1 次
         private const int StrongTenTimes = 10;  // 强化 10 次
-        public Action1204(HttpGet httpGet)
+        public Action1204(ZyGames.Framework.Game.Contract.HttpGet httpGet)
             : base(ActionIDDefine.Cst_Action1204, httpGet)
         {
 

@@ -47,7 +47,7 @@ namespace ZyGames.Tianjiexing.BLL.Action
         private short openNum;
         private UserEnchantInfo[] enchantArray = new UserEnchantInfo[0];
 
-        public Action1252(HttpGet httpGet)
+        public Action1252(ZyGames.Framework.Game.Contract.HttpGet httpGet)
             : base(ActionIDDefine.Cst_Action1252, httpGet)
         {
 

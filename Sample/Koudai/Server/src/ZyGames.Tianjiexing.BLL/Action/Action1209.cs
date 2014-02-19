@@ -44,7 +44,7 @@ namespace ZyGames.Tianjiexing.BLL.Action
         private int _generalID;
         private List<UserItemInfo> _userItemArray = new List<UserItemInfo>();
 
-        public Action1209(HttpGet httpGet)
+        public Action1209(ZyGames.Framework.Game.Contract.HttpGet httpGet)
             : base(ActionIDDefine.Cst_Action1209, httpGet)
         {
 

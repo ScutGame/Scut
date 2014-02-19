@@ -47,7 +47,7 @@ namespace ZyGames.Tianjiexing.BLL.Action
         private int petMinLevel = ConfigEnvSet.GetInt("Pet.MinLevel");
 
 
-        public Action3204(HttpGet httpGet)
+        public Action3204(ZyGames.Framework.Game.Contract.HttpGet httpGet)
             : base(ActionIDDefine.Cst_Action3204, httpGet)
         {
 

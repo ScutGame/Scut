@@ -77,7 +77,7 @@ namespace ZyGames.Tianjiexing.BLL.Action
         //玩家佣兵的职业名称
         private string userCareerName;
 
-        public Action1403(HttpGet httpGet)
+        public Action1403(ZyGames.Framework.Game.Contract.HttpGet httpGet)
             : base(ActionIDDefine.Cst_Action1403, httpGet)
         {
 

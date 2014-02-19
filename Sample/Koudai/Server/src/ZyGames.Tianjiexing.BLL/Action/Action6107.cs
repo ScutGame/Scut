@@ -35,7 +35,7 @@ namespace ZyGames.Tianjiexing.BLL.Action
         private int _activeId;
 
 
-        public Action6107(HttpGet httpGet)
+        public Action6107(ZyGames.Framework.Game.Contract.HttpGet httpGet)
             : base(ActionIDDefine.Cst_Action6107, httpGet)
         {
 

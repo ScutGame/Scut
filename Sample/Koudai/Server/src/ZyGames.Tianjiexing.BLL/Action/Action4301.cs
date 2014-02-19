@@ -51,7 +51,7 @@ namespace ZyGames.Tianjiexing.BLL.Action
         private string[] strEnchant = new string[0];
         private UniversalInfo[] universalArray = new UniversalInfo[0];
 
-        public Action4301(HttpGet httpGet)
+        public Action4301(ZyGames.Framework.Game.Contract.HttpGet httpGet)
             : base(ActionIDDefine.Cst_Action4301, httpGet)
         {
 

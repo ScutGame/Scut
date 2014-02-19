@@ -44,7 +44,7 @@ namespace ZyGames.Tianjiexing.BLL.Action
         private int packNum;
         private UserEnchantInfo[] enchantArray = new UserEnchantInfo[0];
 
-        public Action1253(HttpGet httpGet)
+        public Action1253(ZyGames.Framework.Game.Contract.HttpGet httpGet)
             : base(ActionIDDefine.Cst_Action1253, httpGet)
         {
 

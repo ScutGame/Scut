@@ -48,7 +48,7 @@ namespace ZyGames.Tianjiexing.BLL.Action
         private List<UserSparePart> _sparePartList = new List<UserSparePart>();
         private string toUserID;
 
-        public Action1211(HttpGet httpGet)
+        public Action1211(ZyGames.Framework.Game.Contract.HttpGet httpGet)
             : base(ActionIDDefine.Cst_Action1211, httpGet)
         {
 

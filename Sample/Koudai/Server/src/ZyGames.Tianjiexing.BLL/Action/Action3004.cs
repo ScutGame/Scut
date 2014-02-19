@@ -40,7 +40,7 @@ namespace ZyGames.Tianjiexing.BLL.Action
         private int NpcID;
         private List<UserTask> userTaskList = new List<UserTask>();
 
-        public Action3004(HttpGet httpGet)
+        public Action3004(ZyGames.Framework.Game.Contract.HttpGet httpGet)
             : base(ActionIDDefine.Cst_Action3004, httpGet)
         {
 

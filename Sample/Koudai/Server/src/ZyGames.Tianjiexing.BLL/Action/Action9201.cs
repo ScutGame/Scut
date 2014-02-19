@@ -41,7 +41,7 @@ namespace ZyGames.Tianjiexing.BLL.Action
         private string _content = string.Empty;
 
 
-        public Action9201(HttpGet httpGet)
+        public Action9201(ZyGames.Framework.Game.Contract.HttpGet httpGet)
             : base(ActionIDDefine.Cst_Action9201, httpGet)
         {
 

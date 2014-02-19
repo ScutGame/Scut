@@ -40,7 +40,7 @@ namespace ZyGames.Tianjiexing.BLL.Action
         private MorePlot[] morePlotArray = new MorePlot[0];
         private FunctionEnum funEnum;
 
-        public Action4203(HttpGet httpGet)
+        public Action4203(ZyGames.Framework.Game.Contract.HttpGet httpGet)
             : base(ActionIDDefine.Cst_Action4203, httpGet)
         {
 

@@ -45,7 +45,7 @@ namespace ZyGames.Tianjiexing.BLL.Action
         private UserGeneral userGeneral = null;
         private string toUserID;
         private string _maxHeadID = string.Empty;
-        public Action1302(HttpGet httpGet)
+        public Action1302(ZyGames.Framework.Game.Contract.HttpGet httpGet)
             : base(ActionIDDefine.Cst_Action1302, httpGet)
         {
 

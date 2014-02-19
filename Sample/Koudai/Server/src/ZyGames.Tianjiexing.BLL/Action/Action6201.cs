@@ -50,7 +50,7 @@ namespace ZyGames.Tianjiexing.BLL.Action
         private GuildAbilityInfo gAbilityInfo = null;
         private short isCityCombat = 0;
 
-        public Action6201(HttpGet httpGet)
+        public Action6201(ZyGames.Framework.Game.Contract.HttpGet httpGet)
             : base(ActionIDDefine.Cst_Action6201, httpGet)
         {
 

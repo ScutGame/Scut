@@ -45,7 +45,7 @@ namespace ZyGames.Tianjiexing.BLL.Action
     {
         private BossDateType dateType;
 
-        public Action6109(HttpGet httpGet)
+        public Action6109(ZyGames.Framework.Game.Contract.HttpGet httpGet)
             : base(ActionIDDefine.Cst_Action6109, httpGet)
         {
 

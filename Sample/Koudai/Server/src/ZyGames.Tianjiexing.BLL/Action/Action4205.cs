@@ -39,7 +39,7 @@ namespace ZyGames.Tianjiexing.BLL.Action
         private int teamID = 0;
         private FunctionEnum funEnum;
 
-        public Action4205(HttpGet httpGet)
+        public Action4205(ZyGames.Framework.Game.Contract.HttpGet httpGet)
             : base(ActionIDDefine.Cst_Action4205, httpGet)
         {
 

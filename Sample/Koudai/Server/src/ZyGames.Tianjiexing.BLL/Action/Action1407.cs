@@ -43,7 +43,7 @@ namespace ZyGames.Tianjiexing.BLL.Action
         private int medicineID = 0;
         private int ops = 0;
 
-        public Action1407(HttpGet httpGet)
+        public Action1407(ZyGames.Framework.Game.Contract.HttpGet httpGet)
             : base(ActionIDDefine.Cst_Action1407, httpGet)
         {
 

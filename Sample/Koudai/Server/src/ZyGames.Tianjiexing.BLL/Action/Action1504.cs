@@ -39,7 +39,7 @@ namespace ZyGames.Tianjiexing.BLL.Action
         private int ClientVersion;
         private List<MagicInfo> magicList = new List<MagicInfo>();
 
-        public Action1504(HttpGet httpGet)
+        public Action1504(ZyGames.Framework.Game.Contract.HttpGet httpGet)
             : base(ActionIDDefine.Cst_Action1504, httpGet)
         {
 

@@ -10,7 +10,7 @@ namespace ZyGames.Tianjiexing.BLL.Action
 {
     public abstract class BaseAction : AuthorizeAction
     {
-        protected BaseAction(short actionID, HttpGet httpGet)
+        protected BaseAction(short actionID, ZyGames.Framework.Game.Contract.HttpGet httpGet)
             : base(actionID, httpGet)
         {
         }

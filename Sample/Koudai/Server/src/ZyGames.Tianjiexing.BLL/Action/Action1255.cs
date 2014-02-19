@@ -43,7 +43,7 @@ namespace ZyGames.Tianjiexing.BLL.Action
         private string userEnchantID;
 
 
-        public Action1255(HttpGet httpGet)
+        public Action1255(ZyGames.Framework.Game.Contract.HttpGet httpGet)
             : base(ActionIDDefine.Cst_Action1255, httpGet)
         {
 

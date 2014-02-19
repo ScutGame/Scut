@@ -47,7 +47,7 @@ namespace ZyGames.Tianjiexing.BLL.Action
         private int currNum = 0;
         private int unopened = 0;
         private short _isEnabled = 1;
-        public Action1401(HttpGet httpGet)
+        public Action1401(ZyGames.Framework.Game.Contract.HttpGet httpGet)
             : base(ActionIDDefine.Cst_Action1401, httpGet)
         {
 

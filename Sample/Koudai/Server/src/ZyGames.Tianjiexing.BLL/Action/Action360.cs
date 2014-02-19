@@ -31,7 +31,7 @@ namespace ZyGames.Tianjiexing.BLL.Action
     /// </summary>
     public class Action360 : ReAccessTokenAction
     {
-        public Action360(HttpGet httpGet)
+        public Action360(ZyGames.Framework.Game.Contract.HttpGet httpGet)
             : base(ActionIDDefine.Cst_Action360, httpGet)
         {
         }

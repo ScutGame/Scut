@@ -42,7 +42,7 @@ namespace ZyGames.Tianjiexing.BLL.Action
     {
         private List<NoviceInfo> _noviceList = new List<NoviceInfo>();
 
-        public Action13001(HttpGet httpGet)
+        public Action13001(ZyGames.Framework.Game.Contract.HttpGet httpGet)
             : base(ActionIDDefine.Cst_Action13001, httpGet)
         {
 

@@ -48,7 +48,7 @@ namespace ZyGames.Tianjiexing.BLL.Action
         private short isWin = 0;
         private UserStatus status;
 
-        public Action6408(HttpGet httpGet)
+        public Action6408(ZyGames.Framework.Game.Contract.HttpGet httpGet)
             : base(ActionIDDefine.Cst_Action6408, httpGet)
         {
 

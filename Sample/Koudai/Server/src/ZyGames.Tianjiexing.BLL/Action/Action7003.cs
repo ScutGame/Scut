@@ -47,7 +47,7 @@ namespace ZyGames.Tianjiexing.BLL.Action
         private int pageCount = 0;
         private List<UserItemInfo> userItemArray = new List<UserItemInfo>();
 
-        public Action7003(HttpGet httpGet)
+        public Action7003(ZyGames.Framework.Game.Contract.HttpGet httpGet)
             : base(ActionIDDefine.Cst_Action7003, httpGet)
         {
 

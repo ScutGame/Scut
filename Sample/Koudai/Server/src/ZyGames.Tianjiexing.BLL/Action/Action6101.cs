@@ -58,7 +58,7 @@ namespace ZyGames.Tianjiexing.BLL.Action
         private string guildID = string.Empty;
         private int bossPlotID = 0;
 
-        public Action6101(HttpGet httpGet)
+        public Action6101(ZyGames.Framework.Game.Contract.HttpGet httpGet)
             : base(ActionIDDefine.Cst_Action6101, httpGet)
         {
 

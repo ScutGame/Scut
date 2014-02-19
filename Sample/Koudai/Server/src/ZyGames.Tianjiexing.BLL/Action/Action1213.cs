@@ -45,7 +45,7 @@ namespace ZyGames.Tianjiexing.BLL.Action
         private short _position;
 
 
-        public Action1213(HttpGet httpGet)
+        public Action1213(ZyGames.Framework.Game.Contract.HttpGet httpGet)
             : base(ActionIDDefine.Cst_Action1213, httpGet)
         {
 

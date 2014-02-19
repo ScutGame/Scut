@@ -45,7 +45,7 @@ namespace ZyGames.Tianjiexing.BLL.Action
         private int idolID = 0;
 
 
-        public Action6012(HttpGet httpGet)
+        public Action6012(ZyGames.Framework.Game.Contract.HttpGet httpGet)
             : base(ActionIDDefine.Cst_Action6012, httpGet)
         {
 

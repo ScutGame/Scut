@@ -45,7 +45,7 @@ namespace ZyGames.Tianjiexing.BLL.Action
         private string PictureID = string.Empty;
         private static int festivalID = 1019;
 
-        public Action1608(HttpGet httpGet)
+        public Action1608(ZyGames.Framework.Game.Contract.HttpGet httpGet)
             : base(ActionIDDefine.Cst_Action1608, httpGet)
         {
 

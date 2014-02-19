@@ -56,7 +56,7 @@ namespace ZyGames.Tianjiexing.BLL.Action
         private int totalDonateNum = 0;
 
 
-        public Action6204(HttpGet httpGet)
+        public Action6204(ZyGames.Framework.Game.Contract.HttpGet httpGet)
             : base(ActionIDDefine.Cst_Action6204, httpGet)
         {
 

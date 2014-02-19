@@ -48,7 +48,7 @@ namespace ZyGames.Tianjiexing.BLL.Action
         private bool _isOverCombat;
         private List<PlotNPCInfo> npcList = new List<PlotNPCInfo>();
         private int _plotNum = 0;
-        public Action4002(HttpGet httpGet)
+        public Action4002(ZyGames.Framework.Game.Contract.HttpGet httpGet)
             : base(ActionIDDefine.Cst_Action4002, httpGet)
         {
 

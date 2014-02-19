@@ -41,7 +41,7 @@ namespace ZyGames.Tianjiexing.BLL.Action
         private GameActive[] _gameActiveList = new GameActive[0];
         private UserGuild guild = null;
 
-        public Action3009(HttpGet httpGet)
+        public Action3009(ZyGames.Framework.Game.Contract.HttpGet httpGet)
             : base(ActionIDDefine.Cst_Action3009, httpGet)
         {
 

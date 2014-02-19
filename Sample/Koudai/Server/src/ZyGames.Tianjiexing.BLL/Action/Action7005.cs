@@ -41,7 +41,7 @@ namespace ZyGames.Tianjiexing.BLL.Action
         private int itemID = 0;
         private int itemNum = 0;
 
-        public Action7005(HttpGet httpGet)
+        public Action7005(ZyGames.Framework.Game.Contract.HttpGet httpGet)
             : base(ActionIDDefine.Cst_Action7005, httpGet)
         {
 

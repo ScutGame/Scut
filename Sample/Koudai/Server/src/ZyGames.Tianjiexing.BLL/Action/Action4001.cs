@@ -47,7 +47,7 @@ namespace ZyGames.Tianjiexing.BLL.Action
         private List<CityInfo> _cityInfoList = new List<CityInfo>();
         private int _backpackType = 0;
         private ConfigCacheSet<PlotInfo> _cacheSetPlot = new ConfigCacheSet<PlotInfo>();
-        public Action4001(HttpGet httpGet)
+        public Action4001(ZyGames.Framework.Game.Contract.HttpGet httpGet)
             : base(ActionIDDefine.Cst_Action4001, httpGet)
         {
 

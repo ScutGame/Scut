@@ -46,7 +46,7 @@ namespace ZyGames.Tianjiexing.BLL.Action
         private int pageCount = 0;
         private List<GuildMember> memberArray = new List<GuildMember>();
 
-        public Action6002(HttpGet httpGet)
+        public Action6002(ZyGames.Framework.Game.Contract.HttpGet httpGet)
             : base(ActionIDDefine.Cst_Action6002, httpGet)
         {
 

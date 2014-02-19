@@ -38,7 +38,7 @@ namespace ZyGames.Tianjiexing.BLL.Action
         private int IsUp = 0;
 
 
-        public Action4207(HttpGet httpGet)
+        public Action4207(ZyGames.Framework.Game.Contract.HttpGet httpGet)
             : base(ActionIDDefine.Cst_Action4207, httpGet)
         {
 

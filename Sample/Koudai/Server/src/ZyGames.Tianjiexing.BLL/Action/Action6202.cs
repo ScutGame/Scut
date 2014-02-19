@@ -47,7 +47,7 @@ namespace ZyGames.Tianjiexing.BLL.Action
         private int pageCount;
         private List<GuildAbility> abilityArray = new List<GuildAbility>();
 
-        public Action6202(HttpGet httpGet)
+        public Action6202(ZyGames.Framework.Game.Contract.HttpGet httpGet)
             : base(ActionIDDefine.Cst_Action6202, httpGet)
         {
 

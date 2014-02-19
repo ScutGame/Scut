@@ -50,7 +50,7 @@ namespace ZyGames.Tianjiexing.BLL.Action
         private int isShow = 0;
         private int isXs = 0;
 
-        public Action6011(HttpGet httpGet)
+        public Action6011(ZyGames.Framework.Game.Contract.HttpGet httpGet)
             : base(ActionIDDefine.Cst_Action6011, httpGet)
         {
 

@@ -49,7 +49,7 @@ namespace ZyGames.Tianjiexing.BLL.Action
         private int _mscoreNum;
         private int _hscoreNum;
 
-        public Action5201(HttpGet httpGet)
+        public Action5201(ZyGames.Framework.Game.Contract.HttpGet httpGet)
             : base(ActionIDDefine.Cst_Action5201, httpGet)
         {
 

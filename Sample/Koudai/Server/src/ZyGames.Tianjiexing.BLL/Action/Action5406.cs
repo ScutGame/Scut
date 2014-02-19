@@ -50,7 +50,7 @@ namespace ZyGames.Tianjiexing.BLL.Action
         private short _isCurr;
         private GameDataCacheSet<GameUser> _cacheSet = new GameDataCacheSet<GameUser>();
 
-        public Action5406(HttpGet httpGet)
+        public Action5406(ZyGames.Framework.Game.Contract.HttpGet httpGet)
             : base(ActionIDDefine.Cst_Action5406, httpGet)
         {
 

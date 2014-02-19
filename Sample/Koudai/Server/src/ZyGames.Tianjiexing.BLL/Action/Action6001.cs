@@ -45,7 +45,7 @@ namespace ZyGames.Tianjiexing.BLL.Action
         private int isApply;
         private int maxPeople = 0;
 
-        public Action6001(HttpGet httpGet)
+        public Action6001(ZyGames.Framework.Game.Contract.HttpGet httpGet)
             : base(ActionIDDefine.Cst_Action6001, httpGet)
         {
 

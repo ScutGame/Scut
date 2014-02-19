@@ -52,7 +52,7 @@ namespace ZyGames.Tianjiexing.BLL.Action
         private short nextLv = 0;
         private UserGuild userGuild = null;
 
-        public Action6004(HttpGet httpGet)
+        public Action6004(ZyGames.Framework.Game.Contract.HttpGet httpGet)
             : base(ActionIDDefine.Cst_Action6004, httpGet)
         {
 

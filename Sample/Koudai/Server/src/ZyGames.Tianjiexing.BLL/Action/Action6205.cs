@@ -44,7 +44,7 @@ namespace ZyGames.Tianjiexing.BLL.Action
         private int guildSkillID;
 
 
-        public Action6205(HttpGet httpGet)
+        public Action6205(ZyGames.Framework.Game.Contract.HttpGet httpGet)
             : base(ActionIDDefine.Cst_Action6205, httpGet)
         {
 

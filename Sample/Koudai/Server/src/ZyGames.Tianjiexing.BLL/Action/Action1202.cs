@@ -52,7 +52,7 @@ namespace ZyGames.Tianjiexing.BLL.Action
         private string _toUserId = string.Empty;
         private int _stengBaseNum;
         private int _tenTimesStrongMoney = 0;
-        public Action1202(HttpGet httpGet)
+        public Action1202(ZyGames.Framework.Game.Contract.HttpGet httpGet)
             : base(ActionIDDefine.Cst_Action1202, httpGet)
         {
 

@@ -47,7 +47,7 @@ namespace ZyGames.Tianjiexing.BLL.Action
         private string _userEquID = string.Empty;
         private int _ops = 0;
 
-        public Action1603(HttpGet httpGet)
+        public Action1603(ZyGames.Framework.Game.Contract.HttpGet httpGet)
             : base(ActionIDDefine.Cst_Action1603, httpGet)
         {
 

@@ -50,7 +50,7 @@ namespace ZyGames.Tianjiexing.BLL.Action
         private string abilityNum;
         private UserEnchantInfo[] enchantArray = new UserEnchantInfo[0];
 
-        public Action1262(HttpGet httpGet)
+        public Action1262(ZyGames.Framework.Game.Contract.HttpGet httpGet)
             : base(ActionIDDefine.Cst_Action1262, httpGet)
         {
 

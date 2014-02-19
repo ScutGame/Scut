@@ -53,7 +53,7 @@ namespace ZyGames.Tianjiexing.BLL.Action
         private int rewardNumlv = 0;
         private List<RewardShow> rewardShowArray = new List<RewardShow>();
 
-        public Action11002(HttpGet httpGet)
+        public Action11002(ZyGames.Framework.Game.Contract.HttpGet httpGet)
             : base(ActionIDDefine.Cst_Action11002, httpGet)
         {
 

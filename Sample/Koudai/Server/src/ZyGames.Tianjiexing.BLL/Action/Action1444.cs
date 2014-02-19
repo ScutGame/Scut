@@ -44,7 +44,7 @@ namespace ZyGames.Tianjiexing.BLL.Action
         private int itemNum;
         private List<UserItemInfo> useritemList = new List<UserItemInfo>();
 
-        public Action1444(HttpGet httpGet)
+        public Action1444(ZyGames.Framework.Game.Contract.HttpGet httpGet)
             : base(ActionIDDefine.Cst_Action1444, httpGet)
         {
 

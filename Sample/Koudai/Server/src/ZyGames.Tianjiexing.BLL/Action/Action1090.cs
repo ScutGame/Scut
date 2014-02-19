@@ -37,7 +37,7 @@ namespace ZyGames.Tianjiexing.BLL.Action
     {
         private List<ConfigVersion> versionList;
 
-        public Action1090(HttpGet httpGet)
+        public Action1090(ZyGames.Framework.Game.Contract.HttpGet httpGet)
             : base(ActionIDDefine.Cst_Action1090, httpGet)
         {
 

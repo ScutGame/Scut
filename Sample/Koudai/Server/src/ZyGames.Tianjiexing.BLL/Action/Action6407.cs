@@ -50,7 +50,7 @@ namespace ZyGames.Tianjiexing.BLL.Action
         private int pageCount;
         private List<MemberGroup> memberGroupList = new List<MemberGroup>();
 
-        public Action6407(HttpGet httpGet)
+        public Action6407(ZyGames.Framework.Game.Contract.HttpGet httpGet)
             : base(ActionIDDefine.Cst_Action6407, httpGet)
         {
 

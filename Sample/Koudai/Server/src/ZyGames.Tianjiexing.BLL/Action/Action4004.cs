@@ -60,7 +60,7 @@ namespace ZyGames.Tianjiexing.BLL.Action
         private int GotoNum;
         private int _userTalPriority = 0;
         private int _npcTalPriority = 0;
-        public Action4004(HttpGet httpGet)
+        public Action4004(ZyGames.Framework.Game.Contract.HttpGet httpGet)
             : base(ActionIDDefine.Cst_Action4004, httpGet)
         {
 

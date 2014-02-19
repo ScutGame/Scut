@@ -51,7 +51,7 @@ namespace ZyGames.Tianjiexing.BLL.Action
         private string toUserID;
         private short genQuality = 0;
 
-        public Action1301(HttpGet httpGet)
+        public Action1301(ZyGames.Framework.Game.Contract.HttpGet httpGet)
             : base(ActionIDDefine.Cst_Action1301, httpGet)
         {
 

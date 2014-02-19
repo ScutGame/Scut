@@ -45,7 +45,7 @@ namespace ZyGames.Tianjiexing.BLL.Action
 
         private List<UserFriends> _userFriendList = new List<UserFriends>();
 
-        public Action9101(HttpGet httpGet)
+        public Action9101(ZyGames.Framework.Game.Contract.HttpGet httpGet)
             : base(ActionIDDefine.Cst_Action9101, httpGet)
         {
            

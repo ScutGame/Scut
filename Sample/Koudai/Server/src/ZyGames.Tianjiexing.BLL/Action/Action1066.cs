@@ -49,7 +49,7 @@ namespace ZyGames.Tianjiexing.BLL.Action
         private string _deviceId = "";
         private string AppUrl = "https://buy.itunes.apple.com/verifyReceipt";
 
-        public Action1066(HttpGet httpGet)
+        public Action1066(ZyGames.Framework.Game.Contract.HttpGet httpGet)
             : base(ActionIDDefine.Cst_Action1066, httpGet)
         {
         }

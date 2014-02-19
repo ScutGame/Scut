@@ -39,7 +39,7 @@ namespace ZyGames.Tianjiexing.BLL.Action
         private short _enableGridNum;
 
 
-        public Action1215(HttpGet httpGet)
+        public Action1215(ZyGames.Framework.Game.Contract.HttpGet httpGet)
             : base(ActionIDDefine.Cst_Action1215, httpGet)
         {
 

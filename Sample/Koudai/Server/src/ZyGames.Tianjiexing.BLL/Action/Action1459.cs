@@ -47,7 +47,7 @@ namespace ZyGames.Tianjiexing.BLL.Action
         private TrumpInfo[] trumpInfoArray = new TrumpInfo[0];
         private short isFull;
 
-        public Action1459(HttpGet httpGet)
+        public Action1459(ZyGames.Framework.Game.Contract.HttpGet httpGet)
             : base(ActionIDDefine.Cst_Action1459, httpGet)
         {
 

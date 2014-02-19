@@ -53,21 +53,16 @@
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="IronPython, Version=2.7.0.40, Culture=neutral, PublicKeyToken=7f709c5b713576e1, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\..\Release\6.1.5.6\Lib\IronPython.dll</HintPath>
-    </Reference>
     <Reference Include="Newtonsoft.Json">
-      <HintPath>..\..\..\..\..\Release\6.1.5.6\Lib\Newtonsoft.Json.dll</HintPath>
+      <HintPath>..\..\..\..\..\Release\6.1.5.8\Lib\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="NLog">
-      <HintPath>..\..\..\..\..\Release\6.1.5.6\Lib\NLog.dll</HintPath>
+      <HintPath>..\..\..\..\..\Release\6.1.5.8\Lib\NLog.dll</HintPath>
     </Reference>
     <Reference Include="protobuf-net">
-      <HintPath>..\..\..\..\..\Release\6.1.5.6\Lib\protobuf-net.dll</HintPath>
+      <HintPath>..\..\..\..\..\Release\6.1.5.8\Lib\protobuf-net.dll</HintPath>
     </Reference>
     <Reference Include="System" />
-    <Reference Include="System.configuration" />
     <Reference Include="System.Core">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
@@ -83,14 +78,18 @@
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
     <Reference Include="ZyGames.Framework">
-      <HintPath>..\..\..\..\..\Release\6.1.5.6\Lib\ZyGames.Framework.dll</HintPath>
+      <HintPath>..\..\..\..\..\Release\6.1.5.8\Lib\ZyGames.Framework.dll</HintPath>
     </Reference>
     <Reference Include="ZyGames.Framework.Common">
-      <HintPath>..\..\..\..\..\Release\6.1.5.6\Lib\ZyGames.Framework.Common.dll</HintPath>
+      <HintPath>..\..\..\..\..\Release\6.1.5.8\Lib\ZyGames.Framework.Common.dll</HintPath>
     </Reference>
     <Reference Include="ZyGames.Framework.Game">
-      <HintPath>..\..\..\..\..\Release\6.1.5.6\Lib\ZyGames.Framework.Game.dll</HintPath>
+      <HintPath>..\..\..\..\..\Release\6.1.5.8\Lib\ZyGames.Framework.Game.dll</HintPath>
     </Reference>
+    <Reference Include="IronPython">
+      <HintPath>..\..\..\..\..\Release\6.1.5.8\Lib\IronPython.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Configuration" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="..\Solution Items\GlobalAssemblyInfo.cs">

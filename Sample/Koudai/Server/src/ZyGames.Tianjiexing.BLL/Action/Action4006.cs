@@ -47,7 +47,7 @@ namespace ZyGames.Tianjiexing.BLL.Action
         private Dictionary<int, MonsterInfo> monsterDict = new Dictionary<int, MonsterInfo>();
         private Dictionary<int, int> monsterNumDict = new Dictionary<int, int>();
 
-        public Action4006(HttpGet httpGet)
+        public Action4006(ZyGames.Framework.Game.Contract.HttpGet httpGet)
             : base(ActionIDDefine.Cst_Action4006, httpGet)
         {
 

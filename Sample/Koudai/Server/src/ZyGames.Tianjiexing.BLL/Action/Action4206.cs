@@ -40,7 +40,7 @@ namespace ZyGames.Tianjiexing.BLL.Action
         private int ops = 0;
         private FunctionEnum funEnum;
 
-        public Action4206(HttpGet httpGet)
+        public Action4206(ZyGames.Framework.Game.Contract.HttpGet httpGet)
             : base(ActionIDDefine.Cst_Action4206, httpGet)
         {
 

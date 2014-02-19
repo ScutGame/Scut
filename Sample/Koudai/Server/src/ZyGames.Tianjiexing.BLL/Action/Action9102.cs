@@ -41,7 +41,7 @@ namespace ZyGames.Tianjiexing.BLL.Action
         private int _pageCount;
         private List<GameUser> _userFriendArray = new List<GameUser>();
 
-        public Action9102(HttpGet httpGet)
+        public Action9102(ZyGames.Framework.Game.Contract.HttpGet httpGet)
             : base(ActionIDDefine.Cst_Action9102, httpGet)
         {
 

@@ -42,7 +42,7 @@ namespace ZyGames.Tianjiexing.BLL.Action
     {
         private int isDevil = 0;
 
-        public Action6014(HttpGet httpGet)
+        public Action6014(ZyGames.Framework.Game.Contract.HttpGet httpGet)
             : base(ActionIDDefine.Cst_Action6014, httpGet)
         {
 

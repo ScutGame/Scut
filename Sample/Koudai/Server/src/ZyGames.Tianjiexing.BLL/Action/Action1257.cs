@@ -51,7 +51,7 @@ namespace ZyGames.Tianjiexing.BLL.Action
         private EnchantInfo enchantInfo = null;
         private List<EnchantCulTure> enchantList = new List<EnchantCulTure>();
 
-        public Action1257(HttpGet httpGet)
+        public Action1257(ZyGames.Framework.Game.Contract.HttpGet httpGet)
             : base(ActionIDDefine.Cst_Action1257, httpGet)
         {
 

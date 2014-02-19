@@ -46,7 +46,7 @@ namespace ZyGames.Tianjiexing.BLL.Action
         private List<ItemSynthesisInfo> synthesisArray = new List<ItemSynthesisInfo>();
         private List<ItemEquAttrInfo> equAttrInfo = new List<ItemEquAttrInfo>();
 
-        public Action1601(HttpGet httpGet)
+        public Action1601(ZyGames.Framework.Game.Contract.HttpGet httpGet)
             : base(ActionIDDefine.Cst_Action1601, httpGet)
         {
 

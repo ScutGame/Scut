@@ -44,7 +44,7 @@ namespace ZyGames.Tianjiexing.BLL.Action
         private int teamID = 0;
         private TeamCombatResult teamCombatResult = new TeamCombatResult();
 
-        public Action4211(HttpGet httpGet)
+        public Action4211(ZyGames.Framework.Game.Contract.HttpGet httpGet)
             : base(ActionIDDefine.Cst_Action4211, httpGet)
         {
 

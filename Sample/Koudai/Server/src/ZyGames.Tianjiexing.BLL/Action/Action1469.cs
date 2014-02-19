@@ -42,7 +42,7 @@ namespace ZyGames.Tianjiexing.BLL.Action
         private AbilityType propertyID;
 
 
-        public Action1469(HttpGet httpGet)
+        public Action1469(ZyGames.Framework.Game.Contract.HttpGet httpGet)
             : base(ActionIDDefine.Cst_Action1469, httpGet)
         {
 

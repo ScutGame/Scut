@@ -65,7 +65,7 @@ namespace ZyGames.Tianjiexing.BLL.Action
         private ConfigCacheSet<GeneralInfo> _cacheSetGeneral = new ConfigCacheSet<GeneralInfo>();
         private List<SelfAbilityEffect> _selfAbilityEffectList = new List<SelfAbilityEffect>();
         private List<SelfAbilityEffect> _defSelfAbilityEffectList = new List<SelfAbilityEffect>();
-        public Action5107(HttpGet httpGet)
+        public Action5107(ZyGames.Framework.Game.Contract.HttpGet httpGet)
             : base(ActionIDDefine.Cst_Action5107, httpGet)
         {
 

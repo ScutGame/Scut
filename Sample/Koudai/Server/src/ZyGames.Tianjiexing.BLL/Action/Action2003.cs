@@ -45,7 +45,7 @@ namespace ZyGames.Tianjiexing.BLL.Action
         private List<GameUser> gameUserArray = new List<GameUser>();
         private CityInfo cityInfo = null;
 
-        public Action2003(HttpGet httpGet)
+        public Action2003(ZyGames.Framework.Game.Contract.HttpGet httpGet)
             : base(ActionIDDefine.Cst_Action2003, httpGet)
         {
 

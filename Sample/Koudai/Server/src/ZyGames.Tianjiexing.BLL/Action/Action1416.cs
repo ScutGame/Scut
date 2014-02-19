@@ -50,7 +50,7 @@ namespace ZyGames.Tianjiexing.BLL.Action
         private List<GeneralHeritage> heritageList = new List<GeneralHeritage>();
         private List<OpsInfo> opsInfoList = new List<OpsInfo>();
 
-        public Action1416(HttpGet httpGet)
+        public Action1416(ZyGames.Framework.Game.Contract.HttpGet httpGet)
             : base(ActionIDDefine.Cst_Action1416, httpGet)
         {
 

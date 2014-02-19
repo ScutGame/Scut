@@ -38,7 +38,7 @@ namespace ZyGames.Tianjiexing.BLL.Action
         private int _magicID;
 
 
-        public Action1903(HttpGet httpGet)
+        public Action1903(ZyGames.Framework.Game.Contract.HttpGet httpGet)
             : base(ActionIDDefine.Cst_Action1903, httpGet)
         {
 

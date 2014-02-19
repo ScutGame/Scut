@@ -49,7 +49,7 @@ namespace ZyGames.Tianjiexing.BLL.Action
         private short newIntellect = 0;
         private Random random = new Random();
 
-        public Action1409(HttpGet httpGet)
+        public Action1409(ZyGames.Framework.Game.Contract.HttpGet httpGet)
             : base(ActionIDDefine.Cst_Action1409, httpGet)
         {
 

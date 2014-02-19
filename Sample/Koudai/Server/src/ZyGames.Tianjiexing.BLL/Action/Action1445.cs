@@ -37,7 +37,7 @@ namespace ZyGames.Tianjiexing.BLL.Action
         private string generalCard;
         private int generalID = 0;
 
-        public Action1445(HttpGet httpGet)
+        public Action1445(ZyGames.Framework.Game.Contract.HttpGet httpGet)
             : base(ActionIDDefine.Cst_Action1445, httpGet)
         {
 

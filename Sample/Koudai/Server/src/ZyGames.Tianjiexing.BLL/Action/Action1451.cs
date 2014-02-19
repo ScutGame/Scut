@@ -48,7 +48,7 @@ namespace ZyGames.Tianjiexing.BLL.Action
         private short iscomplete;
         private StoryTaskInfo[] storyTaskArray = new StoryTaskInfo[0];
 
-        public Action1451(HttpGet httpGet)
+        public Action1451(ZyGames.Framework.Game.Contract.HttpGet httpGet)
             : base(ActionIDDefine.Cst_Action1451, httpGet)
         {
 

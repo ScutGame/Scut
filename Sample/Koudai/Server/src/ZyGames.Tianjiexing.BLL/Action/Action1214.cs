@@ -45,7 +45,7 @@ namespace ZyGames.Tianjiexing.BLL.Action
         private UserSparePart _sparePart = new UserSparePart();
         private string[] _partPropertys = new string[0];
 
-        public Action1214(HttpGet httpGet)
+        public Action1214(ZyGames.Framework.Game.Contract.HttpGet httpGet)
             : base(ActionIDDefine.Cst_Action1214, httpGet)
         {
 

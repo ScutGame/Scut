@@ -44,7 +44,7 @@ namespace ZyGames.Tianjiexing.BLL.Action
         private List<UserEmbattle> userEmbattleList = new List<UserEmbattle>();
 
 
-        public Action4009(HttpGet httpGet)
+        public Action4009(ZyGames.Framework.Game.Contract.HttpGet httpGet)
             : base(ActionIDDefine.Cst_Action4009, httpGet)
         {
 

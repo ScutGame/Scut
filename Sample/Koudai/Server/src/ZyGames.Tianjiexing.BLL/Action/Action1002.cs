@@ -46,7 +46,7 @@ namespace ZyGames.Tianjiexing.BLL.Action
         private int ScreenX = 0;
         private int ScreenY = 0;
 
-        public Action1002(HttpGet httpGet)
+        public Action1002(ZyGames.Framework.Game.Contract.HttpGet httpGet)
             : base(ActionIDDefine.Cst_Action1002, httpGet)
         {
         }

@@ -45,7 +45,7 @@ namespace ZyGames.Tianjiexing.BLL.Action
         private UserPlant userPlant = null;
         private List<UserLand> userLandArray = new List<UserLand>();
 
-        public Action10001(HttpGet httpGet)
+        public Action10001(ZyGames.Framework.Game.Contract.HttpGet httpGet)
             : base(ActionIDDefine.Cst_Action10001, httpGet)
         {
 

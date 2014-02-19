@@ -47,7 +47,7 @@ namespace ZyGames.Tianjiexing.BLL.Action
         private int _gridNum;
         private int _itemCount = 0;
         private List<UserItemInfo> mlist = new List<UserItemInfo>();
-        public Action1101(HttpGet httpGet)
+        public Action1101(ZyGames.Framework.Game.Contract.HttpGet httpGet)
             : base(ActionIDDefine.Cst_Action1101, httpGet)
         {
         }

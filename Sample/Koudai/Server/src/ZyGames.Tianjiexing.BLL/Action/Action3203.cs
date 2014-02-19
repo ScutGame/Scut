@@ -45,7 +45,7 @@ namespace ZyGames.Tianjiexing.BLL.Action
         private int _petVipLvCall = ConfigEnvSet.GetInt("Pet.VipLvCall");
 
 
-        public Action3203(HttpGet httpGet)
+        public Action3203(ZyGames.Framework.Game.Contract.HttpGet httpGet)
             : base(ActionIDDefine.Cst_Action3203, httpGet)
         {
         }

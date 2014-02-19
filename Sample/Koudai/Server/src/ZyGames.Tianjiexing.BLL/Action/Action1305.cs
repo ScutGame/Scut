@@ -50,7 +50,7 @@ namespace ZyGames.Tianjiexing.BLL.Action
         private List<UserLight> lightArray = new List<UserLight>();
         private const int errorNum = 1000; //一键猎命出错的编号
 
-        public Action1305(HttpGet httpGet)
+        public Action1305(ZyGames.Framework.Game.Contract.HttpGet httpGet)
             : base(ActionIDDefine.Cst_Action1305, httpGet)
         {
 

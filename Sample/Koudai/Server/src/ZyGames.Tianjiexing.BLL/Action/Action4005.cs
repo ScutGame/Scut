@@ -40,7 +40,7 @@ namespace ZyGames.Tianjiexing.BLL.Action
     {
         private int plotID;
 
-        public Action4005(HttpGet httpGet)
+        public Action4005(ZyGames.Framework.Game.Contract.HttpGet httpGet)
             : base(ActionIDDefine.Cst_Action4005, httpGet)
         {
 

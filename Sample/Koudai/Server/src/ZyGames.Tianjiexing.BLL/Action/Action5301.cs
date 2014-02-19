@@ -39,7 +39,7 @@ namespace ZyGames.Tianjiexing.BLL.Action
         private int RegCount;
         private short RegState;
 
-        public Action5301(HttpGet httpGet)
+        public Action5301(ZyGames.Framework.Game.Contract.HttpGet httpGet)
             : base(ActionIDDefine.Cst_Action5301, httpGet)
         {
             RegCount = 0;

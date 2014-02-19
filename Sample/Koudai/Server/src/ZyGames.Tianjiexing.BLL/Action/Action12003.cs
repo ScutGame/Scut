@@ -44,7 +44,7 @@ namespace ZyGames.Tianjiexing.BLL.Action
     {
         private List<TreasureInfo> treasureList = new List<TreasureInfo>();
 
-        public Action12003(HttpGet httpGet)
+        public Action12003(ZyGames.Framework.Game.Contract.HttpGet httpGet)
             : base(ActionIDDefine.Cst_Action12003, httpGet)
         {
 

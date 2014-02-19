@@ -45,7 +45,7 @@ namespace ZyGames.Tianjiexing.BLL.Action
         private int proportion;
 
 
-        public Action6203(HttpGet httpGet)
+        public Action6203(ZyGames.Framework.Game.Contract.HttpGet httpGet)
             : base(ActionIDDefine.Cst_Action6203, httpGet)
         {
 

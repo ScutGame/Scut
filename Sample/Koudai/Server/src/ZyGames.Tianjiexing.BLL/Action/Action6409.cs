@@ -50,7 +50,7 @@ namespace ZyGames.Tianjiexing.BLL.Action
         private FightStage stage;
         private string fatigue;
 
-        public Action6409(HttpGet httpGet)
+        public Action6409(ZyGames.Framework.Game.Contract.HttpGet httpGet)
             : base(ActionIDDefine.Cst_Action6409, httpGet)
         {
 

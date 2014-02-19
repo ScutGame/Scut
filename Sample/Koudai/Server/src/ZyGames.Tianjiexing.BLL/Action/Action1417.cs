@@ -41,7 +41,7 @@ namespace ZyGames.Tianjiexing.BLL.Action
         private HeritageType heritageType;
         private List<UserGeneral> generalArray = new List<UserGeneral>();
 
-        public Action1417(HttpGet httpGet)
+        public Action1417(ZyGames.Framework.Game.Contract.HttpGet httpGet)
             : base(ActionIDDefine.Cst_Action1417, httpGet)
         {
 

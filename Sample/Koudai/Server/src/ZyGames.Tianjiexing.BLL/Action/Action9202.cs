@@ -43,7 +43,7 @@ namespace ZyGames.Tianjiexing.BLL.Action
         private int _pageCount;
         private List<GameNotice> _gameNotices;
 
-        public Action9202(HttpGet httpGet)
+        public Action9202(ZyGames.Framework.Game.Contract.HttpGet httpGet)
             : base(ActionIDDefine.Cst_Action9202, httpGet)
         {
         }

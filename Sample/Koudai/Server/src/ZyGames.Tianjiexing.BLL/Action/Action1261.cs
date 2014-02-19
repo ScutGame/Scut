@@ -52,7 +52,7 @@ namespace ZyGames.Tianjiexing.BLL.Action
         private string notchColor;
         private UserEnchantInfo[] enchantArray = new UserEnchantInfo[0];
 
-        public Action1261(HttpGet httpGet)
+        public Action1261(ZyGames.Framework.Game.Contract.HttpGet httpGet)
             : base(ActionIDDefine.Cst_Action1261, httpGet)
         {
 

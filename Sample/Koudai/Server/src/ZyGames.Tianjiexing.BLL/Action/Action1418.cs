@@ -46,7 +46,7 @@ namespace ZyGames.Tianjiexing.BLL.Action
         private HeritageType heritageType;
 
 
-        public Action1418(HttpGet httpGet)
+        public Action1418(ZyGames.Framework.Game.Contract.HttpGet httpGet)
             : base(ActionIDDefine.Cst_Action1418, httpGet)
         {
 

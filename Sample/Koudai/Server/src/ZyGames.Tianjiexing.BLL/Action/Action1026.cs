@@ -39,7 +39,7 @@ namespace ZyGames.Tianjiexing.BLL.Action
     {
         private List<GeneralInfo> generalList = new List<GeneralInfo>();
 
-        public Action1026(HttpGet httpGet)
+        public Action1026(ZyGames.Framework.Game.Contract.HttpGet httpGet)
             : base(ActionIDDefine.Cst_Action1026, httpGet)
         {
 

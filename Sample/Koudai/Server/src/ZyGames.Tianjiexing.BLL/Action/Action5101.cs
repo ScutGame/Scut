@@ -57,7 +57,7 @@ namespace ZyGames.Tianjiexing.BLL.Action
         private int sportsIntegral = 0;
         private IList<UserRank> userRankArray = new List<UserRank>();
 
-        public Action5101(HttpGet httpGet)
+        public Action5101(ZyGames.Framework.Game.Contract.HttpGet httpGet)
             : base(ActionIDDefine.Cst_Action5101, httpGet)
         {
 

@@ -46,7 +46,7 @@ namespace ZyGames.Tianjiexing.BLL.Action
         private static int festivalID = 1012;
 
 
-        public Action9005(HttpGet httpGet)
+        public Action9005(ZyGames.Framework.Game.Contract.HttpGet httpGet)
             : base(ActionIDDefine.Cst_Action9005, httpGet)
         {
 

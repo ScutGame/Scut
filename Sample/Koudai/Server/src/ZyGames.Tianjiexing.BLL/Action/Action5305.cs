@@ -39,7 +39,7 @@ namespace ZyGames.Tianjiexing.BLL.Action
         private int InspireNum = 0;
 
 
-        public Action5305(HttpGet httpGet)
+        public Action5305(ZyGames.Framework.Game.Contract.HttpGet httpGet)
             : base(ActionIDDefine.Cst_Action5305, httpGet)
         {
 

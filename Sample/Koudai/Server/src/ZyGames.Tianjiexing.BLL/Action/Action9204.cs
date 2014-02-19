@@ -41,7 +41,7 @@ namespace ZyGames.Tianjiexing.BLL.Action
         private List<ChatMessage> _chatArray = new List<ChatMessage>();
         private int _currVersion;
         private int _charItemNum;
-        public Action9204(HttpGet httpGet)
+        public Action9204(ZyGames.Framework.Game.Contract.HttpGet httpGet)
             : base(ActionIDDefine.Cst_Action9204, httpGet)
         {
 

@@ -47,7 +47,7 @@ namespace ZyGames.Tianjiexing.BLL.Action
         private short isObtain;
         private short abilityLv = 0;
 
-        public Action1468(HttpGet httpGet)
+        public Action1468(ZyGames.Framework.Game.Contract.HttpGet httpGet)
             : base(ActionIDDefine.Cst_Action1468, httpGet)
         {
 

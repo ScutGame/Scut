@@ -45,7 +45,7 @@ namespace ZyGames.Tianjiexing.BLL.Action
         private int landPositon = 0;
         private int gainNum = 0;
 
-        public Action10006(HttpGet httpGet)
+        public Action10006(ZyGames.Framework.Game.Contract.HttpGet httpGet)
             : base(ActionIDDefine.Cst_Action10006, httpGet)
         {
 

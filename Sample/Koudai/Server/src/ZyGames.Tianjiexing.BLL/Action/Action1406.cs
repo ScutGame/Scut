@@ -49,7 +49,7 @@ namespace ZyGames.Tianjiexing.BLL.Action
         private UserGeneral generalInfo = null;
         private List<GeneralMedicine> generalMedicineArray = new List<GeneralMedicine>();
 
-        public Action1406(HttpGet httpGet)
+        public Action1406(ZyGames.Framework.Game.Contract.HttpGet httpGet)
             : base(ActionIDDefine.Cst_Action1406, httpGet)
         {
 

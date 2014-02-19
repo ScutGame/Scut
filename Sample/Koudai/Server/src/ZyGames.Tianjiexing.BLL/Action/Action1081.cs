@@ -31,7 +31,7 @@ namespace ZyGames.Tianjiexing.BLL.Action
     /// </summary>
     public class Action1081 : PayNormalAction
     {
-        public Action1081(short aActionId, HttpGet httpGet)
+        public Action1081(short aActionId, ZyGames.Framework.Game.Contract.HttpGet httpGet)
             : base(aActionId, httpGet)
         {
         }

@@ -51,7 +51,7 @@ namespace ZyGames.Tianjiexing.BLL.Action
         private short memberPost = 0;
         private int weekExperience = 0;
 
-        public Action6005(HttpGet httpGet)
+        public Action6005(ZyGames.Framework.Game.Contract.HttpGet httpGet)
             : base(ActionIDDefine.Cst_Action6005, httpGet)
         {
 

@@ -50,7 +50,7 @@ namespace ZyGames.Tianjiexing.BLL.Action
         private int QueueStatus = 0;
         private int IsAuto = 0;
 
-        public Action6302(HttpGet httpGet)
+        public Action6302(ZyGames.Framework.Game.Contract.HttpGet httpGet)
             : base(ActionIDDefine.Cst_Action6302, httpGet)
         {
         }

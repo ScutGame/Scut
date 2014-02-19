@@ -51,7 +51,7 @@ namespace ZyGames.Tianjiexing.BLL.Action
         private int postion = 0;
         private List<DialInfo> dialList = new List<DialInfo>();
 
-        public Action12001(HttpGet httpGet)
+        public Action12001(ZyGames.Framework.Game.Contract.HttpGet httpGet)
             : base(ActionIDDefine.Cst_Action12001, httpGet)
         {
 

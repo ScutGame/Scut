@@ -46,7 +46,7 @@ namespace ZyGames.Tianjiexing.BLL.Action
         private bool IsWin;
         private int _activeId;
 
-        public Action6105(HttpGet httpGet)
+        public Action6105(ZyGames.Framework.Game.Contract.HttpGet httpGet)
             : base(ActionIDDefine.Cst_Action6105, httpGet)
         {
 

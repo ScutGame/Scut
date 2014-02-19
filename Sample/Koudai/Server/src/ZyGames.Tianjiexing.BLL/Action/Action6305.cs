@@ -46,7 +46,7 @@ namespace ZyGames.Tianjiexing.BLL.Action
         private int baseexpen = 12;
         private int Result = 0;
 
-        public Action6305(HttpGet httpGet)
+        public Action6305(ZyGames.Framework.Game.Contract.HttpGet httpGet)
             : base(ActionIDDefine.Cst_Action6305, httpGet)
         {
         }

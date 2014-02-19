@@ -42,7 +42,7 @@ namespace ZyGames.Tianjiexing.BLL.Action
         private string endDate;
         private FestivalInfo festivalInfo = null;
 
-        public Action3011(HttpGet httpGet)
+        public Action3011(ZyGames.Framework.Game.Contract.HttpGet httpGet)
             : base(ActionIDDefine.Cst_Action3011, httpGet)
         {
 

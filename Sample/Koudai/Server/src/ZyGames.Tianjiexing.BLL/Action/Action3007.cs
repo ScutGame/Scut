@@ -44,7 +44,7 @@ namespace ZyGames.Tianjiexing.BLL.Action
         private UserGeneral _userGeneral;
 
 
-        public Action3007(HttpGet httpGet)
+        public Action3007(ZyGames.Framework.Game.Contract.HttpGet httpGet)
             : base(ActionIDDefine.Cst_Action3007, httpGet)
         {
 

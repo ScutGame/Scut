@@ -41,7 +41,7 @@ namespace ZyGames.Tianjiexing.BLL.Action
         private string amount = string.Empty;
         private string gamecoins = string.Empty;
 
-        public Action1080(HttpGet httpGet)
+        public Action1080(ZyGames.Framework.Game.Contract.HttpGet httpGet)
             : base(ActionIDDefine.Cst_Action1080, httpGet)
         {
         }

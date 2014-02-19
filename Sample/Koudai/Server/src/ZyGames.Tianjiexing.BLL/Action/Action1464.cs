@@ -40,7 +40,7 @@ namespace ZyGames.Tianjiexing.BLL.Action
     /// </summary>
     public class Action1464 : BaseAction
     {
-        public Action1464(HttpGet httpGet)
+        public Action1464(ZyGames.Framework.Game.Contract.HttpGet httpGet)
             : base(ActionIDDefine.Cst_Action1464, httpGet)
         {
 

@@ -51,7 +51,7 @@ namespace ZyGames.Tianjiexing.BLL.Action
         private short typeID;
         private List<UserQueue> queueArray = new List<UserQueue>();
 
-        public Action1701(HttpGet httpGet)
+        public Action1701(ZyGames.Framework.Game.Contract.HttpGet httpGet)
             : base(ActionIDDefine.Cst_Action1701, httpGet)
         {
 

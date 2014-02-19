@@ -50,7 +50,7 @@ namespace ZyGames.Tianjiexing.BLL.Action
         private string successNum;
         private WorshipInfo[] worshipInfoInfoArray = new WorshipInfo[0];
 
-        public Action1463(HttpGet httpGet)
+        public Action1463(ZyGames.Framework.Game.Contract.HttpGet httpGet)
             : base(ActionIDDefine.Cst_Action1463, httpGet)
         {
 

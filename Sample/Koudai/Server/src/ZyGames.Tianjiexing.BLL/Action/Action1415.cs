@@ -46,7 +46,7 @@ namespace ZyGames.Tianjiexing.BLL.Action
 
         private string[] medicineArray = new string[0];
 
-        public Action1415(HttpGet httpGet)
+        public Action1415(ZyGames.Framework.Game.Contract.HttpGet httpGet)
             : base(ActionIDDefine.Cst_Action1415, httpGet)
         {
 

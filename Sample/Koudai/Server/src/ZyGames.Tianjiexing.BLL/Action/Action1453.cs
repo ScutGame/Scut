@@ -43,7 +43,7 @@ namespace ZyGames.Tianjiexing.BLL.Action
         private int maxExp;
 
 
-        public Action1453(HttpGet httpGet)
+        public Action1453(ZyGames.Framework.Game.Contract.HttpGet httpGet)
             : base(ActionIDDefine.Cst_Action1453, httpGet)
         {
 

@@ -47,7 +47,7 @@ namespace ZyGames.Tianjiexing.BLL.Action
         private List<GrayCrystal> grayCrystalArray = new List<GrayCrystal>();
         private List<UserLight> userLightArray = new List<UserLight>();
 
-        public Action1303(HttpGet httpGet)
+        public Action1303(ZyGames.Framework.Game.Contract.HttpGet httpGet)
             : base(ActionIDDefine.Cst_Action1303, httpGet)
         {
 

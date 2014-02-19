@@ -48,7 +48,7 @@ namespace ZyGames.Tianjiexing.BLL.Action
         private BringUpType _bringUpType;
         private Dictionary<int, int> _attributeIndexD = new Dictionary<int, int>();
 
-        public Action1217(HttpGet httpGet)
+        public Action1217(ZyGames.Framework.Game.Contract.HttpGet httpGet)
             : base(ActionIDDefine.Cst_Action1217, httpGet)
         {
 

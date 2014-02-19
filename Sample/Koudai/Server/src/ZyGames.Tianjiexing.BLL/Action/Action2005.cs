@@ -39,7 +39,7 @@ namespace ZyGames.Tianjiexing.BLL.Action
         private int ClientVersion;
         private List<CityInfo> cityList = new List<CityInfo>();
 
-        public Action2005(HttpGet httpGet)
+        public Action2005(ZyGames.Framework.Game.Contract.HttpGet httpGet)
             : base(ActionIDDefine.Cst_Action2005, httpGet)
         {
         }

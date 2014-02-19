@@ -43,7 +43,7 @@ namespace ZyGames.Tianjiexing.BLL.Action
 
         private List<ServerFightGroup> fightGroupList = new List<ServerFightGroup>();
 
-        public Action6406(HttpGet httpGet)
+        public Action6406(ZyGames.Framework.Game.Contract.HttpGet httpGet)
             : base(ActionIDDefine.Cst_Action6406, httpGet)
         {
 

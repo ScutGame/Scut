@@ -46,7 +46,7 @@ namespace ZyGames.Tianjiexing.BLL.Action
         private int codeTime = 0;
         public List<MysteryShops> mysteryShopsList = null;
 
-        public Action7002(HttpGet httpGet)
+        public Action7002(ZyGames.Framework.Game.Contract.HttpGet httpGet)
             : base(ActionIDDefine.Cst_Action7002, httpGet)
         {
 

@@ -46,7 +46,7 @@ namespace ZyGames.Tianjiexing.BLL.Action
         private int hasNextGift = 0;
         private string content = "";
 
-        public Action1606(HttpGet httpGet)
+        public Action1606(ZyGames.Framework.Game.Contract.HttpGet httpGet)
             : base(ActionIDDefine.Cst_Action1606, httpGet)
         {
 

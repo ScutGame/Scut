@@ -38,7 +38,7 @@ namespace ZyGames.Tianjiexing.BLL.Action
         private CountryType _countryID;
 
 
-        public Action2004(HttpGet httpGet)
+        public Action2004(ZyGames.Framework.Game.Contract.HttpGet httpGet)
             : base(ActionIDDefine.Cst_Action2004, httpGet)
         {
 

@@ -79,7 +79,7 @@ namespace ZyGames.Tianjiexing.BLL.Action
         private int _talPriority = 0;
         private List<UserFunction> functionList = new List<UserFunction>();
         private int unReadCount;
-        public Action1008(HttpGet httpGet)
+        public Action1008(ZyGames.Framework.Game.Contract.HttpGet httpGet)
             : base(ActionIDDefine.Cst_Action1008, httpGet)
         {
 

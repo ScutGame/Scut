@@ -45,7 +45,7 @@ namespace ZyGames.Tianjiexing.BLL.Action
         private short isWeek = 0;
         private string guildID = string.Empty;
 
-        public Action6108(HttpGet httpGet)
+        public Action6108(ZyGames.Framework.Game.Contract.HttpGet httpGet)
             : base(ActionIDDefine.Cst_Action6108, httpGet)
         {
 

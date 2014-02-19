@@ -42,7 +42,7 @@ namespace ZyGames.Tianjiexing.BLL.Action
     {
         private List<UserCrystalInfo> userCrystalArray = new List<UserCrystalInfo>();
 
-        public Action1311(HttpGet httpGet)
+        public Action1311(ZyGames.Framework.Game.Contract.HttpGet httpGet)
             : base(ActionIDDefine.Cst_Action1311, httpGet)
         {
 

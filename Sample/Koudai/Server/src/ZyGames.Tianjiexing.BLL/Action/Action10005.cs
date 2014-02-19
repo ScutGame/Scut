@@ -44,7 +44,7 @@ namespace ZyGames.Tianjiexing.BLL.Action
         private int plantType = 0;
         private int generalID = 0;
 
-        public Action10005(HttpGet httpGet)
+        public Action10005(ZyGames.Framework.Game.Contract.HttpGet httpGet)
             : base(ActionIDDefine.Cst_Action10005, httpGet)
         {
 

@@ -40,7 +40,7 @@ namespace ZyGames.Tianjiexing.BLL.Action
         private string guildID = string.Empty;
         private List<GuildMember> memberArray = new List<GuildMember>();
 
-        public Action6021(HttpGet httpGet)
+        public Action6021(ZyGames.Framework.Game.Contract.HttpGet httpGet)
             : base(ActionIDDefine.Cst_Action6021, httpGet)
         {
 

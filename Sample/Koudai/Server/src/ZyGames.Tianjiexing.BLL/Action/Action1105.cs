@@ -37,7 +37,7 @@ namespace ZyGames.Tianjiexing.BLL.Action
         private string userItemID = string.Empty;
 
 
-        public Action1105(HttpGet httpGet)
+        public Action1105(ZyGames.Framework.Game.Contract.HttpGet httpGet)
             : base(ActionIDDefine.Cst_Action1105, httpGet)
         {
 

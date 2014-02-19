@@ -49,7 +49,7 @@ namespace ZyGames.Tianjiexing.BLL.Action
         private short _careerID = 0;
         private int generalID = 0;
 
-        public Action1005(HttpGet httpGet)
+        public Action1005(ZyGames.Framework.Game.Contract.HttpGet httpGet)
             : base(ActionIDDefine.Cst_Action1005, httpGet)
         {
         }

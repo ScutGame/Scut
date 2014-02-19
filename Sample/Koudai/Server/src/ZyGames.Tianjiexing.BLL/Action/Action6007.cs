@@ -44,7 +44,7 @@ namespace ZyGames.Tianjiexing.BLL.Action
         private int pageCount = 0;
         private List<UserApply> applyArray = new List<UserApply>();
 
-        public Action6007(HttpGet httpGet)
+        public Action6007(ZyGames.Framework.Game.Contract.HttpGet httpGet)
             : base(ActionIDDefine.Cst_Action6007, httpGet)
         {
 

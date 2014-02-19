@@ -42,7 +42,7 @@ namespace ZyGames.Tianjiexing.BLL.Action
         private List<FestivalInfo> festivalList = new List<FestivalInfo>();
         private FestivalInfo festivalInfo = null;
 
-        public Action3010(HttpGet httpGet)
+        public Action3010(ZyGames.Framework.Game.Contract.HttpGet httpGet)
             : base(ActionIDDefine.Cst_Action3010, httpGet)
         {
 

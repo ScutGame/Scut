@@ -45,7 +45,7 @@ namespace ZyGames.Tianjiexing.BLL.Action
     {
         private List<RecruitRule> recruitList = new List<RecruitRule>();
 
-        public Action1402(HttpGet httpGet)
+        public Action1402(ZyGames.Framework.Game.Contract.HttpGet httpGet)
             : base(ActionIDDefine.Cst_Action1402, httpGet)
         {
 

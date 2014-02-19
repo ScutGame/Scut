@@ -47,7 +47,7 @@ namespace ZyGames.Tianjiexing.BLL.Action
         private string descript = string.Empty;
 
 
-        public Action1411(HttpGet httpGet)
+        public Action1411(ZyGames.Framework.Game.Contract.HttpGet httpGet)
             : base(ActionIDDefine.Cst_Action1411, httpGet)
         {
 

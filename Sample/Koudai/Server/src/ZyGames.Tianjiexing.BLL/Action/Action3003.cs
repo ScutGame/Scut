@@ -42,7 +42,7 @@ namespace ZyGames.Tianjiexing.BLL.Action
         private int _ops;
         private List<UserTask> _userTaskList = new List<UserTask>();
 
-        public Action3003(HttpGet httpGet)
+        public Action3003(ZyGames.Framework.Game.Contract.HttpGet httpGet)
             : base(ActionIDDefine.Cst_Action3003, httpGet)
         {
 

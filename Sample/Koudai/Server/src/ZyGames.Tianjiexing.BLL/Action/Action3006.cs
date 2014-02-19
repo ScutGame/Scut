@@ -46,7 +46,7 @@ namespace ZyGames.Tianjiexing.BLL.Action
         private int TaskID;
 
 
-        public Action3006(HttpGet httpGet)
+        public Action3006(ZyGames.Framework.Game.Contract.HttpGet httpGet)
             : base(ActionIDDefine.Cst_Action3006, httpGet)
         {
 

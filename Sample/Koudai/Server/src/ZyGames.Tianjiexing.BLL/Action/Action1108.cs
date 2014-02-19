@@ -41,7 +41,7 @@ namespace ZyGames.Tianjiexing.BLL.Action
         private int latticeNum = 0;
 
 
-        public Action1108(HttpGet httpGet)
+        public Action1108(ZyGames.Framework.Game.Contract.HttpGet httpGet)
             : base(ActionIDDefine.Cst_Action1108, httpGet)
         {
 

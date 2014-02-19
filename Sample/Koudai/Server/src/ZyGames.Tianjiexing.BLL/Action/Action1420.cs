@@ -54,7 +54,7 @@ namespace ZyGames.Tianjiexing.BLL.Action
         public List<GeneralProperty> propertyList = new List<GeneralProperty>();
 
 
-        public Action1420(HttpGet httpGet)
+        public Action1420(ZyGames.Framework.Game.Contract.HttpGet httpGet)
             : base(ActionIDDefine.Cst_Action1420, httpGet)
         {
 

@@ -46,7 +46,7 @@ namespace ZyGames.Tianjiexing.BLL.Action
         private const int CityId = 0;
         private int _num = 1;
 
-        public Action7004(HttpGet httpGet)
+        public Action7004(ZyGames.Framework.Game.Contract.HttpGet httpGet)
             : base(ActionIDDefine.Cst_Action7004, httpGet)
         {
         }

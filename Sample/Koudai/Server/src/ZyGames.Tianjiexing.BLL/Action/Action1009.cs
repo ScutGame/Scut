@@ -38,7 +38,7 @@ namespace ZyGames.Tianjiexing.BLL.Action
     {
         private List<UserFunction> functionList;
 
-        public Action1009(HttpGet httpGet)
+        public Action1009(ZyGames.Framework.Game.Contract.HttpGet httpGet)
             : base(ActionIDDefine.Cst_Action1009, httpGet)
         {
 

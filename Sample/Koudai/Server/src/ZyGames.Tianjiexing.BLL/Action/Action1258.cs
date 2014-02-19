@@ -49,7 +49,7 @@ namespace ZyGames.Tianjiexing.BLL.Action
         private EnchantCultureType cultureType;
 
 
-        public Action1258(HttpGet httpGet)
+        public Action1258(ZyGames.Framework.Game.Contract.HttpGet httpGet)
             : base(ActionIDDefine.Cst_Action1258, httpGet)
         {
 

@@ -36,7 +36,7 @@ namespace ZyGames.Tianjiexing.BLL.Action
     public class Action1007 : BaseAction
     {
         private string _nickName = string.Empty;
-        public Action1007(HttpGet httpGet)
+        public Action1007(ZyGames.Framework.Game.Contract.HttpGet httpGet)
             : base(ActionIDDefine.Cst_Action1007, httpGet)
         {
 

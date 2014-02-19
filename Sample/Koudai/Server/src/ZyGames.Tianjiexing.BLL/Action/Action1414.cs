@@ -40,7 +40,7 @@ namespace ZyGames.Tianjiexing.BLL.Action
         private int medicineType = 0;
         private string[] medicineArray = new string[0];
 
-        public Action1414(HttpGet httpGet)
+        public Action1414(ZyGames.Framework.Game.Contract.HttpGet httpGet)
             : base(ActionIDDefine.Cst_Action1414, httpGet)
         {
 

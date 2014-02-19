@@ -43,7 +43,7 @@ namespace ZyGames.Tianjiexing.BLL.Action
         private UserSparePart _sparePart = new UserSparePart();
 
 
-        public Action1216(HttpGet httpGet)
+        public Action1216(ZyGames.Framework.Game.Contract.HttpGet httpGet)
             : base(ActionIDDefine.Cst_Action1216, httpGet)
         {
 

@@ -42,23 +42,19 @@ namespace ZyGames.Tianjiexing.Service
             {
                 var setting = new EnvironmentSetting();
                 setting.ClientDesDeKey = "j6=9=1ac";
-                setting.EntityAssembly = Assembly.Load("ZyGames.Tianjiexing.Model");
-                setting.ScriptStartBeforeHandle += () =>
-                {
-                    SystemGlobal.Run();
-
-                    ScriptEngines.AddReferencedAssembly(new string[] {
-                        "ZyGames.Tianjiexing.Lang.dll",
-                        "ZyGames.Tianjiexing.Model.dll",
-                        "ZyGames.Tianjiexing.Component.dll",
-                        "ZyGames.Tianjiexing.BLL.Combat.dll",
-                        "ZyGames.Tianjiexing.BLL.GM.dll",
-                        "ZyGames.Tianjiexing.BLL.dll"
-                    });
-                };
-
+				setting.EntityAssembly = Assembly.Load("ZyGames.Tianjiexing.Model");
+				ScriptEngines.AddReferencedAssembly(new string[] {
+					"ZyGames.Tianjiexing.Lang.dll",
+					"ZyGames.Tianjiexing.Model.dll",
+					"ZyGames.Tianjiexing.Component.dll",
+					"ZyGames.Tianjiexing.BLL.Combat.dll",
+					"ZyGames.Tianjiexing.BLL.GM.dll",
+					"ZyGames.Tianjiexing.BLL.dll"
+				});
                 GameEnvironment.Start(setting);
-
+                GameSession.StartClear();
+				
+				SystemGlobal.Run();
 
 #if(DEBUG)
                 TraceLog.WriteError("系统正使用Debug版本");

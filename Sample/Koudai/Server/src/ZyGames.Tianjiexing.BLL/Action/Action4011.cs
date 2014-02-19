@@ -41,7 +41,7 @@ namespace ZyGames.Tianjiexing.BLL.Action
         private int ClientVersion = 0;
         private List<PlotInfo> plotList = new List<PlotInfo>();
 
-        public Action4011(HttpGet httpGet)
+        public Action4011(ZyGames.Framework.Game.Contract.HttpGet httpGet)
             : base(ActionIDDefine.Cst_Action4011, httpGet)
         {
         }

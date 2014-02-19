@@ -43,7 +43,7 @@ namespace ZyGames.Tianjiexing.BLL.Action
         private PlotInfo _plotInfo;
 
 
-        public Action1604(HttpGet httpGet)
+        public Action1604(ZyGames.Framework.Game.Contract.HttpGet httpGet)
             : base(ActionIDDefine.Cst_Action1604, httpGet)
         {
 

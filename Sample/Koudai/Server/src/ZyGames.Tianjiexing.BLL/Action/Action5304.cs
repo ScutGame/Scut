@@ -49,7 +49,7 @@ namespace ZyGames.Tianjiexing.BLL.Action
         private int GuildFailNum = 0;
 
 
-        public Action5304(HttpGet httpGet)
+        public Action5304(ZyGames.Framework.Game.Contract.HttpGet httpGet)
             : base(ActionIDDefine.Cst_Action5304, httpGet)
         {
 

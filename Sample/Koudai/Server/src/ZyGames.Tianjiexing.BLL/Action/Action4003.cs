@@ -51,7 +51,7 @@ namespace ZyGames.Tianjiexing.BLL.Action
         private int maxHonourNum = 0;
         private int lastMaxHonourNum = 0;
 
-        public Action4003(HttpGet httpGet)
+        public Action4003(ZyGames.Framework.Game.Contract.HttpGet httpGet)
             : base(ActionIDDefine.Cst_Action4003, httpGet)
         {
 

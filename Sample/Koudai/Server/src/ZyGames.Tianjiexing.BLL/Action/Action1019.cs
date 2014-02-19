@@ -52,7 +52,7 @@ namespace ZyGames.Tianjiexing.BLL.Action
         private IList<UserRank> userRankArray;
         private int currRankID = 0;
 
-        public Action1019(HttpGet httpGet)
+        public Action1019(ZyGames.Framework.Game.Contract.HttpGet httpGet)
             : base(ActionIDDefine.Cst_Action1019, httpGet)
         {
 

@@ -51,7 +51,7 @@ namespace ZyGames.Tianjiexing.BLL.Action
         private string qiShiName = string.Empty;
         private int cityID = 0;
 
-        public Action7009(HttpGet httpGet)
+        public Action7009(ZyGames.Framework.Game.Contract.HttpGet httpGet)
             : base(ActionIDDefine.Cst_Action7009, httpGet)
         {
 

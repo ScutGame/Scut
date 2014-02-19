@@ -49,7 +49,7 @@ namespace ZyGames.Tianjiexing.BLL.Action
         private int _npcTalPriority = 0;
         private ConfigCacheSet<GeneralInfo> _cacheSetGeneral = new ConfigCacheSet<GeneralInfo>();
 
-        public Action5405(HttpGet httpGet)
+        public Action5405(ZyGames.Framework.Game.Contract.HttpGet httpGet)
             : base(ActionIDDefine.Cst_Action5405, httpGet)
         {
 

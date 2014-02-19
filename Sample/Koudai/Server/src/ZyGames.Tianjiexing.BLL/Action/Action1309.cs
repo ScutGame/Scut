@@ -42,7 +42,7 @@ namespace ZyGames.Tianjiexing.BLL.Action
         private short potion = 0;
         private int ops = 0;
 
-        public Action1309(HttpGet httpGet)
+        public Action1309(ZyGames.Framework.Game.Contract.HttpGet httpGet)
             : base(ActionIDDefine.Cst_Action1309, httpGet)
         {
 

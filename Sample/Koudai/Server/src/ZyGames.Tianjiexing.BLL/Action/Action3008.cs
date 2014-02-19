@@ -39,7 +39,7 @@ namespace ZyGames.Tianjiexing.BLL.Action
         private int ClientVersion = 0;
         private List<StoryTaskInfo> taskList = new List<StoryTaskInfo>();
 
-        public Action3008(HttpGet httpGet)
+        public Action3008(ZyGames.Framework.Game.Contract.HttpGet httpGet)
             : base(ActionIDDefine.Cst_Action3008, httpGet)
         {
         }

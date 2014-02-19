@@ -47,7 +47,7 @@ namespace ZyGames.Tianjiexing.BLL.Action
         private EnchantInfo enchant = null;
         private EnchantLvInfo enchantLvInfo = null;
 
-        public Action1254(HttpGet httpGet)
+        public Action1254(ZyGames.Framework.Game.Contract.HttpGet httpGet)
             : base(ActionIDDefine.Cst_Action1254, httpGet)
         {
 

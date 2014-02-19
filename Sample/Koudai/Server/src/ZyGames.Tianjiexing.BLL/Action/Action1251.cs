@@ -53,7 +53,7 @@ namespace ZyGames.Tianjiexing.BLL.Action
         private UserEnchant package = null;
         private MosaicInfo[] mosaicList = new MosaicInfo[0];
 
-        public Action1251(HttpGet httpGet)
+        public Action1251(ZyGames.Framework.Game.Contract.HttpGet httpGet)
             : base(ActionIDDefine.Cst_Action1251, httpGet)
         {
 

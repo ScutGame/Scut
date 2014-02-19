@@ -37,7 +37,7 @@ namespace ZyGames.Tianjiexing.BLL.Action
         private int MaxLifeNum;
         private int _activeId;
 
-        public Action5404(HttpGet httpGet)
+        public Action5404(ZyGames.Framework.Game.Contract.HttpGet httpGet)
             : base(ActionIDDefine.Cst_Action5404, httpGet)
         {
 

@@ -47,7 +47,7 @@ namespace ZyGames.Tianjiexing.BLL.Action
         private string _nickName = string.Empty;
         private int itemID = 0;
 
-        public Action1023(HttpGet httpGet)
+        public Action1023(ZyGames.Framework.Game.Contract.HttpGet httpGet)
             : base(ActionIDDefine.Cst_Action1023, httpGet)
         {
 

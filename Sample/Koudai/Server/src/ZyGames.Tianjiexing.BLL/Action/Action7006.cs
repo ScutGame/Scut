@@ -39,7 +39,7 @@ namespace ZyGames.Tianjiexing.BLL.Action
     {
         private string _userItemId = string.Empty;
         private int _salePrice;
-        public Action7006(HttpGet httpGet)
+        public Action7006(ZyGames.Framework.Game.Contract.HttpGet httpGet)
             : base(ActionIDDefine.Cst_Action7006, httpGet)
         {
 

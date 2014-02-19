@@ -42,7 +42,7 @@ namespace ZyGames.Tianjiexing.BLL.Action
         private List<NoticeMessage> _broadcastList;
 
 
-        public Action9205(HttpGet httpGet)
+        public Action9205(ZyGames.Framework.Game.Contract.HttpGet httpGet)
             : base(ActionIDDefine.Cst_Action9205, httpGet)
         {
 

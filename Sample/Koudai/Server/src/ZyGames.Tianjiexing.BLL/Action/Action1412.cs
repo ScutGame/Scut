@@ -48,7 +48,7 @@ namespace ZyGames.Tianjiexing.BLL.Action
         private int practiceTime = 0;
         private int currExperience = 0;
 
-        public Action1412(HttpGet httpGet)
+        public Action1412(ZyGames.Framework.Game.Contract.HttpGet httpGet)
             : base(ActionIDDefine.Cst_Action1412, httpGet)
         {
 

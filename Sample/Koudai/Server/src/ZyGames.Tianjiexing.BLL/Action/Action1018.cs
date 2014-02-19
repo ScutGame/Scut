@@ -38,7 +38,7 @@ namespace ZyGames.Tianjiexing.BLL.Action
         private int ColdTime;
 
 
-        public Action1018(HttpGet httpGet)
+        public Action1018(ZyGames.Framework.Game.Contract.HttpGet httpGet)
             : base(ActionIDDefine.Cst_Action1018, httpGet)
         {
             TakeNum = 0;

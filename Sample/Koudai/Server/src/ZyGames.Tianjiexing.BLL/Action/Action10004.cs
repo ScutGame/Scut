@@ -49,7 +49,7 @@ namespace ZyGames.Tianjiexing.BLL.Action
         private int landPsition = 0;
 
 
-        public Action10004(HttpGet httpGet)
+        public Action10004(ZyGames.Framework.Game.Contract.HttpGet httpGet)
             : base(ActionIDDefine.Cst_Action10004, httpGet)
         {
 

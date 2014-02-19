@@ -41,7 +41,7 @@ namespace ZyGames.Tianjiexing.BLL.Action
         private List<RechargePacks> _chargePacksArray = new List<RechargePacks>();
         private static int festivalID = 1012;
 
-        public Action9003(HttpGet httpGet)
+        public Action9003(ZyGames.Framework.Game.Contract.HttpGet httpGet)
             : base(ActionIDDefine.Cst_Action9003, httpGet)
         {
 

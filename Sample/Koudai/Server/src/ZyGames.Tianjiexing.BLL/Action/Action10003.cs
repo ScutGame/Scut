@@ -52,7 +52,7 @@ namespace ZyGames.Tianjiexing.BLL.Action
         private UserGeneral userGeneral = null;
         private PlantInfo plantInfo = null;
 
-        public Action10003(HttpGet httpGet)
+        public Action10003(ZyGames.Framework.Game.Contract.HttpGet httpGet)
             : base(ActionIDDefine.Cst_Action10003, httpGet)
         {
 

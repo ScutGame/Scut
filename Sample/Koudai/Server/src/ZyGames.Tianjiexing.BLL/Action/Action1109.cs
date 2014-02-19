@@ -45,7 +45,7 @@ namespace ZyGames.Tianjiexing.BLL.Action
         private int itemType = 0;//1装备，2图纸，3道具
         private List<UserItemInfo> mlist = new List<UserItemInfo>();
 
-        public Action1109(HttpGet httpGet)
+        public Action1109(ZyGames.Framework.Game.Contract.HttpGet httpGet)
             : base(ActionIDDefine.Cst_Action1109, httpGet)
         {
         }

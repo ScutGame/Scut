@@ -48,7 +48,7 @@ namespace ZyGames.Tianjiexing.BLL.Action
         private List<UserMagic> userMagicArray = new List<UserMagic>();
         private MagicInfo magicInfo = null;
 
-        public Action1501(HttpGet httpGet)
+        public Action1501(ZyGames.Framework.Game.Contract.HttpGet httpGet)
             : base(ActionIDDefine.Cst_Action1501, httpGet)
         {
 

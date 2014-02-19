@@ -45,7 +45,7 @@ namespace ZyGames.Tianjiexing.BLL.Action
         private CrystalLvInfo _crystalLvInfo;
         private string toUserID;
 
-        public Action1304(HttpGet httpGet)
+        public Action1304(ZyGames.Framework.Game.Contract.HttpGet httpGet)
             : base(ActionIDDefine.Cst_Action1304, httpGet)
         {
 

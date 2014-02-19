@@ -40,7 +40,7 @@ namespace ZyGames.Tianjiexing.BLL.Action
         private string passportId = string.Empty;
         private string servicename = string.Empty;
 
-        public Action1065(HttpGet httpGet)
+        public Action1065(ZyGames.Framework.Game.Contract.HttpGet httpGet)
             : base(ActionIDDefine.Cst_Action1065, httpGet)
         {
         }

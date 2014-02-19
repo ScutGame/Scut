@@ -54,7 +54,7 @@ namespace ZyGames.Tianjiexing.BLL.Action
         private short isShow = 0;
         private string packUser = string.Empty;
 
-        public Action1102(HttpGet httpGet)
+        public Action1102(ZyGames.Framework.Game.Contract.HttpGet httpGet)
             : base(ActionIDDefine.Cst_Action1102, httpGet)
         {
 

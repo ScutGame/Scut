@@ -61,7 +61,7 @@ namespace ZyGames.Tianjiexing.BLL.Action
         private int _bossMaxLift;
 
 
-        public Action5401(HttpGet httpGet)
+        public Action5401(ZyGames.Framework.Game.Contract.HttpGet httpGet)
             : base(ActionIDDefine.Cst_Action5401, httpGet)
         {
 

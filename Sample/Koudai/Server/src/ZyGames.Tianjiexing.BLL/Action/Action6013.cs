@@ -46,7 +46,7 @@ namespace ZyGames.Tianjiexing.BLL.Action
         private int isPilgrimage = 0;
         private int chaoShengNum = 0;
 
-        public Action6013(HttpGet httpGet)
+        public Action6013(ZyGames.Framework.Game.Contract.HttpGet httpGet)
             : base(ActionIDDefine.Cst_Action6013, httpGet)
         {
 

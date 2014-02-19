@@ -54,7 +54,7 @@ namespace ZyGames.Tianjiexing.BLL.Action
         private CombatProcessContainer combatProcessList = new CombatProcessContainer();
 
 
-        public Action3206(HttpGet httpGet)
+        public Action3206(ZyGames.Framework.Game.Contract.HttpGet httpGet)
             : base(ActionIDDefine.Cst_Action3206, httpGet)
         {
 

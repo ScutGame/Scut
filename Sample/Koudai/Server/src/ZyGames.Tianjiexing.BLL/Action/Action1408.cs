@@ -44,7 +44,7 @@ namespace ZyGames.Tianjiexing.BLL.Action
         private UserGeneral userGeneral = null;
         private List<TrainingInfo> cultureList = new List<TrainingInfo>();
 
-        public Action1408(HttpGet httpGet)
+        public Action1408(ZyGames.Framework.Game.Contract.HttpGet httpGet)
             : base(ActionIDDefine.Cst_Action1408, httpGet)
         {
 

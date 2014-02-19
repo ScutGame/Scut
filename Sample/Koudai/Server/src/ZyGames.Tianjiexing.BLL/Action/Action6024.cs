@@ -43,7 +43,7 @@ namespace ZyGames.Tianjiexing.BLL.Action
         private const int itemID = 7004;
 
 
-        public Action6024(HttpGet httpGet)
+        public Action6024(ZyGames.Framework.Game.Contract.HttpGet httpGet)
             : base(ActionIDDefine.Cst_Action6024, httpGet)
         {
 

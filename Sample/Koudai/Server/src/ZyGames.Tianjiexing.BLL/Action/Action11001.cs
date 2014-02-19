@@ -49,7 +49,7 @@ namespace ZyGames.Tianjiexing.BLL.Action
         private int codeTime = 0;
         private int useGold = 0;
 
-        public Action11001(HttpGet httpGet)
+        public Action11001(ZyGames.Framework.Game.Contract.HttpGet httpGet)
             : base(ActionIDDefine.Cst_Action11001, httpGet)
         {
 

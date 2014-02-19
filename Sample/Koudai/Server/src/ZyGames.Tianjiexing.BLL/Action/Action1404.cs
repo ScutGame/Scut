@@ -51,7 +51,7 @@ namespace ZyGames.Tianjiexing.BLL.Action
         private GeneralInfo general = null;
         private GeneralType generalType = 0;
 
-        public Action1404(HttpGet httpGet)
+        public Action1404(ZyGames.Framework.Game.Contract.HttpGet httpGet)
             : base(ActionIDDefine.Cst_Action1404, httpGet)
         {
 

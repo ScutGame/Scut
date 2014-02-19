@@ -47,7 +47,7 @@ namespace ZyGames.Tianjiexing.BLL.Action
         private int _isRe;
         private int _isSuccess;
 
-        public Action9103(HttpGet httpGet)
+        public Action9103(ZyGames.Framework.Game.Contract.HttpGet httpGet)
             : base(ActionIDDefine.Cst_Action9103, httpGet)
         {
 
