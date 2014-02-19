@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using ZyGames.Doudizhu.Bll.Base;
 using ZyGames.Framework.Common;
+using ZyGames.Framework.Game.Contract;
 using ZyGames.Framework.Game.Service;
 using System.Collections;
 

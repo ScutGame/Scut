@@ -2,7 +2,7 @@
 using ZyGames.Doudizhu.Model;
 using ZyGames.Framework.Cache.Generic;
 using ZyGames.Framework.Game.Cache;
-using ZyGames.Framework.Game.Service;
+using ZyGames.Framework.Game.Contract;
 
 
 namespace ZyGames.Doudizhu.Bll.Action

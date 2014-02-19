@@ -71,21 +71,18 @@ namespace ZyGames.Doudizhu.Bll
                 var setting = new EnvironmentSetting();
                 setting.ClientDesDeKey = "j6=9=1ac";
                 setting.EntityAssembly = Assembly.Load("ZyGames.Doudizhu.Model");
-                setting.ScriptStartBeforeHandle += () =>
-                {
-                    ScriptEngines.AddReferencedAssembly(new string[] {
+                GameEnvironment.Start(setting);
+
+                ScriptEngines.AddReferencedAssembly(new string[] {
                         "ZyGames.Doudizhu.Lang.dll",
                         "ZyGames.Doudizhu.Model.dll",
                         "ZyGames.Doudizhu.Bll.dll"
                     });
-                    ActionFactory.SetActionIgnoreAuthorize(1012, 9001, 9203);
+                ActionFactory.SetActionIgnoreAuthorize(1012, 9001, 9203);
 
-                    AppstoreClientManager.Current.InitConfig();
-                    LoadUnlineUser();
-                    InitRanking();
-                };
-                GameEnvironment.Start(setting);
-
+                AppstoreClientManager.Current.InitConfig();
+                LoadUnlineUser();
+                InitRanking();
             }
             catch (Exception ex)
             {

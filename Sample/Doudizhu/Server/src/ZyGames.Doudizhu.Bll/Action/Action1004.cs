@@ -1,4 +1,5 @@
 ﻿using System;
+using ZyGames.Framework.Game.Contract;
 using ZyGames.Framework.Game.Service;
 using ZyGames.Framework.Common;
 using ZyGames.Doudizhu.Lang;

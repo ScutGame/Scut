@@ -79,7 +79,7 @@ namespace ZyGames.Doudizhu.Bll.Logic
             {
                 str += "," + gameUser.UserId;
             }
-            GameHostApp.Current.SendAsyncAction(userList, actionId, parameters, g => { });
+            ActionFactory.SendAsyncAction(userList, actionId, parameters, g => { });
             if (callback != null)
             {
                 callback(actionId);

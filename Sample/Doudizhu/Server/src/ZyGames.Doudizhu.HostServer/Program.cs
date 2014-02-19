@@ -1,14 +1,6 @@
 ﻿using System;
-using System.IO;
-using System.Collections.Generic;
-using System.Runtime.Serialization;
-using ProtoBuf;
 using ZyGames.Doudizhu.Bll;
-using ZyGames.Doudizhu.Model;
-using ZyGames.Framework.Cache.Generic;
 using ZyGames.Framework.Common.Log;
-using ZyGames.Framework.Common.Serialization;
-using ZyGames.Framework.Model;
 
 namespace ZyGames.Doudizhu.HostServer
 {
@@ -19,7 +11,7 @@ namespace ZyGames.Doudizhu.HostServer
         {
             try
             {
-                GameHostApp.Current.Start();
+                GameHostApp.Current.Start(args);
                 TraceLog.ReleaseWrite("The server is started!");
             }
             catch (Exception ex)

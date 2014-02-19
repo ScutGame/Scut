@@ -6,6 +6,7 @@ using ZyGames.Doudizhu.Model;
 using ZyGames.Framework.Cache.Generic;
 using ZyGames.Framework.Common;
 using ZyGames.Framework.Game.Cache;
+using ZyGames.Framework.Game.Contract;
 using ZyGames.Framework.Game.Contract.Action;
 using ZyGames.Framework.Game.Runtime;
 using ZyGames.Framework.Game.Service;

@@ -1,5 +1,5 @@
-﻿using ZyGames.Framework.Game.Contract.Action;
-using ZyGames.Framework.Game.Service;
+﻿using ZyGames.Framework.Game.Contract;
+using ZyGames.Framework.Game.Contract.Action;
 
 namespace ZyGames.Doudizhu.Bll.Action
 {

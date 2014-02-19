@@ -1,7 +1,5 @@
 ﻿using System;
-
-using ZyGames.Framework.Game.Service;
-using ZyGames.Framework.Cache;
+using ZyGames.Framework.Game.Contract;
 using ZyGames.Doudizhu.Lang;
 using ZyGames.Framework.Cache.Generic;
 

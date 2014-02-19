@@ -5,6 +5,7 @@ using System.Net;
 using System.IO;
 using ZyGames.Framework.Common.Log;
 using ZyGames.Framework.Common.Serialization;
+using ZyGames.Framework.Game.Contract;
 using ZyGames.Framework.Game.Service;
 using ZyGames.Framework.Collection;
 using ZyGames.Framework.Common;

@@ -5,6 +5,7 @@ using ZyGames.Doudizhu.Lang;
 using ZyGames.Doudizhu.Model;
 using ZyGames.Framework.Cache.Generic;
 using ZyGames.Framework.Game.Cache;
+using ZyGames.Framework.Game.Contract;
 using ZyGames.Framework.Game.Service;
 
 namespace ZyGames.Doudizhu.Bll.Action
