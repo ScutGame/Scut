@@ -1,7 +1,6 @@
 ﻿"""404错误处理"""
-import clr, sys
+import ReferenceLib
 from action import *
-clr.AddReference('ZyGames.Framework.Common');
 from ZyGames.Framework.Common.Log import *
 
 class UrlParam(HttpParam):
