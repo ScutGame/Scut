@@ -26,10 +26,11 @@ using ZyGames.Framework.Cache.Generic;
 using ZyGames.Framework.Game.Context;
 using ZyGames.Framework.Game.Contract;
 using ZyGames.Framework.Game.Runtime;
+using ZyGames.Framework.Script;
 
-namespace GameServer.Script
+namespace Game.Script
 {
-    public class MainClass : GameSocketHost
+    public class MainClass : GameSocketHost, IMainScript
     {
 
         protected override BaseUser GetUser(int userId)
@@ -39,8 +40,6 @@ namespace GameServer.Script
 
         protected override void OnStartAffer()
         {
-            var setting = new EnvironmentSetting();
-            GameEnvironment.Start(setting);
         }
 
         protected override void OnServiceStop()

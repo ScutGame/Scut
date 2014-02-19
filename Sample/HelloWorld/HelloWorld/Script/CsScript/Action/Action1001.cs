@@ -22,7 +22,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ****************************************************************************/
 
-using ZyGames.Framework.Game.Service;
+using ZyGames.Framework.Game.Contract;
 
 namespace HelloWorld.Script.CsScript.Action
 {
