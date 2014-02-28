@@ -34,89 +34,89 @@ using ZyGames.Framework.Game.Sns;
 
 namespace ZyGames.Framework.Game.Contract.Action
 {
-	/// <summary>
-	/// Login action.
-	/// </summary>
+    /// <summary>
+    /// Login action.
+    /// </summary>
     public abstract class LoginAction : BaseStruct
     {
-		/// <summary>
-		/// The type of the mobile.
-		/// </summary>
+        /// <summary>
+        /// The type of the mobile.
+        /// </summary>
         protected MobileType MobileType;
-		/// <summary>
-		/// The passport identifier.
-		/// </summary>
+        /// <summary>
+        /// The passport identifier.
+        /// </summary>
         protected string PassportId = string.Empty;
-		/// <summary>
-		/// The password.
-		/// </summary>
+        /// <summary>
+        /// The password.
+        /// </summary>
         protected string Password = string.Empty;
-		/// <summary>
-		/// The device I.
-		/// </summary>
+        /// <summary>
+        /// The device I.
+        /// </summary>
         protected string DeviceID = string.Empty;
-		/// <summary>
-		/// The sex.
-		/// </summary>
+        /// <summary>
+        /// The sex.
+        /// </summary>
         protected byte Sex;
-		/// <summary>
-		/// The name of the nick.
-		/// </summary>
+        /// <summary>
+        /// The name of the nick.
+        /// </summary>
         protected string NickName = string.Empty;
-		/// <summary>
-		/// The head I.
-		/// </summary>
+        /// <summary>
+        /// The head I.
+        /// </summary>
         protected string HeadID = string.Empty;
-		/// <summary>
-		/// The screen x.
-		/// </summary>
+        /// <summary>
+        /// The screen x.
+        /// </summary>
         protected Int16 ScreenX;
-		/// <summary>
-		/// The screen y.
-		/// </summary>
+        /// <summary>
+        /// The screen y.
+        /// </summary>
         protected Int16 ScreenY;
-		/// <summary>
-		/// The retail I.
-		/// </summary>
+        /// <summary>
+        /// The retail I.
+        /// </summary>
         protected string RetailID = string.Empty;
-		/// <summary>
-		/// The type of the user.
-		/// </summary>
+        /// <summary>
+        /// The type of the user.
+        /// </summary>
         protected int UserType;
-		/// <summary>
-		/// The server I.
-		/// </summary>
+        /// <summary>
+        /// The server I.
+        /// </summary>
         protected int ServerID;
-		/// <summary>
-		/// The type of the game.
-		/// </summary>
+        /// <summary>
+        /// The type of the game.
+        /// </summary>
         protected int GameType;
-		/// <summary>
-		/// The login proxy.
-		/// </summary>
+        /// <summary>
+        /// The login proxy.
+        /// </summary>
         protected readonly LoginProxy LoginProxy;
-		/// <summary>
-		/// Gets or sets the guide identifier.
-		/// </summary>
-		/// <value>The guide identifier.</value>
+        /// <summary>
+        /// Gets or sets the guide identifier.
+        /// </summary>
+        /// <value>The guide identifier.</value>
         protected int GuideId
         {
             get;
             set;
         }
-		/// <summary>
-		/// Initializes a new instance of the <see cref="ZyGames.Framework.Game.Contract.Action.LoginAction"/> class.
-		/// </summary>
-		/// <param name="actionId">Action identifier.</param>
-		/// <param name="httpGet">Http get.</param>
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ZyGames.Framework.Game.Contract.Action.LoginAction"/> class.
+        /// </summary>
+        /// <param name="actionId">Action identifier.</param>
+        /// <param name="httpGet">Http get.</param>
         protected LoginAction(short actionId, HttpGet httpGet)
             : base(actionId, httpGet)
         {
             LoginProxy = new LoginProxy(httpGet);
         }
-		/// <summary>
-		/// 创建返回协议内容输出栈
-		/// </summary>
+        /// <summary>
+        /// 创建返回协议内容输出栈
+        /// </summary>
         public override void BuildPacket()
         {
             PushIntoStack(Sid);
@@ -126,10 +126,10 @@ namespace ZyGames.Framework.Game.Contract.Action
             PushIntoStack(GuideId);
             PushIntoStack(PassportId);
         }
-		/// <summary>
-		/// 接收用户请求的参数，并根据相应类进行检测
-		/// </summary>
-		/// <returns></returns>
+        /// <summary>
+        /// 接收用户请求的参数，并根据相应类进行检测
+        /// </summary>
+        /// <returns></returns>
         public override bool GetUrlElement()
         {
             if (httpGet.GetEnum("MobileType", ref MobileType) &&
@@ -149,10 +149,10 @@ namespace ZyGames.Framework.Game.Contract.Action
             }
             return false;
         }
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <returns></returns>
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
         public override bool CheckAction()
         {
             if (!GameEnvironment.IsRunning)
@@ -163,19 +163,24 @@ namespace ZyGames.Framework.Game.Contract.Action
             }
             return true;
         }
-		/// <summary>
-		/// 子类实现Action处理
-		/// </summary>
-		/// <returns></returns>
+        /// <summary>
+        /// 子类实现Action处理
+        /// </summary>
+        /// <returns></returns>
         public override bool TakeAction()
         {
             ILogin login = LoginProxy.GetLogin();
             if (login != null && login.CheckLogin())
             {
                 Uid = login.UserID;
-                Sid = Current.SessionId;//string.Format("{0}|{1}|{2}", login.SessionID, GameType, ServerID);
+                Sid = Current.SessionId;
                 UserId = Uid.ToInt();
                 PassportId = login.PassportID;
+                var session = GameSession.Get(Sid);
+                if (session != null)
+                {
+                    session.BindIdentity(UserId);
+                }
                 UserType = SnsManager.GetUserType(PassportId);
                 SetParameter(login);
                 if (!GetError() && DoSuccess(UserId))
@@ -187,7 +192,6 @@ namespace ZyGames.Framework.Game.Contract.Action
                         {
                             Current.User = user;
                             user.RemoteAddress = httpGet.RemoteAddress;
-                            httpGet.Session.BindIdentity(UserId);
                         }
                     }
                     return true;
@@ -202,27 +206,27 @@ namespace ZyGames.Framework.Game.Contract.Action
             }
             return false;
         }
-		/// <summary>
-		/// Sets the parameter.
-		/// </summary>
-		/// <param name="login">Login.</param>
+        /// <summary>
+        /// Sets the parameter.
+        /// </summary>
+        /// <param name="login">Login.</param>
         protected virtual void SetParameter(ILogin login)
         {
         }
 
-		/// <summary>
-		/// 是否此请求忽略UID参数
-		/// </summary>
-		/// <returns></returns>
+        /// <summary>
+        /// 是否此请求忽略UID参数
+        /// </summary>
+        /// <returns></returns>
         protected override bool IsIgnoreUid()
         {
             return true;
         }
-		/// <summary>
-		/// Dos the success.
-		/// </summary>
-		/// <returns><c>true</c>, if success was done, <c>false</c> otherwise.</returns>
-		/// <param name="userId">User identifier.</param>
+        /// <summary>
+        /// Dos the success.
+        /// </summary>
+        /// <returns><c>true</c>, if success was done, <c>false</c> otherwise.</returns>
+        /// <param name="userId">User identifier.</param>
         protected abstract bool DoSuccess(int userId);
     }
 }

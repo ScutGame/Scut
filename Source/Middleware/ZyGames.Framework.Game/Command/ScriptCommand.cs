@@ -56,8 +56,13 @@ namespace ZyGames.Framework.Game.Command
         /// <param name="args">Arguments.</param>
         protected override void ProcessCmd(string[] args)
         {
-            string routeName = string.Format("Gm\\{0}.py", _cmd);
+            string routeName = string.Format("{0}/Gm/{1}.py", ScriptEngines.PythonDirName, _cmd);
             dynamic scriptScope = ScriptEngines.Execute(routeName, null);
+            if (scriptScope == null)
+            {
+                routeName = string.Format("{0}/Gm/{1}.cs", ScriptEngines.CSharpDirName, _cmd);
+                scriptScope = ScriptEngines.Execute(routeName, null);
+            }
             if (scriptScope != null)
             {
                 try
