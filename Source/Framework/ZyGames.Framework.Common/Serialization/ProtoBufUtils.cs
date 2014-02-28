@@ -22,6 +22,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ****************************************************************************/
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
@@ -71,9 +72,9 @@ namespace ZyGames.Framework.Common.Serialization
             {
                 typeModel.Serialize(fs, obj);
             }
-        }        
-        
- 
+        }
+
+
         /// <summary>
         /// 使用protobuf反序列化二进制文件为对象
         /// </summary>
@@ -171,7 +172,7 @@ namespace ZyGames.Framework.Common.Serialization
                         }
                     }
                 }
-                
+
                 return bytes;
             }
         }
@@ -217,7 +218,7 @@ namespace ZyGames.Framework.Common.Serialization
                             {
                                 data = stream.ToArray();
                                 stream.SetLength(0);
-                                goto Start; 
+                                goto Start;
                             }
                         }
                     }
@@ -242,6 +243,10 @@ namespace ZyGames.Framework.Common.Serialization
         /// <param name="assembly"></param>
         public static void LoadProtobufType(Assembly assembly)
         {
+            if (assembly == null)
+            {
+                throw new ArgumentNullException("assembly");
+            }
             var types = assembly.GetTypes().Where(p => p.GetCustomAttributes(typeof(ProtoContractAttribute), false).Count() > 0).ToList();
             for (int i = 0; i < types.Count; i++)
             {
@@ -256,38 +261,7 @@ namespace ZyGames.Framework.Common.Serialization
                     if (typeModel.CanSerializeContractType(myEntity))
                     {
                         var metaType = typeModel.Add(myEntity, true);
-                        Properties.ForEach((o) =>
-                        {
-                            try
-                            {
-                                var fieldNumber = (o.GetCustomAttributes(typeof(ProtoMemberAttribute), false)[0] as ProtoMemberAttribute).Tag;
-                                if (metaType[fieldNumber] == null)
-                                {
-                                    metaType.Add(fieldNumber, o.Name);
-                                }
-                            }
-                            //忽略异常
-                            catch (Exception ex)
-                            {
-                                TraceLog.WriteError("Loading protobuf type \"{0}.{1}\" property error:{2}", myEntity.FullName, o.Name, ex);
-                            }
-                        });
-                        Fields.ForEach((o) =>
-                        {
-                            try
-                            {
-                                var fieldNumber = (o.GetCustomAttributes(typeof(ProtoMemberAttribute), false)[0] as ProtoMemberAttribute).Tag;
-                                if (metaType[fieldNumber] == null)
-                                {
-                                    metaType.AddField(fieldNumber, o.Name);
-                                }
-                            }
-                            //忽略异常
-                            catch (Exception ex)
-                            {
-                                TraceLog.WriteError("Loading protobuf type \"{0}.{1}\" field error:{2}", myEntity.FullName, o.Name, ex);
-                            }
-                        });
+                        LoadProtoTypeMember(myEntity, Properties, metaType, Fields);
                     }
                 }
                 //忽略异常
@@ -298,6 +272,42 @@ namespace ZyGames.Framework.Common.Serialization
 
             }
 
+        }
+
+        private static void LoadProtoTypeMember(Type myEntity, List<PropertyInfo> Properties, MetaType metaType, List<FieldInfo> Fields)
+        {
+            Properties.ForEach((o) =>
+            {
+                try
+                {
+                    var fieldNumber = (o.GetCustomAttributes(typeof(ProtoMemberAttribute), false)[0] as ProtoMemberAttribute).Tag;
+                    if (metaType[fieldNumber] == null)
+                    {
+                        metaType.Add(fieldNumber, o.Name);
+                    }
+                }
+                //忽略异常
+                catch (Exception ex)
+                {
+                    TraceLog.WriteError("Loading protobuf type \"{0}.{1}\" property error:{2}", myEntity.FullName, o.Name, ex);
+                }
+            });
+            Fields.ForEach((o) =>
+            {
+                try
+                {
+                    var fieldNumber = (o.GetCustomAttributes(typeof(ProtoMemberAttribute), false)[0] as ProtoMemberAttribute).Tag;
+                    if (metaType[fieldNumber] == null)
+                    {
+                        metaType.AddField(fieldNumber, o.Name);
+                    }
+                }
+                //忽略异常
+                catch (Exception ex)
+                {
+                    TraceLog.WriteError("Loading protobuf type \"{0}.{1}\" field error:{2}", myEntity.FullName, o.Name, ex);
+                }
+            });
         }
     }
 }

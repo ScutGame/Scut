@@ -362,7 +362,7 @@ namespace ZyGames.Framework.RPC.IO
                 buffer = CompressGzipBuffer(buffer);
             }
             return buffer;
-        } 
+        }
         /// <summary>
         /// 读取缓冲数据至结尾转为字符串
         /// </summary>
@@ -403,29 +403,74 @@ namespace ZyGames.Framework.RPC.IO
         /// 读取消息头，如果有Gzip压缩时自动解压字节流
         /// </summary>
         /// <returns></returns>
+        /// <exception cref="OverflowException"></exception>
         public MessageHead ReadHeadGzip()
         {
-            MessageHead head = new MessageHead();
-            head.HasGzip = true;
-            head.PacketLength = Length;
-            if (CheckGzipBuffer())
+            try
             {
-                byte[] gzipData = PopBuffer();
-                head.GzipLength = gzipData.Length;
-                //gzip格式500+gzip( 1000+ XXXXXX)
-                byte[] deZipData = GzipUtils.DeCompress(gzipData, 0, gzipData.Length);
-                WriteByte(deZipData);
-                Reset();
+                MessageHead head = new MessageHead();
+                head.HasGzip = true;
+                head.PacketLength = Length;
+                if (CheckGzipBuffer())
+                {
+                    byte[] gzipData = PopBuffer();
+                    head.GzipLength = gzipData.Length;
+                    //gzip格式500+gzip( 1000+ XXXXXX)
+                    byte[] deZipData = GzipUtils.DeCompress(gzipData, 0, gzipData.Length);
+                    WriteByte(deZipData);
+                    Reset();
+                }
+                head.TotalLength = ReadInt();
+                head.ErrorCode = ReadInt();
+                head.MsgId = ReadInt();
+                head.ErrorInfo = ReadString();
+                head.Action = ReadInt();
+                head.St = ReadString();
+                return head;
             }
-            head.TotalLength = ReadInt();
-            head.ErrorCode = ReadInt();
-            head.MsgId = ReadInt();
-            head.ErrorInfo = ReadString();
-            head.Action = ReadInt();
-            head.St = ReadString();
-            return head;
+            catch (Exception ex)
+            {
+                string error = string.Format("read to {0}/{1}pos error,\r\nbytes:{2}", Offset, Length, ToHexString());
+                throw new OverflowException(error, ex);
+            }
         }
 
+        /// <summary>
+        /// To Hex(16) string
+        /// </summary>
+        /// <returns></returns>
+        public string ToHexString()
+        {
+            StringBuilder sb = new StringBuilder();
+            try
+            {
+                var buffer = _msBuffers.ToArray();
+                if (buffer != null)
+                {
+                    int colIndex = 0;
+                    int index = 0;
+                    foreach (var b in buffer)
+                    {
+                        sb.AppendFormat(" {0}", b.ToString("X2"));
+                        index++;
+                        if (index % 8 == 0)
+                        {
+                            sb.Append(" ");
+                            colIndex++;
+                        }
+                        if (colIndex == 2)
+                        {
+                            sb.AppendLine();
+                            colIndex = 0;
+                        }
+                    }
+                }
+            }
+            catch (Exception)
+            {
+            }
+            return sb.ToString();
+        }
         /// <summary>
         /// 检查是否有压缩数据
         /// </summary>

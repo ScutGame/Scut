@@ -205,20 +205,23 @@ namespace ZyGames.Framework.Model
         }
 
 
-        /// <summary>
-        /// 
-        /// </summary>
-        [ProtoMember(100023)]
         protected bool _isDelete;
+
         /// <summary>
         /// 删除实体标记，将从源数据（DB、Redis）中删除
         /// </summary>
         [JsonIgnore]
-        internal bool IsDelete
+        [ProtoMember(100023)]
+        public bool IsDelete
         {
             get
             {
                 return _isDelete;
+            }
+            internal set
+            {
+                //写Redis时标记,但不触发事件
+                _isDelete = value;
             }
         }
         ///// <summary>
@@ -611,6 +614,7 @@ namespace ZyGames.Framework.Model
         /// <summary>
         /// 是否有改变的字段列属性
         /// </summary>
+        [JsonIgnore]
         public bool HasChangePropertys
         {
             get { return _changePropertys.Count > 0; }
