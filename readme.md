@@ -49,7 +49,13 @@ OSChina代码库：https://git.oschina.net/scutgame/Scut<br />
 
 更新日志
 ----------------
-###版本：6.1.5.8 (2014-2-19) Unstable
+###版本：6.1.6.0 (2014-2-28) Unstable
+> 1. 增加Session停服恢复功能
+> 2. 增加Server Console打印logo字符画信息
+> 3. 修改Server Console回车无法退出问题
+> 4. 修改强制停服写入Redis的数据丢失问题
+
+###版本：6.1.5.8 (2014-2-19)
 > 1. 增加通讯协议写入流支持可Protobuf序列化的对象
 > 2. 增加Action通讯流可支持Gzip压缩
 > 3. 修改语言包为空异常的问题
