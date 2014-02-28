@@ -52,7 +52,6 @@ namespace ZyGames.Tianjiexing.Service
 					"ZyGames.Tianjiexing.BLL.dll"
 				});
                 GameEnvironment.Start(setting);
-                GameSession.StartClear();
 				
 				SystemGlobal.Run();
 
