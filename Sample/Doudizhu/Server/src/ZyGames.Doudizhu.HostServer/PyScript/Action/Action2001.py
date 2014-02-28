@@ -48,11 +48,11 @@ def takeAction(urlParam, parent):
         parent.ErrorInfo = Lang.getLang("LoadError")
         actionResult.Result = False
         return actionResult
-    if not user.RemoteAddress or user.RemoteAddress=='':
-        parent.ErrorCode = Lang.getLang("ErrorCode")
-        parent.ErrorInfo = Lang.getLang("St2001_ConnectError")
-        actionResult.Result = False
-        return actionResult
+    #if not user.RemoteAddress or user.RemoteAddress=='':
+    #    parent.ErrorCode = Lang.getLang("ErrorCode")
+    #    parent.ErrorInfo = Lang.getLang("St2001_ConnectError")
+    #    actionResult.Result = False
+    #    return actionResult
     if urlParam.Op == 2:
         #续局
         GameRoom.Current.Exit(user)

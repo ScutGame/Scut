@@ -21,18 +21,6 @@ namespace ZyGames.Doudizhu.Bll
 {
     public class GameHostApp : GameSocketHost
     {
-        private static GameHostApp _instance;
-
-        static GameHostApp()
-        {
-            _instance = new GameHostApp();
-        }
-
-        public static GameHostApp Current
-        {
-            get { return _instance; }
-        }
-
 
         protected override void OnConnectCompleted(object sender, ConnectionEventArgs e)
         {

@@ -57,7 +57,10 @@ def takeAction(urlParam, parent):
         actionResult.TitleName = gameHall.GetTitle()
         actionResult.ScoreNum = user.ScoreNum
         actionResult.WinRate = gameHall.GetWinRate()
-        actionResult.RoomId = user.Property.RoomId
+        
+        table = gameRoom.GetTableData(user)
+        if table and table.IsStarting:
+            actionResult.RoomId = user.Property.RoomId
     else:
         parent.ErrorCode = LanguageManager.GetLang().ErrorCode
         parent.ErrorInfo = LanguageManager.GetLang().LoadDataError
