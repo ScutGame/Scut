@@ -22,15 +22,12 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ****************************************************************************/
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using GameRanking.Model;
+using GameServer.Model;
 using ZyGames.Framework.Cache.Generic;
+using ZyGames.Framework.Game.Contract;
 using ZyGames.Framework.Game.Service;
 
-namespace GameRanking.Server.Script.Action
+namespace GameServer.CsScript.Action
 {
     public class Action1000 : BaseStruct
     {
@@ -64,8 +61,10 @@ namespace GameRanking.Server.Script.Action
             var ranking = cache.Find(m => m.UserName == UserName);
             if (ranking == null)
             {
+                var user = new GameUser() { UserId = (int)cache.GetNextNo(), NickName = UserName};
+                new PersonalCacheStruct<GameUser>().Add(user);
                 ranking = new UserRanking();
-                ranking.UserID = (int)cache.GetNextNo();
+                ranking.UserID = user.UserId;
                 ranking.UserName = UserName;
                 ranking.Score = Score;
                 cache.Add(ranking);

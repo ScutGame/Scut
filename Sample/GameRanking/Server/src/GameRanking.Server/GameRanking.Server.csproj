@@ -38,12 +38,12 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="IronPython, Version=2.7.0.40, Culture=neutral, PublicKeyToken=7f709c5b713576e1, processorArchitecture=MSIL">
-      <HintPath>..\..\..\..\Release\6.1.5.8\Lib\IronPython.dll</HintPath>
+      <HintPath>..\..\..\..\Release\6.1.6.0\Lib\IronPython.dll</HintPath>
       <SpecificVersion>False</SpecificVersion>
       <Private>True</Private>
     </Reference>
     <Reference Include="IronPython.Modules, Version=2.7.0.40, Culture=neutral, PublicKeyToken=7f709c5b713576e1, processorArchitecture=MSIL">
-      <HintPath>..\..\..\..\Release\6.1.5.8\Lib\IronPython.Modules.dll</HintPath>
+      <HintPath>..\..\..\..\Release\6.1.6.0\Lib\IronPython.Modules.dll</HintPath>
       <SpecificVersion>False</SpecificVersion>
       <Private>True</Private>
     </Reference>
@@ -52,26 +52,26 @@
     </Reference>
     <Reference Include="Microsoft.Dynamic, Version=1.1.0.20, Culture=neutral, PublicKeyToken=7f709c5b713576e1, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\Release\6.1.5.8\Lib\Microsoft.Dynamic.dll</HintPath>
+      <HintPath>..\..\..\..\Release\6.1.6.0\Lib\Microsoft.Dynamic.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Microsoft.Scripting, Version=1.1.0.20, Culture=neutral, PublicKeyToken=7f709c5b713576e1, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\Release\6.1.5.8\Lib\Microsoft.Scripting.dll</HintPath>
+      <HintPath>..\..\..\..\Release\6.1.6.0\Lib\Microsoft.Scripting.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="MySql.Data, Version=5.2.5.0, Culture=neutral, PublicKeyToken=c5687fc88969c44d, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\Release\6.1.5.8\Lib\MySql.Data.dll</HintPath>
+      <HintPath>..\..\..\..\Release\6.1.6.0\Lib\MySql.Data.dll</HintPath>
     </Reference>
     <Reference Include="Newtonsoft.Json">
-      <HintPath>..\..\..\..\..\Release\6.1.5.8\Lib\Newtonsoft.Json.dll</HintPath>
+      <HintPath>..\..\..\..\..\Release\6.1.6.0\Lib\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="NLog">
-      <HintPath>..\..\..\..\..\Release\6.1.5.8\Lib\NLog.dll</HintPath>
+      <HintPath>..\..\..\..\..\Release\6.1.6.0\Lib\NLog.dll</HintPath>
     </Reference>
     <Reference Include="protobuf-net">
-      <HintPath>..\..\..\..\..\Release\6.1.5.8\Lib\protobuf-net.dll</HintPath>
+      <HintPath>..\..\..\..\..\Release\6.1.6.0\Lib\protobuf-net.dll</HintPath>
     </Reference>
     <Reference Include="System.Web.DynamicData" />
     <Reference Include="System.Web.Entity" />
@@ -89,57 +89,35 @@
     <Reference Include="System.Web.Services" />
     <Reference Include="System.EnterpriseServices" />
     <Reference Include="ZyGames.Framework">
-      <HintPath>..\..\..\..\..\Release\6.1.5.8\Lib\ZyGames.Framework.dll</HintPath>
+      <HintPath>..\..\..\..\..\Release\6.1.6.0\Lib\ZyGames.Framework.dll</HintPath>
     </Reference>
     <Reference Include="ZyGames.Framework.Common">
-      <HintPath>..\..\..\..\..\Release\6.1.5.8\Lib\ZyGames.Framework.Common.dll</HintPath>
+      <HintPath>..\..\..\..\..\Release\6.1.6.0\Lib\ZyGames.Framework.Common.dll</HintPath>
     </Reference>
     <Reference Include="ZyGames.Framework.Game">
-      <HintPath>..\..\..\..\..\Release\6.1.5.8\Lib\ZyGames.Framework.Game.dll</HintPath>
+      <HintPath>..\..\..\..\..\Release\6.1.6.0\Lib\ZyGames.Framework.Game.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
     <Content Include="Global.asax" />
-    <Content Include="PyScript\Action\action1000.py" />
-    <Content Include="PyScript\Action\action1001.py" />
-    <Content Include="PyScript\Lib\action.py" />
-    <Content Include="PyScript\Lib\lang.py" />
-    <Content Include="PyScript\Lib\mathUtils.py" />
-    <Content Include="PyScript\Lib\randomUtils.py" />
+    <Content Include="Script\PyScript\Action\action1000.py" />
+    <Content Include="Script\PyScript\Action\action1001.py" />
+    <Content Include="Script\PyScript\Lib\action.py" />
+    <Content Include="Script\PyScript\Lib\lang.py" />
+    <Content Include="Script\PyScript\Lib\mathUtils.py" />
+    <Content Include="Script\PyScript\Lib\randomUtils.py" />
     <Content Include="Service.aspx" />
-    <Content Include="Web.config">
-      <SubType>Designer</SubType>
-    </Content>
-    <Content Include="Web.Debug.config">
-      <DependentUpon>Web.config</DependentUpon>
-    </Content>
-    <Content Include="Web.Release.config">
-      <DependentUpon>Web.config</DependentUpon>
-    </Content>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Global.asax.cs">
-      <DependentUpon>Global.asax</DependentUpon>
-    </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Content Include="Script\Action\Action1000.cs" />
-    <Content Include="Script\Action\Action1001.cs" />
-    <Compile Include="Service.aspx.cs">
-      <DependentUpon>Service.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Service.aspx.designer.cs">
-      <DependentUpon>Service.aspx</DependentUpon>
-    </Compile>
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\GameRanking.Model\GameRanking.Model.csproj">
-      <Project>{32E6FAC2-FB6A-485A-B016-FEC82394E032}</Project>
-      <Name>GameRanking.Model</Name>
-    </ProjectReference>
+    <Compile Include="Script\CsScript\Locale\SimplifiedLanguage.cs" />
+    <Compile Include="Script\CsScript\MainClass.cs" />
+    <Compile Include="Script\Model\GuestUser.cs" />
+    <Compile Include="Script\Model\UserRanking.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="NLog.config" />
+    <Content Include="Web.config" />
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>

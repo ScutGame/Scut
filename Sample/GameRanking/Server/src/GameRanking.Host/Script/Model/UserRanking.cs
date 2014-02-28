@@ -1,4 +1,4 @@
-﻿/****************************************************************************
+/****************************************************************************
 Copyright (c) 2013-2015 scutgame.com
 
 http://www.scutgame.com
@@ -22,29 +22,59 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ****************************************************************************/
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using ZyGames.Framework.Common.Log;
+using ProtoBuf;
+using ZyGames.Framework.Model;
 
-namespace GameRanking.Host
+namespace GameServer.Model
 {
-    class Program
+    /// <summary>
+    /// 玩家排行榜实体类
+    /// </summary>
+    [Serializable, ProtoContract]
+    [EntityTable(CacheType.Entity, "ConnData")]
+    public class UserRanking : ShareEntity
     {
-        static void Main(string[] args)
+        public UserRanking()
+            : base(false)
         {
-            try
-            {
-                var hostApp = new GameHostApp();
-                hostApp.Start(args);
-                Console.ReadLine();
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex.Message);
-                TraceLog.WriteError("HostServer error:{0}", ex);
-                Console.ReadKey();
-            }
+            CreateDate = DateTime.Now;
+        }
+
+        [ProtoMember(1)]
+        [EntityField(true)]
+        public int UserID
+        {
+            get;
+            set;
+        }
+
+        [ProtoMember(2)]
+        [EntityField]
+        public string UserName
+        {
+            get;
+            set;
+        }
+
+        [ProtoMember(3)]
+        [EntityField]
+        public int Score
+        {
+            get;
+            set;
+        }
+
+        [ProtoMember(4)]
+        [EntityField]
+        public DateTime CreateDate
+        {
+            get;
+            set;
+        }
+
+        protected override int GetIdentityId()
+        {
+            return UserID;
         }
     }
 }
