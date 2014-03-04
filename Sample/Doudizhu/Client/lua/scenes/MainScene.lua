@@ -589,4 +589,5 @@ end;
 function netCallBack(pScutScene, lpExternalData)
 	local actionId = ZyReader:getActionID();
 	 local userData = ZyRequestParam:getParamData(lpExternalData)
+	 MainSceneNetCallback.netCallBack(pScutScene, lpExternalData)
 end

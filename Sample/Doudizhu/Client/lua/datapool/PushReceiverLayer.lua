@@ -16,6 +16,7 @@ function PushReceiverCallback(pScutScene, lpExternalData)
 	local actionId = ScutDataLogic.CNetReader:getInstance():getActionID()
 	local result = ScutDataLogic.CNetReader:getInstance():getResult()
 	pScutScene= CCDirector:sharedDirector():getRunningScene()
+
 	if actionId==2003 then
 		local serverInfo=actionLayer._2003Callback(pScutScene, lpExternalData)
 		if serverInfo and serverInfo.PlayerTable then
