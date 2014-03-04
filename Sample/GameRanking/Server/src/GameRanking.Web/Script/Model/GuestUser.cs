@@ -21,39 +21,25 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ****************************************************************************/
+
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using ProtoBuf;
+using ZyGames.Framework.Game.Context;
 using ZyGames.Framework.Model;
 
-namespace GameRanking.Model
+namespace GameServer.Model
 {
-    /// <summary>
-    /// 玩家排行榜实体类
-    /// </summary>
     [Serializable, ProtoContract]
-    [EntityTable(CacheType.Entity, "ConnData")]
-    public class UserRanking : ShareEntity
+    [EntityTable("ConnData")]
+    public class GameUser : BaseUser
     {
-        public UserRanking()
-            : base(false)
-        {
-            CreateDate = DateTime.Now;
-        }
-
         [ProtoMember(1)]
         [EntityField(true)]
-        public int UserID
-        {
-            get;
-            set;
-        }
+        public int UserId { get; set; }
 
         [ProtoMember(2)]
         [EntityField]
-        public string UserName
+        public String NickName
         {
             get;
             set;
@@ -61,7 +47,7 @@ namespace GameRanking.Model
 
         [ProtoMember(3)]
         [EntityField]
-        public int Score
+        public String PassportId
         {
             get;
             set;
@@ -69,15 +55,54 @@ namespace GameRanking.Model
 
         [ProtoMember(4)]
         [EntityField]
-        public DateTime CreateDate
+        public String RetailId
         {
             get;
             set;
         }
 
+        public string SId { get; set; }
+
         protected override int GetIdentityId()
         {
-            return UserID;
+            return UserId;
+        }
+
+        public override string GetSessionId()
+        {
+            return SId;
+        }
+
+        public override int GetUserId()
+        {
+            return UserId;
+        }
+
+        public override string GetNickName()
+        {
+            return NickName;
+        }
+
+        public override string GetPassportId()
+        {
+            return PassportId;
+        }
+
+        public override string GetRetailId()
+        {
+            return RetailId;
+        }
+
+        public override bool IsFengJinStatus
+        {
+            get { return false; }
+        }
+
+        public override DateTime OnlineDate
+        {
+            get;
+            set;
         }
     }
+
 }

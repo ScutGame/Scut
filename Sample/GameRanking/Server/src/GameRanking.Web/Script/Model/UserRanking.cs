@@ -21,79 +21,60 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ****************************************************************************/
-
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using ZyGames.Framework.Common;
-using ZyGames.Framework.Game.Context;
+using ProtoBuf;
+using ZyGames.Framework.Model;
 
-namespace GameRanking.Model
+namespace GameServer.Model
 {
-
-    public class GuestUser : BaseUser
+    /// <summary>
+    /// 玩家排行榜实体类
+    /// </summary>
+    [Serializable, ProtoContract]
+    [EntityTable(CacheType.Entity, "ConnData")]
+    public class UserRanking : ShareEntity
     {
-        private static VersionConfig UserConfig = new VersionConfig();
-
-        public GuestUser()
+        public UserRanking()
+            : base(false)
         {
+            CreateDate = DateTime.Now;
         }
 
-        public GuestUser(int userId)
-        {
-            UserId = userId;
-        }
-
-        public void Init()
-        {
-            UserId = UserConfig.NextId;
-        }
-
-        public int UserId { get; private set; }
-
-        public string SId { get; set; }
-
-        protected override int GetIdentityId()
-        {
-            return UserId;
-        }
-
-        public override string GetSessionId()
-        {
-            return SId;
-        }
-
-        public override int GetUserId()
-        {
-            return UserId;
-        }
-
-        public override string GetNickName()
-        {
-            return "";
-        }
-
-        public override string GetPassportId()
-        {
-            return "";
-        }
-
-        public override string GetRetailId()
-        {
-            return "";
-        }
-
-        public override bool IsFengJinStatus
-        {
-            get { return false; }
-        }
-
-        public override DateTime OnlineDate
+        [ProtoMember(1)]
+        [EntityField(true)]
+        public int UserID
         {
             get;
             set;
         }
-    }
 
+        [ProtoMember(2)]
+        [EntityField]
+        public string UserName
+        {
+            get;
+            set;
+        }
+
+        [ProtoMember(3)]
+        [EntityField]
+        public int Score
+        {
+            get;
+            set;
+        }
+
+        [ProtoMember(4)]
+        [EntityField]
+        public DateTime CreateDate
+        {
+            get;
+            set;
+        }
+
+        protected override int GetIdentityId()
+        {
+            return UserID;
+        }
+    }
 }
