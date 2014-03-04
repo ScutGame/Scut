@@ -1,4 +1,4 @@
-/****************************************************************************
+﻿/****************************************************************************
 Copyright (c) 2013-2015 scutgame.com
 
 http://www.scutgame.com
@@ -22,61 +22,28 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ****************************************************************************/
 using System;
-using ProtoBuf;
-using ZyGames.Framework.Model;
+using ZyGames.Framework.Cache.Generic;
+using ZyGames.Framework.Game.Context;
+using ZyGames.Framework.Game.Contract;
+using ZyGames.Framework.Game.Runtime;
+using ZyGames.Framework.Script;
 
-namespace GameServer.Model
+namespace Game.Script
 {
-    /// <summary>
-    /// 玩家排行榜实体类
-    /// </summary>
-    [Serializable, ProtoContract]
-    [EntityTable(CacheType.Entity, "ConnData")]
-    public class UserRanking : ShareEntity
+    public class MainClass : GameSocketHost, IMainScript
     {
-        public UserRanking()
-            : base(false)
+        protected override BaseUser GetUser(int userId)
         {
-            CreateDate = DateTime.Now;
+            return (BaseUser)CacheFactory.GetPersonalEntity("GameServer.Model.GameUser", userId.ToString(), userId);
         }
 
-        [ProtoMember(1)]
-        [EntityField(true)]
-        public int UserID
+        protected override void OnStartAffer()
         {
-            get;
-            set;
         }
 
-        [ProtoMember(2)]
-        [EntityField]
-        public string UserName
+        protected override void OnServiceStop()
         {
-            get;
-            set;
+            GameEnvironment.Stop();
         }
-
-        [ProtoMember(3)]
-        [EntityField]
-        public int Score
-        {
-            get;
-            set;
-        }
-
-        [ProtoMember(4)]
-        [EntityField]
-        public DateTime CreateDate
-        {
-            get;
-            set;
-        }
-
-        protected override int GetIdentityId()
-        {
-            return UserID;
-        }
-
-
     }
 }
