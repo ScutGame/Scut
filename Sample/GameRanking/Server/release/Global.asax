@@ -1,1 +1,1 @@
-﻿<%@ Application Codebehind="Global.asax.cs" Inherits="GameRanking.Server.Global" Language="C#" %>
+﻿<%@ Application Codebehind="Global.asax.cs" Inherits="GameWebServer.Global" Language="C#" %>

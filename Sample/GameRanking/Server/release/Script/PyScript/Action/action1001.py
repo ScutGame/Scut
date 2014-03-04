@@ -1,14 +1,10 @@
 ﻿"""1001_排名列表接口"""
-import clr, sys
+import ReferenceLib
 from action import *
-clr.AddReference('ZyGames.Framework.Common')
-clr.AddReference('ZyGames.Framework')
-clr.AddReference('ZyGames.Framework.Game')
-clr.AddReference('GameRanking.Model')
 from ZyGames.Framework.Common import *
 from ZyGames.Framework.Cache.Generic import *
 from ZyGames.Framework.Game.Service import *
-from GameRanking.Model import *
+from GameServer.Model import *
 
 class UrlParam(HttpParam):
     def __init__(self):

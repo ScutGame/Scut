@@ -22,16 +22,14 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ****************************************************************************/
 
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using GameRanking.Model;
+using GameServer.Model;
 using ZyGames.Framework.Cache.Generic;
 using ZyGames.Framework.Common;
+using ZyGames.Framework.Game.Contract;
 using ZyGames.Framework.Game.Service;
 
-namespace GameRanking.Server.Script.Action
+namespace GameServer.CsScript.Action
 {
     public class Action1001 : BaseStruct
     {
