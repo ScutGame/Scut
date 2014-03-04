@@ -74,121 +74,101 @@ namespace ProxyServer
 
         void socketLintener_Disconnected(object sender, ConnectionEventArgs e)
         {
-            try
+            ClientConnection clientConnection;
+            if (clientConnections.TryGetValue(e.Socket, out clientConnection))
             {
-                ClientConnection clientConnection;
-                if (clientConnections.TryGetValue(e.Socket, out clientConnection))
-                {
-                    clientConnections.Remove(clientConnection.SSID);
-                    TraceLog.ReleaseWriteDebug("断开 IP:{0},ssid:{1}", clientConnection.Socket.RemoteEndPoint, clientConnection.SSID);
+                clientConnections.Remove(clientConnection.SSID);
+                TraceLog.ReleaseWriteDebug("断开 IP:{0},ssid:{1}", clientConnection.Socket.RemoteEndPoint, clientConnection.SSID);
 
-                    if (clientConnection.ServerId != 0)
+                if (clientConnection.ServerId != 0)
+                {
+                    NameValueCollection requestParam = new NameValueCollection();
+                    requestParam["actionid"] = ((int)ActionEnum.Interrupt).ToString();
+                    requestParam["ssid"] = clientConnection.SSID.ToString("N");
+                    requestParam["msgid"] = "0";
+                    string paramStr = RequestParse.ToQueryString(requestParam);
+                    byte[] paramData = Encoding.ASCII.GetBytes(paramStr);
+                    try
                     {
-                        NameValueCollection requestParam = new NameValueCollection();
-                        requestParam["actionid"] = ((int)ActionEnum.Interrupt).ToString();
-                        requestParam["ssid"] = clientConnection.SSID.ToString("N");
-                        requestParam["msgid"] = "0";
-                        string paramStr = RequestParse.ToQueryString(requestParam);
-                        byte[] paramData = Encoding.ASCII.GetBytes(paramStr);
-                        try
-                        {
-                            gsConnectionManager.Send(clientConnection.GameId, clientConnection.ServerId, paramData);
-                        }
-                        catch (Exception ex)
-                        {
-                            TraceLog.WriteError("Send to tcp disconnected notify failed:{0}\r\nparam:{1}", ex, paramStr);
-                        }
+                        gsConnectionManager.Send(clientConnection.GameId, clientConnection.ServerId, paramData);
+                    }
+                    catch (Exception ex)
+                    {
+                        TraceLog.WriteError("Send to tcp disconnected notify failed:{0}\r\nparam:{1}", ex, paramStr);
                     }
                 }
-                else
-                {
-                    TraceLog.ReleaseWriteDebug("断开 IP:{0}。", e.Socket.RemoteEndPoint);
-                }
             }
-            catch (Exception err)
+            else
             {
-                TraceLog.WriteError("Disconnected:{0}", err);
+                TraceLog.ReleaseWriteDebug("断开 IP:{0}。", e.Socket.RemoteEndPoint);
             }
         }
 
         void socketLintener_Connected(object sender, ConnectionEventArgs e)
         {
-            try
-            {
-                var ssid = Guid.NewGuid();
-                var clientConnection = new ClientConnection { SSID = ssid, Socket = e.Socket };
-                TraceLog.ReleaseWriteDebug("连接 IP:{0},ssid:{1}", e.Socket.RemoteEndPoint, ssid);
-                clientConnections.Add(ssid, e.Socket, clientConnection);
-            }
-            catch (Exception)
-            {
-            }
+            var ssid = Guid.NewGuid();
+            var clientConnection = new ClientConnection { SSID = ssid, Socket = e.Socket };
+            TraceLog.ReleaseWriteDebug("连接 IP:{0},ssid:{1}", e.Socket.RemoteEndPoint, ssid);
+            clientConnections.Add(ssid, e.Socket, clientConnection);
         }
 
         void socketLintener_DataReceived(object sender, ConnectionEventArgs e)
         {
             var data = Encoding.ASCII.GetString(e.Data);
+
+            string routeName = string.Empty;
+            int index = data.LastIndexOf("?d=");
+            if (index > 0)
+            {
+                if (data.StartsWith("route:", StringComparison.CurrentCultureIgnoreCase))
+                {
+                    routeName = data.Substring(6, index - 6);
+                }
+                data = data.Substring(index, data.Length - index);
+            }
+            data = HttpUtility.ParseQueryString(data)["d"];
+            int gameId, serverId, statuscode;
+            var ip = e.Socket.RemoteEndPoint.ToString().Split(new char[] { ':' })[0];
+            var requestParam = RequestParse.Parse(ip, "", data, out gameId, out serverId, out statuscode);
+            if (statuscode != (int)HttpStatusCode.OK)
+            {// 接收到非法数据
+                listener.CloseSocket(e.Socket);
+                return;
+            }
+            ClientConnection clientConnection;
+            if (!clientConnections.TryGetValue(e.Socket, out clientConnection))
+            {
+                TraceLog.WriteError("接收到不在连接池中的socket数据，哪里有bug。");
+                listener.CloseSocket(e.Socket);
+                return;
+            }
+
+            if (clientConnection.GameId == 0) clientConnection.GameId = gameId;
+            if (clientConnection.ServerId == 0) clientConnection.ServerId = serverId;
+
+            requestParam["UserHostAddress"] = ip;
+            requestParam["ssid"] = clientConnection.SSID.ToString("N");
+            requestParam["http"] = "0";
+            string paramStr = string.Format("{0}&UserHostAddress={1}&ssid={2}&http=0",
+                data,
+                ip,
+                requestParam["ssid"]);
+            if (!string.IsNullOrEmpty(routeName))
+            {
+                requestParam["route"] = routeName;
+                paramStr += "&route=" + routeName;
+            }
+            byte[] paramData = Encoding.ASCII.GetBytes(paramStr);
+
             try
             {
-
-                string routeName = string.Empty;
-                int index = data.LastIndexOf("?d=");
-                if (index > 0)
-                {
-                    if (data.StartsWith("route:", StringComparison.CurrentCultureIgnoreCase))
-                    {
-                        routeName = data.Substring(6, index - 6);
-                    }
-                    data = data.Substring(index, data.Length - index);
-                }
-                data = HttpUtility.ParseQueryString(data)["d"];
-                int gameId, serverId, statuscode;
-                var ip = e.Socket.RemoteEndPoint.ToString().Split(new char[] { ':' })[0];
-                var requestParam = RequestParse.Parse(ip, "", data, out gameId, out serverId, out statuscode);
-                if (statuscode != (int)HttpStatusCode.OK)
-                {// 接收到非法数据
-                    listener.CloseSocket(e.Socket);
-                    return;
-                }
-                ClientConnection clientConnection;
-                if (!clientConnections.TryGetValue(e.Socket, out clientConnection))
-                {
-                    TraceLog.WriteError("接收到不在连接池中的socket数据，哪里有bug。");
-                    listener.CloseSocket(e.Socket);
-                    return;
-                }
-
-                if (clientConnection.GameId == 0) clientConnection.GameId = gameId;
-                if (clientConnection.ServerId == 0) clientConnection.ServerId = serverId;
-
-                requestParam["UserHostAddress"] = ip;
-                requestParam["ssid"] = clientConnection.SSID.ToString("N");
-                requestParam["http"] = "0";
-                string paramStr = string.Format("{0}&UserHostAddress={1}&ssid={2}&http=0",
-                    data,
-                    ip,
-                    requestParam["ssid"]);
-                if (!string.IsNullOrEmpty(routeName))
-                {
-                    requestParam["route"] = routeName;
-                    paramStr += "&route=" + routeName;
-                }
-                byte[] paramData = Encoding.ASCII.GetBytes(paramStr);
-
-                try
-                {
-                    gsConnectionManager.Send(gameId, serverId, paramData);
-                }
-                catch (Exception ex)
-                {
-                    TraceLog.WriteError("无法连接游服error:{0}\r\nparam:{1}", ex, paramStr);
-                    var responseData = RequestParse.CtorErrMsg(errmsg, requestParam);
-                    SendDataBack(clientConnection.SSID, responseData, 0, responseData.Length);
-                }
+                gsConnectionManager.Send(gameId, serverId, paramData);
             }
-            catch (Exception err)
+            catch (Exception ex)
             {
-                TraceLog.WriteError("DataReceived error:{0},param:{1}", err, data);
+                TraceLog.WriteError("无法连接游服error:{0}\r\nparam:{1}", ex, paramStr);
+                var responseData = RequestParse.CtorErrMsg(errmsg, requestParam);
+                SendDataBack(clientConnection.SSID, responseData, 0, responseData.Length);
             }
         }
 

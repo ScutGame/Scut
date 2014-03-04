@@ -13,11 +13,11 @@ namespace GameWebServer
         {
             try
             {
-                if (!GameEnvironment.IsRunning)
+                var setting = new EnvironmentSetting();
+                GameEnvironment.Start(setting);
+                if (ScriptEngines.RunMainClass(out _instance))
                 {
-                    var setting = new EnvironmentSetting();
-                    GameEnvironment.Start(setting);
-                    ScriptEngines.RunMainClass(out _instance);
+                    _instance.Start();
                 }
             }
             catch (Exception ex)
@@ -53,10 +53,7 @@ namespace GameWebServer
 
         protected void Application_End(object sender, EventArgs e)
         {
-            if (_instance != null)
-            {
-                _instance.Stop();
-            }
+            _instance.Stop();
         }
     }
 }

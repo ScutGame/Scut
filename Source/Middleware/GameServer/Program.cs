@@ -24,55 +24,37 @@ THE SOFTWARE.
 using System;
 using ZyGames.Framework.Common.Log;
 using ZyGames.Framework.Game.Runtime;
+using ZyGames.Framework.RPC.IO;
 using ZyGames.Framework.Script;
 
 namespace GameServer
 {
     class Program
     {
-        private static string CharFormat =
-@"/////////////////////////////////////////////////////////////////////////
-
-    //   ) )  //   ) )  //   / / /__  ___/   SCUT Server version {0}
-   ((        //        //   / /    / /       Game: {1}   Server: {2}
-     \\     //        //   / /    / /        Port: {3}
-       ) ) //        //   / /    / /        
-((___ / / ((____/ / ((___/ /    / /                http://www.scutgame.com
-
-";
         static void Main(string[] args)
         {
-            string date = DateTime.Now.ToString("HH:mm:ss");
             try
             {
                 var setting = new EnvironmentSetting();
-                Console.WriteLine(string.Format(CharFormat,
-                    "6.1.6.0",
-                    setting.ProductCode,
-                    setting.ProductServerId,
-                    setting.GamePort));
                 GameEnvironment.Start(setting);
 
                 dynamic instance;
                 if (ScriptEngines.RunMainClass(out instance, args))
                 {
-                    Console.WriteLine("{0} Server has started successfully!", date);
-                    Console.WriteLine("# Server is listening...");
+                    Console.WriteLine("Press any key to exit the listener!");
+                    Console.ReadKey();
+                    instance.Stop();
                 }
                 else
                 {
-                    Console.WriteLine("{0} Server failed to start!", date);
-                }
-                Console.ReadKey();
-                if (instance != null)
-                {
-                    instance.Stop();    
+                    Console.WriteLine("Run main class fail.");
+                    Console.ReadKey();
                 }
             }
             catch (Exception ex)
             {
-                Console.WriteLine("{0} Server failed to start!", date);
-                TraceLog.WriteError("Server failed to start error:{0}", ex);
+                Console.WriteLine(ex.Message);
+                TraceLog.WriteError("GameServer main error:{0}", ex);
                 Console.ReadKey();
             }
         }

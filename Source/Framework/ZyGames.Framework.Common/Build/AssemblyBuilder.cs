@@ -45,16 +45,15 @@ namespace ZyGames.Framework.Common.Build
         /// </summary>
         public static Assembly ReadAssembly(string assemblyPath, Evidence evidence)
         {
-            return Assembly.LoadFrom(assemblyPath);
-            //FileStream fileStream = new FileStream(assemblyPath, FileMode.Open, FileAccess.Read, FileShare.Read);
-            //try
-            //{
-            //    return ReadAssembly(fileStream, evidence);
-            //}
-            //finally
-            //{
-            //    fileStream.Close();
-            //}
+            FileStream fileStream = new FileStream(assemblyPath, FileMode.Open, FileAccess.Read, FileShare.Read);
+            try
+            {
+                return ReadAssembly(fileStream, evidence);
+            }
+            finally
+            {
+                fileStream.Close();
+            }
         }
 
         /// <summary>
@@ -143,17 +142,33 @@ namespace ZyGames.Framework.Common.Build
             {
                 savePath = assemblyPath;
             }
-            var ass = AssemblyDefinition.ReadAssembly(assemblyPath);
-            var types = ass.MainModule.Types.Where(p => !p.IsEnum).ToList();
-            foreach (TypeDefinition type in types)
+            FileStream fileStream = new FileStream(assemblyPath, FileMode.Open, FileAccess.Read, FileShare.Read);
+            byte[] array;
+            try
             {
-                setSuccess = ProcessEntityType(type, setSuccess, currentPath);
+                int num = (int)fileStream.Length;
+                array = new byte[num];
+                fileStream.Read(array, 0, num);
+            }
+            finally
+            {
+                fileStream.Close();
             }
 
-            if (setSuccess)
+            using (MemoryStream stream = new MemoryStream(array))
             {
-                ass.Write(savePath);
-                return true;
+                var ass = AssemblyDefinition.ReadAssembly(stream);
+                var types = ass.MainModule.Types.Where(p => !p.IsEnum).ToList();
+                foreach (TypeDefinition type in types)
+                {
+                    setSuccess = ProcessEntityType(type, setSuccess, currentPath);
+                }
+
+                if (setSuccess)
+                {
+                    ass.Write(savePath);
+                    return true;
+                }
             }
             return false;
         }
@@ -299,9 +314,7 @@ namespace ZyGames.Framework.Common.Build
         {
             if (type == null ||
                 type.Module == null ||
-                type.Name == typeof(object).Name ||
-                (type.Scope != null && type.Scope.Name.StartsWith("mscorlib"))
-                )
+                type.Name == typeof(object).Name)
             {
                 return null;
             }

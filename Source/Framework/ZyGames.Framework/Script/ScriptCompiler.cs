@@ -64,11 +64,11 @@ namespace ZyGames.Framework.Script
         /// <summary>
         /// Clear temp assmbly.
         /// </summary>
-        public static void ClearTemp(string dirName)
+        internal static void ClearTemp(string dirName)
         {
             try
             {
-                string tempPath = Path.Combine(MathUtils.RuntimeBinPath, dirName);
+                string tempPath = Path.Combine(".", dirName);
                 if (Directory.Exists(tempPath))
                 {
                     Directory.Delete(tempPath, true);
@@ -106,14 +106,13 @@ namespace ZyGames.Framework.Script
                 if (!isInMemory)
                 {
                     string tempPath = "";
-                    string path = MathUtils.RuntimeBinPath;
                     if (string.IsNullOrEmpty(outputPath))
                     {
-                        tempPath = Path.Combine(path, CompileTemp, Guid.NewGuid().ToString());
+                        tempPath = Path.Combine(MathUtils.RuntimePath, CompileTemp, Guid.NewGuid().ToString());
                     }
                     else
                     {
-                        tempPath = Path.Combine(path, outputPath);
+                        tempPath = Path.Combine(MathUtils.RuntimePath, outputPath);
                     }
 
                     if (!Directory.Exists(tempPath))
@@ -179,7 +178,7 @@ namespace ZyGames.Framework.Script
                 return null;
             }
             pathToAssembly = result.PathToAssembly;
-            string runtimePath = MathUtils.RuntimeBinPath;
+            string runtimePath = MathUtils.RuntimePath;
             string outAssembly = Path.Combine(runtimePath, ScriptAssemblyTemp);
             if (!Directory.Exists(outAssembly))
             {

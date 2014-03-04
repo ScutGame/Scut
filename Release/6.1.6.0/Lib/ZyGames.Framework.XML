@@ -9106,6 +9106,11 @@
             内存中一定时间存在的实体，不存储数据库
             </summary>
         </member>
+        <member name="M:ZyGames.Framework.Cache.Generic.MemoryCacheStruct`1.Reset">
+            <summary>
+            Reset.
+            </summary>
+        </member>
         <member name="M:ZyGames.Framework.Cache.Generic.MemoryCacheStruct`1.#ctor">
             <summary>
             

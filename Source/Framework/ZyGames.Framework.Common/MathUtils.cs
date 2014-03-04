@@ -81,26 +81,20 @@ namespace ZyGames.Framework.Common
             return type.IsValueType ? Activator.CreateInstance(type) : "";
         }
 
-        private static string _runtimeBinPath;
         /// <summary>
         /// Get runtime bin path.
         /// </summary>
         public static string RuntimeBinPath
         {
-            get { return _runtimeBinPath ?? (_runtimeBinPath = AppDomain.CurrentDomain.SetupInformation.PrivateBinPath ?? RuntimePath); }
-            set { _runtimeBinPath = value; }
+            get { return AppDomain.CurrentDomain.SetupInformation.PrivateBinPath; }
         }
 
-        private static string _runtimePath;
         /// <summary>
         /// Get runtime path.
         /// </summary>
         public static string RuntimePath
         {
-            get
-            {
-                return _runtimePath ?? (_runtimePath = AppDomain.CurrentDomain.SetupInformation.ApplicationBase);
-            }
+            get { return AppDomain.CurrentDomain.SetupInformation.ApplicationBase; }
         }
 
         /// <summary>

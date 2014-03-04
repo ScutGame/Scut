@@ -31,7 +31,6 @@ using ZyGames.Framework.Common;
 using ZyGames.Framework.Common.Locking;
 using ZyGames.Framework.Common.Log;
 using ZyGames.Framework.Game.Context;
-using ZyGames.Framework.Game.Runtime;
 using ZyGames.Framework.Game.Service;
 using ZyGames.Framework.Game.Contract.Action;
 using ZyGames.Framework.Net;
@@ -45,8 +44,6 @@ namespace ZyGames.Framework.Game.Contract
     /// </summary>
     public static class ActionFactory
     {
-        private static HashSet<int> _ignoreAuthorizeSet = new HashSet<int>();
-
         /// <summary>
         /// The error code.
         /// </summary>
@@ -60,7 +57,7 @@ namespace ZyGames.Framework.Game.Contract
         {
             foreach (var actionId in actionIds)
             {
-                _ignoreAuthorizeSet.Add(actionId);
+                ActionConfig.Current.IgnoreAuthorizeSet.Add(actionId);
             }
         }
 
@@ -70,7 +67,7 @@ namespace ZyGames.Framework.Game.Contract
         /// <param name="userFactory"></param>
         public static void Request(Func<int, BaseUser> userFactory)
         {
-            Request(GameEnvironment.Setting.ActionTypeName, userFactory);
+            Request(ActionConfig.Current.TypeName, userFactory);
         }
 
         /// <summary>
@@ -97,7 +94,7 @@ namespace ZyGames.Framework.Game.Contract
         /// <param name="userFactory"></param>
         public static void Request(HttpGet httpGet, IGameResponse response, Func<int, BaseUser> userFactory)
         {
-            Request(GameEnvironment.Setting.ActionTypeName, httpGet, response, userFactory);
+            Request(ActionConfig.Current.TypeName, httpGet, response, userFactory);
         }
 
         /// <summary>
@@ -215,18 +212,16 @@ namespace ZyGames.Framework.Game.Contract
         /// <returns></returns>
         public static byte[] GetActionResponse(int actionId, BaseUser baseUser, string parameters, out HttpGet httpGet)
         {
-            int userId = baseUser != null ? baseUser.GetUserId() : 0;
-            GameSession session = GameSession.Get(userId);
-            string sessionId = session != null ? session.SessionId : "";
             string param = string.Format("MsgId={0}&St={1}&Sid={2}&Uid={3}&ActionID={4}{5}",
                 0,
                 "st",
-                sessionId,
-                userId,
+                baseUser.GetSessionId(),
+                baseUser.GetUserId(),
                 actionId,
                 parameters);
+            GameSession session = GameSession.Get(baseUser.GetUserId());
             httpGet = new HttpGet(param, session);
-            BaseStruct baseStruct = FindRoute(GameEnvironment.Setting.ActionTypeName, httpGet, actionId);
+            BaseStruct baseStruct = FindRoute(ActionConfig.Current.TypeName, httpGet, actionId);
             SocketGameResponse response = new SocketGameResponse();
             baseStruct.UserFactory = uid => { return baseUser; };
             baseStruct.SetPush();
@@ -312,7 +307,7 @@ namespace ZyGames.Framework.Game.Contract
                 }
                 try
                 {
-                    GameSession session = GameSession.Get(user.GetUserId());
+                    GameSession session = GameSession.Get(user.GetSessionId());
                     if (session != null)
                     {
                         if (session.SendAsync(sendData, 0, sendData.Length))
@@ -354,7 +349,7 @@ namespace ZyGames.Framework.Game.Contract
                 }
                 try
                 {
-                    var session = GameSession.Get(user.GetUserId());
+                    var session = GameSession.Get(user.GetSessionId());
                     HttpGet httpGet;
                     byte[] sendData = GetActionResponse(actionId, user, shareParam.ToString(), out httpGet);
                     if (session != null &&
@@ -374,22 +369,20 @@ namespace ZyGames.Framework.Game.Contract
 
         internal static BaseStruct FindScriptRoute(HttpGet httpGet, int actionID)
         {
-            string scriptTypeName = string.Format(GameEnvironment.Setting.ScriptTypeName, actionID);
-            string scriptCode = "";
+            string scriptTypeName = string.Format(ActionConfig.Current.ScriptTypeName, actionID);
+            string scriptCode = string.Format("action{0}", actionID);
 
             if (!ScriptEngines.DisablePython) //By Seamoon 在Python禁用的情况下，就没有必要再加载了
             {
-                scriptCode = string.Format("{0}/action/action{1}.py", ScriptEngines.PythonDirName, actionID);
-                dynamic scriptScope = ScriptEngines.Execute(scriptCode, null);
+                dynamic scriptScope = ScriptEngines.Execute(scriptCode + ".py", null);
                 if (scriptScope != null)
                 {
-                    bool ignoreAuthorize = _ignoreAuthorizeSet.Contains(actionID);
+                    bool ignoreAuthorize = ActionConfig.Current.IgnoreAuthorizeSet.Contains(actionID);
                     return new ScriptAction((short)actionID, httpGet, scriptScope, ignoreAuthorize);
                 }
             }
 
-            scriptCode = string.Format("{0}/action/action{1}.cs", ScriptEngines.CSharpDirName, actionID);
-            BaseStruct baseStruct = ScriptEngines.Execute(scriptCode, scriptTypeName, httpGet);
+            BaseStruct baseStruct = ScriptEngines.Execute(scriptCode + ".cs", scriptTypeName, httpGet);
             if (baseStruct != null) return baseStruct;
             return null;
         }

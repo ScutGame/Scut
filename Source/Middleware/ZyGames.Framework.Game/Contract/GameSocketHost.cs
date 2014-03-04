@@ -81,11 +81,6 @@ namespace ZyGames.Framework.Game.Contract
         internal protected int runningNum;
         private Timer _LockedQueueChecker;
         /// <summary>
-        /// is running process queue.
-        /// </summary>
-        private int _runningQueue;
-
-        /// <summary>
         /// Gets the blocking number.
         /// </summary>
         /// <value>The blocking number.</value>
@@ -96,7 +91,7 @@ namespace ZyGames.Framework.Game.Contract
         /// </summary>
         protected GameSocketHost()
         {
-            int port = GameEnvironment.Setting.GamePort;
+            int port = ActionConfig.Current.Port;
             IPEndPoint localEndPoint = new IPEndPoint(IPAddress.Any, port);
 
             int maxConnections = ConfigUtils.GetSetting("MaxConnections", 10000);
@@ -131,7 +126,6 @@ namespace ZyGames.Framework.Game.Contract
                     httpListener.Prefixes.Add(string.Format("{0}:{1}/{2}/", address, httpPort, httpName));
                 }
             }
-            Interlocked.Exchange(ref _runningQueue, 1);
             queueProcessThread = new Thread(ProcessQueue);
             queueProcessThread.Start();
             _LockedQueueChecker = new Timer(LockedQueueChecker, null, 100, 100);
@@ -212,37 +206,25 @@ namespace ZyGames.Framework.Game.Contract
                 if (!int.TryParse(param["actionid"], out actionid)) { Interlocked.Increment(ref errorDropNum); return; }
                 int msgid;
                 if (!int.TryParse(param["msgid"], out msgid)) { Interlocked.Increment(ref errorDropNum); return; }
-                bool isproxy = param.ContainsKey("isproxy");//proxy server send
-                string sessionId = param.ContainsKey("sid") ? param["sid"] : "";
 
                 //使用代理分发器时,每个ssid建立一个游服Serssion
                 GameSession session;
                 if (proxySid != Guid.Empty)
                 {
                     session = GameSession.Get(proxySid) ??
-                               (isproxy
-                                ? GameSession.Get(e.Socket.HashCode)
-                                : GameSession.CreateNew(proxySid, e.Socket, socketLintener.PostSend));
+                              GameSession.CreateNew(proxySid, e.Socket, socketLintener.PostSend);
                     session.ProxySid = proxySid;
                 }
                 else
                 {
                     session = GameSession.Get(e.Socket.HashCode);
                 }
-                if (session != null && !session.Connected)
-                {
-                    GameSession.Recover(session, e.Socket.HashCode, e.Socket, socketLintener.PostSend);
-                }
                 if (actionid == (int)ActionEnum.Interrupt)
                 {
                     //Proxy server notifly interrupt connect ops
                     OnDisconnected(session);
-                    if (session != null && (session.ProxySid == Guid.Empty || GameSession.Count > 1))
-                    {
-                        //保留代理服连接
-                        session.Close();
-                        session.ProxySid = Guid.Empty;
-                    }
+                    session.Close();
+                    session.ProxySid = Guid.Empty;
                     return;
                 }
 
@@ -273,30 +255,24 @@ namespace ZyGames.Framework.Game.Contract
 
         void ProcessQueue(object state)
         {
-            while (_runningQueue == 1)
+            while (true)
             {
                 singal.WaitOne();
-                while (_runningQueue == 1)
+                while (true)
                 {
-                    try
+                    RequestPackage package;
+                    if (requestQueue.TryDequeue(out package))
                     {
-                        RequestPackage package;
-                        if (requestQueue.TryDequeue(out package))
-                        {
-                            if (package.Session == null || !package.Session.EnterSession()) lockedQueue.Enqueue(package);
-                            else
-                            {
-                                Interlocked.Increment(ref runningNum);
-                                threadPool.QueueWorkItem(ProcessPackage, package);
-                            }
-                        }
+                        if (!package.Session.EnterSession()) lockedQueue.Enqueue(package);
                         else
                         {
-                            break;
+                            Interlocked.Increment(ref runningNum);
+                            threadPool.QueueWorkItem(ProcessPackage, package);
                         }
                     }
-                    catch (Exception)
+                    else
                     {
+                        break;
                     }
                 }
                 //if (isInStopping) break;
@@ -565,7 +541,6 @@ namespace ZyGames.Framework.Game.Contract
         /// </summary>
         public void Stop()
         {
-            Interlocked.Exchange(ref _runningQueue, 0);
             if (EnableHttp)
             {
                 httpListener.Stop();
@@ -574,12 +549,10 @@ namespace ZyGames.Framework.Game.Contract
             OnServiceStop();
             try
             {
-                singal.Set();
                 threadPool.Dispose();
                 queueProcessThread.Abort();
                 _LockedQueueChecker.Dispose();
                 singal.Dispose();
-                EntitySyncManger.Dispose();
 
                 threadPool = null;
                 queueProcessThread = null;
@@ -606,14 +579,13 @@ namespace ZyGames.Framework.Game.Contract
                     funcName = mapList[mapList.Length - 1];
                     routeName = string.Join("/", mapList, 0, mapList.Length - 1);
                 }
-                string routeFile = "";
+                string routeFile = string.Format("Remote/{0}", routeName);
                 string typeName = string.Format("Game.Script.Remote.{0}", routeName);
                 int actionId = httpGet.ActionId;
                 MessageHead head = new MessageHead(actionId);
                 if (!ScriptEngines.DisablePython)
                 {
-                    routeFile = string.Format("{0}/Remote/{1}.py", ScriptEngines.PythonDirName, routeName);
-                    dynamic scope = ScriptEngines.Execute(routeFile, typeName);
+                    dynamic scope = ScriptEngines.Execute(routeFile + ".py", typeName);
                     if (scope != null)
                     {
                         var funcHandle = scope.GetVariable<RemoteHandle>(funcName);
@@ -625,8 +597,7 @@ namespace ZyGames.Framework.Game.Contract
                         }
                     }
                 }
-                routeFile = string.Format("{0}/Remote/{1}.cs", ScriptEngines.CSharpDirName, routeName);
-                var instance = (object)ScriptEngines.Execute(routeFile, typeName);
+                var instance = (object)ScriptEngines.Execute(routeFile + ".cs", typeName);
                 if (instance != null)
                 {
                     var result = ObjectAccessor.Create(instance, true)[funcName];
