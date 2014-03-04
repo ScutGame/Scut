@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
@@ -118,204 +118,81 @@
     </Content>
     <Content Include="Game.config.xml" />
     <Content Include="OfficialService.aspx" />
-    <Content Include="PyScript\Action\action1023.py" />
-    <Content Include="PyScript\Action\action12051.py">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="PyScript\Action\action12052.py">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="PyScript\Action\action12053.py">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="PyScript\Action\action12056.py">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="PyScript\Action\action12057.py">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="PyScript\Action\action12101.py" />
-    <Content Include="PyScript\Action\action12055.py">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="PyScript\Action\action12102.py" />
-    <Content Include="PyScript\Action\action12103.py" />
-    <Content Include="PyScript\Action\action1312.py">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="PyScript\Action\action1425.py">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="PyScript\Action\action1611.py">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="PyScript\Action\action3014.py">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="PyScript\Action\action1008.py" />
-    <Content Include="PyScript\Action\action3013.py">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="PyScript\Action\action4401.py">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="PyScript\Action\action4402.py">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="PyScript\Action\action4403.py">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="PyScript\Action\action4404.py">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="PyScript\Action\action4405.py">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="PyScript\Action\action4406.py">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="PyScript\Action\action4407.py">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="PyScript\Action\action4408.py">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="PyScript\Action\action4409.py">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="PyScript\Action\action4410.py">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="PyScript\Action\action4411.py">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="PyScript\Action\action4412.py">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="PyScript\Bll\festivalBll.py">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="PyScript\Action\action5108.py" />
-    <Content Include="PyScript\Lib\action.py" />
-    <Content Include="PyScript\Lib\lang.py" />
-    <Content Include="PyScript\Lib\mathUtils.py" />
-    <Content Include="PyScript\Lib\randomUtils.py" />
-    <Content Include="PyScript\Action\action1092.py">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="PyScript\Action\action1093.py">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="PyScript\Action\action1094.py">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="PyScript\Action\action1114.py">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="PyScript\Action\action1402.py">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="PyScript\Action\action1441.py">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="PyScript\Action\action1442.py">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="PyScript\Action\action1404.py">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="PyScript\Action\action1091.py">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="PyScript\Action\action1446.py">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="PyScript\Action\action1447.py">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="PyScript\Action\action1448.py">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="PyScript\Action\action1449.py">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="PyScript\Action\action1484.py">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="PyScript\Action\action1610.py">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="PyScript\Action\action3012.py">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="PyScript\Action\action7011.py">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="PyScript\Action\action7012.py">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="PyScript\Action\action1444.py">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="PyScript\Action\action1445.py">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="PyScript\Action\action5408.py">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="PyScript\Action\action9301.py">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="PyScript\Action\action9302.py">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
+    <Content Include="Script\PyScript\Action\action1008.py" />
+    <Content Include="Script\PyScript\Action\action1023.py" />
+    <Content Include="Script\PyScript\Action\action1025.py" />
+    <Content Include="Script\PyScript\Action\action1026.py" />
+    <Content Include="Script\PyScript\Action\action1091.py" />
+    <Content Include="Script\PyScript\Action\action1092.py" />
+    <Content Include="Script\PyScript\Action\action1093.py" />
+    <Content Include="Script\PyScript\Action\action1094.py" />
+    <Content Include="Script\PyScript\Action\action1095.py" />
+    <Content Include="Script\PyScript\Action\action1110.py" />
+    <Content Include="Script\PyScript\Action\action1112.py" />
+    <Content Include="Script\PyScript\Action\action1113.py" />
+    <Content Include="Script\PyScript\Action\action1114.py" />
+    <Content Include="Script\PyScript\Action\action12051.py" />
+    <Content Include="Script\PyScript\Action\action12052.py" />
+    <Content Include="Script\PyScript\Action\action12053.py" />
+    <Content Include="Script\PyScript\Action\action12055.py" />
+    <Content Include="Script\PyScript\Action\action12056.py" />
+    <Content Include="Script\PyScript\Action\action12057.py" />
+    <Content Include="Script\PyScript\Action\action12101.py" />
+    <Content Include="Script\PyScript\Action\action12102.py" />
+    <Content Include="Script\PyScript\Action\action12103.py" />
+    <Content Include="Script\PyScript\Action\action1217.py" />
+    <Content Include="Script\PyScript\Action\action1312.py" />
+    <Content Include="Script\PyScript\Action\action1402.py" />
+    <Content Include="Script\PyScript\Action\action1404.py" />
+    <Content Include="Script\PyScript\Action\action1425.py" />
+    <Content Include="Script\PyScript\Action\action1441.py" />
+    <Content Include="Script\PyScript\Action\action1442.py" />
+    <Content Include="Script\PyScript\Action\action1443.py" />
+    <Content Include="Script\PyScript\Action\action1444.py" />
+    <Content Include="Script\PyScript\Action\action1445.py" />
+    <Content Include="Script\PyScript\Action\action1446.py" />
+    <Content Include="Script\PyScript\Action\action1447.py" />
+    <Content Include="Script\PyScript\Action\action1448.py" />
+    <Content Include="Script\PyScript\Action\action1449.py" />
+    <Content Include="Script\PyScript\Action\action1481.py" />
+    <Content Include="Script\PyScript\Action\action1482.py" />
+    <Content Include="Script\PyScript\Action\action1483.py" />
+    <Content Include="Script\PyScript\Action\action1484.py" />
+    <Content Include="Script\PyScript\Action\action1485.py" />
+    <Content Include="Script\PyScript\Action\action1610.py" />
+    <Content Include="Script\PyScript\Action\action1611.py" />
+    <Content Include="Script\PyScript\Action\action3012.py" />
+    <Content Include="Script\PyScript\Action\action3013.py" />
+    <Content Include="Script\PyScript\Action\action3014.py" />
+    <Content Include="Script\PyScript\Action\action3301.py" />
+    <Content Include="Script\PyScript\Action\action3302.py" />
+    <Content Include="Script\PyScript\Action\action360.py" />
+    <Content Include="Script\PyScript\Action\action4401.py" />
+    <Content Include="Script\PyScript\Action\action4402.py" />
+    <Content Include="Script\PyScript\Action\action4403.py" />
+    <Content Include="Script\PyScript\Action\action4404.py" />
+    <Content Include="Script\PyScript\Action\action4405.py" />
+    <Content Include="Script\PyScript\Action\action4406.py" />
+    <Content Include="Script\PyScript\Action\action4407.py" />
+    <Content Include="Script\PyScript\Action\action4408.py" />
+    <Content Include="Script\PyScript\Action\action4409.py" />
+    <Content Include="Script\PyScript\Action\action4410.py" />
+    <Content Include="Script\PyScript\Action\action4411.py" />
+    <Content Include="Script\PyScript\Action\action4412.py" />
+    <Content Include="Script\PyScript\Action\action5108.py" />
+    <Content Include="Script\PyScript\Action\action5408.py" />
+    <Content Include="Script\PyScript\Action\action7011.py" />
+    <Content Include="Script\PyScript\Action\action7012.py" />
+    <Content Include="Script\PyScript\Action\action9006.py" />
+    <Content Include="Script\PyScript\Action\action9301.py" />
+    <Content Include="Script\PyScript\Action\action9302.py" />
+    <Content Include="Script\PyScript\Bll\festivalBll.py" />
+    <Content Include="Script\PyScript\Lib\action.py" />
+    <Content Include="Script\PyScript\Lib\lang.py" />
+    <Content Include="Script\PyScript\Lib\mathUtils.py" />
+    <Content Include="Script\PyScript\Lib\randomUtils.py" />
+    <Content Include="Script\PyScript\Lib\ReferenceLib.py" />
     <Content Include="Service.aspx" />
-    <Content Include="PyScript\Action\action1110.py">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="PyScript\Action\action1217.py">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="PyScript\Action\action1026.py">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="PyScript\Action\action1481.py">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="PyScript\Action\action1482.py">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="PyScript\Action\action1112.py">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="PyScript\Action\action3301.py">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="PyScript\Action\action3302.py">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="PyScript\Action\action9006.py">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="PyScript\Action\action1483.py">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="PyScript\Action\action1443.py">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="PyScript\Action\action1485.py">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="PyScript\Action\action1113.py">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="PyScript\Action\action1025.py">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="PyScript\Action\action1095.py">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="PyScript\Action\action360.py" />
     <None Include="Web.config">
       <SubType>Designer</SubType>
     </None>
@@ -415,7 +292,7 @@
   -->
   <ProjectExtensions>
     <VisualStudio>
-      <FlavorProperties GUID="{349c5851-65df-11da-9384-00065b846f21}">
+      <FlavorProperties GUID="{349C5851-65DF-11DA-9384-00065B846F21}">
         <WebProjectProperties>
           <UseIIS>False</UseIIS>
           <AutoAssignPort>True</AutoAssignPort>
