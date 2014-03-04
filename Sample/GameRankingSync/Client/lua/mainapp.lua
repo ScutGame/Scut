@@ -1,8 +1,8 @@
 ------------------------------------------------------------------
 -- mainapp.lua
--- Author     : Xin Zhang
+-- Author     : LZW
 -- Version    : 1.0.0.0
--- Date       : 2011-10-15
+-- Date       : 2014-1-20
 -- Description:
 ------------------------------------------------------------------
 
@@ -12,10 +12,10 @@ CCLuaLog("Module ".. strModuleName.. " loaded.")
 strModuleName = nil
 
 function PushReceiverCallback(pScutScene, lpExternalData)
+    testScene.netCallback(pScutScene, lpExternalData, true)
 end
 
 local function ScutMain()
-    ---[[
     ------------------------------------------------------------------
     -- ↓↓ 初始化环境变量 开始 ↓↓
     ------------------------------------------------------------------
@@ -25,19 +25,12 @@ local function ScutMain()
     
     local strSubDirs =
     {
-        "scenes",
-        "layers",
-        "datapool",
-        "config",
-        "action",
-        "lib",
-        "commupdate",
-        "payment",
+      
+        "lib",       
         "SyncSDK"
+        
         -- 在此添加新的目录
     };
-    
-    --package.path = string.format("%s/?.lua;%s/lib/?.lua;%s/action/?.lua;%s/common/?.lua;%s/datapool/?.lua;%s/Global/?.lua;%s/layers/?.lua;%s/LuaClass/?.lua;%s/scenes/?.lua;%s/titleMap/?.lua;%s",strRootDir,strRootDir,strRootDir,strRootDir,strRootDir,strRootDir,strRootDir,strRootDir,strRootDir,strRootDir, strTmpPkgPath);
     
     -- 逐个添加子文件夹
     for key, value in ipairs(strSubDirs) do
@@ -47,7 +40,6 @@ local function ScutMain()
         else
             strTmpPkgPath = string.format("%s/%s/?.lua;%s", strRootDir, value, strOld);
         end
-    --  CCLuaLog(value.. " added.");
         strOld = nil;
     end
     
@@ -62,7 +54,6 @@ local function ScutMain()
     require("lib.lib")
     require("lib.ScutScene")
     require("lib.FrameManager")
-    require("datapool.Image")
     require("SyncSDK.ScutDataSync")
     require("testScene")
     g_frame_mgr = FrameManager:new()
@@ -84,37 +75,18 @@ local function ScutMain()
     end
     
     function netDecodeEnd(pScutScene, nTag)
---        ZyLoading.hide(pScutScene, nTag)
+
     end
 
     --注册服务器push回调
-    CCDirector:sharedDirector():RegisterSocketPushHandler("ScutDataSync.PushReceiverCallback")
-    --NDFixSDK.FixCocos2dx:CreateFixCocos2dx():RegisterSocketPushHandler("PushReceiverLayer.PushReceiverCallback")
-    --ScutScene:registerNetCommonDataFunc("processCommonData");
-    --ScutScene:registerNetErrorFunc("LoginScene.netConnectError2")
-    ScutScene:registerNetDecodeEnd("netDecodeEnd");
-    --NdUpdate.CUpdateEngine:getInstance():registerResPackageUpdateLuaHandleFunc("CommandDataResove.resourceUpdated")
-    
-    CCDirector:sharedDirector():RegisterBackHandler("MainScene.closeApp")
-    --注册crash log回调
-    CCDirector:sharedDirector():RegisterErrorHandler("err_handler")
-    
-    --
-    function err_handler(str)
-        ZyRequestCounter = ZyRequestCounter + 1
-        ZyWriter:writeString("ActionId",404 );
-        ZyWriter:writeString("ErrorInfo", str)
-        ZyExecRequest(ScutScene, nil,isLoading)
-    --  ScutDataLogic.CDataRequest:Instance():AsyncExecRequest(ScutScene, ZyWriter:generatePostData(), ZyRequestCounter, nil);
-    --  ScutDataLogic.CNetWriter:resetData()
-    end
-    
+   ScutExt:getInstance():RegisterSocketPushHandler("ScutDataSync.PushReceiverCallback")
+   ScutScene:registerNetDecodeEnd("netDecodeEnd");
     ------------------------------------------------------------------
     -- ↑↑ 协议解析函数注册 结束 ↑↑
     ------------------------------------------------------------------
-    ---]]
+
 end
--- for CCLuaEngine traceback
+
 function __G__TRACKBACK__(msg)
     print("----------------------------------------")
     print("LUA ERROR: " .. tostring(msg) .. "\n")
@@ -123,11 +95,10 @@ function __G__TRACKBACK__(msg)
 end
 
 local function main()
-
     ScutMain()
     testScene.init()
 end
 
 xpcall(main, __G__TRACKBACK__)
 
-ScutDataSync.registerSceneCallback(ScutEntityListener.NotifySceneLayer)
+--ScutDataSync.registerSceneCallback(ScutEntityListener.NotifySceneLayer)

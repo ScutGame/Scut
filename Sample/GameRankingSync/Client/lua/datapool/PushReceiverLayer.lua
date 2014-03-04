@@ -18,12 +18,6 @@ function PushReceiverCallback(pScutScene, lpExternalData)
 	
 	if actionId==1001 then
 	    
-	        local box = ZyMessageBoxEx:new()
-            box:doPrompt(pScutScene, nil, actionId, "OK")
-		--local table =  testScene._1001Callback(pScutScene, lpExternalData);
-        --if table then
-            --testScene.update(table.RecordTabel)--更新数据
-		--end	
 	end
 	--]]
 end

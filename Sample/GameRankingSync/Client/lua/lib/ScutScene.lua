@@ -40,7 +40,7 @@ function ScutScene:execCallback(nTag, nNetState, pData)
     if 2 == nNetState then
         local reader = ScutDataLogic.CDataRequest:Instance()
         local bValue = reader:LuaHandlePushDataWithInt(pData)
-        if not bValue then return end
+      --  if not bValue then return end
         if self.mCallbackFunc then
             self.mCallbackFunc(self.root)
         end
