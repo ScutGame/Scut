@@ -7,12 +7,17 @@ $dbpath Êý¾Ý¿â´æ´¢Â·¾¶
 /*=========================================================================================*/
 
 --config
-CREATE DATABASE [$(gameName)Config] 
-ON  PRIMARY ( NAME = N'$(gameName)Config', FILENAME = N'$(dbpath)/$(gameName)Config.mdf' , SIZE = 3072KB , FILEGROWTH = 1024KB )
- LOG ON ( NAME = N'$(gameName)Config_log', FILENAME = N'$(dbpath)/$(gameName)Config_log.ldf' , SIZE = 1024KB , FILEGROWTH = 10%)
+IF NOT EXISTS (SELECT * FROM sys.sysdatabases WHERE name = N'$(gameName)Config')
+BEGIN
+	CREATE DATABASE [$(gameName)Config] 
+	ON  PRIMARY ( NAME = N'$(gameName)Config', FILENAME = N'$(dbpath)/$(gameName)Config.mdf' , SIZE = 3072KB , FILEGROWTH = 1024KB )
+	 LOG ON ( NAME = N'$(gameName)Config_log', FILENAME = N'$(dbpath)/$(gameName)Config_log.ldf' , SIZE = 1024KB , FILEGROWTH = 10%)
+	
+END
 GO
-ALTER DATABASE [$(gameName)Config] SET RECOVERY SIMPLE 
-go
+	ALTER DATABASE [$(gameName)Config] SET RECOVERY SIMPLE 
+	
+GO
 
 use $(gameName)Config
 GO
@@ -26,12 +31,17 @@ EXEC sp_addrolemember N'db_ddladmin', N'$(gameuser)'
 GO
 
 --data
-CREATE DATABASE [$(gameName)1Data] 
-ON  PRIMARY ( NAME = N'$(gameName)1Data', FILENAME = N'$(dbpath)/$(gameName)1Data.mdf' , SIZE = 3072KB , FILEGROWTH = 1024KB )
- LOG ON ( NAME = N'$(gameName)1Data_log', FILENAME = N'$(dbpath)/$(gameName)1Data_log.ldf' , SIZE = 1024KB , FILEGROWTH = 10%)
+IF NOT EXISTS (SELECT * FROM sys.sysdatabases WHERE name = N'$(gameName)1Data')
+BEGIN
+	CREATE DATABASE [$(gameName)1Data] 
+	ON  PRIMARY ( NAME = N'$(gameName)1Data', FILENAME = N'$(dbpath)/$(gameName)1Data.mdf' , SIZE = 3072KB , FILEGROWTH = 1024KB )
+	 LOG ON ( NAME = N'$(gameName)1Data_log', FILENAME = N'$(dbpath)/$(gameName)1Data_log.ldf' , SIZE = 1024KB , FILEGROWTH = 10%)
+	
+END
 GO
-ALTER DATABASE [$(gameName)1Data] SET RECOVERY FULL
-go
+	ALTER DATABASE [$(gameName)1Data] SET RECOVERY FULL
+	
+GO
 
 use $(gameName)1Data
 GO
@@ -43,14 +53,20 @@ EXEC sp_addrolemember N'db_datareader', N'$(gameuser)'
 EXEC sp_addrolemember N'db_datawriter', N'$(gameuser)'
 EXEC sp_addrolemember N'db_ddladmin', N'$(gameuser)'
 GO
+GO
 
 --log
-CREATE DATABASE [$(gameName)1Log] 
-ON  PRIMARY ( NAME = N'$(gameName)1Log', FILENAME = N'$(dbpath)/$(gameName)1Log.mdf' , SIZE = 3072KB , FILEGROWTH = 1024KB )
- LOG ON ( NAME = N'$(gameName)1Log_log', FILENAME = N'$(dbpath)/$(gameName)1Log_log.ldf' , SIZE = 1024KB , FILEGROWTH = 10%)
+IF NOT EXISTS (SELECT * FROM sys.sysdatabases WHERE name = N'$(gameName)1Log')
+BEGIN
+	CREATE DATABASE [$(gameName)1Log] 
+	ON  PRIMARY ( NAME = N'$(gameName)1Log', FILENAME = N'$(dbpath)/$(gameName)1Log.mdf' , SIZE = 3072KB , FILEGROWTH = 1024KB )
+	 LOG ON ( NAME = N'$(gameName)1Log_log', FILENAME = N'$(dbpath)/$(gameName)1Log_log.ldf' , SIZE = 1024KB , FILEGROWTH = 10%)
+
+END
 GO
-ALTER DATABASE [$(gameName)1Log] SET RECOVERY BULK_LOGGED 
-go
+	ALTER DATABASE [$(gameName)1Log] SET RECOVERY BULK_LOGGED 
+
+GO
 
 use $(gameName)1Log
 GO

@@ -26,6 +26,15 @@ echo 请安装sqlcmd支持。&pause>nul
 exit
 )
 
+Sqlcmd -S %dbServer% -U %dbAcount% -P %dbPass% -d master -i 创建游戏帐号.sql -v gameuser="%gameuser%" loginPass="%gamepass%"
+@echo 创建数据库登录帐号成功!
+
+Sqlcmd -S %dbServer% -U %dbAcount% -P %dbPass% -d master -i 用户中心表结构.sql -v gameuser="%gameuser%" dbpath="%dbpath%" 
+@echo 正在创建用户中心数据库成功!
+
+Sqlcmd -S %dbServer% -U %dbAcount% -P %dbPass% -d master -i 分服与充值中心表结构.sql -v gameuser="%gameuser%" dbpath="%dbpath%" 
+@echo 创建分服中心数据库成功!
+
 @echo 正在创建游戏%4数据库...
 Sqlcmd -S %dbServer% -U %dbAcount% -P %dbPass% -d master -i 创建游戏数据库.sql -v gameuser="%gameuser%" gameName="%gameName%" dbpath="%dbpath%"
 
