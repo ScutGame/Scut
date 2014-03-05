@@ -71,9 +71,12 @@ Source: "..\..\..\Document\API\SCUT Server Framework API.chm"; DestDir: "{app}\D
 Source: "..\..\..\Document\API\SCUT Server Middleware API.chm"; DestDir: "{app}\Doc"; Flags: ignoreversion
 
 Source: "Redis\x32\redis.conf"; DestDir: "{app}\Redis\x32"; Flags: ignoreversion
-Source: "Redis\x32\redis-server.exe"; DestDir: "{app}\Redis\x32"; Flags: ignoreversion    
+Source: "Redis\x32\redis-server.exe"; DestDir: "{app}\Redis\x32"; Flags: ignoreversion  
+Source: "Redis\x32\redis-cli.exe"; DestDir: "{app}\Redis\x32"; Flags: ignoreversion   
+
 Source: "Redis\x64\redis.conf"; DestDir: "{app}\Redis\x64"; Flags: ignoreversion
-Source: "Redis\x64\redis-server.exe"; DestDir: "{app}\Redis\x64"; Flags: ignoreversion
+Source: "Redis\x64\redis-server.exe"; DestDir: "{app}\Redis\x64"; Flags: ignoreversion 
+Source: "Redis\x64\redis-cli.exe"; DestDir: "{app}\Redis\x64"; Flags: ignoreversion 
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
 
 [Icons]
