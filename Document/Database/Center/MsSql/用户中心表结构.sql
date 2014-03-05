@@ -4,10 +4,16 @@ $dbpath Êý¾Ý¿â´æ´¢Â·¾¶
 */
 
 /*=========================================================================================*/
-CREATE DATABASE [snscenter] 
-ON  PRIMARY ( NAME = N'snscenter', FILENAME = N'$(dbpath)/snscenter.mdf' , SIZE = 3072KB , FILEGROWTH = 1024KB )
- LOG ON ( NAME = N'snscenter_log', FILENAME = N'$(dbpath)/snscenter_log.ldf' , SIZE = 1024KB , FILEGROWTH = 10%)
-GO
+
+IF NOT EXISTS (SELECT * FROM sys.sysdatabases WHERE name = N'snscenter')
+BEGIN
+
+    CREATE DATABASE [snscenter] 
+        ON  PRIMARY ( NAME = N'snscenter', FILENAME = N'$(dbpath)/snscenter.mdf' , SIZE = 3072KB , FILEGROWTH = 1024KB )
+        LOG ON ( NAME = N'snscenter_log', FILENAME = N'$(dbpath)/snscenter_log.ldf' , SIZE = 1024KB , FILEGROWTH = 10%)
+
+END
+go
 
 use snscenter
 GO
@@ -109,6 +115,7 @@ CREATE TABLE [SnsUserInfo](
 	[ActiveCode] [nchar](10) NULL,
 	[SendActiveDate] [datetime] NULL,
 	[ActiveDate] [datetime] NULL,
+	[WeixinCode] varchar(50) NULL,
  CONSTRAINT [PK_SnsUserInfo] PRIMARY KEY CLUSTERED 
 (
 	[UserId] ASC
@@ -173,5 +180,4 @@ CREATE TABLE [LogUserLogin](
 ) ON [PRIMARY]
 END
 
---2013-05-25 wuzf
-alter table SnsUserInfo add WeixinCode varchar(50); --weixin bind
+GO
