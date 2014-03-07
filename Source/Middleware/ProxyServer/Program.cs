@@ -34,14 +34,6 @@ namespace ProxyServer
         {
             try
             {
-                var dict = new CacheList<int>();
-                dict.Add(1);
-                string js = dict.ToJson();
-                var temp = js.ParseJson<CacheList<int>>();
-                if(temp == null)
-                {
-                    
-                }
                 GameServerListManager.Initialize();
                 var server = new GameProxy();
 				Console.WriteLine("Press Enter to exit...");

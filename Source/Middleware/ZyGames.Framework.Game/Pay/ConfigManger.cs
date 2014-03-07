@@ -33,7 +33,7 @@ namespace ZyGames.Framework.Game.Pay
     internal class ConfigManger
     {
         private static readonly DbBaseProvider _dbBaseProvider;
-        private const string ConnectKey = "PayCenter";
+        internal const string ConnectKey = "PayCenter";
 
         static ConfigManger()
         {

@@ -54,7 +54,12 @@ namespace ZyGames.Framework.Game.Contract
             {
                 SessionId = _param["sid"];
             }
-            _session = GameSession.Get(SessionId) ?? GameSession.CreateNew(Guid.NewGuid(), request);
+            if(string.IsNullOrEmpty(SessionId))
+            {
+                SessionId = request["sid"];
+            }
+            _session = GameSession.Get(SessionId)
+                ?? GameSession.CreateNew(Guid.NewGuid(), request);
         }
 
         /// <summary>
@@ -67,7 +72,7 @@ namespace ZyGames.Framework.Game.Contract
             _paramString = param ?? "";
             _session = session;
             InitData(_paramString);
-            SessionId = _session.SessionId;
+            SessionId = _session != null ? _session.SessionId : "";
         }
 
         /// <summary>
@@ -97,8 +102,13 @@ namespace ZyGames.Framework.Game.Contract
         /// </summary>
         public string RemoteAddress
         {
-            get { return _session.EndAddress; }
+            get { return _session != null ? _session.EndAddress : string.Empty; }
         }
+
+        /// <summary>
+        /// get current UserId.
+        /// </summary>
+        public int UserId { get; private set; }
 
         /// <summary>
         /// get current sessionid.
@@ -151,6 +161,7 @@ namespace ZyGames.Framework.Game.Contract
             }
 
             _actionId = (_param.ContainsKey("actionId") ? _param["actionId"] : "0").ToInt();
+            UserId = (_param.ContainsKey("uid") ? _param["uid"] : "0").ToInt();
         }
 
         private const int ZeroNum = 0;

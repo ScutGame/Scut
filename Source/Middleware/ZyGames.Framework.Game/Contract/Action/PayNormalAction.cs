@@ -184,7 +184,7 @@ namespace ZyGames.Framework.Game.Contract.Action
             string appId = "";
             string version = "1.0.0";
             int orderType = 1;
-            GameChannel gameChannel = ZyGameBaseConfigManager.GameSetting.GetChannelSetting(ChannelType.channelMIUI);
+            GameChannel gameChannel = ZyGameBaseConfigManager.GameSetting.GetChannelSetting(ChannelType.channel10086);
             if (gameChannel != null)
             {
                 url = gameChannel.Url;

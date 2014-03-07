@@ -32,9 +32,9 @@ using ZyGames.Framework.Game.Lang;
 
 namespace ZyGames.Framework.Game.Service
 {
-	/// <summary>
-	/// Base struct.
-	/// </summary>
+    /// <summary>
+    /// Base struct.
+    /// </summary>
     public abstract class BaseStruct : GameStruct
     {
         /// <summary>
@@ -145,7 +145,7 @@ namespace ZyGames.Framework.Game.Service
             {
                 St = st;
             }
-            InitContext(httpGet.Session.SessionId, actionId, UserId);
+            InitContext(httpGet.SessionId, actionId, UserId);
             InitAction();
             InitChildAction();
         }
@@ -210,7 +210,7 @@ namespace ZyGames.Framework.Game.Service
                     return false;
                 }
                 result = TakeAction();
-                if(Current.UserId == 0 && UserId > 0)
+                if (Current != null && Current.UserId == 0 && UserId > 0)
                 {
                     Current.SetValue(UserId);
                 }

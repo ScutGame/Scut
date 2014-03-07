@@ -36,6 +36,7 @@ using ZyGames.Framework.Game.Lang;
 using ZyGames.Framework.Game.Message;
 using ZyGames.Framework.Game.Pay;
 using ZyGames.Framework.Model;
+using ZyGames.Framework.Redis;
 using ZyGames.Framework.Script;
 
 namespace ZyGames.Framework.Game.Runtime
@@ -80,17 +81,17 @@ namespace ZyGames.Framework.Game.Runtime
         /// <summary>
         /// 产品代码
         /// </summary>
-        public static int ProductCode { get { return _setting.ProductCode; } }
+        public static int ProductCode { get { return _setting != null ? _setting.ProductCode : 0; } }
 
         /// <summary>
         /// 产品名称
         /// </summary>
-        public static string ProductName { get { return _setting.ProductName; } }
+        public static string ProductName { get { return _setting != null ? _setting.ProductName : ""; } }
 
         /// <summary>
         /// 游戏服代码
         /// </summary>
-        public static int ProductServerId { get { return _setting.ProductServerId; } }
+        public static int ProductServerId { get { return _setting != null ? _setting.ProductServerId : 0; } }
 
         /// <summary>
         /// 
@@ -129,6 +130,13 @@ namespace ZyGames.Framework.Game.Runtime
             if (_isRunning == 1) return;
 
             _setting = setting;
+            if (!RedisConnectionPool.CheckConnect())
+            {
+                string error = string.Format("Error: the redis server is not started.");
+                Console.WriteLine(error);
+                TraceLog.WriteError(error);
+                return;
+            }
             DbConnectionProvider.Initialize();
             EntitySchemaSet.CacheGlobalPeriod = _setting.CacheGlobalPeriod;
             EntitySchemaSet.CacheUserPeriod = _setting.CacheUserPeriod;
@@ -138,7 +146,6 @@ namespace ZyGames.Framework.Game.Runtime
                 EntitySchemaSet.LoadAssembly(_setting.EntityAssembly);
             }
             EntitySchemaSet.StartCheckTableTimer();
-            LoadGameEntitySchema();
             ZyGameBaseConfigManager.Intialize();
             //init script.
             if (_setting.ScriptSysAsmReferences.Length > 0)
@@ -153,6 +160,7 @@ namespace ZyGames.Framework.Game.Runtime
             ScriptEngines.RegisterModelChangedBefore(OnModelChangeBefore);
             ScriptEngines.RegisterModelChangedAfter(OnModelChangeAtfer);
             ScriptEngines.Initialize();
+            Language.SetLang();
             CacheFactory.Initialize(cacheSetting);
             Global = new ContextCacheSet<CacheItem>("__gameenvironment_global");
             Interlocked.Exchange(ref _isRunning, 1);
@@ -163,16 +171,23 @@ namespace ZyGames.Framework.Game.Runtime
             try
             {
                 Interlocked.Exchange(ref _isRunning, 0);
-                TraceLog.ReleaseWrite("Updating model script...");
+                TraceLog.ReleaseWrite("Wait for the update before Model script...");
                 CacheFactory.UpdateNotify(true);
                 var task = System.Threading.Tasks.Task.Factory.StartNew(() =>
                 {
-                    while (!CacheFactory.CheckCompleted())
+                    try
                     {
-                        Thread.Sleep(100);
+                        while (!CacheFactory.CheckCompleted())
+                        {
+                            Thread.Sleep(100);
+                        }
+                    }
+                    catch (Exception)
+                    {
                     }
                 });
                 System.Threading.Tasks.Task.WaitAll(task);
+                TraceLog.ReleaseWrite("Update before Model script OK.");
             }
             catch (Exception ex)
             {
@@ -189,6 +204,7 @@ namespace ZyGames.Framework.Game.Runtime
                 ProtoBufUtils.LoadProtobufType(assembly);
                 EntitySchemaSet.LoadAssembly(assembly);
                 Language.Reset();
+                CacheFactory.ResetCache();
                 TraceLog.ReleaseWrite("Update Model script success.");
                 Interlocked.Exchange(ref _isRunning, 1);
             }
@@ -199,15 +215,15 @@ namespace ZyGames.Framework.Game.Runtime
         }
 
 
-        private static void LoadGameEntitySchema()
-        {
-            SchemaTable schema;
-            if (EntitySchemaSet.TryGet<SensitiveWord>(out schema))
-            {
-                schema.ConnectionProviderType = ConfigManger.Provider.ConnectionSetting.ProviderTypeName;
-                schema.ConnectionString = ConfigManger.Provider.ConnectionString;
-            }
-        }
+        //private static void LoadGameEntitySchema()
+        //{
+        //    SchemaTable schema;
+        //    if (EntitySchemaSet.TryGet<SensitiveWord>(out schema))
+        //    {
+        //        schema.ConnectionProviderType = ConfigManger.Provider.ConnectionSetting.ProviderTypeName;
+        //        schema.ConnectionString = ConfigManger.Provider.ConnectionString;
+        //    }
+        //}
 
         /// <summary>
         /// The game service stop.

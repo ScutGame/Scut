@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using ZyGames.Framework.Common.Log;
 using ZyGames.Framework.Script;
 
@@ -12,6 +12,7 @@ namespace Game.Script
 
         public void Stop()
         {
+
         }
     }
 }

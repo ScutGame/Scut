@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -46,31 +46,31 @@
     <Reference Include="System.Xml" />
     <Reference Include="System.Configuration" />
     <Reference Include="IronPython">
-      <HintPath>..\..\..\Release\6.1.5.8\Lib\IronPython.dll</HintPath>
+      <HintPath>..\..\..\Release\6.1.6.2\Lib\IronPython.dll</HintPath>
     </Reference>
     <Reference Include="IronPython.Modules">
-      <HintPath>..\..\..\Release\6.1.5.8\Lib\IronPython.Modules.dll</HintPath>
+      <HintPath>..\..\..\Release\6.1.6.2\Lib\IronPython.Modules.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.Dynamic">
-      <HintPath>..\..\..\Release\6.1.5.8\Lib\Microsoft.Dynamic.dll</HintPath>
+      <HintPath>..\..\..\Release\6.1.6.2\Lib\Microsoft.Dynamic.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.Scripting">
-      <HintPath>..\..\..\Release\6.1.5.8\Lib\Microsoft.Scripting.dll</HintPath>
+      <HintPath>..\..\..\Release\6.1.6.2\Lib\Microsoft.Scripting.dll</HintPath>
     </Reference>
     <Reference Include="Newtonsoft.Json">
-      <HintPath>..\..\..\Release\6.1.5.8\Lib\Newtonsoft.Json.dll</HintPath>
+      <HintPath>..\..\..\Release\6.1.6.2\Lib\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="NLog">
-      <HintPath>..\..\..\Release\6.1.5.8\Lib\NLog.dll</HintPath>
+      <HintPath>..\..\..\Release\6.1.6.2\Lib\NLog.dll</HintPath>
     </Reference>
     <Reference Include="protobuf-net">
-      <HintPath>..\..\..\Release\6.1.5.8\Lib\protobuf-net.dll</HintPath>
+      <HintPath>..\..\..\Release\6.1.6.2\Lib\protobuf-net.dll</HintPath>
     </Reference>
     <Reference Include="ZyGames.Framework">
-      <HintPath>..\..\..\Release\6.1.5.8\Lib\ZyGames.Framework.dll</HintPath>
+      <HintPath>..\..\..\Release\6.1.6.2\Lib\ZyGames.Framework.dll</HintPath>
     </Reference>
     <Reference Include="ZyGames.Framework.Common">
-      <HintPath>..\..\..\Release\6.1.5.8\Lib\ZyGames.Framework.Common.dll</HintPath>
+      <HintPath>..\..\..\Release\6.1.6.2\Lib\ZyGames.Framework.Common.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -135,7 +135,6 @@
     <Compile Include="Context\EncryptionManager.cs" />
     <Compile Include="Context\GameContext.cs" />
     <Compile Include="Context\HttpRequestManager.cs" />
-    <Compile Include="Contract\ActionConfig.cs" />
     <Compile Include="Contract\ActionEnum.cs" />
     <Compile Include="Contract\ActionFactory.cs" />
     <Compile Include="Contract\Action\AndroidPayAction.cs" />

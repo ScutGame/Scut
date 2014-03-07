@@ -32,7 +32,7 @@ using System.Runtime.InteropServices;
 //      Revision
 //
 //
-[assembly: AssemblyVersion("5.8.0.*")]
+[assembly: AssemblyVersion("6.2.0.*")]
 [assembly: AssemblyCompany("scutgame.com")]
 [assembly: AssemblyProduct("Scut.GameEngine")]
 [assembly: AssemblyCopyright("Copyright © 2013-2015 scutgame.com")]

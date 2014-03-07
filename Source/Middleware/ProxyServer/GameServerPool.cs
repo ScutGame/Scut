@@ -161,7 +161,7 @@ namespace ProxyServer
             }
         }
 
-        public void Send(int gameId, int serverId, byte[] data)
+        public bool Send(int gameId, int serverId, byte[] data)
         {
             GameServerConnection connection;
             string key = GetKey(gameId, serverId);
@@ -188,7 +188,7 @@ namespace ProxyServer
                 }
             }
 
-            connection.Send(data);
+            return connection.Send(data);
         }
 
         private string GetKey(int gameId, int serverId)
@@ -218,7 +218,6 @@ namespace ProxyServer
             clientSocket.DataReceived += new SocketEventHandler(DataReceived);
             clientSocket.Disconnected += new SocketEventHandler(Disconnected);
             EnsureConnected();
-
             _timer = new Timer(DoCheckHeartbeat, null, 1000, 30 * 1000); //30s
         }
 
@@ -245,6 +244,7 @@ namespace ProxyServer
                 requestParam["actionid"] = ((int)ActionEnum.Heartbeat).ToString();
                 requestParam["ssid"] = _ssid.ToString("N");
                 requestParam["msgid"] = "0";
+                requestParam["isproxy"] = "true";
                 string paramStr = RequestParse.ToQueryString(requestParam);
                 byte[] paramData = Encoding.ASCII.GetBytes(paramStr);
                 try
@@ -258,7 +258,7 @@ namespace ProxyServer
             }
             catch (Exception ex)
             {
-
+                TraceLog.ReleaseWriteDebug("心跳包连接游戏服失败,error:{0}", ex);
             }
         }
 
@@ -303,17 +303,18 @@ namespace ProxyServer
                 {
                     Task.Factory.StartNew(() =>
                     {
-                        NameValueCollection requestParam = new NameValueCollection();
-                        //连接中断通知游戏服
-                        requestParam["actionid"] = ((int)ActionEnum.Interrupt).ToString();
-                        requestParam["ssid"] = ssid.ToString("N");
-                        requestParam["msgid"] = "0";
-                        string paramStr = RequestParse.ToQueryString(requestParam);
-
-                        byte[] paramData = Encoding.ASCII.GetBytes(paramStr);
-
+                        string paramStr = "";
                         try
                         {
+                            NameValueCollection requestParam = new NameValueCollection();
+                            //连接中断通知游戏服
+                            requestParam["actionid"] = ((int)ActionEnum.Interrupt).ToString();
+                            requestParam["ssid"] = ssid.ToString("N");
+                            requestParam["msgid"] = "0";
+                            paramStr = RequestParse.ToQueryString(requestParam);
+
+                            byte[] paramData = Encoding.ASCII.GetBytes(paramStr);
+
                             Send(paramData);
                         }
                         catch (Exception ex)
@@ -329,12 +330,14 @@ namespace ProxyServer
             }
         }
 
-        public void Send(byte[] data)
+        public bool Send(byte[] data)
         {
             if (EnsureConnected())
             {
                 clientSocket.PostSend(data, 0, data.Length);
+                return true;
             }
+            return false;
         }
     }
 }

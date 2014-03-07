@@ -40,6 +40,8 @@ namespace GameServer.Model
             CreateDate = DateTime.Now;
         }
 
+
+
         [ProtoMember(1)]
         [EntityField(true)]
         public int UserID

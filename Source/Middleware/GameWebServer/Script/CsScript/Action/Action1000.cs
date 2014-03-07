@@ -24,6 +24,7 @@ THE SOFTWARE.
 
 using GameServer.Model;
 using ZyGames.Framework.Cache.Generic;
+using ZyGames.Framework.Game.Contract;
 using ZyGames.Framework.Game.Service;
 
 namespace GameServer.CsScript.Action

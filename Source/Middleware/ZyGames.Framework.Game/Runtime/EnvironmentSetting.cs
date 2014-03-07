@@ -25,6 +25,8 @@ THE SOFTWARE.
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
+using System.Net.Sockets;
 using System.Reflection;
 using System.Text;
 using ZyGames.Framework.Cache.Generic;
@@ -43,12 +45,16 @@ namespace ZyGames.Framework.Game.Runtime
         private static readonly int productCode;
         private static readonly string productName;
         private static readonly int productServerId;
+        private static readonly string gameIpAddress;
+        private static readonly int gamePort;
         private static readonly int cacheGlobalPeriod;
         private static readonly int cacheUserPeriod;
         private static readonly string[] scriptSysAsmReferences;
         private static readonly string[] scriptAsmReferences;
         private static readonly bool enableActionGZip;
         private static readonly int actionGZipOutLength;
+        private static readonly string actionTypeName;
+        private static readonly string scriptTypeName;
 
         static EnvironmentSetting()
         {
@@ -58,6 +64,12 @@ namespace ZyGames.Framework.Game.Runtime
             productCode = ConfigUtils.GetSetting("Product.Code", 1);
             productName = ConfigUtils.GetSetting("Product.Name", "Game");
             productServerId = ConfigUtils.GetSetting("Product.ServerId", 1);
+            gameIpAddress = ConfigUtils.GetSetting("Game.IpAddress");
+            if (string.IsNullOrEmpty(gameIpAddress))
+            {
+                gameIpAddress = GetLocalIp();
+            }
+            gamePort = ConfigUtils.GetSetting("Game.Port", 9101);
             cacheGlobalPeriod = ConfigUtils.GetSetting("Cache.global.period", 3 * 86400); //72 hour
             cacheUserPeriod = ConfigUtils.GetSetting("Cache.user.period", 86400); //24 hour
 
@@ -65,8 +77,33 @@ namespace ZyGames.Framework.Game.Runtime
             scriptAsmReferences = ConfigUtils.GetSetting("ScriptAsmReferences", "").Split(';');
             enableActionGZip = ConfigUtils.GetSetting("Game.Action.EnableGZip", true);
             actionGZipOutLength = ConfigUtils.GetSetting("Game.Action.GZipOutLength", 10240);//10k
+
+            actionTypeName = ConfigUtils.GetSetting("Game.Action.TypeName");
+            if (string.IsNullOrEmpty(actionTypeName))
+            {
+                string assemblyName = ConfigUtils.GetSetting("Game.Action.AssemblyName");
+                if (!string.IsNullOrEmpty(assemblyName))
+                {
+                    actionTypeName = assemblyName + ".Action.Action{0}," + assemblyName;
+                }
+            }
+            scriptTypeName = ConfigUtils.GetSetting("Game.Action.Script.TypeName", "Game.Script.Action{0}");
         }
 
+        private static string GetLocalIp()
+        {
+            string localIp = "";
+            IPAddress[] addressList = Dns.GetHostEntry(Environment.MachineName).AddressList;
+            foreach (var ipAddress in addressList)
+            {
+                if (ipAddress.AddressFamily == AddressFamily.InterNetwork)
+                {
+                    localIp = ipAddress.ToString();
+                    break;
+                }
+            }
+            return localIp;
+        }
         /// <summary>
         /// Object Initialization.
         /// </summary>
@@ -85,6 +122,10 @@ namespace ZyGames.Framework.Game.Runtime
             ScriptAsmReferences = scriptAsmReferences;
             ActionEnableGZip = enableActionGZip;
             ActionGZipOutLength = actionGZipOutLength;
+            GamePort = gamePort;
+            GameIpAddress = gameIpAddress;
+            ActionTypeName = actionTypeName;
+            ScriptTypeName = scriptTypeName;
         }
         
         /// <summary>
@@ -151,6 +192,35 @@ namespace ZyGames.Framework.Game.Runtime
         /// stream out length use gzip.
         /// </summary>
         public int ActionGZipOutLength { get; set; }
+
+        /// <summary>
+        /// Action type name.
+        /// </summary>
+        public string ActionTypeName { get; set; }
+
+        /// <summary>
+        /// CSharp script type name.
+        /// </summary>
+        public string ScriptTypeName { get; set; }
+
+        /// <summary>
+        /// local ip
+        /// </summary>
+        public string GameIpAddress
+        {
+            get;
+            private set;
+        }
+
+        /// <summary>
+        /// socket port
+        /// </summary>
+        public int GamePort
+        {
+            get;
+            private set;
+        }
+
         ///// <summary>
         ///// Before starting the script engine process.
         ///// </summary>

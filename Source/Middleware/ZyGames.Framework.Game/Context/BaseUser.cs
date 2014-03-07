@@ -37,26 +37,26 @@ namespace ZyGames.Framework.Game.Context
     [Serializable, ProtoContract]
     public abstract class BaseUser : BaseEntity
     {
-		/// <summary>
-		/// Initializes a new instance of the <see cref="ZyGames.Framework.Game.Context.BaseUser"/> class.
-		/// </summary>
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ZyGames.Framework.Game.Context.BaseUser"/> class.
+        /// </summary>
         protected BaseUser()
         {
         }
-		/// <summary>
-		/// Initializes a new instance of the <see cref="ZyGames.Framework.Game.Context.BaseUser"/> class.
-		/// </summary>
-		/// <param name="access">Access.</param>
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ZyGames.Framework.Game.Context.BaseUser"/> class.
+        /// </summary>
+        /// <param name="access">Access.</param>
         protected BaseUser(AccessLevel access)
             : base(access)
-		{
-		}
+        {
+        }
 
         private ContextCacheSet<CacheItem> _userData;
-		/// <summary>
-		/// Gets the user data.
-		/// </summary>
-		/// <value>The user data.</value>
+        /// <summary>
+        /// Gets the user data.
+        /// </summary>
+        /// <value>The user data.</value>
         public ContextCacheSet<CacheItem> UserData
         {
             get
@@ -73,20 +73,20 @@ namespace ZyGames.Framework.Game.Context
         /// 在线间隔小时数
         /// </summary>
         protected int OnlineHourInterval = 8;
-		/// <summary>
-		/// Gets a value indicating whether this instance is feng jin status.
-		/// </summary>
-		/// <value><c>true</c> if this instance is feng jin status; otherwise, <c>false</c>.</value>
+        /// <summary>
+        /// Gets a value indicating whether this instance is feng jin status.
+        /// </summary>
+        /// <value><c>true</c> if this instance is feng jin status; otherwise, <c>false</c>.</value>
         public abstract bool IsFengJinStatus { get; }
-		/// <summary>
-		/// Gets or sets the online date.
-		/// </summary>
-		/// <value>The online date.</value>
+        /// <summary>
+        /// Gets or sets the online date.
+        /// </summary>
+        /// <value>The online date.</value>
         public abstract DateTime OnlineDate { get; set; }
-		/// <summary>
-		/// Gets a value indicating whether this instance is inlining.
-		/// </summary>
-		/// <value><c>true</c> if this instance is inlining; otherwise, <c>false</c>.</value>
+        /// <summary>
+        /// Gets a value indicating whether this instance is inlining.
+        /// </summary>
+        /// <value><c>true</c> if this instance is inlining; otherwise, <c>false</c>.</value>
         public bool IsInlining
         {
             get
@@ -115,7 +115,11 @@ namespace ZyGames.Framework.Game.Context
         /// 
         /// </summary>
         /// <returns></returns>
-        public abstract string GetSessionId();
+        [Obsolete("no use")]
+        public virtual string GetSessionId()
+        {
+            return string.Empty;
+        }
         /// <summary>
         /// 
         /// </summary>

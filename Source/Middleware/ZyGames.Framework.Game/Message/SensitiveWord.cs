@@ -24,6 +24,7 @@ THE SOFTWARE.
 using System;
 using ProtoBuf;
 using ZyGames.Framework.Common;
+using ZyGames.Framework.Game.Pay;
 using ZyGames.Framework.Model;
 
 namespace ZyGames.Framework.Game.Message
@@ -32,7 +33,7 @@ namespace ZyGames.Framework.Game.Message
     /// 
     /// </summary>
     [Serializable, ProtoContract]
-    [EntityTable(AccessLevel.ReadOnly, "", "SensitiveWord")]
+    [EntityTable(AccessLevel.ReadOnly, ConfigManger.ConnectKey, "SensitiveWord")]
     public class SensitiveWord : ShareEntity
     {
 

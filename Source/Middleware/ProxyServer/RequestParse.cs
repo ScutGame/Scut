@@ -33,6 +33,7 @@ using ICSharpCode.SharpZipLib.GZip;
 using ZyGames.Framework.Common.Configuration;
 using ZyGames.Framework.Common.Log;
 using ZyGames.Framework.Common.Security;
+using ZyGames.Framework.RPC.IO;
 
 namespace ProxyServer
 {
@@ -146,50 +147,28 @@ namespace ProxyServer
             }
             return stringBuilder.ToString();
         }
+
         public static void WriteValue(Stream stream, int value)
         {
             byte[] buf = BitConverter.GetBytes(value);
             stream.Write(buf, 0, buf.Length);
         }
+
         public static void WriteValue(Stream stream, string value)
         {
             byte[] buf = Encoding.UTF8.GetBytes(value);
             WriteValue(stream, buf.Length);
             stream.Write(buf, 0, buf.Length);
         }
-        public static byte[] CtorErrMsg(string msg, NameValueCollection requestParam)
-        {
-            using (MemoryStream ms = new MemoryStream())
-            {
-                //包总长度
-                int len = 0;
-                long pos = 0;
-                //包总长度，占位
-                WriteValue(ms, len);
-                int actionid = Convert.ToInt32(requestParam["actionid"]);
-                //StatusCode
-                WriteValue(ms, 10001);
-                //msgid
-                WriteValue(ms, Convert.ToInt32(requestParam["msgid"]));
-                WriteValue(ms, msg);
-                WriteValue(ms, actionid);
-                WriteValue(ms, "st");
-                //playerdata
-                WriteValue(ms, 0);
-                //固定0
-                WriteValue(ms, 0);
-                ms.Seek(pos, SeekOrigin.Begin);
-                WriteValue(ms, (int)ms.Length);
 
-                using (var gms = new MemoryStream())
-                using (var gzs = new GZipOutputStream(gms))
-                {
-                    gzs.Write(ms.GetBuffer(), 0, (int)ms.Length);
-                    gzs.Flush();
-                    gzs.Close();
-                    return gms.ToArray();
-                }
-            }
+        public static byte[] CtorErrMsg(int error, string msg, NameValueCollection requestParam)
+        {
+            int msgId = Convert.ToInt32(requestParam["msgid"]);
+            int actionid = Convert.ToInt32(requestParam["actionid"]);
+            var ms = new MessageStructure();
+            var head = new MessageHead(msgId, actionid, "st", error, msg);
+            ms.WriteBuffer(head);
+            return ms.PosGzipBuffer();
         }
 
     }

@@ -138,7 +138,7 @@ namespace ZyGames.Framework.Game.Sns
                 return false;
             }
             string key = _mobileType == MobileType.ptAndroid ? "android" : "ios";
-            GameChannel gameChannel = ZyGameBaseConfigManager.GameSetting.GetChannelSetting(ChannelType.channelMIUI);
+            GameChannel gameChannel = ZyGameBaseConfigManager.GameSetting.GetChannelSetting(ChannelType.channelUC);
             if (gameChannel == null)
             {
                 TraceLog.ReleaseWrite("The sdkChannel UC section is null.");

@@ -51,6 +51,7 @@ namespace ZyGames.Framework.Game.Contract
         private static ConcurrentQueue<BaseEntity> _sendQueue;
         private static Thread _queueProcessThread;
         private static ManualResetEvent singal = new ManualResetEvent(false);
+        private static int _runningQueue;
 
         internal static event Func<int, byte[], bool> SendHandle;
 
@@ -59,8 +60,27 @@ namespace ZyGames.Framework.Game.Contract
             _syncPools = new DictionaryExtend<string, bool>();
             _sendQueue = new ConcurrentQueue<BaseEntity>();
 
+            Interlocked.Exchange(ref _runningQueue, 1);
             _queueProcessThread = new Thread(ProcessQueue);
             _queueProcessThread.Start();
+        }
+
+
+        /// <summary>
+        /// Dispose
+        /// </summary>
+        public static void Dispose()
+        {
+            Interlocked.Exchange(ref _runningQueue, 0);
+            try
+            {
+                singal.Set();
+                singal.Dispose();
+                _queueProcessThread.Abort();
+            }
+            catch
+            {
+            }
         }
 
         /// <summary>
@@ -94,11 +114,14 @@ namespace ZyGames.Framework.Game.Contract
 
         private static void ProcessQueue(object state)
         {
-            while (true)
+            while (_runningQueue == 1)
             {
                 singal.WaitOne();
-                Thread.Sleep(100);//Delay 100ms
-                while (true)
+                if (_runningQueue == 1)
+                {
+                    Thread.Sleep(100);//Delay 100ms
+                }
+                while (_runningQueue == 1)
                 {
                     BaseEntity entity;
                     if (_sendQueue.TryDequeue(out entity))

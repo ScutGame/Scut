@@ -105,7 +105,15 @@ namespace ZyGames.Framework.Game.Lang
             }
             else
             {
-                TraceLog.WriteWarn("Can not find the corresponding language configuration,typeName:{0}", typeName);//By Seamoon
+                var type = Type.GetType(_typeName, false, false);
+                if (type != null)
+                {
+                    _instance = type.CreateInstance();
+                }
+                else
+                {
+                    TraceLog.WriteWarn("Can not find the corresponding language configuration,typeName:{0}", typeName);//By Seamoon
+                }
             }
         }
 

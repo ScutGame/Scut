@@ -110,7 +110,7 @@ namespace ZyGames.Framework.Game.Contract.Action
             string appSecret = "";
             string url = "{0}?grant_type=refresh_token&refresh_token={1}&client_id={2}&client_secret={3}&scope={4}";
             
-            GameChannel gameChannel = ZyGameBaseConfigManager.GameSetting.GetChannelSetting(ChannelType.channelMIUI);
+            GameChannel gameChannel = ZyGameBaseConfigManager.GameSetting.GetChannelSetting(ChannelType.channel360);
             if (gameChannel != null)
             {
                 GameSdkSetting setting = gameChannel.GetSetting(RetailID);

@@ -40,11 +40,11 @@ namespace ZyGames.Framework.Game.Contract.Action
     /// </summary>
     public abstract class AuthorizeAction : BaseStruct
     {
-		/// <summary>
-		/// Initializes a new instance of the <see cref="ZyGames.Framework.Game.Contract.Action.AuthorizeAction"/> class.
-		/// </summary>
-		/// <param name="actionID">Action I.</param>
-		/// <param name="httpGet">Http get.</param>
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ZyGames.Framework.Game.Contract.Action.AuthorizeAction"/> class.
+        /// </summary>
+        /// <param name="actionID">Action I.</param>
+        /// <param name="httpGet">Http get.</param>
         protected AuthorizeAction(short actionID, HttpGet httpGet)
             : base(actionID, httpGet)
         {
@@ -58,10 +58,10 @@ namespace ZyGames.Framework.Game.Contract.Action
             get;
             protected set;
         }
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <returns></returns>
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
         public override bool CheckAction()
         {
             bool result = false;
@@ -117,10 +117,10 @@ namespace ZyGames.Framework.Game.Contract.Action
             }
             return result;
         }
-		/// <summary>
-		/// Gets a value indicating whether this instance is refresh.
-		/// </summary>
-		/// <value><c>true</c> if this instance is refresh; otherwise, <c>false</c>.</value>
+        /// <summary>
+        /// Gets a value indicating whether this instance is refresh.
+        /// </summary>
+        /// <value><c>true</c> if this instance is refresh; otherwise, <c>false</c>.</value>
         protected virtual bool IsRefresh
         {
             get { return true; }
@@ -132,13 +132,13 @@ namespace ZyGames.Framework.Game.Contract.Action
         {
             get;
         }
-		/// <summary>
-		/// Checks the user.
-		/// </summary>
-		/// <returns>The user.</returns>
-		/// <param name="sessionID">Session I.</param>
-		/// <param name="userId">User identifier.</param>
-		/// <param name="gameUser">Game user.</param>
+        /// <summary>
+        /// Checks the user.
+        /// </summary>
+        /// <returns>The user.</returns>
+        /// <param name="sessionID">Session I.</param>
+        /// <param name="userId">User identifier.</param>
+        /// <param name="gameUser">Game user.</param>
         protected LoginStatus CheckUser(string sessionID, int userId, out BaseUser gameUser)
         {
             gameUser = null;
@@ -147,20 +147,20 @@ namespace ZyGames.Framework.Game.Contract.Action
                 gameUser = UserFactory(userId);
                 if (gameUser != null)
                 {
-                    string currSid = gameUser.GetSessionId();
-                    if (!string.IsNullOrEmpty(currSid))
+                    var session = GameSession.Get(userId);
+                    if (session != null)
                     {
-                        return currSid == sessionID ? LoginStatus.Success : LoginStatus.Logined;
+                        return session.SessionId == sessionID ? LoginStatus.Success : LoginStatus.Logined;
                     }
                 }
             }
             return LoginStatus.NoLogin;
         }
-		/// <summary>
-		/// Dos the refresh.
-		/// </summary>
-		/// <param name="actionId">Action identifier.</param>
-		/// <param name="gameUser">Game user.</param>
+        /// <summary>
+        /// Dos the refresh.
+        /// </summary>
+        /// <param name="actionId">Action identifier.</param>
+        /// <param name="gameUser">Game user.</param>
         protected void DoRefresh(int actionId, BaseUser gameUser)
         {
             if (EnablePayNotify != null)

@@ -130,7 +130,7 @@ namespace ProxyServer
             catch (Exception ex)
             {
                 TraceLog.WriteError("无法连接游服error:{0}", ex);
-                var responseData = RequestParse.CtorErrMsg(errmsg, requestParam);
+                var responseData = RequestParse.CtorErrMsg(10000, "Connect server fail.", requestParam);
                 SendDataBack(ssid, responseData, 0, responseData.Length);
             }
         }
@@ -139,7 +139,7 @@ namespace ProxyServer
         {
             HttpClientConnection clientConnection = (HttpClientConnection)state;
             NameValueCollection requestParam = clientConnection.Param;
-            var responseData = RequestParse.CtorErrMsg(errmsg, requestParam);
+            var responseData = RequestParse.CtorErrMsg(10000, "timeout.", requestParam);
             TraceLog.WriteError("超时无法连接游服:{0}", RequestParse.ToQueryString(requestParam));
             SendDataBack(clientConnection.SSID, responseData, 0, responseData.Length);
         }
@@ -148,7 +148,7 @@ namespace ProxyServer
         {
             foreach (var kv in pool)
             {
-                var responseData = RequestParse.CtorErrMsg(errmsg, kv.Value.Param);
+                var responseData = RequestParse.CtorErrMsg(10000, errmsg, kv.Value.Param);
                 SendDataBack(kv.Value.SSID, responseData, 0, responseData.Length);
             }
         }
