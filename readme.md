@@ -49,7 +49,7 @@ OSChina代码库：https://git.oschina.net/scutgame/Scut<br />
 
 更新日志
 ----------------
-###版本：6.1.6.2 (2014-3-7)
+###版本：6.1.6.2 (2014-3-7) Unstable
 > 1. 增加输入Log文件可划分目录
 > 2. 修改GameSession初始加载Redis数据出错问题
 > 3. 修改Language使用非脚本无法配置Type问题
