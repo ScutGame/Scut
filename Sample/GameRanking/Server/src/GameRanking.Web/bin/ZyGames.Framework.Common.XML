@@ -1881,6 +1881,21 @@
             <param name="message"></param>
             <param name="args"></param>
         </member>
+        <member name="M:ZyGames.Framework.Common.Log.TraceLog.WriteTo(System.String,System.String,System.Object[])">
+            <summary>
+            Write to custom log
+            </summary>
+            <param name="name">dir name</param>
+            <param name="message"></param>
+            <param name="args"></param>
+        </member>
+        <member name="M:ZyGames.Framework.Common.Log.TraceLog.WriteSqlError(System.String,System.Object[])">
+            <summary>
+            Write sql error.
+            </summary>
+            <param name="message"></param>
+            <param name="args"></param>
+        </member>
         <member name="M:ZyGames.Framework.Common.Log.TraceLog.ReleaseWrite(System.String,System.Object[])">
             <summary>
             在DEBUG和Release下输出到Info目录
