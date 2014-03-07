@@ -40,6 +40,14 @@ namespace ZyGames.Framework.Cache.Generic
 
         static MemoryCacheStruct()
         {
+            Reset();
+        }
+
+        /// <summary>
+        /// Reset.
+        /// </summary>
+        public static void Reset()
+        {
             _momoryPools = new CachePool(null, null, false);
         }
 

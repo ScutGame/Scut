@@ -75,7 +75,7 @@ namespace ZyGames.Framework.Cache.Generic
                             {
                                 keyIndex = (int)state;
                             }
-                            var list = SqlStatementManager.Pop(keyIndex, 0, 10);
+                            var list = SqlStatementManager.Pop(keyIndex, 0, 100);
                             foreach (var statement in list)
                             {
                                 var dbProvider = DbConnectionProvider.CreateDbProvider("", statement.ProviderType, statement.ConnectionString);
@@ -90,17 +90,8 @@ namespace ZyGames.Framework.Cache.Generic
                                 }
                                 catch (Exception e)
                                 {
-                                    TraceLog.WriteComplement("Error:{0}\r\nSql:{1}", e, statement.CommandText);
+                                    TraceLog.WriteSqlError("Error:{0}\r\nSql:{1}", e, statement.CommandText);
                                     SqlStatementManager.PutError(statement);
-                                    //try
-                                    //{
-                                    //    dbProvider.ExecuteQuery(statement.CommandType, statement.CommandText, paramList);
-                                    //}
-                                    //catch (Exception e)
-                                    //{
-                                    //    
-                                    //    TraceLog.WriteComplement("sql:{0}", e, JsonUtils.Serialize(statement));
-                                    //}
                                 }
                             }
                         }
@@ -124,6 +115,7 @@ namespace ZyGames.Framework.Cache.Generic
                     {
                         try
                         {
+                            TraceLog.ReleaseWrite("Sql waiting to be written to the Redis");
                             while (true)
                             {
                                 var list = CacheChangeManager.Current.PopSql(100);
@@ -136,7 +128,7 @@ namespace ZyGames.Framework.Cache.Generic
                                     string redisKey = key;
                                     try
                                     {
-                                        dynamic entity = CacheFactory.GetEntityFromRedis(redisKey);
+                                        dynamic entity = CacheFactory.GetEntityFromRedis(redisKey, true);
                                         SchemaTable schemaTable = entity.GetSchema();
                                         if (entity != null && schemaTable != null)
                                         {
@@ -175,9 +167,10 @@ namespace ZyGames.Framework.Cache.Generic
                     {
                         try
                         {
-                            var list = CacheChangeManager.Current.GetKeys(100);
-                            foreach (var key in list)
+                            var list = CacheChangeManager.Current.GetKeys(0, 100);
+                            foreach (var pair in list)
                             {
+                                string key = pair.Key;
                                 try
                                 {
 
@@ -188,13 +181,21 @@ namespace ZyGames.Framework.Cache.Generic
                                     {
                                         cacheType = itemSet.ItemType;
                                     }
-                                    //判断是否删除状态
-                                    if (entity == null && CacheChangeManager.Current.CheckRemovePool(key, out entity))
+                                    if (entity == null)
                                     {
-                                        SchemaTable schema;
-                                        if (EntitySchemaSet.TryGet(entity.GetType(), out schema))
+                                        entity = CovertEntityObject(key, pair.Value);
+                                        if (entity != null)
                                         {
-                                            cacheType = schema.CacheType;
+                                            SchemaTable schema;
+                                            Type entityType = entity.GetType();
+                                            if (!EntitySchemaSet.TryGet(entityType, out schema))
+                                            {
+                                                EntitySchemaSet.InitSchema(entityType);
+                                            }
+                                            if (schema != null || EntitySchemaSet.TryGet(entityType, out schema))
+                                            {
+                                                cacheType = schema.CacheType;
+                                            }
                                         }
                                     }
                                     if (entity != null && cacheType != CacheType.None)
@@ -210,7 +211,6 @@ namespace ZyGames.Framework.Cache.Generic
                                             {
                                                 itemSet.SetUnChange();
                                             }
-                                            CacheChangeManager.Current.Remove(key);
                                             Type type = entity.GetType();
                                             string entityKey = string.Format("{0},{1}", key, type.Assembly.GetName().Name);
                                             CacheChangeManager.Current.PutSql(entityKey);
@@ -234,6 +234,35 @@ namespace ZyGames.Framework.Cache.Generic
                     TraceLog.WriteError("Redis sync error:{0}", ex);
                 }
 
+            }
+
+            private dynamic CovertEntityObject(string key, byte[] value)
+            {
+                string typeName;
+                string asmName;
+                bool isEntityType;
+                string redisKey;
+                Type type = null;
+                GetEntityTypeFromKey(key, out typeName, ref type, out asmName, out isEntityType, out redisKey);
+                if (type != null)
+                {
+                    try
+                    {
+                        return ProtoBufUtils.Deserialize(value, type);
+                    }
+                    catch
+                    {
+                        try
+                        {
+                            type = Type.GetType(string.Format("{0},{1}", typeName, asmName), false, true);
+                            return ProtoBufUtils.Deserialize(value, type);
+                        }
+                        catch
+                        {
+                        }
+                    }
+                }
+                return null;
             }
 
             private IDataParameter[] ConvertParam(DbBaseProvider dbProvider, SqlParam[] paramList)
@@ -284,7 +313,7 @@ namespace ZyGames.Framework.Cache.Generic
 
             RedisConnectionPool.Initialize();
             EntitySchemaSet.InitSchema(typeof(EntityHistory));
-
+   
             _entitySync.Start();
             InitListener("__CachePoolListener", setting.ExpiredInterval, "__CachePoolUpdateListener", setting.UpdateInterval);
             if (setting.AutoRunEvent)
@@ -303,9 +332,10 @@ namespace ZyGames.Framework.Cache.Generic
             bool result = false;
             RedisManager.Process(client =>
             {
+                string entityChangeKey = CacheChangeManager.GlobalChangeKey + "_temp";
                 string sqlChangeKey = CacheChangeManager.GlobalRedisKey + "_temp";
                 string sqlkey = SqlStatementManager.GetKey(keyIndex) + "_temp";
-                if (CacheChangeManager.Current.ChangeKeys == 0 &&
+                if (!client.ContainsKey(entityChangeKey) &&
                     !client.ContainsKey(sqlChangeKey) &&
                     !client.ContainsKey(sqlkey))
                 {
@@ -321,80 +351,44 @@ namespace ZyGames.Framework.Cache.Generic
         {
             _readonlyPools.Clear();
             _writePools.Clear();
+            MemoryCacheStruct<MemoryEntity>.Reset();
         }
 
         /// <summary>
         /// 通过Redis键获取实体对象
         /// </summary>
         /// <param name="key"></param>
+        /// <param name="isRemove"></param>
         /// <param name="type"></param>
         /// <returns></returns>
-        public static dynamic GetEntityFromRedis(string key, Type type = null)
+        public static dynamic GetEntityFromRedis(string key, bool isRemove, Type type = null)
         {
-            int index = key.IndexOf(',');
-            var arr = (index > -1 ? key.Substring(0, index) : key).Split('_');
-            string typeName = arr[0];
-            string asmName = key.Substring(index + 1, key.Length - index - 1);
-            string persionKey = string.Empty;
-            string entityKey = string.Empty;
-            if (arr.Length > 1)
-            {
-                entityKey = arr[1];
-                var tempArr = entityKey.Split('|');
-                if (tempArr.Length > 1)
-                {
-                    persionKey = tempArr[0];
-                    entityKey = tempArr[1];
-                }
-            }
-            bool isEntityType = false;
+            string typeName;
+            string asmName;
+            bool isEntityType;
             string redisKey;
-            if (string.IsNullOrEmpty(persionKey))
-            {
-                isEntityType = true;
-                redisKey = string.Format("{0}_{1}", typeName, entityKey);
-            }
-            else
-            {
-                redisKey = string.Format("{0}_{1}", typeName, persionKey);
-            }
-
-            if (type == null && index > -1)
-            {
-                
-                type = Type.GetType(string.Format(entityTypeNameFormat, typeName, asmName), false, true);
-                if (Equals(type, null))
-                {
-                    var enitityAsm = ScriptEngines.GetEntityAssembly();
-                    if (enitityAsm != null)
-                    {
-                        asmName = enitityAsm.GetName().Name;
-                        type = Type.GetType(string.Format(entityTypeNameFormat, typeName, asmName), false, true);
-                    }
-                }
-            }
+            string entityKey = GetEntityTypeFromKey(key, out typeName, ref type, out asmName, out isEntityType, out redisKey);
             dynamic entity = null;
             RedisManager.Process(client =>
             {
                 if (isEntityType)
                 {
                     var data = client.Get<byte[]>(redisKey);
-                    if (data != null)
+                    if (data != null && type != null)
                     {
-                        var entityType = Type.GetType(string.Format("{0},{1}", typeName, asmName));
-                        entity = ProtoBufUtils.Deserialize(data, entityType);
+                        entity = ProtoBufUtils.Deserialize(data, type);
                     }
                 }
                 else
                 {
                     var data = client.Get<byte[]>(redisKey);
-                    if (data != null)
+                    if (data != null && type != null)
                     {
                         var dict = (IDictionary)ProtoBufUtils.Deserialize(data, type);
                         entity = dict[entityKey];
                     }
                 }
-                if (entity == null)
+                if (isRemove && entity == null && type != null)
                 {
                     string setId = (isEntityType ? typeName : redisKey) + ":remove";
                     var data = client.Get<byte[]>(setId);
@@ -416,6 +410,56 @@ namespace ZyGames.Framework.Cache.Generic
 
             });
             return entity;
+        }
+
+        private static string GetEntityTypeFromKey(string key, out string typeName, ref Type type, out string asmName, out bool isEntityType, out string redisKey)
+        {
+            int index = key.IndexOf(',');
+            var arr = (index > -1 ? key.Substring(0, index) : key).Split('_');
+            typeName = arr[0];
+            asmName = key.Substring(index + 1, key.Length - index - 1);
+            string persionKey = string.Empty;
+            string entityKey = string.Empty;
+            if (arr.Length > 1)
+            {
+                entityKey = arr[1];
+                var tempArr = entityKey.Split('|');
+                if (tempArr.Length > 1)
+                {
+                    persionKey = tempArr[0];
+                    entityKey = tempArr[1];
+                }
+            }
+            isEntityType = false;
+            if (string.IsNullOrEmpty(persionKey))
+            {
+                isEntityType = true;
+                redisKey = string.Format("{0}_{1}", typeName, entityKey);
+            }
+            else
+            {
+                //私有类型
+                redisKey = string.Format("{0}_{1}", typeName, persionKey);
+            }
+            string formatString = entityTypeNameFormat;
+            if (isEntityType)
+            {
+                formatString = "{0},{1}";
+            }
+            if (type == null)
+            {
+                type = Type.GetType(string.Format(formatString, typeName, asmName), false, true);
+                if (Equals(type, null))
+                {
+                    var enitityAsm = ScriptEngines.GetEntityAssembly();
+                    if (enitityAsm != null)
+                    {
+                        asmName = enitityAsm.GetName().Name;
+                        type = Type.GetType(string.Format(formatString, typeName, asmName), false, true);
+                    }
+                }
+            }
+            return entityKey;
         }
 
         /// <summary>

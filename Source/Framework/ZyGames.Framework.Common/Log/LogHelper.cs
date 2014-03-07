@@ -22,6 +22,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ****************************************************************************/
 using System;
+using System.Collections.Concurrent;
 using System.Text;
 using System.Web;
 using NLog;
@@ -30,102 +31,115 @@ namespace ZyGames.Framework.Common.Log
 {
     internal class LogHelper
     {
-        private static bool isinit;
-        private static bool LogInfoEnable;
-        private static bool LogErrorEnable;
-        private static bool LogWarnEnable;
-        private static bool LogComplementEnable;
-        private static bool LogDubugEnable;
-        private static bool LogFatalEnabled;
-        private static Logger logger;
+        private static bool _isinit;
+        private static bool _logInfoEnable;
+        private static bool _logErrorEnable;
+        private static bool _logWarnEnable;
+        private static bool _logComplementEnable;
+        private static bool _logDubugEnable;
+        private static bool _logFatalEnabled;
+        private static Logger _logger;
+        private static ConcurrentDictionary<string, Logger> _customLoggers;
+
         static LogHelper()
         {
-            LogHelper.isinit = false;
-            LogHelper.LogInfoEnable = false;
-            LogHelper.LogErrorEnable = false;
-            LogHelper.LogWarnEnable = false;
-            LogHelper.LogComplementEnable = false;
-            LogHelper.LogDubugEnable = false;
-            LogHelper.LogFatalEnabled = false;
-            LogHelper.logger = LogManager.GetCurrentClassLogger();
-            if (!LogHelper.isinit)
+            _customLoggers = new ConcurrentDictionary<string, Logger>();
+            _isinit = false;
+            _logInfoEnable = false;
+            _logErrorEnable = false;
+            _logWarnEnable = false;
+            _logComplementEnable = false;
+            _logDubugEnable = false;
+            _logFatalEnabled = false;
+            _logger = LogManager.GetCurrentClassLogger();
+
+            if (!_isinit)
             {
-                LogHelper.isinit = true;
-                LogHelper.SetConfig();
+                _isinit = true;
+                SetConfig();
             }
         }
         public static void SetConfig()
         {
-            LogHelper.LogInfoEnable = LogHelper.logger.IsInfoEnabled;
-            LogHelper.LogErrorEnable = LogHelper.logger.IsErrorEnabled;
-            LogHelper.LogWarnEnable = LogHelper.logger.IsWarnEnabled;
-            LogHelper.LogComplementEnable = LogHelper.logger.IsTraceEnabled;
-            LogHelper.LogFatalEnabled = LogHelper.logger.IsFatalEnabled;
-            LogHelper.LogDubugEnable = LogHelper.logger.IsDebugEnabled;
+            _logInfoEnable = _logger.IsInfoEnabled;
+            _logErrorEnable = _logger.IsErrorEnabled;
+            _logWarnEnable = _logger.IsWarnEnabled;
+            _logComplementEnable = _logger.IsTraceEnabled;
+            _logFatalEnabled = _logger.IsFatalEnabled;
+            _logDubugEnable = _logger.IsDebugEnabled;
         }
         public static void WriteInfo(string info)
         {
-            if (LogHelper.LogInfoEnable)
+            if (LogHelper._logInfoEnable)
             {
-                LogHelper.logger.Info(LogHelper.BuildMessage(info));
+                LogHelper._logger.Info(LogHelper.BuildMessage(info));
             }
         }
         public static void WriteDebug(string info)
         {
-            if (LogHelper.LogDubugEnable)
+            if (LogHelper._logDubugEnable)
             {
-                LogHelper.logger.Debug(LogHelper.BuildMessage(info));
+                LogHelper._logger.Debug(LogHelper.BuildMessage(info));
             }
         }
         public static void WriteError(string info)
         {
-            if (LogHelper.LogErrorEnable)
+            if (LogHelper._logErrorEnable)
             {
-                LogHelper.logger.Error(LogHelper.BuildMessage(info));
+                LogHelper._logger.Error(LogHelper.BuildMessage(info));
             }
         }
         public static void WriteException(string info, Exception ex)
         {
-            if (LogHelper.LogErrorEnable)
+            if (LogHelper._logErrorEnable)
             {
-                LogHelper.logger.Error(LogHelper.BuildMessage(info, ex));
+                LogHelper._logger.Error(LogHelper.BuildMessage(info, ex));
             }
         }
         public static void WriteWarn(string info)
         {
-            if (LogHelper.LogWarnEnable)
+            if (LogHelper._logWarnEnable)
             {
-                LogHelper.logger.Warn(LogHelper.BuildMessage(info));
+                LogHelper._logger.Warn(LogHelper.BuildMessage(info));
             }
         }
         public static void WriteWarn(string info, Exception ex)
         {
-            if (LogHelper.LogWarnEnable)
+            if (LogHelper._logWarnEnable)
             {
-                LogHelper.logger.Warn(LogHelper.BuildMessage(info, ex));
+                LogHelper._logger.Warn(LogHelper.BuildMessage(info, ex));
             }
         }
         public static void WriteFatal(string info)
         {
-            if (LogHelper.LogFatalEnabled)
+            if (LogHelper._logFatalEnabled)
             {
-                LogHelper.logger.Fatal(LogHelper.BuildMessage(info));
+                LogHelper._logger.Fatal(LogHelper.BuildMessage(info));
             }
         }
         public static void WriteComplement(string info)
         {
-            if (LogHelper.LogComplementEnable)
-            {
-                LogHelper.logger.Trace(LogHelper.BuildMessage(info));
-            }
+            WriteTo("", info);
         }
         public static void WriteComplement(string info, Exception ex)
         {
-            if (LogHelper.LogComplementEnable)
+            WriteTo("", info, ex);
+        }
+
+        public static void WriteTo(string name, string info, Exception ex = null)
+        {
+            if (string.IsNullOrEmpty(name))
             {
-                LogHelper.logger.Trace(LogHelper.BuildMessage(info, ex));
+                name = "Complement";
+            }
+            var lazy = new Lazy<Logger>(() => LogManager.GetLogger(name));
+            Logger customLog = _customLoggers.GetOrAdd(name, lazy.Value);
+            if (customLog != null)
+            {
+                customLog.Log(LogLevel.Trace, LogHelper.BuildMessage(info, ex));
             }
         }
+
         private static string BuildMessage(string info)
         {
             return LogHelper.BuildMessage(info, null);

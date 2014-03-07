@@ -68,6 +68,12 @@ namespace ZyGames.Framework.Script
             }
             set
             {
+                //初始运行不检查更新Cache
+                if (_assembly == null)
+                {
+                    _assembly = value;
+                    return;
+                }
                 if (!Equals(_assembly, value))
                 {
                     try

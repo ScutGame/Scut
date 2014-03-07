@@ -118,6 +118,38 @@ namespace ZyGames.Framework.Common.Log
         }
 
         /// <summary>
+        /// Write to custom log
+        /// </summary>
+        /// <param name="name">dir name</param>
+        /// <param name="message"></param>
+        /// <param name="args"></param>
+        public static void WriteTo(string name, string message, params object[] args)
+        {
+            string str = message;
+            if (args.Length > 0)
+            {
+                str = string.Format(name + ">>" + message, args);
+            }
+            LogHelper.WriteTo(name, str);
+        }
+
+        private const string LoggerSqlName = "Sql";
+        /// <summary>
+        /// Write sql error.
+        /// </summary>
+        /// <param name="message"></param>
+        /// <param name="args"></param>
+        public static void WriteSqlError(string message, params object[] args)
+        {
+            string str = message;
+            if (args.Length > 0)
+            {
+                str = string.Format(LoggerSqlName + ">>" + message, args);
+            }
+            LogHelper.WriteTo(LoggerSqlName, str);
+        }
+
+        /// <summary>
         /// 在DEBUG和Release下输出到Info目录
         /// </summary>
         /// <param name="message"></param>

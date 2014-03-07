@@ -27,6 +27,7 @@ using System.Diagnostics;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using ZyGames.Framework.Common.Log;
 
 namespace ZyGames.Framework.Plugin.Test
 {
@@ -107,9 +108,16 @@ namespace ZyGames.Framework.Plugin.Test
         {
             return Task.Factory.StartNew(() =>
             {
-                if (action != null)
+                try
                 {
-                    action();
+                    if (action != null)
+                    {
+                        action();
+                    }
+                }
+                catch (Exception ex)
+                {
+                    TraceLog.WriteError("TaskRun:{0}", ex);
                 }
             });
         }
@@ -122,10 +130,17 @@ namespace ZyGames.Framework.Plugin.Test
         {
             return Task.Factory.StartNew(() =>
             {
-                if (action != null)
+                try
                 {
-                    var watch = StartNewWatch();
-                    action(watch);
+                    if (action != null)
+                    {
+                        var watch = StartNewWatch();
+                        action(watch);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    TraceLog.WriteError("TaskRun:{0}", ex);
                 }
             });
         }
@@ -140,10 +155,17 @@ namespace ZyGames.Framework.Plugin.Test
         {
             return Task.Factory.StartNew(() =>
             {
-                if (action != null)
+                try
                 {
-                    var watch = StartNewWatch();
-                    action(name, watch);
+                    if (action != null)
+                    {
+                        var watch = StartNewWatch();
+                        action(name, watch);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    TraceLog.WriteError("TaskRun:{0}", ex);
                 }
             });
         }

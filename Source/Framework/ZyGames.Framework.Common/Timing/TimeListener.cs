@@ -143,45 +143,53 @@ namespace ZyGames.Framework.Common.Timing
 
         private static void TimerCallback(object state)
         {
-            if (_isRunning == 1)
+            try
             {
-                TraceLog.ReleaseWrite("TimerCallback is busy, The other timer is running.");
-                return;
-            }
-            Interlocked.Exchange(ref _isRunning, 1);
-            var tempList = new PlanConfig[0];
-            _lockStrategy.TryEnterLock(() =>
-            {
-                tempList = new PlanConfig[_listenerQueue.Count];
-                _listenerQueue.CopyTo(tempList, 0);
-            });
-            var expiredList = new Queue<PlanConfig>();
-            foreach (var planConfig in tempList)
-            {
-                if (planConfig == null || planConfig.IsExpired)
+                if (_isRunning == 1)
                 {
-                    if (planConfig != null)
+                    TraceLog.ReleaseWrite("TimerCallback is busy, The other timer is running.");
+                    return;
+                }
+                Interlocked.Exchange(ref _isRunning, 1);
+                var tempList = new PlanConfig[0];
+                _lockStrategy.TryEnterLock(() =>
+                {
+                    tempList = new PlanConfig[_listenerQueue.Count];
+                    _listenerQueue.CopyTo(tempList, 0);
+                });
+                var expiredList = new Queue<PlanConfig>();
+                foreach (var planConfig in tempList)
+                {
+                    if (planConfig == null || planConfig.IsExpired)
                     {
-                        expiredList.Enqueue(planConfig);
+                        if (planConfig != null)
+                        {
+                            expiredList.Enqueue(planConfig);
+                        }
+                        continue;
                     }
-                    continue;
+                    if (planConfig.AutoStart())
+                    {
+                        DoNotify(planConfig);
+                    }
                 }
-                if (planConfig.AutoStart())
+                _lockStrategy.TryEnterLock(() =>
                 {
-                    DoNotify(planConfig);
-                }
-            }
-            _lockStrategy.TryEnterLock(() =>
-            {
-                while (expiredList.Count > 0)
-                {
-                    var p = expiredList.Dequeue();
-                    _listenerQueue.Remove(p);
+                    while (expiredList.Count > 0)
+                    {
+                        var p = expiredList.Dequeue();
+                        _listenerQueue.Remove(p);
 
-                    TraceLog.ReleaseWrite("{0}-{1}>>listener is remove ({2}).", DateTime.Now.ToLongTimeString(), p.Name, _listenerQueue.Count);
-                }
-            });
-            Interlocked.Exchange(ref _isRunning, 0);
+                        TraceLog.ReleaseWrite("{0}-{1}>>listener is remove ({2}).", DateTime.Now.ToLongTimeString(), p.Name, _listenerQueue.Count);
+                    }
+                });
+                Interlocked.Exchange(ref _isRunning, 0);
+            }
+            catch (Exception er)
+            {
+                Interlocked.Exchange(ref _isRunning, 0);
+                TraceLog.WriteError("Timer listenner:{0}", er);
+            }
         }
 
         private static void DoNotify(PlanConfig planConfig)

@@ -43,6 +43,23 @@ namespace ZyGames.Framework.Script
     /// </summary>
     public static class ScriptCompiler
     {
+        private readonly static string _dyScriptPath;
+
+        static ScriptCompiler()
+        {
+            _dyScriptPath = MathUtils.RuntimePath;
+        }
+
+        /// <summary>
+        /// Get Script generate path.
+        /// </summary>
+        public static string ScriptPath
+        {
+            get
+            {
+                return Path.Combine(_dyScriptPath, ScriptAssemblyTemp);
+            }
+        }
         /// <summary>
         /// compile temp
         /// </summary>
@@ -64,11 +81,11 @@ namespace ZyGames.Framework.Script
         /// <summary>
         /// Clear temp assmbly.
         /// </summary>
-        internal static void ClearTemp(string dirName)
+        public static void ClearTemp(string dirName)
         {
             try
             {
-                string tempPath = Path.Combine(".", dirName);
+                string tempPath = Path.Combine(_dyScriptPath, dirName);
                 if (Directory.Exists(tempPath))
                 {
                     Directory.Delete(tempPath, true);
@@ -108,11 +125,11 @@ namespace ZyGames.Framework.Script
                     string tempPath = "";
                     if (string.IsNullOrEmpty(outputPath))
                     {
-                        tempPath = Path.Combine(MathUtils.RuntimePath, CompileTemp, Guid.NewGuid().ToString());
+                        tempPath = Path.Combine(_dyScriptPath, CompileTemp, Guid.NewGuid().ToString());
                     }
                     else
                     {
-                        tempPath = Path.Combine(MathUtils.RuntimePath, outputPath);
+                        tempPath = Path.Combine(_dyScriptPath, outputPath);
                     }
 
                     if (!Directory.Exists(tempPath))
@@ -178,8 +195,8 @@ namespace ZyGames.Framework.Script
                 return null;
             }
             pathToAssembly = result.PathToAssembly;
-            string runtimePath = MathUtils.RuntimePath;
-            string outAssembly = Path.Combine(runtimePath, ScriptAssemblyTemp);
+            string runtimePath = MathUtils.RuntimeBinPath;
+            string outAssembly = Path.Combine(_dyScriptPath, ScriptAssemblyTemp);
             if (!Directory.Exists(outAssembly))
             {
                 Directory.CreateDirectory(outAssembly);

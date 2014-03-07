@@ -25,6 +25,7 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
+using ZyGames.Framework.Common.Log;
 using ZyGames.Framework.Common.Serialization;
 using ZyGames.Framework.Model;
 using ZyGames.Framework.Redis;
@@ -37,6 +38,7 @@ namespace ZyGames.Framework.Cache.Generic
     internal class CacheChangeManager
     {
         public static readonly string GlobalRedisKey = "__GLOBAL_SQL_CHANGE_KEYS";
+        public static readonly string GlobalChangeKey = "__GLOBAL_CHANGE_KEYS";
         private static CacheChangeManager instance = new CacheChangeManager();
 
         /// <summary>
@@ -49,9 +51,6 @@ namespace ZyGames.Framework.Cache.Generic
                 return instance;
             }
         }
-
-        private ConcurrentDictionary<string, bool> _changeKeys = new ConcurrentDictionary<string, bool>();
-        private ConcurrentDictionary<string, dynamic> _removeDict = new ConcurrentDictionary<string, dynamic>();
 
         private CacheChangeManager()
         {
@@ -68,11 +67,8 @@ namespace ZyGames.Framework.Cache.Generic
                 RedisManager.Process(client =>
                 {
                     byte[] data = client.Get<byte[]>(GlobalRedisKey) ?? new byte[0];
-                    var dict = ProtoBufUtils.Deserialize<Dictionary<string, bool>>(data);
-                    if (dict == null)
-                    {
-                        dict = new Dictionary<string, bool>();
-                    }
+                    var dict = ProtoBufUtils.Deserialize<Dictionary<string, bool>>(data) ??
+                               new Dictionary<string, bool>();
                     dict[key] = true;
                     data = ProtoBufUtils.Serialize(dict);
                     client.Set(GlobalRedisKey, data);
@@ -126,31 +122,48 @@ namespace ZyGames.Framework.Cache.Generic
         /// <summary>
         /// get entity keys
         /// </summary>
-        /// <param name="count"></param>
+        /// <param name="min"></param>
+        /// <param name="max"></param>
         /// <returns></returns>
-        public List<string> GetKeys(int count = 1)
+        public List<KeyValuePair<string, byte[]>> GetKeys(int min = 0, int max = 0)
         {
-            return _changeKeys.Keys.Take(count).ToList();
-        }
-
-        internal int ChangeKeys
-        {
-            get { return _changeKeys.Count; }
-        }
-
-        /// <summary>
-        /// remove entity key
-        /// </summary>
-        /// <param name="keys">The entity key</param>
-        public void Remove(params string[] keys)
-        {
-            foreach (var key in keys)
+            if (max == 0)
             {
-                bool val;
-                _changeKeys.TryRemove(key, out val);
-                RemovePool(key);
+                max = int.MaxValue;
             }
+            var list = new List<KeyValuePair<string, byte[]>>();
+            string key = GlobalChangeKey;
+            RedisManager.Process(client =>
+            {
+                string setId = key + "_temp";
+                try
+                {
+                    if (!client.ContainsKey(setId) && client.ContainsKey(key))
+                    {
+                        client.Rename(key, setId);
+                    }
+                    byte[][] buffers = client.ZRange(setId, min, max);
+                    if (buffers == null || buffers.Length == 0)
+                    {
+                        client.Remove(setId);
+                        return;
+                    }
+
+                    foreach (var buffer in buffers)
+                    {
+                        list.Add(ProtoBufUtils.Deserialize<KeyValuePair<string, byte[]>>(buffer));
+                        client.ZRemove(setId, buffer);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    TraceLog.WriteError("Entity change key Pop setId:{0} error:{1}", setId, ex);
+                }
+            });
+
+            return list;
         }
+
 
         /// <summary>
         /// 
@@ -160,50 +173,46 @@ namespace ZyGames.Framework.Cache.Generic
         {
             foreach (var entity in entitys)
             {
-                if (entity != null)
+                string key = "";
+                try
                 {
-                    string key = "";
-                    if (entity.GetSchema().CacheType == CacheType.Entity)
+                    if (entity != null)
                     {
-                        key = string.Format("{0}_{1}", entity.GetType(), entity.GetKeyCode());
+                        if (entity.GetSchema().CacheType == CacheType.Entity)
+                        {
+                            key = string.Format("{0}_{1}", entity.GetType(), entity.GetKeyCode());
+                        }
+                        else
+                        {
+                            key = string.Format("{0}_{1}|{2}", entity.GetType(), entity.PersonalId, entity.GetKeyCode());
+                        }
+                        var data = ProtoBufUtils.Serialize(entity);
+                        SetKey(key, data);
                     }
-                    else
-                    {
-                        key = string.Format("{0}_{1}|{2}", entity.GetType(), entity.PersonalId, entity.GetKeyCode());
-                    }
-                    SetKey(key);
-                    if (entity.IsDelete)
-                    {
-                        _removeDict[key] = entity;
-                    }
+                }
+                catch (Exception ex)
+                {
+                    TraceLog.WriteError("Post changed key:{0} error:{1}", key, ex);
                 }
             }
         }
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="key"></param>
-        internal void SetKey(string key)
+        private void SetKey(string key, byte[] data)
         {
-            bool value = true;
-            if (_changeKeys.AddOrUpdate(key, value, (k, v) => v == value))
+            RedisManager.Process(client =>
             {
-
-            }
+                try
+                {
+                    var pair = new KeyValuePair<string, byte[]>(key, data);
+                    byte[] value = ProtoBufUtils.Serialize(pair);
+                    client.ZAdd(GlobalChangeKey, value);
+                }
+                catch (Exception ex)
+                {
+                    TraceLog.WriteError("Entity change key put to redis error:{0}\r\n{1}", key, ex);
+                }
+            });
         }
-
-        internal bool CheckRemovePool(string key, out dynamic entity)
-        {
-            return _removeDict.TryGetValue(key, out entity);
-        }
-
-        private void RemovePool(string key)
-        {
-            dynamic entity;
-            _removeDict.TryRemove(key, out entity);
-        }
-
 
     }
 }

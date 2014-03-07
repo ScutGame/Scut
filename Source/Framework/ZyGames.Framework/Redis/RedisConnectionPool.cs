@@ -21,6 +21,7 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ****************************************************************************/
+using System;
 using System.Collections.Concurrent;
 using ZyGames.Framework.Common.Configuration;
 
@@ -29,7 +30,7 @@ namespace ZyGames.Framework.Redis
     /// <summary>
     /// 连接池管理
     /// </summary>
-    internal static class RedisConnectionPool
+    public static class RedisConnectionPool
     {
         private static ConcurrentQueue<RedisConnection> _connectionPools = new ConcurrentQueue<RedisConnection>();
         private static readonly string Host;
@@ -49,6 +50,25 @@ namespace ZyGames.Framework.Redis
             PoolMaxSize = ConfigUtils.GetSetting("Redis.Pool.MaxSize", 200);
 
             DbIndex = DbIndex < 0 ? 0 : DbIndex;
+        }
+
+        /// <summary>
+        /// check connect to redis.
+        /// </summary>
+        /// <returns></returns>
+        public static bool CheckConnect()
+        {
+            try
+            {
+                using (var con = new RedisConnection(Host, Port, Password, DbIndex))
+                {
+                    return con.IsConnected;
+                }
+            }
+            catch (Exception)
+            {
+                return false;
+            }
         }
 
         /// <summary>
