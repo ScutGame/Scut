@@ -26,7 +26,7 @@ namespace ZyGames.Doudizhu.HostServer
             {
                 var setting = new EnvironmentSetting();
                 Console.WriteLine(string.Format(CharFormat,
-                    "6.1.6.0",
+                    "6.1.6.5",
                     setting.ProductCode,
                     setting.ProductServerId,
                     setting.GamePort));
