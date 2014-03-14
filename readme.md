@@ -49,7 +49,14 @@ OSChina代码库：https://git.oschina.net/scutgame/Scut<br />
 
 更新日志
 ----------------
-###版本：6.1.6.2 (2014-3-7) Unstable
+###版本：6.1.6.5 (2014-3-14) Unstable
+> 1. 增加CSharp脚本不需要验证访问Action设置
+> 2. 增加脚本引擎可以执行py/C# Source脚本片段
+> 3. 修改Change Key写入Redis有丢失的问题
+> 4. 修改Changed Eventg事件通知使用异步调用
+
+
+###版本：6.1.6.2 (2014-3-7)
 > 1. 增加输入Log文件可划分目录
 > 2. 修改GameSession初始加载Redis数据出错问题
 > 3. 修改Language使用非脚本无法配置Type问题
