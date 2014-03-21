@@ -643,7 +643,7 @@ namespace ContractTools.WebApp.Base
                     depth--;
                     if (depth > 0)
                     {
-                        enumVar = enumVar + depth;
+                        enumVar = enumVar.Substring(0, enumVar.LastIndexOf('_'));
                         itemVar = currentVar;
                         if (currentVar.Length == 6)
                         {
@@ -930,7 +930,7 @@ namespace ContractTools.WebApp.Base
             string currentVar = "this";
             string itemVar = "dsItem";
             string enumVar = "item";
-            string listVar = "dsItemList";
+            string listVar = "_dsItemList";
             int recordIndex = 0;
             int[] indexList = new int[forVarChars.Length];
 
