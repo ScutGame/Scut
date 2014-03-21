@@ -1,21 +1,17 @@
-﻿--        ##Description##（ID=##ID##）
-function Action##ID##(Scene,isLoading ##Parameter##)
+﻿--##Description##（ID=##ID##）
+function Action##ID##(currScene, isLoading##Parameter##)
+    ZyWriter:writeString("ActionId",##ID##)##Fixed##
 
-   	ZyWriter:writeString("ActionId",##ID##)
-   	##Fixed##
-	ZyExecRequest(Scene, nil,isLoading)
+    ZyExecRequest(currScene, nil, isLoading)
 end
 
-function _##ID##Callback(pZyScene, lpExternalData)
-   
-    local DataTabel=nil
+function _##ID##Callback(currScene, lpExternalData)
+    local DataTabel = nil
     if ZyReader:getResult() == eZyNetSuccess then
-        DataTabel={}
+        DataTabel = {}
 ##Judge##
-       
-    else          
-          local box = ZyMessageBoxEx:new()
-	      box:doPrompt(pZyScene, nil, ZyReader:readErrorMsg(),RexueString.IDS_OK)
+    else
+        ZyToast.show(currScene, ZyReader:readErrorMsg())
     end
     return DataTabel
 end
