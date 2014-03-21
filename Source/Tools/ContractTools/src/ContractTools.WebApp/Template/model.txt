@@ -26,7 +26,6 @@ namespace ##Namespace##
         public override bool GetUrlElement()
         {
 ##Judge##
-            return false;
         }
 
         public override bool TakeAction()

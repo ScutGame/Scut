@@ -246,7 +246,12 @@ namespace ContractTools.WebApp
                 syncLink.NavigateUrl = "SyncModelInfo.aspx" + parameter;
                 btnTestCase.NavigateUrl = "TestCase.aspx" + parameter;
                 btnTestCase.Target = "_blank";
-
+                string tileName = DropGetList.SelectedItem.Text;
+                int index = tileName.IndexOf("【");
+                if (index != -1)
+                {
+                    tileName = tileName.Substring(0, index);
+                }
                 int slnId = ddlSolution.Text.ToInt();
                 if (gvGetlist.Rows.Count != 0)
                 {
@@ -256,7 +261,7 @@ namespace ContractTools.WebApp
                     btnCopyto.Visible = true;
                     string name = Path.Combine(Server.MapPath("~"), "Template/CustomerModel.txt");
                     string tempContentto = TemplateHelper.ReadTemp(name);
-                    txtContentto.Text = TemplateHelper.FromatTempto(tempContentto, contractId, respParams, reqParams, DropGetList.SelectedItem.Text);
+                    txtContentto.Text = TemplateHelper.FromatClientLuaTemp(tempContentto, contractId, respParams, reqParams, tileName);
                     var slnRecord = DbDataLoader.GetSolution(slnId);
                     if (LangDropDownList.SelectedValue == "C#")
                     {
@@ -264,7 +269,7 @@ namespace ContractTools.WebApp
                         string tempContent = TemplateHelper.ReadTemp(fileName);
                         string tempActionDefine = TemplateHelper.ReadTemp(Path.Combine(Server.MapPath("~"), "Template/ActionIDDefine.txt"));
 
-                        txtContent.Text = TemplateHelper.FormatTemp(tempContent, contractId, respParams, reqParams, slnRecord, DropGetList.SelectedItem.Text);
+                        txtContent.Text = TemplateHelper.FormatTemp(tempContent, contractId, respParams, reqParams, slnRecord, tileName);
                         var contractDs = DbDataLoader.GetContract(slnId);
                         txtActionDefine.Text = TemplateHelper.FormatActionDefineTemp(tempActionDefine, contractDs, slnRecord);
                         txtActionDefine.Visible = true;
@@ -274,7 +279,7 @@ namespace ContractTools.WebApp
                         string fileName = Path.Combine(Server.MapPath("~"), "Template/pythonmodel.txt");
                         string tempContent = TemplateHelper.ReadTemp(fileName);
 
-                        txtContent.Text = TemplateHelper.FormatPython(tempContent, respParams, reqParams, slnRecord, DropGetList.SelectedItem.Text);
+                        txtContent.Text = TemplateHelper.FormatPython(tempContent, respParams, reqParams, slnRecord, tileName);
                         txtActionDefine.Text = string.Empty;
                         txtActionDefine.Visible = false;
                     };
