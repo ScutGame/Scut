@@ -132,6 +132,12 @@
     <Compile Include="ContractList.aspx.designer.cs">
       <DependentUpon>ContractList.aspx</DependentUpon>
     </Compile>
+    <Compile Include="Default.aspx.cs">
+      <DependentUpon>Default.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Default.aspx.designer.cs">
+      <DependentUpon>Default.aspx</DependentUpon>
+    </Compile>
     <Compile Include="index.aspx.cs">
       <DependentUpon>index.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
@@ -196,6 +202,7 @@
     <Content Include="AddParamInfo.aspx" />
     <Content Include="ClientConfigInfo.aspx" />
     <Content Include="ContractList.aspx" />
+    <Content Include="Default.aspx" />
     <Content Include="index.aspx" />
     <Content Include="Search.aspx" />
     <Content Include="SolutionAdd.aspx" />

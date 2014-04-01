@@ -559,6 +559,7 @@ namespace ContractTools.WebApp
                     else
                     {
                         sb.Append(text);
+                        break;
                     }
                 }
                 else
