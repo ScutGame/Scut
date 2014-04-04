@@ -49,7 +49,13 @@ OSChina代码库：https://git.oschina.net/scutgame/Scut<br />
 
 更新日志
 ----------------
-###版本：6.1.6.5 (2014-3-14) Unstable
+###版本：6.2.7.0 (2014-4-4)
+> 1. 升级底层类库到.Net Framework 4.5.1版本
+> 2. 增加Action=2与服务端Socket断开接口
+> 3. 修改更新Python脚本时ReferenceLib.py文件被占用问题
+
+
+###版本：6.1.6.5 (2014-3-14)
 > 1. 增加CSharp脚本不需要验证访问Action设置
 > 2. 增加脚本引擎可以执行py/C# Source脚本片段
 > 3. 修改Change Key写入Redis有丢失的问题
