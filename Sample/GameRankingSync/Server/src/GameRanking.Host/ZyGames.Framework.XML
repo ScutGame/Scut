@@ -756,6 +756,14 @@
             </summary>
             <param name="client"></param>
         </member>
+        <member name="M:ZyGames.Framework.Cache.Generic.CacheChangeManager.ChangeKeyError(ZyGames.Framework.Redis.RedisConnection,System.String,System.Byte[])">
+            <summary>
+            changkey error occurred while removing more than 3 times.
+            </summary>
+            <param name="client"></param>
+            <param name="key"></param>
+            <param name="buffer"></param>
+        </member>
         <member name="M:ZyGames.Framework.Cache.Generic.CacheChangeManager.GetKeys(ZyGames.Framework.Redis.RedisConnection,System.Int32,System.Int32)">
             <summary>
             get entity keys
@@ -11641,6 +11649,17 @@
             </summary>
             <param name="fileCode">文件编号</param>
             <param name="fileName">完整路径和文件名</param>
+        </member>
+        <member name="M:ZyGames.Framework.Script.ScriptFileInfo.TryEnterLock">
+            <summary>
+            lock
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:ZyGames.Framework.Script.ScriptFileInfo.ExitLock">
+            <summary>
+            exit lock
+            </summary>
         </member>
         <member name="P:ZyGames.Framework.Script.ScriptFileInfo.Type">
             <summary>

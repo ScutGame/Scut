@@ -97,7 +97,7 @@ namespace ZyGames.Tianjiexing.Model.ConfigModel
             }
             private set
             {
-                SetChange("RecruitType", value);
+                SetChange("CodeTime", value);
             }
         }
 

@@ -28,6 +28,7 @@ namespace ZyGames.Tianjiexing.Model
     /// </summary>
     public enum FunctionEnum
     {
+        None = 0,
         /// <summary>
         /// 酒馆招募佣兵
         /// </summary>
