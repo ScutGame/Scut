@@ -64,6 +64,11 @@ namespace ZyGames.Framework.Game.Contract
             }
         }
 
+        internal static bool IsIgnoreAction(int actionId)
+        {
+            return _ignoreAuthorizeSet.Contains(actionId);
+        }
+
         /// <summary>
         /// 请求处理
         /// </summary>

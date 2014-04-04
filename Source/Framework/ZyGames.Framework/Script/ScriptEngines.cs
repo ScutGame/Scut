@@ -30,6 +30,7 @@ using System.Reflection;
 using System.Text;
 using System.Threading;
 using IronPython.Hosting;
+using Microsoft.Scripting;
 using Microsoft.Scripting.Hosting;
 using ZyGames.Framework.Collection.Generic;
 using ZyGames.Framework.Common;
@@ -412,6 +413,7 @@ namespace ZyGames.Framework.Script
         private static void UpdatePythonReferenceLib()
         {
             if (DisablePython) return;
+
             StringBuilder pyCode = new StringBuilder();
             pyCode.AppendLine(@"import clr, sys");
             pyCode.AppendLine(@"clr.AddReference('ZyGames.Framework.Common')");
@@ -424,12 +426,29 @@ namespace ZyGames.Framework.Script
                 pyCode.AppendFormat(@"clr.AddReference('{0}')", assmeblyName);
                 pyCode.AppendLine();
             }
-            using (var sw = File.CreateText(ReferenceLibFile))
+
+            string scriptCode = GetScriptCode(ReferenceLibFile);
+            ScriptFileInfo scriptInfo = _scriptCodeCache[scriptCode];
+            if (scriptInfo == null || scriptInfo.TryEnterLock())
             {
-                sw.Write(pyCode.ToString());
-                sw.Flush();
-                sw.Close();
+                try
+                {
+                    using (var sw = File.CreateText(ReferenceLibFile))
+                    {
+                        sw.Write(pyCode.ToString());
+                        sw.Flush();
+                        sw.Close();
+                    }
+                }
+                finally
+                {
+                    if (scriptInfo != null)
+                    {
+                        scriptInfo.ExitLock();
+                    }
+                }
             }
+
         }
 
         private static void InitPythonRuntime(bool isUpdate = false)
@@ -487,14 +506,21 @@ namespace ZyGames.Framework.Script
 
         private static bool CheckFileChanged(string fileName)
         {
+			//todo modify
+            return true;
             string scriptCode = GetScriptCode(fileName);
-            if (_scriptCodeCache.ContainsKey(scriptCode))
+            var script = _scriptCodeCache[scriptCode];
+            if (script != null && script.TryEnterLock())
             {
-                var script = _scriptCodeCache[scriptCode];
-                string hashcode = GetFileHashCode(fileName);
-                return script != null &&
-                    !string.IsNullOrEmpty(hashcode) &&
-                    script.HashCode != hashcode;
+                try
+                {
+                    string hashcode = GetFileHashCode(fileName);
+                    return !string.IsNullOrEmpty(hashcode) && script.HashCode != hashcode;
+                }
+                finally
+                {
+                    script.ExitLock();
+                }
             }
             return false;
         }
@@ -586,7 +612,7 @@ namespace ZyGames.Framework.Script
                 if (scriptInfo.ObjType == null)
                 {
                     var item = _watcherDict[scriptInfo.GroupName];
-                    if (item != null && item.Assembly != null)
+                    if (item != null && item.Assembly != null && !item.IsUpdating())
                     {
                         if (string.IsNullOrEmpty(typeName))
                         {
@@ -598,6 +624,41 @@ namespace ZyGames.Framework.Script
                 return scriptInfo.ObjType != null ? scriptInfo.ObjType.CreateInstance(args) : null;
             }
             throw new NotSupportedException("Not supported script type:" + scriptInfo.GetType().FullName);
+        }
+        /// <summary>
+        /// ExecutePython
+        /// </summary>
+        /// <param name="scriptCode"></param>
+        /// <returns></returns>
+        public static dynamic ExecutePython(string scriptCode)
+        {
+            if (_scriptEngine == null) return null;
+            var scope = _scriptEngine.CreateScope();
+            var compileCode = CompilePythonCode(scriptCode);
+            if (scriptCode != null)
+            {
+                compileCode.Execute(scope);
+                return scope;
+            }
+            return null;
+        }
+        /// <summary>
+        /// ExecuteCSharp
+        /// </summary>
+        /// <param name="scriptCode"></param>
+        /// <param name="refAssemblies"></param>
+        /// <param name="typeName"></param>
+        /// <param name="args"></param>
+        /// <returns></returns>
+        public static dynamic ExecuteCSharpSource(string[] scriptCode, string[] refAssemblies, string typeName, params object[] args)
+        {
+            var result = ScriptCompiler.CompileSource(scriptCode, refAssemblies, "DynamicCode", _scriptIsDebug, true);
+            if (result != null)
+            {
+                var type = result.CompiledAssembly.GetType(typeName, false, true);
+                if (type != null) return type.CreateInstance(args);
+            }
+            return null;
         }
 
         /// <summary>
@@ -721,10 +782,6 @@ namespace ZyGames.Framework.Script
             try
             {
                 if (_scriptEngine == null) return null;
-                //string source = File.ReadAllText(fileName);
-                //source = source.Replace("$DynamicScript.Model", _watcherDict[ModelDirName].Assembly.GetName().Name)
-                //    .Replace("$DynamicScript.CSharp", _watcherDict[CSharpDirName].Assembly.GetName().Name);
-                //var scriptSource = _scriptEngine.CreateScriptSourceFromString(source, fileName, SourceCodeKind.AutoDetect);
                 var scriptSource = _scriptEngine.CreateScriptSourceFromFile(fileName);
                 return scriptSource.Compile();
             }
@@ -735,5 +792,19 @@ namespace ZyGames.Framework.Script
             }
         }
 
+        private static CompiledCode CompilePythonCode(string scriptCode)
+        {
+            try
+            {
+                if (_scriptEngine == null) return null;
+                var scriptSource = _scriptEngine.CreateScriptSourceFromString(scriptCode, SourceCodeKind.AutoDetect);
+                return scriptSource.Compile();
+            }
+            catch (Exception ex)
+            {
+                TraceLog.WriteError("CompilePython script:{0} error:{1}", scriptCode, ex);
+                return null;
+            }
+        }
     }
 }

@@ -23,7 +23,9 @@ THE SOFTWARE.
 ****************************************************************************/
 using System;
 using ProtoBuf;
+using ZyGames.Framework.Event;
 using ZyGames.Framework.Model;
+using ZyGames.Framework.Cache.Generic;
 
 namespace GameServer.Model
 {
@@ -38,6 +40,7 @@ namespace GameServer.Model
             : base(false)
         {
             CreateDate = DateTime.Now;
+            Items = new CacheList<EquiAttrInfo>();
         }
 
         [ProtoMember(1)]
@@ -72,9 +75,32 @@ namespace GameServer.Model
             set;
         }
 
+        [ProtoMember(100)]
+        [EntityField]
+        public CacheList<EquiAttrInfo> Items { get; set; }
+
         protected override int GetIdentityId()
         {
             return UserID;
+        }
+    }
+
+    [Serializable, ProtoContract]
+    public class EquiAttrInfo : EntityChangeEvent
+    {
+        public EquiAttrInfo()
+            : base(false)
+        {
+        }
+
+        /// <summary>
+        /// 属性
+        /// </summary>
+        [ProtoMember(1)]
+        public int AttrType
+        {
+            get;
+            set;
         }
     }
 }

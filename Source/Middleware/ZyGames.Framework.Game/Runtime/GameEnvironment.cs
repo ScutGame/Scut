@@ -27,6 +27,7 @@ using System.Threading;
 using ZyGames.Framework.Cache.Generic;
 using ZyGames.Framework.Common.Configuration;
 using ZyGames.Framework.Common.Log;
+using ZyGames.Framework.Common.Reflect;
 using ZyGames.Framework.Common.Serialization;
 using ZyGames.Framework.Data;
 using ZyGames.Framework.Game.Cache;
@@ -200,11 +201,14 @@ namespace ZyGames.Framework.Game.Runtime
             if (assembly == null) return;
             try
             {
+                TypeAccessor.Init();
                 ProtoBufUtils.Initialize();
                 ProtoBufUtils.LoadProtobufType(assembly);
+                EntitySchemaSet.Init();
                 EntitySchemaSet.LoadAssembly(assembly);
                 Language.Reset();
                 CacheFactory.ResetCache();
+                SensitiveWordService.Init();
                 TraceLog.ReleaseWrite("Update Model script success.");
                 Interlocked.Exchange(ref _isRunning, 1);
             }

@@ -36,12 +36,17 @@ namespace ZyGames.Framework.Cache.Generic.Pool
     class CachePool : BaseCachePool
     {
         private readonly bool _isReadOnly;
-        private readonly ConcurrentDictionary<string, CacheContainer> _cacheStruct;
+        private ConcurrentDictionary<string, CacheContainer> _cacheStruct;
 
         public CachePool(ITransponder dbTransponder, ITransponder redisTransponder, bool isReadOnly)
             : base(dbTransponder, redisTransponder)
         {
             _isReadOnly = isReadOnly;
+            _cacheStruct = new ConcurrentDictionary<string, CacheContainer>();
+        }
+
+        internal override void Init()
+        {
             _cacheStruct = new ConcurrentDictionary<string, CacheContainer>();
         }
 

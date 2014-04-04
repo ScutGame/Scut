@@ -47,7 +47,7 @@ namespace GameServer
             {
                 var setting = new EnvironmentSetting();
                 Console.WriteLine(string.Format(CharFormat,
-                    "6.1.6.2",
+                    "6.2.7.0",
                     setting.ProductCode,
                     setting.ProductServerId,
                     setting.GamePort));

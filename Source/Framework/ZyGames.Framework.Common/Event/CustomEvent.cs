@@ -82,7 +82,20 @@ namespace ZyGames.Framework.Common.Event
         {
             if (EventHandle != null)
             {
-                EventHandle(sender, args);
+                try
+                {
+                    EventHandle.BeginInvoke(sender, args, null, null);
+                }
+                catch (Exception ex)
+                {
+                    string error = "\r\n";
+                    Delegate[] tempList = EventHandle.GetInvocationList();
+                    foreach (dynamic handle in tempList)
+                    {
+                        error += string.Format("Method:{0}\r\n Target:{1},{2}\r\n", handle.Method, handle.Target, handle.Target.GetType().Assembly.FullName);
+                    }
+                    throw new Exception(error, ex);
+                }
             }
         }
         /// <summary>
@@ -96,12 +109,12 @@ namespace ZyGames.Framework.Common.Event
             {
                 return;
             }
-            var tempList = EventHandle.GetInvocationList();
-            foreach (var item in tempList)
+            Delegate[] tempList = EventHandle.GetInvocationList();
+            foreach (dynamic handle in tempList)
             {
-                if (item != null)
+                if (handle != null)
                 {
-                    item.DynamicInvoke(sender, args);
+                    handle.BeginInvoke(sender, args, null, null);
                 }
             }
         }

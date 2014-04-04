@@ -21,7 +21,7 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ****************************************************************************/
-
+using System;
 using System.Collections.Generic;
 using GameServer.Model;
 using ZyGames.Framework.Cache.Generic;
@@ -53,8 +53,8 @@ namespace GameServer.CsScript.Action
             {
                 DataStruct dsItem = new DataStruct();
                 dsItem.PushIntoStack(item.UserName);
-                dsItem.PushIntoStack(item.Score);
-
+                dsItem.PushIntoStack(item.Score); 
+                //Console.WriteLine("Num count:{0}", item.Items.Count);
                 this.PushIntoStack(dsItem);
             }
 

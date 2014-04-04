@@ -72,7 +72,7 @@ namespace ZyGames.Framework.Game.Contract.Action
                 ErrorInfo = Language.Instance.ServerLoading;
                 return false;
             }
-            if (IgnoreActionId)
+            if (IgnoreActionId || ActionFactory.IsIgnoreAction(actionId))
             {
                 return true;
             }

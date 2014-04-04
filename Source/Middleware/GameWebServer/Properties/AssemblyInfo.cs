@@ -5,8 +5,15 @@ using System.Runtime.InteropServices;
 // 有关程序集的常规信息通过以下特性集 
 // 控制。更改这些特性值可修改
 // 与程序集关联的信息。
-[assembly: AssemblyTitle("SCUT Server")]
-[assembly: AssemblyDescription("")]
+
+#if NET4_0
+[assembly: AssemblyTitle("SCUTServer for .NET Framework 4.0")]
+#elif NET4_5_1
+[assembly: AssemblyTitle("SCUTServer for .NET Framework 4.5.1")]
+#else
+[assembly: AssemblyTitle("SCUTServer")]
+#endif
+[assembly: AssemblyDescription("SCUT Server")]
 [assembly: AssemblyConfiguration("")]
 
 // 将 ComVisible 设置为 false 会使此程序集中的类型 

@@ -39,11 +39,13 @@ namespace ZyGames.Framework.Cache.Generic
     {
         private static readonly int CacheUpdateInterval;
         private static readonly int CacheExpiredInterval;
+        private static readonly bool CacheEnableWritetoDb;
 
         static CacheSetting()
         {
             CacheUpdateInterval = ConfigUtils.GetSetting("Cache.update.interval", 600); //10 Minute
             CacheExpiredInterval = ConfigUtils.GetSetting("Cache.expired.interval", 600);
+            CacheEnableWritetoDb = ConfigUtils.GetSetting("Cache.enable.writetoDb", true);
         }
         /// <summary>
         /// The cache setting init.
@@ -53,6 +55,7 @@ namespace ZyGames.Framework.Cache.Generic
             AutoRunEvent = true;
             UpdateInterval = CacheUpdateInterval;
             ExpiredInterval = CacheExpiredInterval;
+            EnableWriteToDb = CacheEnableWritetoDb;
         }
 
         /// <summary>
@@ -69,6 +72,11 @@ namespace ZyGames.Framework.Cache.Generic
         /// The cache update interval.
         /// </summary>
         public int UpdateInterval { get; set; }
+
+        /// <summary>
+        /// Enable write to Db.
+        /// </summary>
+        public bool EnableWriteToDb { get; set; }
 
         /// <summary>
         /// The entity has be changed event notify.

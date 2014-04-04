@@ -25,6 +25,9 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
+using ServiceStack.Redis;
+using ZyGames.Framework.Collection.Generic;
 using ZyGames.Framework.Common.Log;
 using ZyGames.Framework.Common.Serialization;
 using ZyGames.Framework.Model;
@@ -79,89 +82,124 @@ namespace ZyGames.Framework.Cache.Generic
         /// <summary>
         /// pop sql change keys
         /// </summary>
-        /// <param name="count">the count.</param>
-        public List<string> PopSql(int count = 1)
+        /// <param name="client"></param>
+        public Dictionary<string, bool> PopSql(RedisConnection client)
         {
             Dictionary<string, bool> dict = null;
-            List<string> keys = new List<string>();
-            RedisManager.Process(client =>
+
+            string setId = GlobalRedisKey + "_temp";
+            bool hasKey = client.ContainsKey(GlobalRedisKey);
+            bool hasSetId = client.ContainsKey(setId);
+            if (!hasSetId && !hasKey)
             {
-                string setId = GlobalRedisKey + "_temp";
-                bool hasKey = client.ContainsKey(GlobalRedisKey);
-                bool hasSetId = client.ContainsKey(setId);
-                if (!hasSetId && !hasKey)
-                {
-                    return;
-                }
-                if (!hasSetId && hasKey)
+                return dict;
+            }
+            if (!hasSetId && hasKey)
+            {
+                try
                 {
                     client.Rename(GlobalRedisKey, setId);
                 }
-                byte[] data = client.Get<byte[]>(setId) ?? new byte[0];
-                dict = ProtoBufUtils.Deserialize<Dictionary<string, bool>>(data);
+                catch
+                {
+                }
+            }
+            byte[] data = client.Get<byte[]>(setId) ?? new byte[0];
+            dict = ProtoBufUtils.Deserialize<Dictionary<string, bool>>(data);
 
-                keys = dict.Keys.Take(count).ToList();
-                foreach (var key in keys)
-                {
-                    dict.Remove(key);
-                }
-                if (dict.Count == 0)
-                {
-                    client.Remove(setId);
-                }
-                else
-                {
-                    data = ProtoBufUtils.Serialize(dict);
-                    client.Set(setId, data);
-                }
-
-            });
-            return keys;
+            return dict;
         }
 
+        public void UpdateSqlKey(RedisConnection client, Dictionary<string, bool> dict)
+        {
+            string setId = GlobalRedisKey + "_temp";
+            if (dict.Count == 0)
+            {
+                client.Remove(setId);
+            }
+            else
+            {
+                var data = ProtoBufUtils.Serialize(dict);
+                client.Set(setId, data);
+            }
+        }
+
+        public void RemoveKey(RedisConnection client, byte[] buffer)
+        {
+            string setId = GlobalChangeKey + "_temp";
+            client.ZRemove(setId, buffer);
+        }
+
+        private DictionaryExtend<string, int> _changeKeyError = new DictionaryExtend<string, int>();
+
+        /// <summary>
+        /// changkey error occurred while removing more than 3 times.
+        /// </summary>
+        /// <param name="client"></param>
+        /// <param name="key"></param>
+        /// <param name="buffer"></param>
+        public void ChangeKeyError(RedisConnection client, string key, byte[] buffer)
+        {
+            int errorCount;
+            if (!_changeKeyError.TryGetValue(key, out errorCount))
+            {
+                errorCount = 1;
+                _changeKeyError[key] = errorCount;
+            }
+            else
+            {
+                errorCount++;
+                _changeKeyError[key] = errorCount;
+            }
+            if (errorCount > 2)
+            {
+                RemoveKey(client, buffer);
+                _changeKeyError.TryRemove(key, out errorCount);
+            }
+        }
         /// <summary>
         /// get entity keys
         /// </summary>
+        /// <param name="client"></param>
         /// <param name="min"></param>
         /// <param name="max"></param>
         /// <returns></returns>
-        public List<KeyValuePair<string, byte[]>> GetKeys(int min = 0, int max = 0)
+        public byte[][] GetKeys(RedisConnection client, int min = 0, int max = 0)
         {
             if (max == 0)
             {
                 max = int.MaxValue;
             }
-            var list = new List<KeyValuePair<string, byte[]>>();
             string key = GlobalChangeKey;
-            RedisManager.Process(client =>
+            string setId = key + "_temp";
+            try
             {
-                string setId = key + "_temp";
-                try
+                bool hasKey = client.ContainsKey(key);
+                bool hasSetId = client.ContainsKey(setId);
+                if (!hasSetId && !hasKey)
                 {
-                    if (!client.ContainsKey(setId) && client.ContainsKey(key))
+                    return null;
+                }
+                if (!hasSetId && hasKey)
+                {
+                    try
                     {
                         client.Rename(key, setId);
                     }
-                    byte[][] buffers = client.ZRange(setId, min, max);
-                    if (buffers == null || buffers.Length == 0)
-                    {
-                        client.Remove(setId);
-                        return;
-                    }
-
-                    foreach (var buffer in buffers)
-                    {
-                        list.Add(ProtoBufUtils.Deserialize<KeyValuePair<string, byte[]>>(buffer));
-                        client.ZRemove(setId, buffer);
-                    }
+                    catch { }
                 }
-                catch (Exception ex)
+                byte[][] buffers = client.ZRange(setId, min, max);
+                if (buffers == null || buffers.Length == 0)
                 {
-                    TraceLog.WriteError("Entity change key Pop setId:{0} error:{1}", setId, ex);
+                    client.Remove(setId);
                 }
-            });
-
-            return list;
+                return buffers;
+            }
+            catch (Exception ex)
+            {
+                TraceLog.WriteError("Entity change key Pop setId:{0} error:{1}", setId, ex);
+            }
+            return null;
         }
 
 
@@ -186,8 +224,7 @@ namespace ZyGames.Framework.Cache.Generic
                         {
                             key = string.Format("{0}_{1}|{2}", entity.GetType(), entity.PersonalId, entity.GetKeyCode());
                         }
-                        var data = ProtoBufUtils.Serialize(entity);
-                        SetKey(key, data);
+                        SyncKeyToRedis(key, entity);
                     }
                 }
                 catch (Exception ex)
@@ -197,22 +234,29 @@ namespace ZyGames.Framework.Cache.Generic
             }
         }
 
-        private void SetKey(string key, byte[] data)
+        private void SyncKeyToRedis(string key, AbstractEntity entity)
         {
-            RedisManager.Process(client =>
+            try
             {
-                try
+                var data = ProtoBufUtils.Serialize(entity);
+                RedisManager.Process(client =>
                 {
-                    var pair = new KeyValuePair<string, byte[]>(key, data);
-                    byte[] value = ProtoBufUtils.Serialize(pair);
-                    client.ZAdd(GlobalChangeKey, value);
-                }
-                catch (Exception ex)
-                {
-                    TraceLog.WriteError("Entity change key put to redis error:{0}\r\n{1}", key, ex);
-                }
-            });
+                    try
+                    {
+                        var pair = new KeyValuePair<string, byte[]>(key, data);
+                        byte[] value = ProtoBufUtils.Serialize(pair);
+                        client.ZAdd(GlobalChangeKey, value);
+                    }
+                    catch (Exception ex)
+                    {
+                        TraceLog.WriteError("Entity change key put to redis error:{0}\r\n{1}", key, ex);
+                    }
+                });
+            }
+            catch (Exception er)
+            {
+                TraceLog.WriteError("Sync key to redis error:{0}\r\n{1}", key, er);
+            }
         }
-
     }
 }

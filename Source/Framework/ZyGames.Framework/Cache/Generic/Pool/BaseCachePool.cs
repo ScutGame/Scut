@@ -53,6 +53,7 @@ namespace ZyGames.Framework.Cache.Generic.Pool
             _redisTransponder = redisTransponder;
         }
 
+        internal abstract void Init();
 
         internal CacheSetting Setting { get; set; }
 

@@ -145,7 +145,13 @@ namespace ZyGames.Framework.Data
                 {
                     if (!client.ContainsKey(setId) && client.ContainsKey(key))
                     {
-                        client.Rename(key, setId);
+                        try
+                        {
+                            client.Rename(key, setId);
+                        }
+                        catch
+                        {
+                        }
                     }
                     byte[][] buffers = client.ZRange(setId, min, max);
                     if (buffers == null || buffers.Length == 0)

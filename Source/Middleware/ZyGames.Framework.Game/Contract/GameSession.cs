@@ -134,6 +134,12 @@ namespace ZyGames.Framework.Game.Contract
                         session.LastActivityTime < MathUtils.Now.AddSeconds(-Timeout))
                     {
                         pair.Value.Close();
+                        //todo trace
+                        TraceLog.ReleaseWriteDebug("User {0} sessionId{1} is expire {2}({3}sec)",
+                            session.UserId,
+                            session.SessionId,
+                            session.LastActivityTime,
+                            Timeout);
                     }
                 }
                 SaveTo();
@@ -341,8 +347,15 @@ namespace ZyGames.Framework.Game.Contract
         /// </summary>
         public void Close()
         {
-            GameSession temp;
-            _globalSession.TryRemove(KeyCode, out temp);
+            GameSession session;
+            if (_globalSession.TryRemove(KeyCode, out session))
+            {
+                try
+                {
+                    session._exSocket.WorkSocket.Close();
+                }
+                catch { }
+            }
             Guid code;
             _userHash.TryRemove(UserId, out code);
         }

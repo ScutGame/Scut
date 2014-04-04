@@ -96,7 +96,6 @@ namespace ZyGames.Framework.Script
                 TraceLog.WriteError("ClearTemp error:{0}", ex);
             }
         }
-
         /// <summary>
         /// Compile
         /// </summary>
@@ -107,7 +106,39 @@ namespace ZyGames.Framework.Script
         /// <param name="isInMemory"></param>
         /// <param name="outputPath"></param>
         /// <returns></returns>
-        public static CompilerResults Compile(string[] fileNames, string[] refAssemblies, string assemblyName, bool isDebug, bool isInMemory, string outputPath = "")
+        public static CompilerResults Compile(string[] fileNames, string[] refAssemblies, string assemblyName,
+            bool isDebug, bool isInMemory, string outputPath = "")
+        {
+            return Compile(true, fileNames, refAssemblies, assemblyName, isDebug, isInMemory, outputPath);
+        
+        }
+        /// <summary>
+        /// Compile
+        /// </summary>
+        /// <param name="sources"></param>
+        /// <param name="refAssemblies"></param>
+        /// <param name="assemblyName"></param>
+        /// <param name="isDebug"></param>
+        /// <param name="isInMemory"></param>
+        /// <param name="outputPath"></param>
+        /// <returns></returns>
+        public static CompilerResults CompileSource(string[] sources, string[] refAssemblies, string assemblyName,
+            bool isDebug, bool isInMemory, string outputPath = "")
+        {
+            return Compile(false, sources, refAssemblies, assemblyName, isDebug, isInMemory, outputPath);
+        }
+        /// <summary>
+        /// Compile
+        /// </summary>
+        /// <param name="isFile"></param>
+        /// <param name="sources"></param>
+        /// <param name="refAssemblies"></param>
+        /// <param name="assemblyName"></param>
+        /// <param name="isDebug"></param>
+        /// <param name="isInMemory"></param>
+        /// <param name="outputPath"></param>
+        /// <returns></returns>
+        private static CompilerResults Compile(bool isFile, string[] sources, string[] refAssemblies, string assemblyName, bool isDebug, bool isInMemory, string outputPath = "")
         {
             try
             {
@@ -120,6 +151,7 @@ namespace ZyGames.Framework.Script
                 //{
                 //    options.OutputAssembly = assemblyName.EndsWith(".dll") ? assemblyName : assemblyName + ".dll";
                 //}
+
                 if (!isInMemory)
                 {
                     string tempPath = "";
@@ -155,7 +187,9 @@ namespace ZyGames.Framework.Script
                         options.ReferencedAssemblies.Add(assembly);
                     }
                 }
-                CompilerResults cr = provider.CompileAssemblyFromFile(options, fileNames);
+                CompilerResults cr =isFile
+                    ? provider.CompileAssemblyFromFile(options, sources)
+                    : provider.CompileAssemblyFromSource(options, sources);
                 if (cr.Errors.HasErrors)
                 {
                     string errStr = string.Format("Compile assembly:{0} error:", assemblyName);

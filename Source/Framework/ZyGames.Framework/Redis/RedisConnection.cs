@@ -179,7 +179,7 @@ namespace ZyGames.Framework.Redis
         /// <param name="setId"></param>
         /// <param name="value"></param>
         /// <returns></returns>
-        public int ZAdd(string setId, byte[] value)
+        public long ZAdd(string setId, byte[] value)
         {
             return ZAdd(setId, value, DateTime.Now.Ticks);
         }
@@ -191,7 +191,7 @@ namespace ZyGames.Framework.Redis
         /// <param name="value"></param>
         /// <param name="score"></param>
         /// <returns></returns>
-        public int ZAdd(string setId, byte[] value, long score)
+        public long ZAdd(string setId, byte[] value, long score)
         {
             return _redisClient.ZAdd(setId, score, value);
         }
@@ -224,7 +224,7 @@ namespace ZyGames.Framework.Redis
         /// <param name="setId"></param>
         /// <param name="item"></param>
         /// <returns></returns>
-        public int ZRemove(string setId, byte[] item)
+        public long ZRemove(string setId, byte[] item)
         {
             return _redisClient.ZRem(setId, item);
         }

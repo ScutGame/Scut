@@ -53,7 +53,7 @@ namespace ZyGames.Framework.Model
         /// </summary>
         private static int LogPriorBuildMonth = ConfigUtils.GetSetting("Log.PriorBuild.Month", 3);
 
-        private static readonly DictionaryExtend<string, SchemaTable> SchemaSet = new DictionaryExtend<string, SchemaTable>();
+        private static DictionaryExtend<string, SchemaTable> SchemaSet = new DictionaryExtend<string, SchemaTable>();
         private static ConcurrentQueue<string> _logTables = new ConcurrentQueue<string>();
         private static CacheListener _tableListener = new CacheListener("__EntitySchemaSet_CheckLogTable", 24 * 60 * 60, OnCheckLogTable);//间隔1天
 
@@ -118,6 +118,14 @@ namespace ZyGames.Framework.Model
         public static void StartCheckTableTimer()
         {
             _tableListener.Start();
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public static void Init()
+        {
+            SchemaSet = new DictionaryExtend<string, SchemaTable>();
         }
 
         /// <summary>

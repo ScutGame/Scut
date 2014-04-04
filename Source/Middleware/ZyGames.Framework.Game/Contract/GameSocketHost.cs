@@ -103,11 +103,13 @@ namespace ZyGames.Framework.Game.Contract
             int backlog = ConfigUtils.GetSetting("Backlog", 1000);
             int maxAcceptOps = ConfigUtils.GetSetting("MaxAcceptOps", 1000);
             int bufferSize = ConfigUtils.GetSetting("BufferSize", 8192);
+            int expireInterval = ConfigUtils.GetSetting("ExpireInterval", 600) * 1000;
+            int expireTime = ConfigUtils.GetSetting("ExpireTime", 3600) * 1000;
 
             threadPool = new SmartThreadPool(180 * 1000, 100, 5);
             threadPool.Start();
 
-            var socketSettings = new SocketSettings(maxConnections, backlog, maxAcceptOps, bufferSize, localEndPoint, 3600000, 3600000);
+            var socketSettings = new SocketSettings(maxConnections, backlog, maxAcceptOps, bufferSize, localEndPoint, expireInterval, expireTime);
             socketLintener = new SocketListener(socketSettings);
             socketLintener.DataReceived += new ConnectionEventHandler(socketLintener_DataReceived);
             socketLintener.Connected += new ConnectionEventHandler(socketLintener_OnConnectCompleted);
@@ -276,49 +278,64 @@ namespace ZyGames.Framework.Game.Contract
 
         void ProcessQueue(object state)
         {
-            while (_runningQueue == 1)
+            try
             {
-                singal.WaitOne();
                 while (_runningQueue == 1)
                 {
-                    try
+                    singal.WaitOne();
+                    while (_runningQueue == 1)
                     {
-                        RequestPackage package;
-                        if (requestQueue.TryDequeue(out package))
+                        try
                         {
-                            if (package.Session == null || !package.Session.EnterSession()) lockedQueue.Enqueue(package);
+                            RequestPackage package;
+                            if (requestQueue.TryDequeue(out package))
+                            {
+                                if (package.Session == null || !package.Session.EnterSession()) lockedQueue.Enqueue(package);
+                                else
+                                {
+                                    Interlocked.Increment(ref runningNum);
+                                    threadPool.QueueWorkItem(ProcessPackage, package);
+                                }
+                            }
                             else
                             {
-                                Interlocked.Increment(ref runningNum);
-                                threadPool.QueueWorkItem(ProcessPackage, package);
+                                break;
                             }
                         }
-                        else
+                        catch (Exception ex)
                         {
-                            break;
+                            TraceLog.WriteError("ProcessQueue request error:{0}", ex);
                         }
                     }
-                    catch (Exception)
-                    {
-                    }
+                    //if (isInStopping) break;
+                    singal.Reset();
                 }
-                //if (isInStopping) break;
-                singal.Reset();
+            }
+            catch (Exception er)
+            {
+                TraceLog.WriteError("ProcessQueue error:{0}", er);
             }
         }
 
         void LockedQueueChecker(object state)
         {
-            RequestPackage package;
-            while (lockedQueue.TryDequeue(out package))
+            try
             {
-                if (MathUtils.Now.Subtract(package.ReceiveTime).TotalSeconds >= 30)
+                RequestPackage package;
+                while (lockedQueue.TryDequeue(out package))
                 {
-                    Interlocked.Increment(ref timeoutDropNum);
-                    continue;
+                    if (MathUtils.Now.Subtract(package.ReceiveTime).TotalSeconds >= 30)
+                    {
+                        Interlocked.Increment(ref timeoutDropNum);
+                        continue;
+                    }
+                    requestQueue.Enqueue(package);
+                    singal.Set();
                 }
-                requestQueue.Enqueue(package);
-                singal.Set();
+            }
+            catch (Exception ex)
+            {
+                TraceLog.WriteError("LockedQueue error:{0}", ex);
             }
         }
 
@@ -519,9 +536,9 @@ namespace ZyGames.Framework.Game.Contract
                 byte[] respData = httpresponse.ReadByte();
                 OnHttpResponse(clientConnection, respData, 0, respData.Length);
             }
-            catch
+            catch(Exception ex)
             {
-
+                TraceLog.WriteError("OnHttpRequestTimeout:{0}", ex);
             }
         }
 

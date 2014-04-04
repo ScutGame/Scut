@@ -36,7 +36,7 @@ namespace ZyGames.Framework.Common.Reflect
     public abstract class TypeAccessor
     {
         // hash-table has better read-without-locking semantics than dictionary
-        private static readonly Hashtable publicAccessorsOnly = new Hashtable(), nonPublicAccessors = new Hashtable();
+        private static Hashtable publicAccessorsOnly = new Hashtable(), nonPublicAccessors = new Hashtable();
 
         /// <summary>
         /// Does this type support new instances via a parameterless constructor?
@@ -55,6 +55,15 @@ namespace ZyGames.Framework.Common.Reflect
         /// Query the members available for this type
         /// </summary>
         public virtual MemberSet GetMembers() { throw new NotSupportedException(); }
+
+        /// <summary>
+        /// init
+        /// </summary>
+        public static void Init()
+        {
+            publicAccessorsOnly = new Hashtable();
+            nonPublicAccessors = new Hashtable();
+        }
 
         /// <summary>
         /// Provides a type-specific accessor, allowing by-name access for all objects of that type

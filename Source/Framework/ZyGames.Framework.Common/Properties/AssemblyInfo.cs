@@ -28,8 +28,14 @@ using System.Runtime.InteropServices;
 // 有关程序集的常规信息通过以下
 // 特性集控制。更改这些特性值可修改
 // 与程序集关联的信息。
+#if NET4_0
+[assembly: AssemblyTitle("ZyGames.Framework.Common for .NET Framework 4.0")]
+#elif NET4_5_1
+[assembly: AssemblyTitle("ZyGames.Framework.Common for .NET Framework 4.5.1")]
+#else
 [assembly: AssemblyTitle("ZyGames.Framework.Common")]
-[assembly: AssemblyDescription("")]
+#endif
+[assembly: AssemblyDescription("ZyGames.Framework.Common")]
 [assembly: AssemblyConfiguration("")]
 
 // 将 ComVisible 设置为 false 使此程序集中的类型

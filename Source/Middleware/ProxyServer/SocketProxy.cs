@@ -69,7 +69,14 @@ namespace ProxyServer
 
         private void Check(object state)
         {
-            TraceLog.ReleaseWriteDebug("Tcp connect count：{0}", clientConnections.Count);
+            try
+            {
+                TraceLog.ReleaseWriteDebug("Tcp connect count：{0}", clientConnections.Count);
+
+            }
+            catch (Exception)
+            {
+            }
         }
 
         void socketLintener_Disconnected(object sender, ConnectionEventArgs e)
@@ -179,14 +186,14 @@ namespace ProxyServer
                 {
                     if (!gsConnectionManager.Send(gameId, serverId, paramData))
                     {
-                        var responseData = RequestParse.CtorErrMsg(10000, "Connect server fail.", requestParam);
+                        var responseData = RequestParse.CtorErrMsg(10000, RequestParse.ErrorMsgConnectFail, requestParam);
                         SendDataBack(clientConnection.SSID, responseData, 0, responseData.Length);
                     }
                 }
                 catch (Exception ex)
                 {
                     TraceLog.WriteError("无法连接游服error:{0}\r\nparam:{1}", ex, paramStr);
-                    var responseData = RequestParse.CtorErrMsg(10000, "Connect server fail.", requestParam);
+                    var responseData = RequestParse.CtorErrMsg(10000, RequestParse.ErrorMsgConnectFail, requestParam);
                     SendDataBack(clientConnection.SSID, responseData, 0, responseData.Length);
                 }
             }

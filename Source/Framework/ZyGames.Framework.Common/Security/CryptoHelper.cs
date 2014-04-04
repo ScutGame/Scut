@@ -118,20 +118,19 @@ namespace ZyGames.Framework.Common.Security
             String hashMD5 = String.Empty;
             if (File.Exists(fileName))
             {
-                using (FileStream fs = new FileStream(fileName, FileMode.Open, FileAccess.Read))
+                byte[] fileBuffer = File.ReadAllBytes(fileName);
+
+                //计算文件的MD5值
+                MD5 calculator = MD5.Create();
+                Byte[] buffer = calculator.ComputeHash(fileBuffer);
+                calculator.Clear();
+                //将字节数组转换成十六进制的字符串形式
+                StringBuilder stringBuilder = new StringBuilder();
+                for (int i = 0; i < buffer.Length; i++)
                 {
-                    //计算文件的MD5值
-                    MD5 calculator = MD5.Create();
-                    Byte[] buffer = calculator.ComputeHash(fs);
-                    calculator.Clear();
-                    //将字节数组转换成十六进制的字符串形式
-                    StringBuilder stringBuilder = new StringBuilder();
-                    for (int i = 0; i < buffer.Length; i++)
-                    {
-                        stringBuilder.Append(buffer[i].ToString("x2"));
-                    }
-                    hashMD5 = stringBuilder.ToString();
+                    stringBuilder.Append(buffer[i].ToString("x2"));
                 }
+                hashMD5 = stringBuilder.ToString();
             }
             return hashMD5;
         }

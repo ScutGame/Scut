@@ -126,7 +126,8 @@ namespace ZyGames.Framework.Data.Sql
             {
                 sqlConnection = new SqlConnection(connectionString);
                 sqlConnection.Open();
-                SqlDataReader sqlDataReader = SqlHelper.ExecuteReader(sqlConnection, null, commandType, commandText, commandParameters, SqlHelper.SqlConnectionOwnership.Internal);
+                SqlDataReader sqlDataReader = SqlHelper.ExecuteReader(sqlConnection, null, commandType, commandText,
+                    commandParameters, SqlHelper.SqlConnectionOwnership.Internal);
                 result = sqlDataReader;
             }
             catch

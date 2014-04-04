@@ -41,7 +41,6 @@ namespace ProxyServer
     {
         private static string gameName = ConfigUtils.GetSetting("GameName", "default");
         private static int gamePort = ConfigUtils.GetSetting("GamePort", 8088);
-        private static string errmsg = ConfigUtils.GetSetting("ErrMsg");
         private static int proxyCheckPeriod = ConfigUtils.GetSetting("ProxyCheckPeriod", 60000);
         private static int httpProxyTimeout = ConfigUtils.GetSetting("HttpProxyTimeout", 120000);
         private static string gameHost = ConfigUtils.GetSetting("GameHost", "http://127.0.0.1");
@@ -68,8 +67,14 @@ namespace ProxyServer
 
         private void Check(object state)
         {
-            ConfigurationManager.RefreshSection("appSettings");
-            errmsg = ConfigUtils.GetSetting("ErrMsg");
+            try
+            {
+                ConfigurationManager.RefreshSection("appSettings");
+            }
+            catch (Exception ex)
+            {
+                TraceLog.WriteError("HttpProxy check:{0}", ex);
+            }
         }
 
         public void ListenerCallback(IAsyncResult result)
@@ -130,25 +135,33 @@ namespace ProxyServer
             catch (Exception ex)
             {
                 TraceLog.WriteError("无法连接游服error:{0}", ex);
-                var responseData = RequestParse.CtorErrMsg(10000, "Connect server fail.", requestParam);
+                var responseData = RequestParse.CtorErrMsg(10000, RequestParse.ErrorMsgConnectFail, requestParam);
                 SendDataBack(ssid, responseData, 0, responseData.Length);
             }
         }
 
         private void TimeoutSendback(object state)
         {
-            HttpClientConnection clientConnection = (HttpClientConnection)state;
-            NameValueCollection requestParam = clientConnection.Param;
-            var responseData = RequestParse.CtorErrMsg(10000, "timeout.", requestParam);
-            TraceLog.WriteError("超时无法连接游服:{0}", RequestParse.ToQueryString(requestParam));
-            SendDataBack(clientConnection.SSID, responseData, 0, responseData.Length);
+            try
+            {
+
+                HttpClientConnection clientConnection = (HttpClientConnection)state;
+                NameValueCollection requestParam = clientConnection.Param;
+                var responseData = RequestParse.CtorErrMsg(10000, RequestParse.ErrorMsgConnectTimeout, requestParam);
+                TraceLog.WriteError("超时无法连接游服:{0}", RequestParse.ToQueryString(requestParam));
+                SendDataBack(clientConnection.SSID, responseData, 0, responseData.Length);
+            }
+            catch (Exception ex)
+            {
+                TraceLog.WriteError("Http Proxy Timeout Sendback:{0}", ex);
+            }
         }
 
         public void FlushConnected()
         {
             foreach (var kv in pool)
             {
-                var responseData = RequestParse.CtorErrMsg(10000, errmsg, kv.Value.Param);
+                var responseData = RequestParse.CtorErrMsg(10000, RequestParse.ErrorMsg, kv.Value.Param);
                 SendDataBack(kv.Value.SSID, responseData, 0, responseData.Length);
             }
         }

@@ -1,190 +1,187 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProductVersion>9.0.21022</ProductVersion>
-    <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{BD9F1C04-DE33-4C59-9942-2CD0CDB4CC3C}</ProjectGuid>
+    <ProjectGuid>{416E2E00-4064-4D7A-87A2-A649FF120274}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>ZyGames.Framework</RootNamespace>
     <AssemblyName>ZyGames.Framework</AssemblyName>
+    <TargetFrameworkVersion>v4.5.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
-    <FileUpgradeFlags>
-    </FileUpgradeFlags>
-    <OldToolsVersion>3.5</OldToolsVersion>
-    <UpgradeBackupLocation />
     <TargetFrameworkProfile />
-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
     <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>TRACE;DEBUG;NET4_0</DefineConstants>
+    <DefineConstants>TRACE;DEBUG;NET4_5_1</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>TRACE;NET4_0</DefineConstants>
+    <DefineConstants>TRACE;NET4_5_1</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
     <DocumentationFile>bin\Release\ZyGames.Framework.XML</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release4.5|AnyCPU'">
     <OutputPath>bin\Release4.5\</OutputPath>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Microsoft.CSharp" />
-    <Reference Include="System" />
-    <Reference Include="System.Core">
-      <RequiredTargetFramework>3.5</RequiredTargetFramework>
-    </Reference>
-    <Reference Include="System.Messaging" />
-    <Reference Include="System.Runtime.Serialization" />
-    <Reference Include="System.Web" />
-    <Reference Include="System.Xml.Linq">
-      <RequiredTargetFramework>3.5</RequiredTargetFramework>
-    </Reference>
-    <Reference Include="System.Data.DataSetExtensions">
-      <RequiredTargetFramework>3.5</RequiredTargetFramework>
-    </Reference>
-    <Reference Include="System.Data" />
-    <Reference Include="System.Xml" />
-    <Reference Include="System.Configuration" />
-    <Reference Include="ICSharpCode.SharpZipLib">
+    <Reference Include="ICSharpCode.SharpZipLib, Version=0.86.0.518, Culture=neutral, PublicKeyToken=1b03e6acf1164f73, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
       <HintPath>..\Lib\ICSharpCode.SharpZipLib.dll</HintPath>
     </Reference>
-    <Reference Include="IronPython">
+    <Reference Include="IronPython, Version=2.7.0.40, Culture=neutral, PublicKeyToken=7f709c5b713576e1, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
       <HintPath>..\Lib\IronPython.dll</HintPath>
     </Reference>
-    <Reference Include="IronPython.Modules">
+    <Reference Include="IronPython.Modules, Version=2.7.0.40, Culture=neutral, PublicKeyToken=7f709c5b713576e1, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
       <HintPath>..\Lib\IronPython.Modules.dll</HintPath>
     </Reference>
-    <Reference Include="Microsoft.Dynamic">
+    <Reference Include="Microsoft.Dynamic, Version=1.1.0.20, Culture=neutral, PublicKeyToken=7f709c5b713576e1, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
       <HintPath>..\Lib\Microsoft.Dynamic.dll</HintPath>
     </Reference>
-    <Reference Include="Microsoft.Scripting">
+    <Reference Include="Microsoft.Scripting, Version=1.1.0.20, Culture=neutral, PublicKeyToken=7f709c5b713576e1, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
       <HintPath>..\Lib\Microsoft.Scripting.dll</HintPath>
     </Reference>
-    <Reference Include="MySql.Data">
+    <Reference Include="Mono.Cecil, Version=0.9.5.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Lib\Mono.Cecil.dll</HintPath>
+    </Reference>
+    <Reference Include="MySql.Data, Version=6.7.4.0, Culture=neutral, PublicKeyToken=c5687fc88969c44d, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
       <HintPath>..\Lib\MySql.Data.dll</HintPath>
     </Reference>
-    <Reference Include="Newtonsoft.Json">
+    <Reference Include="Newtonsoft.Json, Version=4.5.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
       <HintPath>..\Lib\Newtonsoft.Json.dll</HintPath>
     </Reference>
-    <Reference Include="NLog">
+    <Reference Include="NLog, Version=2.0.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
       <HintPath>..\Lib\NLog.dll</HintPath>
     </Reference>
-    <Reference Include="protobuf-net">
+    <Reference Include="protobuf-net, Version=2.0.0.668, Culture=neutral, PublicKeyToken=257b51d87d2e4d67, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
       <HintPath>..\Lib\protobuf-net.dll</HintPath>
     </Reference>
-    <Reference Include="ServiceStack.Common">
+    <Reference Include="ServiceStack.Common, Version=3.7.3.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
       <HintPath>..\Lib\ServiceStack.Common.dll</HintPath>
     </Reference>
-    <Reference Include="ServiceStack">
-      <HintPath>..\Lib\ServiceStack.dll</HintPath>
-    </Reference>
-    <Reference Include="ServiceStack.Interfaces">
+    <Reference Include="ServiceStack.Interfaces, Version=3.7.3.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
       <HintPath>..\Lib\ServiceStack.Interfaces.dll</HintPath>
     </Reference>
-    <Reference Include="ServiceStack.Redis">
+    <Reference Include="ServiceStack.Redis, Version=3.7.4.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
       <HintPath>..\Lib\ServiceStack.Redis.dll</HintPath>
     </Reference>
-    <Reference Include="ServiceStack.Text">
+    <Reference Include="ServiceStack.Text, Version=3.6.9.2502, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
       <HintPath>..\Lib\ServiceStack.Text.dll</HintPath>
     </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Configuration" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Web" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="..\Solution Items\GlobalAssemblyInfo.cs">
       <Link>GlobalAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="Cache\Generic\BaseCacheStruct.cs" />
-    <Compile Include="Cache\Generic\CacheBag.cs" />
+    <Compile Include="Cache\Generic\BaseCollection.cs" />
+    <Compile Include="Cache\Generic\CacheChangeManager.cs" />
+    <Compile Include="Cache\Generic\CacheCollection.cs" />
     <Compile Include="Cache\Generic\CacheContainer.cs" />
+    <Compile Include="Cache\Generic\CacheDictionary.cs" />
+    <Compile Include="Cache\Generic\CacheFactory.cs" />
     <Compile Include="Cache\Generic\CacheItem.cs" />
     <Compile Include="Cache\Generic\CacheItemSet.cs" />
+    <Compile Include="Cache\Generic\CacheList.cs" />
+    <Compile Include="Cache\Generic\CachePeriod.cs" />
+    <Compile Include="Cache\Generic\CacheQueue.cs" />
     <Compile Include="Cache\Generic\CacheSetting.cs" />
     <Compile Include="Cache\Generic\DefaultCacheStruct.cs" />
+    <Compile Include="Cache\Generic\EntityContainer.cs" />
+    <Compile Include="Cache\Generic\IDataContainer.cs" />
+    <Compile Include="Cache\Generic\IDataExpired.cs" />
     <Compile Include="Cache\Generic\MemoryCacheStruct.cs" />
+    <Compile Include="Cache\Generic\PersonalCacheStruct.cs" />
+    <Compile Include="Cache\Generic\Pool\BaseCachePool.cs" />
+    <Compile Include="Cache\Generic\Pool\CachePool.cs" />
+    <Compile Include="Cache\Generic\ReadonlyCacheCollection.cs" />
+    <Compile Include="Cache\Generic\ShareCacheStruct.cs" />
     <Compile Include="Collection\Generic\DictionaryExtend.cs" />
+    <Compile Include="Collection\Generic\FreeList.cs" />
+    <Compile Include="Collection\Generic\GroupList.cs" />
     <Compile Include="Collection\Generic\HashtableExtend.cs" />
-    <Compile Include="Data\SqlParam.cs" />
-    <Compile Include="Data\SqlStatement.cs" />
+    <Compile Include="Data\CommandFilter.cs" />
+    <Compile Include="Data\CommandMode.cs" />
+    <Compile Include="Data\CommandStruct.cs" />
+    <Compile Include="Data\ConnectionSetting.cs" />
+    <Compile Include="Data\DbBaseProvider.cs" />
     <Compile Include="Data\DbColumn.cs" />
+    <Compile Include="Data\DbConnectionProvider.cs" />
     <Compile Include="Data\MySql\MySqlCommandFilter.cs" />
     <Compile Include="Data\MySql\MySqlCommandStruct.cs" />
     <Compile Include="Data\MySql\MySqlDataProvider.cs" />
     <Compile Include="Data\MySql\MySqlParamHelper.cs" />
+    <Compile Include="Data\SqlParam.cs" />
+    <Compile Include="Data\SqlStatement.cs" />
     <Compile Include="Data\SqlStatementManager.cs" />
-    <Compile Include="Model\CacheType.cs" />
-    <Compile Include="Cache\Generic\CachePeriod.cs" />
-    <Compile Include="Cache\Generic\CacheList.cs" />
-    <Compile Include="Cache\Generic\PersonalCacheStruct.cs" />
-    <Compile Include="Cache\Generic\CacheDictionary.cs" />
-    <Compile Include="Cache\Generic\ShareCacheStruct.cs" />
-    <Compile Include="Collection\Generic\GroupList.cs" />
-    <Compile Include="Cache\Generic\EntityContainer.cs" />
-    <Compile Include="Cache\Generic\IDataExpired.cs" />
-    <Compile Include="Cache\Generic\Pool\BaseCachePool.cs" />
-    <Compile Include="Cache\Generic\CacheFactory.cs" />
-    <Compile Include="Cache\Generic\IDataContainer.cs" />
-    <Compile Include="Cache\Generic\CacheQueue.cs" />
-    <Compile Include="Cache\Generic\CacheCollection.cs" />
-    <Compile Include="Cache\Generic\Pool\CachePool.cs" />
-    <Compile Include="Cache\Generic\BaseCollection.cs" />
-    <Compile Include="Cache\Generic\ReadonlyCacheCollection.cs" />
-    <Compile Include="Collection\Generic\FreeList.cs" />
-    <Compile Include="Data\Sql\SqlParamHelper.cs" />
-    <Compile Include="Event\EntityChangeEvent.cs" />
-    <Compile Include="Event\CacheItemChangeEvent.cs" />
-    <Compile Include="Event\IItemChangeEvent.cs" />
-    <Compile Include="Model\AbstractEntity.cs" />
-    <Compile Include="Model\BaseEntity.cs" />
-    <Compile Include="Model\ColumnDbType.cs" />
-    <Compile Include="Model\EntityHistory.cs" />
-    <Compile Include="Model\EntitySyncAttribute.cs" />
-    <Compile Include="Model\LoadingStatus.cs" />
-    <Compile Include="Model\LogEntity.cs" />
-    <Compile Include="Model\ShareEntity.cs" />
-    <Compile Include="Model\MemoryEntity.cs" />
-    <Compile Include="Net\DataSyncType.cs" />
-    <Compile Include="Net\DbTransponder.cs" />
-    <Compile Include="Net\IDataReceiver.cs" />
-    <Compile Include="Net\ITransponder.cs" />
-    <Compile Include="Net\Parameters.cs" />
-    <Compile Include="Net\RedisTransponder.cs" />
-    <Compile Include="Redis\RedisConnection.cs" />
-    <Compile Include="Redis\RedisConnectionPool.cs" />
-    <Compile Include="Net\Redis\RedisDataGetter.cs" />
-    <Compile Include="Net\Redis\RedisDataSender.cs" />
-    <Compile Include="Redis\RedisManager.cs" />
-    <Compile Include="Data\CommandFilter.cs" />
-    <Compile Include="Data\CommandStruct.cs" />
-    <Compile Include="Data\DbBaseProvider.cs" />
-    <Compile Include="Data\CommandMode.cs" />
-    <Compile Include="Data\DbConnectionProvider.cs" />
     <Compile Include="Data\Sql\SqlDataProvider.cs" />
     <Compile Include="Data\Sql\SqlHelper.cs" />
     <Compile Include="Data\Sql\SqlHelperParameterCache.cs" />
+    <Compile Include="Data\Sql\SqlParamHelper.cs" />
+    <Compile Include="Event\CacheItemChangeEvent.cs" />
+    <Compile Include="Event\EntityChangeEvent.cs" />
+    <Compile Include="Event\IItemChangeEvent.cs" />
+    <Compile Include="Model\AbstractEntity.cs" />
+    <Compile Include="Model\AccessLevel.cs" />
+    <Compile Include="Model\BaseEntity.cs" />
+    <Compile Include="Model\CacheType.cs" />
+    <Compile Include="Model\ColumnDbType.cs" />
     <Compile Include="Model\EntityFieldAttribute.cs" />
+    <Compile Include="Model\EntityHistory.cs" />
+    <Compile Include="Model\EntitySchemaSet.cs" />
+    <Compile Include="Model\EntitySyncAttribute.cs" />
     <Compile Include="Model\EntityTableAttribute.cs" />
+    <Compile Include="Model\LoadingStatus.cs" />
+    <Compile Include="Model\LogEntity.cs" />
+    <Compile Include="Model\MemoryEntity.cs" />
     <Compile Include="Model\SchemaColumn.cs" />
+    <Compile Include="Model\SchemaTable.cs" />
+    <Compile Include="Model\ShareEntity.cs" />
     <Compile Include="Net\DataSyncManager.cs" />
-    <Compile Include="Net\IDataSender.cs" />
+    <Compile Include="Net\DataSyncType.cs" />
     <Compile Include="Net\DbDataFilter.cs" />
+    <Compile Include="Net\DbTransponder.cs" />
+    <Compile Include="Net\IDataReceiver.cs" />
+    <Compile Include="Net\IDataSender.cs" />
+    <Compile Include="Net\ITransponder.cs" />
+    <Compile Include="Net\Parameters.cs" />
+    <Compile Include="Net\RedisTransponder.cs" />
+    <Compile Include="Net\Redis\RedisDataGetter.cs" />
+    <Compile Include="Net\Redis\RedisDataSender.cs" />
     <Compile Include="Net\Sql\SqlDataReceiver.cs" />
     <Compile Include="Net\Sql\SqlDataSender.cs" />
-    <Compile Include="Model\AccessLevel.cs" />
-    <Compile Include="Model\SchemaTable.cs" />
-    <Compile Include="Model\EntitySchemaSet.cs" />
     <Compile Include="Net\TransReceiveParam.cs" />
     <Compile Include="Net\TransSendParam.cs" />
     <Compile Include="Plugin\PythonScript\PythonContext.cs" />
@@ -195,6 +192,9 @@
     <Compile Include="Plugin\Test\CaseEventArgs.cs" />
     <Compile Include="Plugin\Test\CaseManager.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Redis\RedisConnection.cs" />
+    <Compile Include="Redis\RedisConnectionPool.cs" />
+    <Compile Include="Redis\RedisManager.cs" />
     <Compile Include="RPC\IO\BufferReader.cs" />
     <Compile Include="RPC\IO\BufferUtils.cs" />
     <Compile Include="RPC\IO\ConnectType.cs" />
@@ -217,6 +217,8 @@
     <Compile Include="RPC\Sockets\ExSocket.cs" />
     <Compile Include="RPC\Sockets\MessageHandler.cs" />
     <Compile Include="RPC\Sockets\PrefixHandler.cs" />
+    <Compile Include="RPC\Sockets\SocketListener.cs" />
+    <Compile Include="RPC\Sockets\SocketSettings.cs" />
     <Compile Include="RPC\Sockets\Threading\CallerThreadContext.cs" />
     <Compile Include="RPC\Sockets\Threading\CanceledWorkItemsGroup.cs" />
     <Compile Include="RPC\Sockets\Threading\EventWaitHandle.cs" />
@@ -242,8 +244,6 @@
     <Compile Include="RPC\Sockets\Threading\WorkItemsGroup.cs" />
     <Compile Include="RPC\Sockets\Threading\WorkItemsGroupBase.cs" />
     <Compile Include="RPC\Sockets\Threading\WorkItemsQueue.cs" />
-    <Compile Include="RPC\Sockets\SocketListener.cs" />
-    <Compile Include="RPC\Sockets\SocketSettings.cs" />
     <Compile Include="RPC\Sockets\ThreadSafeStack.cs" />
     <Compile Include="Script\CSharpFileInfo.cs" />
     <Compile Include="Script\FileWatcherInfo.cs" />
@@ -253,13 +253,11 @@
     <Compile Include="Script\ScriptEngines.cs" />
     <Compile Include="Script\ScriptFileInfo.cs" />
     <Compile Include="SyncThreading\SyncHelper.cs" />
-    <Compile Include="Data\ConnectionSetting.cs" />
-    <Compile Include="Cache\Generic\CacheChangeManager.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\ZyGames.Framework.Common\ZyGames.Framework.Common.csproj">
-      <Project>{CE5C369F-8FAC-47A1-89B4-7AB09A6A3CB1}</Project>
-      <Name>ZyGames.Framework.Common</Name>
+    <ProjectReference Include="..\ZyGames.Framework.Common\ZyGames.Framework.Common4.5.csproj">
+      <Project>{e87a5049-85a1-436b-a5ed-2bc0a4e45bdb}</Project>
+      <Name>ZyGames.Framework.Common4.5</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
@@ -273,5 +271,4 @@
   <Target Name="AfterBuild">
   </Target>
   -->
-  <ItemGroup />
 </Project>

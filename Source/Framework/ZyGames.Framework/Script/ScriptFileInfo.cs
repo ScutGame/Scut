@@ -107,5 +107,25 @@ namespace ZyGames.Framework.Script
         /// </summary>
         public string HashCode { get; set; }
 
+        private int _lockFlag;
+
+        /// <summary>
+        /// lock
+        /// </summary>
+        /// <returns></returns>
+        public bool TryEnterLock()
+        {
+            if (_lockFlag == 1) return false;
+            System.Threading.Interlocked.Exchange(ref _lockFlag, 1);
+            return true;
+        }
+
+        /// <summary>
+        /// exit lock
+        /// </summary>
+        public void ExitLock()
+        {
+            System.Threading.Interlocked.Exchange(ref _lockFlag, 0);
+        }
     }
 }

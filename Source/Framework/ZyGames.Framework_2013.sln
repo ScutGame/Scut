@@ -1,0 +1,33 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2013
+VisualStudioVersion = 12.0.21005.1
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{46451F48-D01A-4800-810E-52CC991F63EC}"
+	ProjectSection(SolutionItems) = preProject
+		Solution Items\GlobalAssemblyInfo.cs = Solution Items\GlobalAssemblyInfo.cs
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ZyGames.Framework4.5", "ZyGames.Framework\ZyGames.Framework4.5.csproj", "{416E2E00-4064-4D7A-87A2-A649FF120274}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ZyGames.Framework.Common4.5", "ZyGames.Framework.Common\ZyGames.Framework.Common4.5.csproj", "{E87A5049-85A1-436B-A5ED-2BC0A4E45BDB}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{416E2E00-4064-4D7A-87A2-A649FF120274}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{416E2E00-4064-4D7A-87A2-A649FF120274}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{416E2E00-4064-4D7A-87A2-A649FF120274}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{416E2E00-4064-4D7A-87A2-A649FF120274}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E87A5049-85A1-436B-A5ED-2BC0A4E45BDB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E87A5049-85A1-436B-A5ED-2BC0A4E45BDB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E87A5049-85A1-436B-A5ED-2BC0A4E45BDB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E87A5049-85A1-436B-A5ED-2BC0A4E45BDB}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

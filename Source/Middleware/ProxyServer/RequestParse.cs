@@ -40,6 +40,7 @@ namespace ProxyServer
     class RequestParse
     {
         private static string signkey = ConfigUtils.GetSetting("ProxySignkey", "44CAC8ED53714BF18D60C5C7B6296000");
+        private static bool enableErrorMsg = ConfigUtils.GetSetting("EnableErrorMsg", false);
         public static NameValueCollection Parse(string ip, string rawUrl, string data, out int gameId, out int serverId, out int statuscode)
         {
             NameValueCollection nvc = new NameValueCollection();
@@ -126,6 +127,10 @@ namespace ProxyServer
             return nvc;
         }
 
+        public static string ErrorMsgConnectFail = "Connect server fail.";
+        public static string ErrorMsgConnectTimeout = "";
+        public static string ErrorMsg = "Unknown error.";
+
         /// <summary>
         /// 转成url格式
         /// </summary>
@@ -166,7 +171,7 @@ namespace ProxyServer
             int msgId = Convert.ToInt32(requestParam["msgid"]);
             int actionid = Convert.ToInt32(requestParam["actionid"]);
             var ms = new MessageStructure();
-            var head = new MessageHead(msgId, actionid, "st", error, msg);
+            var head = new MessageHead(msgId, actionid, "st", error, enableErrorMsg ? msg : "");
             ms.WriteBuffer(head);
             return ms.PosGzipBuffer();
         }

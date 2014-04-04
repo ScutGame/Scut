@@ -53,17 +53,7 @@ namespace ZyGames.Framework.Script
         {
             get
             {
-                if (isUpdating == 0)
-                {
-                    return _assembly;
-                }
-                while (true)
-                {
-                    if (Interlocked.CompareExchange(ref isUpdating, 1, 0) == 0)
-                    {
-                        break;
-                    }
-                }
+                //modify reason:Get value when the cycle
                 return _assembly;
             }
             set
@@ -89,6 +79,11 @@ namespace ZyGames.Framework.Script
                     }
                 }
             }
+        }
+
+        public bool IsUpdating()
+        {
+            return isUpdating == 1;
         }
 
         private void OnChangedBefore(Assembly assembly)
