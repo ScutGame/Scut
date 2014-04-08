@@ -60,8 +60,8 @@ function createScene()
 	
 	--Í¸Ã÷±³¾°
 	local transparentBg=Image.tou_ming;--±³¾°Í¼Æ¬
-	local menuItem =CCMenuItemImage:itemFromNormalImage(P(transparentBg),P(transparentBg));
-	local menuBg=CCMenu:menuWithItem(menuItem);
+	local menuItem =CCMenuItemImage:create(P(transparentBg), P(transparentBg))
+	local menuBg=CCMenu:createWithItem(menuItem);
 	menuBg:setContentSize(menuItem:getContentSize());
 	menuBg:setAnchorPoint(CCPoint(0,0));
 	menuBg:setScaleX(pWinSize.width/menuBg:getContentSize().width*2)
@@ -69,10 +69,7 @@ function createScene()
 	menuBg:setPosition(CCPoint(0,0));
 	mLayer:addChild(menuBg,0);
 	
-	-- ×¢²á´¥ÆÁÊÂ¼þ
-	mLayer.__CCTouchDelegate__:registerScriptTouchHandler(CCTOUCHBEGAN, "ChangePwd.touchBegan")
-	mLayer.__CCTouchDelegate__:registerScriptTouchHandler(CCTOUCHMOVED, "ChangePwd.touchMove")
-	mLayer.__CCTouchDelegate__:registerScriptTouchHandler(CCTOUCHENDED, "ChangePwd.touchEnd")
+
 
 	-- ´Ë´¦Ìí¼Ó³¡¾°³õÊ¼ÄÚÈÝ
 	layer_1= CCLayer:create();
@@ -118,13 +115,13 @@ function showLayer()
 	local exitText=ZyButton:new("title/panle_1039.png",nil,nil, nil,FONT_NAME,FONT_SM_SIZE)
 	exitText:setAnchorPoint(PT(0,0))
 	exitText:setPosition(PT(pWinSize.width-exitText:getContentSize().width-SY(20),SY(17)))
-	exitText:registerScriptHandler("ChangePwd.exit")
+	exitText:registerScriptTapHandler(ChangePwd.exit)
 	exitText:addto(mLayer)
 	
 	local exitBtn=ZyButton:new(Image.image_exit,nil,nil, nil,FONT_NAME,FONT_SM_SIZE)
 	exitBtn:setAnchorPoint(PT(0,0))
 	exitBtn:setPosition(PT(exitText:getPosition().x-exitBtn:getContentSize().width,SY(10)))
-	exitBtn:registerScriptHandler("ChangePwd.exit")
+	exitBtn:registerScriptTapHandler(ChangePwd.exit)
 	exitBtn:addto(mLayer)
 
 	if accountInfo.UserType==1 then
@@ -148,7 +145,7 @@ function showLayer()
 	local saveBtn=ZyButton:new("button/button_1013.png","button/button_1014.png",nil, nil,FONT_NAME,FONT_SM_SIZE)
 	saveBtn:setAnchorPoint(PT(0.5,0))
 	saveBtn:addImage(btnStr)
-	saveBtn:registerScriptHandler("ChangePwd.saveNewPwd")
+	saveBtn:registerScriptTapHandler(ChangePwd.saveNewPwd)
 	saveBtn:setPosition(PT(pWinSize.width/2,SY(15)))
 	saveBtn:addto(layer_1)
 	

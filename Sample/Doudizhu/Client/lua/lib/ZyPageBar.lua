@@ -149,7 +149,7 @@ function ZyPageBar:initBar()
 
 	if bMore then
 		button = ZyButton:new("button/button9_normal.png")
-		button:registerScriptHandler("ZyPageBarItemGotoPageHandler")
+		button:registerScriptTapHandler(ZyPageBarItemGotoPageHandler)
 		button:setPosition(CCPoint(offsetX, offsetY))
 		button:addto(self.mLayerBar)
 		gClassPool[button:menuItem()] = self

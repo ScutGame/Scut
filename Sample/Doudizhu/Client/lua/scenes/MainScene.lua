@@ -88,7 +88,7 @@ function initScene(gotype)
 	mScene = scene.root
 	CCDirector:sharedDirector():replaceScene(mScene)
 	-- ×¢²áÍøÂç»Øµ÷
-	scene:registerCallback(netCallBack)	
+	scene:registerCallback(MainSceneNetCallback.netCallBack)	
 --	mScene:registerOnEnter("MainScene.onEnter")
 --	mScene:registerOnExit("MainScene.onExit")
 	--SlideInLReplaceScene(mScene)
@@ -96,7 +96,7 @@ function initScene(gotype)
 	--mScene:setMultiTouchSupported(true)
 	-- Ìí¼Ó±³¾°
 	mLayer = CCLayer:create()
-    	mScene:addChild(mLayer, -2)
+    mScene:addChild(mLayer, -2)
 	initResource()
 
 	creatBgImage()
@@ -217,7 +217,7 @@ function explain(index)
 	exitBtn:setAnchorPoint(CCPoint(0,0))
 	exitBtn:setPosition(CCPoint(detailBg:getPosition().x+detailBg:getContentSize().width-exitBtn:getContentSize().width-SY(15),
 		detailBg:getPosition().y+detailBg:getContentSize().height-exitBtn:getContentSize().height-SY(15)))
-	exitBtn:registerScriptHandler("MainScene.exitRoomInfo")
+	exitBtn:registerScriptTapHandler(MainScene.exitRoomInfo)
 	exitBtn:addto(roomInfoLayer)
 end;
 
@@ -346,14 +346,6 @@ function createScene()
 										helpSprite:getPosition().y-helpSprite:getContentSize().height*0.3));
 		mLayer:addChild(actionBtn,0);
 	
-		--[[
-		local helpBtn=ZyButton:new(Image.image_help,nil,nil, nil,FONT_NAME,FONT_SM_SIZE)
-		helpBtn:setAnchorPoint(CCPoint(0,0))
-		helpBtn:setPosition(CCPoint(pWinSize.width-helpBtn:getContentSize().height-SY(10),pWinSize.height-helpBtn:getContentSize().height-SY(7)))
-		helpBtn:registerScriptHandler("MainScene.gotoHelperLayer")
-		helpBtn:addto(mLayer)
-		--]]
-		---
 		
 		--·¿¼ä±³¾°
 		local roomBg= CCSprite:create(P("common/panel_1002_12.png"));

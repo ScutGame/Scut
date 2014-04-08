@@ -89,15 +89,7 @@ function showGet()
 	local unTouch = UIHelper.createActionRect(SZ(pWinSize.width*0.5, pWinSize.height*0.6))
 	unTouch:setPosition(detailBg:getPosition())
 	layer:addChild(unTouch,0)
-	--[[
-		--Àë¿ª°´Å¥
-	local exitBtn=ZyButton:new("button/panle_1014_3.png",nil,nil, nil,FONT_NAME,FONT_SM_SIZE)
-	exitBtn:setAnchorPoint(PT(0,0))
-	exitBtn:setPosition(PT(detailBg:getPosition().x+detailBg:getContentSize().width-exitBtn:getContentSize().width-SY(15),
-		detailBg:getPosition().y+detailBg:getContentSize().height-exitBtn:getContentSize().height-SY(15)))
-	exitBtn:registerScriptHandler("RollScene.closeGetLayer")
-	exitBtn:addto(layer, 0)
-	--]]
+
 	--¹â±³¾°
 	local lightBg= CCSprite:create(P("roll/panle_1020_1.png"));
 	lightBg:setAnchorPoint(PT(0.5,0.5))

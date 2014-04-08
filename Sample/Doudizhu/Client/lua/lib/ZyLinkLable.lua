@@ -97,7 +97,7 @@ end
 function ZyLinkLable:getParent()
 	return self._menu:getParent();
 end
-function ZyLinkLable:registerScriptHandler(event)
+function ZyLinkLable:registerScriptTapHandler(event)
 	gClassPool[self._menuItem] = self
 	self._menuItem:registerScriptTapHandler(event)
 end

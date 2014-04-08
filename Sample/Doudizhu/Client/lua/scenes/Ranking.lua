@@ -321,7 +321,7 @@ function explainBtnAction()
     local explainCloseBtn=ZyButton:new(P(Image.image_button_small_0),P(Image.image_button_small_1),nil,Language.IDS_OK,FONT_NAME,FONT_SM_SIZE)
     explainCloseBtn:setAnchorPoint(PT(0.5,0))
     explainCloseBtn:setPosition(PT(explainBg:getPosition().x+pWinSize.width*0.25,explainBg:getPosition().y+pWinSize.height*0.04));
-    explainCloseBtn:registerScriptHandler("Ranking.explainCloseBtnAction")
+    explainCloseBtn:registerScriptTapHandler(Ranking.explainCloseBtnAction)
     explainCloseBtn:addto(exPlainLayer,1);
     ----
     local list = ScutCxList:node(pWinSize.height*0.54*0.7, ccc4(24, 24, 24, 255), SZ(pWinSize.width*0.5*0.8,pWinSize.height*0.54*0.7))

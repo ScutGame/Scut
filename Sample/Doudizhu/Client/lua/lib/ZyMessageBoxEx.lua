@@ -285,7 +285,7 @@ function ZyMessageBoxEx:initMessageBox()
 		offsetY = boxSize.height - button:getContentSize().height - SPACE_Y
 		button:setPosition(CCPoint(offsetX, offsetY))
 		button:setTag(1)
-		button:registerScriptHandler(actionMessageboxRightButton)
+		button:registerScriptTapHandler(actionMessageboxRightButton)
 		button:addto(messageBox)
 		gClassPool[button:menuItem()] = self
 	end

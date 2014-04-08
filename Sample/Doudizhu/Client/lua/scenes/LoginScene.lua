@@ -250,7 +250,7 @@ function goto_server()
 	for k , v in pairs(serverTabel) do
 		local severBtn=ZyButton:new("button/list_2001.png",nil,nil,v.Name,FONT_NAME,FONT_SM_SIZE)
 		severBtn:setTag(k)
-		severBtn:registerScriptHandler("LoginScene.key_serve_button_ok")
+		severBtn:registerScriptTapHandler(LoginScene.key_serve_button_ok)
 		severBtn:setAnchorPoint(CCPoint(0.5,1))
 		local colsW=(k-1)%col*spriteW
 		local rowsH=math.floor((k-1)/col)*spriteH

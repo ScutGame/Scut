@@ -10,7 +10,6 @@
 module("MainDesk", package.seeall)
 require("scenes.MainHelper")
 require("layers.AiLayer") 
---ZyReader:readErrorMsg()
 -- 场景中用到的成员变量要在文件头部先申明，并附加必要的说明
 -- 成员变量统一以下划线开始，紧接的首字母要小写
 
@@ -284,7 +283,7 @@ function onTouch(eventType , x, y)
     elseif eventType == "ended" then 
         return touchEnd(x,y)
     end
-end 
+end
 -- 创建场景
 function initScene()
 	initResource()
@@ -300,10 +299,6 @@ function initScene()
 	mScene:addChild(mLayer, 0)
 	MainScene.releaseResource()
 	-- 注册触屏事件
-	--mLayer.__CCTouchDelegate__:registerScriCCPointTouchHandler(CCTOUCHBEGAN, "MainDesk.touchBegan")
-	--mLayer.__CCTouchDelegate__:registerScriCCPointTouchHandler(CCTOUCHMOVED, "MainDesk.touchMove")
-	--mLayer.__CCTouchDelegate__:registerScriCCPointTouchHandler(CCTOUCHENDED, "MainDesk.touchEnd")
-	--mLayer.
 	mLayer:setTouchEnabled(true)	
 	mLayer:registerScriptTouchHandler(onTouch)
 	--
@@ -363,52 +358,45 @@ end
 
 -- 触屏按下
 function touchBegan(x, y)
---if not mTuoGuanLayer  and mLayer and mCardTable then
-  -- for k,v in ipairs(e) do
-  --	local touchCCPointBegin= v:locationInView(v:view())
---	touchCCPointBegin = CCDirector:sharedDirector():convertToGL(touchCCPointBegin)	
-	--mTouchCCPointBegin=touchCCPointBegin
+if not mTuoGuanLayer  and mLayer and mCardTable then
+	mTouchCCPointBegin=CCPoint(x,y)
 	local startY=bottomHeight
 	for k=#mCardTable,1,-1 do
 		local v=mCardTable[k]
 		if v then
-		if MainHelper.isTouchInCard(CCPoint(x,y),v.cardSprite,mColW) then
+		if MainHelper.isTouchInCard(mTouchCCPointBegin,v.cardSprite,mColW) then
 			 v.isChoice= not  v.isChoice
 			 mBeginIndex=k
 			if   v.isChoice then
-				v.cardSprite:setPosition(CCPoint(v.cardSprite:getPosition().x,v.cardSprite:getPosition().y+SY(15)))
+				v.cardSprite:setPosition(CCPoint(v.cardSprite:getPosition().x,
+                                v.cardSprite:getPosition().y+SY(15)))
 			else
 				v.cardSprite:setPosition(CCPoint(v.cardSprite:getPosition().x,startY))	
 			end
 			break
 		end	
 		end
-	return 1
---	end	
-
- --  end
-
   end
+  end
+  return 1
 end
 
 -- 触屏移动
 function touchMoved(e)
---	 for k,v in ipairs(e) do
 		mTouchCCPointMove=true
-		return 1
-	-- end
+		 return 1
 end
 
 -- 触屏弹起
 function touchEnd(x,y)
---if mTouchCCPointMove  and mCardTable then
- --  for k,v in ipairs(e) do
- --	local touchCCPointEnd= v:locationInView(v:view())
-	touchCCPointEnd = PT(x,y)	
+if mTouchPtMove  and mCardTable then
+
+ 	local touchPtEnd= PT(x,y)
+	
 	local endIndex=nil
 	for k=#mCardTable,1,-1 do
 		local v=mCardTable[k]
-		if MainHelper.isTouchInCard(touchCCPointEnd,v.cardSprite,mColW) then
+		if MainHelper.isTouchInCard(touchPtEnd,v.cardSprite,mColW) then
 			endIndex=k
 			break
 		end
@@ -419,14 +407,13 @@ function touchEnd(x,y)
 			for k=begin ,mEnd do
 				local v=mCardTable[k]
 				v.isChoice= true				
-				v.cardSprite:setPosition(CCPoint(v.cardSprite:getPosition().x,bottomHeight+SY(15)))
+				v.cardSprite:setPosition(PT(v.cardSprite:getPosition().x,bottomHeight+SY(15)))
 			end	
 	end
 	mBeginIndex=nil
-	mTouchCCPointBegin=nil
-	mTouchCCPointMove=nil
---end
---end
+	mTouchPtBegin=nil
+	mTouchPtMove=nil
+end
 
 
 	local count=0

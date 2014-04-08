@@ -128,7 +128,7 @@ function ZyMultiLabel:new(content,width,fontname,fontsize,nYSpace,getAniSpriteFu
 						nControlTable[nLine].height = csize.height;
 					end
 					table.insert(nControlTable[nLine].items,{item=linkLabel,sacelX=1,sacelY=1})
-					linkLabel:registerScriptHandler(class);
+					linkLabel:registerScriptTapHandler(class);
 					
 					if userdata then
 						linkLabel:setUserData(ZyFont.Split(userdata,","))

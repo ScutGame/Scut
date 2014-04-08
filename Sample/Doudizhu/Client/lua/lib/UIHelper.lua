@@ -159,7 +159,7 @@ function createUIBg(titleImagePath,titleStr,textColor,closeBtnActionPath, toumin
 		closeBtn = CCMenu:menuWithItem(menuItem)
 		menuItem:setAnchorPoint(CCPoint(0, 0))
 		menuItem:setPosition(CCPoint(0, 0))
-		menuItem:registerScriptHandler(closeBtnActionPath)
+		menuItem:registerScriptTapHandler(closeBtnActionPath)
 		closeBtn:setContentSize(menuItem:getContentSize())
 		layer:addChild(closeBtn, 0, 0)
 		closeBtn:setPosition(CCPoint(layer:getContentSize().width - closeBtn:getContentSize().width,layer:getContentSize().height - closeBtn:getContentSize().height-SY(3)))
@@ -202,7 +202,7 @@ function labelClickable(title, fontName, fontSize, listtener, fontColor, tag)
 	background:setContentSize(label:getContentSize())
 	background:setAnchorPoint(CCPoint(0, 0))
 	background:setPosition(CCPoint(0, 0))
-	background:registerScriptHandler(listtener)
+	background:registerScriptTapHandler(listtener)
 
 	if tag ~= nil then
 		background:setTag(tag)
@@ -250,7 +250,7 @@ function BtnClose(layer,CloseBtn,CloseDown,closeBtnListener,tag)
 		menuItem:setPosition(CCPoint(0, 0))
 		
 		if closeBtnListener ~= nil then
-		   menuItem:registerScriptHandler(closeBtnListener)
+		   menuItem:registerScriptTapHandler(closeBtnListener)
 		end
 		btn:setContentSize(menuItem:getContentSize())
 		if layer~=nil then 

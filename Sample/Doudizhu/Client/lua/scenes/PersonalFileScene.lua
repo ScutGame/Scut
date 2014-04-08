@@ -487,7 +487,7 @@ function basicInfo()
 		local btn=ZyButton:new(Image.image_explain,Image.image_explain_1,nil,v.btnName,FONT_NAME,FONT_FMM_SIZE)
 		btn:setPosition(PT(pidImg:getPosition().x+(k-1)*btn:getContentSize().width*1.2,
 			pidBdImg:getPosition().y))
-		btn:registerScriptHandler("PersonalFileScene.gotoPersonalAction")
+		btn:registerScriptTapHandler(PersonalFileScene.gotoPersonalAction)
 		btn:setTag(k)
 		btn:addto(layer_1) 	 
 	  end

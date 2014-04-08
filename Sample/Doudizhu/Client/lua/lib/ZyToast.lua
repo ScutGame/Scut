@@ -143,19 +143,7 @@ function createToast2(parent, apperTime, delayTime, strText,posState)
 	if mLayer ~= nil then
 	    hide()
 	end
-	mLayer = CCLayer:create()
-	--parent:addChild(mLayer, 9)
---[[	local toumingBtn=ZyButton:new("common/tou_ming.9.png")
-	
-	toumingBtn:setScaleX(pWinSize.width/toumingBtn:getContentSize().width)
-	toumingBtn:setScaleY(pWinSize.height/toumingBtn:getContentSize().height)
-	toumingBtn:setAnchorPoint(PT(0,0))
-	toumingBtn:setPosition(PT(0,0))
-	toumingBtn:addto(mLayer,0)
-	toumingBtn:registerScriptHandler("ZyToast.hide")]]
-
-
-	
+	mLayer = CCLayer:create()	
 	--Å®×ÓÍ¼
 	--[[local girlSprite=CCSprite:create(P("common/list_4000_2.png"))
 	girlSprite:setAnchorPoint(PT(0,0))

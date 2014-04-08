@@ -107,7 +107,7 @@ function MenuItem(normalPic, downPic, listtener, strText, TextAlign, fontSize, c
 
 
 	if listtener ~= nil then
-		menuItem:registerScriptHandler(listtener)
+		menuItem:registerScriptTapHandler(listtener)
 	end
 	menuItem:setAnchorPoint(CCPoint(0, 0))
 

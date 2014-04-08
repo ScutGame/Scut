@@ -13,7 +13,7 @@ function ScutScene:new(o)
     return o
 end
 
-function ScutScene:registerScriptHandler(func)
+function ScutScene:registerScriptTapHandler(func)
 end
 
 function ScutScene:registerCallback(func)
