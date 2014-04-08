@@ -72,13 +72,15 @@ namespace ZyGames.Doudizhu.Bll.Logic
 
         private static void DoNotifyAction(int actionId, List<GameUser> userList, Parameters parameters, Action<int> callback)
         {
-            //todo wait
-            Thread.Sleep(100);
-            string str = "";
-            foreach (GameUser gameUser in userList)
-            {
-                str += "," + gameUser.UserId;
-            }
+            //todo trace
+            //string str = "";
+            //foreach (GameUser gameUser in userList)
+            //{
+            //    str += "," + gameUser.UserId;
+            //}
+            //str = str.TrimStart(',');
+            //Console.WriteLine("Notify action:{0} {1}", actionId, str);
+
             ActionFactory.SendAsyncAction(userList, actionId, parameters, g => { });
             if (callback != null)
             {

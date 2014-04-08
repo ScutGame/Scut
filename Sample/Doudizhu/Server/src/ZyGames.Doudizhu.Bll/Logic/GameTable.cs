@@ -17,7 +17,7 @@ namespace ZyGames.Doudizhu.Bll.Logic
     /// </summary>
     public class GameTable
     {
-
+        private const string AIScriptCode = "PyScript/Logic/cardAILogic.py";
         private static GameTable _instance;
         static GameTable()
         {
@@ -184,7 +184,7 @@ namespace ZyGames.Doudizhu.Bll.Logic
                     if (!table.IsStarting)
                     {
                         //todo AI Join
-                        dynamic scope = ScriptEngines.Execute("Logic/cardAILogic.py", null);
+                        dynamic scope = ScriptEngines.Execute(AIScriptCode, null);
                         if (scope != null)
                         {
                             HashSet<string> nickSet = new HashSet<string>();
@@ -250,7 +250,7 @@ namespace ZyGames.Doudizhu.Bll.Logic
                         {
                             //Console.WriteLine("Table:{0} is ai", table.TableId);
 
-                            dynamic scope = ScriptEngines.Execute("Logic/cardAILogic.py", null);
+                            dynamic scope = ScriptEngines.Execute(AIScriptCode, null);
                             if (scope != null)
                             {
                                 bool iscall = false;
@@ -284,7 +284,7 @@ namespace ZyGames.Doudizhu.Bll.Logic
                         {
                             try
                             {
-                                dynamic scope = ScriptEngines.Execute("Logic/cardAILogic.py", null);
+                                dynamic scope = ScriptEngines.Execute(AIScriptCode, null);
                                 if (scope != null)
                                 {
                                     var myClass = scope.GetVariable<Func<int, int, int, dynamic>>("CardAILogic");
