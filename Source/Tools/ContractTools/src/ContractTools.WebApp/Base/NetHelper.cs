@@ -66,7 +66,7 @@ namespace ContractTools.WebApp.Base
                 Stream requestStream = serverRequest.GetRequestStream();
                 requestStream.Write(bufferData, 0, bufferData.Length);
                 requestStream.Close();
-                //������
+                //
                 WebResponse serverResponse = serverRequest.GetResponse();
                 Stream responseStream = serverResponse.GetResponseStream();
                 msgReader = MessageStructure.Create(responseStream, Encoding.UTF8);
@@ -154,20 +154,31 @@ namespace ContractTools.WebApp.Base
         {
             byte[] data = Encoding.UTF8.GetBytes("?d=" + param);
             MessageStructure ms = null;
-            var client = new ClientSocket(new ClientSocketSettings(1024, remoteEndPoint));
-
-            using (var singal = new ManualResetEvent(false))
+            ClientSocket client = null;
+            HttpContext context = HttpContext.Current;
+            if (context != null && context.Session != null)
             {
-                client.DataReceived += (sender, e) =>
-                {
-                    ms = new MessageStructure(e.Data);
-                    singal.Set();
-                };
-                client.Connect();
-                client.PostSend(data, 0, data.Length);
-                singal.WaitOne(10000);//10s
-                client.Close();
+                client = context.Session["CLIENT_CONNECT"] as ClientSocket;
             }
+            if (client == null)
+            {
+                client = new ClientSocket(new ClientSocketSettings(1024, remoteEndPoint));
+                if (context != null && context.Session != null)
+                {
+                    context.Session["CLIENT_CONNECT"] = client;
+                }
+            }
+
+            var singal = new ManualResetEvent(false);
+            client.DataReceived += (sender, e) =>
+            {
+                ms = new MessageStructure(e.Data);
+                singal.Set();
+            };
+            client.Connect();
+            client.PostSend(data, 0, data.Length);
+            singal.WaitOne(60000);//60s
+
             return ms;
         }
     }
