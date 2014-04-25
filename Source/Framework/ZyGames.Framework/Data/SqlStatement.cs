@@ -34,6 +34,14 @@ namespace ZyGames.Framework.Data
     public class SqlStatement
     {
         /// <summary>
+        /// init
+        /// </summary>
+        public SqlStatement()
+        {
+            
+        }
+
+        /// <summary>
         /// 标识ID
         /// </summary>
         [ProtoMember(1)]

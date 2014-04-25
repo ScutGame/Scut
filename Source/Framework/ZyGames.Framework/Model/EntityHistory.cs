@@ -53,7 +53,7 @@ namespace ZyGames.Framework.Model
         }
 
         /// <summary>
-        /// The bytes data.
+        /// The bytes data for hash(key/value).
         /// </summary>
         [EntityField]
         public byte[] Value

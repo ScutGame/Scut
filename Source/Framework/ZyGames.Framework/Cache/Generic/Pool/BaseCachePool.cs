@@ -186,10 +186,19 @@ namespace ZyGames.Framework.Cache.Generic.Pool
             bool result = false;
             dataList = null;
             //表为空时，不加载数据
-            if (receiveParam.Schema != null && string.IsNullOrEmpty(receiveParam.Schema.Name))
+            if (receiveParam.Schema == null ||
+                string.IsNullOrEmpty(receiveParam.Schema.Name) ||
+                DbConnectionProvider.CreateDbProvider(receiveParam.Schema) == null)
             {
+                //DB is optional and can no DB configuration
                 dataList = new List<T>();
                 return true;
+            }
+
+            //配置库不放到Redis，尝试从DB加载
+            if (receiveParam.Schema.AccessLevel == AccessLevel.ReadOnly)
+            {
+                return _dbTransponder.TryReceiveData(receiveParam, out dataList);
             }
 
             if (!string.IsNullOrEmpty(receiveParam.RedisKey) &&
@@ -198,18 +207,6 @@ namespace ZyGames.Framework.Cache.Generic.Pool
                 if (dataList.Count > 0)
                 {
                     return true;
-                }
-                if (receiveParam.Schema == null || DbConnectionProvider.CreateDbProvider(receiveParam.Schema) == null)
-                {
-                    //DB is optional and can no DB configuration
-                    dataList = new List<T>();
-                    return true;
-                }
-
-                //配置库不放到Redis，尝试从DB加载
-                if (receiveParam.Schema.AccessLevel == AccessLevel.ReadOnly)
-                {
-                    return _dbTransponder.TryReceiveData(receiveParam, out dataList);
                 }
                 //从Redis历史记录表中加载
                 result = TryLoadHistory(receiveParam.RedisKey, out dataList);
@@ -221,6 +218,7 @@ namespace ZyGames.Framework.Cache.Generic.Pool
 
         public bool TryLoadHistory<T>(string redisKey, out List<T> dataList)
         {
+            redisKey = RedisConnectionPool.GetRedisEntityKeyName(redisKey);
             bool result = false;
             dataList = null;
             SchemaTable schemaTable;
@@ -248,21 +246,20 @@ namespace ZyGames.Framework.Cache.Generic.Pool
                     List<EntityHistory> historyList;
                     if (_dbTransponder.TryReceiveData(receiveParam, out historyList))
                     {
-                        if (historyList.Count == 0)
+                        EntityHistory history = historyList.Count > 0 ? historyList[0] : null;
+                        if (history != null && history.Value != null && history.Value.Length > 0)
                         {
-                            dataList = new List<T>();
+                            byte[][] bufferBytes = ProtoBufUtils.Deserialize<byte[][]>(history.Value);
+                            byte[][] keys = bufferBytes.Where((b, index) => index % 2 == 0).ToArray();
+                            byte[][] values = bufferBytes.Where((b, index) => index % 2 == 1).ToArray();
+                            RedisConnectionPool.Process(client => client.HMSet(redisKey, keys, values));
+                            dataList = values.Select(value => ProtoBufUtils.Deserialize<T>(value)).ToList();
                             result = true;
                         }
                         else
                         {
-                            EntityHistory history = historyList[0];
-                            RedisManager.Process(client => client.Set(redisKey, history.Value));
-                            var dataSet = ProtoBufUtils.Deserialize<Dictionary<string, T>>(history.Value);
-                            if (dataSet != null)
-                            {
-                                dataList = dataSet.Values.ToList();
-                                result = true;
-                            }
+                            dataList = new List<T>();
+                            result = true;
                         }
                     }
                 }
@@ -287,8 +284,8 @@ namespace ZyGames.Framework.Cache.Generic.Pool
         /// <param name="sendParam"></param>
         public void SendData<T>(T[] dataList, TransSendParam sendParam) where T : AbstractEntity, new()
         {
-            //todo modify use redis
-            CacheChangeManager.Current.SetEntity(dataList);
+            //modify reason:提交到Redis同步队列处理
+            DataSyncQueueManager.Send(dataList);
             //if (!sendParam.OnlyRedis)
             //{
             //    _dbTransponder.SendData(dataList, sendParam);

@@ -24,6 +24,7 @@ THE SOFTWARE.
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using IronPython.Modules;
 using Newtonsoft.Json;
 using ProtoBuf;
 using ZyGames.Framework.Cache.Generic;
@@ -40,6 +41,8 @@ namespace ZyGames.Framework.Model
     [ProtoContract, Serializable]
     public abstract class AbstractEntity : EntityChangeEvent, IDataExpired, IComparable<AbstractEntity>
     {
+        protected const char KeyCodeJoinChar = '-';
+
         /// <summary>
         /// 
         /// </summary>
@@ -422,7 +425,7 @@ namespace ZyGames.Framework.Model
                 {
                     if (value.Length > 0)
                     {
-                        value += "-";
+                        value += KeyCodeJoinChar;
                     }
                     value += GetPropertyValue(key).ToNotNullString();
                 }
@@ -720,5 +723,69 @@ namespace ZyGames.Framework.Model
             base.Dispose(disposing);
         }
 
+        /// <summary>
+        /// Set key from keycode
+        /// </summary>
+        /// <param name="keyCode"></param>
+        /// <param name="typeName"></param>
+        internal void SetKeyValue(string keyCode, string typeName)
+        {
+            SchemaTable schemaTable;
+            if (EntitySchemaSet.TryGet(typeName, out schemaTable))
+            {
+                string[] keyValues = keyCode.Split(KeyCodeJoinChar);
+                for (int i = 0; i < schemaTable.Keys.Length; i++)
+                {
+                    string columnName = schemaTable.Keys[i];
+                    var colAttr = schemaTable[columnName];
+                    if (i < keyValues.Length && colAttr != null)
+                    {
+                        object value = ParseValueType(keyValues[i], colAttr.ColumnType);
+                        SetPropertyValue(columnName, value);
+                    }
+                }
+            }
+        }
+
+        internal object ParseValueType(object value, Type columnType)
+        {
+            if (columnType == typeof(int))
+            {
+                return value.ToInt();
+            }
+            if (columnType == typeof(string))
+            {
+                return value.ToNotNullString();
+            }
+            if (columnType == typeof(decimal))
+            {
+                return value.ToDecimal();
+            }
+            if (columnType == typeof(double))
+            {
+                return value.ToDouble();
+            }
+            if (columnType == typeof(bool))
+            {
+                return value.ToBool();
+            }
+            if (columnType == typeof(byte))
+            {
+                return value.ToByte();
+            }
+            if (columnType == typeof(DateTime))
+            {
+                return value.ToDateTime();
+            }
+            if (columnType == typeof(Guid))
+            {
+                return (Guid)value;
+            }
+            if (columnType.IsEnum)
+            {
+                return value.ToEnum(columnType);
+            }
+            return value;
+        }
     }
 }

@@ -83,7 +83,14 @@ namespace ZyGames.Framework.Event
         /// Get exclusive modify entity property.
         /// </summary>
         /// <param name="modifyHandle"></param>
+        [Obsolete("Use ModifyLocked method", true)]
         public abstract void ExclusiveModify(Action modifyHandle);
+
+        /// <summary>
+        /// locked modify value.
+        /// </summary>
+        /// <param name="modifyHandle"></param>
+        public abstract void ModifyLocked(Action modifyHandle);
 
         /// <summary>
         /// 序列化Json

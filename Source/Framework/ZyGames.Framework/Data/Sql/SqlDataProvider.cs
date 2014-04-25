@@ -79,21 +79,34 @@ namespace ZyGames.Framework.Data.Sql
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="identityID"></param>
+        /// <param name="identityId"></param>
         /// <param name="commandType"></param>
         /// <param name="commandText"></param>
         /// <param name="parameters"></param>
         /// <returns></returns>
-        public override int ExecuteNonQuery(int identityID, CommandType commandType, string commandText, params IDataParameter[] parameters)
+        public override int ExecuteNonQuery(int identityId, CommandType commandType, string commandText, params IDataParameter[] parameters)
         {
             SqlStatement statement = new SqlStatement();
-            statement.IdentityID = identityID;
+            statement.IdentityID = identityId;
             statement.ConnectionString = ConnectionString;
             statement.ProviderType = "SqlDataProvider";
             statement.CommandType = commandType;
             statement.CommandText = commandText;
             statement.Params = SqlStatementManager.ConvertSqlParam(parameters);
             return SqlStatementManager.Put(statement) ? 1 : 0;
+        }
+
+        public override SqlStatement GenerateSql(int identityId, CommandStruct command)
+        {
+            command.Parser();
+            SqlStatement statement = new SqlStatement();
+            statement.IdentityID = identityId;
+            statement.ConnectionString = ConnectionString;
+            statement.ProviderType = "SqlDataProvider";
+            statement.CommandType = command.CommandType;
+            statement.CommandText = command.Sql;
+            statement.Params = SqlStatementManager.ConvertSqlParam(command.Parameters);
+            return statement;
         }
 
         private string GetParametersToString(IDataParameter[] parameters)
@@ -329,7 +342,7 @@ namespace ZyGames.Framework.Data.Sql
             }
             if (type.Equals(typeof(Byte[])))
             {
-                return "sql_variant";
+                return "varbinary(max)";
             }
 
             if (string.Equals(dbType, "uniqueidentifier", StringComparison.CurrentCultureIgnoreCase) ||

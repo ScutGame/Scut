@@ -25,21 +25,122 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
+using System.Threading;
+using IronPython.Modules;
 using MySql.Data.MySqlClient;
 using ZyGames.Framework.Common.Configuration;
 using ZyGames.Framework.Common.Log;
 using ZyGames.Framework.Common.Serialization;
 using ZyGames.Framework.Redis;
+using ZyGames.Framework.RPC.Sockets.Threading;
 
 namespace ZyGames.Framework.Data
 {
     /// <summary>
     /// sql命令管理
     /// </summary>
-    public static class SqlStatementManager
+    public abstract class SqlStatementManager
     {
-        private static readonly string GlobalRedisKey = "__GLOBAL_SQL_STATEMENT";
-        private static int MessageQueueNum = 1;//ConfigUtils.GetSetting("MessageQueueNum", 1);
+        /// <summary>
+        /// 同步到数据库的Sql队列, 存储格式List:SqlStatement对象
+        /// </summary>
+        public static readonly string SqlSyncQueueKey = "__QUEUE_SQL_SYNC";
+        /// <summary>
+        /// 同步到数据库的Sql出错队列，格式同SqlSyncQueueKey
+        /// </summary>
+        public static readonly string SqlSyncErrorQueueKey = "__QUEUE_SQL_SYNC_ERROR";
+        private static Timer[] _queueWatchTimers;
+        private static SmartThreadPool _threadPools;
+        private static int[] _isWatchWorking;
+        private const int sqlSyncPackSize = 999;
+        private const int DefSqlSyncQueueNum = 2;
+
+        /// <summary>
+        /// Sql sync queue num
+        /// </summary>
+        public static int SqlSyncQueueNum { get; set; }
+
+        static SqlStatementManager()
+        {
+            SqlSyncQueueNum = ConfigUtils.GetSetting("SqlSyncQueueNum", DefSqlSyncQueueNum);
+            if (SqlSyncQueueNum < 1) SqlSyncQueueNum = DefSqlSyncQueueNum;
+            _isWatchWorking = new int[SqlSyncQueueNum];
+        }
+
+#if TEST_METHOD
+        public static void TestCheckSqlSyncQueue(int identity)
+        {
+            if (Interlocked.Exchange(ref _isWatchWorking[identity], 1) == 0)
+            {
+                try
+                {
+                    string queueKey = GetSqlQueueKey(identity);
+                    string workingKey = queueKey + "_temp";
+                    bool result;
+                    byte[][] bufferBytes = new byte[0][];
+                    do
+                    {
+                        result = false;
+                        RedisConnectionPool.ProcessReadOnly(client =>
+                        {
+                            bool hasWorkingQueue = client.ContainsKey(workingKey);
+                            bool hasNewWorkingQueue = client.ContainsKey(queueKey);
+
+                            if (!hasWorkingQueue && !hasNewWorkingQueue)
+                            {
+                                return;
+                            }
+                            if (!hasWorkingQueue)
+                            {
+                                try
+                                {
+                                    client.Rename(queueKey, workingKey);
+                                }
+                                catch { }
+                            }
+
+                            bufferBytes = client.ZRange(workingKey, 0, sqlSyncPackSize);
+                            if (bufferBytes.Length > 0)
+                            {
+                                client.ZRemRangeByRank(workingKey, 0, sqlSyncPackSize);
+                                result = true;
+                            }
+                            else
+                            {
+                                client.Remove(workingKey);
+                            }
+                        });
+                        if (!result)
+                        {
+                            break;
+                        }
+                        DoProcessSqlSyncQueue(workingKey, bufferBytes);
+                    } while (true);
+                }
+                catch (Exception ex)
+                {
+                    TraceLog.WriteError("OnCheckSqlSyncQueue error:{0}", ex);
+                }
+                finally
+                {
+                    Interlocked.Exchange(ref _isWatchWorking[identity], 0);
+                }
+            }
+        }
+#endif
+        /// <summary>
+        /// Start
+        /// </summary>
+        public static void Start()
+        {
+            _queueWatchTimers = new Timer[SqlSyncQueueNum];
+            for (int i = 0; i < SqlSyncQueueNum; i++)
+            {
+                _queueWatchTimers[i] = new Timer(OnCheckSqlSyncQueue, i, 100, 100);
+            }
+            _threadPools = new SmartThreadPool(180 * 1000, 100, 5);
+            _threadPools.Start();
+        }
 
         /// <summary>
         /// 
@@ -75,6 +176,17 @@ namespace ZyGames.Framework.Data
             return paramList;
         }
 
+        private static IDataParameter[] ToSqlParameter(DbBaseProvider dbProvider, SqlParam[] paramList)
+        {
+            IDataParameter[] list = new IDataParameter[paramList.Length];
+            for (int i = 0; i < paramList.Length; i++)
+            {
+                SqlParam param = paramList[i];
+                list[i] = dbProvider.CreateParameter(param.ParamName, param.DbTypeValue, param.Size, param.Value.Value);
+            }
+            return list;
+        }
+
         /// <summary>
         /// 放到Redsi中
         /// </summary>
@@ -82,108 +194,137 @@ namespace ZyGames.Framework.Data
         public static bool Put(SqlStatement statement)
         {
             bool result = false;
-            RedisManager.Process(client =>
+            try
             {
-                try
-                {
-                    string key = GetStatementKey(statement.IdentityID);
-                    byte[] value = ProtoBufUtils.Serialize(statement);
-                    client.ZAdd(key, value);
-                    result = true;
-                }
-                catch (Exception ex)
-                {
-                    TraceLog.WriteError("Sql statement put to redis error:{0}\r\n{1}", ex, JsonUtils.SerializeCustom(statement));
-                }
-            });
+                string key = GetSqlQueueKey(statement.IdentityID);
+                byte[] value = ProtoBufUtils.Serialize(statement);
+                RedisConnectionPool.Process(client => client.ZAdd(key, DateTime.Now.Ticks, value));
+                result = true;
+            }
+            catch (Exception ex)
+            {
+                TraceLog.WriteError("Sql update queue write error:{0}\r\n{1}", ex, JsonUtils.SerializeCustom(statement));
+            }
+
             return result;
         }
 
         /// <summary>
         /// put error sql
         /// </summary>
-        /// <param name="statement"></param>
+        /// <param name="value"></param>
         /// <returns></returns>
-        public static bool PutError(SqlStatement statement)
+        private static bool PutError(byte[] value)
         {
             bool result = false;
-            RedisManager.Process(client =>
+            try
             {
-                try
-                {
-                    string key = GetStatementKey(statement.IdentityID) + "_error";
-                    byte[] value = ProtoBufUtils.Serialize(statement);
-                    client.ZAdd(key, value);
-                    result = true;
-                }
-                catch (Exception ex)
-                {
-                    TraceLog.WriteError("Sql statement put to redis error:{0}\r\n{1}", ex, JsonUtils.SerializeCustom(statement));
-                }
-            });
+                RedisConnectionPool.Process(client => client.ZAdd(SqlSyncErrorQueueKey, DateTime.Now.Ticks, value));
+                result = true;
+            }
+            catch (Exception ex)
+            {
+                TraceLog.WriteError("Sql error queue write error:{0}", ex);
+            }
             return result;
         }
-        /// <summary>
-        /// 从Redis队列中取出Sql命令
-        /// </summary>
-        /// <param name="keyIndex">Redis队列的Index，默认从0开始</param>
-        /// <param name="min"></param>
-        /// <param name="max">从队列取的最大值，0为不限制</param>
-        /// <returns></returns>
-        public static List<SqlStatement> Pop(int keyIndex = 0, int min = 0, int max = 0)
+
+        internal static string GetSqlQueueKey(int identityId)
         {
-            if (max == 0)
+            int index = identityId % SqlSyncQueueNum;
+            string queueKey = string.Format("{0}{1}",
+                SqlSyncQueueKey,
+                SqlSyncQueueNum > 1 ? ":" + index : "");
+            return queueKey;
+        }
+
+        private static void OnCheckSqlSyncQueue(object state)
+        {
+            int identity = (int)state;
+            if (Interlocked.Exchange(ref _isWatchWorking[identity], 1) == 0)
             {
-                max = int.MaxValue;
-            }
-            List<SqlStatement> list = new List<SqlStatement>();
-            string key = GetKey(keyIndex);
-            RedisManager.Process(client =>
-            {
-                string setId = key + "_temp";
                 try
                 {
-                    if (!client.ContainsKey(setId) && client.ContainsKey(key))
+                    string queueKey = GetSqlQueueKey(identity);
+                    string workingKey = queueKey + "_temp";
+                    bool result;
+                    byte[][] bufferBytes = new byte[0][];
+                    do
                     {
-                        try
+                        result = false;
+                        RedisConnectionPool.ProcessReadOnly(client =>
                         {
-                            client.Rename(key, setId);
-                        }
-                        catch
-                        {
-                        }
-                    }
-                    byte[][] buffers = client.ZRange(setId, min, max);
-                    if (buffers == null || buffers.Length == 0)
-                    {
-                        client.Remove(setId);
-                        return;
-                    }
+                            bool hasWorkingQueue = client.ContainsKey(workingKey);
+                            bool hasNewWorkingQueue = client.ContainsKey(queueKey);
 
-                    foreach (var buffer in buffers)
-                    {
-                        list.Add(ProtoBufUtils.Deserialize<SqlStatement>(buffer));
-                        client.ZRemove(setId, buffer);
-                    }
+                            if (!hasWorkingQueue && !hasNewWorkingQueue)
+                            {
+                                return;
+                            }
+                            if (!hasWorkingQueue)
+                            {
+                                try
+                                {
+                                    client.Rename(queueKey, workingKey);
+                                }
+                                catch { }
+                            }
+
+                            bufferBytes = client.ZRange(workingKey, 0, sqlSyncPackSize);
+                            if (bufferBytes.Length > 0)
+                            {
+                                client.ZRemRangeByRank(workingKey, 0, sqlSyncPackSize);
+                                result = true;
+                            }
+                            else
+                            {
+                                client.Remove(workingKey);
+                            }
+                        });
+                        if (!result)
+                        {
+                            break;
+                        }
+                        _threadPools.QueueWorkItem(DoProcessSqlSyncQueue, workingKey, bufferBytes);
+                    } while (true);
                 }
                 catch (Exception ex)
                 {
-                    TraceLog.WriteError("SqlStatement Pop setId:{0} error:{1}", setId, ex);
+                    TraceLog.WriteError("OnCheckSqlSyncQueue error:{0}", ex);
                 }
-            });
-
-            return list;
+                finally
+                {
+                    Interlocked.Exchange(ref _isWatchWorking[identity], 0);
+                }
+            }
         }
 
-        private static string GetStatementKey(int identityID)
+        private static void DoProcessSqlSyncQueue(string workingKey, byte[][] bufferBytes)
         {
-            int index = MessageQueueNum > 1 ? (identityID % MessageQueueNum) : 0;
-            return GetKey(index);
+            try
+            {
+                foreach (var buffer in bufferBytes)
+                {
+                    SqlStatement statement = null;
+                    try
+                    {
+                        statement = ProtoBufUtils.Deserialize<SqlStatement>(buffer);
+                        var dbProvider = DbConnectionProvider.CreateDbProvider("", statement.ProviderType, statement.ConnectionString);
+                        var paramList = ToSqlParameter(dbProvider, statement.Params);
+                        dbProvider.ExecuteQuery(statement.CommandType, statement.CommandText, paramList);
+                    }
+                    catch (Exception e)
+                    {
+                        TraceLog.WriteSqlError("Error:{0}\r\nSql>>\r\n{1}", e, statement != null ? statement.CommandText : "");
+                        PutError(buffer);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                TraceLog.WriteError("DoProcessSqlSyncQueue error:{0}", ex);
+            }
         }
 
-        internal static string GetKey(int index)
-        {
-            return string.Format("{0}_{1}", GlobalRedisKey, index);
-        }
     }
 }

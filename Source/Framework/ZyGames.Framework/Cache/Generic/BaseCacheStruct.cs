@@ -23,6 +23,7 @@ THE SOFTWARE.
 ****************************************************************************/
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using ZyGames.Framework.Collection.Generic;
 using ZyGames.Framework.Common;
 using ZyGames.Framework.Common.Log;
@@ -79,7 +80,7 @@ namespace ZyGames.Framework.Cache.Generic
         public long GetNextNo()
         {
             string key = "EntityPrimaryKey_" + typeof(T).Name;
-            return RedisManager.GetNextNo(key);
+            return RedisConnectionPool.GetNextNo(key);
         }
 
         /// <summary>
@@ -432,15 +433,9 @@ namespace ZyGames.Framework.Cache.Generic
         /// <param name="changeKey"></param>
         protected void UpdateEntity(bool isChange = true, string changeKey = null)
         {
-
             var changeList = DataContainer.GetChangeEntity(changeKey, isChange);
-            var groupList = new GroupList<string, T>();
-            foreach (var pair in changeList)
-            {
-                groupList.TryAdd(pair.Value.GetKeyCode(), pair.Value);
-            }
             TransSendParam sendParam = new TransSendParam() { IsChange = isChange };
-            DoSend(groupList, sendParam);
+            DoSend(changeList, sendParam);
         }
         /// <summary>
         /// 
@@ -449,15 +444,9 @@ namespace ZyGames.Framework.Cache.Generic
         /// <param name="changeKey"></param>
         protected void UpdateGroup(bool isChange = true, string changeKey = null)
         {
-
             var changeList = DataContainer.GetChangeGroup(changeKey, isChange);
-            var groupList = new GroupList<string, T>();
-            foreach (var pair in changeList)
-            {
-                groupList.TryAdd(pair.Value.PersonalId, pair.Value);
-            }
             TransSendParam sendParam = new TransSendParam() { IsChange = isChange };
-            DoSend(groupList, sendParam);
+            DoSend(changeList, sendParam);
         }
         /// <summary>
         /// 
@@ -466,31 +455,23 @@ namespace ZyGames.Framework.Cache.Generic
         /// <param name="changeKey"></param>
         protected void UpdateQueue(bool isChange = true, string changeKey = null)
         {
-
             var changeList = DataContainer.GetChangeQueue(changeKey, isChange);
-            var groupList = new GroupList<string, T>();
-            foreach (var pair in changeList)
-            {
-                groupList.TryAdd(pair.Value.PersonalId, pair.Value);
-            }
             TransSendParam sendParam = new TransSendParam() { IsChange = isChange };
-            DoSend(groupList, sendParam);
+            DoSend(changeList, sendParam);
         }
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="groupList"></param>
+        /// <param name="dataList"></param>
         /// <param name="sendParam"></param>
-        protected void DoSend(GroupList<string, T> groupList, TransSendParam sendParam)
+        protected void DoSend(IEnumerable<KeyValuePair<string, T>> dataList, TransSendParam sendParam)
         {
-
-            foreach (var groupKey in groupList.Keys)
+            var keyValuePairs = dataList as KeyValuePair<string, T>[] ?? dataList.ToArray();
+            DataContainer.SendData(keyValuePairs.Select(pair => pair.Value).ToArray(), sendParam);
+            var groupList = keyValuePairs.GroupBy(t => t.Key);
+            foreach (var g in groupList)
             {
-                List<T> list;
-                groupList.TryGetValue(groupKey, out list);
-                sendParam.RedisKey = groupKey;
-                DataContainer.SendData(list.ToArray(), sendParam);
-                DataContainer.UnChangeNotify(groupKey);
+                DataContainer.UnChangeNotify(g.Key);
             }
         }
         /// <summary>

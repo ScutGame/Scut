@@ -21,6 +21,9 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ****************************************************************************/
+
+using System.Collections.Generic;
+using System.Linq;
 using ZyGames.Framework.Model;
 using ZyGames.Framework.Redis;
 
@@ -31,11 +34,8 @@ namespace ZyGames.Framework.Net.Redis
     /// </summary>
     class RedisDataSender : IDataSender
     {
-        private string _redisKey;
-
-        public RedisDataSender(string redisKey)
+        public RedisDataSender()
         {
-            _redisKey = redisKey;
         }
 
         #region IDataSender 成员
@@ -45,19 +45,19 @@ namespace ZyGames.Framework.Net.Redis
             Send(new T[] { data }, isChange, null, null);
         }
 
-        public void Send<T>(T[] dataList) where T : AbstractEntity
+        public void Send<T>(IEnumerable<T> dataList) where T : AbstractEntity
         {
             Send(dataList, true, null, null);
         }
 
-        public void Send<T>(T[] dataList, bool isChange) where T : AbstractEntity
+        public void Send<T>(IEnumerable<T> dataList, bool isChange) where T : AbstractEntity
         {
             Send(dataList, isChange, null, null);
         }
 
-        public void Send<T>(T[] dataList, bool isChange, string connectKey, EntityBeforeProcess handle) where T : AbstractEntity
+        public void Send<T>(IEnumerable<T> dataList, bool isChange, string connectKey, EntityBeforeProcess handle) where T : AbstractEntity
         {
-            RedisManager.AppendToDict(_redisKey, dataList);
+            RedisConnectionPool.TryUpdateEntity(dataList);
         }
 
         public void Dispose()

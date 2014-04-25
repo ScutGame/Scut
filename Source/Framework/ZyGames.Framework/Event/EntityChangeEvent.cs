@@ -37,6 +37,7 @@ namespace ZyGames.Framework.Event
     {
         private bool _isDisableEvent;
         private int _lockFlag;
+        private int _modified;
 
         /// <summary>
         /// 
@@ -123,6 +124,16 @@ namespace ZyGames.Framework.Event
         {
             get { return _childrenEvent; }
         }
+
+        /// <summary>
+        /// 正在被修改中
+        /// </summary>
+        [JsonIgnore]
+        public bool IsModifying
+        {
+            get { return _modified == 1; }
+        }
+
         /// <summary>
         /// 
         /// </summary>
@@ -207,8 +218,14 @@ namespace ZyGames.Framework.Event
         {
             if (updateHandle != null)
             {
-                if (updateHandle(this))
+                try
                 {
+                    Interlocked.Exchange(ref _modified, 1);
+                    updateHandle(this);
+                }
+                finally
+                {
+                    Interlocked.Exchange(ref _modified, 0);
                     Notify(this, CacheItemChangeType.Modify, PropertyName);
                 }
             }
@@ -220,16 +237,27 @@ namespace ZyGames.Framework.Event
         /// <param name="modifyHandle"></param>
         public override void ExclusiveModify(Action modifyHandle)
         {
-            if (modifyHandle != null)
+            ModifyLocked(modifyHandle);
+        }
+
+        /// <summary>
+        /// locked modify value.
+        /// </summary>
+        /// <param name="action"></param>
+        public override void ModifyLocked(Action action)
+        {
+            if (action != null)
             {
                 try
                 {
                     EnterLock();
-                    modifyHandle();
-                    Notify(this, CacheItemChangeType.Modify, PropertyName);
+                    Interlocked.Exchange(ref _modified, 1);
+                    action();
                 }
                 finally
                 {
+                    Interlocked.Exchange(ref _modified, 0);
+                    Notify(this, CacheItemChangeType.Modify, PropertyName);
                     ExitLock();
                 }
             }
@@ -278,7 +306,8 @@ namespace ZyGames.Framework.Event
         /// <param name="eventArgs"></param>
         protected virtual void Notify(object sender, CacheItemEventArgs eventArgs)
         {
-            if (!_isDisableEvent)
+            //modify reason:调用ExclusiveModify方法多个属性被修改时,修改状态延后通知，减少频繁同步数据
+            if (!_isDisableEvent && !IsModifying)
             {
                 _hasChanged = true;
                 if (ItemEvent != null)

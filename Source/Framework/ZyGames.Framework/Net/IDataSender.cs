@@ -22,6 +22,8 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ****************************************************************************/
 using System;
+using System.Collections.Generic;
+using ZyGames.Framework.Data;
 using ZyGames.Framework.Model;
 
 namespace ZyGames.Framework.Net
@@ -70,14 +72,14 @@ namespace ZyGames.Framework.Net
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="dataList"></param>
-        void Send<T>(T[] dataList) where T : AbstractEntity;
+        void Send<T>(IEnumerable<T> dataList) where T : AbstractEntity;
         /// <summary>
         /// 
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="dataList"></param>
         /// <param name="isChange"></param>
-        void Send<T>(T[] dataList, bool isChange) where T : AbstractEntity;
+        void Send<T>(IEnumerable<T> dataList, bool isChange) where T : AbstractEntity;
 
         /// <summary>
         /// 发送数据到Redis和Db
@@ -87,6 +89,7 @@ namespace ZyGames.Framework.Net
         /// <param name="isChange">是否只发送发生变化的实体数据</param>
         /// <param name="connectKey">数据库连接字符串的连接键值</param>
         /// <param name="handle">发送之前处理委托方法</param>
-        void Send<T>(T[] dataList, bool isChange, string connectKey, EntityBeforeProcess handle) where T : AbstractEntity;
+        void Send<T>(IEnumerable<T> dataList, bool isChange, string connectKey, EntityBeforeProcess handle) where T : AbstractEntity;
+
     }
 }

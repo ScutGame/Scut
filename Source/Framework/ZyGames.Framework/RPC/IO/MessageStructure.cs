@@ -36,7 +36,7 @@ namespace ZyGames.Framework.RPC.IO
     /// <summary>
     /// 消息结构体
     /// </summary>
-    public class MessageStructure
+    public class MessageStructure : BaseDisposable
     {
         private const int DoubleSize = 8;
         private const int FloatSize = 4;
@@ -121,6 +121,14 @@ namespace ZyGames.Framework.RPC.IO
             EnableGzip = true;
             _msBuffers = new MemoryStream(buffer.ToArray());
             //_buffersQueue = new ConcurrentQueue<byte>(buffer);
+        }
+
+        protected override void Dispose(bool disposing)
+        {
+            _waitWriteObjects = null;
+            Reset();
+            _msBuffers.Dispose();
+            base.Dispose(disposing);
         }
 
         /// <summary>
@@ -292,16 +300,6 @@ namespace ZyGames.Framework.RPC.IO
             byte[] bytes = new byte[count];
             int len = _msBuffers.Read(bytes, 0, count);
             _currRecordPos += len;
-            //for (int i = 0; i < count; i++)
-            //{
-            //    byte b;
-            //    if (_buffersQueue.TryDequeue(out b))
-            //    {
-            //        bytes[i] = b;
-            //        Interlocked.Increment(ref _offset);
-            //        Interlocked.Increment(ref _currRecordPos);
-            //    }
-            //}
             return bytes;
         }
 

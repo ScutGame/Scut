@@ -468,7 +468,8 @@ namespace ZyGames.Framework.Script
             string path = Environment.GetEnvironmentVariable("IRONPYTHONPATH");
             if (string.IsNullOrEmpty(path))
             {
-                TraceLog.WriteError("The ENV:\"IRONPYTHONPATH\" is not be setting.");
+                TraceLog.WriteError("The environment variables:\"IRONPYTHONPATH\" is not be setting.");
+                Console.WriteLine("# Error>>The environment variables:\"IRONPYTHONPATH\" is not be setting.");
             }
             if (!string.IsNullOrEmpty(path))
             {
@@ -506,8 +507,6 @@ namespace ZyGames.Framework.Script
 
         private static bool CheckFileChanged(string fileName)
         {
-			//todo modify
-            return true;
             string scriptCode = GetScriptCode(fileName);
             var script = _scriptCodeCache[scriptCode];
             if (script != null && script.TryEnterLock())
@@ -548,6 +547,17 @@ namespace ZyGames.Framework.Script
                 _scriptCodeCache[scriptCode] = scriptFileInfo;
             }
             return scriptFileInfo;
+        }
+
+        /// <summary>
+        /// Get script object
+        /// </summary>
+        /// <param name="fileName"></param>
+        /// <returns></returns>
+        public static ScriptFileInfo GetScript(string fileName)
+        {
+            string scriptCode = GetScriptCode(fileName);
+            return _scriptCodeCache[scriptCode];
         }
 
         /// <summary>

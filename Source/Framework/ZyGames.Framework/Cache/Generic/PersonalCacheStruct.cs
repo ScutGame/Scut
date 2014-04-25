@@ -384,10 +384,8 @@ namespace ZyGames.Framework.Cache.Generic
             return TryRemove(personalId, key, entity =>
             {
                 entity.OnDelete();
-                var groupList = new GroupList<string, T>();
-                groupList.TryAdd(personalId, entity);
                 TransSendParam sendParam = new TransSendParam() { IsChange = true };
-                DoSend(groupList, sendParam);
+                DoSend(new[] { new KeyValuePair<string, T>(personalId, value) }, sendParam);
                 return true;
             });
         }

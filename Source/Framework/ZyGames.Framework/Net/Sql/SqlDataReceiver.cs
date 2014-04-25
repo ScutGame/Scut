@@ -232,7 +232,7 @@ namespace ZyGames.Framework.Net.Sql
                 {
                     try
                     {
-                        fieldValue = ParseValueType(reader[columnName], fieldAttr.ColumnType);
+                        fieldValue = entity.ParseValueType(reader[columnName], fieldAttr.ColumnType);
                     }
                     catch (Exception ex)
                     {
@@ -250,45 +250,5 @@ namespace ZyGames.Framework.Net.Sql
             }
         }
 
-        private object ParseValueType(object value, Type columnType)
-        {
-            if (columnType == typeof(int))
-            {
-                return value.ToInt();
-            }
-            if (columnType == typeof(string))
-            {
-                return value.ToNotNullString();
-            }
-            if (columnType == typeof(decimal))
-            {
-                return value.ToDecimal();
-            }
-            if (columnType == typeof(double))
-            {
-                return value.ToDouble();
-            }
-            if (columnType == typeof(bool))
-            {
-                return value.ToBool();
-            }
-            if (columnType == typeof(byte))
-            {
-                return value.ToByte();
-            }
-            if (columnType == typeof(DateTime))
-            {
-                return value.ToDateTime();
-            }
-            if (columnType == typeof(Guid))
-            {
-                return (Guid)value;
-            }
-            if (columnType.IsEnum)
-            {
-                return value.ToEnum(columnType);
-            }
-            return value;
-        }
     }
 }

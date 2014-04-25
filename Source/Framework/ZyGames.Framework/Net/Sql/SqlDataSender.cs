@@ -22,6 +22,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ****************************************************************************/
 using System;
+using System.Collections.Generic;
 using System.Data;
 using System.Text;
 using ZyGames.Framework.Common;
@@ -39,22 +40,44 @@ namespace ZyGames.Framework.Net.Sql
             Send(new T[] { data }, isChange, null, null);
         }
 
-        public void Send<T>(T[] dataList) where T : AbstractEntity
+        public void Send<T>(IEnumerable<T> dataList) where T : AbstractEntity
         {
             Send(dataList, true, null, null);
         }
 
-        public void Send<T>(T[] dataList, bool isChange) where T : AbstractEntity
+        public void Send<T>(IEnumerable<T> dataList, bool isChange) where T : AbstractEntity
         {
             Send(dataList, isChange, null, null);
         }
 
-        public void Send<T>(T[] dataList, bool isChange, string connectKey, EntityBeforeProcess handle) where T : AbstractEntity
+        public void Send<T>(IEnumerable<T> dataList, bool isChange, string connectKey, EntityBeforeProcess handle) where T : AbstractEntity
         {
             foreach (var data in dataList)
             {
                 UpdateToDb(data, isChange, connectKey, handle);
             }
+        }
+
+        /// <summary>
+        /// Generate sql statement
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="data"></param>
+        /// <returns></returns>
+        internal SqlStatement GenerateSqlQueue<T>(T data) where T : AbstractEntity
+        {
+            SchemaTable schemaTable = data.GetSchema();
+            DbBaseProvider dbProvider = DbConnectionProvider.CreateDbProvider(schemaTable.ConnectKey);
+            if (dbProvider != null)
+            {
+                CommandStruct command = GenerateCommand(dbProvider, data, schemaTable, false, null);
+                if (command != null)
+                {
+                    int identityId = data.GetIdentityId();
+                    return dbProvider.GenerateSql(identityId, command);
+                }
+            }
+            return null;
         }
 
         public void Dispose()
@@ -68,29 +91,37 @@ namespace ZyGames.Framework.Net.Sql
             {
                 return;
             }
-
             SchemaTable schemaTable = data.GetSchema();
-            if (!schemaTable.IsStoreInDb ||
-                (string.IsNullOrEmpty(schemaTable.ConnectKey) &&
-                    string.IsNullOrEmpty(schemaTable.ConnectionString)))
+            DbBaseProvider dbProvider = DbConnectionProvider.CreateDbProvider(connectKey ?? schemaTable.ConnectKey);
+            if (dbProvider == null)
             {
                 return;
+            }
+            CommandStruct command = GenerateCommand(dbProvider, data, schemaTable, isChange, handle);
+            if (command != null)
+            {
+                dbProvider.ExecuteNonQuery(data.GetIdentityId(), CommandType.Text, command.Sql, command.Parameters);
+                data.OnUnNew();
+            }
+        }
+
+        private CommandStruct GenerateCommand<T>(DbBaseProvider dbProvider, T data, SchemaTable schemaTable, bool isChange, EntityBeforeProcess handle) where T : AbstractEntity
+        {
+            CommandStruct command = null;
+            if (!schemaTable.IsStoreInDb ||
+                (string.IsNullOrEmpty(schemaTable.ConnectKey) &&
+                 string.IsNullOrEmpty(schemaTable.ConnectionString)))
+            {
+                return null;
             }
 
             string[] columns = GetColumns(schemaTable, data, isChange);
             if (columns == null || columns.Length == 0)
             {
                 TraceLog.WriteError("Class:{0} is not change column.", data.GetType().FullName);
-                return;
+                return null;
             }
 
-            DbBaseProvider dbProvider = DbConnectionProvider.CreateDbProvider(connectKey ?? schemaTable.ConnectKey);
-            if (dbProvider == null)
-            {
-                //TraceLog.WriteError("DbBaseProvider:{0} is null.", (connectKey ?? schemaTable.ConnectKey));
-                return;
-            }
-            CommandStruct command = null;
             if (data.IsDelete)
             {
                 command = dbProvider.CreateCommandStruct(schemaTable.Name, CommandMode.Delete);
@@ -168,12 +199,7 @@ namespace ZyGames.Framework.Net.Sql
             }
             command.Filter.Condition = condition;
             command.Parser();
-            //if (schemaTable.AccessLevel == AccessLevel.ReadWrite)
-            //{
-            //    TraceLog.ReleaseWriteDebug("Update change \"{0}\" data:{1}", data.GetType().FullName, changeLog.ToString());
-            //}
-            dbProvider.ExecuteNonQuery(data.GetIdentityId(), CommandType.Text, command.Sql, command.Parameters);
-            data.OnUnNew();
+            return command;
         }
 
         private static IDataParameter CreateParameter(DbBaseProvider dbProvider, string columnName, ColumnDbType dbType, object value)

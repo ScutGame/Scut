@@ -112,6 +112,7 @@
     <Compile Include="Cache\Generic\CacheItem.cs" />
     <Compile Include="Cache\Generic\CacheItemSet.cs" />
     <Compile Include="Cache\Generic\CacheSetting.cs" />
+    <Compile Include="Cache\Generic\DataSyncQueueManager.cs" />
     <Compile Include="Cache\Generic\DefaultCacheStruct.cs" />
     <Compile Include="Cache\Generic\MemoryCacheStruct.cs" />
     <Compile Include="Collection\Generic\DictionaryExtend.cs" />
@@ -141,7 +142,7 @@
     <Compile Include="Cache\Generic\Pool\CachePool.cs" />
     <Compile Include="Cache\Generic\BaseCollection.cs" />
     <Compile Include="Cache\Generic\ReadonlyCacheCollection.cs" />
-    <Compile Include="Collection\Generic\FreeList.cs" />
+    <Compile Include="Collection\Generic\ListExtend.cs" />
     <Compile Include="Data\Sql\SqlParamHelper.cs" />
     <Compile Include="Event\EntityChangeEvent.cs" />
     <Compile Include="Event\CacheItemChangeEvent.cs" />
@@ -165,7 +166,6 @@
     <Compile Include="Redis\RedisConnectionPool.cs" />
     <Compile Include="Net\Redis\RedisDataGetter.cs" />
     <Compile Include="Net\Redis\RedisDataSender.cs" />
-    <Compile Include="Redis\RedisManager.cs" />
     <Compile Include="Data\CommandFilter.cs" />
     <Compile Include="Data\CommandStruct.cs" />
     <Compile Include="Data\DbBaseProvider.cs" />
@@ -195,6 +195,7 @@
     <Compile Include="Plugin\Test\CaseEventArgs.cs" />
     <Compile Include="Plugin\Test\CaseManager.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Redis\RedisPoolSetting.cs" />
     <Compile Include="RPC\IO\BufferReader.cs" />
     <Compile Include="RPC\IO\BufferUtils.cs" />
     <Compile Include="RPC\IO\ConnectType.cs" />
@@ -254,7 +255,6 @@
     <Compile Include="Script\ScriptFileInfo.cs" />
     <Compile Include="SyncThreading\SyncHelper.cs" />
     <Compile Include="Data\ConnectionSetting.cs" />
-    <Compile Include="Cache\Generic\CacheChangeManager.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ZyGames.Framework.Common\ZyGames.Framework.Common.csproj">

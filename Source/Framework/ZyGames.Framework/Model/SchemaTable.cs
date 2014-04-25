@@ -212,6 +212,15 @@ namespace ZyGames.Framework.Model
         }
 
         /// <summary>
+        /// get column
+        /// </summary>
+        /// <param name="name"></param>
+        /// <returns></returns>
+        public SchemaColumn this[string name]
+        {
+            get { return _columns.ContainsKey(name) ? _columns[name] : null; }
+        }
+        /// <summary>
         /// 条件，不需要加Where
         /// </summary>
         public string Condition

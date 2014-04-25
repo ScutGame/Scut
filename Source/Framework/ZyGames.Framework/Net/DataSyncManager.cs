@@ -25,6 +25,7 @@ using System;
 using ZyGames.Framework.Model;
 using ZyGames.Framework.Net.Redis;
 using ZyGames.Framework.Net.Sql;
+using ZyGames.Framework.Redis;
 
 namespace ZyGames.Framework.Net
 {
@@ -67,7 +68,7 @@ namespace ZyGames.Framework.Net
 
 
         #region Redis
-        
+
         /// <summary>
         /// 
         /// </summary>
@@ -75,7 +76,7 @@ namespace ZyGames.Framework.Net
         /// <returns></returns>
         public static IDataSender GetRedisSender(string redisKey)
         {
-            return new RedisDataSender(redisKey);
+            return new RedisDataSender();
         }
         /// <summary>
         /// 

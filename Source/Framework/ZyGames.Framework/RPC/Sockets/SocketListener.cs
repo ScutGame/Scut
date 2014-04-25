@@ -215,7 +215,7 @@ namespace ZyGames.Framework.RPC.Sockets
             }
             catch (Exception ex)
             {
-                logger.Error("Accept_Completed", ex);
+                logger.Error(string.Format("AcceptCompleted method error:{0}", ex));
 
                 if (acceptEventArgs.AcceptSocket != null)
                 {

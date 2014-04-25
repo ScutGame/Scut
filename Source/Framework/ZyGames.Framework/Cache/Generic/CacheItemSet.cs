@@ -156,7 +156,7 @@ namespace ZyGames.Framework.Cache.Generic
                 return;
             }
             _hasChanged = true;
-            PutToChangeKeys(sender);
+            PutToChangeKeys(sender as AbstractEntity);
             DoChangedNotify(sender as AbstractEntity, eventArgs);
         }
 
@@ -168,7 +168,7 @@ namespace ZyGames.Framework.Cache.Generic
         protected override void NotifyByChildren(object sender, CacheItemEventArgs eventArgs)
         {
             _hasChanged = true;
-            PutToChangeKeys(sender);
+            PutToChangeKeys(sender as AbstractEntity);
             DoChangedNotify(sender as AbstractEntity, eventArgs);
         }
 
@@ -185,9 +185,9 @@ namespace ZyGames.Framework.Cache.Generic
             _hasChanged = false;
         }
 
-        private void PutToChangeKeys(object sender)
+        private void PutToChangeKeys(AbstractEntity entity)
         {
-            CacheChangeManager.Current.SetEntity(sender as AbstractEntity);
+            DataSyncQueueManager.Send(new[] { entity });
         }
 
         /// <summary>

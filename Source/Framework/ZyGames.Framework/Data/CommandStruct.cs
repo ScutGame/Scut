@@ -53,7 +53,13 @@ namespace ZyGames.Framework.Data
             Columns = columns;
             Filter = new CommandFilter();
             Parameters = new IDataParameter[0];
+            CommandType = CommandType.Text;
         }
+
+        /// <summary>
+        /// CommandType
+        /// </summary>
+        public CommandType CommandType { get; set; }
 
         private string _tableName;
 
@@ -339,10 +345,17 @@ namespace ZyGames.Framework.Data
         }
 
         /// <summary>
+        /// Is generate
+        /// </summary>
+        public bool IsGenerated { get; private set; }
+
+        /// <summary>
         /// 提交
         /// </summary>
         public void Parser()
         {
+            if (IsGenerated) return;
+
             switch (EntityType)
             {
                 case CommandMode.Insert:
@@ -363,7 +376,7 @@ namespace ZyGames.Framework.Data
                 default:
                     throw new ArgumentOutOfRangeException();
             }
-
+            IsGenerated = true;
         }
         /// <summary>
         /// Parsers the inquiry.
@@ -470,7 +483,7 @@ namespace ZyGames.Framework.Data
                     string.Join(",", tempArray2),
                     ReturnIdentity ? ";SELECT @@IDENTITY;" : "");
         }
-    
+
         /// <summary>
         /// 
         /// </summary>

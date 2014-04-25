@@ -41,7 +41,7 @@ namespace ZyGames.Framework.Net.Redis
 
         public bool TryReceive<T>(out List<T> dataList) where T : AbstractEntity, new()
         {
-            return RedisManager.TryGet<T>(_redisKey, out dataList);
+            return RedisConnectionPool.TryGetEntity(_redisKey, out dataList);
         }
 
         public void Dispose()

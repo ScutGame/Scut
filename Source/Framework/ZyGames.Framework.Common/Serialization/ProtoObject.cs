@@ -104,6 +104,8 @@ namespace ZyGames.Framework.Common.Serialization
                     return _binaryValue;
                 if (_charsValue != null)
                     return _charsValue;
+                if (_binaryArrayValue != null)
+                    return _binaryArrayValue;
                 return _stringValue;
             }
             set
@@ -136,6 +138,8 @@ namespace ZyGames.Framework.Common.Serialization
                     _binaryValue = (byte[])value;
                 else if (value is char[])
                     _charsValue = (char[])value;
+                else if (value is byte[][])
+                    _binaryArrayValue = (byte[][])value;
                 else if (value == null)
                 {
                     _isnullValue = true;
@@ -189,6 +193,9 @@ namespace ZyGames.Framework.Common.Serialization
 
         [ProtoMember(14)]
         private bool? _isnullValue;
+
+        [ProtoMember(15)]
+        private byte[][] _binaryArrayValue;
         // etc
 
 
