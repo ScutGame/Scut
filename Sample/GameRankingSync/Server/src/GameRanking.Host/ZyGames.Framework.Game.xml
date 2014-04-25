@@ -2795,7 +2795,7 @@
             Checks the user.
             </summary>
             <returns>The user.</returns>
-            <param name="sessionID">Session I.</param>
+            <param name="sessionId">Session I.</param>
             <param name="userId">User identifier.</param>
             <param name="gameUser">Game user.</param>
         </member>

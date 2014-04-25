@@ -253,11 +253,11 @@
             <param name="isChange">更新到库中是全部数据还是改变的数据</param>
             <param name="changeKey"></param>
         </member>
-        <member name="M:ZyGames.Framework.Cache.Generic.BaseCacheStruct`1.DoSend(ZyGames.Framework.Collection.Generic.GroupList{System.String,`0},ZyGames.Framework.Net.TransSendParam)">
+        <member name="M:ZyGames.Framework.Cache.Generic.BaseCacheStruct`1.DoSend(System.Collections.Generic.IEnumerable{System.Collections.Generic.KeyValuePair{System.String,`0}},ZyGames.Framework.Net.TransSendParam)">
             <summary>
             
             </summary>
-            <param name="groupList"></param>
+            <param name="dataList"></param>
             <param name="sendParam"></param>
         </member>
         <member name="M:ZyGames.Framework.Cache.Generic.BaseCacheStruct`1.DoTimeSend(ZyGames.Framework.Collection.Generic.GroupList{System.String,`0},ZyGames.Framework.Net.TransSendParam)">
@@ -336,6 +336,12 @@
         <member name="M:ZyGames.Framework.Event.IItemChangeEvent.ExclusiveModify(System.Action)">
             <summary>
             Get exclusive modify entity property.
+            </summary>
+            <param name="modifyHandle"></param>
+        </member>
+        <member name="M:ZyGames.Framework.Event.IItemChangeEvent.ModifyLocked(System.Action)">
+            <summary>
+            locked modify value.
             </summary>
             <param name="modifyHandle"></param>
         </member>
@@ -438,6 +444,12 @@
             </summary>
             <param name="modifyHandle"></param>
         </member>
+        <member name="M:ZyGames.Framework.Event.EntityChangeEvent.ModifyLocked(System.Action)">
+            <summary>
+            locked modify value.
+            </summary>
+            <param name="action"></param>
+        </member>
         <member name="M:ZyGames.Framework.Event.EntityChangeEvent.NotifyByModify">
             <summary>
             触发修改通知事件
@@ -505,6 +517,11 @@
         <member name="P:ZyGames.Framework.Event.EntityChangeEvent.ChildrenEvent">
             <summary>
             当前对象绑定的Chang事件
+            </summary>
+        </member>
+        <member name="P:ZyGames.Framework.Event.EntityChangeEvent.IsModifying">
+            <summary>
+            正在被修改中
             </summary>
         </member>
         <member name="P:ZyGames.Framework.Event.EntityChangeEvent.HasChanged">
@@ -735,51 +752,6 @@
             </summary>
         </member>
         <member name="P:ZyGames.Framework.Cache.Generic.BaseCollection.IsEmpty">
-            <summary>
-            
-            </summary>
-        </member>
-        <member name="T:ZyGames.Framework.Cache.Generic.CacheChangeManager">
-            <summary>
-            缓存改变键管理
-            </summary>
-        </member>
-        <member name="M:ZyGames.Framework.Cache.Generic.CacheChangeManager.PutSql(System.String)">
-            <summary>
-            Put to sql change keys
-            </summary>
-            <param name="key">The entity key</param>
-        </member>
-        <member name="M:ZyGames.Framework.Cache.Generic.CacheChangeManager.PopSql(ZyGames.Framework.Redis.RedisConnection)">
-            <summary>
-            pop sql change keys
-            </summary>
-            <param name="client"></param>
-        </member>
-        <member name="M:ZyGames.Framework.Cache.Generic.CacheChangeManager.ChangeKeyError(ZyGames.Framework.Redis.RedisConnection,System.String,System.Byte[])">
-            <summary>
-            changkey error occurred while removing more than 3 times.
-            </summary>
-            <param name="client"></param>
-            <param name="key"></param>
-            <param name="buffer"></param>
-        </member>
-        <member name="M:ZyGames.Framework.Cache.Generic.CacheChangeManager.GetKeys(ZyGames.Framework.Redis.RedisConnection,System.Int32,System.Int32)">
-            <summary>
-            get entity keys
-            </summary>
-            <param name="client"></param>
-            <param name="min"></param>
-            <param name="max"></param>
-            <returns></returns>
-        </member>
-        <member name="M:ZyGames.Framework.Cache.Generic.CacheChangeManager.SetEntity(ZyGames.Framework.Model.AbstractEntity[])">
-            <summary>
-            
-            </summary>
-            <param name="entitys"></param>
-        </member>
-        <member name="P:ZyGames.Framework.Cache.Generic.CacheChangeManager.Current">
             <summary>
             
             </summary>
@@ -1904,6 +1876,53 @@
         <member name="E:ZyGames.Framework.Cache.Generic.CacheSetting.ChangedHandle">
             <summary>
             The entity has be changed event notify.
+            </summary>
+        </member>
+        <member name="T:ZyGames.Framework.Cache.Generic.DataSyncQueueManager">
+            <summary>
+            Data sync queue manager
+            </summary>
+        </member>
+        <member name="F:ZyGames.Framework.Cache.Generic.DataSyncQueueManager.RedisSyncQueueKey">
+            <summary>
+            同步缓存数据到Redis的队列名,存储格式:key值:typename_keycode, value值:len(4)+head[id(4)+state(4)] + value,state:1 移除操作
+            </summary>
+        </member>
+        <member name="F:ZyGames.Framework.Cache.Generic.DataSyncQueueManager.RedisSyncErrorQueueKey">
+            <summary>
+            同步缓存出错队列，格式同RedisSyncQueueKey
+            </summary>
+        </member>
+        <member name="F:ZyGames.Framework.Cache.Generic.DataSyncQueueManager.SqlSyncWaitQueueKey">
+            <summary>
+            同步到数据库的Sql等待队列, 存储格式:key值:typename_keycode, value值:head[id(4)+state(4)]
+            </summary>
+        </member>
+        <member name="F:ZyGames.Framework.Cache.Generic.DataSyncQueueManager.SqlSyncWaitErrirQueueKey">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:ZyGames.Framework.Cache.Generic.DataSyncQueueManager.Start(ZyGames.Framework.Cache.Generic.CacheSetting)">
+            <summary>
+            Start
+            </summary>
+            <param name="setting"></param>
+        </member>
+        <member name="M:ZyGames.Framework.Cache.Generic.DataSyncQueueManager.Send(ZyGames.Framework.Model.AbstractEntity[])">
+            <summary>
+            Send to queue pool
+            </summary>
+            <param name="entityList"></param>
+        </member>
+        <member name="P:ZyGames.Framework.Cache.Generic.DataSyncQueueManager.DataSyncQueueNum">
+            <summary>
+            Data sync queue num
+            </summary>
+        </member>
+        <member name="P:ZyGames.Framework.Cache.Generic.DataSyncQueueManager.SqlWaitSyncQueueNum">
+            <summary>
+            Sql wait sync queue num
             </summary>
         </member>
         <member name="T:ZyGames.Framework.Cache.Generic.DefaultCacheStruct`1">
@@ -3110,6 +3129,11 @@
             <param name="periodTime"></param>
             <returns></returns>
         </member>
+        <member name="P:ZyGames.Framework.Cache.Generic.ShareCacheStruct`1.LoadingStatus">
+            <summary>
+            Get loading status from redis or DB
+            </summary>
+        </member>
         <member name="T:ZyGames.Framework.Collection.Generic.DictionaryExtend`2">
             <summary>
             扩展线程安全字典
@@ -3245,23 +3269,6 @@
             
             </summary>
         </member>
-        <member name="T:ZyGames.Framework.Collection.Generic.FreeList`1">
-            <summary>
-            
-            </summary>
-            <typeparam name="T"></typeparam>
-        </member>
-        <member name="M:ZyGames.Framework.Collection.Generic.FreeList`1.#ctor">
-            <summary>
-            
-            </summary>
-        </member>
-        <member name="M:ZyGames.Framework.Collection.Generic.FreeList`1.TryAdd">
-            <summary>
-            
-            </summary>
-            <returns></returns>
-        </member>
         <member name="T:ZyGames.Framework.Collection.Generic.GroupList`2">
             <summary>
             分组List
@@ -3307,6 +3314,192 @@
         <member name="T:ZyGames.Framework.Collection.Generic.HashtableExtend">
             <summary>
             扩展Hashtable
+            </summary>
+        </member>
+        <member name="T:ZyGames.Framework.Collection.Generic.ListExtend`1">
+            <summary>
+            
+            </summary>
+            <typeparam name="T"></typeparam>
+        </member>
+        <member name="M:ZyGames.Framework.Collection.Generic.ListExtend`1.#ctor">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:ZyGames.Framework.Collection.Generic.ListExtend`1.GetEnumerator">
+            <summary>
+            
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:ZyGames.Framework.Collection.Generic.ListExtend`1.Add(`0)">
+            <summary>
+            
+            </summary>
+            <param name="item"></param>
+        </member>
+        <member name="M:ZyGames.Framework.Collection.Generic.ListExtend`1.TryAdd(`0,System.Predicate{`0})">
+            <summary>
+            
+            </summary>
+            <param name="item"></param>
+            <param name="math"></param>
+        </member>
+        <member name="M:ZyGames.Framework.Collection.Generic.ListExtend`1.Clear">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:ZyGames.Framework.Collection.Generic.ListExtend`1.Contains(`0)">
+            <summary>
+            
+            </summary>
+            <param name="item"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ZyGames.Framework.Collection.Generic.ListExtend`1.CopyTo(`0[],System.Int32)">
+            <summary>
+            
+            </summary>
+            <param name="array"></param>
+            <param name="arrayIndex"></param>
+        </member>
+        <member name="M:ZyGames.Framework.Collection.Generic.ListExtend`1.ToArray">
+            <summary>
+            
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:ZyGames.Framework.Collection.Generic.ListExtend`1.ToList">
+            <summary>
+            
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:ZyGames.Framework.Collection.Generic.ListExtend`1.Foreach(System.Func{`0,System.Boolean})">
+            <summary>
+            Func返回false跳出遍历
+            </summary>
+        </member>
+        <member name="M:ZyGames.Framework.Collection.Generic.ListExtend`1.Remove(`0)">
+            <summary>
+            
+            </summary>
+            <param name="item"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ZyGames.Framework.Collection.Generic.ListExtend`1.IndexOf(`0)">
+            <summary>
+            
+            </summary>
+            <param name="item"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ZyGames.Framework.Collection.Generic.ListExtend`1.Insert(System.Int32,`0)">
+            <summary>
+            
+            </summary>
+            <param name="index"></param>
+            <param name="item"></param>
+        </member>
+        <member name="M:ZyGames.Framework.Collection.Generic.ListExtend`1.RemoveAt(System.Int32)">
+            <summary>
+            
+            </summary>
+            <param name="index"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ZyGames.Framework.Collection.Generic.ListExtend`1.RemoveAll(System.Predicate{`0})">
+            <summary>
+            
+            </summary>
+            <param name="match"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ZyGames.Framework.Collection.Generic.ListExtend`1.InsertSort(`0,System.Comparison{`0})">
+            <summary>
+            以指定的顺序，插入项
+            </summary>
+            <param name="item"></param>
+            <param name="comparison"></param>
+        </member>
+        <member name="M:ZyGames.Framework.Collection.Generic.ListExtend`1.Exists(System.Predicate{`0})">
+            <summary>
+            
+            </summary>
+            <param name="match"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ZyGames.Framework.Collection.Generic.ListExtend`1.Find(System.Predicate{`0})">
+            <summary>
+            
+            </summary>
+            <param name="match"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ZyGames.Framework.Collection.Generic.ListExtend`1.FindLast(System.Predicate{`0})">
+            <summary>
+            
+            </summary>
+            <param name="match"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ZyGames.Framework.Collection.Generic.ListExtend`1.FindAll(System.Predicate{`0})">
+            <summary>
+            
+            </summary>
+            <param name="match"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ZyGames.Framework.Collection.Generic.ListExtend`1.GetListRange(System.Int32,System.Int32)">
+            <summary>
+            
+            </summary>
+            <param name="index"></param>
+            <param name="count"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ZyGames.Framework.Collection.Generic.ListExtend`1.GetRange(System.Int32,System.Int32,System.Int32@)">
+            <summary>
+            
+            </summary>
+            <param name="pageIndex"></param>
+            <param name="pageSize"></param>
+            <param name="pageCount"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ZyGames.Framework.Collection.Generic.ListExtend`1.GetRange(System.Int32,System.Int32,System.Int32@,System.Int32@)">
+            <summary>
+            
+            </summary>
+            <param name="pageIndex"></param>
+            <param name="pageSize"></param>
+            <param name="pageCount"></param>
+            <param name="recordCount"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ZyGames.Framework.Collection.Generic.ListExtend`1.Dispose(System.Boolean)">
+            <summary>
+            
+            </summary>
+            <param name="disposing"></param>
+        </member>
+        <member name="P:ZyGames.Framework.Collection.Generic.ListExtend`1.Item(System.Int32)">
+            <summary>
+            
+            </summary>
+            <param name="index"></param>
+            <returns></returns>
+        </member>
+        <member name="P:ZyGames.Framework.Collection.Generic.ListExtend`1.Count">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:ZyGames.Framework.Collection.Generic.ListExtend`1.IsReadOnly">
+            <summary>
+            
             </summary>
         </member>
         <member name="T:ZyGames.Framework.Data.CommandFilter">
@@ -3562,6 +3755,11 @@
             <param name="name"></param>
             <returns></returns>
         </member>
+        <member name="P:ZyGames.Framework.Data.CommandStruct.CommandType">
+            <summary>
+            CommandType
+            </summary>
+        </member>
         <member name="P:ZyGames.Framework.Data.CommandStruct.TableName">
             <summary>
             
@@ -3623,6 +3821,11 @@
         <member name="P:ZyGames.Framework.Data.CommandStruct.SqlParameters">
             <summary>
             
+            </summary>
+        </member>
+        <member name="P:ZyGames.Framework.Data.CommandStruct.IsGenerated">
+            <summary>
+            Is generate
             </summary>
         </member>
         <member name="T:ZyGames.Framework.Data.DbLevel">
@@ -3789,10 +3992,18 @@
             <summary>
             写入消息队列
             </summary>
-            <param name="identityID"></param>
+            <param name="identityId"></param>
             <param name="commandType"></param>
             <param name="commandText"></param>
             <param name="parameters"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ZyGames.Framework.Data.DbBaseProvider.GenerateSql(System.Int32,ZyGames.Framework.Data.CommandStruct)">
+            <summary>
+            生成Sql命令对象
+            </summary>
+            <param name="identityId"></param>
+            <param name="command"></param>
             <returns></returns>
         </member>
         <member name="M:ZyGames.Framework.Data.DbBaseProvider.CheckTable(System.String,ZyGames.Framework.Data.DbColumn[]@)">
@@ -4189,7 +4400,7 @@
             <summary>
             
             </summary>
-            <param name="identityID"></param>
+            <param name="identityId"></param>
             <param name="commandType"></param>
             <param name="commandText"></param>
             <param name="parameters"></param>
@@ -4381,32 +4592,37 @@
         </member>
         <member name="T:ZyGames.Framework.Data.SqlParam">
             <summary>
-            sql��������
+            sql
             </summary>
         </member>
         <member name="F:ZyGames.Framework.Data.SqlParam.ParamName">
             <summary>
-            ��������
+            ParamName
             </summary>
         </member>
         <member name="F:ZyGames.Framework.Data.SqlParam.DbTypeValue">
             <summary>
-            ��������
+            DbType
             </summary>
         </member>
         <member name="F:ZyGames.Framework.Data.SqlParam.Size">
             <summary>
-            ���ȴ�С����
+            Size
             </summary>
         </member>
         <member name="F:ZyGames.Framework.Data.SqlParam.Value">
             <summary>
-            ����ֵ
+            Value
             </summary>
         </member>
         <member name="T:ZyGames.Framework.Data.SqlStatement">
             <summary>
             Sql语句对象
+            </summary>
+        </member>
+        <member name="M:ZyGames.Framework.Data.SqlStatement.#ctor">
+            <summary>
+            init
             </summary>
         </member>
         <member name="P:ZyGames.Framework.Data.SqlStatement.IdentityID">
@@ -4444,6 +4660,21 @@
             sql命令管理
             </summary>
         </member>
+        <member name="F:ZyGames.Framework.Data.SqlStatementManager.SqlSyncQueueKey">
+            <summary>
+            同步到数据库的Sql队列, 存储格式List:SqlStatement对象
+            </summary>
+        </member>
+        <member name="F:ZyGames.Framework.Data.SqlStatementManager.SqlSyncErrorQueueKey">
+            <summary>
+            同步到数据库的Sql出错队列，格式同SqlSyncQueueKey
+            </summary>
+        </member>
+        <member name="M:ZyGames.Framework.Data.SqlStatementManager.Start">
+            <summary>
+            Start
+            </summary>
+        </member>
         <member name="M:ZyGames.Framework.Data.SqlStatementManager.ConvertSqlParam(System.Data.IDataParameter[])">
             <summary>
             
@@ -4457,21 +4688,17 @@
             </summary>
             <param name="statement"></param>
         </member>
-        <member name="M:ZyGames.Framework.Data.SqlStatementManager.PutError(ZyGames.Framework.Data.SqlStatement)">
+        <member name="M:ZyGames.Framework.Data.SqlStatementManager.PutError(System.Byte[])">
             <summary>
             put error sql
             </summary>
-            <param name="statement"></param>
+            <param name="value"></param>
             <returns></returns>
         </member>
-        <member name="M:ZyGames.Framework.Data.SqlStatementManager.Pop(System.Int32,System.Int32,System.Int32)">
+        <member name="P:ZyGames.Framework.Data.SqlStatementManager.SqlSyncQueueNum">
             <summary>
-            从Redis队列中取出Sql命令
+            Sql sync queue num
             </summary>
-            <param name="keyIndex">Redis队列的Index，默认从0开始</param>
-            <param name="min"></param>
-            <param name="max">从队列取的最大值，0为不限制</param>
-            <returns></returns>
         </member>
         <member name="T:ZyGames.Framework.Data.Sql.SqlDataProvider">
             <summary>
@@ -4515,7 +4742,7 @@
             <summary>
             
             </summary>
-            <param name="identityID"></param>
+            <param name="identityId"></param>
             <param name="commandType"></param>
             <param name="commandText"></param>
             <param name="parameters"></param>
@@ -5607,6 +5834,13 @@
             </summary>
             <param name="disposing"></param>
         </member>
+        <member name="M:ZyGames.Framework.Model.AbstractEntity.SetKeyValue(System.String,System.String)">
+            <summary>
+            Set key from keycode
+            </summary>
+            <param name="keyCode"></param>
+            <param name="typeName"></param>
+        </member>
         <member name="P:ZyGames.Framework.Model.AbstractEntity.KeyValue">
             <summary>
             初始键值，未配置EntityField属性时
@@ -5919,7 +6153,7 @@
         </member>
         <member name="P:ZyGames.Framework.Model.EntityHistory.Value">
             <summary>
-            The bytes data.
+            The bytes data for hash(key/value).
             </summary>
         </member>
         <member name="T:ZyGames.Framework.Model.EntitySchemaSet">
@@ -5973,12 +6207,7 @@
             </summary>
             <param name="type"></param>
         </member>
-        <member name="M:ZyGames.Framework.Model.EntitySchemaSet.ExportSync(System.String)">
-            <summary>
-            Export to sync model format content.
-            </summary>
-            <returns></returns>
-        </member>
+        <!-- 对于成员“M:ZyGames.Framework.Model.EntitySchemaSet.ExportSync(System.String)”忽略有格式错误的 XML 注释 -->
         <member name="M:ZyGames.Framework.Model.EntitySchemaSet.ExportSync(ZyGames.Framework.Model.SchemaTable)">
             <summary>
             Export entity schema for client sync.
@@ -6054,11 +6283,24 @@
             <param name="schema"></param>
             <returns></returns>
         </member>
+        <member name="M:ZyGames.Framework.Model.EntitySchemaSet.TryGet(System.String,ZyGames.Framework.Model.SchemaTable@)">
+            <summary>
+            Get schema for typename
+            </summary>
+            <param name="typeName"></param>
+            <param name="schema"></param>
+            <returns></returns>
+        </member>
         <member name="M:ZyGames.Framework.Model.EntitySchemaSet.CheckTableSchema(ZyGames.Framework.Model.SchemaTable)">
             <summary>
             检测数据表结构变动
             </summary>
             <param name="schema"></param>
+        </member>
+        <member name="P:ZyGames.Framework.Model.EntitySchemaSet.EntityAssembly">
+            <summary>
+            聊天缓存生命周期
+            </summary>
         </member>
         <member name="P:ZyGames.Framework.Model.EntitySchemaSet.CacheGlobalPeriod">
             <summary>
@@ -6488,6 +6730,13 @@
             Get schema column.
             </summary>
         </member>
+        <member name="P:ZyGames.Framework.Model.SchemaTable.Item(System.String)">
+            <summary>
+            get column
+            </summary>
+            <param name="name"></param>
+            <returns></returns>
+        </member>
         <member name="P:ZyGames.Framework.Model.SchemaTable.Condition">
             <summary>
             条件，不需要加Where
@@ -6686,14 +6935,14 @@
             <param name="data"></param>
             <param name="isChange"></param>
         </member>
-        <member name="M:ZyGames.Framework.Net.IDataSender.Send``1(``0[])">
+        <member name="M:ZyGames.Framework.Net.IDataSender.Send``1(System.Collections.Generic.IEnumerable{``0})">
             <summary>
             
             </summary>
             <typeparam name="T"></typeparam>
             <param name="dataList"></param>
         </member>
-        <member name="M:ZyGames.Framework.Net.IDataSender.Send``1(``0[],System.Boolean)">
+        <member name="M:ZyGames.Framework.Net.IDataSender.Send``1(System.Collections.Generic.IEnumerable{``0},System.Boolean)">
             <summary>
             
             </summary>
@@ -6701,7 +6950,7 @@
             <param name="dataList"></param>
             <param name="isChange"></param>
         </member>
-        <member name="M:ZyGames.Framework.Net.IDataSender.Send``1(``0[],System.Boolean,System.String,ZyGames.Framework.Net.EntityBeforeProcess)">
+        <member name="M:ZyGames.Framework.Net.IDataSender.Send``1(System.Collections.Generic.IEnumerable{``0},System.Boolean,System.String,ZyGames.Framework.Net.EntityBeforeProcess)">
             <summary>
             发送数据到Redis和Db
             </summary>
@@ -6749,6 +6998,14 @@
             </summary>
             <typeparam name="T"></typeparam>
             <param name="dataList"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ZyGames.Framework.Net.Sql.SqlDataSender.GenerateSqlQueue``1(``0)">
+            <summary>
+            Generate sql statement
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="data"></param>
             <returns></returns>
         </member>
         <member name="T:ZyGames.Framework.Net.TransReceiveParam">
@@ -7300,155 +7557,41 @@
             </summary>
             <param name="baseCase"></param>
         </member>
-        <member name="T:ZyGames.Framework.Redis.RedisConnection">
-            <summary>
-            Redis连接对象
-            </summary>
-        </member>
-        <member name="M:ZyGames.Framework.Redis.RedisConnection.#ctor(System.String,System.Int32,System.String,System.Int32)">
-            <summary>
-            
-            </summary>
-            <param name="host"></param>
-            <param name="port"></param>
-            <param name="password"></param>
-            <param name="db"></param>
-        </member>
-        <member name="M:ZyGames.Framework.Redis.RedisConnection.FlushDb(System.Int32)">
-            <summary>
-            清空Redis
-            </summary>
-            <param name="db"></param>
-            <returns></returns>
-        </member>
-        <member name="M:ZyGames.Framework.Redis.RedisConnection.Remove(System.String)">
-            <summary>
-            移除
-            </summary>
-            <param name="key"></param>
-            <returns></returns>
-        </member>
-        <member name="M:ZyGames.Framework.Redis.RedisConnection.SearchKeys(System.String)">
-            <summary>
-            Serach keys
-            </summary>
-            <returns></returns>
-        </member>
-        <member name="M:ZyGames.Framework.Redis.RedisConnection.Get``1(System.String)">
-            <summary>
-            Get key
-            </summary>
-            <typeparam name="T"></typeparam>
-            <param name="key"></param>
-            <returns></returns>
-        </member>
-        <member name="M:ZyGames.Framework.Redis.RedisConnection.MGet(System.String[])">
-            <summary>
-            Get multi keys.
-            </summary>
-            <param name="key"></param>
-            <returns></returns>
-        </member>
-        <member name="M:ZyGames.Framework.Redis.RedisConnection.Set``1(System.String,``0,System.Int32)">
-            <summary>
-            Set value.
-            </summary>
-            <typeparam name="T"></typeparam>
-            <param name="key"></param>
-            <param name="value"></param>
-            <param name="expiresMinutes"></param>
-            <returns></returns>
-        </member>
-        <member name="M:ZyGames.Framework.Redis.RedisConnection.Increment(System.String)">
-            <summary>
-            获取自增Id
-            </summary>
-            <returns></returns>
-        </member>
-        <member name="M:ZyGames.Framework.Redis.RedisConnection.ZAdd(System.String,System.Byte[])">
-            <summary>
-            增加
-            </summary>
-            <param name="setId"></param>
-            <param name="value"></param>
-            <returns></returns>
-        </member>
-        <member name="M:ZyGames.Framework.Redis.RedisConnection.ZAdd(System.String,System.Byte[],System.Int64)">
-            <summary>
-            增加到指定setId的List表中
-            </summary>
-            <param name="setId"></param>
-            <param name="value"></param>
-            <param name="score"></param>
-            <returns></returns>
-        </member>
-        <member name="M:ZyGames.Framework.Redis.RedisConnection.ContainsKey(System.String)">
-            <summary>
-            是否存在Key
-            </summary>
-            <param name="key"></param>
-            <returns></returns>
-        </member>
-        <member name="M:ZyGames.Framework.Redis.RedisConnection.ZRange(System.String,System.Int32,System.Int32)">
-            <summary>
-            获得指定范围的字节数组
-            </summary>
-            <param name="setId"></param>
-            <param name="min"></param>
-            <param name="max"></param>
-            <returns></returns>
-        </member>
-        <member name="M:ZyGames.Framework.Redis.RedisConnection.ZRemove(System.String,System.Byte[])">
-            <summary>
-            移除指定的setId键的项
-            </summary>
-            <param name="setId"></param>
-            <param name="item"></param>
-            <returns></returns>
-        </member>
-        <member name="M:ZyGames.Framework.Redis.RedisConnection.ZRangeByScore(System.String,System.Int64,System.Int64,System.Nullable{System.Int32},System.Nullable{System.Int32})">
-            <summary>
-            获得按score排序的指定范围的字节数组
-            </summary>
-            <param name="setId"></param>
-            <param name="min"></param>
-            <param name="max"></param>
-            <param name="skip"></param>
-            <param name="take"></param>
-            <returns></returns>
-        </member>
-        <member name="M:ZyGames.Framework.Redis.RedisConnection.Rename(System.String,System.String)">
-            <summary>
-            重置Key
-            </summary>
-            <param name="key"></param>
-            <param name="newKey"></param>
-        </member>
-        <member name="M:ZyGames.Framework.Redis.RedisConnection.Dispose(System.Boolean)">
-            <summary>
-            
-            </summary>
-            <param name="disposing"></param>
-        </member>
-        <member name="P:ZyGames.Framework.Redis.RedisConnection.Host">
-            <summary>
-            主机地址
-            </summary>
-        </member>
-        <member name="P:ZyGames.Framework.Redis.RedisConnection.Port">
-            <summary>
-            端口
-            </summary>
-        </member>
-        <member name="P:ZyGames.Framework.Redis.RedisConnection.IsConnected">
-            <summary>
-            是否已连接
-            </summary>
-        </member>
         <member name="T:ZyGames.Framework.Redis.RedisConnectionPool">
             <summary>
             连接池管理
             </summary>
+        </member>
+        <member name="M:ZyGames.Framework.Redis.RedisConnectionPool.Initialize">
+            <summary>
+            init
+            </summary>
+        </member>
+        <member name="M:ZyGames.Framework.Redis.RedisConnectionPool.Initialize(ZyGames.Framework.Redis.RedisPoolSetting)">
+            <summary>
+            init
+            </summary>
+            <param name="setting">pool setting</param>
+        </member>
+        <member name="M:ZyGames.Framework.Redis.RedisConnectionPool.GetNextNo(System.String,System.UInt32)">
+            <summary>
+            GetNo
+            </summary>
+            <param name="key"></param>
+            <param name="increaseNum">increase num,defalut 1</param>
+            <returns></returns>
+        </member>
+        <member name="M:ZyGames.Framework.Redis.RedisConnectionPool.Process(System.Action{ServiceStack.Redis.RedisClient})">
+            <summary>
+            Process delegate
+            </summary>
+            <param name="func"></param>
+        </member>
+        <member name="M:ZyGames.Framework.Redis.RedisConnectionPool.ProcessReadOnly(System.Action{ServiceStack.Redis.RedisClient})">
+            <summary>
+            Process ReadOnly delegate
+            </summary>
+            <param name="func"></param>
         </member>
         <member name="M:ZyGames.Framework.Redis.RedisConnectionPool.CheckConnect">
             <summary>
@@ -7456,58 +7599,90 @@
             </summary>
             <returns></returns>
         </member>
-        <member name="M:ZyGames.Framework.Redis.RedisConnectionPool.Initialize">
+        <member name="M:ZyGames.Framework.Redis.RedisConnectionPool.GetClient">
             <summary>
-            初始化
-            </summary>
-        </member>
-        <member name="M:ZyGames.Framework.Redis.RedisConnectionPool.Pop">
-            <summary>
-            取出连接
+            Get read and write connection
             </summary>
             <returns></returns>
         </member>
-        <member name="M:ZyGames.Framework.Redis.RedisConnectionPool.Put(ZyGames.Framework.Redis.RedisConnection)">
+        <member name="M:ZyGames.Framework.Redis.RedisConnectionPool.GetReadOnlyClient">
             <summary>
-            放入连接池
+            Get read only connection
             </summary>
-            <param name="connection"></param>
+            <returns></returns>
         </member>
-        <member name="T:ZyGames.Framework.Redis.RedisManager">
+        <member name="M:ZyGames.Framework.Redis.RedisConnectionPool.TryGetEntity``1(System.String,System.Collections.Generic.List{``0}@)">
             <summary>
-            Redis管理者
-            </summary>
-        </member>
-        <member name="M:ZyGames.Framework.Redis.RedisManager.AppendToDict``1(System.String,``0[])">
-            <summary>
-            增加到Redis的字典集合
+            Try get entity
             </summary>
             <typeparam name="T"></typeparam>
             <param name="redisKey"></param>
+            <param name="list"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ZyGames.Framework.Redis.RedisConnectionPool.TryUpdateEntity(System.Collections.Generic.IEnumerable{ZyGames.Framework.Model.AbstractEntity})">
+            <summary>
+            Try update entity
+            </summary>
             <param name="dataList"></param>
             <returns></returns>
         </member>
-        <member name="M:ZyGames.Framework.Redis.RedisManager.TryGet``1(System.String,System.Collections.Generic.List{``0}@)">
+        <member name="M:ZyGames.Framework.Redis.RedisConnectionPool.UpdateEntity(System.String,System.Byte[][],System.Byte[][],System.Byte[][])">
             <summary>
-            获取数据
+            Try update entity
             </summary>
-            <typeparam name="T"></typeparam>
-            <param name="redisKey"></param>
-            <param name="dataList"></param>
-            <returns>返回是否加载成功</returns>
-        </member>
-        <member name="M:ZyGames.Framework.Redis.RedisManager.Process(System.Action{ZyGames.Framework.Redis.RedisConnection})">
-            <summary>
-            自定处理
-            </summary>
-            <param name="func"></param>
-        </member>
-        <member name="M:ZyGames.Framework.Redis.RedisManager.GetNextNo(System.String)">
-            <summary>
-            获取指定Key的下一个唯一编号
-            </summary>
-            <param name="key"></param>
+            <param name="typeName"></param>
+            <param name="keys"></param>
+            <param name="values"></param>
+            <param name="removeKeys"></param>
             <returns></returns>
+        </member>
+        <member name="M:ZyGames.Framework.Redis.RedisConnectionPool.GetRedisEntityKeyName(System.String)">
+            <summary>
+            Get key name of store redis entity 
+            </summary>
+            <param name="typeName"></param>
+            <returns></returns>
+        </member>
+        <member name="T:ZyGames.Framework.Redis.RedisPoolSetting">
+            <summary>
+            Redis Pool Setting
+            </summary>
+        </member>
+        <member name="P:ZyGames.Framework.Redis.RedisPoolSetting.Host">
+            <summary>
+            Host, format:password@ip:port
+            </summary>
+        </member>
+        <member name="P:ZyGames.Framework.Redis.RedisPoolSetting.ReadOnlyHost">
+            <summary>
+            ReadOnlyHost
+            </summary>
+        </member>
+        <member name="P:ZyGames.Framework.Redis.RedisPoolSetting.MaxWritePoolSize">
+            <summary>
+            MaxWritePoolSize
+            </summary>
+        </member>
+        <member name="P:ZyGames.Framework.Redis.RedisPoolSetting.MaxReadPoolSize">
+            <summary>
+            MaxReadPoolSize
+            </summary>
+        </member>
+        <member name="P:ZyGames.Framework.Redis.RedisPoolSetting.ConnectTimeout">
+            <summary>
+            ConnectTimeout(ms)
+            </summary>
+        </member>
+        <member name="P:ZyGames.Framework.Redis.RedisPoolSetting.PoolTimeOut">
+            <summary>
+            PoolTimeOut(ms), default 2000ms
+            </summary>
+        </member>
+        <member name="P:ZyGames.Framework.Redis.RedisPoolSetting.DbIndex">
+            <summary>
+            DbIndex
+            </summary>
         </member>
         <member name="T:ZyGames.Framework.RPC.IO.BufferReader">
             <summary>
@@ -11877,6 +12052,13 @@
             </summary>
             <param name="fileName"></param>
             <param name="isUpdate"></param>
+        </member>
+        <member name="M:ZyGames.Framework.Script.ScriptEngines.GetScript(System.String)">
+            <summary>
+            Get script object
+            </summary>
+            <param name="fileName"></param>
+            <returns></returns>
         </member>
         <member name="M:ZyGames.Framework.Script.ScriptEngines.ExecuteCSharp(System.String,System.Object[])">
             <summary>

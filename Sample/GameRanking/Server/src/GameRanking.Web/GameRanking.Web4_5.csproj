@@ -118,7 +118,9 @@
     <Content Include="Script\PyScript\Lib\lang.py" />
     <Content Include="Script\PyScript\Lib\mathUtils.py" />
     <Content Include="Script\PyScript\Lib\randomUtils.py" />
-    <Content Include="Service.aspx" />
+    <Content Include="Service.aspx">
+      <SubType>ASPXCodeBehind</SubType>
+    </Content>
   </ItemGroup>
   <ItemGroup>
     <None Include="NLog.config" />
