@@ -212,6 +212,11 @@ namespace ZyGames.Framework.Redis
                         else
                         {
                             value = client.HGet(hashId, keyCode);
+                            //修正Persional结构当多个Key时，以PersionalId加载不了数据问题
+                            if (value == null && typeof(T).IsSubclassOf(typeof(BaseEntity)))
+                            {
+                                valueBytes = client.HGetAll(hashId).Where((b, index) => index % 2 == 1).ToArray();
+                            }
                         }
                     });
 
