@@ -63,7 +63,7 @@ namespace ZyGames.Tianjiexing.Model
         /// <returns></returns>
         public static UserGeneral GetMainGeneral(string userID)
         {
-            var usergeneral = new GameDataCacheSet<UserGeneral>().Find(userID, s => s.GeneralType == GeneralType.YongHu);
+            var usergeneral = new PersonalCacheStruct<UserGeneral>().Find(userID, s => s.GeneralType == GeneralType.YongHu);
             return usergeneral;
         }
 
