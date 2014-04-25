@@ -24,13 +24,16 @@ namespace ZyGames.Doudizhu.HostServer
             string date = DateTime.Now.ToString("HH:mm:ss");
             try
             {
+                var fc = Console.ForegroundColor;
+                Console.ForegroundColor = ConsoleColor.DarkYellow;
                 var setting = new EnvironmentSetting();
                 Console.WriteLine(string.Format(CharFormat,
-                    "6.2.7.0",
+                    "6.3.7.200",
                     setting.ProductCode,
                     setting.ProductServerId,
                     setting.GamePort));
                 GameEnvironment.Start(setting);
+                Console.ForegroundColor = fc;
                 instance = new GameHostApp();
                 instance.Start(args);
                 Console.WriteLine("{0} Server has started successfully!", date);

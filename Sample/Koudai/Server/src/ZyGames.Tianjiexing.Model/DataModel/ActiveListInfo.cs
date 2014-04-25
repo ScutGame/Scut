@@ -42,7 +42,7 @@ namespace ZyGames.Tianjiexing.Model
     /// @personalName: 映射UserId对应的字段名,默认为"UserId"
     /// </summary>
     [Serializable, ProtoContract]
-    [EntityTable(DbConfig.Data, "ActiveListInfo", DbConfig.PeriodTime, DbConfig.PersonalName)]
+    [EntityTable(CacheType.Entity, DbConfig.Data)]
     public class ActiveListInfo : ShareEntity
     {
 
@@ -51,7 +51,7 @@ namespace ZyGames.Tianjiexing.Model
         public ActiveListInfo()
             : base(AccessLevel.ReadWrite)
         {
-        }        
+        }
         /// <summary>
         /// </summary>
         public ActiveListInfo(Int32 ActiveID)
@@ -77,7 +77,7 @@ namespace ZyGames.Tianjiexing.Model
             {
                 SetChange("ActiveID", value);
             }
-            
+
         }
 
         private String _ActiveName;
@@ -90,7 +90,7 @@ namespace ZyGames.Tianjiexing.Model
             get
             {
                 return _ActiveName;
-            } 
+            }
             set
             {
                 SetChange("ActiveName", value);
@@ -107,7 +107,7 @@ namespace ZyGames.Tianjiexing.Model
             get
             {
                 return _ActiveType;
-            } 
+            }
             set
             {
                 SetChange("ActiveType", value);
@@ -124,7 +124,7 @@ namespace ZyGames.Tianjiexing.Model
             get
             {
                 return _BeginDate;
-            } 
+            }
             set
             {
                 SetChange("BeginDate", value);
@@ -141,7 +141,7 @@ namespace ZyGames.Tianjiexing.Model
             get
             {
                 return _EndDate;
-            } 
+            }
             set
             {
                 SetChange("EndDate", value);
@@ -158,7 +158,7 @@ namespace ZyGames.Tianjiexing.Model
             get
             {
                 return _HeadID;
-            } 
+            }
             set
             {
                 SetChange("HeadID", value);
@@ -175,7 +175,7 @@ namespace ZyGames.Tianjiexing.Model
             get
             {
                 return _EffectiveCount;
-            } 
+            }
             set
             {
                 SetChange("EffectiveCount", value);
@@ -192,20 +192,20 @@ namespace ZyGames.Tianjiexing.Model
             get
             {
                 return _Describe;
-            } 
+            }
             set
             {
                 SetChange("Describe", value);
             }
         }
-    
+
         protected override object this[string index]
-		{
-			get
-			{
+        {
+            get
+            {
                 #region
-				switch (index)
-				{
+                switch (index)
+                {
                     case "ActiveID": return ActiveID;
                     case "ActiveName": return ActiveName;
                     case "ActiveType": return ActiveType;
@@ -214,52 +214,52 @@ namespace ZyGames.Tianjiexing.Model
                     case "HeadID": return HeadID;
                     case "EffectiveCount": return EffectiveCount;
                     case "Describe": return Describe;
-					default: throw new ArgumentException(string.Format("ActiveListInfo index[{0}] isn't exist.", index));
-				}
+                    default: throw new ArgumentException(string.Format("ActiveListInfo index[{0}] isn't exist.", index));
+                }
                 #endregion
-			}
-			set
-			{
+            }
+            set
+            {
                 #region
-				switch (index)
-				{
-                    case "ActiveID": 
-                        _ActiveID = value.ToInt(); 
-                        break; 
-                    case "ActiveName": 
-                        _ActiveName = value.ToNotNullString(); 
-                        break; 
-                    case "ActiveType": 
-                        _ActiveType = value.ToShort(); 
-                        break; 
-                    case "BeginDate": 
-                        _BeginDate = value.ToDateTime();                         
-                        break; 
-                    case "EndDate": 
-                        _EndDate = value.ToDateTime();                         
-                        break; 
-                    case "HeadID": 
-                        _HeadID = value.ToNotNullString(); 
-                        break; 
-                    case "EffectiveCount": 
-                        _EffectiveCount = value.ToInt(); 
-                        break; 
-                    case "Describe": 
-                        _Describe = value.ToNotNullString(); 
-                        break; 
-					default: throw new ArgumentException(string.Format("ActiveListInfo index[{0}] isn't exist.", index));
-				}
+                switch (index)
+                {
+                    case "ActiveID":
+                        _ActiveID = value.ToInt();
+                        break;
+                    case "ActiveName":
+                        _ActiveName = value.ToNotNullString();
+                        break;
+                    case "ActiveType":
+                        _ActiveType = value.ToShort();
+                        break;
+                    case "BeginDate":
+                        _BeginDate = value.ToDateTime();
+                        break;
+                    case "EndDate":
+                        _EndDate = value.ToDateTime();
+                        break;
+                    case "HeadID":
+                        _HeadID = value.ToNotNullString();
+                        break;
+                    case "EffectiveCount":
+                        _EffectiveCount = value.ToInt();
+                        break;
+                    case "Describe":
+                        _Describe = value.ToNotNullString();
+                        break;
+                    default: throw new ArgumentException(string.Format("ActiveListInfo index[{0}] isn't exist.", index));
+                }
                 #endregion
-			}
-		}
-        
+            }
+        }
+
         #endregion
-        
+
         protected override int GetIdentityId()
         {
             //设置玩家的UserID
             //若要做为全局使用设置类绑定的自定义属性[EntityTable(CacheType.Entity, DbConfig.Config, @TableName, @PeriodTime)]
             return DefIdentityId;
         }
-	}
+    }
 }
