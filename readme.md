@@ -49,6 +49,16 @@ OSChina代码库：https://git.oschina.net/scutgame/Scut<br />
 
 更新日志
 ----------------
+###版本：6.3.7.2 (2014-4-25)
+> 1. 修改缓存更新与删除一起处理时未能删除数据问题
+> 2. 修改实体数据在Redis中以Hash方式存储
+> 3. 修改使用Redis自带的连接池管理类
+> 4. 修改Redis内存回收表（Temp_EntityHistory）的Value列的存储超出范围问题，手动删除表引擎自动重建
+> 5. 增加多个线程同步缓存变更数据到Redis和Db库，可配置开启线程数（默认2个）
+> 6. 增加Entity类的ModifyLocked方法，多次修改属性时只会通知一次变更事件，降低缓存数据同步的次数
+> 7. 增加CacheStruct类LoadingStatus属性，在缓存中查找Key时是对象为空，还是由于从Redis取数据异常导致为空
+
+
 ###版本：6.2.7.0 (2014-4-4)
 > 1. 升级底层类库到.Net Framework 4.5.1版本
 > 2. 增加Action=2与服务端Socket断开接口
