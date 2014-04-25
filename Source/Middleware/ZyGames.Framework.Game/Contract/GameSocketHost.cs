@@ -232,12 +232,14 @@ namespace ZyGames.Framework.Game.Contract
                 }
                 else
                 {
-                    session = GameSession.Get(e.Socket.HashCode);
+                    session = GameSession.Get(sessionId) ?? GameSession.Get(e.Socket.HashCode);
                 }
                 if (session != null && !session.Connected)
                 {
                     GameSession.Recover(session, e.Socket.HashCode, e.Socket, socketLintener.PostSend);
                 }
+                //todo trace session expire
+                //TraceLog.WriteComplement("Request {0}:sid={1},session:{2}", actionid, sessionId, session == null ? "" : session.SessionId + session.UserId);
                 if (actionid == (int)ActionEnum.Interrupt)
                 {
                     //Proxy server notifly interrupt connect ops
@@ -352,7 +354,7 @@ namespace ZyGames.Framework.Game.Contract
                 if (actionid == (int)ActionEnum.Heartbeat)
                 {
                     // 客户端tcp心跳包
-                    session.LastActivityTime = DateTime.Now;
+                    session.Refresh();
                     OnHeartbeat(session);
                     session.ExitSession();
                     Interlocked.Decrement(ref runningNum);
@@ -536,7 +538,7 @@ namespace ZyGames.Framework.Game.Contract
                 byte[] respData = httpresponse.ReadByte();
                 OnHttpResponse(clientConnection, respData, 0, respData.Length);
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 TraceLog.WriteError("OnHttpRequestTimeout:{0}", ex);
             }
@@ -687,7 +689,7 @@ namespace ZyGames.Framework.Game.Contract
         {
             if (GameEnvironment.IsRunning)
             {
-                //todo trace
+                //todo debug response error
 #if DEBUG 
                 ActionFactory.RequestError(response, httpGet.ActionId, 0, "");
 #else

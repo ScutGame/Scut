@@ -22,6 +22,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ****************************************************************************/
 using System;
+using System.Reflection;
 using ZyGames.Framework.Common.Log;
 using ZyGames.Framework.Game.Runtime;
 using ZyGames.Framework.Script;
@@ -31,7 +32,7 @@ namespace GameServer
     class Program
     {
         private static string CharFormat =
-@"/////////////////////////////////////////////////////////////////////////
+@"///////////////////////////////////////////////////////////////////////////
 
     //   ) )  //   ) )  //   / / /__  ___/   SCUT Server version {0}
    ((        //        //   / /    / /       Game: {1}   Server: {2}
@@ -45,13 +46,16 @@ namespace GameServer
             string date = DateTime.Now.ToString("HH:mm:ss");
             try
             {
+                ConsoleColor currentForeColor = Console.ForegroundColor;
                 var setting = new EnvironmentSetting();
+                Console.ForegroundColor = ConsoleColor.DarkYellow;
                 Console.WriteLine(string.Format(CharFormat,
-                    "6.2.7.0",
+                    Assembly.GetExecutingAssembly().GetName().Version,
                     setting.ProductCode,
                     setting.ProductServerId,
                     setting.GamePort));
                 GameEnvironment.Start(setting);
+                Console.ForegroundColor = currentForeColor;
 
                 dynamic instance;
                 if (ScriptEngines.RunMainClass(out instance, args))

@@ -153,7 +153,7 @@ namespace ZyGames.Framework.Game.Service
         private void InitContext(string sessionId, int actionId, int userId)
         {
             Current = GameContext.GetInstance(sessionId, actionId, userId);
-            if (UserFactory != null)
+            if (userId > 0 && UserFactory != null)
             {
                 Current.User = UserFactory(userId);
             }

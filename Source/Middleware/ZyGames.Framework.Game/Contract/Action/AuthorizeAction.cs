@@ -26,6 +26,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using ZyGames.Framework.Common;
+using ZyGames.Framework.Common.Log;
 using ZyGames.Framework.Game.Com;
 using ZyGames.Framework.Game.Com.Generic;
 using ZyGames.Framework.Game.Context;
@@ -136,10 +137,10 @@ namespace ZyGames.Framework.Game.Contract.Action
         /// Checks the user.
         /// </summary>
         /// <returns>The user.</returns>
-        /// <param name="sessionID">Session I.</param>
+        /// <param name="sessionId">Session I.</param>
         /// <param name="userId">User identifier.</param>
         /// <param name="gameUser">Game user.</param>
-        protected LoginStatus CheckUser(string sessionID, int userId, out BaseUser gameUser)
+        protected LoginStatus CheckUser(string sessionId, int userId, out BaseUser gameUser)
         {
             gameUser = null;
             if (UserFactory != null)
@@ -150,8 +151,14 @@ namespace ZyGames.Framework.Game.Contract.Action
                     var session = GameSession.Get(userId);
                     if (session != null)
                     {
-                        return session.SessionId == sessionID ? LoginStatus.Success : LoginStatus.Logined;
+                        return session.SessionId == sessionId ? LoginStatus.Success : LoginStatus.Logined;
                     }
+                    //todo trace session is null
+                    session = GameSession.Get(sessionId);
+                    TraceLog.ReleaseWriteDebug("CheckUser Sid:{0},Uid:{1},session info:{2}", sessionId, userId,
+                        session == null ? "is empty" :
+                        string.Format("{0}, bind sid:{1}", session.UserId, GameSession.GetUserBindSid(userId))
+                        );
                 }
             }
             return LoginStatus.NoLogin;

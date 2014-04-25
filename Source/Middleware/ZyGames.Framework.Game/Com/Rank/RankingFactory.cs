@@ -52,9 +52,8 @@ namespace ZyGames.Framework.Game.Com.Rank
             {
 				if (reason == CacheRemovedReason.Expired)
                 {
-                    if (_running == 0)
+                    if (Interlocked.Exchange(ref _running, 1) == 0)
                     {
-                        Interlocked.Exchange(ref _running, 1);
                         DoRefresh();
                         Interlocked.Exchange(ref _running, 0);
                     }

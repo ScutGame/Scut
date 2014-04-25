@@ -24,6 +24,8 @@ THE SOFTWARE.
 using System;
 using System.Text;
 using System.Security.Cryptography;
+using IronPython.Modules;
+using ZyGames.Framework.Common;
 using ZyGames.Framework.Game.Configuration;
 using ZyGames.Framework.Game.Sns._91sdk;
 using ZyGames.Framework.Common.Log;
@@ -94,21 +96,26 @@ namespace ZyGames.Framework.Game.Sns
         public override bool CheckLogin()
         {
             int Act = 4;
-            string Sign = string.Format("{0}{1}{2}{3}{4}", AppId, Act, Uin, SessionID, AppKey);
+            string Sign = string.Format("{0}{1}{2}{3}{4}", AppId.ToNotNullString(), Act, Uin.ToNotNullString(), SessionID.ToNotNullString(), AppKey.ToNotNullString());
             Sign = HashToMD5Hex(Sign);
 
             string urlData = string.Format("{0}?AppId={1}&Act={2}&Uin={3}&SessionID={4}&Sign={5}",
-                Url,
-                AppId,
+                Url.ToNotNullString(),
+                AppId.ToNotNullString(),
                 Act,
-                Uin,
-                SessionID,
-                Sign
+                Uin.ToNotNullString(),
+                SessionID.ToNotNullString(),
+                Sign.ToNotNullString()
             );
 
             string result = HttpPostManager.GetStringData(urlData);
             try
             {
+                if (string.IsNullOrEmpty(result))
+                {
+                    TraceLog.ReleaseWrite("91sdk login fail result:{0},request url:{1}", result, urlData);
+                    return false;
+                }
                 SDKError sdk = JsonUtils.Deserialize<SDKError>(result);
                 if (sdk.ErrorCode != "1")
                 {

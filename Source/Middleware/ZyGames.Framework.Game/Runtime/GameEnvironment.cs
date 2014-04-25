@@ -131,6 +131,7 @@ namespace ZyGames.Framework.Game.Runtime
             if (_isRunning == 1) return;
 
             _setting = setting;
+            RedisConnectionPool.Initialize();
             if (!RedisConnectionPool.CheckConnect())
             {
                 string error = string.Format("Error: the redis server is not started.");

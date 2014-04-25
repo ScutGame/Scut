@@ -1,4 +1,4 @@
-﻿/****************************************************************************
+/****************************************************************************
 Copyright (c) 2013-2015 scutgame.com
 
 http://www.scutgame.com
@@ -32,7 +32,7 @@ using System.Runtime.InteropServices;
 //      Revision
 //
 //
-[assembly: AssemblyVersion("7.0.0.100")]
+[assembly: AssemblyVersion("6.3.7.200")]
 [assembly: AssemblyCompany("scutgame.com")]
 [assembly: AssemblyProduct("SCUT Server Engine")]
 [assembly: AssemblyCopyright("Copyright © 2013-2015 Gavin Wu")]
