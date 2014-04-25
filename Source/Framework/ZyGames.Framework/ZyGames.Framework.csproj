@@ -162,7 +162,6 @@
     <Compile Include="Net\ITransponder.cs" />
     <Compile Include="Net\Parameters.cs" />
     <Compile Include="Net\RedisTransponder.cs" />
-    <Compile Include="Redis\RedisConnection.cs" />
     <Compile Include="Redis\RedisConnectionPool.cs" />
     <Compile Include="Net\Redis\RedisDataGetter.cs" />
     <Compile Include="Net\Redis\RedisDataSender.cs" />
