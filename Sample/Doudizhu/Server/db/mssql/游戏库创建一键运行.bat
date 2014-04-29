@@ -6,6 +6,7 @@ set dbServer=.
 set dbAcount=sa
 set dbPass=123
 set gameuser=game_user
+set gamepass=123
 set gameName=Ddz
 set dbpath=%cd%\Data
 
@@ -14,6 +15,7 @@ set dbpath=%cd%\Data
 @echo     [dbAcount] 可创建数据库的帐号(sa):%dbAcount%
 @echo     [dbPass]   可创建数据库的密码(sa):%dbPass%
 @echo     [gameuser] 游戏登录帐号:%gameuser%
+@echo     [gamepass] 游戏登录密码:%gamepass%
 @echo     [gameName] 游戏项目名称:%gameName%
 @echo     [dbpath] 数据库存储路径:%dbpath%
 @echo ================================================================
