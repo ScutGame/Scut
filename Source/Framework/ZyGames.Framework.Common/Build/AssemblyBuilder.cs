@@ -312,12 +312,29 @@ namespace ZyGames.Framework.Common.Build
             {
                 fileName += ".dll";
             }
-            var md = ModuleDefinition.ReadModule(fileName);
-            if (md != null && md.Assembly != null)
+            ModuleDefinition md = null;
+            try
             {
-                AssemblyDefinition ad = md.Assembly;
-                typeDefinition = ad.MainModule.GetType(type.Namespace, type.Name);
+                md = ModuleDefinition.ReadModule(fileName);
+                if (md != null && md.Assembly != null)
+                {
+                    AssemblyDefinition ad = md.Assembly;
+                    typeDefinition = ad.MainModule.GetType(type.Namespace, type.Name);
+                }
             }
+            catch (Exception ex)
+            {
+                try
+                {
+                    //支持子类Entity继承方式
+                    typeDefinition = type.Module.GetType(type.Namespace, type.Name);
+                }
+                catch
+                {
+                    throw new Exception(string.Format("Read type \"{0}.{1}\" error", type.Namespace, type.Name), ex);
+                }
+            }
+
             if (typeDefinition != null)
             {
                 typeDefinition = typeDefinition.Resolve();

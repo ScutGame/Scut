@@ -247,6 +247,7 @@ namespace ZyGames.Framework.Common.Serialization
             {
                 throw new ArgumentNullException("assembly");
             }
+            Dictionary<Type, int> typeMemberTags = new Dictionary<Type, int>();
             var types = assembly.GetTypes().Where(p => p.GetCustomAttributes(typeof(ProtoContractAttribute), false).Count() > 0).ToList();
             for (int i = 0; i < types.Count; i++)
             {
@@ -257,11 +258,24 @@ namespace ZyGames.Framework.Common.Serialization
                 var Fields = myEntity.GetFields(BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance | BindingFlags.IgnoreCase).Where(p => p.GetCustomAttributes(typeof(ProtoMemberAttribute), true).Count() > 0).ToList();
                 try
                 {
-
                     if (typeModel.CanSerializeContractType(myEntity))
                     {
                         var metaType = typeModel.Add(myEntity, true);
-                        LoadProtoTypeMember(myEntity, Properties, metaType, Fields);
+                        int maxMemberTag;
+                        LoadProtoTypeMember(myEntity, Properties, metaType, Fields, out maxMemberTag);
+                        typeMemberTags[myEntity] = maxMemberTag;
+
+                        //增加继承的子类
+                        if (myEntity.BaseType != null)
+                        {
+                            var parentMetaType = typeModel[myEntity.BaseType];
+                            if (parentMetaType != null && typeMemberTags.ContainsKey(myEntity.BaseType))
+                            {
+                                var parentMemberTag = typeMemberTags[myEntity.BaseType]+1;
+                                parentMetaType.AddSubType(parentMemberTag, myEntity);
+                                typeMemberTags[myEntity.BaseType] = parentMemberTag;
+                            }
+                        }
                     }
                 }
                 //忽略异常
@@ -274,13 +288,18 @@ namespace ZyGames.Framework.Common.Serialization
 
         }
 
-        private static void LoadProtoTypeMember(Type myEntity, List<PropertyInfo> Properties, MetaType metaType, List<FieldInfo> Fields)
+        private static void LoadProtoTypeMember(Type myEntity, List<PropertyInfo> Properties, MetaType metaType, List<FieldInfo> Fields, out int maxMemberTag)
         {
+            int memberTag = 0;
             Properties.ForEach((o) =>
             {
                 try
                 {
                     var fieldNumber = (o.GetCustomAttributes(typeof(ProtoMemberAttribute), false)[0] as ProtoMemberAttribute).Tag;
+                    if (memberTag < fieldNumber)
+                    {
+                        memberTag = fieldNumber;
+                    }
                     if (metaType[fieldNumber] == null)
                     {
                         metaType.Add(fieldNumber, o.Name);
@@ -297,6 +316,10 @@ namespace ZyGames.Framework.Common.Serialization
                 try
                 {
                     var fieldNumber = (o.GetCustomAttributes(typeof(ProtoMemberAttribute), false)[0] as ProtoMemberAttribute).Tag;
+                    if (memberTag < fieldNumber)
+                    {
+                        memberTag = fieldNumber;
+                    }
                     if (metaType[fieldNumber] == null)
                     {
                         metaType.AddField(fieldNumber, o.Name);
@@ -308,6 +331,7 @@ namespace ZyGames.Framework.Common.Serialization
                     TraceLog.WriteError("Loading protobuf type \"{0}.{1}\" field error:{2}", myEntity.FullName, o.Name, ex);
                 }
             });
+            maxMemberTag = memberTag;
         }
     }
 }
