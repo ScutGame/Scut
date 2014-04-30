@@ -190,11 +190,13 @@ namespace ZyGames.Framework.Redis
             {
                 //修改存储统一Hash格式(TypeName, keyCode, value)
                 var keys = redisKey.Split('_');
+                string keyValue = "";
                 string hashId = GetRedisEntityKeyName(keys[0]);
                 byte[] keyCode = null;
                 if (keys.Length > 1)
                 {
-                    keyCode = ToByteKey(keys[1]);
+                    keyValue = keys[1];
+                    keyCode = ToByteKey(keyValue);
                 }
                 byte[][] valueBytes = null;
                 byte[] value = null;
@@ -213,9 +215,15 @@ namespace ZyGames.Framework.Redis
                         {
                             value = client.HGet(hashId, keyCode);
                             //修正Persional结构当多个Key时，以PersionalId加载不了数据问题
-                            if (value == null && typeof(T).IsSubclassOf(typeof(BaseEntity)))
+                            if (value == null
+                                && !string.IsNullOrEmpty(keyValue)
+                                && typeof(T).IsSubclassOf(typeof(BaseEntity)))
                             {
-                                valueBytes = client.HGetAll(hashId).Where((b, index) => index % 2 == 1).ToArray();
+                                var resultKeys = client.HKeys(hashId).Where(k => ToStringKey(k).IndexOf(keyValue, StringComparison.Ordinal) != -1).ToArray();
+                                if (resultKeys.Length > 0)
+                                {
+                                    valueBytes = client.HMGet(hashId, resultKeys);
+                                }
                             }
                         }
                     });
