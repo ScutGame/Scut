@@ -49,6 +49,13 @@ OSChina代码库：https://git.oschina.net/scutgame/Scut<br />
 
 更新日志
 ----------------
+###版本：6.3.7.5 (2014-5-9) Unstable
+> 1. 增加客户端与服务端通讯支持自定义的消息结构，支持Unity3d对象接入
+> 2. 增加Http操作工具类
+> 3. 修改实体对象修改锁不能重入问题
+> 4. 修改Action封包出异常时的下发Push类型包的问题
+
+
 ###版本：6.3.7.3 (2014-4-30) Release
 > 1. 修改动态脚本使用实体继承的方式编译出错
 > 2. 修改使用实体继承的方式不能Protobuf序列化问题
@@ -56,8 +63,7 @@ OSChina代码库：https://git.oschina.net/scutgame/Scut<br />
 > 4. 增加ScutSMS工具的帮助文档（含游戏服参数配置说明）
 
 
-----------------
-###版本：6.3.7.2 (2014-4-25)
+###版本：6.3.7.2 (2014-4-25) Release
 > 1. 修改缓存更新与删除一起处理时未能删除数据问题
 > 2. 修改实体数据在Redis中以Hash方式存储
 > 3. 修改使用Redis自带的连接池管理类
@@ -67,20 +73,20 @@ OSChina代码库：https://git.oschina.net/scutgame/Scut<br />
 > 7. 增加CacheStruct类LoadingStatus属性，在缓存中查找Key时是对象为空，还是由于从Redis取数据异常导致为空
 
 
-###版本：6.2.7.0 (2014-4-4)
+###版本：6.2.7.0 (2014-4-4) Release
 > 1. 升级底层类库到.Net Framework 4.5.1版本
 > 2. 增加Action=2与服务端Socket断开接口
 > 3. 修改更新Python脚本时ReferenceLib.py文件被占用问题
 
 
-###版本：6.1.6.5 (2014-3-14)
+###版本：6.1.6.5 (2014-3-14) Release
 > 1. 增加CSharp脚本不需要验证访问Action设置
 > 2. 增加脚本引擎可以执行py/C# Source脚本片段
 > 3. 修改Change Key写入Redis有丢失的问题
 > 4. 修改Changed Eventg事件通知使用异步调用
 
 
-###版本：6.1.6.2 (2014-3-7)
+###版本：6.1.6.2 (2014-3-7) Release
 > 1. 增加输入Log文件可划分目录
 > 2. 修改GameSession初始加载Redis数据出错问题
 > 3. 修改Language使用非脚本无法配置Type问题
@@ -88,13 +94,13 @@ OSChina代码库：https://git.oschina.net/scutgame/Scut<br />
 > 5. 修改屏蔽词中间件取不到数据问题
 > 6. 修改使用Timer与Task开启线程crash掉的问题
 
-###版本：6.1.6.0 (2014-2-28)
+###版本：6.1.6.0 (2014-2-28) Release
 > 1. 增加Session停服恢复功能
 > 2. 增加Server Console打印logo字符画信息
 > 3. 修改Server Console回车无法退出问题
 > 4. 修改强制停服写入Redis的数据丢失问题
 
-###版本：6.1.5.8 (2014-2-19)
+###版本：6.1.5.8 (2014-2-19) Release
 > 1. 增加通讯协议写入流支持可Protobuf序列化的对象
 > 2. 增加Action通讯流可支持Gzip压缩
 > 3. 修改语言包为空异常的问题
