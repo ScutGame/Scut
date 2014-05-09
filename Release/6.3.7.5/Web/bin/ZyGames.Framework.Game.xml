@@ -2060,6 +2060,11 @@
             </summary>
             <value><c>true</c> if this instance is inlining; otherwise, <c>false</c>.</value>
         </member>
+        <member name="P:ZyGames.Framework.Game.Context.BaseUser.RemoteAddress">
+            <summary>
+            
+            </summary>
+        </member>
         <member name="P:ZyGames.Framework.Game.Context.BaseUser.Token360">
             <summary>
             360渠道Token
@@ -7379,6 +7384,12 @@
             <summary>
             close session
             </summary>
+        </member>
+        <member name="M:ZyGames.Framework.Game.Contract.HttpGet.ToParamString">
+            <summary>
+            
+            </summary>
+            <returns></returns>
         </member>
         <member name="M:ZyGames.Framework.Game.Contract.HttpGet.GetIntValue(System.String)">
             <summary>
