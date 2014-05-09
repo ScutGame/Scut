@@ -32,6 +32,9 @@ namespace Game.Script
 {
     public class MainClass : GameSocketHost, IMainScript
     {
+        public MainClass()
+        {
+        }
         protected override BaseUser GetUser(int userId)
         {
             return (BaseUser)CacheFactory.GetPersonalEntity("GameServer.Model.GameUser", userId.ToString(), userId);

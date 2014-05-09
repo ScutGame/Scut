@@ -74,10 +74,12 @@ namespace ZyGames.Framework.Game.Service
         public GameContext Current { get; private set; }
 
         /// <summary>
-        /// url分解器
+        /// 兼容子类变量名
         /// </summary>
-        protected HttpGet httpGet;
-
+        protected ActionGetter httpGet
+        {
+            get { return actionGetter; }
+        }
         /// <summary>
         /// 是否是压力测试
         /// </summary>
@@ -85,7 +87,7 @@ namespace ZyGames.Framework.Game.Service
         {
             get
             {
-                return CheckRunloader(httpGet);
+                return CheckRunloader(actionGetter);
             }
         }
         /// <summary>
@@ -101,23 +103,23 @@ namespace ZyGames.Framework.Game.Service
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="httpGet"></param>
+        /// <param name="actionGetter"></param>
         /// <returns></returns>
-        public static bool CheckRunloader(HttpGet httpGet)
+        public static bool CheckRunloader(ActionGetter actionGetter)
         {
-            return !IsRealse && httpGet.ContainsKey("rl");
+            return !IsRealse && actionGetter.IsRunloader();
         }
 
         /// <summary>
         /// 构造函数
         /// </summary>
         /// <param name="aActionId"></param>
-        /// <param name="httpGet"></param>
-        protected BaseStruct(short aActionId, HttpGet httpGet) :
+        /// <param name="actionGetter"></param>
+        protected BaseStruct(int aActionId, ActionGetter actionGetter) :
             base(aActionId)
         {
             actionId = aActionId;
-            this.httpGet = httpGet;
+            this.actionGetter = actionGetter;
         }
 
         /// <summary>
@@ -132,20 +134,20 @@ namespace ZyGames.Framework.Game.Service
         /// </summary>
         public void DoInit()
         {
-            Uid = "0";
-            httpGet.GetString("uid", ref Uid);
-            httpGet.GetInt("uid", ref _userId);
+            _userId = actionGetter.GetUserId();
+            Uid = _userId.ToString();
 
             if (!IsPush)
             {
-                httpGet.GetInt("MsgId", ref MsgId);
+                MsgId = actionGetter.GetMsgId();
             }
-            string st = httpGet.GetStringValue("St");
+            string st = actionGetter.GetSt();
             if (!string.IsNullOrEmpty(st))
             {
                 St = st;
             }
-            InitContext(httpGet.SessionId, actionId, UserId);
+            Sid = actionGetter.GetSessionId();
+            InitContext(Sid, actionId, UserId);
             InitAction();
             InitChildAction();
         }
@@ -237,7 +239,6 @@ namespace ZyGames.Framework.Game.Service
         {
             //调整加锁位置
             bool result = false;
-            httpGet.GetString("Sid", ref Sid);
             if (GetUrlElement())
             {
                 if (ValidateElement())
@@ -260,11 +261,20 @@ namespace ZyGames.Framework.Game.Service
                     ErrorCode = Language.Instance.ErrorCode;
                     if (!IsRealse)
                     {
-                        ErrorInfo = Language.Instance.UrlElement + httpGet.ErrorMsg;
+                        ErrorInfo = Language.Instance.UrlElement;
                     }
                 }
             }
             return result;
+        }
+
+        /// <summary>
+        /// get url parameter
+        /// </summary>
+        /// <returns></returns>
+        public override bool GetUrlElement()
+        {
+            return true;
         }
         /// <summary>
         /// 

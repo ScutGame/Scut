@@ -32,7 +32,7 @@ using System.Runtime.InteropServices;
 //      Revision
 //
 //
-[assembly: AssemblyVersion("6.3.7.230")]
+[assembly: AssemblyVersion("6.3.7.500")]
 [assembly: AssemblyCompany("scutgame.com")]
 [assembly: AssemblyProduct("SCUT Server Engine")]
 [assembly: AssemblyCopyright("Copyright © 2013-2015 Gavin Wu")]

@@ -65,16 +65,6 @@ namespace ZyGames.Framework.Game.Context
             
         } 
 
-        /// <summary> 
-        /// MD5加密字符串 
-        /// </summary> 
-        /// <param name="source">源字符串</param> 
-        /// <returns>加密后的字符串</returns> 
-        public static string MD5(string source)
-        {
-            return FormsAuthentication.HashPasswordForStoringInConfigFile(source, "MD5"); ;
-        }
-
 		/// <summary>
 		/// Gets the M d5_32.
 		/// </summary>

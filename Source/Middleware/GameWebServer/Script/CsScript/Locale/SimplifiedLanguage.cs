@@ -28,6 +28,11 @@ namespace GameServer.CsScript.Locale
     public class SimplifiedLanguage : Language
     {
         /// <summary>
+        /// Sign error
+        /// </summary>
+        public new string SignError = "验证签名出错";
+
+        /// <summary>
         /// validate error
         /// </summary>
         public new string ValidateError = "请求的参数无效";

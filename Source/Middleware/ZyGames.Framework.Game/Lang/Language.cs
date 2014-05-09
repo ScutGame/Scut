@@ -144,6 +144,10 @@ namespace ZyGames.Framework.Game.Lang
         /// <value>The validate code.</value>
         public int ValidateCode = 10003;
 
+        /// <summary>
+        /// 验签出错
+        /// </summary>
+        public string SignError = "Sign error.";
 
         /// <summary>
         /// validate error

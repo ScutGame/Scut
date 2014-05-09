@@ -67,15 +67,15 @@ namespace ZyGames.Framework.Game.Contract.Action
         public override bool GetUrlElement()
         {
             TraceLog.ReleaseWriteFatal("PayInfo---error");
-            if (httpGet.GetInt("gameID", ref _gameID)
-                && httpGet.GetInt("ServerID", ref _serviceID)
-                && httpGet.GetString("amount", ref amount)
-                && httpGet.GetString("gameconis", ref gamecoins)
-                && httpGet.GetString("orderno", ref orderno)
-                && httpGet.GetString("PassportID", ref _passportId))
+            if (actionGetter.GetInt("gameID", ref _gameID)
+                && actionGetter.GetInt("ServerID", ref _serviceID)
+                && actionGetter.GetString("amount", ref amount)
+                && actionGetter.GetString("gameconis", ref gamecoins)
+                && actionGetter.GetString("orderno", ref orderno)
+                && actionGetter.GetString("PassportID", ref _passportId))
             {
-                httpGet.GetString("RetailID", ref _RetailID);
-                httpGet.GetString("deviceId", ref _deviceId);
+                actionGetter.GetString("RetailID", ref _RetailID);
+                actionGetter.GetString("deviceId", ref _deviceId);
                 return true;
             }
             return false;

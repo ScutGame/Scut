@@ -67,7 +67,7 @@ namespace ZyGames.Framework.Game.Contract.Action
 		/// <returns></returns>
         public override bool GetUrlElement()
         {
-            if (httpGet.GetEnum("MobileType", ref MobileType))
+            if (actionGetter.GetEnum("MobileType", ref MobileType))
             {
                 return true;
             }

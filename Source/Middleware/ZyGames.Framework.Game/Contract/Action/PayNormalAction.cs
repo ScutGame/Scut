@@ -23,6 +23,7 @@ THE SOFTWARE.
 ****************************************************************************/
 using System;
 using System.Text;
+using System.Xml;
 using ZyGames.Framework.Common;
 using ZyGames.Framework.Common.Log;
 using ZyGames.Framework.Game.Configuration;
@@ -38,107 +39,107 @@ namespace ZyGames.Framework.Game.Contract.Action
     /// </summary>
     public class PayNormalAction : BaseStruct
     {
-		/// <summary>
-		/// The _amount.
-		/// </summary>
+        /// <summary>
+        /// The _amount.
+        /// </summary>
         protected int _amount;
-		/// <summary>
-		/// The _game I.
-		/// </summary>
+        /// <summary>
+        /// The _game I.
+        /// </summary>
         protected int _gameID;
-		/// <summary>
-		/// The _server I.
-		/// </summary>
+        /// <summary>
+        /// The _server I.
+        /// </summary>
         protected int _serverID;
-		/// <summary>
-		/// The name of the _server.
-		/// </summary>
+        /// <summary>
+        /// The name of the _server.
+        /// </summary>
         protected string _serverName;
-		/// <summary>
-		/// The _order no.
-		/// </summary>
+        /// <summary>
+        /// The _order no.
+        /// </summary>
         protected string _orderNo;
-		/// <summary>
-		/// The _passport I.
-		/// </summary>
+        /// <summary>
+        /// The _passport I.
+        /// </summary>
         protected string _passportID;
-		/// <summary>
-		/// The _currency.
-		/// </summary>
+        /// <summary>
+        /// The _currency.
+        /// </summary>
         protected string _currency;
-		/// <summary>
-		/// The _retail I.
-		/// </summary>
+        /// <summary>
+        /// The _retail I.
+        /// </summary>
         protected string _retailID;
-		/// <summary>
-		/// The _device I.
-		/// </summary>
+        /// <summary>
+        /// The _device I.
+        /// </summary>
         protected string _deviceID;
-		/// <summary>
-		/// The _product I.
-		/// </summary>
+        /// <summary>
+        /// The _product I.
+        /// </summary>
         protected string _productID;
-		/// <summary>
-		/// The type of the _pay.
-		/// </summary>
+        /// <summary>
+        /// The type of the _pay.
+        /// </summary>
         protected string _payType;
-		/// <summary>
-		/// The name of the _game.
-		/// </summary>
+        /// <summary>
+        /// The name of the _game.
+        /// </summary>
         protected string _gameName;
-		/// <summary>
-		/// The _pay status.
-		/// </summary>
+        /// <summary>
+        /// The _pay status.
+        /// </summary>
         protected int _payStatus;
-		/// <summary>
-		/// Initializes a new instance of the <see cref="ZyGames.Framework.Game.Contract.Action.PayNormalAction"/> class.
-		/// </summary>
-		/// <param name="aActionId">A action identifier.</param>
-		/// <param name="httpGet">Http get.</param>
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ZyGames.Framework.Game.Contract.Action.PayNormalAction"/> class.
+        /// </summary>
+        /// <param name="aActionId">A action identifier.</param>
+        /// <param name="httpGet">Http get.</param>
         public PayNormalAction(short aActionId, HttpGet httpGet)
             : base(aActionId, httpGet)
         {
         }
-		/// <summary>
-		/// 创建返回协议内容输出栈
-		/// </summary>
+        /// <summary>
+        /// 创建返回协议内容输出栈
+        /// </summary>
         public override void BuildPacket()
         {
             PushIntoStack(_payStatus);
         }
-		/// <summary>
-		/// 接收用户请求的参数，并根据相应类进行检测
-		/// </summary>
-		/// <returns></returns>
+        /// <summary>
+        /// 接收用户请求的参数，并根据相应类进行检测
+        /// </summary>
+        /// <returns></returns>
         public override bool GetUrlElement()
         {
-            if (httpGet.GetInt("GameID", ref _gameID)
-                && httpGet.GetInt("ServerID", ref _serverID)
-                && httpGet.GetString("ServerName", ref _serverName)
-                && httpGet.GetString("OrderNo", ref _orderNo)
-                && httpGet.GetString("PassportID", ref _passportID)
-                && httpGet.GetString("PayType", ref _payType))
+            if (actionGetter.GetInt("GameID", ref _gameID)
+                && actionGetter.GetInt("ServerID", ref _serverID)
+                && actionGetter.GetString("ServerName", ref _serverName)
+                && actionGetter.GetString("OrderNo", ref _orderNo)
+                && actionGetter.GetString("PassportID", ref _passportID)
+                && actionGetter.GetString("PayType", ref _payType))
             {
-                if (!httpGet.GetString("Currency", ref _currency))
+                if (!actionGetter.GetString("Currency", ref _currency))
                 {
                     _currency = "CNY";
                 }
-                if (!httpGet.GetString("RetailID", ref _retailID))
+                if (!actionGetter.GetString("RetailID", ref _retailID))
                 {
                     _retailID = _payType;
                 }
-                httpGet.GetString("DeviceID", ref _deviceID);
-                httpGet.GetString("ProductID", ref _productID);
-                httpGet.GetInt("Amount", ref _amount);
-                httpGet.GetString("GameName", ref _gameName);
+                actionGetter.GetString("DeviceID", ref _deviceID);
+                actionGetter.GetString("ProductID", ref _productID);
+                actionGetter.GetInt("Amount", ref _amount);
+                actionGetter.GetString("GameName", ref _gameName);
                 return true;
             }
             return false;
         }
-		/// <summary>
-		/// 子类实现Action处理
-		/// </summary>
-		/// <returns></returns>
+        /// <summary>
+        /// 子类实现Action处理
+        /// </summary>
+        /// <returns></returns>
         public override bool TakeAction()
         {
             OrderInfo orderInfo = new OrderInfo();
@@ -180,72 +181,70 @@ namespace ZyGames.Framework.Game.Contract.Action
 
         private void Check10086Payment(OrderInfo orderInfo)
         {
-            string url = "http://ospd.mmarket.com:8089/trust";
-            string appId = "";
-            string version = "1.0.0";
-            int orderType = 1;
-            GameChannel gameChannel = ZyGameBaseConfigManager.GameSetting.GetChannelSetting(ChannelType.channel10086);
-            if (gameChannel != null)
+            try
             {
-                url = gameChannel.Url;
-                version = gameChannel.Version;
-                orderType = gameChannel.CType.ToInt();
-                GameSdkSetting setting = gameChannel.GetSetting(orderInfo.PayType);
-                if (setting != null)
+                string url = "http://ospd.mmarket.com:8089/trust";
+                string appId = "";
+                string version = "1.0.0";
+                int orderType = 1;
+                GameChannel gameChannel = ZyGameBaseConfigManager.GameSetting.GetChannelSetting(ChannelType.channel10086);
+                if (gameChannel != null)
                 {
-                    appId = setting.AppId;
-                }
-                else
-                {
-                    return;
-                }
-            }
-            
-            StringBuilder paramData = new StringBuilder();
-            paramData.Append("<?xml version=\"1.0\"?>");
-            paramData.AppendFormat("<Trusted2ServQueryReq>");
-            paramData.AppendFormat("<MsgType>{0}</MsgType>", "Trusted2ServQueryReq");
-            paramData.AppendFormat("<Version>{0}</Version>", version);
-            paramData.AppendFormat("<AppID>{0}</AppID>", appId);
-            paramData.AppendFormat("<OrderID>{0}</OrderID>", orderInfo.OrderNO);
-            paramData.AppendFormat("<OrderType>{0}</OrderType>", orderType);
-            paramData.AppendFormat("</Trusted2ServQueryReq>");
-            HttpUtils.Post(HttpUtils.ContentTypeXml, url, paramData.ToString(), stream =>
-            {
-                try
-                {
-                    var doc = HttpUtils.ToXml(stream);
-                    TraceLog.ReleaseWriteFatal("10068 order:{0} response:{1}", orderInfo.OrderNO, doc.InnerXml);
-                    var returnCode = doc.SelectSingleNode("Trusted2ServQueryResp/ReturnCode");
-                    if (returnCode != null && !string.IsNullOrEmpty(returnCode.InnerText))
+                    url = gameChannel.Url;
+                    version = gameChannel.Version;
+                    orderType = gameChannel.CType.ToInt();
+                    GameSdkSetting setting = gameChannel.GetSetting(orderInfo.PayType);
+                    if (setting != null)
                     {
-                        int code = returnCode.InnerText.ToInt();
-                        if (code == 0)
-                        {
-                            string orderNo = "";
-                            var orderIDNode = doc.SelectSingleNode("Trusted2ServQueryResp/OrderID");
-                            if (orderIDNode != null)
-                            {
-                                orderNo = orderIDNode.InnerText;
-                            }
-                            var priceNode = doc.SelectSingleNode("Trusted2ServQueryResp/TotalPrice");
-                            if (priceNode != null)
-                            {
-                                decimal amount = priceNode.InnerText.ToDecimal();
-                                orderInfo.Amount = amount;
-                                orderInfo.GameCoins = (int)amount * 10;
-                            }
-                            return PayManager.PaySuccess(orderNo, orderInfo);
-                        }
-                        TraceLog.ReleaseWriteFatal("10086 payment order:{0} fail code:{1}", orderInfo.OrderNO, code);
+                        appId = setting.AppId;
+                    }
+                    else
+                    {
+                        return;
                     }
                 }
-                catch (Exception ex)
+                StringBuilder paramData = new StringBuilder();
+                paramData.Append("<?xml version=\"1.0\"?>");
+                paramData.AppendFormat("<Trusted2ServQueryReq>");
+                paramData.AppendFormat("<MsgType>{0}</MsgType>", "Trusted2ServQueryReq");
+                paramData.AppendFormat("<Version>{0}</Version>", version);
+                paramData.AppendFormat("<AppID>{0}</AppID>", appId);
+                paramData.AppendFormat("<OrderID>{0}</OrderID>", orderInfo.OrderNO);
+                paramData.AppendFormat("<OrderType>{0}</OrderType>", orderType);
+                paramData.AppendFormat("</Trusted2ServQueryReq>");
+
+                var stream = HttpUtils.Post(url, paramData.ToString(), Encoding.UTF8, HttpUtils.XmlContentType);
+                XmlDocument doc = new XmlDocument();
+                doc.Load(stream);
+                TraceLog.ReleaseWriteFatal("10068 order:{0} response:{1}", orderInfo.OrderNO, doc.InnerXml);
+                var returnCode = doc.SelectSingleNode("Trusted2ServQueryResp/ReturnCode");
+                if (returnCode != null && !string.IsNullOrEmpty(returnCode.InnerText))
                 {
-                    TraceLog.WriteError("10086 payment error:", ex);
+                    int code = returnCode.InnerText.ToInt();
+                    if (code == 0)
+                    {
+                        string orderNo = "";
+                        var orderIDNode = doc.SelectSingleNode("Trusted2ServQueryResp/OrderID");
+                        if (orderIDNode != null)
+                        {
+                            orderNo = orderIDNode.InnerText;
+                        }
+                        var priceNode = doc.SelectSingleNode("Trusted2ServQueryResp/TotalPrice");
+                        if (priceNode != null)
+                        {
+                            decimal amount = priceNode.InnerText.ToDecimal();
+                            orderInfo.Amount = amount;
+                            orderInfo.GameCoins = (int)amount * 10;
+                        }
+                        PayManager.PaySuccess(orderNo, orderInfo);
+                    }
+                    TraceLog.ReleaseWriteFatal("10086 payment order:{0} fail code:{1}", orderInfo.OrderNO, code);
                 }
-                return false;
-            });
+            }
+            catch (Exception ex)
+            {
+                TraceLog.WriteError("10086 payment error:", ex);
+            }
         }
     }
 }

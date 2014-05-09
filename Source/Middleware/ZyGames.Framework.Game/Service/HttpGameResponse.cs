@@ -30,12 +30,13 @@ namespace ZyGames.Framework.Game.Service
     /// <summary>
     /// Http流输出类
     /// </summary>
-    public class HttpGameResponse : IGameResponse
+    public class HttpGameResponse : BaseGameResponse
     {
         /// <summary>
         /// 输出类
         /// </summary>
         private System.Web.HttpResponse _response;
+
         /// <summary>
         /// 
         /// </summary>
@@ -50,7 +51,7 @@ namespace ZyGames.Framework.Game.Service
         /// 
         /// </summary>
         /// <param name="buffer"></param>
-        public void BinaryWrite(byte[] buffer)
+        public override void BinaryWrite(byte[] buffer)
         {
             _response.BinaryWrite(buffer);
         }
@@ -58,16 +59,17 @@ namespace ZyGames.Framework.Game.Service
         /// 
         /// </summary>
         /// <param name="buffer"></param>
-        public void Write(byte[] buffer)
+        public override void Write(byte[] buffer)
         {
             _response.OutputStream.Write(buffer, 0, buffer.Length);
         }
+
     }
 
     /// <summary>
     /// HttpListent流输出类
     /// </summary>
-    public class HttpListentGameResponse : IGameResponse
+    public class HttpListentGameResponse : BaseGameResponse
     {
         private readonly HttpListenerResponse _response;
 
@@ -81,11 +83,12 @@ namespace ZyGames.Framework.Game.Service
             response.ContentType = "application/octet-stream";
             response.AddHeader("Access-Control-Allow-Origin", "*");
         }
+
 		/// <summary>
 		/// 
 		/// </summary>
 		/// <param name="buffer"></param>
-        public void BinaryWrite(byte[] buffer)
+        public override void BinaryWrite(byte[] buffer)
         {
             _response.OutputStream.Write(buffer, 0, buffer.Length);
         }
@@ -93,9 +96,10 @@ namespace ZyGames.Framework.Game.Service
 		/// 
 		/// </summary>
 		/// <param name="buffer"></param>
-        public void Write(byte[] buffer)
+        public override void Write(byte[] buffer)
         {
             _response.OutputStream.Write(buffer, 0, buffer.Length);
         }
+
     }
 }

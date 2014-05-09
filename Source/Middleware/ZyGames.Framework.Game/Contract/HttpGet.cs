@@ -29,14 +29,15 @@ using System.Web.Security;
 using ZyGames.Framework.Common;
 using ZyGames.Framework.Game.Lang;
 using ZyGames.Framework.Game.Runtime;
+using ZyGames.Framework.Game.Service;
 
 namespace ZyGames.Framework.Game.Contract
 {
 
     /// <summary>
-    /// HttpGet 的摘要说明
+    /// HttpGet
     /// </summary>
-    public class HttpGet
+    public class HttpGet : ActionGetter
     {
         private string _requestParam = string.Empty;
         private StringBuilder _error = new StringBuilder();
@@ -46,6 +47,7 @@ namespace ZyGames.Framework.Game.Contract
         /// 构造函数
         /// </summary>
         public HttpGet(HttpRequest request)
+            : base(null)
         {
             _paramString = request["d"] ?? "";
             InitData(_paramString);
@@ -54,7 +56,7 @@ namespace ZyGames.Framework.Game.Contract
             {
                 SessionId = _param["sid"];
             }
-            if(string.IsNullOrEmpty(SessionId))
+            if (string.IsNullOrEmpty(SessionId))
             {
                 SessionId = request["sid"];
             }
@@ -65,12 +67,12 @@ namespace ZyGames.Framework.Game.Contract
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="param">自定义参数字串</param>
-        /// <param name="session"></param>
-        public HttpGet(string param, GameSession session)
+        /// <param name="package"></param>
+        public HttpGet(RequestPackage package)
+            : base(package)
         {
-            _paramString = param ?? "";
-            _session = session;
+            _paramString = package.UrlParam ?? "";
+            _session = package.Session;
             InitData(_paramString);
             SessionId = _session != null ? _session.SessionId : "";
         }
@@ -86,6 +88,10 @@ namespace ZyGames.Framework.Game.Contract
             set { _param[key] = value; }
         }
 
+        /// <summary>
+        /// MsgId
+        /// </summary>
+        public int MsgId { get; private set; }
 
         private int _actionId;
 
@@ -148,7 +154,7 @@ namespace ZyGames.Framework.Game.Contract
 
         private void InitData(string d)
         {
-            int index = d.LastIndexOf("&sign=");
+            int index = d.LastIndexOf("&sign=", StringComparison.Ordinal);
             if (index != -1)
             {
                 _requestParam = d.Substring(0, index);
@@ -159,7 +165,7 @@ namespace ZyGames.Framework.Game.Contract
             {
                 _param[key] = temp[key];
             }
-
+            MsgId = (_param.ContainsKey("MsgId") ? _param["MsgId"] : "0").ToInt();
             _actionId = (_param.ContainsKey("actionId") ? _param["actionId"] : "0").ToInt();
             UserId = (_param.ContainsKey("uid") ? _param["uid"] : "0").ToInt();
         }
@@ -183,9 +189,18 @@ namespace ZyGames.Framework.Game.Contract
         /// <summary>
         /// 
         /// </summary>
+        /// <returns></returns>
+        public override string ToParamString()
+        {
+            return ParamString;
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
         /// <param name="param"></param>
         /// <returns></returns>
-        public int GetIntValue(string param)
+        public override int GetIntValue(string param)
         {
             return GetIntValue(param, ZeroNum, int.MaxValue, false);
         }
@@ -198,7 +213,7 @@ namespace ZyGames.Framework.Game.Contract
         /// <param name="max"></param>
         /// <param name="isRequired"></param>
         /// <returns></returns>
-        public int GetIntValue(string param, int min, int max, bool isRequired = true)
+        public override int GetIntValue(string param, int min, int max, bool isRequired = true)
         {
             int value = 0;
             if (!GetInt(param, ref value, min, max) && isRequired)
@@ -213,7 +228,7 @@ namespace ZyGames.Framework.Game.Contract
         /// </summary>
         /// <param name="param"></param>
         /// <returns></returns>
-        public short GetWordValue(string param)
+        public override short GetWordValue(string param)
         {
             return GetWordValue(param, ZeroNum, short.MaxValue, false);
         }
@@ -226,7 +241,7 @@ namespace ZyGames.Framework.Game.Contract
         /// <param name="max"></param>
         /// <param name="isRequired"></param>
         /// <returns></returns>
-        public short GetWordValue(string param, short min, short max, bool isRequired = true)
+        public override short GetWordValue(string param, short min, short max, bool isRequired = true)
         {
             short value = 0;
             if (!GetWord(param, ref value, min, max) && isRequired)
@@ -241,7 +256,7 @@ namespace ZyGames.Framework.Game.Contract
         /// </summary>
         /// <param name="param"></param>
         /// <returns></returns>
-        public byte GetByteValue(string param)
+        public override byte GetByteValue(string param)
         {
             return GetByteValue(param, ZeroNum, byte.MaxValue, false);
         }
@@ -254,7 +269,7 @@ namespace ZyGames.Framework.Game.Contract
         /// <param name="max"></param>
         /// <param name="isRequired"></param>
         /// <returns></returns>
-        public byte GetByteValue(string param, byte min, byte max, bool isRequired = true)
+        public override byte GetByteValue(string param, byte min, byte max, bool isRequired = true)
         {
             byte value = 0;
             if (!GetByte(param, ref value, min, max) && isRequired)
@@ -269,7 +284,7 @@ namespace ZyGames.Framework.Game.Contract
         /// </summary>
         /// <param name="param"></param>
         /// <returns></returns>
-        public string GetStringValue(string param)
+        public override string GetStringValue(string param)
         {
             return GetStringValue(param, ZeroNum, -1, false);
         }
@@ -282,7 +297,7 @@ namespace ZyGames.Framework.Game.Contract
         /// <param name="max"></param>
         /// <param name="isRequired"></param>
         /// <returns></returns>
-        public string GetStringValue(string param, int min, int max, bool isRequired = true)
+        public override string GetStringValue(string param, int min, int max, bool isRequired = true)
         {
             string value = "";
             if (!GetString(param, ref value, min, max, true) && isRequired)
@@ -298,7 +313,7 @@ namespace ZyGames.Framework.Game.Contract
         /// </summary>
         /// <param name="param"></param>
         /// <returns></returns>
-        public int GetInt(string param)
+        public override int GetInt(string param)
         {
             return GetIntValue(param);
         }
@@ -308,7 +323,7 @@ namespace ZyGames.Framework.Game.Contract
         /// </summary>
         /// <param name="param"></param>
         /// <returns></returns>
-        public short GetWord(string param)
+        public override short GetWord(string param)
         {
             return GetWordValue(param);
         }
@@ -317,7 +332,7 @@ namespace ZyGames.Framework.Game.Contract
         /// </summary>
         /// <param name="param"></param>
         /// <returns></returns>
-        public Byte GetByte(string param)
+        public override Byte GetByte(string param)
         {
             return GetByteValue(param);
         }
@@ -326,7 +341,7 @@ namespace ZyGames.Framework.Game.Contract
         /// </summary>
         /// <param name="param"></param>
         /// <returns></returns>
-        public string GetString(string param)
+        public override string GetString(string param)
         {
             return GetStringValue(param);
         }
@@ -337,7 +352,7 @@ namespace ZyGames.Framework.Game.Contract
         /// <typeparam name="T"></typeparam>
         /// <param name="param"></param>
         /// <returns></returns>
-        public T GetEnum<T>(string param) where T : struct
+        public override T GetEnum<T>(string param)
         {
             T value = default(T);
             GetEnum(param, ref value);
@@ -359,7 +374,7 @@ namespace ZyGames.Framework.Game.Contract
         /// </summary>
         /// <param name="param">参数名</param>
         /// <returns></returns>
-        public bool Contains(string param)
+        public override bool Contains(string param)
         {
             if (_param.ContainsKey(param))
             {
@@ -375,7 +390,7 @@ namespace ZyGames.Framework.Game.Contract
         /// <param name="aName">URL参数名</param>
         /// <param name="rValue">返回变量</param>
         /// <returns></returns>
-        public bool GetInt(string aName, ref Int32 rValue)
+        public override bool GetInt(string aName, ref Int32 rValue)
         {
             return GetInt(aName, ref rValue, ZeroNum, Int32.MaxValue);
         }
@@ -387,7 +402,7 @@ namespace ZyGames.Framework.Game.Contract
         /// <param name="minValue">取值最小范围</param>
         /// <param name="maxValue">取值最大范围</param>
         /// <returns></returns>
-        public bool GetInt(string aName, ref Int32 rValue, Int32 minValue, Int32 maxValue)
+        public override bool GetInt(string aName, ref Int32 rValue, Int32 minValue, Int32 maxValue)
         {
             bool result = false;
             if (_param.ContainsKey(aName))
@@ -415,7 +430,7 @@ namespace ZyGames.Framework.Game.Contract
         /// <param name="aName">URL参数名</param>
         /// <param name="rValue">返回变量</param>
         /// <returns></returns>
-        public bool GetWord(string aName, ref Int16 rValue)
+        public override bool GetWord(string aName, ref Int16 rValue)
         {
             return GetWord(aName, ref rValue, ZeroNum, Int16.MaxValue);
         }
@@ -427,7 +442,7 @@ namespace ZyGames.Framework.Game.Contract
         /// <param name="minValue">取值最小范围</param>
         /// <param name="maxValue">取值最大范围</param>
         /// <returns></returns>
-        public bool GetWord(string aName, ref Int16 rValue, Int16 minValue, Int16 maxValue)
+        public override bool GetWord(string aName, ref Int16 rValue, Int16 minValue, Int16 maxValue)
         {
             bool result = false;
             if (_param.ContainsKey(aName))
@@ -455,7 +470,7 @@ namespace ZyGames.Framework.Game.Contract
         /// <param name="aName">URL参数名</param>
         /// <param name="rValue">返回变量</param>
         /// <returns></returns>
-        public bool GetByte(string aName, ref Byte rValue)
+        public override bool GetByte(string aName, ref Byte rValue)
         {
             return GetByte(aName, ref rValue, ZeroNum, Byte.MaxValue);
         }
@@ -467,7 +482,7 @@ namespace ZyGames.Framework.Game.Contract
         /// <param name="minValue">取值最小范围</param>
         /// <param name="maxValue">取值最大范围</param>
         /// <returns></returns>
-        public bool GetByte(string aName, ref Byte rValue, Byte minValue, Byte maxValue)
+        public override bool GetByte(string aName, ref Byte rValue, Byte minValue, Byte maxValue)
         {
             bool result = false;
             if (_param.ContainsKey(aName))
@@ -496,7 +511,7 @@ namespace ZyGames.Framework.Game.Contract
         /// <param name="rValue">返回变量</param>
         /// <param name="ignoreError"></param>
         /// <returns></returns>
-        public bool GetString(string aName, ref String rValue, bool ignoreError = false)
+        public override bool GetString(string aName, ref String rValue, bool ignoreError = false)
         {
             return GetString(aName, ref rValue, ZeroNum, -1, ignoreError);
         }
@@ -510,7 +525,7 @@ namespace ZyGames.Framework.Game.Contract
         /// <param name="maxValue">长度最大范围，-1:不限制</param>
         /// <param name="ignoreError"></param>
         /// <returns></returns>
-        public bool GetString(string aName, ref String rValue, int minValue, int maxValue, bool ignoreError = false)
+        public override bool GetString(string aName, ref String rValue, int minValue, int maxValue, bool ignoreError = false)
         {
             bool result = false;
             if (_param.ContainsKey(aName))
@@ -536,7 +551,7 @@ namespace ZyGames.Framework.Game.Contract
         /// <param name="aName"></param>
         /// <param name="rValue"></param>
         /// <returns></returns>
-        public bool GetEnum<T>(string aName, ref T rValue) where T : struct
+        public override bool GetEnum<T>(string aName, ref T rValue)
         {
             bool result = false;
             if (_param.ContainsKey(aName))
@@ -563,7 +578,7 @@ namespace ZyGames.Framework.Game.Contract
         /// 签名检查
         /// </summary>
         /// <returns></returns>
-        public bool CheckSign()
+        public override bool CheckSign()
         {
             string signKey = GameEnvironment.Setting.ProductSignKey;
             if (string.IsNullOrEmpty(signKey))
@@ -577,7 +592,7 @@ namespace ZyGames.Framework.Game.Contract
                 if (_requestParam != null)
                 {
                     string attachParam = _requestParam + signKey;
-                    string key = FormsAuthentication.HashPasswordForStoringInConfigFile(attachParam, "MD5");
+                    string key = ZyGames.Framework.Common.Security.CryptoHelper.MD5_Encrypt(attachParam, Encoding.UTF8);
                     if (!string.IsNullOrEmpty(key) && key.ToLower() == sign)
                     {
                         return true;
@@ -606,6 +621,65 @@ namespace ZyGames.Framework.Game.Contract
             }
             _error.AppendFormat(Language.Instance.UrlParamOutRange, param, min, max);
         }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        public override int GetMsgId()
+        {
+            return MsgId;
+        }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        public override string GetSt()
+        {
+            return GetStringValue("St");
+        }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        public override int GetActionId()
+        {
+            return _actionId;
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        public override int GetUserId()
+        {
+            return UserId;
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        public override string GetSessionId()
+        {
+            return SessionId;
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        public override GameSession GetSession()
+        {
+            return _session;
+        }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        public override bool IsRunloader()
+        {
+            return ContainsKey("rl");
+        }
     }
 }

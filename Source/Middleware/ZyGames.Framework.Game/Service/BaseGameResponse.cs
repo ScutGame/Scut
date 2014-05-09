@@ -21,23 +21,39 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ****************************************************************************/
+
+using System;
+
 namespace ZyGames.Framework.Game.Service
 {
     /// <summary>
     /// 游戏输出接口
     /// </summary>
-    public interface IGameResponse
+    public abstract class BaseGameResponse
     {
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="buffer"></param>
-        void BinaryWrite(byte[] buffer);
+        public event Action<BaseGameResponse, ActionGetter, int, string> WriteErrorCallback;
+
         /// <summary>
         /// 
         /// </summary>
         /// <param name="buffer"></param>
-        void Write(byte[] buffer);
+       public abstract void BinaryWrite(byte[] buffer);
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="buffer"></param>
+       public abstract void Write(byte[] buffer);
+
+       internal void WriteError(ActionGetter actionGetter, int errorCode, string errorInfo)
+       {
+           Action<BaseGameResponse, ActionGetter, int, string> handler = WriteErrorCallback;
+
+           if (handler != null) handler(this, actionGetter, errorCode, errorInfo);
+       }
+
     }
 
 }

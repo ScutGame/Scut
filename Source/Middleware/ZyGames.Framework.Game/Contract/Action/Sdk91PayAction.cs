@@ -64,13 +64,13 @@ namespace ZyGames.Framework.Game.Contract.Action
         public override bool GetUrlElement()
         {
             TraceLog.ReleaseWriteFatal("url");
-            if (httpGet.GetString("OrderID", ref OrderID)
-                && httpGet.GetInt("gameID", ref gameID)
-                && httpGet.GetInt("Server", ref serviceID)
-                && httpGet.GetString("ServiceName", ref servicename)
-                && httpGet.GetString("PassportID", ref passportId))
+            if (actionGetter.GetString("OrderID", ref OrderID)
+                && actionGetter.GetInt("gameID", ref gameID)
+                && actionGetter.GetInt("Server", ref serviceID)
+                && actionGetter.GetString("ServiceName", ref servicename)
+                && actionGetter.GetString("PassportID", ref passportId))
             {
-                httpGet.GetString("RetailID", ref _RetailID);
+                actionGetter.GetString("RetailID", ref _RetailID);
                 return true;
             }
             return false;

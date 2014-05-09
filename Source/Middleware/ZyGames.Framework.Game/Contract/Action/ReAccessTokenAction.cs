@@ -67,9 +67,9 @@ namespace ZyGames.Framework.Game.Contract.Action
 		/// <returns></returns>
         public override bool GetUrlElement()
         {
-            if (httpGet.GetString("RetailID", ref RetailID)
-                && httpGet.GetString("RefeshToken", ref RefeshToken)
-                && httpGet.GetString("Scope", ref Scope))
+            if (actionGetter.GetString("RetailID", ref RetailID)
+                && actionGetter.GetString("RefeshToken", ref RefeshToken)
+                && actionGetter.GetString("Scope", ref Scope))
             {
                 return true;
             }

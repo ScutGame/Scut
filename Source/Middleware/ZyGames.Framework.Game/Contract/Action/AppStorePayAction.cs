@@ -130,14 +130,14 @@ namespace ZyGames.Framework.Game.Contract.Action
 		/// <returns></returns>
         public override bool TakeAction()
         {
-            if (httpGet.GetString("OrderInfo", ref _orderInfo)
-                   && httpGet.GetInt("gameID", ref _gameID)
-                   && httpGet.GetInt("Server", ref _serviceID)
-                   && httpGet.GetString("ServiceName", ref _servicename)
-                   && httpGet.GetString("PassportID", ref _passportId))
+            if (actionGetter.GetString("OrderInfo", ref _orderInfo)
+                   && actionGetter.GetInt("gameID", ref _gameID)
+                   && actionGetter.GetInt("Server", ref _serviceID)
+                   && actionGetter.GetString("ServiceName", ref _servicename)
+                   && actionGetter.GetString("PassportID", ref _passportId))
             {
-                httpGet.GetString("RetailID", ref _RetailID);
-                httpGet.GetString("mac", ref _deviceId);
+                actionGetter.GetString("RetailID", ref _RetailID);
+                actionGetter.GetString("mac", ref _deviceId);
                 return true;
             }
             return false;

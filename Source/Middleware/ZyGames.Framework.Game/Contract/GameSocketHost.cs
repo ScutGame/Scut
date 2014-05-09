@@ -59,6 +59,7 @@ namespace ZyGames.Framework.Game.Contract
         private SmartThreadPool threadPool;
         private SocketListener socketLintener;
         private HttpListener httpListener;
+
         /// <summary>
         /// The enable http.
         /// </summary>
@@ -67,10 +68,7 @@ namespace ZyGames.Framework.Game.Contract
         /// The receive number.
         /// </summary>
         internal protected int receiveNum;
-        /// <summary>
-        /// The error drop number.
-        /// </summary>
-        internal protected int errorDropNum;
+
         /// <summary>
         /// The timeout drop number.
         /// </summary>
@@ -92,10 +90,16 @@ namespace ZyGames.Framework.Game.Contract
         internal protected int blockingNum { get { return lockedQueue.Count; } }
 
         /// <summary>
+        /// Action repeater
+        /// </summary>
+        public IActionDispatcher ActionDispatcher { get; set; }
+
+        /// <summary>
         /// 
         /// </summary>
         protected GameSocketHost()
         {
+            ActionDispatcher = new ActionDispatcher();
             int port = GameEnvironment.Setting.GamePort;
             IPEndPoint localEndPoint = new IPEndPoint(IPAddress.Any, port);
 
@@ -176,98 +180,79 @@ namespace ZyGames.Framework.Game.Contract
             {
                 Interlocked.Increment(ref receiveNum);
                 OnReceivedBefore(e);
-                //if (isInStopping) return;
-                Dictionary<string, string> param = new Dictionary<string, string>(StringComparer.InvariantCultureIgnoreCase);
-                string paramStr = Encoding.ASCII.GetString(e.Data);
-                int index = paramStr.IndexOf("?d=");
-                string routeName = string.Empty;
-                if (index != -1)
+                RequestPackage package;
+                if (!ActionDispatcher.TryDecodePackage(e, out package))
                 {
-                    if (paramStr.StartsWith("route:", StringComparison.CurrentCultureIgnoreCase))
-                    {
-                        routeName = paramStr.Substring(6, index - 6);
-                    }
-                    paramStr = paramStr.Substring(index, paramStr.Length - index);
-                    paramStr = HttpUtility.ParseQueryString(paramStr)["d"];
-                }
-
-                var nvc = HttpUtility.ParseQueryString(paramStr);
-                foreach (var key in nvc.AllKeys)
-                {
-                    param[key] = nvc[key];
-                }
-                if (param.ContainsKey("route"))
-                {
-                    routeName = param["route"];
-                }
-                //if (!param.ContainsKey("ssid")) { Interlocked.Increment(ref errorDropNum); return; }
-                if (!param.ContainsKey("actionid")) { Interlocked.Increment(ref errorDropNum); return; }
-                if (!param.ContainsKey("msgid")) { Interlocked.Increment(ref errorDropNum); return; }
-
-                //sessionId of proxy server
-                Guid proxySid;
-                if (!param.ContainsKey("ssid") || !Guid.TryParse(param["ssid"], out proxySid))
-                {
-                    proxySid = Guid.Empty;
-                }
-                int actionid;
-                if (!int.TryParse(param["actionid"], out actionid)) { Interlocked.Increment(ref errorDropNum); return; }
-                int msgid;
-                if (!int.TryParse(param["msgid"], out msgid)) { Interlocked.Increment(ref errorDropNum); return; }
-                bool isproxy = param.ContainsKey("isproxy");//proxy server send
-                string sessionId = param.ContainsKey("sid") ? param["sid"] : "";
-
-                //使用代理分发器时,每个ssid建立一个游服Serssion
-                GameSession session;
-                if (proxySid != Guid.Empty)
-                {
-                    session = GameSession.Get(proxySid) ??
-                               (isproxy
-                                ? GameSession.Get(e.Socket.HashCode)
-                                : GameSession.CreateNew(proxySid, e.Socket, socketLintener.PostSend));
-                    if (session != null)
-                    {
-                        session.ProxySid = proxySid;
-                    }
-                }
-                else
-                {
-                    session = GameSession.Get(sessionId) ?? GameSession.Get(e.Socket.HashCode);
-                }
-                if (session != null && !session.Connected)
-                {
-                    GameSession.Recover(session, e.Socket.HashCode, e.Socket, socketLintener.PostSend);
-                }
-                //todo trace session expire
-                //TraceLog.WriteComplement("Request {0}:sid={1},session:{2}", actionid, sessionId, session == null ? "" : session.SessionId + session.UserId);
-                if (actionid == (int)ActionEnum.Interrupt)
-                {
-                    //Proxy server notifly interrupt connect ops
-                    OnDisconnected(session);
-                    if (session != null && (session.ProxySid == Guid.Empty || GameSession.Count > 1))
-                    {
-                        //保留代理服连接
-                        session.Close();
-                        session.ProxySid = Guid.Empty;
-                    }
                     return;
                 }
-
-
-                requestQueue.Enqueue(new RequestPackage
-                                         {
-                                             Route = routeName,
-                                             ActionId = actionid,
-                                             Param = paramStr,
-                                             Session = session,
-                                             ReceiveTime = DateTime.Now
-                                         });
+                var session = GetSession(e, package);
+                if (CheckSpecialPackge(package, session))
+                {
+                    return;
+                }
+                package.Session = session;
+                package.ReceiveTime = DateTime.Now;
+                requestQueue.Enqueue(package);
                 singal.Set();
             }
             catch (Exception ex)
             {
                 TraceLog.WriteError("Received to Host:{0} error:{1}", e.Socket.RemoteEndPoint, ex);
             }
+        }
+
+        private bool CheckSpecialPackge(RequestPackage package, GameSession session)
+        {
+            //处理特殊包
+            if (package.ActionId == ((int)ActionEnum.Interrupt))
+            {
+                //Proxy server notifly interrupt connect ops
+                OnDisconnected(session);
+                if (session != null && (session.ProxySid == Guid.Empty || GameSession.Count > 1))
+                {
+                    //保留代理服连接
+                    session.Close();
+                    session.ProxySid = Guid.Empty;
+                }
+                return true;
+            }
+
+            if (package.ActionId == ((int)ActionEnum.Heartbeat))
+            {
+                // 客户端tcp心跳包
+                session.Refresh();
+                OnHeartbeat(session);
+                session.ExitSession();
+                Interlocked.Decrement(ref runningNum);
+                return true;
+            }
+            return false;
+        }
+
+        private GameSession GetSession(ConnectionEventArgs e, RequestPackage package)
+        {
+            //使用代理分发器时,每个ssid建立一个游服Serssion
+            GameSession session;
+            if (package.ProxySid != Guid.Empty)
+            {
+                session = GameSession.Get(package.ProxySid) ??
+                          (package.IsProxyRequest
+                              ? GameSession.Get(e.Socket.HashCode)
+                              : GameSession.CreateNew(package.ProxySid, e.Socket, socketLintener.PostSend));
+                if (session != null)
+                {
+                    session.ProxySid = package.ProxySid;
+                }
+            }
+            else
+            {
+                session = GameSession.Get(package.SessionId) ?? GameSession.Get(e.Socket.HashCode);
+            }
+            if (session != null && !session.Connected)
+            {
+                GameSession.Recover(session, e.Socket.HashCode, e.Socket, socketLintener.PostSend);
+            }
+            return session;
         }
 
         /// <summary>
@@ -346,41 +331,34 @@ namespace ZyGames.Framework.Game.Contract
             var package = (RequestPackage)state;
             if (package == null) return;
 
-            var param = package.Param;
             var session = package.Session;
-            var actionid = package.ActionId;
             try
             {
-                if (actionid == (int)ActionEnum.Heartbeat)
-                {
-                    // 客户端tcp心跳包
-                    session.Refresh();
-                    OnHeartbeat(session);
-                    session.ExitSession();
-                    Interlocked.Decrement(ref runningNum);
-                    return;
-                }
-
-                HttpGet httpGet = new HttpGet(param, session);
                 byte[] data = new byte[0];
-                if (!string.IsNullOrEmpty(package.Route))
+                if (!string.IsNullOrEmpty(package.RouteName))
                 {
-                    if (CheckRemote(package.Route, httpGet))
+                    HttpGet httpGet = new HttpGet(package);
+                    if (CheckRemote(package.RouteName, httpGet))
                     {
                         MessageStructure response = new MessageStructure();
-                        OnCallRemote(package.Route, httpGet, response);
+                        OnCallRemote(package.RouteName, httpGet, response);
                         data = response.PopBuffer();
                     }
                 }
                 else
                 {
                     SocketGameResponse response = new SocketGameResponse();
-                    OnRequested(httpGet, response);
+                    response.WriteErrorCallback += ActionDispatcher.ResponseError;
+                    ActionGetter actionGetter = ActionDispatcher.GetActionGetter(package);
+                    OnRequested(actionGetter, response);
                     data = response.ReadByte();
                 }
                 try
                 {
-                    session.SendAsync(data, 0, data.Length);
+                    if (data.Length > 0)
+                    {
+                        session.SendAsync(data, 0, data.Length);
+                    }
                 }
                 catch (Exception ex)
                 {
@@ -487,14 +465,24 @@ namespace ZyGames.Framework.Game.Contract
                     response.Close();
                     return;
                 }
+                
+                var httpresponse = new SocketGameResponse();
+                httpresponse.WriteErrorCallback += new ActionDispatcher().ResponseError;
 
-                var clientConnection = new HttpClientConnection { Context = context, Session = session, Param = param };
-                clientConnection.TimeoutTimer = new Timer(OnHttpRequestTimeout, clientConnection, httpRequestTimeout, Timeout.Infinite);
-                HttpGet httpGet = new HttpGet(data, session);
+                HttpGet httpGet = new HttpGet(new RequestPackage() { UrlParam = data, Session = session });
                 httpGet["UserHostAddress"] = session.EndAddress;
                 httpGet["ssid"] = session.KeyCode.ToString("N");
                 httpGet["http"] = "1";
-                SocketGameResponse httpresponse = new SocketGameResponse();
+                
+                var clientConnection = new HttpClientConnection { 
+                    Context = context, 
+                    Session = session,
+                    ActionGetter = httpGet,
+                    GameResponse = httpresponse
+                };
+                clientConnection.TimeoutTimer = new Timer(OnHttpRequestTimeout, clientConnection, httpRequestTimeout, Timeout.Infinite);
+
+
                 OnRequested(httpGet, httpresponse);
                 byte[] respData = httpresponse.ReadByte();
                 OnHttpResponse(clientConnection, respData, 0, respData.Length);
@@ -525,17 +513,9 @@ namespace ZyGames.Framework.Game.Contract
             {
                 HttpClientConnection clientConnection = (HttpClientConnection)state;
                 if (clientConnection == null) return;
-
-                int actionId = 0;
-                string action;
-                if (clientConnection.Param.TryGetValue("ActionId", out action))
-                {
-                    actionId = action.ToInt();
-                }
-
-                var httpresponse = new SocketGameResponse();
-                ActionFactory.RequestError(httpresponse, actionId, "Request Timeout.");
-                byte[] respData = httpresponse.ReadByte();
+                var actionGetter = clientConnection.ActionGetter;
+                clientConnection.GameResponse.WriteError(actionGetter, Language.Instance.ErrorCode, "Request Timeout.");
+                byte[] respData = clientConnection.GameResponse.ReadByte();
                 OnHttpResponse(clientConnection, respData, 0, respData.Length);
             }
             catch (Exception ex)
@@ -674,8 +654,8 @@ namespace ZyGames.Framework.Game.Contract
         /// </summary>
         /// <returns><c>true</c>, if remote was checked, <c>false</c> otherwise.</returns>
         /// <param name="route">Route.</param>
-        /// <param name="httpGet">Http get.</param>
-        protected virtual bool CheckRemote(string route, HttpGet httpGet)
+        /// <param name="actionGetter">Http get.</param>
+        protected virtual bool CheckRemote(string route, ActionGetter actionGetter)
         {
             return true;
         }
@@ -683,22 +663,17 @@ namespace ZyGames.Framework.Game.Contract
         /// <summary>
         /// Raises the requested event.
         /// </summary>
-        /// <param name="httpGet">Http get.</param>
+        /// <param name="actionGetter">Http get.</param>
         /// <param name="response">Response.</param>
-        protected virtual void OnRequested(HttpGet httpGet, IGameResponse response)
+        protected virtual void OnRequested(ActionGetter actionGetter, BaseGameResponse response)
         {
             if (GameEnvironment.IsRunning)
             {
-                //todo debug response error
-#if DEBUG 
-                ActionFactory.RequestError(response, httpGet.ActionId, 0, "");
-#else
-                ActionFactory.Request(httpGet, response, GetUser);
-#endif
+                ActionFactory.Request(actionGetter, response, GetUser);
             }
             else
             {
-                ActionFactory.RequestError(response, httpGet.ActionId, Language.Instance.ServerMaintain);
+                response.WriteError(actionGetter, Language.Instance.ErrorCode, Language.Instance.ServerMaintain);
             }
         }
 
@@ -724,8 +699,8 @@ namespace ZyGames.Framework.Game.Contract
             public GameSession Session;
             public HttpListenerContext Context;
             public Timer TimeoutTimer;
-            public Dictionary<string, string> Param;
-
+            public ActionGetter ActionGetter;
+            public SocketGameResponse GameResponse;
             public void Close()
             {
             }

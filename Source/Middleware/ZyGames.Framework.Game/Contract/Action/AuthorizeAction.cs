@@ -44,10 +44,10 @@ namespace ZyGames.Framework.Game.Contract.Action
         /// <summary>
         /// Initializes a new instance of the <see cref="ZyGames.Framework.Game.Contract.Action.AuthorizeAction"/> class.
         /// </summary>
-        /// <param name="actionID">Action I.</param>
-        /// <param name="httpGet">Http get.</param>
-        protected AuthorizeAction(short actionID, HttpGet httpGet)
-            : base(actionID, httpGet)
+        /// <param name="actionId">Action I.</param>
+        /// <param name="actionGetter">Http get.</param>
+        protected AuthorizeAction(int actionId, ActionGetter actionGetter)
+            : base(actionId, actionGetter)
         {
         }
 

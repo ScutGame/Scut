@@ -42,11 +42,11 @@ namespace ZyGames.Framework.Game.Contract.Action
         /// /
         /// </summary>
         /// <param name="aActionId"></param>
-        /// <param name="httpGet"></param>
+        /// <param name="actionGetter"></param>
         /// <param name="scriptScope"></param>
         /// <param name="ignoreAuthorize">忽略授权</param>
-        public ScriptAction(short aActionId, HttpGet httpGet, dynamic scriptScope, bool ignoreAuthorize)
-            : base(aActionId, httpGet)
+        public ScriptAction(int aActionId, ActionGetter actionGetter, dynamic scriptScope, bool ignoreAuthorize)
+            : base(aActionId, actionGetter)
         {
             _scriptScope = scriptScope;
             _ignoreAuthorize = ignoreAuthorize;
@@ -63,7 +63,7 @@ namespace ZyGames.Framework.Game.Contract.Action
 		/// <returns></returns>
         public override bool GetUrlElement()
         {
-            _urlParam = _scriptScope.getUrlElement(httpGet, this);
+            _urlParam = _scriptScope.getUrlElement(actionGetter, this);
             return _urlParam != null && _urlParam.Result ? true : false;
         }
 		/// <summary>

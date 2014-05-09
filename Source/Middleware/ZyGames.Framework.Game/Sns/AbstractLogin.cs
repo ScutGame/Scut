@@ -35,37 +35,37 @@ namespace ZyGames.Framework.Game.Sns
     /// </summary>
     public abstract class AbstractLogin : ILogin
     {
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <value>The passport I.</value>
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <value>The passport I.</value>
         public string PassportID { get; protected set; }
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <value>The user I.</value>
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <value>The user I.</value>
         public string UserID
         {
             get;
-            protected set; 
+            protected set;
         }
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <value>The password.</value>
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <value>The password.</value>
         public string Password
         {
             get;
-            protected set; 
+            protected set;
         }
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <value>The session I.</value>
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <value>The session I.</value>
         public string SessionID
         {
             get;
-            protected set; 
+            protected set;
         }
 
         /// <summary>
@@ -76,20 +76,20 @@ namespace ZyGames.Framework.Game.Sns
             get;
             protected set;
         }
-		/// <summary>
-		/// 注册通行证
-		/// </summary>
-		/// <returns></returns>
+        /// <summary>
+        /// 注册通行证
+        /// </summary>
+        /// <returns></returns>
         public abstract string GetRegPassport();
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <returns></returns>
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
         public abstract bool CheckLogin();
-		/// <summary>
-		/// Gets the session identifier.
-		/// </summary>
-		/// <returns>The session identifier.</returns>
+        /// <summary>
+        /// Gets the session identifier.
+        /// </summary>
+        /// <returns>The session identifier.</returns>
         protected string GetSessionId()
         {
             string sessionId = string.Empty;
@@ -109,7 +109,7 @@ namespace ZyGames.Framework.Game.Sns
         public string AccessToken
         {
             get;
-            protected set; 
+            protected set;
         }
         /// <summary>
         /// 
@@ -117,7 +117,7 @@ namespace ZyGames.Framework.Game.Sns
         public string RefeshToken
         {
             get;
-            protected set; 
+            protected set;
         }
         /// <summary>
         /// 
@@ -125,7 +125,7 @@ namespace ZyGames.Framework.Game.Sns
         public string QihooUserID
         {
             get;
-            protected set; 
+            protected set;
         }
         /// <summary>
         /// 
@@ -133,7 +133,7 @@ namespace ZyGames.Framework.Game.Sns
         public int ExpiresIn
         {
             get;
-            protected set; 
+            protected set;
         }
         /// <summary>
         /// 
@@ -141,23 +141,23 @@ namespace ZyGames.Framework.Game.Sns
         public string Scope
         {
             get;
-            protected set; 
+            protected set;
         }
 
-		/// <summary>
-		/// AMs the d5.
-		/// </summary>
-		/// <returns>The d5.</returns>
-		/// <param name="str1">Str1.</param>
+        /// <summary>
+        /// AMs the d5.
+        /// </summary>
+        /// <returns>The d5.</returns>
+        /// <param name="str1">Str1.</param>
         protected string AMD5(string str1)
         {
-            return System.Web.Security.FormsAuthentication.HashPasswordForStoringInConfigFile(str1, "MD5").ToUpper();
+            return ZyGames.Framework.Common.Security.CryptoHelper.MD5_Encrypt(str1, Encoding.UTF8).ToUpper();
         }
-		/// <summary>
-		/// SHs the a256.
-		/// </summary>
-		/// <returns>The a256.</returns>
-		/// <param name="str">String.</param>
+        /// <summary>
+        /// SHs the a256.
+        /// </summary>
+        /// <returns>The a256.</returns>
+        /// <param name="str">String.</param>
         protected string SHA256(string str)
         {
             byte[] tmpByte;

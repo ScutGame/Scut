@@ -32,7 +32,7 @@ namespace ZyGames.Framework.Game.Service
     /// <summary>
     /// 
     /// </summary>
-    public class SocketGameResponse : IGameResponse
+    public class SocketGameResponse : BaseGameResponse
     {
         static SocketGameResponse()
         {
@@ -41,7 +41,6 @@ namespace ZyGames.Framework.Game.Service
         }
 
         private MessageStructure _buffers;
-
         /// <summary>
         /// 
         /// </summary>
@@ -54,7 +53,7 @@ namespace ZyGames.Framework.Game.Service
         /// 
         /// </summary>
         /// <param name="buffer"></param>
-        public void BinaryWrite(byte[] buffer)
+        public override void BinaryWrite(byte[] buffer)
         {
             DoWrite(buffer);
         }
@@ -62,7 +61,7 @@ namespace ZyGames.Framework.Game.Service
         /// 
         /// </summary>
         /// <param name="buffer"></param>
-        public void Write(byte[] buffer)
+        public override void Write(byte[] buffer)
         {
             DoWrite(buffer);
         }

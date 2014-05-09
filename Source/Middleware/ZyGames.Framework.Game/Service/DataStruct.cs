@@ -298,7 +298,7 @@ namespace ZyGames.Framework.Game.Service
         /// 内部输出Action的值
         /// </summary>
         /// <returns>无</returns>
-        protected void InternalWriteAction(IGameResponse response)
+        protected void InternalWriteAction(BaseGameResponse response)
         {
             foreach (object obj in arrayList)
             {
@@ -360,7 +360,7 @@ namespace ZyGames.Framework.Game.Service
         /// <param name="errorInfo"></param>
         /// <param name="msgId">消息初始ID</param>
         /// <param name="st"></param>
-        public void WriteAction(IGameResponse response, int aAction, int errorCode, string errorInfo, int msgId, string st = "st")
+        public void WriteAction(BaseGameResponse response, int aAction, int errorCode, string errorInfo, int msgId, string st = "st")
         {
             WriteHead(response, aAction, errorCode, errorInfo, msgId, st);
         }
@@ -368,7 +368,7 @@ namespace ZyGames.Framework.Game.Service
         /// <summary>
         /// 输出当前协议
         /// </summary>
-        protected void WriteHead(IGameResponse response, int aAction, int errorCode, string errorInfo, int msgId, string st)
+        protected void WriteHead(BaseGameResponse response, int aAction, int errorCode, string errorInfo, int msgId, string st)
         {
             PushIntoStackObj(errorCode, 0);
             PushIntoStackObj(msgId, 1);
@@ -384,7 +384,7 @@ namespace ZyGames.Framework.Game.Service
         /// <summary>
         /// 计算Action协议占用的字节长度
         /// </summary>
-        protected void WriteActionNum(IGameResponse response)
+        protected void WriteActionNum(BaseGameResponse response)
         {
             int iActionNum = GetContentLen();
             WriteDWord(response, iActionNum);
@@ -394,7 +394,7 @@ namespace ZyGames.Framework.Game.Service
         /// </summary>
         /// <param name="aValue"></param>
         /// <param name="response"></param>
-        protected static void WriteString(IGameResponse response, string aValue)
+        protected static void WriteString(BaseGameResponse response, string aValue)
         {
             byte[] outputStream = System.Text.Encoding.UTF8.GetBytes(aValue);
             int iLen = outputStream.Length;
@@ -410,7 +410,7 @@ namespace ZyGames.Framework.Game.Service
         /// </summary>
         /// <param name="response"></param>
         /// <param name="aValue"></param>
-        protected static void WriteDouble(IGameResponse response, double aValue)
+        protected static void WriteDouble(BaseGameResponse response, double aValue)
         {
             byte[] outputStream = BitConverter.GetBytes(aValue);
             response.Write(outputStream);
@@ -420,7 +420,7 @@ namespace ZyGames.Framework.Game.Service
         /// </summary>
         /// <param name="response"></param>
         /// <param name="aValue"></param>
-        protected static void WriteFloat(IGameResponse response, float aValue)
+        protected static void WriteFloat(BaseGameResponse response, float aValue)
         {
             byte[] outputStream = BitConverter.GetBytes(aValue);
             response.Write(outputStream);
@@ -430,7 +430,7 @@ namespace ZyGames.Framework.Game.Service
         /// </summary>
         /// <param name="response"></param>
         /// <param name="aValue"></param>
-        protected static void WriteLong(IGameResponse response, Int64 aValue)
+        protected static void WriteLong(BaseGameResponse response, Int64 aValue)
         {
             byte[] outputStream = BitConverter.GetBytes(aValue);
             response.Write(outputStream);
@@ -440,7 +440,7 @@ namespace ZyGames.Framework.Game.Service
         /// </summary>
         /// <param name="response"></param>
         /// <param name="aValue"></param>
-        protected static void WriteBool(IGameResponse response, Boolean aValue)
+        protected static void WriteBool(BaseGameResponse response, Boolean aValue)
         {
             byte[] outputStream = BitConverter.GetBytes(aValue);
             response.Write(outputStream);
@@ -451,7 +451,7 @@ namespace ZyGames.Framework.Game.Service
         /// </summary>
         /// <param name="aValue"></param>
         /// <param name="response"></param>
-        protected static void WriteDWord(IGameResponse response, Int32 aValue)
+        protected static void WriteDWord(BaseGameResponse response, Int32 aValue)
         {
             byte[] outputStream = BitConverter.GetBytes(aValue);
             response.Write(outputStream);
@@ -461,7 +461,7 @@ namespace ZyGames.Framework.Game.Service
         /// </summary>
         /// <param name="aValue"></param>
         /// <param name="response"></param>
-        protected static void WriteWord(IGameResponse response, Int16 aValue)
+        protected static void WriteWord(BaseGameResponse response, Int16 aValue)
         {
             byte[] outputStream = BitConverter.GetBytes(aValue);
             response.Write(outputStream);
@@ -471,7 +471,7 @@ namespace ZyGames.Framework.Game.Service
         /// </summary>
         /// <param name="aByte"></param>
         /// <param name="m_Response"></param>
-        protected static void WriteByte(IGameResponse m_Response, byte aByte)
+        protected static void WriteByte(BaseGameResponse m_Response, byte aByte)
         {
             byte[] outputStream = new byte[1];
             outputStream[0] = aByte;

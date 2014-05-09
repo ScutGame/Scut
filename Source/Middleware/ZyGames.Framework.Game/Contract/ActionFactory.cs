@@ -27,10 +27,12 @@ using System.Net;
 using System.Net.Sockets;
 using System.Text;
 using System.Web;
+using IronPython.Modules;
 using ZyGames.Framework.Common;
 using ZyGames.Framework.Common.Locking;
 using ZyGames.Framework.Common.Log;
 using ZyGames.Framework.Game.Context;
+using ZyGames.Framework.Game.Lang;
 using ZyGames.Framework.Game.Runtime;
 using ZyGames.Framework.Game.Service;
 using ZyGames.Framework.Game.Contract.Action;
@@ -90,19 +92,19 @@ namespace ZyGames.Framework.Game.Contract
                 throw new Exception("HttpContext is not supported.");
             }
             HttpGet httpGet = new HttpGet(HttpContext.Current.Request);
-            IGameResponse response = new HttpGameResponse(HttpContext.Current.Response);
+            HttpGameResponse response = new HttpGameResponse(HttpContext.Current.Response);
             Request(typeName, httpGet, response, userFactory);
         }
 
         /// <summary>
         /// 请求处理
         /// </summary>
-        /// <param name="httpGet"></param>
+        /// <param name="actionGetter"></param>
         /// <param name="response"></param>
         /// <param name="userFactory"></param>
-        public static void Request(HttpGet httpGet, IGameResponse response, Func<int, BaseUser> userFactory)
+        public static void Request(ActionGetter actionGetter, BaseGameResponse response, Func<int, BaseUser> userFactory)
         {
-            Request(GameEnvironment.Setting.ActionTypeName, httpGet, response, userFactory);
+            Request(GameEnvironment.Setting.ActionTypeName, actionGetter, response, userFactory);
         }
 
         /// <summary>
@@ -111,19 +113,19 @@ namespace ZyGames.Framework.Game.Contract
         /// <param name="typeName"></param>
         /// <param name="response"></param>
         /// <param name="userFactory"></param>
-        /// <param name="httpGet"></param>
-        public static void Request(string typeName, HttpGet httpGet, IGameResponse response, Func<int, BaseUser> userFactory)
+        /// <param name="actionGetter"></param>
+        public static void Request(string typeName, ActionGetter actionGetter, BaseGameResponse response, Func<int, BaseUser> userFactory)
         {
-            int actionID = httpGet.ActionId;
-            string tempName = string.Format(typeName, httpGet.ActionId);
+            var actionId = actionGetter.GetActionId().ToInt();
+            string tempName = string.Format(typeName, actionId);
             string errorInfo = "";
             try
             {
-                bool isRL = BaseStruct.CheckRunloader(httpGet);
-                if (isRL || httpGet.CheckSign())
+                bool isRL = BaseStruct.CheckRunloader(actionGetter);
+                if (isRL || actionGetter.CheckSign())
                 {
-                    BaseStruct action = FindRoute(typeName, httpGet, actionID);
-                    Process(action, httpGet, response, userFactory);
+                    BaseStruct action = FindRoute(typeName, actionGetter, actionId);
+                    Process(action, actionGetter, response, userFactory);
                     if (action != null)
                     {
                         return;
@@ -131,16 +133,16 @@ namespace ZyGames.Framework.Game.Contract
                 }
                 else
                 {
-                    errorInfo = "Signature failure";
-                    TraceLog.WriteError("Action request {3} error:{2},rl:{0},param:{1}", isRL, httpGet.ParamString, errorInfo, tempName);
+                    errorInfo = Language.Instance.SignError;
+                    TraceLog.WriteError("Action request {3} error:{2},rl:{0},param:{1}", isRL, actionGetter.ToParamString(), errorInfo, tempName);
                 }
             }
             catch (Exception ex)
             {
-                errorInfo = "Unknown error";
-                TraceLog.WriteError("Action request {0} error:{1}\r\nparam:{2}", tempName, ex, httpGet.ParamString);
+                errorInfo = Language.Instance.ServerBusy;
+                TraceLog.WriteError("Action request {0} error:{1}\r\nparam:{2}", tempName, ex, actionGetter.ToParamString());
             }
-            RequestError(response, actionID, errorInfo);
+            response.WriteError(actionGetter, Language.Instance.ErrorCode, errorInfo);
         }
 
         /// <summary>
@@ -150,75 +152,79 @@ namespace ZyGames.Framework.Game.Contract
         public static void RequestScript(Func<int, BaseUser> userFactory = null)
         {
             HttpGet httpGet = new HttpGet(HttpContext.Current.Request);
-            IGameResponse response = new HttpGameResponse(HttpContext.Current.Response);
+            BaseGameResponse response = new HttpGameResponse(HttpContext.Current.Response);
             RequestScript(httpGet, response, userFactory);
         }
 
         /// <summary>
         /// 请求脚本处理
         /// </summary>
-        /// <param name="httpGet">请求参数对象</param>
+        /// <param name="actionGetter">请求参数对象</param>
         /// <param name="response">字节输出处理</param>
         /// <param name="userFactory">创建user对象工厂,可为Null</param>
-        public static void RequestScript(HttpGet httpGet, IGameResponse response, Func<int, BaseUser> userFactory)
+        public static void RequestScript(ActionGetter actionGetter, BaseGameResponse response, Func<int, BaseUser> userFactory)
         {
-            int actionID = httpGet.ActionId;
+            int actionId = actionGetter.GetActionId();
             string errorInfo = "";
             try
             {
-                bool isRl = BaseStruct.CheckRunloader(httpGet);
-                if (isRl || httpGet.CheckSign())
+                bool isRl = BaseStruct.CheckRunloader(actionGetter);
+                if (isRl || actionGetter.CheckSign())
                 {
-                    BaseStruct baseStruct = FindScriptRoute(httpGet, actionID);
+                    BaseStruct baseStruct = FindScriptRoute(actionGetter, actionId);
                     if (baseStruct != null)
                     {
-                        Process(baseStruct, httpGet, response, userFactory);
+                        Process(baseStruct, actionGetter, response, userFactory);
                         return;
                     }
                 }
                 else
                 {
-                    errorInfo = "Sign Error";
-                    TraceLog.WriteError("Action request error:{2},rl:{0},param:{1}", isRl, httpGet.ParamString, errorInfo);
+                    errorInfo = Language.Instance.SignError;
+                    TraceLog.WriteError("Action request error:{2},rl:{0},param:{1}", isRl, actionGetter.ToParamString(), errorInfo);
                 }
             }
             catch (Exception ex)
             {
-                TraceLog.WriteError("Action request error:{0}\r\nparam:{1}", ex, httpGet.ParamString);
+                errorInfo = Language.Instance.ServerBusy;
+                TraceLog.WriteError("Action request error:{0}\r\nparam:{1}", ex, actionGetter.ToParamString());
             }
-            RequestError(response, actionID, errorInfo);
+            response.WriteError(actionGetter, Language.Instance.ErrorCode, errorInfo);
         }
-        /// <summary>
+
+        /*/// <summary>
         /// 出错处理
         /// </summary>
         /// <param name="response"></param>
-        /// <param name="actionID"></param>
+        /// <param name="msgId"></param>
+        /// <param name="actionId"></param>
         /// <param name="errorInfo"></param>
-        public static void RequestError(IGameResponse response, int actionID, string errorInfo)
+        public static void RequestError(BaseGameResponse response, int msgId, int actionId, string errorInfo)
         {
-            RequestError(response, actionID, ErrorCode, errorInfo);
+            RequestError(response, msgId, actionId, ErrorCode, errorInfo);
         }
 
         /// <summary>
         /// 出错处理
         /// </summary>
         /// <param name="response"></param>
-        /// <param name="actionID"></param>
+        /// <param name="msgId"></param>
+        /// <param name="actionId"></param>
         /// <param name="errorCode"></param>
         /// <param name="errorInfo"></param>
-        public static void RequestError(IGameResponse response, int actionID, int errorCode, string errorInfo)
+        public static void RequestError(BaseGameResponse response, int msgId, int actionId, int errorCode, string errorInfo)
         {
-            MessageHead head = new MessageHead(actionID, errorCode, errorInfo);
+            MessageHead head = new MessageHead(msgId, actionId, errorCode, errorInfo);
             MessageStructure sb = new MessageStructure();
             sb.WriteBuffer(head);
             response.BinaryWrite(sb.PopBuffer());
-        }
+        }*/
 
         /// <summary>
         /// 获取Action处理的输出字节流
         /// </summary>
         /// <returns></returns>
-        public static byte[] GetActionResponse(int actionId, BaseUser baseUser, string parameters, out HttpGet httpGet)
+        public static byte[] GetActionResponse(IActionDispatcher actionDispatcher, int actionId, BaseUser baseUser, string urlParam, out ActionGetter actionGetter)
         {
             int userId = baseUser != null ? baseUser.GetUserId() : 0;
             GameSession session = GameSession.Get(userId);
@@ -229,10 +235,17 @@ namespace ZyGames.Framework.Game.Contract
                 sessionId,
                 userId,
                 actionId,
-                parameters);
-            httpGet = new HttpGet(param, session);
-            BaseStruct baseStruct = FindRoute(GameEnvironment.Setting.ActionTypeName, httpGet, actionId);
+                urlParam);
+
+            RequestPackage requestPackage = new RequestPackage(0, sessionId, actionId, userId);
+            requestPackage.UrlParam = param;
+            requestPackage.IsUrlParam = true;
+            requestPackage.Session = session;
+            requestPackage.ReceiveTime = DateTime.Now;
+            actionGetter = new HttpGet(requestPackage);
+            BaseStruct baseStruct = FindRoute(GameEnvironment.Setting.ActionTypeName, actionGetter, actionId);
             SocketGameResponse response = new SocketGameResponse();
+            response.WriteErrorCallback += actionDispatcher.ResponseError;
             baseStruct.UserFactory = uid => { return baseUser; };
             baseStruct.SetPush();
             baseStruct.DoInit();
@@ -245,8 +258,7 @@ namespace ZyGames.Framework.Game.Contract
                         baseStruct.DoAction() &&
                         !baseStruct.GetError())
                     {
-                        baseStruct.BuildPacket();
-                        baseStruct.WriteAction(response);
+                        baseStruct.WriteResponse(response);
                     }
                     else
                     {
@@ -261,10 +273,10 @@ namespace ZyGames.Framework.Game.Contract
         /// 
         /// </summary>
         /// <param name="baseStruct"></param>
-        /// <param name="httpGet"></param>
+        /// <param name="actionGetter"></param>
         /// <param name="response"></param>
         /// <param name="userFactory"></param>
-        public static void Process(BaseStruct baseStruct, HttpGet httpGet, IGameResponse response, Func<int, BaseUser> userFactory)
+        public static void Process(BaseStruct baseStruct, ActionGetter actionGetter, BaseGameResponse response, Func<int, BaseUser> userFactory)
         {
             baseStruct.UserFactory = userFactory;
             baseStruct.DoInit();
@@ -277,8 +289,7 @@ namespace ZyGames.Framework.Game.Contract
                         baseStruct.DoAction() &&
                         !baseStruct.GetError())
                     {
-                        baseStruct.BuildPacket();
-                        baseStruct.WriteAction(response);
+                        baseStruct.WriteResponse(response);
                     }
                     else
                     {
@@ -307,8 +318,9 @@ namespace ZyGames.Framework.Game.Contract
                     shareParam.AppendFormat("&{0}={1}", parameter.Key, parameter.Value);
                 }
             }
-            HttpGet httpGet;
-            byte[] sendData = GetActionResponse(actionId, null, shareParam.ToString(), out httpGet);
+            IActionDispatcher actionDispatcher = new ActionDispatcher();
+            ActionGetter actionParam;
+            byte[] sendData = GetActionResponse(actionDispatcher, actionId, null, shareParam.ToString(), out actionParam);
             foreach (var user in userList)
             {
                 if (user == default(T))
@@ -341,7 +353,7 @@ namespace ZyGames.Framework.Game.Contract
         /// <param name="actionId">指定的Action</param>
         /// <param name="parameters">请求参数</param>
         /// <param name="successHandle">成功回调</param>
-        public static void SendAsyncAction<T>(List<T> userList, int actionId, Parameters parameters, Action<HttpGet> successHandle) where T : BaseUser
+        public static void SendAsyncAction<T>(List<T> userList, int actionId, Parameters parameters, Action<ActionGetter> successHandle) where T : BaseUser
         {
             StringBuilder shareParam = new StringBuilder();
             if (parameters != null)
@@ -351,6 +363,7 @@ namespace ZyGames.Framework.Game.Contract
                     shareParam.AppendFormat("&{0}={1}", parameter.Key, parameter.Value);
                 }
             }
+            IActionDispatcher actionDispatcher = new ActionDispatcher();
             foreach (var user in userList)
             {
                 if (user == default(T))
@@ -360,13 +373,13 @@ namespace ZyGames.Framework.Game.Contract
                 try
                 {
                     var session = GameSession.Get(user.GetUserId());
-                    HttpGet httpGet;
-                    byte[] sendData = GetActionResponse(actionId, user, shareParam.ToString(), out httpGet);
+                    ActionGetter actionParam;
+                    byte[] sendData = GetActionResponse(actionDispatcher, actionId, user, shareParam.ToString(), out actionParam);
                     if (session != null &&
                         session.SendAsync(sendData, 0, sendData.Length) &&
-                        httpGet != null)
+                        actionParam != null)
                     {
-                        successHandle(httpGet);
+                        successHandle(actionParam);
                     }
                 }
                 catch (Exception ex)
@@ -377,7 +390,7 @@ namespace ZyGames.Framework.Game.Contract
         }
 
 
-        internal static BaseStruct FindScriptRoute(HttpGet httpGet, int actionID)
+        internal static BaseStruct FindScriptRoute(ActionGetter actionGetter, int actionID)
         {
             string scriptTypeName = string.Format(GameEnvironment.Setting.ScriptTypeName, actionID);
             string scriptCode = "";
@@ -389,38 +402,38 @@ namespace ZyGames.Framework.Game.Contract
                 if (scriptScope != null)
                 {
                     bool ignoreAuthorize = _ignoreAuthorizeSet.Contains(actionID);
-                    return new ScriptAction((short)actionID, httpGet, scriptScope, ignoreAuthorize);
+                    return new ScriptAction((short)actionID, actionGetter, scriptScope, ignoreAuthorize);
                 }
             }
 
             scriptCode = string.Format("{0}/action/action{1}.cs", ScriptEngines.CSharpDirName, actionID);
-            BaseStruct baseStruct = ScriptEngines.Execute(scriptCode, scriptTypeName, httpGet);
+            BaseStruct baseStruct = ScriptEngines.Execute(scriptCode, scriptTypeName, actionGetter);
             if (baseStruct != null) return baseStruct;
             return null;
         }
 
-        internal static BaseStruct FindRoute(string typeExpression, HttpGet httpGet, int actionID)
+        internal static BaseStruct FindRoute(string typeExpression, ActionGetter actionGetter, int actionId)
         {
-            BaseStruct baseStruct = FindScriptRoute(httpGet, actionID);
+            BaseStruct baseStruct = FindScriptRoute(actionGetter, actionId);
             if (baseStruct != null)
             {
                 return baseStruct;
             }
             //在没有找到对应的处理脚本的情况，转而尝试从已编译好的库中找
-            string typeName = string.Format(typeExpression, actionID);
+            string typeName = string.Format(typeExpression, actionId);
             Type actionType = Type.GetType(typeName);
             if (actionType != null)
             {
                 try
                 {
-                    return actionType.CreateInstance<BaseStruct>(new object[] { httpGet });
+                    return actionType.CreateInstance<BaseStruct>(new object[] { actionGetter });
                 }
                 catch (Exception ex)
                 {
-                    throw new Exception(string.Format("The {0} action init error", actionID), ex);
+                    throw new Exception(string.Format("The {0} action init error", actionId), ex);
                 }
             }
-            throw new NotSupportedException(string.Format("Not found {0} action Interface.", actionID));
+            throw new NotSupportedException(string.Format("Not found {0} action Interface.", actionId));
         }
     }
 }

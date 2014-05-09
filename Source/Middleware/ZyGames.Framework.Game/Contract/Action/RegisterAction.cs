@@ -111,21 +111,21 @@ namespace ZyGames.Framework.Game.Contract.Action
 		/// <returns></returns>
         public override bool GetUrlElement()
         {
-            if (httpGet.GetString("UserName", ref UserName) &&
-                httpGet.GetByte("Sex", ref Sex) &&
-                httpGet.GetString("HeadID", ref HeadID) &&
-                httpGet.GetString("RetailID", ref RetailID) &&
-                httpGet.GetString("Pid", ref Pid, 1, int.MaxValue) &&
-                httpGet.GetEnum("MobileType", ref MobileType)
+            if (actionGetter.GetString("UserName", ref UserName) &&
+                actionGetter.GetByte("Sex", ref Sex) &&
+                actionGetter.GetString("HeadID", ref HeadID) &&
+                actionGetter.GetString("RetailID", ref RetailID) &&
+                actionGetter.GetString("Pid", ref Pid, 1, int.MaxValue) &&
+                actionGetter.GetEnum("MobileType", ref MobileType)
                 )
             {
                 UserName = UserName.Trim();
-                httpGet.GetWord("ScreenX", ref ScreenX);
-                httpGet.GetWord("ScreenY", ref ScreenY);
-                httpGet.GetWord("ClientAppVersion", ref ReqAppVersion);
-                httpGet.GetString("DeviceID", ref DeviceID);
-                httpGet.GetInt("GameID", ref GameID);
-                httpGet.GetInt("ServerID", ref ServerID);
+                actionGetter.GetWord("ScreenX", ref ScreenX);
+                actionGetter.GetWord("ScreenY", ref ScreenY);
+                actionGetter.GetWord("ClientAppVersion", ref ReqAppVersion);
+                actionGetter.GetString("DeviceID", ref DeviceID);
+                actionGetter.GetInt("GameID", ref GameID);
+                actionGetter.GetInt("ServerID", ref ServerID);
                 return GetActionParam();
             }
             return false;
@@ -157,14 +157,6 @@ namespace ZyGames.Framework.Game.Contract.Action
 		/// <param name="state">If set to <c>true</c> state.</param>
         public override void TakeActionAffter(bool state)
         {
-            if(state)
-            {
-                var user = UserFactory(UserId);
-                if (user != null)
-                {
-                    user.RemoteAddress = httpGet.RemoteAddress;
-                }
-            }
         }
         /// <summary>
         /// Gets the action parameter.

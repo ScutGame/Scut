@@ -70,7 +70,7 @@ namespace GameServer
                 Console.ReadKey();
                 if (instance != null)
                 {
-                    instance.Stop();    
+                    instance.Stop();
                 }
             }
             catch (Exception ex)
