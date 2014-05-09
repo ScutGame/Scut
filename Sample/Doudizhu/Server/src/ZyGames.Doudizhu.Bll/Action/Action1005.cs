@@ -100,7 +100,6 @@ namespace ZyGames.Doudizhu.Bll.Action
             user.Property.GameId = GameID;
             user.Property.ServerId = ServerID;
             user.Birthday = new DateTime(1970, 1, 1);
-            user.RemoteAddress = httpGet.RemoteAddress;
             var cacheSet = new GameDataCacheSet<GameUser>();
             cacheSet.Add(user);
             cacheSet.Update();

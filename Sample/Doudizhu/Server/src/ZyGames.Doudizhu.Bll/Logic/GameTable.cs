@@ -183,7 +183,7 @@ namespace ZyGames.Doudizhu.Bll.Logic
                     }
                     if (!table.IsStarting)
                     {
-                        //todo AI Join
+                        //AI Join
                         dynamic scope = ScriptEngines.Execute(AIScriptCode, null);
                         if (scope != null)
                         {
@@ -226,7 +226,6 @@ namespace ZyGames.Doudizhu.Bll.Logic
                                     pos.InitAI(table.RoomId, table.TableId, aiId, nickName, head);
                                 }
                             }
-
                             SyncNotifyAction(ActionIDDefine.Cst_Action2003, table, null,
                                 c =>
                                 {
@@ -299,7 +298,6 @@ namespace ZyGames.Doudizhu.Bll.Logic
                                     }
                                     if (!OutCard(pos.UserId, pos.Id, table, cards))
                                     {
-                                        //todo test
                                         table.StopTimer();
                                         TraceLog.WriteError("桌子:{0}玩家{1}-{2}托管出牌:\"{3}\"出错,上一手出牌:\"{4}\"",
                                             table.TableId,
@@ -462,7 +460,6 @@ namespace ZyGames.Doudizhu.Bll.Logic
             bool started = !Array.Exists(tableData.Positions, pos => !pos.IsAI && pos.UserId == 0);
             if (started)
             {
-                //todo
                 TraceLog.WriteComplement("房间:{0},桌:{1}开始发牌...", tableData.RoomId, tableData.TableId);
                 foreach (var p in tableData.Positions)
                 {
@@ -551,7 +548,6 @@ namespace ZyGames.Doudizhu.Bll.Logic
                 if (isCall)
                 {
                     tableData.DoDouble();
-                    //todo
                     TraceLog.WriteComplement("桌子:{0}叫地主加倍{1}", tableData.TableId, tableData.MultipleNum);
                 }
                 tableData.CallOperation[tableData.CallTimes] = isCall;
@@ -560,7 +556,7 @@ namespace ZyGames.Doudizhu.Bll.Logic
             if (tableData.CallTimes > tableData.PlayerNum - 1 &&
                 !Array.Exists(tableData.CallOperation, op => op))
             {
-                //todo 都不叫时重新发牌接口
+                //都不叫时重新发牌接口
                 TraceLog.WriteComplement("桌子:{0}重新发牌,CallTimes:{1},Log:{2}", tableData.TableId, tableData.CallTimes, string.Join(",", tableData.CallOperation));
                 CheckStart(tableData);
                 return;
@@ -625,7 +621,6 @@ namespace ZyGames.Doudizhu.Bll.Logic
             param.Add("IsRob", (calledNum == 1 && isCall) || calledNum == 0 ? 0 : 1);
             SyncNotifyAction(ActionIDDefine.Cst_Action2006, tableData, param, null);
 
-            //todo
             TraceLog.WriteComplement("桌子:{0}叫地主通知成功，地主是:{1},是否结束{2}",
                 tableData.TableId,
                 tableData.IsCallEnd ? (tableData.LandlordId + "") : (tableData.CallLandlordId + tableData.CallLandlordName),
@@ -646,7 +641,7 @@ namespace ZyGames.Doudizhu.Bll.Logic
                 pos.IsShow = true;
                 tableData.IsShow = true;
                 SyncNotifyAction(ActionIDDefine.Cst_Action2008, tableData, null, null);
-                //todo
+                
                 TraceLog.WriteComplement("桌子:{0}玩家{1}明牌通知成功", tableData.TableId, user.UserId);
             }
         }
@@ -777,7 +772,6 @@ namespace ZyGames.Doudizhu.Bll.Logic
                     t =>
                     {
                         DoComplatedSettlement(tableData);
-                        //todo
                         TraceLog.WriteComplement("桌子:{0}玩家:{1}出牌结束通知", tableData.TableId, userId);
                     });
             }
@@ -926,7 +920,7 @@ namespace ZyGames.Doudizhu.Bll.Logic
                         landPos.CoinNum += pos.CoinNum;
                         landPos.ScoreNum += pos.ScoreNum;
                         pos.ScoreNum = user.ScoreNum > pos.ScoreNum ? pos.ScoreNum : user.ScoreNum;
-                        //todo
+                        
                         TraceLog.WriteComplement("桌子:{0}玩家(农):{1}败,结算:-{2}金豆,-{3}积分,之前剩余:{4}-{5}",
                             tableData.TableId, user.UserId, pos.CoinNum, pos.ScoreNum, user.GameCoin, user.ScoreNum);
                         user.GameCoin = MathUtils.Subtraction(user.GameCoin, pos.CoinNum);
@@ -942,7 +936,6 @@ namespace ZyGames.Doudizhu.Bll.Logic
                 user = GetUser(landPos.UserId);
                 if (user != null)
                 {
-                    //todo
                     TraceLog.WriteComplement("桌子:{0}玩家(主):{1}胜,结算:+{2}金豆,+{3}积分,之前剩余:{4}-{5}",
                         tableData.TableId, user.UserId, landPos.CoinNum, landPos.ScoreNum, user.GameCoin, user.ScoreNum);
                     user.GameCoin = MathUtils.Addition(user.GameCoin, landPos.CoinNum);
@@ -959,7 +952,7 @@ namespace ZyGames.Doudizhu.Bll.Logic
                 {
                     landPos.CoinNum = user.GameCoin > tableData.AnteNum ? tableData.AnteNum : user.GameCoin;
                     landPos.ScoreNum = tableData.MultipleNum;
-                    //todo
+                    
                     TraceLog.WriteComplement("桌子:{0}玩家(主):{1}败,结算:-{2}金豆,-{3}积分,之前剩余:{4}-{5}",
                         tableData.TableId, user.UserId, landPos.CoinNum, landPos.ScoreNum, user.GameCoin, user.ScoreNum);
                     user.GameCoin = MathUtils.Subtraction(user.GameCoin, landPos.CoinNum);
@@ -979,7 +972,7 @@ namespace ZyGames.Doudizhu.Bll.Logic
                     {
                         pos.CoinNum = landPos.CoinNum / 2;
                         pos.ScoreNum = landPos.ScoreNum / 2;
-                        //todo
+                        
                         TraceLog.WriteComplement("桌子:{0}玩家(农):{1}胜,结算:+{2}金豆,+{3}积分,之前剩余:{4}-{5}",
                             tableData.TableId, user.UserId, pos.CoinNum, pos.ScoreNum, user.GameCoin, user.ScoreNum);
                         user.GameCoin = MathUtils.Addition(user.GameCoin, pos.CoinNum);
@@ -993,7 +986,7 @@ namespace ZyGames.Doudizhu.Bll.Logic
             }
             _userCacheSet.Update();
             tableData.IsSettlemented = true;
-            //todo 出牌记录
+            //出牌记录
             StringBuilder sb = new StringBuilder();
             foreach (var card in tableData.OutCardList)
             {
@@ -1052,7 +1045,7 @@ namespace ZyGames.Doudizhu.Bll.Logic
                     c =>
                     {
                         DoComplatedSettlement(table);
-                        //todo
+                        //
                         TraceLog.WriteComplement("桌子:{0}玩家{1}逃跑通知", table.TableId, user.UserId);
                     });
 

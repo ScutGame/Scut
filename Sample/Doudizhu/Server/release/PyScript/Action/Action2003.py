@@ -34,7 +34,7 @@ def getUrlElement(httpGet, parent):
 def takeAction(urlParam, parent):
     actionResult = ActionResult()
     user = parent.Current.User
-    table = GameRoom.Current.GetTableData(user)
+    table = GameRoom.Current.GetTableDataByUserId(parent.Current.UserId)
     if not table or not user:
         parent.ErrorCode = Lang.getLang("ErrorCode")
         parent.ErrorInfo = Lang.getLang("LoadError")

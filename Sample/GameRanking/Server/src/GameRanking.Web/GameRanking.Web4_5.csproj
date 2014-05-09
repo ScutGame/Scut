@@ -123,7 +123,9 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
-    <None Include="NLog.config" />
+    <None Include="NLog.config">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="Web.config">
       <SubType>Designer</SubType>
     </None>

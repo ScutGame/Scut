@@ -7,6 +7,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GameRanking.Host4_5", "Game
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GameRanking.Web4_5", "GameRanking.Web\GameRanking.Web4_5.csproj", "{EBA2EEC8-C8E3-4F61-B5C8-71AFCCF1729B}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GameRanking.HostU3D4_5", "GameRanking.HostU3D4_5\GameRanking.HostU3D4_5.csproj", "{CBB74FFF-D1DB-4C3E-98BE-8E40D7244DD2}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GameRanking.Pack", "GameRanking.Pack\GameRanking.Pack.csproj", "{C52DFD7B-65BE-4478-A3E6-2E9554D63FE1}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -37,6 +41,26 @@ Global
 		{EBA2EEC8-C8E3-4F61-B5C8-71AFCCF1729B}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
 		{EBA2EEC8-C8E3-4F61-B5C8-71AFCCF1729B}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{EBA2EEC8-C8E3-4F61-B5C8-71AFCCF1729B}.Release|x86.ActiveCfg = Release|Any CPU
+		{CBB74FFF-D1DB-4C3E-98BE-8E40D7244DD2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CBB74FFF-D1DB-4C3E-98BE-8E40D7244DD2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CBB74FFF-D1DB-4C3E-98BE-8E40D7244DD2}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{CBB74FFF-D1DB-4C3E-98BE-8E40D7244DD2}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{CBB74FFF-D1DB-4C3E-98BE-8E40D7244DD2}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{CBB74FFF-D1DB-4C3E-98BE-8E40D7244DD2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CBB74FFF-D1DB-4C3E-98BE-8E40D7244DD2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CBB74FFF-D1DB-4C3E-98BE-8E40D7244DD2}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{CBB74FFF-D1DB-4C3E-98BE-8E40D7244DD2}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{CBB74FFF-D1DB-4C3E-98BE-8E40D7244DD2}.Release|x86.ActiveCfg = Release|Any CPU
+		{C52DFD7B-65BE-4478-A3E6-2E9554D63FE1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C52DFD7B-65BE-4478-A3E6-2E9554D63FE1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C52DFD7B-65BE-4478-A3E6-2E9554D63FE1}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{C52DFD7B-65BE-4478-A3E6-2E9554D63FE1}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{C52DFD7B-65BE-4478-A3E6-2E9554D63FE1}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{C52DFD7B-65BE-4478-A3E6-2E9554D63FE1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C52DFD7B-65BE-4478-A3E6-2E9554D63FE1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C52DFD7B-65BE-4478-A3E6-2E9554D63FE1}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{C52DFD7B-65BE-4478-A3E6-2E9554D63FE1}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{C52DFD7B-65BE-4478-A3E6-2E9554D63FE1}.Release|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

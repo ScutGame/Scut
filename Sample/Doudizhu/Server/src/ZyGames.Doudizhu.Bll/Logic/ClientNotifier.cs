@@ -72,7 +72,6 @@ namespace ZyGames.Doudizhu.Bll.Logic
 
         private static void DoNotifyAction(int actionId, List<GameUser> userList, Parameters parameters, Action<int> callback)
         {
-            //todo trace
             //string str = "";
             //foreach (GameUser gameUser in userList)
             //{

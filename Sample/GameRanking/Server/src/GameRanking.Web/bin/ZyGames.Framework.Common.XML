@@ -205,6 +205,92 @@
             </summary>
             <param name="disposing"></param>
         </member>
+        <member name="T:ZyGames.Framework.Common.HttpUtils">
+            <summary>
+            Http mothod
+            </summary>
+        </member>
+        <member name="F:ZyGames.Framework.Common.HttpUtils.XmlContentType">
+            <summary>
+            The content type xml.
+            </summary>
+        </member>
+        <member name="F:ZyGames.Framework.Common.HttpUtils.StreamContentType">
+            <summary>
+            stream
+            </summary>
+        </member>
+        <member name="M:ZyGames.Framework.Common.HttpUtils.GetString(System.String,System.Text.Encoding,System.String)">
+            <summary>
+            Get request
+            </summary>
+            <param name="url"></param>
+            <param name="encoding"></param>
+            <param name="contentType"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ZyGames.Framework.Common.HttpUtils.Get(System.String,System.String)">
+            <summary>
+            Get request
+            </summary>
+            <param name="url"></param>
+            <param name="contentType"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ZyGames.Framework.Common.HttpUtils.Get(System.String,System.String,System.Nullable{System.Int32},System.String,System.Net.CookieCollection)">
+            <summary>  
+            Get request  
+            </summary>  
+            <param name="url">URL</param>
+            <param name="contentType"></param>
+            <param name="timeout">请求的超时时间</param>  
+            <param name="userAgent">请求的客户端浏览器信息，可以为空</param>  
+            <param name="cookies">随同HTTP请求发送的Cookie信息，如果不需要身份验证可以为空</param>  
+            <returns></returns>  
+        </member>
+        <member name="M:ZyGames.Framework.Common.HttpUtils.PostString(System.String,System.String,System.Text.Encoding,System.String)">
+            <summary>
+            Post request
+            </summary>
+            <param name="url"></param>
+            <param name="parameters"></param>
+            <param name="encoding"></param>
+            <param name="contentType"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ZyGames.Framework.Common.HttpUtils.Post(System.String,System.Collections.Generic.IDictionary{System.String,System.String},System.Text.Encoding,System.String)">
+            <summary>
+            Post request
+            </summary>
+            <param name="url"></param>
+            <param name="parameters"></param>
+            <param name="encoding"></param>
+            <param name="contentType"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ZyGames.Framework.Common.HttpUtils.Post(System.String,System.String,System.Text.Encoding,System.String)">
+            <summary>
+            
+            </summary>
+            <param name="url"></param>
+            <param name="parameters"></param>
+            <param name="encoding"></param>
+            <param name="contentType"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ZyGames.Framework.Common.HttpUtils.Post(System.String,System.String,System.Nullable{System.Int32},System.String,System.Text.Encoding,System.String,System.Net.CookieCollection)">
+            <summary>  
+            Post request 
+            </summary>  
+            <param name="url">请求的URL</param>  
+            <param name="parameters">随同请求POST的参数</param>
+            <param name="timeout">请求的超时时间</param>  
+            <param name="userAgent">请求的客户端浏览器信息，可以为空</param>  
+            <param name="encoding">发送HTTP请求时所用的编码</param>  
+            <param name="contentType"></param>
+            <param name="cookies">随同HTTP请求发送的Cookie信息，如果不需要身份验证可以为空</param>  
+            <returns></returns>  
+        </member>
         <member name="T:ZyGames.Framework.Common.Locking.LockCallback">
             <summary>
             锁回调委托
@@ -1623,6 +1709,29 @@
             <param name="UrlParam"></param>
             <returns></returns>
         </member>
+        <member name="M:ZyGames.Framework.Common.Security.CryptoHelper.MD5_Encrypt(System.String,System.String)">
+            <summary>
+            
+            </summary>
+            <param name="source"></param>
+            <param name="encoding"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ZyGames.Framework.Common.Security.CryptoHelper.MD5_Encrypt(System.String)">
+            <summary>
+            
+            </summary>
+            <param name="source"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ZyGames.Framework.Common.Security.CryptoHelper.MD5_Encrypt(System.String,System.Text.Encoding)">
+            <summary>
+            
+            </summary>
+            <param name="source"></param>
+            <param name="encoding"></param>
+            <returns></returns>
+        </member>
         <member name="M:ZyGames.Framework.Common.Security.CryptoHelper.MD5_Encrypt(System.String,System.String,System.Text.Encoding)">
             <summary>
             
@@ -1660,21 +1769,6 @@
             <param name="bytes"></param>
             <returns></returns>
         </member>
-        <member name="M:ZyGames.Framework.Common.Security.CryptoHelper.MD5_Encrypt(System.String,System.String)">
-            <summary>
-            
-            </summary>
-            <param name="source"></param>
-            <param name="encoding"></param>
-            <returns></returns>
-        </member>
-        <member name="M:ZyGames.Framework.Common.Security.CryptoHelper.MD5_Encrypt(System.String)">
-            <summary>
-            
-            </summary>
-            <param name="source"></param>
-            <returns></returns>
-        </member>
         <member name="M:ZyGames.Framework.Common.Security.CryptoHelper.RegUser_MD5_Pwd(System.String)">
             <summary>
             
@@ -1704,12 +1798,30 @@
             <param name="source"></param>
             <returns></returns>
         </member>
-        <member name="M:ZyGames.Framework.Common.Security.CryptoHelper.DES_Decrypt(System.String,System.String)">
+        <member name="M:ZyGames.Framework.Common.Security.CryptoHelper.DES_Decrypt(System.String,System.String,System.String)">
             <summary>
             
             </summary>
             <param name="source"></param>
-            <param name="key"></param>
+            <param name="key">8 length</param>
+            <returns></returns>
+        </member>
+        <member name="M:ZyGames.Framework.Common.Security.CryptoHelper.DES16_Encrypt(System.String,System.String,System.String)">
+            <summary>
+            Des encrypt
+            </summary>
+            <param name="toEncrypt"></param>
+            <param name="privateKey">16 length</param>
+            <param name="privateIv"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ZyGames.Framework.Common.Security.CryptoHelper.DES16_Decrypt(System.String,System.String,System.String)">
+            <summary>
+            Des decrypt
+            </summary>
+            <param name="toDecrypt"></param>
+            <param name="privateKey"></param>
+            <param name="privateIv"></param>
             <returns></returns>
         </member>
         <member name="M:ZyGames.Framework.Common.Security.CryptoHelper.SHA1_Encrypt(System.String)">

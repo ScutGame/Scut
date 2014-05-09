@@ -9,6 +9,9 @@ namespace ZyGames.Doudizhu.Model
     [Serializable, ProtoContract]
     public class UserProperty
     {
+        public UserProperty()
+        {
+        }
 
         [ProtoMember(1)]
         public int GameId { get; set; }
@@ -63,6 +66,7 @@ namespace ZyGames.Doudizhu.Model
         /// </summary>
         [ProtoMember(10)]
         public int InningNum { get; set; }
+
 
         /// <summary>
         /// 初始化桌子

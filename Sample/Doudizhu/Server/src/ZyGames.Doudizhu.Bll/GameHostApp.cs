@@ -31,14 +31,14 @@ namespace ZyGames.Doudizhu.Bll
             //Console.WriteLine("Url:{0}", Encoding.ASCII.GetString(e.Data));
         }
 
-        protected override void OnRequested(HttpGet httpGet, IGameResponse response)
+        protected override void OnRequested(ActionGetter actionGetter, BaseGameResponse response)
         {
             try
             {
-                var actionId = httpGet.ActionId;
-                var uid = httpGet.GetString("uid");
-                Console.WriteLine("Action{0} from {1} {2}", actionId, httpGet.RemoteAddress, uid);
-                ActionFactory.Request(httpGet, response, GetUser);
+                var actionId = actionGetter.GetActionId();
+                var uid = actionGetter.GetUserId();
+                Console.WriteLine("Action{0} from {1}", actionId, uid);
+                ActionFactory.Request(actionGetter, response, GetUser);
 
             }
             catch (Exception ex)
@@ -56,16 +56,6 @@ namespace ZyGames.Doudizhu.Bll
         {
             try
             {
-                var setting = new EnvironmentSetting();
-                setting.ClientDesDeKey = "j6=9=1ac";
-                setting.EntityAssembly = Assembly.Load("ZyGames.Doudizhu.Model");
-                GameEnvironment.Start(setting);
-
-                ScriptEngines.AddReferencedAssembly(new string[] {
-                        "ZyGames.Doudizhu.Lang.dll",
-                        "ZyGames.Doudizhu.Model.dll",
-                        "ZyGames.Doudizhu.Bll.dll"
-                    });
                 ActionFactory.SetActionIgnoreAuthorize(1012, 9001, 9203);
 
                 AppstoreClientManager.Current.InitConfig();

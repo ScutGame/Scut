@@ -74,12 +74,16 @@ namespace ZyGames.Doudizhu.Bll.Logic
         /// </summary>
         public void Enter(GameUser user, RoomInfo roomInfo)
         {
-            List<PositionData> list = new List<PositionData>();
             string key = roomInfo.Id.ToString();
             RoomData roomData;
             if (_roomStruct.TryGet(key, out roomData))
             {
-                var tableData = GameTable.Current.SelectTable(user, roomData, roomInfo);
+                var cacheSet = new GameDataCacheSet<GameUser>();
+                var userTemp = cacheSet.FindKey(user.PersonalId, user.UserId);
+                var list = cacheSet.FindGlobal(t => true);
+
+
+                var tableData = GameTable.Current.SelectTable(userTemp, roomData, roomInfo);
                 if (tableData != null && tableData.Positions.Length > 0)
                 {
                     GameTable.Current.SyncNotifyAction(ActionIDDefine.Cst_Action2003, tableData, null,
@@ -133,6 +137,14 @@ namespace ZyGames.Doudizhu.Bll.Logic
             return null;
         }
 
+        public TableData GetTableDataByUserId(int userId)
+        {
+            var cacheSet = new GameDataCacheSet<GameUser>();
+            var user = cacheSet.FindKey(userId.ToString(), userId);
+            return GetTableData(user);
+        }
+
+
         /// <summary>
         /// 获取桌面对象数据Pyton中调用
         /// </summary>
@@ -141,6 +153,10 @@ namespace ZyGames.Doudizhu.Bll.Logic
         public TableData GetTableData(GameUser user)
         {
             TableData tableData = GetTableData(user.Property.RoomId, user.Property.TableId);
+            if (tableData == null)
+            {
+                Console.WriteLine("GetTableData error,uid:{0},Room:{1},TableId:{2}", user.UserId, user.Property.RoomId, user.Property.TableId);
+            }
             //if (tableData == null)
             //{
             //    var param = new Parameters();
@@ -182,7 +198,7 @@ namespace ZyGames.Doudizhu.Bll.Logic
                 {
                     user.GameCoin = MathUtils.Addition(user.GameCoin, roomInfo.GiffCion);
                     restrain.RestrainProperty.DailyGiffCoinTime = MathUtils.Addition(restrain.RestrainProperty.DailyGiffCoinTime, 1);
-                    
+
                     return true;
                 }
             }

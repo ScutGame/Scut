@@ -27,7 +27,6 @@ namespace ZyGames.Doudizhu.Model
         /// </summary>
         public void InitAI(int roomId, int tableId, int userId, string nickName, string head)
         {
-            //todo test
             var ai = new GameUser(userId);
             ai.NickName = nickName;
             ai.HeadIcon = head;
