@@ -57,7 +57,13 @@ namespace ZyGames.Framework.Script
         private static HashSet<string> _changedFiles;
         private static string _relativeDirName;
         private const string ModelDirName = "Model";
+        /// <summary>
+        /// 
+        /// </summary>
         public static readonly string CSharpDirName;
+        /// <summary>
+        /// 
+        /// </summary>
         public static readonly string PythonDirName;
         private static string _runtimeBinPath;
         private static bool _scriptIsDebug;

@@ -389,7 +389,11 @@ namespace ZyGames.Framework.Cache.Generic
         {
             return GetEnumerator();
         }
-
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="eventArgs"></param>
         protected override void Notify(object sender, CacheItemEventArgs eventArgs)
         {
             //check data is init.

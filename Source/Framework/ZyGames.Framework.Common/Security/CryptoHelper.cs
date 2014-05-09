@@ -33,6 +33,7 @@ namespace ZyGames.Framework.Common.Security
     /// </summary>
     public class CryptoHelper
     {
+        private const string DefaultKey = "!@#ASD12";
         /// <summary>
         /// 
         /// </summary>
@@ -40,7 +41,7 @@ namespace ZyGames.Framework.Common.Security
         {
             get
             {
-                return "!@#ASD12";
+                return DefaultKey;
             }
         }
         /// <summary>
@@ -68,6 +69,36 @@ namespace ZyGames.Framework.Common.Security
             UrlParam = UrlParam.Replace("＆", "&");
             UrlParam = UrlParam.Replace("？", "?");
             return UrlParam;
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="source"></param>
+        /// <param name="encoding"></param>
+        /// <returns></returns>
+        public static string MD5_Encrypt(string source, string encoding)
+        {
+            return MD5_Encrypt(source, string.Empty, Encoding.GetEncoding(encoding));
+        }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="source"></param>
+        /// <returns></returns>
+        public static string MD5_Encrypt(string source)
+        {
+            return MD5_Encrypt(source, string.Empty, Encoding.Default);
+        }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="source"></param>
+        /// <param name="encoding"></param>
+        /// <returns></returns>
+        public static string MD5_Encrypt(string source, Encoding encoding)
+        {
+            return MD5_Encrypt(source, string.Empty, encoding);
         }
         /// <summary>
         /// 
@@ -171,25 +202,6 @@ namespace ZyGames.Framework.Common.Security
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="source"></param>
-        /// <param name="encoding"></param>
-        /// <returns></returns>
-        public static string MD5_Encrypt(string source, string encoding)
-        {
-            return CryptoHelper.MD5_Encrypt(source, string.Empty, Encoding.GetEncoding(encoding));
-        }
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="source"></param>
-        /// <returns></returns>
-        public static string MD5_Encrypt(string source)
-        {
-            return CryptoHelper.MD5_Encrypt(source, string.Empty, Encoding.Default);
-        }
-        /// <summary>
-        /// 
-        /// </summary>
         /// <param name="strpwd"></param>
         /// <returns></returns>
         public static string RegUser_MD5_Pwd(string strpwd)
@@ -263,7 +275,7 @@ namespace ZyGames.Framework.Common.Security
         /// <returns></returns>
         public static string DES_Encrypt(string source)
         {
-            return CryptoHelper.DES_Encrypt(source, "!@#ASD12");
+            return CryptoHelper.DES_Encrypt(source, DefaultKey);
         }
         /// <summary>
         /// 
@@ -272,16 +284,24 @@ namespace ZyGames.Framework.Common.Security
         /// <returns></returns>
         public static string DES_Decrypt(string source)
         {
-            return CryptoHelper.DES_Decrypt(source, "!@#ASD12");
+            return CryptoHelper.DES_Decrypt(source, DefaultKey);
         }
         /// <summary>
         /// 
         /// </summary>
         /// <param name="source"></param>
-        /// <param name="key"></param>
+        /// <param name="key">8 length</param>
         /// <returns></returns>
-        public static string DES_Decrypt(string source, string key)
+        public static string DES_Decrypt(string source, string key, string iv = "")
         {
+            if (string.IsNullOrEmpty(key))
+            {
+                key = DefaultKey;
+            }
+            if (string.IsNullOrWhiteSpace(iv))
+            {
+                iv = key;
+            }
             if (string.IsNullOrEmpty(source))
             {
                 return null;
@@ -294,7 +314,7 @@ namespace ZyGames.Framework.Common.Security
                 array[i] = (byte)num;
             }
             dESCryptoServiceProvider.Key = Encoding.UTF8.GetBytes(key);
-            dESCryptoServiceProvider.IV = Encoding.UTF8.GetBytes(key);
+            dESCryptoServiceProvider.IV = Encoding.UTF8.GetBytes(iv);
             MemoryStream memoryStream = new MemoryStream();
             CryptoStream cryptoStream = new CryptoStream(memoryStream, dESCryptoServiceProvider.CreateDecryptor(), CryptoStreamMode.Write);
             cryptoStream.Write(array, 0, array.Length);
@@ -302,6 +322,63 @@ namespace ZyGames.Framework.Common.Security
             new StringBuilder();
             return Encoding.Default.GetString(memoryStream.ToArray());
         }
+
+        /// <summary>
+        /// Des encrypt
+        /// </summary>
+        /// <param name="toEncrypt"></param>
+        /// <param name="privateKey">16 length</param>
+        /// <param name="privateIv"></param>
+        /// <returns></returns>
+        public static string DES16_Encrypt(string toEncrypt, string privateKey, string privateIv)
+        {
+            SymmetricAlgorithm des = Rijndael.Create();
+            byte[] inputByteArray = Encoding.UTF8.GetBytes(toEncrypt);//得到需要加密的字节数组
+            des.Key = Encoding.UTF8.GetBytes(privateKey);//设置密钥及密钥向量
+            des.IV = Encoding.UTF8.GetBytes(privateIv);
+            MemoryStream ms = new MemoryStream();
+            CryptoStream cs = new CryptoStream(ms, des.CreateEncryptor(), CryptoStreamMode.Write);
+            cs.Write(inputByteArray, 0, inputByteArray.Length);
+            cs.FlushFinalBlock();
+            byte[] cipherBytes = ms.ToArray();//得到加密后的字节数组
+            cs.Close();
+            ms.Close();
+            return Convert.ToBase64String(cipherBytes);
+        }
+
+        /// <summary>
+        /// Des decrypt
+        /// </summary>
+        /// <param name="toDecrypt"></param>
+        /// <param name="privateKey"></param>
+        /// <param name="privateIv"></param>
+        /// <returns></returns>
+        public static string DES16_Decrypt(string toDecrypt, string privateKey, string privateIv)
+        {
+            byte[] bKey = Encoding.UTF8.GetBytes(privateKey);
+            byte[] bIV = Encoding.UTF8.GetBytes(privateIv);
+            byte[] byteArray = Convert.FromBase64String(toDecrypt);
+
+            string decrypt = null;
+            Rijndael aes = Rijndael.Create();
+            try
+            {
+                using (MemoryStream mStream = new MemoryStream())
+                {
+                    using (CryptoStream cStream = new CryptoStream(mStream, aes.CreateDecryptor(bKey, bIV), CryptoStreamMode.Write))
+                    {
+                        cStream.Write(byteArray, 0, byteArray.Length);
+                        cStream.FlushFinalBlock();
+                        decrypt = Encoding.UTF8.GetString(mStream.ToArray());
+                    }
+                }
+            }
+            catch { }
+            aes.Clear();
+
+            return decrypt;
+        }
+
         /// <summary>
         /// 
         /// </summary>
@@ -310,13 +387,14 @@ namespace ZyGames.Framework.Common.Security
         public static string SHA1_Encrypt(string source)
         {
             byte[] bytes = Encoding.UTF8.GetBytes(source);
-            SHA1CryptoServiceProvider sHA1CryptoServiceProvider = new SHA1CryptoServiceProvider();
-            byte[] value = sHA1CryptoServiceProvider.ComputeHash(bytes);
-            sHA1CryptoServiceProvider.Clear();
+            SHA1CryptoServiceProvider sHa1CryptoServiceProvider = new SHA1CryptoServiceProvider();
+            byte[] value = sHa1CryptoServiceProvider.ComputeHash(bytes);
+            sHa1CryptoServiceProvider.Clear();
             string text = BitConverter.ToString(value);
             text = text.Replace("-", "");
             return text.ToLower();
         }
+
         /// <summary>
         /// 
         /// </summary>

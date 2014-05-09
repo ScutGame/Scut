@@ -240,6 +240,7 @@ namespace ZyGames.Framework.Model
             }
         }
 
+        /// <summary>
         /// Export to sync model format content.
         /// </summary>
         /// <returns></returns>
@@ -630,7 +631,11 @@ namespace ZyGames.Framework.Model
             SchemaTable schema;
             return TryGet(type, out schema);
         }
-
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="typeName"></param>
+        /// <returns></returns>
         public static SchemaTable Get(string typeName)
         {
             SchemaTable schema;

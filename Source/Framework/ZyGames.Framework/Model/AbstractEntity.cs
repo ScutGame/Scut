@@ -41,6 +41,9 @@ namespace ZyGames.Framework.Model
     [ProtoContract, Serializable]
     public abstract class AbstractEntity : EntityChangeEvent, IDataExpired, IComparable<AbstractEntity>
     {
+        /// <summary>
+        /// 
+        /// </summary>
         protected const char KeyCodeJoinChar = '-';
 
         /// <summary>
@@ -207,7 +210,9 @@ namespace ZyGames.Framework.Model
             }
         }
 
-
+        /// <summary>
+        /// 
+        /// </summary>
         protected bool _isDelete;
 
         /// <summary>

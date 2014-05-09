@@ -55,7 +55,7 @@
       <HintPath>..\Lib\protobuf-net.dll</HintPath>
     </Reference>
     <Reference Include="System" />
-    <Reference Include="System.Configuration" />
+    <Reference Include="System.configuration" />
     <Reference Include="System.Core" />
     <Reference Include="System.Runtime.Caching" />
     <Reference Include="System.Web" />
@@ -74,6 +74,7 @@
     <Compile Include="Build\WeavingEntityTask.cs" />
     <Compile Include="Configuration\ConfigUtils.cs" />
     <Compile Include="Event\CustomEvent.cs" />
+    <Compile Include="HttpUtils.cs" />
     <Compile Include="Locking\ILocking.cs" />
     <Compile Include="Locking\IMonitorStrategy.cs" />
     <Compile Include="Locking\MonitorLockStrategy.cs" />

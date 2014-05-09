@@ -36,7 +36,7 @@ namespace ZyGames.Framework.Event
     public class EntityChangeEvent : IItemChangeEvent
     {
         private bool _isDisableEvent;
-        private int _lockFlag;
+        private readonly object _lockFlag = new object();
         private int _modified;
 
         /// <summary>
@@ -235,6 +235,7 @@ namespace ZyGames.Framework.Event
         /// Get exclusive modify entity property.
         /// </summary>
         /// <param name="modifyHandle"></param>
+        [Obsolete("Use ModifyLocked method", true)]
         public override void ExclusiveModify(Action modifyHandle)
         {
             ModifyLocked(modifyHandle);
@@ -345,7 +346,6 @@ namespace ZyGames.Framework.Event
         {
             if (disposing)
             {
-                Interlocked.Exchange(ref _lockFlag, 0);
                 //释放 托管资源 
                 _itemEvent = null;
                 _childrenEvent = null;
@@ -358,13 +358,7 @@ namespace ZyGames.Framework.Event
         /// </summary>
         public void EnterLock()
         {
-            while (true)
-            {
-                if (Interlocked.CompareExchange(ref _lockFlag, 1, 0) == 0)
-                {
-                    break;
-                }
-            }
+            Monitor.Enter(_lockFlag);
         }
 
         /// <summary>
@@ -372,7 +366,7 @@ namespace ZyGames.Framework.Event
         /// </summary>
         public void ExitLock()
         {
-            Interlocked.Exchange(ref _lockFlag, 0);
+            Monitor.Exit(_lockFlag);
         }
         /// <summary>
         /// To json string.

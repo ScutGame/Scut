@@ -335,7 +335,7 @@ namespace ZyGames.Framework.Cache.Generic
         private static void OnCheckRedisSyncQueue(object state)
         {
             int identity = (int)state;
-            if (Interlocked.Exchange(ref _isRedisSyncWorking[identity], 1) == 0)
+            if (Interlocked.CompareExchange(ref _isRedisSyncWorking[identity], 1, 0) == 0)
             {
                 try
                 {
@@ -484,7 +484,7 @@ namespace ZyGames.Framework.Cache.Generic
         private static void OnCheckSqlWaitSyncQueue(object state)
         {
             int identity = (int)state;
-            if (Interlocked.Exchange(ref _isSqlWaitSyncWorking[identity], 1) == 0)
+            if (Interlocked.CompareExchange(ref _isSqlWaitSyncWorking[identity], 1, 0) == 0)
             {
                 try
                 {

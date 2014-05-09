@@ -95,7 +95,12 @@ namespace ZyGames.Framework.Data.MySql
             statement.Params = SqlStatementManager.ConvertSqlParam(parameters);
             return SqlStatementManager.Put(statement) ? 1 : 0;
         }
-
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="identityId"></param>
+        /// <param name="command"></param>
+        /// <returns></returns>
         public override SqlStatement GenerateSql(int identityId, CommandStruct command)
         {
             command.Parser();
@@ -522,11 +527,13 @@ namespace ZyGames.Framework.Data.MySql
         {
             return MySqlParamHelper.MakeInParam(paramName, MySqlDbType.Text, 0, value);
         }
+
         /// <summary>
         /// 创建CommandStruct对象
         /// </summary>
         /// <param name="tableName"></param>
         /// <param name="editType"></param>
+        /// <param name="columns"></param>
         /// <returns></returns>
         public override CommandStruct CreateCommandStruct(string tableName, CommandMode editType, string columns = "")
         {

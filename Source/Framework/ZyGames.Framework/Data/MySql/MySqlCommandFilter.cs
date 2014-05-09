@@ -55,13 +55,6 @@ namespace ZyGames.Framework.Data.MySql
 		/// <param name="compareChar"></param>
 		/// <param name="paramName"></param>
 		/// <returns>The expression.</returns>
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="fieldName"></param>
-		/// <param name="compareChar"></param>
-		/// <param name="paramName"></param>
-		/// <returns>The expression.</returns>
         public override string FormatExpression(string fieldName, string compareChar = "", string paramName = "")
         {
             return MySqlParamHelper.FormatFilterParam(fieldName, compareChar, paramName);

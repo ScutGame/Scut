@@ -32,7 +32,6 @@ namespace ZyGames.Framework.Common.Configuration
     /// </summary>
     public class ConfigUtils
     {
-        private static string Key = "!@#ASD12";
         /// <summary>
         /// 
         /// </summary>
@@ -165,7 +164,7 @@ namespace ZyGames.Framework.Common.Configuration
         /// <returns></returns>
         public static string GetConnectionString(string connName)
         {
-            return GetConnectionString(connName, Key);
+            return GetConnectionString(connName, string.Empty);
         }
     }
 }

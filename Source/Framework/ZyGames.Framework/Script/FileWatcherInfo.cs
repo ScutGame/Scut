@@ -66,16 +66,18 @@ namespace ZyGames.Framework.Script
                 }
                 if (!Equals(_assembly, value))
                 {
-                    try
+                    if (Interlocked.CompareExchange(ref isUpdating, 1, 0) == 0)
                     {
-                        Interlocked.Exchange(ref isUpdating, 1);
-                        OnChangedBefore(_assembly);
-                        _assembly = value;
-                        OnChangedAfter(_assembly);
-                    }
-                    finally
-                    {
-                        Interlocked.Exchange(ref isUpdating, 0);
+                        try
+                        {
+                            OnChangedBefore(_assembly);
+                            _assembly = value;
+                            OnChangedAfter(_assembly);
+                        }
+                        finally
+                        {
+                            Interlocked.Exchange(ref isUpdating, 0);
+                        }
                     }
                 }
             }

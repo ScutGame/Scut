@@ -95,7 +95,12 @@ namespace ZyGames.Framework.Data.Sql
             statement.Params = SqlStatementManager.ConvertSqlParam(parameters);
             return SqlStatementManager.Put(statement) ? 1 : 0;
         }
-
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="identityId"></param>
+        /// <param name="command"></param>
+        /// <returns></returns>
         public override SqlStatement GenerateSql(int identityId, CommandStruct command)
         {
             command.Parser();

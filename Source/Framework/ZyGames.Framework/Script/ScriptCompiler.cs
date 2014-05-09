@@ -238,7 +238,7 @@ namespace ZyGames.Framework.Script
             outAssembly = Path.Combine(outAssembly, Path.GetFileNameWithoutExtension(pathToAssembly) + ".dll");
             if (AssemblyBuilder.BuildToFile(pathToAssembly, runtimePath, outAssembly))
             {
-                var ass = AssemblyBuilder.ReadAssembly(outAssembly, result.Evidence);
+                var ass = AssemblyBuilder.ReadAssembly(outAssembly, null);
                 if (ass != null) pathToAssembly = outAssembly;
                 ClearTemp(CompileTemp);
                 return ass;

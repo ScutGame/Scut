@@ -45,13 +45,17 @@ namespace ZyGames.Framework.RPC.IO
     public class MessageHead
     {
         /// <summary>
+        /// default st
+        /// </summary>
+        public const string DefaultSt = "st";
+
+        /// <summary>
         /// 
         /// </summary>
         public MessageHead()
         {
-            MsgId = 0;
             ErrorInfo = string.Empty;
-            St = "st";
+            St = DefaultSt;
         }
 
         /// <summary>
@@ -61,11 +65,20 @@ namespace ZyGames.Framework.RPC.IO
         /// <param name="errorCode"></param>
         /// <param name="errorInfo"></param>
         public MessageHead(int action, int errorCode = 0, string errorInfo = "")
-            : this()
+            : this(0, action, DefaultSt, errorCode, errorInfo)
         {
-            Action = action;
-            ErrorCode = errorCode;
-            ErrorInfo = errorInfo;
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="msgId"></param>
+        /// <param name="action"></param>
+        /// <param name="errorCode"></param>
+        /// <param name="errorInfo"></param>
+        public MessageHead(int msgId, int action, int errorCode = 0, string errorInfo = "")
+            : this(msgId, action, DefaultSt, errorCode, errorInfo)
+        {
         }
 
         /// <summary>
@@ -76,8 +89,7 @@ namespace ZyGames.Framework.RPC.IO
         /// <param name="st"></param>
         /// <param name="errorCode"></param>
         /// <param name="errorInfo"></param>
-        public MessageHead(int msgId, int action, string st = "st", int errorCode = 0, string errorInfo = "")
-            : this()
+        public MessageHead(int msgId, int action, string st = DefaultSt, int errorCode = 0, string errorInfo = "")
         {
             MsgId = msgId;
             Action = action;

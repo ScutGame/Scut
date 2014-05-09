@@ -26,6 +26,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.IO;
+using System.Threading;
 
 namespace ZyGames.Framework.Script
 {
@@ -65,7 +66,9 @@ namespace ZyGames.Framework.Script
             _fileCode = fileCode;
             _fileName = fileName;
         }
-
+        /// <summary>
+        /// 
+        /// </summary>
         protected ScriptType _type;
 
         /// <summary>
@@ -116,8 +119,7 @@ namespace ZyGames.Framework.Script
         public bool TryEnterLock()
         {
             if (_lockFlag == 1) return false;
-            System.Threading.Interlocked.Exchange(ref _lockFlag, 1);
-            return true;
+            return Interlocked.CompareExchange(ref _lockFlag, 1, 0) == 0;
         }
 
         /// <summary>
@@ -125,7 +127,7 @@ namespace ZyGames.Framework.Script
         /// </summary>
         public void ExitLock()
         {
-            System.Threading.Interlocked.Exchange(ref _lockFlag, 0);
+            Interlocked.Exchange(ref _lockFlag, 0);
         }
     }
 }

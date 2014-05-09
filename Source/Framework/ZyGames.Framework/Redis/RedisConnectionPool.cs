@@ -44,6 +44,9 @@ namespace ZyGames.Framework.Redis
     /// </summary>
     public static class RedisConnectionPool
     {
+        /// <summary>
+        /// 
+        /// </summary>
         public const string EntityKeyPreChar = "$";
         private static PooledRedisClientManager _pooledRedis;
         private static RedisPoolSetting _defaultSetting;

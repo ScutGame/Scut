@@ -241,7 +241,7 @@ namespace ZyGames.Framework.Data
         private static void OnCheckSqlSyncQueue(object state)
         {
             int identity = (int)state;
-            if (Interlocked.Exchange(ref _isWatchWorking[identity], 1) == 0)
+            if (Interlocked.CompareExchange(ref _isWatchWorking[identity], 1, 0) == 0)
             {
                 try
                 {

@@ -88,8 +88,8 @@ namespace ZyGames.Framework.RPC.IO
             return new MessageStructure(data);
         }
 
-        private int _bufferLength;
-        private byte[] _buffers;
+        //private int _bufferLength;
+        //private byte[] _buffers;
         //private ConcurrentQueue<byte> _buffersQueue;
         private MemoryStream _msBuffers;
         private ConcurrentQueue<object> _waitWriteObjects = new ConcurrentQueue<object>();
@@ -122,7 +122,10 @@ namespace ZyGames.Framework.RPC.IO
             _msBuffers = new MemoryStream(buffer.ToArray());
             //_buffersQueue = new ConcurrentQueue<byte>(buffer);
         }
-
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="disposing"></param>
         protected override void Dispose(bool disposing)
         {
             _waitWriteObjects = null;

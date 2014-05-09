@@ -47,7 +47,7 @@ namespace ZyGames.Framework.RPC.IO
         public static string PasswordMd5(string str)
         {
             string attachParam = str + DefaultKey;
-            return FormsAuthentication.HashPasswordForStoringInConfigFile(attachParam, "MD5");
+            return ZyGames.Framework.Common.Security.CryptoHelper.MD5_Encrypt(attachParam);
         }
     }
 }
