@@ -34,32 +34,51 @@
     <NoWarn>0169</NoWarn>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="ICSharpCode.SharpZipLib">
+      <HintPath>Assets\Lib\ICSharpCode.SharpZipLib.dll</HintPath>
+    </Reference>
+    <Reference Include="protobuf-net">
+      <HintPath>Assets\Lib\protobuf-net.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.XML" />
     <Reference Include="System.Core" />
     <Reference Include="UnityEngine">
-      <HintPath>D:/Program Files (x86)/Unity/Editor4.0/Data/Managed/UnityEngine.dll</HintPath>
+      <HintPath>C:\Program Files (x86)\Unity\Editor\Data\Managed\UnityEngine.dll</HintPath>
     </Reference>
     <Reference Include="UnityEditor">
-      <HintPath>D:/Program Files (x86)/Unity/Editor4.0/Data/Managed/UnityEditor.dll</HintPath>
+      <HintPath>C:\Program Files (x86)\Unity\Editor\Data\Managed\UnityEditor.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Assets\des\DES.cs" />
-    <Compile Include="Assets\GameNet\Net.cs" />
-    <Compile Include="Assets\GameNet\NetDelegate.cs" />
-    <Compile Include="Assets\GameNet\ResponseCommonData.cs" />
-    <Compile Include="Assets\GameNet\ServerResonse.cs" />
+    <Compile Include="Assets\Game\Action\ActionType.cs" />
+    <Compile Include="Assets\Security\DES.cs" />
+    <Compile Include="Assets\Security\MD5Utils.cs" />
+    <Compile Include="Assets\Game\Action\Action1001.cs" />
+    <Compile Include="Assets\Net\ActionFactory.cs" />
+    <Compile Include="Assets\Net\GameAction.cs" />
+    <Compile Include="Assets\Game\Net.cs" />
+    <Compile Include="Assets\Game\NetDelegate.cs" />
+    <Compile Include="Assets\Game\ResponseCommonData.cs" />
+    <Compile Include="Assets\Game\ServerResonse.cs" />
+    <Compile Include="Assets\Net\DefaultHeadFormater.cs" />
     <Compile Include="Assets\Net\Http.cs" />
+    <Compile Include="Assets\Net\HttpPackage.cs" />
+    <Compile Include="Assets\Net\IHeadFormater.cs" />
     <Compile Include="Assets\Net\IHttpCallBack.cs" />
     <Compile Include="Assets\Net\NetReader.cs" />
+    <Compile Include="Assets\Net\NetworkType.cs" />
     <Compile Include="Assets\Net\NetWriter.cs" />
     <Compile Include="Assets\Net\SocketConnect.cs" />
+    <Compile Include="Assets\Net\PackageHead.cs" />
     <Compile Include="Assets\Net\SocketPackage.cs" />
-    <Compile Include="Assets\TestGUI.cs" />
-    <Reference Include="ICSharpCode.SharpZipLib">
-      <HintPath>Assets\Net\ICSharpCode.SharpZipLib.dll</HintPath>
-    </Reference>
+    <Compile Include="Assets\Reflect\FastActivator.cs" />
+    <Compile Include="Assets\Reflect\MemberSet.cs" />
+    <Compile Include="Assets\Reflect\ObjectAccessor.cs" />
+    <Compile Include="Assets\Reflect\TypeAccessor.cs" />
+    <Compile Include="Assets\Serialization\ProtoBufUtils.cs" />
+    <Compile Include="Assets\Serialization\ProtoObject.cs" />
+    <Compile Include="Assets\Game\Behaviour\TestGUI.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
