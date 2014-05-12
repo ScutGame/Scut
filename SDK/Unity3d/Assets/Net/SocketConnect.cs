@@ -1,87 +1,92 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Net.Sockets;
-using System.Net;
 using System.Threading;
-using System.IO;
-using System.IO.Compression;
+
+/// <summary>
+/// 
+/// </summary>
 public class SocketConnect
 {
-    private Socket socket;
-    private string host;
-    private int port;
-    private bool isDisposed;
-    private List<SocketPackage> sendList;
-    private Queue<SocketPackage> receiveQueue;
-    static private List<SocketPackage> pushActionList = new List<SocketPackage>();//push Action的请求
+    /// <summary>
+    /// push Action的请求
+    /// </summary>
+    private static readonly List<SocketPackage> ActionPools = new List<SocketPackage>();
+    private Socket _socket;
+    private readonly string _host;
+    private readonly int _port;
+    private bool _isDisposed;
+    private readonly List<SocketPackage> _sendList;
+    private readonly Queue<SocketPackage> _receiveQueue;
     private const int TimeOut = 30;//30秒的超时时间
-    private Thread thread = null;
+    private Thread _thread = null;
+
     enum ErrorCode
     {
-        eSuccess = 0,
-        eConnectError = -1,
-        eTimeOutError = -2,
+        Success = 0,
+        ConnectError = -1,
+        TimeOutError = -2,
     }
+
     public SocketConnect(string host, int port)
     {
-        this.host = host;
-        this.port = port;
-        sendList = new List<SocketPackage>();
-        receiveQueue = new Queue<SocketPackage>();
+        this._host = host;
+        this._port = port;
+        _sendList = new List<SocketPackage>();
+        _receiveQueue = new Queue<SocketPackage>();
     }
 
-    static public void AddPushActionID(int actionID, INetCallback callback)
+    static public void PushActionPool(int actionId, INetCallback callback)
     {
-        RemovePushActionID(actionID);
+        RemoveActionPool(actionId);
         SocketPackage package = new SocketPackage();
-        package.ActionId = actionID;
+        package.ActionId = actionId;
         package.FuncCallback = callback;
-        pushActionList.Add(package);
+        ActionPools.Add(package);
     }
 
-    static public void RemovePushActionID(int actionID)
+    static public void RemoveActionPool(int actionId)
     {
-        foreach (SocketPackage pack in pushActionList)
+        foreach (SocketPackage pack in ActionPools)
         {
-            if (pack.ActionId == actionID)
+            if (pack.ActionId == actionId)
             {
-                pushActionList.Remove(pack);
+                ActionPools.Remove(pack);
                 break;
             }
         }
     }
     public SocketPackage Dequeue()
     {
-        lock (receiveQueue)
+        lock (_receiveQueue)
         {
-            if (receiveQueue.Count == 0)
+            if (_receiveQueue.Count == 0)
             {
                 return null;
             }
             else
             {
-                return receiveQueue.Dequeue();
+                return _receiveQueue.Dequeue();
             }
         }
     }
-    private void CheckReceive()//(object state)
+    private void CheckReceive()
     {
         while (true)
         {
-            if (socket == null) return;
+            if (_socket == null) return;
             try
             {
-                if (socket.Poll(5, SelectMode.SelectRead))
+                if (_socket.Poll(5, SelectMode.SelectRead))
                 {
-                    if (socket.Available == 0)
+                    if (_socket.Available == 0)
                     {
                         UnityEngine.Debug.Log("Close Socket");
                         Close();
                         break;
                     }
                     byte[] prefix = new byte[4];
-                    int recnum = socket.Receive(prefix);
+                    int recnum = _socket.Receive(prefix);
 
                     if (recnum == 4)
                     {
@@ -91,26 +96,29 @@ public class SocketConnect
                         recnum = 0;
                         do
                         {
-                            int rev = socket.Receive(data, startIndex, datalen - recnum, SocketFlags.None);
+                            int rev = _socket.Receive(data, startIndex, datalen - recnum, SocketFlags.None);
                             recnum += rev;
                             startIndex += rev;
                         } while (recnum != datalen);
+                        //判断流是否有Gzip压缩
                         if (data[0] == 0x1f && data[1] == 0x8b && data[2] == 0x08 && data[3] == 0x00)
                         {
                             data = NetReader.Decompression(data);  
                         }
+
                         NetReader reader = new NetReader();
-                        reader.pushNetStream(data, NetworkType.Http);
+                        reader.pushNetStream(data, NetworkType.Socket);
                         SocketPackage findPackage = null;
-                        UnityEngine.Debug.Log("socket.Poll ok" + recnum + "actionId:" + reader.ActionId + " " + reader.RmId.ToString() + "len" + datalen.ToString());
-                        lock (sendList)
+
+                        UnityEngine.Debug.Log("Socket receive ok, revLen:" + recnum + ", actionId:" + reader.ActionId + ", msgId:" + reader.RmId + ", packLen:" + reader.Buffer.Length);
+                        lock (_sendList)
                         {
-                            foreach (SocketPackage package in sendList)
+                            foreach (SocketPackage package in _sendList)
                             {
                                 if (package.MsgId == reader.RmId)
                                 {
                                     package.Reader = reader;
-                                    package.ErrorCode = (int)ErrorCode.eSuccess;
+                                    package.ErrorCode = (int)ErrorCode.Success;
                                     package.ErrorMsg = "success";
                                     findPackage = package;
                                     break;
@@ -118,32 +126,32 @@ public class SocketConnect
 
                             }
                         }
-                        foreach (SocketPackage package in pushActionList)
+                        foreach (SocketPackage package in ActionPools)
                         {
                             if (package.ActionId == reader.ActionId)
                             {
                                 package.Reader = reader;
-                                package.ErrorCode = (int)ErrorCode.eSuccess;
+                                package.ErrorCode = (int)ErrorCode.Success;
                                 package.ErrorMsg = "success";
                                 findPackage = package;
                             }
                         }
                         if (findPackage != null)
                         {
-                            lock (receiveQueue)
+                            lock (_receiveQueue)
                             {
-                                receiveQueue.Enqueue(findPackage);
+                                _receiveQueue.Enqueue(findPackage);
                             }
-                            lock (sendList)
+                            lock (_sendList)
                             {
-                                sendList.Remove(findPackage);
+                                _sendList.Remove(findPackage);
                             }
                         }
 
                     }
 
                 }
-                else if (socket.Poll(5, SelectMode.SelectError))
+                else if (_socket.Poll(5, SelectMode.SelectError))
                 {
                     Close();
                     UnityEngine.Debug.Log("SelectError Close Socket");
@@ -192,26 +200,26 @@ public class SocketConnect
         UnityEngine.NetworkReachability state = UnityEngine.Application.internetReachability;
         if (state != UnityEngine.NetworkReachability.NotReachable)
         {
-            socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+            _socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
             try
             {
-                socket.Connect(host, port);
+                _socket.Connect(_host, _port);
             }
             catch
             {
                 //socket.Dispose();
-                socket = null;
+                _socket = null;
                 throw;
             }
-            thread = new Thread(new ThreadStart(CheckReceive));
-            thread.Start();
+            _thread = new Thread(new ThreadStart(CheckReceive));
+            _thread.Start();
         }
 
     }
 
     private void EnsureConnected()
     {
-        if (socket == null)
+        if (_socket == null)
         {
             Open();
         }
@@ -223,16 +231,16 @@ public class SocketConnect
     /// </summary>
     public void Close()
     {
-        if (socket == null) return;
+        if (_socket == null) return;
         try
         {
-            socket.Shutdown(SocketShutdown.Both);
-            socket.Close();
-            socket = null;
+            _socket.Shutdown(SocketShutdown.Both);
+            _socket.Close();
+            _socket = null;
         }
-        catch (Exception ex)
+        catch (Exception)
         {
-            socket = null;
+            _socket = null;
         }
     }
 
@@ -243,10 +251,10 @@ public class SocketConnect
     public bool Send(byte[] data)
     {
         EnsureConnected();
-        if (socket != null)
+        if (_socket != null)
         {
              //socket.Send(data);
-            IAsyncResult asyncSend = socket.BeginSend(data, 0, data.Length, SocketFlags.None, new AsyncCallback(sendCallback), socket);
+            IAsyncResult asyncSend = _socket.BeginSend(data, 0, data.Length, SocketFlags.None, new AsyncCallback(sendCallback), _socket);
             bool success = asyncSend.AsyncWaitHandle.WaitOne(5000, true);
             if (!success)
             {
@@ -270,28 +278,28 @@ public class SocketConnect
         {
             return;
         }
-        lock (sendList)
+        lock (_sendList)
         {
-            sendList.Add(package);
+            _sendList.Add(package);
         }
 
         try
         {
             bool bRet = Send(data);
-            UnityEngine.Debug.Log("Socket Request Id:" + package.ActionId.ToString() + " " + package.MsgId.ToString() + "send:" + bRet.ToString());
+            UnityEngine.Debug.Log("Socket send actionId:" + package.ActionId + ", msgId:" + package.MsgId + ", send result:" + bRet);
         }
-        catch (System.Exception ex)
+        catch (Exception ex)
         {
-            UnityEngine.Debug.Log("Request error" + ex.ToString());
-            package.ErrorCode = (int)ErrorCode.eConnectError;
+            UnityEngine.Debug.Log("Socket send actionId: " + package.ActionId + " error" + ex);
+            package.ErrorCode = (int)ErrorCode.ConnectError;
             package.ErrorMsg = ex.ToString();
-            lock (receiveQueue)
+            lock (_receiveQueue)
             {
-                receiveQueue.Enqueue(package);
+                _receiveQueue.Enqueue(package);
             }
-            lock (sendList)
+            lock (_sendList)
             {
-                sendList.Remove(package);
+                _sendList.Remove(package);
             }
         }
     }
@@ -306,7 +314,7 @@ public class SocketConnect
     {
         try
         {
-            if (!this.isDisposed)
+            if (!this._isDisposed)
             {
                 if (isDisposing)
                 {
@@ -316,20 +324,20 @@ public class SocketConnect
         }
         finally
         {
-            this.isDisposed = true;
+            this._isDisposed = true;
         }
     }
 
     public void ProcessTimeOut()
     {
         SocketPackage findPackage = null;
-        lock (sendList)
+        lock (_sendList)
         {
-            foreach (SocketPackage package in sendList)
+            foreach (SocketPackage package in _sendList)
             {
                 if (DateTime.Now.Subtract(package.SendTime).TotalSeconds > TimeOut)
                 {
-                    package.ErrorCode = (int)ErrorCode.eTimeOutError;
+                    package.ErrorCode = (int)ErrorCode.TimeOutError;
                     package.ErrorMsg = "TimeOut";
                     findPackage = package;
                     break;
@@ -338,13 +346,13 @@ public class SocketConnect
         }
         if (findPackage != null)
         {
-            lock (receiveQueue)
+            lock (_receiveQueue)
             {
-                receiveQueue.Enqueue(findPackage);
+                _receiveQueue.Enqueue(findPackage);
             }
-            lock (sendList)
+            lock (_sendList)
             {
-                sendList.Remove(findPackage);
+                _sendList.Remove(findPackage);
             }
         }
     }

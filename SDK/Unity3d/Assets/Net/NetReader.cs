@@ -1,22 +1,12 @@
 using UnityEngine;
-using System.Collections;
 using System.Collections.Generic;
 using System;
 using System.Text;
 using System.IO;
-using ICSharpCode.SharpZipLib;
 using ICSharpCode.SharpZipLib.GZip;
-
-public enum NetworkType
-{
-    Http = 0,
-    Socket = 1,
-}
 
 public class NetReader
 {
-    
-
     class RECORDINFO
     {
         public int RecordSize { get; set; }
@@ -28,98 +18,82 @@ public class NetReader
         }
     }
 
-    byte[] bytes = null;
-    int streamPos = 0;
+    private PackageHead _head;
+    private IHeadFormater _formater;
+    private byte[] _bytes = null;
+    private int streamPos = 0;
     Stack<RECORDINFO> RecordStack = new Stack<RECORDINFO>();
-    public void SetByte(byte[] buf)
+
+
+    public NetReader()
+        : this(new DefaultHeadFormater())
     {
-        bytes = buf;
+    }
+
+    public NetReader(IHeadFormater formater)
+    {
+        _formater = formater;
     }
 
     public int StatusCode
     {
-        get;
-        set;
+        get { return _head.StatusCode; }
     }
 
     public string Description
     {
-        get;
-        set;
+        get { return _head.Description; }
     }
 
     public int ActionId
     {
-        get;
-        set;
+        get { return _head.ActionId; }
     }
 
     public int RmId
     {
-        get;
-        set;
+        get { return _head.RmId; }
     }
 
     public string StrTime
     {
-        get;
-        set;
+        get { return _head.StrTime; }
     }
 
-    public NetReader()
+    public void SetBuffer(byte[] buf)
     {
-
+        _bytes = buf;
+        streamPos = 0;
+        RecordStack.Clear();
     }
 
-    public bool pushNetStream(byte[] netBytes, NetworkType type)
+    /// <summary>
+    /// 设置字节流，并解开包的头部信息
+    /// </summary>
+    /// <param name="buffer"></param>
+    /// <param name="type"></param>
+    /// <returns></returns>
+    public bool pushNetStream(byte[] buffer, NetworkType type)
     {
-        if (null == netBytes)
+        if (null == buffer)
         {
             return false;
         }
-
-        // Decompression
-        //netBytes = Decompression(netBytes);
-        //Debug.Log("pushNetStream:length" + netBytes.Length);
-
-        this.bytes = netBytes;
-        this.streamPos = 0;
-        this.RecordStack.Clear();
-
-        int nStreamSize = getInt();
-
-        if (nStreamSize != this.bytes.Length)
-	    {
-            Debug.Log(" Failed: NetReader: pushNetStream , nStreamSize error " + "nStreamSize" + nStreamSize + "this.bytes.Length" + this.bytes.Length);
-	        return false;
-	    }
-
-
-        this.StatusCode = this.getInt();
-
-        this.RmId = this.getInt();
-
-        int nDescriptionLen = this.getInt();
-        if (nDescriptionLen > 0)
+        byte[] data;
+        if (!_formater.TryParse(buffer, out _head, out data))
         {
-            this.Description = this.getString(nDescriptionLen);
+            Debug.Log(" Failed: NetReader's pushNetStream parse head error: buffer Length " + buffer.Length);
+            return false;
         }
-        else
-        {
-            this.Description = "";
-        }
-
-        this.ActionId = this.getInt();
-
-        int nStrTimeLen = this.getInt();
-        if (nStrTimeLen > 0)
-        {
-            this.StrTime = this.getString(nStrTimeLen);
-        }
-
+        SetBuffer(data);
         return true;
     }
 
+    /// <summary>
+    /// Gzip解压
+    /// </summary>
+    /// <param name="buf"></param>
+    /// <returns></returns>
     public static byte[] Decompression(byte[] buf)
     {
         MemoryStream ms = new MemoryStream();
@@ -139,10 +113,15 @@ public class NetReader
         return result;
     }
 
+    public byte[] Buffer
+    {
+        get { return _bytes; }
+    }
+
     public bool recordBegin()
     {
         int nLen = sizeof(int);
-        if (streamPos + nLen > this.bytes.Length)
+        if (streamPos + nLen > this._bytes.Length)
         {
             Debug.Log(" Failed: 长度越界 NetReader: recordBegin ");
             return false;
@@ -172,7 +151,7 @@ public class NetReader
 
     public byte getRecordNumber()
     {
-        byte bt = bytes[this.streamPos];
+        byte bt = _bytes[this.streamPos];
         this.streamPos += 1;
         return bt;
     }
@@ -180,13 +159,13 @@ public class NetReader
     public byte getByte()
     {
         int nLen = sizeof(byte);
-        if (this.streamPos + nLen > this.bytes.Length)
+        if (this.streamPos + nLen > this._bytes.Length)
         {
             Debug.Log(" Failed: 长度越界  NetReader: getBYTE ");
             return 0;
         }
 
-        byte bt = bytes[this.streamPos];
+        byte bt = _bytes[this.streamPos];
         this.streamPos += nLen;
 
         if (this.RecordStack.Count > 0)
@@ -208,13 +187,13 @@ public class NetReader
     public sbyte getSByte()
     {
         int nLen = sizeof(sbyte);
-        if (this.streamPos + nLen > this.bytes.Length)
+        if (this.streamPos + nLen > this._bytes.Length)
         {
             Debug.Log(" Failed: 长度越界  NetReader: getSByte ");
             return 0;
         }
 
-        sbyte bt = Convert.ToSByte(bytes[this.streamPos]);
+        sbyte bt = Convert.ToSByte(_bytes[this.streamPos]);
         this.streamPos += nLen;
 
         if (this.RecordStack.Count > 0)
@@ -236,20 +215,20 @@ public class NetReader
     public short getShort()
     {
         int nLen = sizeof(short);
-        if (streamPos + nLen > this.bytes.Length)
+        if (streamPos + nLen > this._bytes.Length)
         {
             Debug.Log(" Failed: 长度越界 NetReader: getShort");
             return 0;
         }
 
-        short val = BitConverter.ToInt16(this.bytes, this.streamPos);
+        short val = BitConverter.ToInt16(this._bytes, this.streamPos);
         streamPos += nLen;
 
         if (this.RecordStack.Count > 0)
         {
             RECORDINFO info = RecordStack.Peek();
 
-            if(info.RecordReadSize + nLen > info.RecordSize)
+            if (info.RecordReadSize + nLen > info.RecordSize)
             {
                 Debug.Log(" Failed: 记录长度越界 NetReader: getShort");
                 return 0;
@@ -264,13 +243,13 @@ public class NetReader
     public ushort getUShort()
     {
         int nLen = sizeof(ushort);
-        if (streamPos + nLen > this.bytes.Length)
+        if (streamPos + nLen > this._bytes.Length)
         {
             Debug.Log(" Failed: 长度越界 NetReader: getUShort");
             return 0;
         }
 
-        ushort val = BitConverter.ToUInt16(this.bytes, this.streamPos);
+        ushort val = BitConverter.ToUInt16(this._bytes, this.streamPos);
         streamPos += nLen;
 
         if (this.RecordStack.Count > 0)
@@ -292,54 +271,53 @@ public class NetReader
     public int getInt()
     {
         int nLen = sizeof(int);
-        if (streamPos + nLen > this.bytes.Length)
+        if (streamPos + nLen > this._bytes.Length)
         {
             Debug.Log(" Failed: 长度越界 NetReader: getInt" + ActionId);
             return 0;
         }
 
-        int val = BitConverter.ToInt32(this.bytes, this.streamPos);
+        int val = BitConverter.ToInt32(this._bytes, this.streamPos);
         streamPos += nLen;
 
+        if (CheckRecordSize(nLen))
+        {
+            Debug.Log(" Failed: 记录长度越界 NetReader: getInt" + ActionId);
+            return 0;
+        }
+        return val;
+    }
+
+    private bool CheckRecordSize(int nLen)
+    {
         if (this.RecordStack.Count > 0)
         {
             RECORDINFO info = RecordStack.Peek();
-
             if (info.RecordReadSize + nLen > info.RecordSize)
             {
-                Debug.Log(" Failed: 记录长度越界 NetReader: getInt" + ActionId);
-                return 0;
+                return true;
             }
-
             info.RecordReadSize += nLen;
         }
-
-        return val;
+        return false;
     }
 
     public uint getUInt()
     {
         int nLen = sizeof(uint);
-        if (streamPos + nLen > this.bytes.Length)
+        if (streamPos + nLen > this._bytes.Length)
         {
             Debug.Log(" Failed: 长度越界 NetReader: getUInt");
             return 0;
         }
 
-        uint val = BitConverter.ToUInt32(this.bytes, this.streamPos);
+        uint val = BitConverter.ToUInt32(this._bytes, this.streamPos);
         streamPos += nLen;
 
-        if (this.RecordStack.Count > 0)
+        if (CheckRecordSize(nLen))
         {
-            RECORDINFO info = RecordStack.Peek();
-
-            if (info.RecordReadSize + nLen > info.RecordSize)
-            {
-                Debug.Log(" Failed: 记录长度越界 NetReader: getUInt");
-                return 0;
-            }
-
-            info.RecordReadSize += nLen;
+            Debug.Log(" Failed: 记录长度越界 NetReader: getUInt");
+            return 0;
         }
 
         return val;
@@ -347,26 +325,19 @@ public class NetReader
     public float getFloat()
     {
         int nLen = sizeof(float);
-        if (streamPos + nLen > this.bytes.Length)
+        if (streamPos + nLen > this._bytes.Length)
         {
             Debug.Log(" Failed: 长度越界 NetReader: getFloat");
             return 0;
         }
 
-        float val = BitConverter.ToSingle(this.bytes, this.streamPos);
+        float val = BitConverter.ToSingle(this._bytes, this.streamPos);
         streamPos += nLen;
 
-        if (this.RecordStack.Count > 0)
+        if (CheckRecordSize(nLen))
         {
-            RECORDINFO info = RecordStack.Peek();
-
-            if (info.RecordReadSize + nLen > info.RecordSize)
-            {
-                Debug.Log(" Failed: 记录长度越界 NetReader: getFloat");
-                return 0;
-            }
-
-            info.RecordReadSize += nLen;
+            Debug.Log(" Failed: 记录长度越界 NetReader: getFloat");
+            return 0;
         }
 
         return val;
@@ -375,56 +346,40 @@ public class NetReader
     public double getDouble()
     {
         int nLen = sizeof(double);
-        if (streamPos + nLen > this.bytes.Length)
+        if (streamPos + nLen > this._bytes.Length)
         {
             Debug.Log(" Failed: 长度越界 NetReader: getDouble");
             return 0;
         }
 
-        double val = BitConverter.ToDouble(this.bytes, this.streamPos);
+        double val = BitConverter.ToDouble(this._bytes, this.streamPos);
         streamPos += nLen;
 
-        if (this.RecordStack.Count > 0)
+        if (CheckRecordSize(nLen))
         {
-            RECORDINFO info = RecordStack.Peek();
-
-            if (info.RecordReadSize + nLen > info.RecordSize)
-            {
-                Debug.Log(" Failed: 记录长度越界 NetReader: getDouble");
-                return 0;
-            }
-
-            info.RecordReadSize += nLen;
+            Debug.Log(" Failed: 记录长度越界 NetReader: getDouble");
+            return 0;
         }
-
         return val;
     }
 
     public ulong getULong()
     {
         int nLen = sizeof(ulong);
-        if (streamPos + nLen > this.bytes.Length)
+        if (streamPos + nLen > this._bytes.Length)
         {
             Debug.Log(" Failed: 长度越界 NetReader: getULong");
             return 0;
         }
 
-        ulong val = BitConverter.ToUInt64(this.bytes, this.streamPos);
+        ulong val = BitConverter.ToUInt64(this._bytes, this.streamPos);
         streamPos += nLen;
 
-        if (this.RecordStack.Count > 0)
+        if (CheckRecordSize(nLen))
         {
-            RECORDINFO info = RecordStack.Peek();
-
-            if (info.RecordReadSize + nLen > info.RecordSize)
-            {
-                Debug.Log(" Failed: 记录长度越界 NetReader: getULong");
-                return 0;
-            }
-
-            info.RecordReadSize += nLen;
+            Debug.Log(" Failed: 记录长度越界 NetReader: getULong");
+            return 0;
         }
-
         return val;
     }
     public Int64 getLong()
@@ -434,28 +389,20 @@ public class NetReader
     public Int64 readInt64()
     {
         int nLen = sizeof(Int64);
-        if (streamPos + nLen > this.bytes.Length)
+        if (streamPos + nLen > this._bytes.Length)
         {
             Debug.Log(" Failed: 长度越界 NetReader: readInt64");
             return 0;
         }
 
-        Int64 val = BitConverter.ToInt64(this.bytes, this.streamPos);
+        Int64 val = BitConverter.ToInt64(this._bytes, this.streamPos);
         streamPos += nLen;
 
-        if (this.RecordStack.Count > 0)
+        if (CheckRecordSize(nLen))
         {
-            RECORDINFO info = RecordStack.Peek();
-
-            if (info.RecordReadSize + nLen > info.RecordSize)
-            {
-                Debug.Log(" Failed: 记录长度越界 NetReader: readInt64");
-                return 0;
-            }
-
-            info.RecordReadSize += nLen;
+            Debug.Log(" Failed: 记录长度越界 NetReader: readInt64");
+            return 0;
         }
-
         return val;
     }
 
@@ -474,28 +421,20 @@ public class NetReader
     public DateTime getDateTime()
     {
         int nLen = sizeof(long);
-        if (streamPos + nLen > this.bytes.Length)
+        if (streamPos + nLen > this._bytes.Length)
         {
             Debug.Log(" Failed: 长度越界 NetReader: getDateTime");
             return DateTime.MinValue;
         }
 
-        long val = BitConverter.ToInt64(this.bytes, this.streamPos);
+        long val = BitConverter.ToInt64(this._bytes, this.streamPos);
         streamPos += nLen;
 
-        if (this.RecordStack.Count > 0)
+        if (CheckRecordSize(nLen))
         {
-            RECORDINFO info = RecordStack.Peek();
-
-            if (info.RecordReadSize + nLen > info.RecordSize)
-            {
-                Debug.Log(" Failed: 记录长度越界 NetReader: getDateTime");
-                return DateTime.MinValue;
-            }
-
-            info.RecordReadSize += nLen;
+            Debug.Log(" Failed: 记录长度越界 NetReader: getDateTime");
+            return DateTime.MinValue;
         }
-
         return FromUnixTime(Convert.ToDouble(val));
     }
 
@@ -508,28 +447,20 @@ public class NetReader
 
     public string getString(int nLen)
     {
-        if (this.streamPos + nLen > this.bytes.Length)
+        if (this.streamPos + nLen > this._bytes.Length)
         {
             Debug.Log(" Failed: 长度越界 NetReader: getString");
             return null;
         }
-       
-        string str = Encoding.UTF8.GetString(this.bytes, this.streamPos, nLen);
+
+        string str = Encoding.UTF8.GetString(this._bytes, this.streamPos, nLen);
         this.streamPos += nLen;
 
-        if (this.RecordStack.Count > 0)
+        if (CheckRecordSize(nLen))
         {
-            RECORDINFO info = RecordStack.Peek();
-
-            if (info.RecordReadSize + nLen > info.RecordSize)
-            {
-                Debug.Log(" Failed: 记录长度越界 NetReader: getString");
-                return null;
-            }
-
-            info.RecordReadSize += nLen;
+            Debug.Log(" Failed: 记录长度越界 NetReader: getString");
+            return null;
         }
-
         return str;
     }
 
