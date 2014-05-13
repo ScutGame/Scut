@@ -1,20 +1,38 @@
 using System;
+using System.Collections;
 using UnityEngine;
 
 
 public class Net : MonoBehaviour, IHttpCallback
 {
+    public delegate bool CanRequestDelegate(int actionId, object userData);
+    public delegate void RequestNotifyDelegate(Status eStatus);
+    /// <summary>
+    /// 网络请求回调统一处理方法
+    /// </summary>
+    /// <param name="reader"></param>
+    /// <returns></returns>
+    public delegate bool CommonDataCallback(NetReader reader);
+
+    /// <summary>
+    /// 网络请求出错回调方法
+    /// </summary>
+    /// <param name="nType"></param>
+    /// <param name="actionId"></param>
+    /// <param name="strMsg"></param>
+    public delegate void NetError(eNetError nType, int actionId, string strMsg);
+
     public enum Status
     {
         eStartRequest = 0,
         eEndRequest = 1,
     }
-    public delegate void RequestNotifyDelegate(Status eStatus);
-    static Net s_instance = null;
+
+    protected static readonly int OVER_TIME = 30;
+    private static Net s_instance = null;
     private const int NETSUCCESS = 0;
     private string strUrl;
     private SocketConnect mSocket = null;
-    public delegate bool CanRequestDelegate(int actionId, object userData);
 
     public enum eNetError
     {
@@ -22,76 +40,44 @@ public class Net : MonoBehaviour, IHttpCallback
         eTimeOut = 1,
     }
 
-    public delegate bool CommonDataCallback(NetReader reader);
-    public delegate void NetError(eNetError nType, int ActionId, string strMsg);
+    /// <summary>
+    /// 请求代理通知
+    /// </summary>
+    public RequestNotifyDelegate RequestNotify { set; get; }
 
-    public NetError NetErrorCallback
-    {
-        get;
-        set;
-    }
-    public CommonDataCallback CommonCallback
-    {
-        get;
-        set;
-    }
+    /// <summary>
+    /// 注册网络请求出错回调方法
+    /// </summary>
+    public NetError NetErrorCallback { get; set; }
+
+    /// <summary>
+    /// 注册网络请求回调统一处理方法
+    /// </summary>
+    public CommonDataCallback CommonCallback { get; set; }
 
 
     public int NetSuccess
     {
         get { return NETSUCCESS; }
     }
-    void Start()
-    {
-        CommonCallback = NetResponse.Instance.CommonData;
-        NetErrorCallback = NetResponse.Instance.NetError;
-
-    }
     public void RequestDelegate(Net.Status eState)
     {
-        // RequestDelegate(eState, null);
-        //todo user loading
+        //todo user implement loading method
         if (eState == Net.Status.eStartRequest)
         {
         }
-        else//Net.Status.eEndRequest
+        else
         {
+            //Net.Status.eEndRequest
 
         }
     }
-    /* public LoginLoadingLogo mLoadingLogo = null;
-     public void RequestDelegate(Net.Status eState)
-     {
-         RequestDelegate(eState, null);
-     }
 
-     public void RequestDelegate(Net.Status eState, string strText)
-     {
-         if (eState == Net.Status.eStartRequest)
-         {
-             if (mLoadingLogo != null)
-             {
-                 mLoadingLogo.nCounter++;
-             }
-             else
-             {
-                 mLoadingLogo = LoginLoadingLogo.Create(strText);
-             }
-         }
-         else
-         {
-             if (mLoadingLogo != null)
-             {
-                 mLoadingLogo.nCounter--;
-                 if (mLoadingLogo.nCounter <= 0)
-                 {
-                     mLoadingLogo.CloseWindow();
-                     mLoadingLogo = null;
-                 }
-             }
-         }
-     }
-     */
+    void Start()
+    {
+
+    }
+
     void Awake()
     {
         UnityEngine.Object.DontDestroyOnLoad(base.gameObject);
@@ -119,74 +105,56 @@ public class Net : MonoBehaviour, IHttpCallback
             {
                 GameObject obj2 = new GameObject("net");
                 s_instance = obj2.AddComponent(typeof(Net)) as Net;
-                Http.RequestNotify = s_instance.RequestDelegate;
+                s_instance.RequestNotify = s_instance.RequestDelegate;
             }
             return s_instance;
         }
     }
+
     /// <summary>
-    /// CallBack的函数要保证它在网络回来时的生命周期依然可用
+    /// 
     /// </summary>
     /// <param name="actionId"></param>
-    /// <param name="callback"></param>
     /// <param name="userData"></param>
-    public void Request(int actionId, INetCallback callback, object userData)
+    /// <param name="bShowLoading"></param>
+    public void Send(int actionId, object userData, bool bShowLoading = true)
     {
-        Request(actionId, callback, userData, true);
-    }
-    public void Request(int actionId, INetCallback callback, object userData, bool bShowLoading)
-    {
+        GameAction gameAction = ActionFactory.Create(actionId);
+        if (gameAction == null)
+        {
+            throw new ArgumentException(string.Format("Not found {0} of GameAction object.", actionId));
+        }
         if (NetWriter.IsSocket())
         {
-            SocketRequest(actionId, callback, userData, bShowLoading);
+            SocketRequest(gameAction, userData, bShowLoading);
         }
         else
         {
-            HttpRequest(actionId, callback, userData, bShowLoading);
+            HttpRequest(gameAction, userData, bShowLoading);
         }
-    }
-    //
-    //NetWriter.Instance.writeInt32()
-    //发送请求
-    public void HttpRequest(int actionId, INetCallback callback, object userData)
-    {
-        HttpRequest(actionId, callback, userData, true);
-    }
-
-    public void HttpRequest(int actionId, INetCallback callback, object userData, bool bShowLoading)
-    {
-        NetWriter writer = NetWriter.Instance;
-        writer.writeInt32("actionId", actionId);
-        StartCoroutine(Http.GetRequest(writer.generatePostData(), userData, actionId, callback, this, bShowLoading));
-        NetWriter.resetData();
     }
 
     /// <summary>
     /// parse input data
     /// </summary>
-    /// <param name="actionId"></param>
-    /// <param name="callback"></param>
+    /// <param name="gameAction"></param>
     /// <param name="userData"></param>
     /// <param name="bShowLoading"></param>
-    public void SocketRequest(int actionId, INetCallback callback, object userData, bool bShowLoading)
+    private void SocketRequest(GameAction gameAction, object userData, bool bShowLoading)
     {
-        //todo unchanged
         if (mSocket == null)
         {
             string strUrl = NetWriter.GetUrl();
-            Debug.Log("connect to " + strUrl);
             string[] arr = strUrl.Split(new char[] { ':' });
             int nPort = int.Parse(arr[1]);
             mSocket = new SocketConnect(arr[0], nPort);
         }
-        NetWriter writer = NetWriter.Instance;
-        writer.writeInt32("actionId", actionId);
-        byte[] data = NetWriter.Instance.PostData();
+        byte[] data = gameAction.Send(userData);
         SocketPackage package = new SocketPackage();
-        package.FuncCallback = callback;
         package.UserData = userData;
         package.MsgId = NetWriter.MsgId - 1;
-        package.ActionId = actionId;
+        package.Action = gameAction;
+        package.ActionId = gameAction.ActionId;
         package.HasLoading = bShowLoading;
         package.SendTime = DateTime.Now;
         NetWriter.resetData();
@@ -195,22 +163,15 @@ public class Net : MonoBehaviour, IHttpCallback
         {
             RequestDelegate(Status.eStartRequest);
         }
-        mSocket.Request(data, package);
+        mSocket.Send(data, package);
     }
-    public void SocketRequest(int actionId, INetCallback callback, object userData)
-    {
-        SocketRequest(actionId, callback, userData, true);
-    }
-
 
     /// <summary>
     /// socket respond
     /// </summary>
     /// <param name="package"></param>
-    public void OnSocketRespond(SocketPackage package)
+    private void OnSocketRespond(SocketPackage package)
     {
-        Debug.Log("OnSocketRespond actionId:" + package.ActionId + ", error:" + package.ErrorCode);
-
         if (package.HasLoading)
         {
             RequestDelegate(Status.eEndRequest);
@@ -229,30 +190,48 @@ public class Net : MonoBehaviour, IHttpCallback
         }
         else
         {
-            ServerResponse.ResponseData data = null;
-            NetReader reader = package.Reader;
-            bool bRet = true;
-
-            if (CommonCallback != null)
-            {
-                bRet = CommonCallback(reader);
-            }
-
-            if (bRet)
-            {
-                //todo response
-                data = ServerResponse.Instance.GetData(reader);
-                if (package.FuncCallback != null)
-                {
-                    ProcessBodyData(data, package.UserData, package.FuncCallback);
-                }
-                else
-                {
-                    Debug.Log("poll message ");
-                }
-
-            }
+            OnRespond(package);
         }
+    }
+
+    private void HttpRequest(GameAction gameAction, object userData, bool bShowLoading)
+    {
+        StartCoroutine(HttpGetRequest(gameAction, userData, bShowLoading));
+        NetWriter.resetData();
+    }
+
+    private IEnumerator HttpGetRequest(GameAction gameAction, object userData, bool showLoading)
+    {
+        string url = NetWriter.GetUrl();
+        byte[] postData = gameAction.Send(userData);
+        DateTime start = DateTime.Now;
+        HttpPackage httpPackage = new HttpPackage();
+        httpPackage.WwwObject = new WWW(url, postData);
+        httpPackage.ActionId = gameAction.ActionId;
+        httpPackage.Action = gameAction;
+        httpPackage.Reader = new NetReader();
+        httpPackage.UserData = userData;
+
+        if (RequestNotify != null && showLoading)
+        {
+            RequestNotify(Net.Status.eStartRequest);
+        }
+
+        yield return httpPackage.WwwObject;
+
+        if (RequestNotify != null && showLoading)
+        {
+            RequestNotify(Net.Status.eEndRequest);
+        }
+        TimeSpan tsStart = new TimeSpan(start.Ticks);
+        TimeSpan tsEnd = new TimeSpan(DateTime.Now.Ticks);
+        TimeSpan ts = tsEnd.Subtract(tsStart).Duration();
+
+        if (ts.Seconds > OVER_TIME)
+        {
+            httpPackage.IsOverTime = true;
+        }
+        OnHttpRespond(httpPackage, userData);
     }
 
     /// <summary>
@@ -264,53 +243,55 @@ public class Net : MonoBehaviour, IHttpCallback
     {
         if (package.error != null)
         {
-            OnNetError(package.Tag, package.error.ToString());
+            OnNetError(package.ActionId, package.error);
         }
-        else if (package.overTime)
+        else if (package.IsOverTime)
         {
-            OnNetTimeOut(package.Tag);
+            OnNetTimeOut(package.ActionId);
         }
         else
         {
-            NetReader reader = new NetReader();
-            reader.pushNetStream(package.Buffer, NetworkType.Http);
-            ServerResponse.ResponseData data = null;
-            bool bRet = true;
-            if (reader.ActionId != 0)//获取服务器列表比较特殊没有协议头
+            NetReader reader = package.Reader;
+            byte[] buffBytes = package.GetResponse();
+            if (reader.pushNetStream(buffBytes, NetworkType.Http))
             {
-                if (CommonCallback != null)
-                {
-                    bRet = CommonCallback(reader);
-                }
+                OnRespond(package);
             }
-            if (bRet)
-            {
-                data = ServerResponse.Instance.GetData(reader);
-                ProcessBodyData(data, userdata, package.FuncCallback);
-            }
-            reader = null;
         }
     }
 
-    public void OnNetError(int nActionId, string str)
+    private void OnRespond(NetPackage package)
+    {
+        NetReader reader = package.Reader;
+        bool result = true;
+        if (CommonCallback != null)
+        {
+            result = CommonCallback(reader);
+        }
+
+        if (result && package.Action != null && package.Action.TryDecodePackage(reader))
+        {
+            package.Action.Callback(package.UserData);
+        }
+        else
+        {
+            Debug.Log("Decode package fail.");
+        }
+    }
+
+    private void OnNetError(int nActionId, string str)
     {
         if (NetErrorCallback != null)
         {
             NetErrorCallback(eNetError.eConnectFailed, nActionId, str);
         }
     }
-    public void OnNetTimeOut(int nActionId)
+    private void OnNetTimeOut(int nActionId)
     {
         if (NetErrorCallback != null)
         {
             NetErrorCallback(eNetError.eTimeOut, nActionId, null);
         }
 
-    }
-
-    public void ProcessBodyData(ServerResponse.ResponseData data, object userdata, INetCallback callback)
-    {
-        Debug.Log("Net ProcessBodyData " + data.ActionId + " ErrorCode " + data.ErrorCode + " ErrorMsg " + data.ErrorMsg);
-        callback(data, userdata);
     }
 }

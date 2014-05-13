@@ -37,27 +37,27 @@ public class NetReader
 
     public int StatusCode
     {
-        get { return _head.StatusCode; }
+        get { return _head == null ? 10000 : _head.StatusCode; }
     }
 
     public string Description
     {
-        get { return _head.Description; }
+        get { return _head == null ? "" : _head.Description; }
     }
 
     public int ActionId
     {
-        get { return _head.ActionId; }
+        get { return _head == null ? 0 : _head.ActionId; }
     }
 
     public int RmId
     {
-        get { return _head.RmId; }
+        get { return _head == null ? 0 : _head.RmId; }
     }
 
     public string StrTime
     {
-        get { return _head.StrTime; }
+        get { return _head == null ? "" : _head.StrTime; }
     }
 
     public void SetBuffer(byte[] buf)
@@ -75,14 +75,10 @@ public class NetReader
     /// <returns></returns>
     public bool pushNetStream(byte[] buffer, NetworkType type)
     {
-        if (null == buffer)
-        {
-            return false;
-        }
         byte[] data;
         if (!_formater.TryParse(buffer, out _head, out data))
         {
-            Debug.Log(" Failed: NetReader's pushNetStream parse head error: buffer Length " + buffer.Length);
+            Debug.LogError(" Failed: NetReader's pushNetStream parse head error: buffer Length " + buffer.Length);
             return false;
         }
         SetBuffer(data);

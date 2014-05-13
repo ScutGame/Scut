@@ -27,7 +27,6 @@ public abstract class ActionFactory
                 if (type == null)
                 {
                     type = Type.GetType(name);
-                    UnityEngine.Debug.Log(name + " type:" + (type == null));
                     lookupType[name] = type;
                 }
             }

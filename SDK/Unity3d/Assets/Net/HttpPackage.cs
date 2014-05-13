@@ -1,53 +1,40 @@
 using UnityEngine;
 
-public class HttpPackage
+public class HttpPackage : NetPackage
 {
+    public WWW WwwObject { get; set; }
+
     public string error
     {
         get
         {
-            if (overTime)
+            if (IsOverTime)
             {
                 return "http request over time";
             }
             else
             {
-                return w.error;
+                return WwwObject.error;
             }
         }
     }
 
-    public byte[] Buffer
+    public byte[] GetResponse()
     {
-        get
+        if (Application.platform == RuntimePlatform.IPhonePlayer)
         {
-            if (Application.platform == RuntimePlatform.IPhonePlayer)
-            {
-                return w.bytes;
-            }
-            string strEncoding = null;
-            if (w.responseHeaders.ContainsKey("CONTENT-ENCODING"))
-            {
-                strEncoding = w.responseHeaders["CONTENT-ENCODING"];
-            }
-            if (strEncoding != null && strEncoding == "gzip")
-            {
-                return NetReader.Decompression(w.bytes);
-            }
-            return w.bytes;
+            return WwwObject.bytes;
         }
+        string strEncoding = null;
+        if (WwwObject.responseHeaders.ContainsKey("CONTENT-ENCODING"))
+        {
+            strEncoding = WwwObject.responseHeaders["CONTENT-ENCODING"];
+        }
+        if (strEncoding != null && strEncoding == "gzip")
+        {
+            return NetReader.Decompression(WwwObject.bytes);
+        }
+        return WwwObject.bytes;
     }
 
-    public int Tag
-    {
-        get;
-        set;
-    }
-    public INetCallback FuncCallback
-    {
-        set;
-        get;
-    }
-    public WWW w { get; set; }
-    public bool overTime { get; set; }
 }

@@ -34,6 +34,7 @@ public class NetWriter
 
     public static void resetData()
     {
+        _buffer = null;
         s_strPostData = "";
         s_strUserData = string.Format("MsgId={0}&Sid={1}&Uid={2}&St={3}", s_Counter, s_strSessionID, s_userID, s_strSt);
         s_Counter++;
@@ -65,6 +66,13 @@ public class NetWriter
 
     public void SetData(byte[] headBuffer, byte[] bodyBytes)
     {
+        //加头长度,合并body
+        byte[] lenBytes = BitConverter.GetBytes(headBuffer.Length);
+        byte[] buffer = new byte[headBuffer.Length + lenBytes.Length + bodyBytes.Length];
+        Buffer.BlockCopy(lenBytes, 0, buffer, 0, lenBytes.Length);
+        Buffer.BlockCopy(headBuffer, 0, buffer, lenBytes.Length, headBuffer.Length);
+        Buffer.BlockCopy(bodyBytes, 0, buffer, lenBytes.Length + headBuffer.Length, bodyBytes.Length);
+        SetData(buffer);
     }
 
     public void SetData(byte[] buffer)
@@ -146,21 +154,6 @@ public class NetWriter
         return getMd5String(Encoding.Default.GetBytes(input));
     }
 
-    public string generatePostData()
-    {
-        s_strPostData = s_strUrl + "?d=";
-
-        //md5
-        string str = s_strUserData + "&sign="
-            + getMd5String(s_strUserData + s_md5Key);
-
-        s_strPostData += url_encode(str);
-
-        Debug.Log(s_strPostData);
-
-        return s_strPostData;
-    }
-
     public byte[] PostData()
     {
         byte[] data;
@@ -171,11 +164,12 @@ public class NetWriter
         }
         else
         {
-            s_strPostData = "?d=";
+            s_strPostData = IsSocket() ? "?d=" : "d=";
             string str = s_strUserData + "&sign=" + getMd5String(s_strUserData + s_md5Key);
             s_strPostData += url_encode(str);
             data = Encoding.ASCII.GetBytes(s_strPostData);
         }
+        if (!IsSocket()) return data;
 
         //加包长度，拆包时使用
         byte[] len = BitConverter.GetBytes(data.Length);

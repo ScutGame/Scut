@@ -34,6 +34,9 @@
     <NoWarn>0169</NoWarn>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="GameRanking.Pack">
+      <HintPath>Assets\Lib\GameRanking.Pack.dll</HintPath>
+    </Reference>
     <Reference Include="ICSharpCode.SharpZipLib">
       <HintPath>Assets\Lib\ICSharpCode.SharpZipLib.dll</HintPath>
     </Reference>
@@ -51,21 +54,21 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Assets\Game\Action\Action1000.cs" />
     <Compile Include="Assets\Game\Action\ActionType.cs" />
+    <Compile Include="Assets\Net\IHttpCallBack.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Assets\Net\NetPackage.cs" />
     <Compile Include="Assets\Security\DES.cs" />
     <Compile Include="Assets\Security\MD5Utils.cs" />
     <Compile Include="Assets\Game\Action\Action1001.cs" />
-    <Compile Include="Assets\Net\ActionFactory.cs" />
-    <Compile Include="Assets\Net\GameAction.cs" />
+    <Compile Include="Assets\Game\ActionFactory.cs" />
+    <Compile Include="Assets\Game\GameAction.cs" />
     <Compile Include="Assets\Game\Net.cs" />
-    <Compile Include="Assets\Game\NetDelegate.cs" />
-    <Compile Include="Assets\Game\ResponseCommonData.cs" />
-    <Compile Include="Assets\Game\ServerResonse.cs" />
     <Compile Include="Assets\Net\DefaultHeadFormater.cs" />
-    <Compile Include="Assets\Net\Http.cs" />
     <Compile Include="Assets\Net\HttpPackage.cs" />
     <Compile Include="Assets\Net\IHeadFormater.cs" />
-    <Compile Include="Assets\Net\IHttpCallBack.cs" />
     <Compile Include="Assets\Net\NetReader.cs" />
     <Compile Include="Assets\Net\NetworkType.cs" />
     <Compile Include="Assets\Net\NetWriter.cs" />

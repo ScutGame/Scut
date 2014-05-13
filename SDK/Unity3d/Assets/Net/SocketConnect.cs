@@ -36,12 +36,12 @@ public class SocketConnect
         _receiveQueue = new Queue<SocketPackage>();
     }
 
-    static public void PushActionPool(int actionId, INetCallback callback)
+    static public void PushActionPool(int actionId, GameAction action)
     {
         RemoveActionPool(actionId);
         SocketPackage package = new SocketPackage();
         package.ActionId = actionId;
-        package.FuncCallback = callback;
+        package.Action = action;
         ActionPools.Add(package);
     }
 
@@ -56,6 +56,10 @@ public class SocketConnect
             }
         }
     }
+    /// <summary>
+    /// 取出回返消息包
+    /// </summary>
+    /// <returns></returns>
     public SocketPackage Dequeue()
     {
         lock (_receiveQueue)
@@ -248,7 +252,7 @@ public class SocketConnect
     /// 发送数据
     /// </summary>
     /// <param name="data"></param>
-    public bool Send(byte[] data)
+    private bool PostSend(byte[] data)
     {
         EnsureConnected();
         if (_socket != null)
@@ -272,7 +276,7 @@ public class SocketConnect
        
 
     }
-    public void Request(byte[] data, SocketPackage package)
+    public void Send(byte[] data, SocketPackage package)
     {
         if (data == null)
         {
@@ -285,7 +289,7 @@ public class SocketConnect
 
         try
         {
-            bool bRet = Send(data);
+            bool bRet = PostSend(data);
             UnityEngine.Debug.Log("Socket send actionId:" + package.ActionId + ", msgId:" + package.MsgId + ", send result:" + bRet);
         }
         catch (Exception ex)

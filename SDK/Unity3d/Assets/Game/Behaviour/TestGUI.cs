@@ -15,52 +15,22 @@ public class TestGUI : MonoBehaviour
     {
 
     }
-    void httpCallback(ServerResponse.ResponseData data, object userdata)
-    {
-        ServerResponse.Resopnse_1001 res = (ServerResponse.Resopnse_1001)data.Resonse;
 
-        string ret = "Page " + res.PageCount;
-        for (int i = 0; i < res.items.Count; i++)
-        {
-            ServerResponse.Item item = res.items[i];
-            ret += item.UserName;
-            ret += ",";
-            ret += item.Score;
-            ret += ":";
-        }
-        Debug.Log("Receive OK, Value:" + ret);
-
-    }
     void OnGUI()
     {
-
 
         // Now create any Controls you like, and they will be displayed with the custom Skin
         if (GUILayout.Button("Click Http"))
         {
             NetWriter.SetUrl("http://ph.scutgame.com/service.aspx");
-            NetWriter writer = NetWriter.Instance;
-            writer.writeString("PageIndex", "1");
-            writer.writeInt32("PageSize", 10);
-            Net.Instance.Request(1001, httpCallback, null);
+            Net.Instance.Send((int)ActionType.RankSelect, null);
         }
-
-
 
         // Any Controls created here will use the default Skin and not the custom Skin
         if (GUILayout.Button("Click Socket"))
         {
-            //GameAction gameAction = ActionFactory.Create(ActionType.RankSelect);
-            //if (gameAction != null) gameAction.Test();
-            //else
-            //{
-            //    print("game is null.");
-            //}
             NetWriter.SetUrl("ph.scutgame.com:9001");
-            NetWriter writer = NetWriter.Instance;
-            writer.writeString("PageIndex", "1");
-            writer.writeInt32("PageSize", 10);
-            Net.Instance.Request(1001, httpCallback, null);
+            Net.Instance.Send((int)ActionType.RankSelect, null);
         }
     }
 }

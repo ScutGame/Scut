@@ -11,6 +11,10 @@ class DefaultHeadFormater : IHeadFormater
         bodyBytes = null;
         head = null;
         int pos = 0;
+        if (data == null || data.Length == 0)
+        {
+            return false;
+        }
         int nStreamSize = GetInt(data, ref pos);
 
         if (nStreamSize != data.Length)
