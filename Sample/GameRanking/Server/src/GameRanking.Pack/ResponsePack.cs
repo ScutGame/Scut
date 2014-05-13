@@ -12,11 +12,13 @@ namespace GameRanking.Pack
         [ProtoMember(2)]
         public int ActionId { get; set; }
 
-        [ProtoMember(10)]
+        [ProtoMember(3)]
         public int ErrorCode { get; set; }
-        [ProtoMember(11)]
+        [ProtoMember(4)]
         public string ErrorInfo { get; set; }
 
+        [ProtoMember(5)]
+        public string St { get; set; }
     }
 
 }

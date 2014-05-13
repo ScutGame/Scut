@@ -93,7 +93,8 @@ public class CustomActionDispatcher : IActionDispatcher
             MsgId = actionGetter.GetMsgId(),
             ActionId = actionGetter.GetActionId(),
             ErrorCode = errorCode,
-            ErrorInfo = errorInfo
+            ErrorInfo = errorInfo,
+            St = actionGetter.GetSt()
         };
         byte[] headBytes = ProtoBufUtils.Serialize(head);
         byte[] buffer = BufferUtils.AppendHeadBytes(headBytes);

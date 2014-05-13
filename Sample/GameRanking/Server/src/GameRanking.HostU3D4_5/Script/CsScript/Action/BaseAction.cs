@@ -48,7 +48,8 @@ namespace GameServer.CsScript.Action
                 MsgId = actionGetter.GetMsgId(),
                 ActionId = actionGetter.GetActionId(),
                 ErrorCode = ErrorCode,
-                ErrorInfo = ErrorInfo
+                ErrorInfo = ErrorInfo,
+                St = St
             };
         }
 
