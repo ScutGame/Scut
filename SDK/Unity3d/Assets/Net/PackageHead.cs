@@ -26,12 +26,18 @@ public class PackageHead
         set;
     }
 
-    public int RmId
+    public int MsgId
     {
         get;
         set;
     }
 
+    public string SessionId { get; set; }
+    public int UserId { get; set; }
+
+    /// <summary>
+    /// st
+    /// </summary>
     public string StrTime
     {
         get;

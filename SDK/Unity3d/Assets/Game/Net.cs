@@ -55,6 +55,7 @@ public class Net : MonoBehaviour, IHttpCallback
     /// </summary>
     public CommonDataCallback CommonCallback { get; set; }
 
+    public IHeadFormater HeadFormater { get; set; }
 
     public int NetSuccess
     {
@@ -105,14 +106,20 @@ public class Net : MonoBehaviour, IHttpCallback
             {
                 GameObject obj2 = new GameObject("net");
                 s_instance = obj2.AddComponent(typeof(Net)) as Net;
-                s_instance.RequestNotify = s_instance.RequestDelegate;
+                if (s_instance != null)
+                {
+                    s_instance.RequestNotify = s_instance.RequestDelegate;
+                    s_instance.HeadFormater = new DefaultHeadFormater();
+                    s_instance.NetErrorCallback = (type, id, msg) => Debug.LogError(string.Format("Net error:{0}-{1}", id, msg));
+                }
             }
             return s_instance;
         }
     }
 
+
     /// <summary>
-    /// 
+    /// Send
     /// </summary>
     /// <param name="actionId"></param>
     /// <param name="userData"></param>
@@ -126,11 +133,11 @@ public class Net : MonoBehaviour, IHttpCallback
         }
         if (NetWriter.IsSocket())
         {
-            SocketRequest(gameAction, userData, bShowLoading);
+            SocketRequest(gameAction, userData, HeadFormater, bShowLoading);
         }
         else
         {
-            HttpRequest(gameAction, userData, bShowLoading);
+            HttpRequest(gameAction, userData, HeadFormater, bShowLoading);
         }
     }
 
@@ -139,26 +146,28 @@ public class Net : MonoBehaviour, IHttpCallback
     /// </summary>
     /// <param name="gameAction"></param>
     /// <param name="userData"></param>
+    /// <param name="formater"></param>
     /// <param name="bShowLoading"></param>
-    private void SocketRequest(GameAction gameAction, object userData, bool bShowLoading)
+    private void SocketRequest(GameAction gameAction, object userData, IHeadFormater formater, bool bShowLoading)
     {
         if (mSocket == null)
         {
             string strUrl = NetWriter.GetUrl();
             string[] arr = strUrl.Split(new char[] { ':' });
             int nPort = int.Parse(arr[1]);
-            mSocket = new SocketConnect(arr[0], nPort);
+            mSocket = new SocketConnect(arr[0], nPort, formater);
         }
-        byte[] data = gameAction.Send(userData);
+        gameAction.Head.MsgId = NetWriter.MsgId - 1;
+
         SocketPackage package = new SocketPackage();
         package.UserData = userData;
-        package.MsgId = NetWriter.MsgId - 1;
-        package.Action = gameAction;
+        package.MsgId = gameAction.Head.MsgId;
         package.ActionId = gameAction.ActionId;
+        package.Action = gameAction;
         package.HasLoading = bShowLoading;
         package.SendTime = DateTime.Now;
+        byte[] data = gameAction.Send(userData);
         NetWriter.resetData();
-
         if (bShowLoading)
         {
             RequestDelegate(Status.eStartRequest);
@@ -194,13 +203,13 @@ public class Net : MonoBehaviour, IHttpCallback
         }
     }
 
-    private void HttpRequest(GameAction gameAction, object userData, bool bShowLoading)
+    private void HttpRequest(GameAction gameAction, object userData, IHeadFormater formater, bool bShowLoading)
     {
-        StartCoroutine(HttpGetRequest(gameAction, userData, bShowLoading));
+        StartCoroutine(HttpGetRequest(gameAction, userData, formater, bShowLoading));
         NetWriter.resetData();
     }
 
-    private IEnumerator HttpGetRequest(GameAction gameAction, object userData, bool showLoading)
+    private IEnumerator HttpGetRequest(GameAction gameAction, object userData, IHeadFormater formater, bool showLoading)
     {
         string url = NetWriter.GetUrl();
         byte[] postData = gameAction.Send(userData);
@@ -209,7 +218,7 @@ public class Net : MonoBehaviour, IHttpCallback
         httpPackage.WwwObject = new WWW(url, postData);
         httpPackage.ActionId = gameAction.ActionId;
         httpPackage.Action = gameAction;
-        httpPackage.Reader = new NetReader();
+        httpPackage.Reader = new NetReader(formater);
         httpPackage.UserData = userData;
 
         if (RequestNotify != null && showLoading)
@@ -290,7 +299,7 @@ public class Net : MonoBehaviour, IHttpCallback
     {
         if (NetErrorCallback != null)
         {
-            NetErrorCallback(eNetError.eTimeOut, nActionId, null);
+            NetErrorCallback(eNetError.eTimeOut, nActionId, "timeout.");
         }
 
     }

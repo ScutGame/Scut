@@ -56,6 +56,8 @@
   <ItemGroup>
     <Compile Include="Assets\Game\Action\Action1000.cs" />
     <Compile Include="Assets\Game\Action\ActionType.cs" />
+    <Compile Include="Assets\Game\Action\BaseAction.cs" />
+    <Compile Include="Assets\Game\CustomHeadFormater.cs" />
     <Compile Include="Assets\Net\IHttpCallBack.cs">
       <SubType>Code</SubType>
     </Compile>

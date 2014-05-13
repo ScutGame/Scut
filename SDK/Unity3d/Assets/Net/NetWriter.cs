@@ -15,7 +15,8 @@ public class NetWriter
     private static string s_strUserData = "";
     private static int s_Counter = 1;
     private static string s_md5Key = "";
-    private static byte[] _buffer;
+    private static byte[] _bodyBuffer;
+    private static byte[] _headBuffer;
     private static readonly NetWriter s_isntance = new NetWriter();
 
     public static NetWriter Instance
@@ -34,7 +35,8 @@ public class NetWriter
 
     public static void resetData()
     {
-        _buffer = null;
+        _headBuffer = null;
+        _bodyBuffer = null;
         s_strPostData = "";
         s_strUserData = string.Format("MsgId={0}&Sid={1}&Uid={2}&St={3}", s_Counter, s_strSessionID, s_userID, s_strSt);
         s_Counter++;
@@ -64,21 +66,31 @@ public class NetWriter
         }
     }
 
-    public void SetData(byte[] headBuffer, byte[] bodyBytes)
+    public void SetHeadBuffer(byte[] buffer)
     {
-        //加头长度,合并body
-        byte[] lenBytes = BitConverter.GetBytes(headBuffer.Length);
-        byte[] buffer = new byte[headBuffer.Length + lenBytes.Length + bodyBytes.Length];
-        Buffer.BlockCopy(lenBytes, 0, buffer, 0, lenBytes.Length);
-        Buffer.BlockCopy(headBuffer, 0, buffer, lenBytes.Length, headBuffer.Length);
-        Buffer.BlockCopy(bodyBytes, 0, buffer, lenBytes.Length + headBuffer.Length, bodyBytes.Length);
-        SetData(buffer);
+        _headBuffer = buffer;
     }
 
-    public void SetData(byte[] buffer)
+    public void SetBodyData(byte[] buffer)
     {
-        _buffer = buffer;
+        _bodyBuffer = buffer ?? new byte[0];
     }
+
+    private byte[] GetDataBuffer()
+    {
+        if (_headBuffer == null || _headBuffer.Length == 0 || _bodyBuffer == null)
+        {
+            return new byte[0];
+        }
+        //加头长度,合并body
+        byte[] lenBytes = BitConverter.GetBytes(_headBuffer.Length);
+        byte[] buffer = new byte[_headBuffer.Length + lenBytes.Length + _bodyBuffer.Length];
+        Buffer.BlockCopy(lenBytes, 0, buffer, 0, lenBytes.Length);
+        Buffer.BlockCopy(_headBuffer, 0, buffer, lenBytes.Length, _headBuffer.Length);
+        Buffer.BlockCopy(_bodyBuffer, 0, buffer, lenBytes.Length + _headBuffer.Length, _bodyBuffer.Length);
+        return buffer;
+    }
+
 
     private NetWriter()
     {
@@ -157,10 +169,10 @@ public class NetWriter
     public byte[] PostData()
     {
         byte[] data;
-        if (_buffer != null && _buffer.Length > 0)
+        if (_headBuffer != null && _headBuffer.Length > 0)
         {
             //支持自定义结构
-            data = _buffer;
+            data = GetDataBuffer();
         }
         else
         {

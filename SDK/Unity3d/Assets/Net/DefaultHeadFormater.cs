@@ -23,7 +23,7 @@ class DefaultHeadFormater : IHeadFormater
         }
         head = new PackageHead();
         head.StatusCode = GetInt(data, ref pos);
-        head.RmId = GetInt(data, ref pos);
+        head.MsgId = GetInt(data, ref pos);
         head.Description = GetString(data, ref pos);
         head.ActionId = GetInt(data, ref pos);
         head.StrTime = GetString(data, ref pos);

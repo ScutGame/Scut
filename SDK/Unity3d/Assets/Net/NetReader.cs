@@ -25,10 +25,10 @@ public class NetReader
     Stack<RECORDINFO> RecordStack = new Stack<RECORDINFO>();
 
 
-    public NetReader()
-        : this(new DefaultHeadFormater())
-    {
-    }
+    //public NetReader()
+    //    : this(new DefaultHeadFormater())
+    //{
+    //}
 
     public NetReader(IHeadFormater formater)
     {
@@ -52,7 +52,7 @@ public class NetReader
 
     public int RmId
     {
-        get { return _head == null ? 0 : _head.RmId; }
+        get { return _head == null ? 0 : _head.MsgId; }
     }
 
     public string StrTime
@@ -111,7 +111,7 @@ public class NetReader
 
     public byte[] Buffer
     {
-        get { return _bytes; }
+        get { return _bytes ?? new byte[0]; }
     }
 
     public bool recordBegin()

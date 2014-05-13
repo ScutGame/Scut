@@ -10,18 +10,20 @@ public abstract class GameAction
 
     protected GameAction(int actionId)
     {
-        _actionId = actionId;
+        Head = new PackageHead() { ActionId = actionId };
     }
 
     public int ActionId
     {
-        get { return _actionId; }
+        get { return Head.ActionId; }
     }
-    
-    public virtual byte[] Send(object userData)
+
+    public PackageHead Head { get; private set; }
+
+    public byte[] Send(object userData)
     {
         NetWriter writer = NetWriter.Instance;
-        SetActionParameter(writer);
+        SetActionHead(writer);
         SendParameter(writer, userData);
         return writer.PostData();
     }
@@ -58,7 +60,7 @@ public abstract class GameAction
     }
 
 
-    private void SetActionParameter(NetWriter writer)
+    protected virtual void SetActionHead(NetWriter writer)
     {
         writer.writeInt32("actionId", ActionId);
     }

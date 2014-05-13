@@ -1,5 +1,4 @@
 ﻿using UnityEngine;
-using System.Collections;
 
 public class TestGUI : MonoBehaviour
 {
@@ -7,7 +6,8 @@ public class TestGUI : MonoBehaviour
     // Use this for initialization
     void Start()
     {
-
+        //todo 启用自定的结构
+        Net.Instance.HeadFormater = new CustomHeadFormater();
     }
 
     // Update is called once per frame

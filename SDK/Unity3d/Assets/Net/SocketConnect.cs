@@ -15,6 +15,7 @@ public class SocketConnect
     private Socket _socket;
     private readonly string _host;
     private readonly int _port;
+    private readonly IHeadFormater _formater;
     private bool _isDisposed;
     private readonly List<SocketPackage> _sendList;
     private readonly Queue<SocketPackage> _receiveQueue;
@@ -28,10 +29,11 @@ public class SocketConnect
         TimeOutError = -2,
     }
 
-    public SocketConnect(string host, int port)
+    public SocketConnect(string host, int port, IHeadFormater formater)
     {
         this._host = host;
         this._port = port;
+        _formater = formater;
         _sendList = new List<SocketPackage>();
         _receiveQueue = new Queue<SocketPackage>();
     }
@@ -107,14 +109,14 @@ public class SocketConnect
                         //判断流是否有Gzip压缩
                         if (data[0] == 0x1f && data[1] == 0x8b && data[2] == 0x08 && data[3] == 0x00)
                         {
-                            data = NetReader.Decompression(data);  
+                            data = NetReader.Decompression(data);
                         }
 
-                        NetReader reader = new NetReader();
+                        NetReader reader = new NetReader(_formater);
                         reader.pushNetStream(data, NetworkType.Socket);
                         SocketPackage findPackage = null;
 
-                        UnityEngine.Debug.Log("Socket receive ok, revLen:" + recnum + ", actionId:" + reader.ActionId + ", msgId:" + reader.RmId + ", packLen:" + reader.Buffer.Length);
+                        //UnityEngine.Debug.Log("Socket receive ok, revLen:" + recnum + ", actionId:" + reader.ActionId + ", msgId:" + reader.RmId + ", packLen:" + reader.Buffer.Length);
                         lock (_sendList)
                         {
                             foreach (SocketPackage package in _sendList)
@@ -168,7 +170,7 @@ public class SocketConnect
                 UnityEngine.Debug.Log("catch" + ex.ToString());
 
             }
-           
+
             Thread.Sleep(5);
 
         }
@@ -227,7 +229,7 @@ public class SocketConnect
         {
             Open();
         }
-      
+
     }
 
     /// <summary>
@@ -257,7 +259,7 @@ public class SocketConnect
         EnsureConnected();
         if (_socket != null)
         {
-             //socket.Send(data);
+            //socket.Send(data);
             IAsyncResult asyncSend = _socket.BeginSend(data, 0, data.Length, SocketFlags.None, new AsyncCallback(sendCallback), _socket);
             bool success = asyncSend.AsyncWaitHandle.WaitOne(5000, true);
             if (!success)
@@ -266,14 +268,14 @@ public class SocketConnect
                 Close();
                 return false;
             }
-          
+
         }
         return true;
 
     }
-    private void sendCallback (IAsyncResult asyncSend)
+    private void sendCallback(IAsyncResult asyncSend)
     {
-       
+
 
     }
     public void Send(byte[] data, SocketPackage package)
@@ -290,7 +292,7 @@ public class SocketConnect
         try
         {
             bool bRet = PostSend(data);
-            UnityEngine.Debug.Log("Socket send actionId:" + package.ActionId + ", msgId:" + package.MsgId + ", send result:" + bRet);
+            //UnityEngine.Debug.Log("Socket send actionId:" + package.ActionId + ", msgId:" + package.MsgId + ", send result:" + bRet);
         }
         catch (Exception ex)
         {
