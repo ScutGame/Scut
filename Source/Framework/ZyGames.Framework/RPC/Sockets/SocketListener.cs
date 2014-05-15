@@ -530,15 +530,14 @@ namespace ZyGames.Framework.RPC.Sockets
                 {
                     TraceLog.WriteError("OnDisconnected error:{0}", ex);
                 }
-                ioEventArgs.AcceptSocket.Close();
+                ResetSAEAObject(ioEventArgs);
             }
             ReleaseIOEventArgs(ioEventArgs);
         }
 
         private void HandleBadAccept(SocketAsyncEventArgs acceptEventArgs)
         {
-            acceptEventArgs.AcceptSocket.Close();
-            acceptEventArgs.AcceptSocket = null;
+            ResetSAEAObject(acceptEventArgs);
             acceptEventArgsPool.Push(acceptEventArgs);
             maxConnectionsEnforcer.Release();
         }
@@ -582,13 +581,25 @@ namespace ZyGames.Framework.RPC.Sockets
             while (this.acceptEventArgsPool.Count > 0)
             {
                 eventArgs = acceptEventArgsPool.Pop();
-                eventArgs.Dispose();
+                ResetSAEAObject(eventArgs);
             }
             while (this.ioEventArgsPool.Count > 0)
             {
                 eventArgs = ioEventArgsPool.Pop();
-                eventArgs.Dispose();
+                ResetSAEAObject(eventArgs);
             }
+        }
+
+        private static void ResetSAEAObject(SocketAsyncEventArgs eventArgs)
+        {
+            try
+            {
+                eventArgs.AcceptSocket.Close();
+            }
+            catch (Exception)
+            {
+            }
+            eventArgs.AcceptSocket = null;
         }
     }
 }
