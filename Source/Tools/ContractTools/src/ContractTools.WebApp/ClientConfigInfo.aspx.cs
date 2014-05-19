@@ -87,12 +87,12 @@ namespace ContractTools.WebApp
         {
             int contractID = int.Parse(ddlContract.Text);
             MessageHead msg = new MessageHead();
-
+            
             var paramList = DbDataLoader.GetParamInfo(SlnID, contractID);
             string requestParams = GetRequestParams(paramList, contractID, txtVersion.Text);
             string serverUrl = txtServerUrl.Text;
             string[] keyNames = txtKeyName.Text.Split(new char[] { ',' });
-            var msgReader = NetHelper.Create(serverUrl, requestParams, out msg, false);
+            var msgReader = NetHelper.Create(serverUrl, requestParams, out msg, false, contractID, Session.SessionID);
             if (msgReader != null)
             {
                 try

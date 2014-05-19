@@ -23,6 +23,7 @@ THE SOFTWARE.
 ****************************************************************************/
 
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -34,6 +35,7 @@ using System.Web.Security;
 using ContractTools.WebApp.Model;
 using ZyGames.Framework.Common;
 using ZyGames.Framework.Common.Configuration;
+using ZyGames.Framework.Common.Log;
 using ZyGames.Framework.RPC.IO;
 using ZyGames.Framework.RPC.Sockets;
 
@@ -45,13 +47,13 @@ namespace ContractTools.WebApp.Base
         private static string SignKey = ConfigUtils.GetSetting("Product.SignKey");
         public static string ClientDesDeKey = ConfigUtils.GetSetting("Product.ClientDesDeKey", "j6=9=1ac");
 
-        public static MessageStructure Create(string serverUrl, string requestParams, out MessageHead header, bool isSocket)
+        public static MessageStructure Create(string serverUrl, string requestParams, out MessageHead header, bool isSocket, int actionId, string pid)
         {
             header = null;
             MessageStructure msgReader = null;
             if (isSocket)
             {
-                msgReader = DoRequest(serverUrl, requestParams);
+                msgReader = DoRequest(serverUrl, requestParams, actionId, pid);
             }
             else
             {
@@ -138,48 +140,148 @@ namespace ContractTools.WebApp.Base
             return Uri.EscapeDataString(string.Format("{0}&sign={1}", requestParams, sign));
         }
 
-        private static MessageStructure DoRequest(string server, string param)
+        private static MessageStructure DoRequest(string server, string param, int actionId, string pid)
         {
             string[] serverArray = server.Split(':');
-            return DoRequest(serverArray[0], Convert.ToInt32(serverArray[1]), GetSign(param));
+            return DoRequest(serverArray[0], Convert.ToInt32(serverArray[1]), GetSign(param), actionId, pid);
         }
 
-        private static MessageStructure DoRequest(string host, int port, string param)
+        private static MessageStructure DoRequest(string host, int port, string param, int actionId, string pid)
         {
             var remoteEndPoint = new IPEndPoint(Dns.GetHostAddresses(host)[0], port);
-            return DoRequest(remoteEndPoint, param, 4096);
+            return DoRequest(remoteEndPoint, param, 1024, actionId, pid);
         }
 
-        private static MessageStructure DoRequest(IPEndPoint remoteEndPoint, string param, int bufferSize)
+        private static ConcurrentDictionary<string, MyConnect> _clientSockets = new ConcurrentDictionary<string, MyConnect>();
+        private static MessageStructure DoRequest(IPEndPoint remoteEndPoint, string param, int bufferSize, int actionId, string pid)
         {
             byte[] data = Encoding.UTF8.GetBytes("?d=" + param);
-            MessageStructure ms = null;
-            ClientSocket client = null;
-            HttpContext context = HttpContext.Current;
-            if (context != null && context.Session != null)
+            MyConnect myConnect = null;
+            if (!_clientSockets.ContainsKey(pid))
             {
-                client = context.Session["CLIENT_CONNECT"] as ClientSocket;
+                myConnect = new MyConnect();
+                _clientSockets[pid] = myConnect;
             }
-            if (client == null)
+            else
             {
-                client = new ClientSocket(new ClientSocketSettings(1024, remoteEndPoint));
-                if (context != null && context.Session != null)
+                myConnect = _clientSockets[pid];
+            }
+
+            if (myConnect.Client == null || myConnect.Check(remoteEndPoint))
+            {
+                myConnect.EndPoint = remoteEndPoint;
+                myConnect.Client = new ClientSocket(new ClientSocketSettings(bufferSize, remoteEndPoint));
+                myConnect.Client.UserData = myConnect;
+                myConnect.Bind();
+            }
+            if (!myConnect.Client.Connected)
+            {
+                myConnect.Client.Connect();
+            }
+            if (myConnect.PutAction(actionId))
+            {
+                myConnect.Client.PostSend(data, 0, data.Length);
+                return myConnect.GetResult();
+            }
+            return null;
+        }
+    }
+
+    class MyPack
+    {
+        public MessageHead Head { get; set; }
+        public byte[] Data { get; set; }
+    }
+    internal class MyConnect
+    {
+        private readonly object syncRoot = new object();
+        private ManualResetEvent singal = new ManualResetEvent(false);
+        private int _actionId;
+        private ConcurrentQueue<MyPack> actionPools = new ConcurrentQueue<MyPack>();
+        private ConcurrentQueue<MyPack> pushPools = new ConcurrentQueue<MyPack>();
+        private MessageStructure ms;
+        private Timer checkTimer;
+        private int _isRunning = 0;
+
+        public MyConnect()
+        {
+            checkTimer = new Timer(OnCheckPack, this, 10, 10);
+        }
+        public ClientSocket Client { get; set; }
+        public IPEndPoint EndPoint { get; set; }
+
+        public bool Check(IPEndPoint endPoint)
+        {
+            return EndPoint == null ||
+                   EndPoint.ToString() != endPoint.ToString();
+        }
+
+        private static void OnCheckPack(object state)
+        {
+            var myConnect = state as MyConnect;
+            if (myConnect == null)
+            {
+                return;
+            }
+            if (Interlocked.CompareExchange(ref myConnect._isRunning, 1, 0) == 0)
+            {
+                try
                 {
-                    context.Session["CLIENT_CONNECT"] = client;
+                    MyPack pack;
+                    if (myConnect.actionPools.TryDequeue(out pack))
+                    {
+                        if (pack.Head.Action == myConnect._actionId)
+                        {
+                            myConnect.ms = new MessageStructure(pack.Data);
+                            myConnect.singal.Set();
+                        }
+                        else
+                        {
+                            //myConnect.pushPools.Enqueue(pack);
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    TraceLog.WriteError("CheckPack error:{0}", ex);
+                }
+                finally
+                {
+                    Interlocked.Exchange(ref myConnect._isRunning, 0);
                 }
             }
+        }
 
-            var singal = new ManualResetEvent(false);
-            client.DataReceived += (sender, e) =>
+        public void Bind()
+        {
+            Client.DataReceived += OnReceive;
+        }
+
+        private static void OnReceive(object sender, SocketEventArgs e)
+        {
+            var myConnect = ((ClientSocket)sender).UserData as MyConnect;
+            if (myConnect != null)
             {
-                ms = new MessageStructure(e.Data);
-                singal.Set();
-            };
-            client.Connect();
-            client.PostSend(data, 0, data.Length);
-            singal.WaitOne(60000);//60s
+                var stream = new MessageStructure(e.Data);
+                var head = stream.ReadHeadGzip();
+                var pack = new MyPack() { Head = head, Data = e.Data };
+                myConnect.actionPools.Enqueue(pack);
+            }
+        }
 
+
+        public MessageStructure GetResult()
+        {
+            singal.WaitOne(10000);
             return ms;
+        }
+
+        public bool PutAction(int actionId)
+        {
+            ms = null;
+            _actionId = actionId;
+            singal.Reset();
+            return true;
         }
     }
 }

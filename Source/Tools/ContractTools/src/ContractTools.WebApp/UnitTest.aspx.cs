@@ -153,7 +153,7 @@ namespace ContractTools.WebApp
                     if (conId == 0) continue;
 
                     requestParams = GetRequestParams(sid, uid, conId, SlnID, pid, pwd, gameId, serverId);
-                    responseStr += PostGameServer(conId, SlnID, serverUrl, requestParams, isSocket, out respSID, out respUID);
+                    responseStr += PostGameServer(conId, SlnID, serverUrl, requestParams, isSocket, pid, out respSID, out respUID);
                     if (!string.IsNullOrEmpty(respSID))
                     {
                         txtSessionID.Text = respSID;
@@ -166,11 +166,11 @@ namespace ContractTools.WebApp
                 LinkUrlLiteral.Text = requestParams;
                 if (this.ckResponse.Checked)
                 {
-                    responseStr += PostGameServer(contractId, SlnID, serverUrl, requestParams, isSocket, out respSID, out respUID);
+                    responseStr += PostGameServer(contractId, SlnID, serverUrl, requestParams, isSocket, pid, out respSID, out respUID);
                 }
                 else
                 {
-                    responseStr = PostGameServer(contractId, SlnID, serverUrl, requestParams, isSocket, out respSID, out respUID);
+                    responseStr = PostGameServer(contractId, SlnID, serverUrl, requestParams, isSocket, pid, out respSID, out respUID);
                 }
                 if (!string.IsNullOrEmpty(respSID))
                 {
@@ -253,16 +253,20 @@ namespace ContractTools.WebApp
         }
 
 
-        private static string PostGameServer(int contractId, int slnId, string serverUrl, string requestParams, bool isSocket, out string sid, out string uid)
+        private static string PostGameServer(int contractId, int slnId, string serverUrl, string requestParams, bool isSocket, string pid, out string sid, out string uid)
         {
             sid = "";
             uid = "";
             StringBuilder respContent = new StringBuilder();
             MessageHead msg = new MessageHead();
-            MessageStructure msgReader = NetHelper.Create(serverUrl, requestParams, out msg, isSocket);
+            MessageStructure msgReader = NetHelper.Create(serverUrl, requestParams, out msg, isSocket, contractId, pid);
             if (msgReader != null)
             {
                 ProcessResult(contractId, slnId, respContent, msg, msgReader, out sid, out uid);
+            }
+            else
+            {
+                ResponseHead(contractId, respContent, ErrorCode, "请求超时");
             }
             return respContent.ToString();
         }
@@ -271,14 +275,7 @@ namespace ContractTools.WebApp
         {
             sid = "";
             uid = "";
-            //头部消息
-            respContent.AppendFormat("<h3>{0}-{1}</h3>", contractId, "基本消息");
-            respContent.Append("<table style=\"width:90%; border-color:#999\" border=\"1\" cellpadding=\"3\" cellspacing=\"0\">");
-            respContent.Append("<tr><td style=\"width:25%;\"><strong>状态值</strong></td>");
-            respContent.Append("<td style=\"width:75%;\"><strong>描述</strong></td></tr>");
-            respContent.AppendFormat("<tr><td>{0}</td>", msg.ErrorCode);
-            respContent.AppendFormat("<td>{0}&nbsp;</td></tr>", msg.ErrorInfo);
-            respContent.Append("</table>");
+            ResponseHead(contractId, respContent, msg.ErrorCode, msg.ErrorInfo);
 
 
             if (msg.ErrorCode != ErrorCode)
@@ -354,6 +351,18 @@ namespace ContractTools.WebApp
                 respContent.Append("</table>");
 
             }
+        }
+
+        private static void ResponseHead(int contractId, StringBuilder respContent, int errorCode, string errorInfo)
+        {
+            //头部消息
+            respContent.AppendFormat("<h3>{0}-{1}</h3>", contractId, "基本消息");
+            respContent.Append("<table style=\"width:90%; border-color:#999\" border=\"1\" cellpadding=\"3\" cellspacing=\"0\">");
+            respContent.Append("<tr><td style=\"width:25%;\"><strong>状态值</strong></td>");
+            respContent.Append("<td style=\"width:75%;\"><strong>描述</strong></td></tr>");
+            respContent.AppendFormat("<tr><td>{0}</td>", errorCode);
+            respContent.AppendFormat("<td>{0}&nbsp;</td></tr>", errorInfo);
+            respContent.Append("</table>");
         }
 
         /// <summary>
