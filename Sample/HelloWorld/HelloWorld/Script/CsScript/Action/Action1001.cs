@@ -22,9 +22,10 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ****************************************************************************/
 
+using HelloWorld.Script.CsScript.Action;
 using ZyGames.Framework.Game.Contract;
 
-namespace HelloWorld.Script.CsScript.Action
+namespace GameServer.CsScript.Action
 {
     /// <summary>
     /// 1001_hello¡¾ÒÑÍê³É¡¿
@@ -57,7 +58,7 @@ namespace HelloWorld.Script.CsScript.Action
 
         public override bool TakeAction()
         {
-            content = "Hello World";
+            content = "Hello World!";
             return true;
         }
     }
