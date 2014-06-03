@@ -3968,6 +3968,12 @@
             </summary>
             <param name="connectionSetting"></param>
         </member>
+        <member name="M:ZyGames.Framework.Data.DbBaseProvider.CheckConnect">
+            <summary>
+            Check connect
+            </summary>
+            <returns></returns>
+        </member>
         <member name="M:ZyGames.Framework.Data.DbBaseProvider.ExecuteReader(System.Data.CommandType,System.String,System.Data.IDataParameter[])">
             <summary>
             执行Sql语句
@@ -4369,6 +4375,11 @@
             </summary>
             <param name="connectionSetting">connection setting.</param>
         </member>
+        <member name="M:ZyGames.Framework.Data.MySql.MySqlDataProvider.CheckConnect">
+            <summary>
+            
+            </summary>
+        </member>
         <member name="M:ZyGames.Framework.Data.MySql.MySqlDataProvider.ExecuteReader(System.Data.CommandType,System.String,System.Data.IDataParameter[])">
             <summary>
             
@@ -4719,6 +4730,11 @@
             
             </summary>
             <param name="connectionSetting">connection setting</param>
+        </member>
+        <member name="M:ZyGames.Framework.Data.Sql.SqlDataProvider.CheckConnect">
+            <summary>
+            
+            </summary>
         </member>
         <member name="M:ZyGames.Framework.Data.Sql.SqlDataProvider.ExecuteReader(System.Data.CommandType,System.String,System.Data.IDataParameter[])">
             <summary>
@@ -7643,6 +7659,12 @@
             </summary>
             <returns></returns>
         </member>
+        <member name="M:ZyGames.Framework.Redis.RedisConnectionPool.Ping(System.String)">
+            <summary>
+            Ping ip
+            </summary>
+            <returns></returns>
+        </member>
         <member name="M:ZyGames.Framework.Redis.RedisConnectionPool.GetClient">
             <summary>
             Get read and write connection
@@ -8849,6 +8871,11 @@
             Gets a value indicating whether this <see cref="T:ZyGames.Framework.RPC.Sockets.ClientSocket"/> is connected.
             </summary>
             <value><c>true</c> if connected; otherwise, <c>false</c>.</value>
+        </member>
+        <member name="P:ZyGames.Framework.RPC.Sockets.ClientSocket.UserData">
+            <summary>
+            
+            </summary>
         </member>
         <member name="T:ZyGames.Framework.RPC.Sockets.ClientSocketSettings">
             <summary>
@@ -11889,45 +11916,19 @@
             <param name="fileCode">文件编号</param>
             <param name="fileName">完整路径和文件名</param>
         </member>
-        <member name="F:ZyGames.Framework.Script.ScriptFileInfo._type">
-            <summary>
-            
-            </summary>
-        </member>
-        <member name="M:ZyGames.Framework.Script.ScriptFileInfo.TryEnterLock">
-            <summary>
-            lock
-            </summary>
-            <returns></returns>
-        </member>
-        <member name="M:ZyGames.Framework.Script.ScriptFileInfo.ExitLock">
-            <summary>
-            exit lock
-            </summary>
-        </member>
-        <member name="P:ZyGames.Framework.Script.ScriptFileInfo.Type">
-            <summary>
-            脚本类型
-            </summary>
-        </member>
-        <member name="P:ZyGames.Framework.Script.ScriptFileInfo.ObjType">
-            <summary>
-            Object type.
-            </summary>
-        </member>
         <member name="P:ZyGames.Framework.Script.ScriptFileInfo.FileCode">
             <summary>
             文件编号
             </summary>
         </member>
+        <member name="P:ZyGames.Framework.Script.ScriptFileInfo.Source">
+            <summary>
+            源文件
+            </summary>
+        </member>
         <member name="P:ZyGames.Framework.Script.ScriptFileInfo.FileName">
             <summary>
             完整路径和文件名
-            </summary>
-        </member>
-        <member name="P:ZyGames.Framework.Script.ScriptFileInfo.GroupName">
-            <summary>
-            
             </summary>
         </member>
         <member name="P:ZyGames.Framework.Script.ScriptFileInfo.HashCode">
@@ -11941,6 +11942,428 @@
             </summary>
             <param name="fileCode"></param>
             <param name="fileName"></param>
+        </member>
+        <member name="T:ZyGames.Framework.Script.CSharpRuntimeScope">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="T:ZyGames.Framework.Script.PythonRuntimeScope">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="T:ZyGames.Framework.Script.LuaRuntimeScope">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="T:ZyGames.Framework.Script.ScriptBaseScope">
+            <summary>
+            Script runtime scope
+            </summary>
+        </member>
+        <member name="F:ZyGames.Framework.Script.ScriptBaseScope.SettupInfo">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="F:ZyGames.Framework.Script.ScriptBaseScope.WatcherPathList">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="F:ZyGames.Framework.Script.ScriptBaseScope._modelAssemblyPath">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="F:ZyGames.Framework.Script.ScriptBaseScope._modelAssembly">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="F:ZyGames.Framework.Script.ScriptBaseScope._csharpAssemblyPath">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="F:ZyGames.Framework.Script.ScriptBaseScope._csharpAssembly">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:ZyGames.Framework.Script.ScriptBaseScope.#ctor(ZyGames.Framework.Script.ScriptSettupInfo)">
+            <summary>
+            init
+            </summary>
+            <param name="settupInfo"></param>
+        </member>
+        <member name="M:ZyGames.Framework.Script.ScriptBaseScope.GetAssemblies">
+            <summary>
+            
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:ZyGames.Framework.Script.ScriptBaseScope.AddWatchPath(System.String,System.String)">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:ZyGames.Framework.Script.ScriptBaseScope.Init">
+            <summary>
+            初始化
+            </summary>
+        </member>
+        <member name="M:ZyGames.Framework.Script.ScriptBaseScope.Execute(System.String,System.String,System.Object[])">
+            <summary>
+            执行脚本
+            </summary>
+            <param name="scriptCode"></param>
+            <param name="typeName"></param>
+            <param name="args"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ZyGames.Framework.Script.ScriptBaseScope.InvokeMenthod(System.String,System.String,System.Object[],System.String,System.Object[])">
+            <summary>
+            执行脚本方法
+            </summary>
+            <param name="scriptCode"></param>
+            <param name="typeName"></param>
+            <param name="typeArgs"></param>
+            <param name="method"></param>
+            <param name="methodArgs"></param>
+        </member>
+        <member name="M:ZyGames.Framework.Script.ScriptBaseScope.Decode(System.String,System.String)">
+            <summary>
+            脚本解码
+            </summary>
+            <param name="source">脚本文件</param>
+            <param name="ext">扩展名</param>
+            <returns></returns>
+        </member>
+        <member name="M:ZyGames.Framework.Script.ScriptBaseScope.GetFileHashCode(System.String)">
+            <summary>
+            
+            </summary>
+            <param name="fileName"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ZyGames.Framework.Script.ScriptBaseScope.GetScriptCode(System.String)">
+            <summary>
+            filename or typeName,return relative to "Script" path
+            </summary>
+            <param name="name"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ZyGames.Framework.Script.ScriptBaseScope.FormatScriptCode(System.String,System.String,System.String)">
+            <summary>
+            附加脚本扩展名
+            </summary>
+            <param name="path">脚本存储目录</param>
+            <param name="code"></param>
+            <param name="ext">.cs .py .lua</param>
+            <returns></returns>
+        </member>
+        <member name="M:ZyGames.Framework.Script.ScriptBaseScope.Dispose">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:ZyGames.Framework.Script.ScriptBaseScope.DoDispose(System.Boolean)">
+            <summary>
+            
+            </summary>
+            <param name="disposing"></param>
+        </member>
+        <member name="P:ZyGames.Framework.Script.ScriptBaseScope.ModelAssembly">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:ZyGames.Framework.Script.ScriptBaseScope.WatcherPaths">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:ZyGames.Framework.Script.LuaRuntimeScope.#ctor(ZyGames.Framework.Script.ScriptSettupInfo)">
+            <summary>
+            
+            </summary>
+            <param name="settupInfo"></param>
+        </member>
+        <member name="M:ZyGames.Framework.Script.LuaRuntimeScope.Init">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:ZyGames.Framework.Script.LuaRuntimeScope.InitLua">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:ZyGames.Framework.Script.LuaRuntimeScope.LuaRegister(System.String,System.Object,System.Reflection.MethodBase)">
+            <summary>
+            
+            </summary>
+            <param name="funName"></param>
+            <param name="obj"></param>
+            <param name="method"></param>
+        </member>
+        <member name="M:ZyGames.Framework.Script.LuaRuntimeScope.LuaRegister(System.Object[])">
+            <summary>
+            
+            </summary>
+            <param name="args"></param>
+        </member>
+        <member name="M:ZyGames.Framework.Script.LuaRuntimeScope.Execute(System.String,System.String,System.Object[])">
+            <summary>
+            
+            </summary>
+            <param name="scriptCode"></param>
+            <param name="typeName"></param>
+            <param name="args"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ZyGames.Framework.Script.LuaRuntimeScope.InvokeMenthod(System.String,System.String,System.Object[],System.String,System.Object[])">
+            <summary>
+            
+            </summary>
+            <param name="scriptCode"></param>
+            <param name="typeName"></param>
+            <param name="typeArgs"></param>
+            <param name="method"></param>
+            <param name="methodArgs"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ZyGames.Framework.Script.LuaRuntimeScope.ExecuteLua(System.String,System.Object[])">
+            <summary>
+            
+            </summary>
+            <param name="funcName"></param>
+            <param name="args"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ZyGames.Framework.Script.LuaRuntimeScope.ExecuteLua(System.String,System.String,System.Object[])">
+            <summary>
+            
+            </summary>
+            <param name="luaMethod"></param>
+            <param name="funcName"></param>
+            <param name="args"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ZyGames.Framework.Script.LuaRuntimeScope.ExecuteLuaSource(System.String[],System.String,System.String,System.Object[])">
+            <summary>
+            
+            </summary>
+            <param name="sources"></param>
+            <param name="luaMethod"></param>
+            <param name="funcName"></param>
+            <param name="args"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ZyGames.Framework.Script.PythonRuntimeScope.#ctor(ZyGames.Framework.Script.ScriptSettupInfo)">
+            <summary>
+            
+            </summary>
+            <param name="settupInfo"></param>
+        </member>
+        <member name="M:ZyGames.Framework.Script.PythonRuntimeScope.Init">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:ZyGames.Framework.Script.PythonRuntimeScope.InitPython">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:ZyGames.Framework.Script.PythonRuntimeScope.Execute(System.String,System.String,System.Object[])">
+            <summary>
+            
+            </summary>
+            <param name="scriptCode"></param>
+            <param name="typeName"></param>
+            <param name="args"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ZyGames.Framework.Script.PythonRuntimeScope.InvokeMenthod(System.String,System.String,System.Object[],System.String,System.Object[])">
+            <summary>
+            
+            </summary>
+            <param name="scriptCode"></param>
+            <param name="typeName"></param>
+            <param name="typeArgs"></param>
+            <param name="method"></param>
+            <param name="methodArgs"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ZyGames.Framework.Script.PythonRuntimeScope.ExecutePython(System.String)">
+            <summary>
+            
+            </summary>
+            <param name="scriptCode"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ZyGames.Framework.Script.PythonRuntimeScope.InitPython(System.String[])">
+            <summary>
+            
+            </summary>
+            <param name="fileNames"></param>
+        </member>
+        <member name="M:ZyGames.Framework.Script.PythonRuntimeScope.LoadScript(System.String,System.Boolean)">
+            <summary>
+            
+            </summary>
+            <param name="fileName"></param>
+            <param name="isReLoad"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ZyGames.Framework.Script.CSharpRuntimeScope.#ctor(ZyGames.Framework.Script.ScriptSettupInfo)">
+            <summary>
+            
+            </summary>
+            <param name="settupInfo"></param>
+        </member>
+        <member name="M:ZyGames.Framework.Script.CSharpRuntimeScope.IsModelScript(System.String)">
+            <summary>
+            是否是Model类型的脚本
+            </summary>
+            <param name="file"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ZyGames.Framework.Script.CSharpRuntimeScope.Init">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:ZyGames.Framework.Script.CSharpRuntimeScope.ExecuteCSharp(System.String,System.Object[])">
+            <summary>
+            Process csharp script.
+            </summary>
+            <param name="typeName"></param>
+            <param name="args"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ZyGames.Framework.Script.CSharpRuntimeScope.Execute(System.String,System.String,System.Object[])">
+            <summary>
+            
+            </summary>
+            <param name="scriptCode"></param>
+            <param name="typeName"></param>
+            <param name="args"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ZyGames.Framework.Script.CSharpRuntimeScope.InvokeMenthod(System.String,System.String,System.Object[],System.String,System.Object[])">
+            <summary>
+            调用方法
+            </summary>
+            <param name="scriptCode"></param>
+            <param name="typeName"></param>
+            <param name="typeArgs"></param>
+            <param name="method"></param>
+            <param name="methodArgs"></param>
+        </member>
+        <member name="M:ZyGames.Framework.Script.CSharpRuntimeScope.ExecuteCSharpSource(System.String[],System.String[],System.String,System.Object[])">
+            <summary>
+            
+            </summary>
+            <param name="sources"></param>
+            <param name="refAssemblies"></param>
+            <param name="typeName"></param>
+            <param name="args"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ZyGames.Framework.Script.CSharpRuntimeScope.InitCsharp">
+            <summary>
+            Init csharp script.
+            </summary>
+        </member>
+        <member name="M:ZyGames.Framework.Script.CSharpRuntimeScope.Load">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:ZyGames.Framework.Script.CSharpRuntimeScope.CreateScriptFile(System.String)">
+            <summary>
+            创建脚本文件信息对象
+            </summary>
+            <param name="fileName"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ZyGames.Framework.Script.CSharpRuntimeScope.BuildPythonReferenceFile">
+            <summary>
+            生成Python引用的头文件
+            </summary>
+        </member>
+        <member name="T:ZyGames.Framework.Script.LuaMethodAttribute">
+            <summary>
+            Lua方法属性
+            </summary>
+        </member>
+        <member name="M:ZyGames.Framework.Script.LuaMethodAttribute.#ctor(System.String)">
+            <summary>
+            init
+            </summary>
+            <param name="funcName"></param>
+        </member>
+        <member name="P:ZyGames.Framework.Script.LuaMethodAttribute.FuncName">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="T:ZyGames.Framework.Script.ScriptDomainContext">
+            <summary>
+            Script domain context.
+            </summary>
+        </member>
+        <member name="M:ZyGames.Framework.Script.ScriptDomainContext.#ctor">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:ZyGames.Framework.Script.ScriptDomainContext.LoadAssembly(System.String,System.String)">
+            <summary>
+            
+            </summary>
+            <param name="assemblyKey"></param>
+            <param name="path"></param>
+        </member>
+        <member name="M:ZyGames.Framework.Script.ScriptDomainContext.GetAssembly(System.String)">
+            <summary>
+            
+            </summary>
+            <param name="assemblyKey"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ZyGames.Framework.Script.ScriptDomainContext.GetTypeFrom(System.String,System.String)">
+            <summary>
+            
+            </summary>
+            <param name="assemblyKey"></param>
+            <param name="typeName"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ZyGames.Framework.Script.ScriptDomainContext.GetInstance(System.String,System.String,System.Object[])">
+            <summary>
+            
+            </summary>
+            <param name="assemblyKey"></param>
+            <param name="typeName"></param>
+            <param name="args"></param>
+            <returns>返回的类型需要加Serializable标识属性</returns>
+        </member>
+        <member name="M:ZyGames.Framework.Script.ScriptDomainContext.Invoke(System.String,System.String,System.Object[],System.String,System.Object[])">
+            <summary>
+            
+            </summary>
+            <param name="assemblyKey"></param>
+            <param name="typeName"></param>
+            <param name="typeArgs"></param>
+            <param name="method"></param>
+            <param name="methodArgs"></param>
+            <returns>返回的类型需要加Serializable标识属性</returns>
         </member>
         <member name="T:ZyGames.Framework.Script.IMainScript">
             <summary>
@@ -11962,12 +12385,11 @@
              Python文件信息
             </summary>
         </member>
-        <member name="M:ZyGames.Framework.Script.PythonFileInfo.#ctor(System.String,System.String,Microsoft.Scripting.Hosting.CompiledCode)">
+        <member name="M:ZyGames.Framework.Script.PythonFileInfo.#ctor(System.String,System.String)">
             <summary>
             </summary>
             <param name="fileCode"></param>
             <param name="fileName"></param>
-            <param name="compiledCode"></param>
         </member>
         <member name="P:ZyGames.Framework.Script.PythonFileInfo.CompiledCode">
             <summary>
@@ -12036,11 +12458,12 @@
             <param name="outputPath"></param>
             <returns></returns>
         </member>
-        <member name="M:ZyGames.Framework.Script.ScriptCompiler.InjectionCompile(System.String[],System.String[],System.String,System.Boolean,System.Boolean,System.String@)">
+        <member name="M:ZyGames.Framework.Script.ScriptCompiler.InjectionCompile(System.String,System.String[],System.String[],System.String,System.Boolean,System.Boolean,System.String@)">
             <summary>
             Compile csharp srcipt and injection code.
             </summary>
-            <param name="fileNames"></param>
+            <param name="privateBinPath"></param>
+            <param name="sources"></param>
             <param name="refAssemblies"></param>
             <param name="assemblyName"></param>
             <param name="isDebug"></param>
@@ -12058,22 +12481,10 @@
             脚本对象引擎
             </summary>
         </member>
-        <member name="F:ZyGames.Framework.Script.ScriptEngines.CSharpDirName">
+        <member name="M:ZyGames.Framework.Script.ScriptEngines.Initialize">
             <summary>
-            
+            初始化
             </summary>
-        </member>
-        <member name="F:ZyGames.Framework.Script.ScriptEngines.PythonDirName">
-            <summary>
-            
-            </summary>
-        </member>
-        <member name="M:ZyGames.Framework.Script.ScriptEngines.SetPythonOptions(System.String,System.Object)">
-            <summary>
-            设置Python运行时参数
-            </summary>
-            <param name="param"></param>
-            <param name="value"></param>
         </member>
         <member name="M:ZyGames.Framework.Script.ScriptEngines.RegisterModelChangedBefore(System.Action{System.Reflection.Assembly})">
             <summary>
@@ -12099,53 +12510,21 @@
             </summary>
             <param name="assemblys"></param>
         </member>
-        <member name="M:ZyGames.Framework.Script.ScriptEngines.RunMainClass(System.Object@,System.String[])">
-            <summary>
-            Run main class.
-            </summary>
-        </member>
         <member name="M:ZyGames.Framework.Script.ScriptEngines.GetEntityAssembly">
             <summary>
             Get model entity assembly.
             </summary>
             <returns></returns>
         </member>
-        <member name="M:ZyGames.Framework.Script.ScriptEngines.Initialize">
+        <member name="M:ZyGames.Framework.Script.ScriptEngines.RunMainProgram(System.String[])">
             <summary>
-            初始化
+            Run main class.
             </summary>
         </member>
-        <member name="M:ZyGames.Framework.Script.ScriptEngines.Dispose">
+        <member name="M:ZyGames.Framework.Script.ScriptEngines.StopMainProgram">
             <summary>
-            Dispose
+            stop main class.
             </summary>
-        </member>
-        <member name="M:ZyGames.Framework.Script.ScriptEngines.UpdatePythonReferenceLib">
-            <summary>
-            update py reference head file.
-            </summary>
-        </member>
-        <member name="M:ZyGames.Framework.Script.ScriptEngines.LoadScript(System.String,System.Boolean)">
-            <summary>
-            加载脚本对象
-            </summary>
-            <param name="fileName"></param>
-            <param name="isUpdate"></param>
-        </member>
-        <member name="M:ZyGames.Framework.Script.ScriptEngines.GetScript(System.String)">
-            <summary>
-            Get script object
-            </summary>
-            <param name="fileName"></param>
-            <returns></returns>
-        </member>
-        <member name="M:ZyGames.Framework.Script.ScriptEngines.ExecuteCSharp(System.String,System.Object[])">
-            <summary>
-            Process csharp script.
-            </summary>
-            <param name="typeName"></param>
-            <param name="args"></param>
-            <returns></returns>
         </member>
         <member name="M:ZyGames.Framework.Script.ScriptEngines.Execute(System.String,System.String,System.Object[])">
             <summary>
@@ -12156,14 +12535,13 @@
             <param name="args">csharp脚本指定类型构造函数的参数</param>
             <returns>csharp脚本返回指定typeName实例对象；python脚本返回ScriptCode对象</returns>
         </member>
-        <member name="M:ZyGames.Framework.Script.ScriptEngines.Execute(ZyGames.Framework.Script.ScriptFileInfo,System.String,System.Object[])">
+        <member name="M:ZyGames.Framework.Script.ScriptEngines.ExecuteCSharp(System.String,System.Object[])">
             <summary>
-            执行脚本
+            Process csharp script.
             </summary>
-            <param name="scriptInfo">ScriptFileInfo对象</param>
-            <param name="typeName">csharp脚本指定对象类型</param>
-            <param name="args">csharp脚本指定类型构造函数的参数</param>
-            <returns>csharp脚本返回指定typeName实例对象；python脚本返回ScriptCode对象</returns>
+            <param name="typeName"></param>
+            <param name="args"></param>
+            <returns></returns>
         </member>
         <member name="M:ZyGames.Framework.Script.ScriptEngines.ExecutePython(System.String)">
             <summary>
@@ -12172,38 +12550,61 @@
             <param name="scriptCode"></param>
             <returns></returns>
         </member>
+        <member name="M:ZyGames.Framework.Script.ScriptEngines.LuaRegister(System.String,System.Object,System.Reflection.MethodBase)">
+            <summary>
+            向Lua注册NET的方法
+            </summary>
+            <param name="funName"></param>
+            <param name="obj"></param>
+            <param name="method"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ZyGames.Framework.Script.ScriptEngines.LuaRegister(System.Object[])">
+            <summary>
+            向Lua注册NET的方法,方法需要加LuaMethod属性
+            </summary>
+            <param name="args"></param>
+        </member>
+        <member name="M:ZyGames.Framework.Script.ScriptEngines.ExecuteLua(System.String,System.Object[])">
+            <summary>
+            
+            </summary>
+            <param name="funcName"></param>
+            <param name="args"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ZyGames.Framework.Script.ScriptEngines.ExecuteLua(System.String,System.String,System.Object[])">
+            <summary>
+            
+            </summary>
+            <param name="luaMethod"></param>
+            <param name="funcName"></param>
+            <param name="args"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ZyGames.Framework.Script.ScriptEngines.ExecuteLuaSource(System.String[],System.String,System.String,System.Object[])">
+            <summary>
+            
+            </summary>
+            <param name="sources"></param>
+            <param name="luaMethod"></param>
+            <param name="funcName"></param>
+            <param name="args"></param>
+            <returns></returns>
+        </member>
         <member name="M:ZyGames.Framework.Script.ScriptEngines.ExecuteCSharpSource(System.String[],System.String[],System.String,System.Object[])">
             <summary>
             ExecuteCSharp
             </summary>
-            <param name="scriptCode"></param>
+            <param name="sources"></param>
             <param name="refAssemblies"></param>
             <param name="typeName"></param>
             <param name="args"></param>
             <returns></returns>
         </member>
-        <member name="M:ZyGames.Framework.Script.ScriptEngines.GenerateCsharpScriptAssembly(System.String,System.String[],System.String,ZyGames.Framework.Script.FileWatcherInfo)">
+        <member name="M:ZyGames.Framework.Script.ScriptEngines.Dispose">
             <summary>
-            生成CSharp脚本程序集
-            </summary>
-        </member>
-        <member name="M:ZyGames.Framework.Script.ScriptEngines.CreateScriptFile(System.String)">
-            <summary>
-            创建脚本文件信息对象
-            </summary>
-            <param name="fileName"></param>
-            <returns></returns>
-        </member>
-        <member name="M:ZyGames.Framework.Script.ScriptEngines.GetScriptCode(System.String)">
-            <summary>
-            full filename,return relative to "Script" path
-            </summary>
-            <param name="fileName"></param>
-            <returns></returns>
-        </member>
-        <member name="P:ZyGames.Framework.Script.ScriptEngines.DisablePython">
-            <summary>
-            Disable python script.
+            Dispose
             </summary>
         </member>
         <member name="P:ZyGames.Framework.Script.ScriptEngines.IsError">
@@ -12211,29 +12612,194 @@
             Is error
             </summary>
         </member>
-        <member name="P:ZyGames.Framework.Script.ScriptEngines.SetPythonDebug">
+        <member name="P:ZyGames.Framework.Script.ScriptEngines.SettupInfo">
             <summary>
-            设置Python脚本是否可调试
+            Settup info
             </summary>
         </member>
-        <member name="T:ZyGames.Framework.Script.ScriptType">
-            <summary>
-            脚本类型
-            </summary>
-        </member>
-        <member name="F:ZyGames.Framework.Script.ScriptType.Unkown">
+        <member name="T:ZyGames.Framework.Script.ScriptRuntimeDomain">
             <summary>
             
             </summary>
         </member>
-        <member name="F:ZyGames.Framework.Script.ScriptType.Python">
+        <member name="M:ZyGames.Framework.Script.ScriptRuntimeDomain.#ctor(System.String)">
+            <summary>
+            
+            </summary>
+            <param name="name"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ZyGames.Framework.Script.ScriptRuntimeDomain.InitDomainContext">
+            <summary>
+            
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:ZyGames.Framework.Script.ScriptRuntimeDomain.CreateScope(ZyGames.Framework.Script.ScriptSettupInfo)">
             <summary>
             
             </summary>
         </member>
-        <member name="F:ZyGames.Framework.Script.ScriptType.Csharp">
+        <member name="M:ZyGames.Framework.Script.ScriptRuntimeDomain.Unload">
             <summary>
             
+            </summary>
+        </member>
+        <member name="M:ZyGames.Framework.Script.ScriptRuntimeDomain.Dispose">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:ZyGames.Framework.Script.ScriptRuntimeDomain.DomainContext">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:ZyGames.Framework.Script.ScriptRuntimeDomain.Scope">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:ZyGames.Framework.Script.ScriptRuntimeDomain.MainArgs">
+            <summary>
+            Main function args.
+            </summary>
+        </member>
+        <member name="P:ZyGames.Framework.Script.ScriptRuntimeDomain.MainInstance">
+            <summary>
+            IMainScript
+            </summary>
+        </member>
+        <member name="P:ZyGames.Framework.Script.ScriptRuntimeDomain.SetPrivateBinPaths">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="T:ZyGames.Framework.Script.ScriptRuntimeScope">
+            <summary>
+            脚本执行顺序:cs -> py -> lua
+            </summary>
+        </member>
+        <member name="M:ZyGames.Framework.Script.ScriptRuntimeScope.#ctor(ZyGames.Framework.Script.ScriptSettupInfo)">
+            <summary>
+            
+            </summary>
+            <param name="settupInfo"></param>
+        </member>
+        <member name="M:ZyGames.Framework.Script.ScriptRuntimeScope.Init">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:ZyGames.Framework.Script.ScriptRuntimeScope.DoDispose(System.Boolean)">
+            <summary>
+            
+            </summary>
+            <param name="disposing"></param>
+        </member>
+        <member name="T:ZyGames.Framework.Script.ScriptSettupInfo">
+            <summary>
+            Script settup info
+            </summary>
+        </member>
+        <member name="M:ZyGames.Framework.Script.ScriptSettupInfo.#ctor">
+            <summary>
+            init
+            </summary>
+        </member>
+        <member name="P:ZyGames.Framework.Script.ScriptSettupInfo.ScriptChangedDelay">
+            <summary>
+            脚本文件改变延迟时间(ms)
+            </summary>
+        </member>
+        <member name="P:ZyGames.Framework.Script.ScriptSettupInfo.RuntimePath">
+            <summary>
+            脚本当前运行目录
+            </summary>
+        </member>
+        <member name="P:ZyGames.Framework.Script.ScriptSettupInfo.RuntimePrivateBinPath">
+            <summary>
+            脚本运行的Dll目录，Web程序是在Bin目录下
+            </summary>
+        </member>
+        <member name="P:ZyGames.Framework.Script.ScriptSettupInfo.ScriptRelativePath">
+            <summary>
+            脚本在当前运行目录的相对位置
+            </summary>
+        </member>
+        <member name="P:ZyGames.Framework.Script.ScriptSettupInfo.ScriptMainProgram">
+            <summary>
+            脚本入口程序
+            </summary>
+        </member>
+        <member name="P:ZyGames.Framework.Script.ScriptSettupInfo.ScriptMainTypeName">
+            <summary>
+            脚本入口程序类型，C#脚本时配置
+            </summary>
+        </member>
+        <member name="P:ZyGames.Framework.Script.ScriptSettupInfo.ModelScriptPath">
+            <summary>
+            C# Model实体脚本路径
+            </summary>
+        </member>
+        <member name="P:ZyGames.Framework.Script.ScriptSettupInfo.CSharpScriptPath">
+            <summary>
+            C#脚本路径
+            </summary>
+        </member>
+        <member name="P:ZyGames.Framework.Script.ScriptSettupInfo.ScriptIsDebug">
+            <summary>
+            脚本是否可调试
+            </summary>
+        </member>
+        <member name="P:ZyGames.Framework.Script.ScriptSettupInfo.DisablePython">
+            <summary>
+            Py脚本是否启用
+            </summary>
+        </member>
+        <member name="P:ZyGames.Framework.Script.ScriptSettupInfo.PythonIsDebug">
+            <summary>
+            Py是否可调试
+            </summary>
+        </member>
+        <member name="P:ZyGames.Framework.Script.ScriptSettupInfo.PythonScriptPath">
+            <summary>
+            Py脚本目录
+            </summary>
+        </member>
+        <member name="P:ZyGames.Framework.Script.ScriptSettupInfo.PythonReferenceLibFile">
+            <summary>
+            Py脚本包含的Import头信息
+            </summary>
+        </member>
+        <member name="P:ZyGames.Framework.Script.ScriptSettupInfo.DisableLua">
+            <summary>
+            Lua脚本是否开启
+            </summary>
+        </member>
+        <member name="P:ZyGames.Framework.Script.ScriptSettupInfo.LuaScriptPath">
+            <summary>
+            Lua脚本目录
+            </summary>
+        </member>
+        <member name="P:ZyGames.Framework.Script.ScriptSettupInfo.ReferencedAssemblyNames">
+            <summary>
+            脚本引用的程序集名
+            </summary>
+        </member>
+        <member name="P:ZyGames.Framework.Script.ScriptSettupInfo.DecodeCallback">
+            <summary>
+            脚本解码回调方法
+            </summary>
+        </member>
+        <member name="P:ZyGames.Framework.Script.ScriptSettupInfo.ModelChangedBefore">
+            <summary>
+            Register model script has changed before event.
+            </summary>
+        </member>
+        <member name="P:ZyGames.Framework.Script.ScriptSettupInfo.ModelChangedAfter">
+            <summary>
+            Register model script has changed after event.
             </summary>
         </member>
         <member name="T:ZyGames.Framework.SyncThreading.SyncLimit">

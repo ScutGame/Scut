@@ -2376,195 +2376,9 @@
             <param name="parameters">请求参数</param>
             <param name="successHandle">成功回调</param>
         </member>
-        <member name="T:ZyGames.Framework.Game.Service.ActionGetter">
+        <member name="T:ZyGames.Framework.Game.Contract.Action.ScriptAction">
             <summary>
-            action Parameter
-            </summary>
-        </member>
-        <member name="F:ZyGames.Framework.Game.Service.ActionGetter.ReqPackage">
-            <summary>
-            
-            </summary>
-        </member>
-        <member name="M:ZyGames.Framework.Game.Service.ActionGetter.#ctor(ZyGames.Framework.Game.Contract.RequestPackage)">
-            <summary>
-            init
-            </summary>
-            <param name="package"></param>
-        </member>
-        <member name="M:ZyGames.Framework.Game.Service.ActionGetter.GetMsgId">
-            <summary>
-            MsgId
-            </summary>
-        </member>
-        <member name="M:ZyGames.Framework.Game.Service.ActionGetter.GetSt">
-            <summary>
-            St
-            </summary>
-        </member>
-        <member name="M:ZyGames.Framework.Game.Service.ActionGetter.GetActionId">
-            <summary>
-            ActoinId
-            </summary>
-        </member>
-        <member name="M:ZyGames.Framework.Game.Service.ActionGetter.GetUserId">
-            <summary>
-            get current UserId.
-            </summary>
-        </member>
-        <member name="M:ZyGames.Framework.Game.Service.ActionGetter.GetSessionId">
-            <summary>
-            get current sessionid.
-            </summary>
-        </member>
-        <member name="M:ZyGames.Framework.Game.Service.ActionGetter.GetSession">
-            <summary>
-            get current session.
-            </summary>
-        </member>
-        <member name="M:ZyGames.Framework.Game.Service.ActionGetter.IsRunloader">
-            <summary>
-            Is Runloader tool's param
-            </summary>
-            <returns></returns>
-        </member>
-        <member name="M:ZyGames.Framework.Game.Service.ActionGetter.GetMessage">
-            <summary>
-            Get custom message
-            </summary>
-            <returns></returns>
-        </member>
-        <member name="M:ZyGames.Framework.Game.Service.ActionGetter.ToParamString">
-            <summary>
-            
-            </summary>
-            <returns></returns>
-        </member>
-        <member name="M:ZyGames.Framework.Game.Service.ActionGetter.GetIntValue(System.String)">
-            <summary>
-            
-            </summary>
-            <param name="param"></param>
-            <returns></returns>
-        </member>
-        <member name="M:ZyGames.Framework.Game.Service.ActionGetter.GetIntValue(System.String,System.Int32,System.Int32,System.Boolean)">
-            <summary>
-            
-            </summary>
-        </member>
-        <member name="M:ZyGames.Framework.Game.Service.ActionGetter.GetWordValue(System.String)">
-            <summary>
-            
-            </summary>
-        </member>
-        <member name="M:ZyGames.Framework.Game.Service.ActionGetter.GetWordValue(System.String,System.Int16,System.Int16,System.Boolean)">
-            <summary>
-            
-            </summary>
-        </member>
-        <member name="M:ZyGames.Framework.Game.Service.ActionGetter.GetByteValue(System.String)">
-            <summary>
-            
-            </summary>
-        </member>
-        <member name="M:ZyGames.Framework.Game.Service.ActionGetter.GetByteValue(System.String,System.Byte,System.Byte,System.Boolean)">
-            <summary>
-            
-            </summary>
-        </member>
-        <member name="M:ZyGames.Framework.Game.Service.ActionGetter.GetStringValue(System.String)">
-            <summary>
-            
-            </summary>
-        </member>
-        <member name="M:ZyGames.Framework.Game.Service.ActionGetter.GetStringValue(System.String,System.Int32,System.Int32,System.Boolean)">
-            <summary>
-            
-            </summary>
-        </member>
-        <member name="M:ZyGames.Framework.Game.Service.ActionGetter.GetInt(System.String)">
-            <summary>
-            
-            </summary>
-        </member>
-        <member name="M:ZyGames.Framework.Game.Service.ActionGetter.GetWord(System.String)">
-            <summary>
-            
-            </summary>
-        </member>
-        <member name="M:ZyGames.Framework.Game.Service.ActionGetter.GetByte(System.String)">
-            <summary>
-            
-            </summary>
-        </member>
-        <member name="M:ZyGames.Framework.Game.Service.ActionGetter.GetString(System.String)">
-            <summary>
-            
-            </summary>
-        </member>
-        <member name="M:ZyGames.Framework.Game.Service.ActionGetter.GetEnum``1(System.String)">
-            <summary>
-            
-            </summary>
-        </member>
-        <member name="M:ZyGames.Framework.Game.Service.ActionGetter.Contains(System.String)">
-            <summary>
-            
-            </summary>
-        </member>
-        <member name="M:ZyGames.Framework.Game.Service.ActionGetter.GetInt(System.String,System.Int32@)">
-            <summary>
-            
-            </summary>
-        </member>
-        <member name="M:ZyGames.Framework.Game.Service.ActionGetter.GetInt(System.String,System.Int32@,System.Int32,System.Int32)">
-            <summary>
-            
-            </summary>
-        </member>
-        <member name="M:ZyGames.Framework.Game.Service.ActionGetter.GetWord(System.String,System.Int16@)">
-            <summary>
-            
-            </summary>
-        </member>
-        <member name="M:ZyGames.Framework.Game.Service.ActionGetter.GetWord(System.String,System.Int16@,System.Int16,System.Int16)">
-            <summary>
-            
-            </summary>
-        </member>
-        <member name="M:ZyGames.Framework.Game.Service.ActionGetter.GetByte(System.String,System.Byte@)">
-            <summary>
-            
-            </summary>
-        </member>
-        <member name="M:ZyGames.Framework.Game.Service.ActionGetter.GetByte(System.String,System.Byte@,System.Byte,System.Byte)">
-            <summary>
-            
-            </summary>
-        </member>
-        <member name="M:ZyGames.Framework.Game.Service.ActionGetter.GetString(System.String,System.String@,System.Boolean)">
-            <summary>
-            
-            </summary>
-        </member>
-        <member name="M:ZyGames.Framework.Game.Service.ActionGetter.GetString(System.String,System.String@,System.Int32,System.Int32,System.Boolean)">
-            <summary>
-            
-            </summary>
-        </member>
-        <member name="M:ZyGames.Framework.Game.Service.ActionGetter.GetEnum``1(System.String,``0@)">
-            <summary>
-            
-            </summary>
-        </member>
-        <member name="M:ZyGames.Framework.Game.Service.ActionGetter.CheckSign">
-            <summary>
-            
-            </summary>
-        </member>
-        <member name="T:ZyGames.Framework.Game.Contract.Action.AndroidPayAction">
-            <summary>
-            触控安卓充值
+            提供脚本支持
             </summary>
         </member>
         <member name="T:ZyGames.Framework.Game.Contract.Action.AuthorizeAction">
@@ -3003,6 +2817,235 @@
         <member name="P:ZyGames.Framework.Game.Contract.Action.AuthorizeAction.IgnoreActionId">
             <summary>
             不检查的ActionID
+            </summary>
+        </member>
+        <member name="M:ZyGames.Framework.Game.Contract.Action.ScriptAction.#ctor(ZyGames.Framework.Game.Contract.Action.ScriptType,System.Int32,ZyGames.Framework.Game.Service.ActionGetter,System.Object,System.Boolean)">
+            <summary>
+            /
+            </summary>
+            <param name="scriptType"></param>
+            <param name="aActionId"></param>
+            <param name="actionGetter"></param>
+            <param name="scriptScope"></param>
+            <param name="ignoreAuthorize">忽略授权</param>
+        </member>
+        <member name="M:ZyGames.Framework.Game.Contract.Action.ScriptAction.InitChildAction">
+            <summary>
+            子类实现
+            </summary>
+        </member>
+        <member name="M:ZyGames.Framework.Game.Contract.Action.ScriptAction.GetUrlElement">
+            <summary>
+            接收用户请求的参数，并根据相应类进行检测
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:ZyGames.Framework.Game.Contract.Action.ScriptAction.TakeAction">
+            <summary>
+            子类实现Action处理
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:ZyGames.Framework.Game.Contract.Action.ScriptAction.BuildPacket">
+            <summary>
+            创建返回协议内容输出栈
+            </summary>
+        </member>
+        <member name="P:ZyGames.Framework.Game.Contract.Action.ScriptAction.IgnoreActionId">
+            <summary>
+            不检查的ActionID
+            </summary>
+            <value><c>true</c> if ignore action identifier; otherwise, <c>false</c>.</value>
+        </member>
+        <member name="T:ZyGames.Framework.Game.Service.ActionGetter">
+            <summary>
+            action Parameter
+            </summary>
+        </member>
+        <member name="F:ZyGames.Framework.Game.Service.ActionGetter.ReqPackage">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:ZyGames.Framework.Game.Service.ActionGetter.#ctor(ZyGames.Framework.Game.Contract.RequestPackage)">
+            <summary>
+            init
+            </summary>
+            <param name="package"></param>
+        </member>
+        <member name="M:ZyGames.Framework.Game.Service.ActionGetter.GetMsgId">
+            <summary>
+            MsgId
+            </summary>
+        </member>
+        <member name="M:ZyGames.Framework.Game.Service.ActionGetter.GetSt">
+            <summary>
+            St
+            </summary>
+        </member>
+        <member name="M:ZyGames.Framework.Game.Service.ActionGetter.GetActionId">
+            <summary>
+            ActoinId
+            </summary>
+        </member>
+        <member name="M:ZyGames.Framework.Game.Service.ActionGetter.GetUserId">
+            <summary>
+            get current UserId.
+            </summary>
+        </member>
+        <member name="M:ZyGames.Framework.Game.Service.ActionGetter.GetSessionId">
+            <summary>
+            get current sessionid.
+            </summary>
+        </member>
+        <member name="M:ZyGames.Framework.Game.Service.ActionGetter.GetSession">
+            <summary>
+            get current session.
+            </summary>
+        </member>
+        <member name="M:ZyGames.Framework.Game.Service.ActionGetter.IsRunloader">
+            <summary>
+            Is Runloader tool's param
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:ZyGames.Framework.Game.Service.ActionGetter.GetMessage">
+            <summary>
+            Get custom message
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:ZyGames.Framework.Game.Service.ActionGetter.ToParamString">
+            <summary>
+            
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:ZyGames.Framework.Game.Service.ActionGetter.GetIntValue(System.String)">
+            <summary>
+            
+            </summary>
+            <param name="param"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ZyGames.Framework.Game.Service.ActionGetter.GetIntValue(System.String,System.Int32,System.Int32,System.Boolean)">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:ZyGames.Framework.Game.Service.ActionGetter.GetWordValue(System.String)">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:ZyGames.Framework.Game.Service.ActionGetter.GetWordValue(System.String,System.Int16,System.Int16,System.Boolean)">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:ZyGames.Framework.Game.Service.ActionGetter.GetByteValue(System.String)">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:ZyGames.Framework.Game.Service.ActionGetter.GetByteValue(System.String,System.Byte,System.Byte,System.Boolean)">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:ZyGames.Framework.Game.Service.ActionGetter.GetStringValue(System.String)">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:ZyGames.Framework.Game.Service.ActionGetter.GetStringValue(System.String,System.Int32,System.Int32,System.Boolean)">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:ZyGames.Framework.Game.Service.ActionGetter.GetInt(System.String)">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:ZyGames.Framework.Game.Service.ActionGetter.GetWord(System.String)">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:ZyGames.Framework.Game.Service.ActionGetter.GetByte(System.String)">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:ZyGames.Framework.Game.Service.ActionGetter.GetString(System.String)">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:ZyGames.Framework.Game.Service.ActionGetter.GetEnum``1(System.String)">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:ZyGames.Framework.Game.Service.ActionGetter.Contains(System.String)">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:ZyGames.Framework.Game.Service.ActionGetter.GetInt(System.String,System.Int32@)">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:ZyGames.Framework.Game.Service.ActionGetter.GetInt(System.String,System.Int32@,System.Int32,System.Int32)">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:ZyGames.Framework.Game.Service.ActionGetter.GetWord(System.String,System.Int16@)">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:ZyGames.Framework.Game.Service.ActionGetter.GetWord(System.String,System.Int16@,System.Int16,System.Int16)">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:ZyGames.Framework.Game.Service.ActionGetter.GetByte(System.String,System.Byte@)">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:ZyGames.Framework.Game.Service.ActionGetter.GetByte(System.String,System.Byte@,System.Byte,System.Byte)">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:ZyGames.Framework.Game.Service.ActionGetter.GetString(System.String,System.String@,System.Boolean)">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:ZyGames.Framework.Game.Service.ActionGetter.GetString(System.String,System.String@,System.Int32,System.Int32,System.Boolean)">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:ZyGames.Framework.Game.Service.ActionGetter.GetEnum``1(System.String,``0@)">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:ZyGames.Framework.Game.Service.ActionGetter.CheckSign">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="T:ZyGames.Framework.Game.Contract.Action.AndroidPayAction">
+            <summary>
+            触控安卓充值
             </summary>
         </member>
         <member name="M:ZyGames.Framework.Game.Contract.Action.AndroidPayAction.#ctor(System.Int16,ZyGames.Framework.Game.Contract.HttpGet)">
@@ -3625,47 +3668,25 @@
             </summary>
             <value>The guide identifier.</value>
         </member>
-        <member name="T:ZyGames.Framework.Game.Contract.Action.ScriptAction">
+        <member name="T:ZyGames.Framework.Game.Contract.Action.ScriptType">
             <summary>
-            提供脚本支持
+            
             </summary>
         </member>
-        <member name="M:ZyGames.Framework.Game.Contract.Action.ScriptAction.#ctor(System.Int32,ZyGames.Framework.Game.Service.ActionGetter,System.Object,System.Boolean)">
+        <member name="F:ZyGames.Framework.Game.Contract.Action.ScriptType.Csharp">
             <summary>
-            /
-            </summary>
-            <param name="aActionId"></param>
-            <param name="actionGetter"></param>
-            <param name="scriptScope"></param>
-            <param name="ignoreAuthorize">忽略授权</param>
-        </member>
-        <member name="M:ZyGames.Framework.Game.Contract.Action.ScriptAction.InitChildAction">
-            <summary>
-            子类实现
+            
             </summary>
         </member>
-        <member name="M:ZyGames.Framework.Game.Contract.Action.ScriptAction.GetUrlElement">
+        <member name="F:ZyGames.Framework.Game.Contract.Action.ScriptType.Python">
             <summary>
-            接收用户请求的参数，并根据相应类进行检测
-            </summary>
-            <returns></returns>
-        </member>
-        <member name="M:ZyGames.Framework.Game.Contract.Action.ScriptAction.TakeAction">
-            <summary>
-            子类实现Action处理
-            </summary>
-            <returns></returns>
-        </member>
-        <member name="M:ZyGames.Framework.Game.Contract.Action.ScriptAction.BuildPacket">
-            <summary>
-            创建返回协议内容输出栈
+            
             </summary>
         </member>
-        <member name="P:ZyGames.Framework.Game.Contract.Action.ScriptAction.IgnoreActionId">
+        <member name="F:ZyGames.Framework.Game.Contract.Action.ScriptType.Lua">
             <summary>
-            不检查的ActionID
+            
             </summary>
-            <value><c>true</c> if ignore action identifier; otherwise, <c>false</c>.</value>
         </member>
         <member name="T:ZyGames.Framework.Game.Contract.Action.Sdk91PayAction">
             <summary>

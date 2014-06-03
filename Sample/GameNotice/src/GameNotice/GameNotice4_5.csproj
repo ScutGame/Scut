@@ -110,7 +110,9 @@
     <Compile Include="Script\Model\Notice.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="GameServer.exe.config" />
+    <None Include="GameServer.exe.config">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="Nlog.config">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <SubType>Designer</SubType>
