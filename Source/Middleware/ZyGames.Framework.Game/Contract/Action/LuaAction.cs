@@ -42,19 +42,20 @@ namespace ZyGames.Framework.Game.Contract.Action
 
         public override bool GetUrlElement()
         {
-            _urlParam = _scriptScope["getUrlElement"].Call(actionGetter, this)[0];
+            var func = _scriptScope["getUrlElement"];
+            _urlParam = func.Call(_scriptScope, actionGetter)[0];
             return _urlParam != null && _urlParam["Result"] ? true : false;
         }
 
         public override bool DoAction()
         {
-            _actionResult = _scriptScope["takeAction"].Call(_urlParam, this)[0];
+            _actionResult = _scriptScope["takeAction"].Call(_scriptScope, _urlParam)[0];
             return _actionResult != null && _actionResult["Result"] ? true : false;
         }
 
         public override void BuildPacket()
         {
-            bool result = _scriptScope["buildPacket"].Call(dataStruct, _urlParam, _actionResult)[0];
+            bool result = _scriptScope["buildPacket"].Call(_scriptScope, dataStruct, _urlParam, _actionResult)[0];
             if (!result)
             {
                 ErrorCode = Language.Instance.ErrorCode;

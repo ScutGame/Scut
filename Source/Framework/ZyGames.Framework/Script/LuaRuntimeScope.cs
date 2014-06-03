@@ -100,7 +100,7 @@ namespace ZyGames.Framework.Script
         /// 
         /// </summary>
         /// <param name="args"></param>
-        public void LuaRegister(params object[] args)
+        public void LuaRegisterObject(params object[] args)
         {
             if (!ScriptEngines.SettupInfo.DisableLua)
             {

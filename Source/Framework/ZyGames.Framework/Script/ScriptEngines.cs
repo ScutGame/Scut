@@ -362,9 +362,9 @@ namespace ZyGames.Framework.Script
         /// 向Lua注册NET的方法,方法需要加LuaMethod属性
         /// </summary>
         /// <param name="args"></param>
-        public static void LuaRegister(params object[] args)
+        public static void LuaRegisterObject(params object[] args)
         {
-            _runtimeDomain.Scope.LuaRegister(args);
+            _runtimeDomain.Scope.LuaRegisterObject(args);
         }
 
         /// <summary>

@@ -55,7 +55,6 @@ namespace GameServer
                     setting.GamePort));
                 GameEnvironment.Start(setting);
                 Console.ForegroundColor = currentForeColor;
-
                 if (ScriptEngines.RunMainProgram(args))
                 {
                     Console.WriteLine("{0} Server has started successfully!", DateTime.Now.ToString("HH:mm:ss"));
@@ -75,5 +74,6 @@ namespace GameServer
                 Console.ReadKey();
             }
         }
+
     }
 }
