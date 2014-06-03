@@ -1,4 +1,4 @@
-/****************************************************************************
+Ôªø/****************************************************************************
 Copyright (c) 2013-2015 scutgame.com
 
 http://www.scutgame.com
@@ -23,15 +23,11 @@ THE SOFTWARE.
 ****************************************************************************/
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
-using System.Text;
 
 namespace ZyGames.Framework.Script
 {
     /// <summary>
-    /// CSharpŒƒº˛–≈œ¢
+    /// CSharpÊñá‰ª∂‰ø°ÊÅØ
     /// </summary>
     public class CSharpFileInfo : ScriptFileInfo
     {
@@ -43,7 +39,6 @@ namespace ZyGames.Framework.Script
         public CSharpFileInfo(string fileCode, string fileName)
             : base(fileCode, fileName)
         {
-            _type = ScriptType.Csharp;
         }
 
     }

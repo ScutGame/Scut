@@ -31,6 +31,7 @@ namespace ZyGames.Framework.Collection.Generic
     /// <summary>
     /// 扩展线程安全字典
     /// </summary>
+    [Serializable]
     public class DictionaryExtend<TKey, TValue> : IDictionary<TKey, TValue>
     {
         private readonly ConcurrentDictionary<TKey, TValue> _cacheStruct;

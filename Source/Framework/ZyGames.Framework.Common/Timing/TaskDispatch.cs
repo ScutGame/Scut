@@ -61,7 +61,7 @@ namespace ZyGames.Framework.Common.Timing
 
         private Timer thread;
         private long intevalTicks = 100;
-        private bool running = false;
+        private bool _running;
         private List<BaseTask> taskList = new List<BaseTask>();
 
         private TaskDispatch()
@@ -127,7 +127,7 @@ namespace ZyGames.Framework.Common.Timing
             if (thread == null)
             {
                 thread = new Timer(ThreadProcess, null, 100, intevalTicks);
-                running = true;
+                _running = true;
             }
         }
         /// <summary>
@@ -136,14 +136,14 @@ namespace ZyGames.Framework.Common.Timing
         public void Stop()
         {
             thread.Change(-1, Timeout.Infinite);
-            running = false;
+            _running = false;
         }
         /// <summary>
         /// 
         /// </summary>
         ~TaskDispatch()
         {
-            running = false;
+            _running = false;
             thread.Dispose();
         }
     }

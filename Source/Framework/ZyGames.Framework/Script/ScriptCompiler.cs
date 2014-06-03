@@ -24,13 +24,8 @@ THE SOFTWARE.
 
 using System;
 using System.CodeDom.Compiler;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Reflection;
-using System.Security;
-using System.Security.Permissions;
-using System.Text;
 using Microsoft.CSharp;
 using ZyGames.Framework.Common;
 using ZyGames.Framework.Common.Build;
@@ -110,7 +105,7 @@ namespace ZyGames.Framework.Script
             bool isDebug, bool isInMemory, string outputPath = "")
         {
             return Compile(true, fileNames, refAssemblies, assemblyName, isDebug, isInMemory, outputPath);
-        
+
         }
         /// <summary>
         /// Compile
@@ -187,7 +182,7 @@ namespace ZyGames.Framework.Script
                         options.ReferencedAssemblies.Add(assembly);
                     }
                 }
-                CompilerResults cr =isFile
+                CompilerResults cr = isFile
                     ? provider.CompileAssemblyFromFile(options, sources)
                     : provider.CompileAssemblyFromSource(options, sources);
                 if (cr.Errors.HasErrors)
@@ -213,30 +208,30 @@ namespace ZyGames.Framework.Script
         /// <summary>
         /// Compile csharp srcipt and injection code.
         /// </summary>
-        /// <param name="fileNames"></param>
+        /// <param name="privateBinPath"></param>
+        /// <param name="sources"></param>
         /// <param name="refAssemblies"></param>
         /// <param name="assemblyName"></param>
         /// <param name="isDebug"></param>
         /// <param name="isInMemory"></param>
         /// <param name="pathToAssembly"></param>
         /// <returns></returns>
-        internal static Assembly InjectionCompile(string[] fileNames, string[] refAssemblies, string assemblyName, bool isDebug, bool isInMemory, out string pathToAssembly)
+        internal static Assembly InjectionCompile(string privateBinPath, string[] sources, string[] refAssemblies, string assemblyName, bool isDebug, bool isInMemory, out string pathToAssembly)
         {
             pathToAssembly = null;
-            var result = Compile(fileNames, refAssemblies, assemblyName, isDebug, false);
+            var result = CompileSource(sources, refAssemblies, assemblyName, isDebug, false);
             if (result == null)
             {
                 return null;
             }
             pathToAssembly = result.PathToAssembly;
-            string runtimePath = MathUtils.RuntimeBinPath;
             string outAssembly = Path.Combine(_dyScriptPath, ScriptAssemblyTemp);
             if (!Directory.Exists(outAssembly))
             {
                 Directory.CreateDirectory(outAssembly);
             }
             outAssembly = Path.Combine(outAssembly, Path.GetFileNameWithoutExtension(pathToAssembly) + ".dll");
-            if (AssemblyBuilder.BuildToFile(pathToAssembly, runtimePath, outAssembly))
+            if (AssemblyBuilder.BuildToFile(pathToAssembly, privateBinPath, outAssembly))
             {
                 var ass = AssemblyBuilder.ReadAssembly(outAssembly, null);
                 if (ass != null) pathToAssembly = outAssembly;

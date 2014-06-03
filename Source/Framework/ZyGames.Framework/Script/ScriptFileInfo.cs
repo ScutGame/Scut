@@ -1,4 +1,4 @@
-/****************************************************************************
+ï»¿/****************************************************************************
 Copyright (c) 2013-2015 scutgame.com
 
 http://www.scutgame.com
@@ -30,26 +30,9 @@ using System.Threading;
 
 namespace ZyGames.Framework.Script
 {
+
     /// <summary>
-    /// ½Å±¾ÀàĞÍ
-    /// </summary>
-    public enum ScriptType
-    {
-        /// <summary>
-        /// 
-        /// </summary>
-        Unkown,
-        /// <summary>
-        /// 
-        /// </summary>
-        Python = 1,
-        /// <summary>
-        /// 
-        /// </summary>
-        Csharp
-    }
-    /// <summary>
-    /// ½Å±¾ÎÄ¼şĞÅÏ¢
+    /// è„šæœ¬æ–‡ä»¶ä¿¡æ¯
     /// </summary>
     public abstract class ScriptFileInfo
     {
@@ -59,33 +42,16 @@ namespace ZyGames.Framework.Script
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="fileCode">ÎÄ¼ş±àºÅ</param>
-        /// <param name="fileName">ÍêÕûÂ·¾¶ºÍÎÄ¼şÃû</param>
+        /// <param name="fileCode">æ–‡ä»¶ç¼–å·</param>
+        /// <param name="fileName">å®Œæ•´è·¯å¾„å’Œæ–‡ä»¶å</param>
         protected ScriptFileInfo(string fileCode, string fileName)
         {
             _fileCode = fileCode;
             _fileName = fileName;
         }
-        /// <summary>
-        /// 
-        /// </summary>
-        protected ScriptType _type;
 
         /// <summary>
-        /// ½Å±¾ÀàĞÍ
-        /// </summary>
-        public ScriptType Type
-        {
-            get { return _type; }
-        }
-
-        /// <summary>
-        /// Object type.
-        /// </summary>
-        public Type ObjType { get; set; }
-
-        /// <summary>
-        /// ÎÄ¼ş±àºÅ
+        /// æ–‡ä»¶ç¼–å·
         /// </summary>
         public string FileCode
         {
@@ -93,7 +59,12 @@ namespace ZyGames.Framework.Script
         }
 
         /// <summary>
-        /// ÍêÕûÂ·¾¶ºÍÎÄ¼şÃû
+        /// æºæ–‡ä»¶
+        /// </summary>
+        public string Source { get; set; }
+
+        /// <summary>
+        /// å®Œæ•´è·¯å¾„å’Œæ–‡ä»¶å
         /// </summary>
         public string FileName
         {
@@ -101,33 +72,8 @@ namespace ZyGames.Framework.Script
         }
 
         /// <summary>
-        /// 
-        /// </summary>
-        public string GroupName { get; set; }
-
-        /// <summary>
-        /// MD5¹şÏ£Code
+        /// MD5å“ˆå¸ŒCode
         /// </summary>
         public string HashCode { get; set; }
-
-        private int _lockFlag;
-
-        /// <summary>
-        /// lock
-        /// </summary>
-        /// <returns></returns>
-        public bool TryEnterLock()
-        {
-            if (_lockFlag == 1) return false;
-            return Interlocked.CompareExchange(ref _lockFlag, 1, 0) == 0;
-        }
-
-        /// <summary>
-        /// exit lock
-        /// </summary>
-        public void ExitLock()
-        {
-            Interlocked.Exchange(ref _lockFlag, 0);
-        }
     }
 }

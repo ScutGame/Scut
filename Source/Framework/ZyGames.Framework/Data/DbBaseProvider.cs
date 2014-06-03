@@ -88,6 +88,11 @@ namespace ZyGames.Framework.Data
             private set;
         }
 
+        /// <summary>
+        /// Check connect
+        /// </summary>
+        /// <returns></returns>
+        public abstract void CheckConnect();
 
         /// <summary>
         /// 执行Sql语句

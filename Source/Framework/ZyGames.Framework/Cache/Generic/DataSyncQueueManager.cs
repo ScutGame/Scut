@@ -614,10 +614,16 @@ namespace ZyGames.Framework.Cache.Generic
                     {
                         asmName = "," + enitityAsm.GetName().Name;
                     }
+                   
                     Type type = Type.GetType(string.Format("{0}{1}", typeName, asmName), false, true);
                     if (type == null)
-                    {
-                        throw new ArgumentTypeException(string.Format("Get entity \"{0}\" type is null", entityParentKey));
+                    { 
+                        //调试模式下type为空处理
+                        type = enitityAsm.GetType(typeName, false, true);
+                        if (type == null)
+                        {
+                            throw new ArgumentTypeException(string.Format("Get entity \"{0}\" type is null", entityParentKey));
+                        }
                     }
                     var keyBuffers = g.Select(p => p.Value[0]).ToArray();
                     var headBuffers = g.Select(p => p.Value[2]).ToArray();

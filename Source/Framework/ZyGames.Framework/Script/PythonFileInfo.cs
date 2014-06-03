@@ -1,4 +1,4 @@
-/****************************************************************************
+Ôªø/****************************************************************************
 Copyright (c) 2013-2015 scutgame.com
 
 http://www.scutgame.com
@@ -31,7 +31,7 @@ using Microsoft.Scripting.Hosting;
 namespace ZyGames.Framework.Script
 {
     ///<summary>
-    /// PythonŒƒº˛–≈œ¢
+    /// PythonÊñá‰ª∂‰ø°ÊÅØ
     ///</summary>
     public class PythonFileInfo : ScriptFileInfo
     {
@@ -39,22 +39,14 @@ namespace ZyGames.Framework.Script
         ///</summary>
         ///<param name="fileCode"></param>
         ///<param name="fileName"></param>
-        ///<param name="compiledCode"></param>
-        public PythonFileInfo(string fileCode, string fileName, CompiledCode compiledCode)
+        public PythonFileInfo(string fileCode, string fileName)
             : base(fileCode, fileName)
         {
-            _compiledCode = compiledCode;
-            _type = ScriptType.Python;
         }
-
-        private CompiledCode _compiledCode;
 
         /// <summary>
         /// The Compiled Code.
         /// </summary>
-        public CompiledCode CompiledCode
-        {
-            get { return _compiledCode; }
-        }
+        public CompiledCode CompiledCode { get; set; }
     }
 }

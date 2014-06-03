@@ -24,6 +24,7 @@ THE SOFTWARE.
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.NetworkInformation;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Text;
@@ -162,6 +163,28 @@ namespace ZyGames.Framework.Redis
         }
 
         /// <summary>
+        /// Ping ip
+        /// </summary>
+        /// <returns></returns>
+        public static bool Ping(string ip)
+        {
+            try
+            {
+                Ping objPingSender = new Ping();
+                PingOptions objPinOptions = new PingOptions();
+                objPinOptions.DontFragment = true;
+                string data = "";
+                byte[] buffer = Encoding.UTF8.GetBytes(data);
+                int intTimeout = 120;
+                PingReply objPinReply = objPingSender.Send(ip, intTimeout, buffer, objPinOptions);
+                return objPinReply != null && objPinReply.Status == IPStatus.Success;
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+        }
+        /// <summary>
         /// Get read and write connection
         /// </summary>
         /// <returns></returns>
@@ -254,7 +277,6 @@ namespace ZyGames.Framework.Redis
                 try
                 {
 
-                    //todo wait test 
                     //从旧版本存储格式中查找
                     if (typeof(T).IsSubclassOf(typeof(ShareEntity)))
                     {

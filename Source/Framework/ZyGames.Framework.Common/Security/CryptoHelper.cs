@@ -149,19 +149,13 @@ namespace ZyGames.Framework.Common.Security
             String hashMD5 = String.Empty;
             if (File.Exists(fileName))
             {
-                byte[] fileBuffer = File.ReadAllBytes(fileName);
-
-                //计算文件的MD5值
-                MD5 calculator = MD5.Create();
-                Byte[] buffer = calculator.ComputeHash(fileBuffer);
-                calculator.Clear();
-                //将字节数组转换成十六进制的字符串形式
-                StringBuilder stringBuilder = new StringBuilder();
-                for (int i = 0; i < buffer.Length; i++)
+                FileInfo fi = new FileInfo(fileName);
+                string str = "";
+                using (var sr = fi.OpenText())
                 {
-                    stringBuilder.Append(buffer[i].ToString("x2"));
+                    str = sr.ReadToEnd();
                 }
-                hashMD5 = stringBuilder.ToString();
+                hashMD5 = ToMd5Hash(str);
             }
             return hashMD5;
         }
@@ -286,11 +280,13 @@ namespace ZyGames.Framework.Common.Security
         {
             return CryptoHelper.DES_Decrypt(source, DefaultKey);
         }
+
         /// <summary>
         /// 
         /// </summary>
         /// <param name="source"></param>
         /// <param name="key">8 length</param>
+        /// <param name="iv"></param>
         /// <returns></returns>
         public static string DES_Decrypt(string source, string key, string iv = "")
         {

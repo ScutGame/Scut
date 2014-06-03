@@ -51,18 +51,22 @@ namespace ZyGames.Framework.Data
             while (er.MoveNext())
             {
                 ConnectionStringSettings connSetting = er.Current as ConnectionStringSettings;
-                if (connSetting != null)
+                if (connSetting == null) continue;
+                var setting = ConnectionSetting.Create(connSetting.Name, connSetting.ProviderName, connSetting.ConnectionString.Trim());
+                if (setting.DbLevel == DbLevel.LocalMysql || setting.DbLevel == DbLevel.LocalSql)
                 {
-                    try
-                    {
-                        dbBaseProvider = CreateDbProvider(connSetting.Name, connSetting.ProviderName, connSetting.ConnectionString.Trim());
-                        dbProviders.TryAdd(connSetting.Name, dbBaseProvider);
-                    }
-                    catch
-                    {
-                        TraceLog.WriteError("ProviderName:{0} instance failed.", connSetting.ProviderName);
-                    }
+                    continue;
                 }
+                dbBaseProvider = CreateDbProvider(setting);
+                try
+                {
+                    dbBaseProvider.CheckConnect();
+                }
+                catch (Exception ex)
+                {
+                    throw new Exception(string.Format("Not connect to the database server \"{0}\" database \"{1}\".", dbBaseProvider.ConnectionSetting.DataSource, dbBaseProvider.ConnectionSetting.DatabaseName), ex);
+                }
+                dbProviders.TryAdd(connSetting.Name, dbBaseProvider);
             }
 
         }
@@ -151,12 +155,18 @@ namespace ZyGames.Framework.Data
         /// <returns></returns>
         public static DbBaseProvider CreateDbProvider(string name, string providerTypeName, string connectionString)
         {
-            Type type = TryGetProviderType(providerTypeName);
+            var setting = ConnectionSetting.Create(name, providerTypeName, connectionString);
+            return CreateDbProvider(setting);
+        }
+
+        private static DbBaseProvider CreateDbProvider(ConnectionSetting setting)
+        {
+            Type type = TryGetProviderType(setting.ProviderTypeName);
             if (type == null)
             {
                 type = typeof(SqlDataProvider);
             }
-            return type.CreateInstance<DbBaseProvider>(ConnectionSetting.Create(name, providerTypeName, connectionString));
+            return type.CreateInstance<DbBaseProvider>(setting);
         }
 
         private static Type TryGetProviderType(string providerTypeName)

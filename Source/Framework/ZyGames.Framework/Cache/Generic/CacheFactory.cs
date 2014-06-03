@@ -24,20 +24,13 @@ THE SOFTWARE.
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Data;
-using System.Linq;
-using System.Threading;
-using IronPython.Modules;
 using ZyGames.Framework.Cache.Generic.Pool;
-using ZyGames.Framework.Common.Configuration;
 using ZyGames.Framework.Common.Log;
 using ZyGames.Framework.Common.Serialization;
 using ZyGames.Framework.Common.Timing;
-using ZyGames.Framework.Data;
 using ZyGames.Framework.Event;
 using ZyGames.Framework.Model;
 using ZyGames.Framework.Net;
-using ZyGames.Framework.Net.Redis;
 using ZyGames.Framework.Redis;
 using ZyGames.Framework.Script;
 
@@ -80,9 +73,7 @@ namespace ZyGames.Framework.Cache.Generic
             _readonlyPools = new CachePool(dbTransponder, redisTransponder, true);
             _writePools = new CachePool(dbTransponder, redisTransponder, false) { Setting = setting };
 
-            RedisConnectionPool.Initialize();
             EntitySchemaSet.InitSchema(typeof(EntityHistory));
-
             DataSyncQueueManager.Start(setting);
             InitListener("__CachePoolListener", setting.ExpiredInterval, "__CachePoolUpdateListener", setting.UpdateInterval);
             if (setting.AutoRunEvent)
@@ -101,7 +92,7 @@ namespace ZyGames.Framework.Cache.Generic
             bool result = false;
             RedisConnectionPool.ProcessReadOnly(client =>
             {
-                result = client.SearchKeys(DataSyncQueueManager.RedisSyncQueueKey + "*").Count > 0;
+                result = client.SearchKeys(DataSyncQueueManager.RedisSyncQueueKey + "*").Count == 0;
             });
             return result;
         }
@@ -217,6 +208,11 @@ namespace ZyGames.Framework.Cache.Generic
                     {
                         asmName = enitityAsm.GetName().Name;
                         type = Type.GetType(string.Format(formatString, typeName, asmName), false, true);
+                        if (Equals(type, null))
+                        {
+                            //调试模式下type为空处理
+                            type = enitityAsm.GetType( typeName, false, true);
+                        }
                     }
                 }
             }
@@ -478,6 +474,7 @@ namespace ZyGames.Framework.Cache.Generic
             {
                 TraceLog.WriteError("Access to cache \"{0}\" data failed because the object has been disposed.", typeof(T).FullName);
             }
+           
             EntityContainer<T> cacheSet = null;
             if (isReadonly)
             {

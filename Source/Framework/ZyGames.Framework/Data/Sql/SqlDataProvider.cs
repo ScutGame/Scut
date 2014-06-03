@@ -27,6 +27,7 @@ using System.Data;
 using System.Data.SqlClient;
 using System.Text;
 using ZyGames.Framework.Common;
+using ZyGames.Framework.Common.Log;
 
 namespace ZyGames.Framework.Data.Sql
 {
@@ -43,6 +44,18 @@ namespace ZyGames.Framework.Data.Sql
             : base(connectionSetting)
         {
         }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public override void CheckConnect()
+        {
+            using (SqlConnection conn = new SqlConnection(ConnectionString))
+            {
+                conn.Open();
+            }
+        }
+
         /// <summary>
         /// 
         /// </summary>
@@ -502,7 +515,7 @@ namespace ZyGames.Framework.Data.Sql
                         i++;
                         index++;
                     }
-                    command.AppendFormat("ALTER TABLE {0} ADD CONSTRAINT PK_{1} PRIMARY KEY({2});", 
+                    command.AppendFormat("ALTER TABLE {0} ADD CONSTRAINT PK_{1} PRIMARY KEY({2});",
                         FormatName(tableName),
                         tableName,
                         FormatQueryColumn(",", keyArray));

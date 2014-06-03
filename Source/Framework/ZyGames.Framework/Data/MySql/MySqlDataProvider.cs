@@ -27,6 +27,7 @@ using System.Data;
 using System.Text;
 using ZyGames.Framework.Common;
 using MySql.Data.MySqlClient;
+using ZyGames.Framework.Common.Log;
 
 namespace ZyGames.Framework.Data.MySql
 {
@@ -43,6 +44,18 @@ namespace ZyGames.Framework.Data.MySql
             : base(connectionSetting)
         {
         }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public override void CheckConnect()
+        {
+            using (MySqlConnection conn = new MySqlConnection(ConnectionString))
+            {
+                conn.Open();
+            }
+        }
+
         /// <summary>
         /// 
         /// </summary>
@@ -357,8 +370,8 @@ namespace ZyGames.Framework.Data.MySql
                     command.AppendFormat("PRIMARY KEY ({0})", FormatQueryColumn(",", keys));
                 }
                 command.AppendLine("");
-                string charSet = string.IsNullOrEmpty(ConnectionSetting.CharSet) 
-                    ? " CharSet=gbk" 
+                string charSet = string.IsNullOrEmpty(ConnectionSetting.CharSet)
+                    ? " CharSet=gbk"
                     : " CharSet=" + ConnectionSetting.CharSet;
                 command.AppendFormat(") ENGINE=InnoDB{0};", charSet);
                 if (hasColumn)

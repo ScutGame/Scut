@@ -245,12 +245,19 @@
     <Compile Include="RPC\Sockets\Threading\WorkItemsQueue.cs" />
     <Compile Include="RPC\Sockets\ThreadSafeStack.cs" />
     <Compile Include="Script\CSharpFileInfo.cs" />
-    <Compile Include="Script\FileWatcherInfo.cs" />
+    <Compile Include="Script\CSharpRuntimeScope.cs" />
+    <Compile Include="Script\LuaMethodAttribute.cs" />
+    <Compile Include="Script\LuaRuntimeScope.cs" />
+    <Compile Include="Script\PythonRuntimeScope.cs" />
+    <Compile Include="Script\ScriptDomainContext.cs" />
     <Compile Include="Script\IMainScript.cs" />
     <Compile Include="Script\PythonFileInfo.cs" />
     <Compile Include="Script\ScriptCompiler.cs" />
     <Compile Include="Script\ScriptEngines.cs" />
     <Compile Include="Script\ScriptFileInfo.cs" />
+    <Compile Include="Script\ScriptRuntimeDomain.cs" />
+    <Compile Include="Script\ScriptRuntimeScope.cs" />
+    <Compile Include="Script\ScriptSettupInfo.cs" />
     <Compile Include="SyncThreading\SyncHelper.cs" />
   </ItemGroup>
   <ItemGroup>
