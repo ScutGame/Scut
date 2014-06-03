@@ -27,17 +27,9 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using System.Text;
 using System.Threading;
-using IronPython.Hosting;
-using Microsoft.Scripting;
-using Microsoft.Scripting.Hosting;
-using Microsoft.Scripting.Interpreter;
-using ZyGames.Framework.Collection.Generic;
 using ZyGames.Framework.Common;
-using ZyGames.Framework.Common.Configuration;
 using ZyGames.Framework.Common.Log;
-using ZyGames.Framework.Common.Security;
 using ZyGames.Framework.Common.Serialization;
 using ZyGames.Framework.Model;
 
@@ -119,14 +111,16 @@ namespace ZyGames.Framework.Script
 
         private static ScriptRuntimeScope InitScriptRuntimeScope()
         {
+            string runtimePath = MathUtils.RuntimePath ?? MathUtils.RuntimeBinPath;
+            AppDomain.CurrentDomain.AppendPrivatePath(ScriptCompiler.ScriptPath);
             bool isFirstRun = _runtimeDomain == null;
             if (!isFirstRun && _settupInfo.ModelChangedBefore != null)
             {
                 _settupInfo.ModelChangedBefore(_runtimeDomain.Scope.ModelAssembly);
             }
 
-            _runtimeDomain = new ScriptRuntimeDomain(typeof(ScriptRuntimeDomain).Name);
-            _runtimeDomain.SetPrivateBinPaths = new[] { _settupInfo.RuntimePath, ScriptCompiler.ScriptPath };
+            _runtimeDomain = new ScriptRuntimeDomain(typeof(ScriptRuntimeDomain).Name, new[] { _settupInfo.RuntimePath, ScriptCompiler.ScriptPath });
+
             ScriptDomainContext domainContext = _runtimeDomain.InitDomainContext();
             foreach (var assemblyName in _settupInfo.ReferencedAssemblyNames)
             {

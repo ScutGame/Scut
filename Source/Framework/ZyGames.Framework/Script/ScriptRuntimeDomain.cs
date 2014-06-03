@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Concurrent;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text;
@@ -21,10 +22,18 @@ namespace ZyGames.Framework.Script
         /// 
         /// </summary>
         /// <param name="name"></param>
+        /// <param name="privateBinPaths"></param>
         /// <returns></returns>
-        public ScriptRuntimeDomain(string name)
+        public ScriptRuntimeDomain(string name, string[] privateBinPaths)
         {
-            _currDomain = AppDomain.CreateDomain(name);
+            AppDomainSetup setup = new AppDomainSetup();
+            setup.ApplicationName = name;
+            setup.ApplicationBase = AppDomain.CurrentDomain.SetupInformation.ApplicationBase;
+            setup.PrivateBinPath = string.Join(";", privateBinPaths);
+            setup.CachePath = setup.ApplicationBase;
+            setup.ShadowCopyFiles = "true";
+            setup.ShadowCopyDirectories = setup.ApplicationBase;
+            _currDomain = AppDomain.CreateDomain(name, null, setup);
         }
 
         /// <summary>
@@ -56,12 +65,9 @@ namespace ZyGames.Framework.Script
         /// <summary>
         /// 
         /// </summary>
-        public string[] SetPrivateBinPaths
+        public string PrivateBinPath
         {
-            set
-            {
-                _currDomain.SetupInformation.PrivateBinPath = string.Join(";", value);
-            }
+            get { return _currDomain.SetupInformation.PrivateBinPath; }
         }
 
         /// <summary>

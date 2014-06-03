@@ -22,11 +22,9 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ****************************************************************************/
 using System;
-using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
 using System.Threading;
-using IronPython.Modules;
 using MySql.Data.MySqlClient;
 using ZyGames.Framework.Common.Configuration;
 using ZyGames.Framework.Common.Log;

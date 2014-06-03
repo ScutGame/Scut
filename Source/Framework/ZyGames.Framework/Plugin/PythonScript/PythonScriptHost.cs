@@ -25,8 +25,9 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
-using IronPython.Hosting;
+using System.Reflection;
 using Microsoft.Scripting.Hosting;
+using Microsoft.Scripting.Utils;
 using ZyGames.Framework.Common.Log;
 
 namespace ZyGames.Framework.Plugin.PythonScript
@@ -34,9 +35,9 @@ namespace ZyGames.Framework.Plugin.PythonScript
     /// <summary>
     /// 
     /// </summary>
-	/// <example>
-	/// <code>
-	/// </code>
+    /// <example>
+    /// <code>
+    /// </code>
     /// </example>
     [Obsolete("使用ZyGames.Framework.Script.ScriptEngines替代")]
     public static class PythonScriptHost
@@ -91,9 +92,16 @@ namespace ZyGames.Framework.Plugin.PythonScript
 			{
 	            RuntimePath = (pythonRuntimePath??"").Replace(@"\", "/");
 	            LibPath = pythonLibPath;
+                var assm = Assembly.LoadFrom(Path.Combine(ZyGames.Framework.Common.MathUtils.RuntimeBinPath, "IronPython.dll"));
+                var type = assm.GetType("IronPython.Hosting.Python", false, true);
+                if (type == null)
+                {
+                    throw new Exception("Not found Python class in IronPython.dll");
+                }
+
 	            _pyEngine = options == null || options.Count == 0
-	                ? Python.CreateEngine()
-	                : Python.CreateEngine(options);
+	                ?  type.InvokeMember("CreateEngine", BindingFlags.InvokeMethod | BindingFlags.Public | BindingFlags.Static, null, null, new object[0]) as ScriptEngine
+	                :  type.InvokeMember("CreateEngine", BindingFlags.InvokeMethod | BindingFlags.Public | BindingFlags.Static, null, null, new[] { options }) as ScriptEngine;
 	            _pyRuntime = _pyEngine.Runtime;
 	            SetPythonSearchPath(RuntimePath);
 
@@ -131,11 +139,11 @@ namespace ZyGames.Framework.Plugin.PythonScript
         /// <param name="path"></param>
         public static void SetPythonSearchPath(string path)
         {
-			path = (path ?? "").Replace(@"\", "/");
-			if(!path.EndsWith("/"))
-			{
-				path = path + "/";
-			}
+            path = (path ?? "").Replace(@"\", "/");
+            if (!path.EndsWith("/"))
+            {
+                path = path + "/";
+            }
             DirectoryInfo rootDir = new DirectoryInfo(path);
             var itemDirs = rootDir.GetDirectories("*", SearchOption.AllDirectories);
             var searchPaths = new List<string>();
@@ -146,7 +154,7 @@ namespace ZyGames.Framework.Plugin.PythonScript
             {
                 searchPaths.Add(itemDir.FullName);
             }
-			TraceLog.ReleaseWrite("Python search path:{0}\r\n{1}",path, string.Join(";\r\n", searchPaths));
+            TraceLog.ReleaseWrite("Python search path:{0}\r\n{1}", path, string.Join(";\r\n", searchPaths));
             SetSearchPaths(searchPaths);
         }
 
@@ -170,21 +178,21 @@ namespace ZyGames.Framework.Plugin.PythonScript
         /// <returns></returns>
         public static bool GetScriptScope(string moduleName, out dynamic scope)
         {
-			moduleName = (moduleName ?? "").Replace(@"\", "/");
+            moduleName = (moduleName ?? "").Replace(@"\", "/");
 
-			if (_pythonScopes.TryGetValue(moduleName, out scope))
-			{
-				return true;
-			}
-			if (TryReLoadScript(moduleName, out scope))
-			{
-				dynamic old;
-				if (_pythonScopes.TryGetValue(moduleName, out old))
-				{
-					return _pythonScopes.TryUpdate(moduleName, scope, old);
-				}
-				return _pythonScopes.TryAdd(moduleName, scope);
-			}
+            if (_pythonScopes.TryGetValue(moduleName, out scope))
+            {
+                return true;
+            }
+            if (TryReLoadScript(moduleName, out scope))
+            {
+                dynamic old;
+                if (_pythonScopes.TryGetValue(moduleName, out old))
+                {
+                    return _pythonScopes.TryUpdate(moduleName, scope, old);
+                }
+                return _pythonScopes.TryAdd(moduleName, scope);
+            }
 
             return false;
         }
@@ -195,8 +203,8 @@ namespace ZyGames.Framework.Plugin.PythonScript
         /// <param name="moduleName"></param>
         /// <returns></returns>
         public static bool TryRemoveScript(string moduleName)
-		{
-			moduleName = (moduleName ?? "").Replace(@"\", "/");
+        {
+            moduleName = (moduleName ?? "").Replace(@"\", "/");
             dynamic scope;
             return _pythonScopes.TryRemove(moduleName, out scope);
         }
@@ -209,7 +217,7 @@ namespace ZyGames.Framework.Plugin.PythonScript
         /// <returns></returns>
         public static bool TryReLoadScript(string moduleName, out dynamic scope)
         {
-			moduleName = (moduleName ?? "").Replace(@"\", "/");
+            moduleName = (moduleName ?? "").Replace(@"\", "/");
             scope = null;
             string fileName = Path.Combine(RuntimePath, moduleName);
             try
@@ -227,7 +235,7 @@ namespace ZyGames.Framework.Plugin.PythonScript
             }
             catch (Exception ex)
             {
-				TraceLog.WriteError("Python script import \"{0}\" error\r\n{1}", fileName, ex);
+                TraceLog.WriteError("Python script import \"{0}\" error\r\n{1}", fileName, ex);
             }
             return false;
         }

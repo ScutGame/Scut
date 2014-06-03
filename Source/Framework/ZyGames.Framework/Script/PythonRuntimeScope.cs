@@ -26,10 +26,10 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using System.Text;
 using Microsoft.Scripting;
 using Microsoft.Scripting.Hosting;
 using ZyGames.Framework.Collection.Generic;
+using ZyGames.Framework.Common;
 using ZyGames.Framework.Common.Log;
 using ZyGames.Framework.Common.Security;
 
@@ -82,7 +82,16 @@ namespace ZyGames.Framework.Script
         {
             var pythonOptions = new Dictionary<string, object>();
             pythonOptions["Debug"] = SettupInfo.PythonIsDebug;
-            _scriptEngine = IronPython.Hosting.Python.CreateEngine(pythonOptions);
+
+            var assm = Assembly.LoadFrom(Path.Combine(SettupInfo.RuntimePrivateBinPath, "IronPython.dll"));
+            var type = assm.GetType("IronPython.Hosting.Python", false, true);
+            if (type == null)
+            {
+                throw new Exception("Not found Python class in IronPython.dll");
+            }
+            _scriptEngine = type.InvokeMember("CreateEngine", BindingFlags.InvokeMethod | BindingFlags.Public | BindingFlags.Static, null, null, new[] { pythonOptions }) as ScriptEngine;
+
+            //_scriptEngine = IronPython.Hosting.Python.CreateEngine(pythonOptions);
             _scriptEngine.Runtime.LoadAssembly(typeof(string).Assembly);
             _scriptEngine.Runtime.LoadAssembly(Assembly.GetExecutingAssembly());
 

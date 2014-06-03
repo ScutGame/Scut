@@ -27,13 +27,10 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text;
-using IronPython.Modules;
 using ZyGames.Framework.Collection.Generic;
 using ZyGames.Framework.Common;
 using ZyGames.Framework.Common.Log;
 using ZyGames.Framework.Common.Security;
-using ZyGames.Framework.Common.Serialization;
-using ZyGames.Framework.Model;
 
 namespace ZyGames.Framework.Script
 {
