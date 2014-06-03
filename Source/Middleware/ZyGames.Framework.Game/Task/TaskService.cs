@@ -70,7 +70,7 @@ namespace ZyGames.Framework.Game.Task
         /// <returns><c>true</c>, if task was inited, <c>false</c> otherwise.</returns>
         protected bool InitTask()
         {
-            _taskScope = ScriptEngines.Execute(ScriptEngines.PythonDirName + "/Lib/Task.py", null);
+            _taskScope = ScriptEngines.Execute("Lib.Task", null);
             return _taskScope != null;
         }
 

@@ -1,6 +1,7 @@
 ﻿using System;
 using ServiceStack.Text;
 using ZyGames.Framework.Game.Contract;
+using ZyGames.Framework.Script;
 
 namespace ZyGames.Framework.Game.Service
 {
@@ -167,6 +168,7 @@ namespace ZyGames.Framework.Game.Service
         /// <summary>
         /// 
         /// </summary>
+        [LuaMethod("ActionGetter_GetInt")]
         public virtual int GetInt(string param)
         {
             throw new NotImplementedException();

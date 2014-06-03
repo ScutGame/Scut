@@ -1,4 +1,4 @@
-/****************************************************************************
+﻿/****************************************************************************
 Copyright (c) 2013-2015 scutgame.com
 
 http://www.scutgame.com
@@ -21,54 +21,33 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ****************************************************************************/
-
 using System;
-using ZyGames.Framework.Common.Log;
-using ZyGames.Framework.Script;
 
-namespace ZyGames.Framework.Game.Command
+namespace ZyGames.Framework.Script
 {
     /// <summary>
-    /// 脚本执行命令
+    /// Lua方法属性
     /// </summary>
-    /// <example>
-    /// <code>
-    /// # py demo:
-    /// ############
-    /// def processCmd(userId, args):
-    ///     #在这里处理命令
-    ///     pass 
-    /// </code>
-    /// </example>
-    public class ScriptCommand : BaseCommand
+    [AttributeUsage(AttributeTargets.Method, AllowMultiple = false)]
+    public class LuaMethodAttribute : Attribute
     {
-        private readonly string _cmd;
+        private string _funcName;
 
-        ///<summary>
-        ///</summary>
-        public ScriptCommand(string cmd)
-        {
-            _cmd = cmd;
-        }
         /// <summary>
-        /// Processes the cmd.
+        /// init
         /// </summary>
-        /// <param name="args">Arguments.</param>
-        protected override void ProcessCmd(string[] args)
+        /// <param name="funcName"></param>
+        public LuaMethodAttribute(string funcName)
         {
-            string routeName = string.Format("Gm.{0}", _cmd);
-            dynamic scriptScope = ScriptEngines.Execute(routeName, null);
-            if (scriptScope != null)
-            {
-                try
-                {
-                    scriptScope.processCmd(UserID, args);
-                }
-                catch (Exception ex)
-                {
-                    TraceLog.WriteError("Gm:{0} process error:{1}", _cmd, ex);
-                }
-            }
+            _funcName = funcName;
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public string FuncName
+        {
+            get { return _funcName; }
         }
     }
 }

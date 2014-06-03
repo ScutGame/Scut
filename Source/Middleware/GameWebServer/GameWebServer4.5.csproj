@@ -48,12 +48,12 @@
   <ItemGroup>
     <Reference Include="IronPython, Version=2.7.0.40, Culture=neutral, PublicKeyToken=7f709c5b713576e1, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\Release\6.3.7.5\Lib\IronPython.dll</HintPath>
+      <HintPath>..\..\..\Release\6.5.8.0\Lib\IronPython.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="IronPython.Modules, Version=2.7.0.40, Culture=neutral, PublicKeyToken=7f709c5b713576e1, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\Release\6.3.7.5\Lib\IronPython.Modules.dll</HintPath>
+      <HintPath>..\..\..\Release\6.5.8.0\Lib\IronPython.Modules.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Microsoft.CSharp">
@@ -61,29 +61,29 @@
     </Reference>
     <Reference Include="Microsoft.Dynamic, Version=1.1.0.20, Culture=neutral, PublicKeyToken=7f709c5b713576e1, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\Release\6.3.7.5\Lib\Microsoft.Dynamic.dll</HintPath>
+      <HintPath>..\..\..\Release\6.5.8.0\Lib\Microsoft.Dynamic.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Microsoft.Scripting, Version=1.1.0.20, Culture=neutral, PublicKeyToken=7f709c5b713576e1, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\Release\6.3.7.5\Lib\Microsoft.Scripting.dll</HintPath>
+      <HintPath>..\..\..\Release\6.5.8.0\Lib\Microsoft.Scripting.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="MySql.Data, Version=6.7.4.0, Culture=neutral, PublicKeyToken=c5687fc88969c44d, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\Release\6.3.7.5\Lib\MySql.Data.dll</HintPath>
+      <HintPath>..\..\..\Release\6.5.8.0\Lib\MySql.Data.dll</HintPath>
     </Reference>
     <Reference Include="Newtonsoft.Json">
-      <HintPath>..\..\..\Release\6.3.7.5\Lib\Newtonsoft.Json.dll</HintPath>
+      <HintPath>..\..\..\Release\6.5.8.0\Lib\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="NLog">
-      <HintPath>..\..\..\Release\6.3.7.5\Lib\NLog.dll</HintPath>
+      <HintPath>..\..\..\Release\6.5.8.0\Lib\NLog.dll</HintPath>
     </Reference>
     <Reference Include="protobuf-net">
-      <HintPath>..\..\..\Release\6.3.7.5\Lib\protobuf-net.dll</HintPath>
+      <HintPath>..\..\..\Release\6.5.8.0\Lib\protobuf-net.dll</HintPath>
     </Reference>
     <Reference Include="ServiceStack.Redis">
-      <HintPath>..\..\..\Release\6.3.7.5\Lib\ServiceStack.Redis.dll</HintPath>
+      <HintPath>..\..\..\Release\6.5.8.0\Lib\ServiceStack.Redis.dll</HintPath>
     </Reference>
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="System.Web.DynamicData" />
@@ -100,10 +100,10 @@
     <Reference Include="System.EnterpriseServices" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="ZyGames.Framework">
-      <HintPath>..\..\..\Release\6.3.7.5\Lib\ZyGames.Framework.dll</HintPath>
+      <HintPath>..\..\..\Release\6.5.8.0\Lib\ZyGames.Framework.dll</HintPath>
     </Reference>
     <Reference Include="ZyGames.Framework.Common">
-      <HintPath>..\..\..\Release\6.3.7.5\Lib\ZyGames.Framework.Common.dll</HintPath>
+      <HintPath>..\..\..\Release\6.5.8.0\Lib\ZyGames.Framework.Common.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>

@@ -153,7 +153,6 @@ namespace ZyGames.Framework.Game.Contract.Action
                     {
                         return session.SessionId == sessionId ? LoginStatus.Success : LoginStatus.Logined;
                     }
-                    //todo trace session is null
                     session = GameSession.Get(sessionId);
                     TraceLog.ReleaseWriteDebug("CheckUser Sid:{0},Uid:{1},session info:{2}", sessionId, userId,
                         session == null ? "is empty" :

@@ -23,6 +23,7 @@ THE SOFTWARE.
 ****************************************************************************/
 using System;
 using System.Reflection;
+using System.ServiceModel.PeerResolvers;
 using System.Threading;
 using ZyGames.Framework.Cache.Generic;
 using ZyGames.Framework.Common.Configuration;
@@ -130,7 +131,15 @@ namespace ZyGames.Framework.Game.Runtime
         {
             if (_isRunning == 1) return;
 
+            Console.WriteLine("{0} Server is starting...", DateTime.Now.ToString("HH:mm:ss"));
             _setting = setting;
+            if (!RedisConnectionPool.Ping("127.0.0.1"))
+            {
+                string error = string.Format("Error: NIC is not connected or no network.");
+                Console.WriteLine(error);
+                TraceLog.WriteError(error);
+                return;
+            }
             RedisConnectionPool.Initialize();
             if (!RedisConnectionPool.CheckConnect())
             {
@@ -148,6 +157,7 @@ namespace ZyGames.Framework.Game.Runtime
                 EntitySchemaSet.LoadAssembly(_setting.EntityAssembly);
             }
             EntitySchemaSet.StartCheckTableTimer();
+
             ZyGameBaseConfigManager.Intialize();
             //init script.
             if (_setting.ScriptSysAsmReferences.Length > 0)
@@ -161,6 +171,7 @@ namespace ZyGames.Framework.Game.Runtime
             }
             ScriptEngines.RegisterModelChangedBefore(OnModelChangeBefore);
             ScriptEngines.RegisterModelChangedAfter(OnModelChangeAtfer);
+
             ScriptEngines.Initialize();
             Language.SetLang();
             CacheFactory.Initialize(cacheSetting);
@@ -168,6 +179,8 @@ namespace ZyGames.Framework.Game.Runtime
             Interlocked.Exchange(ref _isRunning, 1);
         }
 
+
+        private const int CheckTimeout = 60000;
         private static void OnModelChangeBefore(Assembly assembly)
         {
             try
@@ -177,19 +190,23 @@ namespace ZyGames.Framework.Game.Runtime
                 CacheFactory.UpdateNotify(true);
                 var task = System.Threading.Tasks.Task.Factory.StartNew(() =>
                 {
+                    int time = CheckTimeout / 100;
                     try
                     {
-                        while (!CacheFactory.CheckCompleted())
+                        while (time > 0 && !CacheFactory.CheckCompleted())
                         {
                             Thread.Sleep(100);
+                            time--;
                         }
                     }
                     catch (Exception)
                     {
                     }
                 });
-                System.Threading.Tasks.Task.WaitAll(task);
-                TraceLog.ReleaseWrite("Update before Model script OK.");
+                if (System.Threading.Tasks.Task.WaitAll(new[] { task }, CheckTimeout))
+                {
+                    TraceLog.ReleaseWrite("Update before Model script OK.");
+                }
             }
             catch (Exception ex)
             {

@@ -350,7 +350,7 @@ namespace ZyGames.Framework.Game.Contract
                     SocketGameResponse response = new SocketGameResponse();
                     response.WriteErrorCallback += ActionDispatcher.ResponseError;
                     ActionGetter actionGetter = ActionDispatcher.GetActionGetter(package);
-                    OnRequested(actionGetter, response);
+                    DoAction(actionGetter, response);
                     data = response.ReadByte();
                 }
                 try
@@ -465,7 +465,7 @@ namespace ZyGames.Framework.Game.Contract
                     response.Close();
                     return;
                 }
-                
+
                 var httpresponse = new SocketGameResponse();
                 httpresponse.WriteErrorCallback += new ActionDispatcher().ResponseError;
 
@@ -473,9 +473,10 @@ namespace ZyGames.Framework.Game.Contract
                 httpGet["UserHostAddress"] = session.EndAddress;
                 httpGet["ssid"] = session.KeyCode.ToString("N");
                 httpGet["http"] = "1";
-                
-                var clientConnection = new HttpClientConnection { 
-                    Context = context, 
+
+                var clientConnection = new HttpClientConnection
+                {
+                    Context = context,
                     Session = session,
                     ActionGetter = httpGet,
                     GameResponse = httpresponse
@@ -483,7 +484,7 @@ namespace ZyGames.Framework.Game.Contract
                 clientConnection.TimeoutTimer = new Timer(OnHttpRequestTimeout, clientConnection, httpRequestTimeout, Timeout.Infinite);
 
 
-                OnRequested(httpGet, httpresponse);
+                DoAction(httpGet, httpresponse);
                 byte[] respData = httpresponse.ReadByte();
                 OnHttpResponse(clientConnection, respData, 0, respData.Length);
 
@@ -621,10 +622,10 @@ namespace ZyGames.Framework.Game.Contract
                 string typeName = string.Format("Game.Script.Remote.{0}", routeName);
                 int actionId = httpGet.ActionId;
                 MessageHead head = new MessageHead(actionId);
-                if (!ScriptEngines.DisablePython)
+                if (!ScriptEngines.SettupInfo.DisablePython)
                 {
-                    routeFile = string.Format("{0}/Remote/{1}.py", ScriptEngines.PythonDirName, routeName);
-                    dynamic scope = ScriptEngines.Execute(routeFile, typeName);
+                    routeFile = string.Format("Remote.{0}", routeName);
+                    dynamic scope = ScriptEngines.ExecutePython(routeFile);
                     if (scope != null)
                     {
                         var funcHandle = scope.GetVariable<RemoteHandle>(funcName);
@@ -636,7 +637,7 @@ namespace ZyGames.Framework.Game.Contract
                         }
                     }
                 }
-                routeFile = string.Format("{0}/Remote/{1}.cs", ScriptEngines.CSharpDirName, routeName);
+                routeFile = string.Format("Remote.{0}", routeName);
                 var instance = (object)ScriptEngines.Execute(routeFile, typeName);
                 if (instance != null)
                 {
@@ -660,6 +661,19 @@ namespace ZyGames.Framework.Game.Contract
             return true;
         }
 
+        private void DoAction(ActionGetter actionGetter, BaseGameResponse response)
+        {
+            if (GameEnvironment.IsRunning)
+            {
+                OnRequested(actionGetter, response);
+                ActionFactory.Request(actionGetter, response, GetUser);
+            }
+            else
+            {
+                response.WriteError(actionGetter, Language.Instance.ErrorCode, Language.Instance.ServerMaintain);
+            }
+        }
+
         /// <summary>
         /// Raises the requested event.
         /// </summary>
@@ -667,14 +681,6 @@ namespace ZyGames.Framework.Game.Contract
         /// <param name="response">Response.</param>
         protected virtual void OnRequested(ActionGetter actionGetter, BaseGameResponse response)
         {
-            if (GameEnvironment.IsRunning)
-            {
-                ActionFactory.Request(actionGetter, response, GetUser);
-            }
-            else
-            {
-                response.WriteError(actionGetter, Language.Instance.ErrorCode, Language.Instance.ServerMaintain);
-            }
         }
 
         /// <summary>

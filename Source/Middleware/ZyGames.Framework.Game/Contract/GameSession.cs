@@ -121,7 +121,6 @@ namespace ZyGames.Framework.Game.Contract
                     if (session.LastActivityTime < MathUtils.Now.AddSeconds(-Timeout))
                     {
                         pair.Value.Close();
-                        //todo session clear
                         TraceLog.ReleaseWriteDebug("User {0} sessionId{1} is expire {2}({3}sec)",
                             session.UserId,
                             session.SessionId,
@@ -406,6 +405,7 @@ namespace ZyGames.Framework.Game.Contract
                 _userId = value;
                 if (_userId > 0)
                 {
+                    //解除UserId与前一次的Session连接对象绑定
                     Guid sid;
                     if (_userHash.TryGetValue(_userId, out sid))
                     {

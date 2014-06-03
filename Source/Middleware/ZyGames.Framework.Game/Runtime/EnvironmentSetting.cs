@@ -81,7 +81,7 @@ namespace ZyGames.Framework.Game.Runtime
             actionTypeName = ConfigUtils.GetSetting("Game.Action.TypeName");
             if (string.IsNullOrEmpty(actionTypeName))
             {
-                string assemblyName = ConfigUtils.GetSetting("Game.Action.AssemblyName");
+                string assemblyName = ConfigUtils.GetSetting("Game.Action.AssemblyName", "GameServer.CsScript");
                 if (!string.IsNullOrEmpty(assemblyName))
                 {
                     actionTypeName = assemblyName + ".Action.Action{0}," + assemblyName;
@@ -117,7 +117,7 @@ namespace ZyGames.Framework.Game.Runtime
             ProductServerId = productServerId;
             CacheGlobalPeriod = cacheGlobalPeriod;
             CacheUserPeriod = cacheUserPeriod;
-            
+
             ScriptSysAsmReferences = scriptSysAsmReferences;
             ScriptAsmReferences = scriptAsmReferences;
             ActionEnableGZip = enableActionGZip;
@@ -127,7 +127,7 @@ namespace ZyGames.Framework.Game.Runtime
             ActionTypeName = actionTypeName;
             ScriptTypeName = scriptTypeName;
         }
-        
+
         /// <summary>
         /// Request signature key.
         /// </summary>
@@ -167,7 +167,7 @@ namespace ZyGames.Framework.Game.Runtime
         /// Product server id.
         /// </summary>
         public int ProductServerId { get; set; }
-        
+
         /// <summary>
         /// The entity assembly.
         /// </summary>

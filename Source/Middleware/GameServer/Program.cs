@@ -43,7 +43,6 @@ namespace GameServer
 ";
         static void Main(string[] args)
         {
-            string date = DateTime.Now.ToString("HH:mm:ss");
             try
             {
                 ConsoleColor currentForeColor = Console.ForegroundColor;
@@ -57,25 +56,21 @@ namespace GameServer
                 GameEnvironment.Start(setting);
                 Console.ForegroundColor = currentForeColor;
 
-                dynamic instance;
-                if (ScriptEngines.RunMainClass(out instance, args))
+                if (ScriptEngines.RunMainProgram(args))
                 {
-                    Console.WriteLine("{0} Server has started successfully!", date);
+                    Console.WriteLine("{0} Server has started successfully!", DateTime.Now.ToString("HH:mm:ss"));
                     Console.WriteLine("# Server is listening...");
                 }
                 else
                 {
-                    Console.WriteLine("{0} Server failed to start!", date);
+                    Console.WriteLine("{0} Server failed to start!", DateTime.Now.ToString("HH:mm:ss"));
                 }
                 Console.ReadKey();
-                if (instance != null)
-                {
-                    instance.Stop();
-                }
+                ScriptEngines.StopMainProgram();
             }
             catch (Exception ex)
             {
-                Console.WriteLine("{0} Server failed to start!", date);
+                Console.WriteLine("{0} Server failed to start!", DateTime.Now.ToString("HH:mm:ss"));
                 TraceLog.WriteError("Server failed to start error:{0}", ex);
                 Console.ReadKey();
             }

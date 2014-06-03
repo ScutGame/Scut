@@ -192,34 +192,6 @@ namespace ZyGames.Framework.Game.Contract
             response.WriteError(actionGetter, Language.Instance.ErrorCode, errorInfo);
         }
 
-        /*/// <summary>
-        /// 出错处理
-        /// </summary>
-        /// <param name="response"></param>
-        /// <param name="msgId"></param>
-        /// <param name="actionId"></param>
-        /// <param name="errorInfo"></param>
-        public static void RequestError(BaseGameResponse response, int msgId, int actionId, string errorInfo)
-        {
-            RequestError(response, msgId, actionId, ErrorCode, errorInfo);
-        }
-
-        /// <summary>
-        /// 出错处理
-        /// </summary>
-        /// <param name="response"></param>
-        /// <param name="msgId"></param>
-        /// <param name="actionId"></param>
-        /// <param name="errorCode"></param>
-        /// <param name="errorInfo"></param>
-        public static void RequestError(BaseGameResponse response, int msgId, int actionId, int errorCode, string errorInfo)
-        {
-            MessageHead head = new MessageHead(msgId, actionId, errorCode, errorInfo);
-            MessageStructure sb = new MessageStructure();
-            sb.WriteBuffer(head);
-            response.BinaryWrite(sb.PopBuffer());
-        }*/
-
         /// <summary>
         /// 获取Action处理的输出字节流
         /// </summary>
@@ -395,18 +367,28 @@ namespace ZyGames.Framework.Game.Contract
             string scriptTypeName = string.Format(GameEnvironment.Setting.ScriptTypeName, actionID);
             string scriptCode = "";
 
-            if (!ScriptEngines.DisablePython) //By Seamoon 在Python禁用的情况下，就没有必要再加载了
+            if (!ScriptEngines.SettupInfo.DisablePython) //By Seamoon 在Python禁用的情况下，就没有必要再加载了
             {
-                scriptCode = string.Format("{0}/action/action{1}.py", ScriptEngines.PythonDirName, actionID);
-                dynamic scriptScope = ScriptEngines.Execute(scriptCode, null);
+                scriptCode = string.Format("action.action{0}", actionID);
+                dynamic scriptScope = ScriptEngines.ExecutePython(scriptCode);
                 if (scriptScope != null)
                 {
                     bool ignoreAuthorize = _ignoreAuthorizeSet.Contains(actionID);
-                    return new ScriptAction((short)actionID, actionGetter, scriptScope, ignoreAuthorize);
+                    return new ScriptAction(ScriptType.Python, actionID, actionGetter, scriptScope, ignoreAuthorize);
+                }
+            }
+            if (!ScriptEngines.SettupInfo.DisableLua)
+            {
+                scriptCode = string.Format("Action{0}", actionID);
+                dynamic scriptScope = ScriptEngines.ExecuteLua("GetTable", scriptCode, actionID);
+                if (scriptScope != null)
+                {
+                    bool ignoreAuthorize = _ignoreAuthorizeSet.Contains(actionID);
+                    return new LuaAction(actionID, actionGetter, scriptScope, ignoreAuthorize);
                 }
             }
 
-            scriptCode = string.Format("{0}/action/action{1}.cs", ScriptEngines.CSharpDirName, actionID);
+            scriptCode = string.Format("action.action{0}", actionID);
             BaseStruct baseStruct = ScriptEngines.Execute(scriptCode, scriptTypeName, actionGetter);
             if (baseStruct != null) return baseStruct;
             return null;
@@ -433,7 +415,7 @@ namespace ZyGames.Framework.Game.Contract
                     throw new Exception(string.Format("The {0} action init error", actionId), ex);
                 }
             }
-            throw new NotSupportedException(string.Format("Not found {0} action Interface.", actionId));
+            throw new NotSupportedException(string.Format("Not found script action{0}, please check script path setting.", actionId));
         }
     }
 }
