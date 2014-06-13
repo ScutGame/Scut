@@ -350,13 +350,9 @@ namespace ZyGames.Framework.Game.Contract
         public void Close()
         {
             GameSession session;
-            if (_globalSession.TryRemove(KeyCode, out session))
+            if (_globalSession.TryRemove(KeyCode, out session) && session._exSocket != null)
             {
-                try
-                {
-                    session._exSocket.WorkSocket.Close();
-                }
-                catch { }
+                session._exSocket.IsClosed = true;
             }
             Guid code;
             _userHash.TryRemove(UserId, out code);
@@ -442,7 +438,7 @@ namespace ZyGames.Framework.Game.Contract
             {
                 try
                 {
-                    return _exSocket != null ? _exSocket.WorkSocket.Connected : false;
+                    return _exSocket != null && _exSocket.Connected;
                 }
                 catch
                 {

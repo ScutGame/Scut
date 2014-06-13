@@ -83,7 +83,7 @@ namespace ZyGames.Framework.Game.Task
             List<T> taskList = new List<T>();
             if (_isUsedPy)
             {
-                IronPython.Runtime.List list = _taskScope.get(UserId, currTaskId);
+               var list = _taskScope.get(UserId, currTaskId);
                 foreach (var item in list)
                 {
                     taskList.Add((T)item);

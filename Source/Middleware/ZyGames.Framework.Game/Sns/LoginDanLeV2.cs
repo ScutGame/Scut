@@ -42,37 +42,37 @@ namespace ZyGames.Framework.Game.Sns
         private string _token;
         private string username = string.Empty;
 
-		/// <summary>
-		/// Initializes a new instance of the <see cref="ZyGames.Framework.Game.Sns.LoginDanLeV2"/> class.
-		/// </summary>
-		/// <param name="retailID">Retail I.</param>
-		/// <param name="RetailUser">Retail user.</param>
-		/// <param name="token">Token.</param>
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ZyGames.Framework.Game.Sns.LoginDanLeV2"/> class.
+        /// </summary>
+        /// <param name="retailID">Retail I.</param>
+        /// <param name="RetailUser">Retail user.</param>
+        /// <param name="token">Token.</param>
         public LoginDanLeV2(string retailID, string RetailUser, string token)
         {
             this._retailID = retailID ?? "0037";
             _mid = RetailUser.Equals("0") ? string.Empty : RetailUser;
             _token = token;
         }
-		/// <summary>
-		/// 注册通行证
-		/// </summary>
-		/// <returns></returns>
+        /// <summary>
+        /// 注册通行证
+        /// </summary>
+        /// <returns></returns>
         public override string GetRegPassport()
         {
             return this.PassportID;
         }
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <returns></returns>
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
         public override bool CheckLogin()
         {
             string url = "";
             string AppKey = "";
             string AppId = "";
             bool isOldVersion = false;
-            
+
             GameChannel gameChannel = ZyGameBaseConfigManager.GameSetting.GetChannelSetting(ChannelType.channelDanle);
             if (gameChannel != null)
             {
@@ -81,8 +81,8 @@ namespace ZyGames.Framework.Game.Sns
                 GameSdkSetting setting = gameChannel.GetSetting(_retailID);
                 if (setting != null)
                 {
-                AppKey = setting.AppKey;
-                AppId = setting.AppId;
+                    AppKey = setting.AppKey;
+                    AppId = setting.AppId;
                 }
             }
             else
@@ -90,9 +90,9 @@ namespace ZyGames.Framework.Game.Sns
                 TraceLog.ReleaseWrite("The sdkChannelV2 Danle section is null.");
             }
             string sig = AMD5(_token + "|" + AppKey);
-            string Url = Url = string.Format("{0}?app_id={1}&mid={2}&token={3}&sig={4}", url, AppId, _mid, _token, sig);
+            string Url = string.Format("{0}?app_id={1}&mid={2}&token={3}&sig={4}", url, AppId, _mid, _token, sig);
             string result = HttpRequestManager.GetStringData(Url, "GET");
-           
+
             DanleSDK sdk = null;
             try
             {
@@ -103,7 +103,7 @@ namespace ZyGames.Framework.Game.Sns
                 new BaseLog().SaveLog(ex);
                 return false;
             }
-            if (sdk == null || sdk.error_code != 0)
+            if (sdk == null || sdk.error_code != 0 || sdk.memberId == null)
             {
                 TraceLog.ReleaseWrite("Danlesdk login fail:{0},request url:{1}", result, Url);
                 return false;
@@ -118,50 +118,50 @@ namespace ZyGames.Framework.Game.Sns
 
 
     }
-	/// <summary>
-	/// Danle v2 SD.
-	/// </summary>
+    /// <summary>
+    /// Danle v2 SD.
+    /// </summary>
     public class DanleV2SDK
     {
-		/// <summary>
-		/// The member identifier.
-		/// </summary>
+        /// <summary>
+        /// The member identifier.
+        /// </summary>
         public string memberId;
-		/// <summary>
-		/// The username.
-		/// </summary>
+        /// <summary>
+        /// The username.
+        /// </summary>
         public string username;
-		/// <summary>
-		/// The nickname.
-		/// </summary>
+        /// <summary>
+        /// The nickname.
+        /// </summary>
         public string nickname;
-		/// <summary>
-		/// The gender.
-		/// </summary>
+        /// <summary>
+        /// The gender.
+        /// </summary>
         public string gender;
-		/// <summary>
-		/// The level.
-		/// </summary>
+        /// <summary>
+        /// The level.
+        /// </summary>
         public int level;
-		/// <summary>
-		/// The avatar_url.
-		/// </summary>
+        /// <summary>
+        /// The avatar_url.
+        /// </summary>
         public string avatar_url;
-		/// <summary>
-		/// The created_date.
-		/// </summary>
+        /// <summary>
+        /// The created_date.
+        /// </summary>
         public string created_date;
-		/// <summary>
-		/// The token.
-		/// </summary>
+        /// <summary>
+        /// The token.
+        /// </summary>
         public string token;
-		/// <summary>
-		/// The error_code.
-		/// </summary>
+        /// <summary>
+        /// The error_code.
+        /// </summary>
         public int error_code;
-		/// <summary>
-		/// The error_msg.
-		/// </summary>
+        /// <summary>
+        /// The error_msg.
+        /// </summary>
         public string error_msg;
     }
 }

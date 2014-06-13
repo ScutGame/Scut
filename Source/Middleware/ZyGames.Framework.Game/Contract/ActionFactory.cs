@@ -23,11 +23,8 @@ THE SOFTWARE.
 ****************************************************************************/
 using System;
 using System.Collections.Generic;
-using System.Net;
-using System.Net.Sockets;
 using System.Text;
 using System.Web;
-using IronPython.Modules;
 using ZyGames.Framework.Common;
 using ZyGames.Framework.Common.Locking;
 using ZyGames.Framework.Common.Log;
@@ -37,7 +34,6 @@ using ZyGames.Framework.Game.Runtime;
 using ZyGames.Framework.Game.Service;
 using ZyGames.Framework.Game.Contract.Action;
 using ZyGames.Framework.Net;
-using ZyGames.Framework.RPC.IO;
 using ZyGames.Framework.Script;
 
 namespace ZyGames.Framework.Game.Contract

@@ -151,7 +151,7 @@ namespace ZyGames.Framework.Game.Sns
         /// <param name="str1">Str1.</param>
         protected string AMD5(string str1)
         {
-            return ZyGames.Framework.Common.Security.CryptoHelper.MD5_Encrypt(str1, Encoding.UTF8).ToUpper();
+            return ZyGames.Framework.Common.Security.CryptoHelper.MD5_Encrypt(str1, Encoding.UTF8).ToLower();
         }
         /// <summary>
         /// SHs the a256.

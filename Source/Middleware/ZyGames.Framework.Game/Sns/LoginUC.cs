@@ -152,7 +152,8 @@ namespace ZyGames.Framework.Game.Sns
             }
 
             string id = ((DateTime.Now - Convert.ToDateTime("1970-1-1")).TotalMilliseconds).ToString().Substring(0, 13);
-            string sign = AMD5(setting.AppId + "sid=" + _sessionID + setting.AppKey);
+		    string signSrc = setting.AppId + "sid=" + _sessionID + setting.AppKey;
+            string sign = AMD5(signSrc);
             StringBuilder sb = new StringBuilder();
             sb.Append("{");
             sb.Append("\"service\":\"").Append(gameChannel.Service).Append("\",");
@@ -180,7 +181,7 @@ namespace ZyGames.Framework.Game.Sns
             }
             if (ucinfo == null || ucinfo.state.code != "1")
             {
-                TraceLog.ReleaseWrite("Danlesdk login fail:{0},request url:{1},param:{2}", result, gameChannel.Url, sb.ToString());
+                TraceLog.ReleaseWrite("Danlesdk login fail:{0},request url:{1},param:{2},signsrc:{3}", result, gameChannel.Url, sb.ToString(), signSrc);
                 return false;
             }
 

@@ -25,6 +25,7 @@ using System;
 using System.Collections.Concurrent;
 using ZyGames.Framework.Common;
 using ZyGames.Framework.Data.MySql;
+using ZyGames.Framework.Data.Sql;
 
 namespace ZyGames.Framework.Data
 {
@@ -63,6 +64,10 @@ namespace ZyGames.Framework.Data
     /// </summary>
     public enum DbProviderType
     {
+        /// <summary>
+        /// 
+        /// </summary>
+        Unkown = 0,
         /// <summary>
         /// 
         /// </summary>
@@ -109,8 +114,12 @@ namespace ZyGames.Framework.Data
         {
             ProviderName = providerName;
             ProviderTypeName = providerTypeName;
-            ProviderType = DbProviderType.MsSql;
-            if (typeof(MySqlDataProvider).Name.Equals(ProviderTypeName, StringComparison.CurrentCultureIgnoreCase))
+            ProviderType = DbProviderType.Unkown;
+            if (typeof(SqlDataProvider).Name.Equals(ProviderTypeName, StringComparison.CurrentCultureIgnoreCase))
+            {
+                ProviderType = DbProviderType.MsSql;
+            }
+            else if (typeof(MySqlDataProvider).Name.Equals(ProviderTypeName, StringComparison.CurrentCultureIgnoreCase))
             {
                 ProviderType = DbProviderType.MySql;
             }

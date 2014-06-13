@@ -64,8 +64,8 @@ namespace ZyGames.Framework.Game.Configuration
                     Service = "ucid.user.sidInfo";
                     break;
                 case ChannelType.channelDanle:
-                    Url = "http://connect.d.cn/connect/json/member/login";
-                    Version = "0.1";
+                    Url = "http://connect.d.cn/open/member/info/";
+                    Version = "1.3";
                     break;
                 case ChannelType.channel10086:
                     Url = "http://ospd.mmarket.com:8089/trust";

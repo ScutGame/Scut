@@ -58,10 +58,20 @@ namespace ZyGames.Framework.RPC.Sockets
         public Guid HashCode { get; private set; }
 
         /// <summary>
+        /// Is closed socket.
+        /// </summary>
+        public bool IsClosed { get; set; }
+
+        /// <summary>
+        /// Is connected
+        /// </summary>
+        public bool Connected { get { return socket.Connected; } }
+
+        /// <summary>
         /// Gets the work socket.
         /// </summary>
         /// <value>The work socket.</value>
-        public Socket WorkSocket { get { return socket; } }
+        internal Socket WorkSocket { get { return socket; } }
         /// <summary>
         /// Gets the remote end point.
         /// </summary>

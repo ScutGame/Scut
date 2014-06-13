@@ -69,6 +69,7 @@ namespace ZyGames.Framework.RPC.Sockets
                 DataReceived(this, e);
             }
         }
+
         #endregion
 
         Logger logger = LogManager.GetLogger("SocketListener");
@@ -246,13 +247,14 @@ namespace ZyGames.Framework.RPC.Sockets
                         throw new ArgumentException("The last operation completed on the socket was not a receive or send");
                 }
             }
-            catch (ObjectDisposedException)
+            catch (ObjectDisposedException error)
             {
+                logger.Error("IO_Completed error", error);
                 ReleaseIOEventArgs(ioEventArgs);
             }
             catch (Exception ex)
             {
-                logger.Error("IO_Completed", ex);
+                logger.Error("IO_Completed unkown error", ex);
             }
         }
 
@@ -376,6 +378,7 @@ namespace ZyGames.Framework.RPC.Sockets
                 }
             } while (remainingBytesToProcess != 0);
             #endregion
+
             //modify reason:数据包接收事件触发乱序
             foreach (var m in msgs)
             {
@@ -388,19 +391,21 @@ namespace ZyGames.Framework.RPC.Sockets
                     TraceLog.WriteError("OnDataReceived error:{0}", ex);
                 }
             }
-
             if (needPostAnother)
             {
-                //处理下个请求包
+                //继续处理下个请求包
                 if (dataToken.prefixBytesDone == 4 && dataToken.IsMessageReady)
                 {
                     dataToken.Reset(true);
                 }
                 dataToken.bufferSkip = 0;
                 PostReceive(ioEventArgs);
+                //是否需要关闭连接
+                if (exSocket.IsClosed)
+                {
+                    ResetSAEAObject(ioEventArgs);
+                }
             }
-
-            
         }
 
         private void TryDequeueAndPostSend(ExSocket socket, SocketAsyncEventArgs ioEventArgs)
@@ -599,7 +604,10 @@ namespace ZyGames.Framework.RPC.Sockets
         {
             try
             {
-                eventArgs.AcceptSocket.Close();
+                if (eventArgs.AcceptSocket != null)
+                {
+                    eventArgs.AcceptSocket.Close();
+                }
             }
             catch (Exception)
             {

@@ -73,6 +73,7 @@ namespace ZyGames.Framework.Cache.Generic
         private static int[] _isSqlWaitSyncWorking;
         private const int DefSqlSyncWaitQueueNum = 2;
         private const int DefDataSyncQueueNum = 2;
+        private static System.Action<string, byte[][], byte[][]> _asyncSendHandle;
 
         /// <summary>
         /// Data sync queue num
@@ -93,6 +94,7 @@ namespace ZyGames.Framework.Cache.Generic
 
         static DataSyncQueueManager()
         {
+            _asyncSendHandle += OnAsyncSend;
             DataSyncQueueNum = ConfigUtils.GetSetting("DataSyncQueueNum", DefDataSyncQueueNum);
             if (DataSyncQueueNum < 1) DataSyncQueueNum = DefDataSyncQueueNum;
             SqlWaitSyncQueueNum = ConfigUtils.GetSetting("SqlWaitSyncQueueNum", DefSqlSyncWaitQueueNum);
@@ -101,6 +103,19 @@ namespace ZyGames.Framework.Cache.Generic
             _isRedisSyncWorking = new int[DataSyncQueueNum];
             _isSqlWaitSyncWorking = new int[SqlWaitSyncQueueNum];
         }
+
+        private static void OnAsyncSend(string queueKey, byte[][] keyBytes, byte[][] valueBytes)
+        {
+            try
+            {
+                RedisConnectionPool.Process(client => client.HMSet(queueKey, keyBytes, valueBytes));
+            }
+            catch (Exception ex)
+            {
+                TraceLog.WriteError("Async send to redis's key:{0} error:{1}", queueKey, ex);
+            }
+        }
+
 
         /// <summary>
         /// Start
@@ -305,8 +320,7 @@ namespace ZyGames.Framework.Cache.Generic
                             ProtoBufUtils.Serialize(entity));
                         index++;
                     }
-                    RedisConnectionPool.Process(client => client.HMSet(queueKey, keyBytes, valueBytes));
-
+                    _asyncSendHandle.BeginInvoke(queueKey, keyBytes, valueBytes, null, null);
                 }
             }
             catch (Exception ex)
@@ -614,10 +628,10 @@ namespace ZyGames.Framework.Cache.Generic
                     {
                         asmName = "," + enitityAsm.GetName().Name;
                     }
-                   
+
                     Type type = Type.GetType(string.Format("{0}{1}", typeName, asmName), false, true);
                     if (type == null)
-                    { 
+                    {
                         //调试模式下type为空处理
                         type = enitityAsm.GetType(typeName, false, true);
                         if (type == null)

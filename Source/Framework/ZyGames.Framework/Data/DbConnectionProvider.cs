@@ -53,7 +53,7 @@ namespace ZyGames.Framework.Data
                 ConnectionStringSettings connSetting = er.Current as ConnectionStringSettings;
                 if (connSetting == null) continue;
                 var setting = ConnectionSetting.Create(connSetting.Name, connSetting.ProviderName, connSetting.ConnectionString.Trim());
-                if (setting.DbLevel == DbLevel.LocalMysql || setting.DbLevel == DbLevel.LocalSql)
+                if (setting.ProviderType == DbProviderType.Unkown)
                 {
                     continue;
                 }
