@@ -75,7 +75,12 @@ Source: "..\Console(x86)\Script\CsScript\Action\Action1001.cs"; DestDir: "{app}\
 Source: "..\Console(x86)\Script\LuaScript\Action\Action1001.lua"; DestDir: "{app}\Console(x86)\Script\LuaScript\Action"; Flags: ignoreversion
 
 Source: "..\..\..\Document\API\SCUT Server Framework API.chm"; DestDir: "{app}\Doc"; Flags: ignoreversion
-Source: "..\..\..\Document\API\SCUT Server Middleware API.chm"; DestDir: "{app}\Doc"; Flags: ignoreversion
+Source: "..\..\..\Document\API\SCUT Server Middleware API.chm"; DestDir: "{app}\Doc"; Flags: ignoreversion            
+Source: "..\..\..\Document\Tutorials\使用文档（1）-如何安装和运行游戏：Windows篇.doc"; DestDir: "{app}\Doc"; Flags: ignoreversion
+Source: "..\..\..\Document\Tutorials\使用文档（2）-如何安装和运行游戏：Linux篇.doc"; DestDir: "{app}\Doc"; Flags: ignoreversion     
+Source: "..\..\..\Document\Tutorials\使用文档（3）-如何开始开发游戏.docx"; DestDir: "{app}\Doc"; Flags: ignoreversion
+Source: "..\..\..\Document\Tutorials\使用文档（4）-如何使用中间件开发游戏.doc"; DestDir: "{app}\Doc"; Flags: ignoreversion
+
 
 
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
@@ -87,7 +92,11 @@ Name: "{group}\Redis Server"; Filename: "{app}\redis\x86\redis-server.exe"
 Name: "{group}\SCUT Server Management Studio"; Filename: "{app}\console(x86)\ScutSMS.exe"
 Name: "{group}\{cm:ProgramOnTheWeb,{#MyAppName}}"; Filename: "{#MyAppURL}"
 Name: "{group}\Document\SCUT Server Framework API"; Filename: "{app}\Doc\SCUT Server Framework API.chm" 
-Name: "{group}\Document\SCUT Server Middleware API"; Filename: "{app}\Doc\SCUT Server Middleware API.chm"    
+Name: "{group}\Document\SCUT Server Middleware API"; Filename: "{app}\Doc\SCUT Server Middleware API.chm"  
+Name: "{group}\Document\使用文档（1）-如何安装和运行游戏：Windows篇"; Filename: "{app}\Doc\使用文档（1）-如何安装和运行游戏：Windows篇.doc" 
+Name: "{group}\Document\使用文档（2）-如何安装和运行游戏：Linux篇"; Filename: "{app}\Doc\使用文档（2）-如何安装和运行游戏：Linux篇.doc" 
+Name: "{group}\Document\使用文档（3）-如何开始开发游戏"; Filename: "{app}\Doc\使用文档（3）-如何开始开发游戏.docx" 
+Name: "{group}\Document\使用文档（4）-如何使用中间件开发游戏"; Filename: "{app}\Doc\使用文档（4）-如何使用中间件开发游戏.doc"   
 Name: "{group}\{cm:UninstallProgram,{#MyAppName}}"; Filename: "{uninstallexe}"
 Name: "{commondesktop}\{#MyAppName}"; Filename: "{app}\Console(x86)\{#MyAppExeName}"; Tasks: desktopicon
 
