@@ -1,0 +1,237 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{FB98FD3B-8019-4BF8-8DE2-55FF2172394D}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>ZyGames.Doudizhu</RootNamespace>
+    <AssemblyName>ZyGames.Doudizhu</AssemblyName>
+    <TargetFrameworkVersion>v4.5.1</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Microsoft.Dynamic, Version=1.1.0.20, Culture=neutral, PublicKeyToken=7f709c5b713576e1, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>.\Microsoft.Dynamic.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Scripting, Version=1.1.0.20, Culture=neutral, PublicKeyToken=7f709c5b713576e1, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>.\Microsoft.Scripting.dll</HintPath>
+    </Reference>
+    <Reference Include="Mono.Cecil">
+      <HintPath>.\Mono.Cecil.dll</HintPath>
+    </Reference>
+    <Reference Include="MySql.Data, Version=6.7.4.0, Culture=neutral, PublicKeyToken=c5687fc88969c44d, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>.\MySql.Data.dll</HintPath>
+    </Reference>
+    <Reference Include="Newtonsoft.Json, Version=4.5.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>.\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="NLog">
+      <HintPath>.\NLog.dll</HintPath>
+    </Reference>
+    <Reference Include="protobuf-net">
+      <HintPath>.\protobuf-net.dll</HintPath>
+    </Reference>
+    <Reference Include="ServiceStack.Common">
+      <HintPath>.\ServiceStack.Common.dll</HintPath>
+    </Reference>
+    <Reference Include="ServiceStack.Interfaces">
+      <HintPath>.\ServiceStack.Interfaces.dll</HintPath>
+    </Reference>
+    <Reference Include="ServiceStack.Redis">
+      <HintPath>.\ServiceStack.Redis.dll</HintPath>
+    </Reference>
+    <Reference Include="ServiceStack.Text">
+      <HintPath>.\ServiceStack.Text.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.configuration" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+    <Reference Include="ZyGames.Framework">
+      <HintPath>.\ZyGames.Framework.dll</HintPath>
+    </Reference>
+    <Reference Include="ZyGames.Framework.Common">
+      <HintPath>.\ZyGames.Framework.Common.dll</HintPath>
+    </Reference>
+    <Reference Include="ZyGames.Framework.Game">
+      <HintPath>.\ZyGames.Framework.Game.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Script\CsScript\Action\Action100.cs" />
+    <Compile Include="Script\CsScript\Action\Action1000.cs" />
+    <Compile Include="Script\CsScript\Action\Action1002.cs" />
+    <Compile Include="Script\CsScript\Action\Action1004.cs" />
+    <Compile Include="Script\CsScript\Action\Action1005.cs" />
+    <Compile Include="Script\CsScript\Action\Action1006.cs" />
+    <Compile Include="Script\CsScript\Action\Action1007.cs" />
+    <Compile Include="Script\CsScript\Action\Action1065.cs" />
+    <Compile Include="Script\CsScript\Action\Action1066.cs" />
+    <Compile Include="Script\CsScript\Action\Action1069.cs" />
+    <Compile Include="Script\CsScript\Action\Action1080.cs" />
+    <Compile Include="Script\CsScript\Action\Action1081.cs" />
+    <Compile Include="Script\CsScript\Action\Action360.cs" />
+    <Compile Include="Script\CsScript\Action\Action404.cs" />
+    <Compile Include="Script\CsScript\Action\ActionIDDefine.cs" />
+    <Compile Include="Script\CsScript\Action\BaseAction.cs" />
+    <Compile Include="Script\CsScript\Base\AppstoreClientManager.cs" />
+    <Compile Include="Script\CsScript\Base\AppStoreHelper.cs" />
+    <Compile Include="Script\CsScript\Base\PaymentService.cs" />
+    <Compile Include="Script\CsScript\Base\PythonHelper.cs" />
+    <Compile Include="Script\CsScript\Com\Chat\DdzBroadcastService.cs" />
+    <Compile Include="Script\CsScript\Com\Chat\DdzChatService.cs" />
+    <Compile Include="Script\CsScript\Com\Rank\BeansRanking.cs" />
+    <Compile Include="Script\CsScript\Com\Rank\WinRanking.cs" />
+    <Compile Include="Script\CsScript\Com\Share\DdzPaymentNotify.cs" />
+    <Compile Include="Script\CsScript\Com\Share\RoleFunc.cs" />
+    <Compile Include="Script\CsScript\Locale\SimplifiedLanguage.cs" />
+    <Compile Include="Script\CsScript\Logic\AchieveTask.cs" />
+    <Compile Include="Script\CsScript\Logic\CardRole.cs" />
+    <Compile Include="Script\CsScript\Logic\ClientNotifier.cs" />
+    <Compile Include="Script\CsScript\Logic\GameHall.cs" />
+    <Compile Include="Script\CsScript\Logic\GameRoom.cs" />
+    <Compile Include="Script\CsScript\Logic\GameTable.cs" />
+    <Compile Include="Script\CsScript\MainClass.cs" />
+    <Compile Include="Script\Model\ConfigModel\AchievementInfo.cs" />
+    <Compile Include="Script\Model\ConfigModel\ChatInfo.cs" />
+    <Compile Include="Script\Model\ConfigModel\ConfigEnvSet.cs" />
+    <Compile Include="Script\Model\ConfigModel\DialInfo.cs" />
+    <Compile Include="Script\Model\ConfigModel\PokerInfo.cs" />
+    <Compile Include="Script\Model\ConfigModel\RoomInfo.cs" />
+    <Compile Include="Script\Model\ConfigModel\ShopInfo.cs" />
+    <Compile Include="Script\Model\ConfigModel\TaskInfo.cs" />
+    <Compile Include="Script\Model\ConfigModel\TitleInfo.cs" />
+    <Compile Include="Script\Model\DataModel\GameNotice.cs" />
+    <Compile Include="Script\Model\DataModel\GameUser.cs" />
+    <Compile Include="Script\Model\DataModel\UserAchieve.cs" />
+    <Compile Include="Script\Model\DataModel\UserDailyRestrain.cs" />
+    <Compile Include="Script\Model\DataModel\UserItemPackage.cs" />
+    <Compile Include="Script\Model\DataModel\UserNickName.cs" />
+    <Compile Include="Script\Model\DataModel\UserTakePrize.cs" />
+    <Compile Include="Script\Model\DataModel\UserTask.cs" />
+    <Compile Include="Script\Model\DbConfig.cs" />
+    <Compile Include="Script\Model\Enum\AchieveType.cs" />
+    <Compile Include="Script\Model\Enum\CardColor.cs" />
+    <Compile Include="Script\Model\Enum\CardSize.cs" />
+    <Compile Include="Script\Model\Enum\ChatType.cs" />
+    <Compile Include="Script\Model\Enum\DeckType.cs" />
+    <Compile Include="Script\Model\Enum\RankType.cs" />
+    <Compile Include="Script\Model\Enum\ShopType.cs" />
+    <Compile Include="Script\Model\Enum\TaskClass.cs" />
+    <Compile Include="Script\Model\Enum\TaskStatus.cs" />
+    <Compile Include="Script\Model\Enum\TaskType.cs" />
+    <Compile Include="Script\Model\Enum\UserStatus.cs" />
+    <Compile Include="Script\Model\LogModel\ChatLog.cs" />
+    <Compile Include="Script\Model\LogModel\LogActionVisitor.cs" />
+    <Compile Include="Script\Model\LogModel\MallItemLog.cs" />
+    <Compile Include="Script\Model\LogModel\OAOperationLog.cs" />
+    <Compile Include="Script\Model\LogModel\UserGoldLog.cs" />
+    <Compile Include="Script\Model\LogModel\UserItemLog.cs" />
+    <Compile Include="Script\Model\LogModel\UserLoginLog.cs" />
+    <Compile Include="Script\Model\Model\CardData.cs" />
+    <Compile Include="Script\Model\Model\CardGroup.cs" />
+    <Compile Include="Script\Model\Model\ChatData.cs" />
+    <Compile Include="Script\Model\Model\PositionData.cs" />
+    <Compile Include="Script\Model\Model\RestrainProperty.cs" />
+    <Compile Include="Script\Model\Model\RoomData.cs" />
+    <Compile Include="Script\Model\Model\TableData.cs" />
+    <Compile Include="Script\Model\Model\UserAchieveInfo.cs" />
+    <Compile Include="Script\Model\Model\UserConnection.cs" />
+    <Compile Include="Script\Model\Model\UserItem.cs" />
+    <Compile Include="Script\Model\Model\UserProperty.cs" />
+    <Compile Include="Script\Model\Model\UserRank.cs" />
+    <Compile Include="Script\Model\Model\UserTaskInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="GameServer.exe.config" />
+    <None Include="NLog.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Config\Appstore.cfg.xml" />
+    <Content Include="Script\PyScript\Action\Action1008.py" />
+    <Content Include="Script\PyScript\Action\Action1009.py" />
+    <Content Include="Script\PyScript\Action\Action1010.py" />
+    <Content Include="Script\PyScript\Action\Action1011.py" />
+    <Content Include="Script\PyScript\Action\Action1012.py" />
+    <Content Include="Script\PyScript\Action\Action1013.py" />
+    <Content Include="Script\PyScript\Action\Action1014.py" />
+    <Content Include="Script\PyScript\Action\Action1019.py" />
+    <Content Include="Script\PyScript\Action\Action12001.py" />
+    <Content Include="Script\PyScript\Action\Action12002.py" />
+    <Content Include="Script\PyScript\Action\Action2001.py" />
+    <Content Include="Script\PyScript\Action\Action2002.py" />
+    <Content Include="Script\PyScript\Action\Action2003.py" />
+    <Content Include="Script\PyScript\Action\Action2004.py" />
+    <Content Include="Script\PyScript\Action\Action2005.py" />
+    <Content Include="Script\PyScript\Action\Action2006.py" />
+    <Content Include="Script\PyScript\Action\Action2007.py" />
+    <Content Include="Script\PyScript\Action\Action2008.py" />
+    <Content Include="Script\PyScript\Action\Action2009.py" />
+    <Content Include="Script\PyScript\Action\Action2010.py" />
+    <Content Include="Script\PyScript\Action\Action2011.py" />
+    <Content Include="Script\PyScript\Action\Action2012.py" />
+    <Content Include="Script\PyScript\Action\Action2013.py" />
+    <Content Include="Script\PyScript\Action\Action2014.py" />
+    <Content Include="Script\PyScript\Action\Action2015.py" />
+    <Content Include="Script\PyScript\Action\Action3001.py" />
+    <Content Include="Script\PyScript\Action\Action3002.py" />
+    <Content Include="Script\PyScript\Action\Action3003.py" />
+    <Content Include="Script\PyScript\Action\Action3004.py" />
+    <Content Include="Script\PyScript\Action\Action7001.py" />
+    <Content Include="Script\PyScript\Action\Action7002.py" />
+    <Content Include="Script\PyScript\Action\Action9001.py" />
+    <Content Include="Script\PyScript\Action\Action9002.py" />
+    <Content Include="Script\PyScript\Action\Action9003.py" />
+    <Content Include="Script\PyScript\Action\Action9202.py" />
+    <Content Include="Script\PyScript\Action\Action9203.py" />
+    <Content Include="Script\PyScript\Lib\action.py" />
+    <Content Include="Script\PyScript\Lib\lang.py" />
+    <Content Include="Script\PyScript\Lib\mathUtils.py" />
+    <Content Include="Script\PyScript\Lib\types.py" />
+    <Content Include="Script\PyScript\Logic\cardAILogic.py" />
+    <Content Include="Script\PyScript\Logic\roomLogic.py" />
+    <Content Include="Script\PyScript\Remote\cache.py" />
+    <Content Include="Script\PyScript\Remote\notice.py" />
+    <Content Include="Script\PyScript\Remote\prize.py" />
+    <Content Include="Script\PyScript\Remote\python.py" />
+    <Content Include="Script\PyScript\Remote\rank.py" />
+    <Content Include="Script\PyScript\Remote\user.py" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>
