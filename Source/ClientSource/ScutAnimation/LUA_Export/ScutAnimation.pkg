@@ -1,0 +1,6 @@
+$#include"../ScutAnimationManager.h"
+$#include"../ScutSprite.h"
+
+$pfile "ScutAnimationManager.pkg"
+
+$pfile "ScutSprite.pkg"

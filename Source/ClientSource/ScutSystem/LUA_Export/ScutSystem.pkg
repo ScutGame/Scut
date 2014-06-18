@@ -1,0 +1,13 @@
+$#include"../md5.h"
+//$#include"../ScutSMS.h"
+$#include"../ScutUtility.h"
+$#include"../Stream.h"
+$#include <string>
+
+$pfile "md5.pkg"
+
+//$pfile "ScutSMS.pkg"
+
+$pfile "ScutUtility.pkg"
+
+$pfile "Stream.pkg"

@@ -1,0 +1,18 @@
+namespace ScutAnimation
+{
+	class CScutAniGroup;
+	class CCScutSprite;
+	class CScutAnimationManager
+	{
+	public:
+		static CScutAnimationManager& GetInstance();
+		
+	public:
+		// 加载指定的动画组,同时返回动画精灵,默认播放动画组中索引值为0的动画
+		CCScutSprite* LoadSprite(const char* lpszSprName);
+		// 释放指定的动画组
+		void UnLoadSprite(const char* lpszSprName);
+		// 释放内存中所有的动画组
+		void ReleaseAllAniGroup();
+	};
+	}
