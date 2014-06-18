@@ -10,4 +10,7 @@
     <StartProgram>GameNotice\GameServer.exe</StartProgram>
     <StartWorkingDirectory>..\..\</StartWorkingDirectory>
   </PropertyGroup>
+  <PropertyGroup>
+    <ProjectView>ProjectFiles</ProjectView>
+  </PropertyGroup>
 </Project>

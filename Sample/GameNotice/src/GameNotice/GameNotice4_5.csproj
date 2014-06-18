@@ -107,6 +107,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Script\CsScript\Locale\SimplifiedLanguage.cs" />
     <Compile Include="Script\CsScript\MainClass.cs" />
+    <Compile Include="Script\CsScript\ScriptProxy.cs" />
     <Compile Include="Script\Model\Notice.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -117,6 +118,7 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <SubType>Designer</SubType>
     </None>
+    <None Include="Script\LuaScript\Action\Action2001.lua" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Script\PyScript\Action\action2001.py">
