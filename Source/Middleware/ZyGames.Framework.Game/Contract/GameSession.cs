@@ -49,6 +49,7 @@ namespace ZyGames.Framework.Game.Contract
         private static ConcurrentDictionary<int, Guid> _userHash;
         private static Timer clearTime;
         private static string sessionRedisKey = "__GLOBAL_SESSIONS";
+        private static int _isChanged;
 
         static GameSession()
         {
@@ -129,7 +130,11 @@ namespace ZyGames.Framework.Game.Contract
 
                     }
                 }
-                SaveTo();
+                if (_isChanged == 1)
+                {
+                    SaveTo();
+                    Interlocked.Exchange(ref _isChanged, 0);
+                }
             }
             catch (Exception er)
             {
@@ -186,6 +191,7 @@ namespace ZyGames.Framework.Game.Contract
                 throw new ArgumentOutOfRangeException("param is error");
             }
             _globalSession[keyCode] = session;
+            OnChanged();
             return session;
         }
 
@@ -207,7 +213,10 @@ namespace ZyGames.Framework.Game.Contract
                 session._exSocket = socket;
                 session._sendCallback = sendCallback;
                 GameSession temp;
-                _globalSession.TryRemove(newSessionKey, out temp);
+                if (_globalSession.TryRemove(newSessionKey, out temp))
+                {
+                    OnChanged();
+                }
             }
         }
 
@@ -353,9 +362,15 @@ namespace ZyGames.Framework.Game.Contract
             if (_globalSession.TryRemove(KeyCode, out session) && session._exSocket != null)
             {
                 session._exSocket.IsClosed = true;
+                OnChanged();
             }
             Guid code;
             _userHash.TryRemove(UserId, out code);
+        }
+
+        private static void OnChanged()
+        {
+            Interlocked.Exchange(ref _isChanged, 1);
         }
 
         /// <summary>
