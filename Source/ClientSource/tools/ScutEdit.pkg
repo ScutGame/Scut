@@ -1,0 +1,24 @@
+
+	class  CScutEdit
+	{
+	public:
+		CScutEdit(void);
+		~CScutEdit(void);
+		//初始化编辑框控件
+		bool init(bool bMultiline, bool bPwdMode, ccColor4B* pBackColor = 0, ccColor4B* pForeColor = 0, CCPoint* pLocation = 0, CCSize* pSize = 0);
+		//设置编辑框的位置以及大小
+		void setRect(CCRect rcEdit);
+		std::string GetEditText();
+		void release();
+		void setVisible(bool bVisible);
+		void setEnabled(bool bEnable);
+		void setText(std::string strText);
+		void setMaxText(int nTextCount);
+		void setInputNumber();
+		void hiddenTextPanel();
+ 		void SetTextSize(int nTextSize);
+		void OnTextChanged();
+		void registerTextChangedScript(const char* pszFunctionName);
+	};
+
+

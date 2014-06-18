@@ -1,0 +1,12 @@
+
+	class  ScutLineNode: public CCNode
+	{
+	public:
+		static ScutLineNode* lineWithPoint(CCPoint origin, CCPoint destination ,
+			float fLineWidth, ccColor4B color);
+
+
+	};
+	
+
+

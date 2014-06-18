@@ -1,0 +1,34 @@
+
+
+//#define ScutCxListItemChild CCNode
+
+class ScutCxListItem : public CCLayerColor
+{
+ public:
+    static ScutCxListItem *itemWithColor(const ccColor3B &color);
+
+    CCRect rect(void);
+   
+ 
+  
+   
+    void selected(void); 
+    void unselected(void);
+    void setItemColor(const ccColor3B &color);
+    void setMargin(CCSize margin);
+    CCSize getMargin(void);
+
+
+
+    void addChildItem(CCNode *child);
+    void addChildItem(CCNode *child, const LayoutParam &layout);
+    void addChildItem(CCNode *child, const LayoutParam &layout, int tag );
+    CCNode *getChildByTag(int tag);
+    void setDrawTopLine(bool value);
+    void setDrawBottomLine(bool value);
+    void setDrawSelected(bool value);
+
+    
+
+};
+

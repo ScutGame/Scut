@@ -1,0 +1,37 @@
+
+
+enum LAYOUT_TYPE
+{
+    PARENT_CENTER,
+    VERTICAL_TOP,
+    VERTICAL_BOTTOM,
+    HORIZONTAL_LEFT,
+    HORIZONTAL_RIGHT,
+    ABS_WITH_PIXEL,
+    ABS_WITH_PERCENT,
+    REF_PREV_X_INC,
+    REF_PREV_X_DEC,
+    REF_PREV_Y_INC,
+    REF_PREV_Y_DEC,
+    REL_FLOW
+};
+union _Val
+{
+	float pixel_val;
+	float percent_val;
+};
+struct  LayoutParamVal
+{
+    LAYOUT_TYPE t;
+    _Val val;
+  
+};
+
+struct LayoutParam
+{
+    LayoutParamVal val_x;
+    LayoutParamVal val_y;
+    float          padding;
+    bool           wrap;
+};
+static  LayoutParam CxLayout();

@@ -1,0 +1,86 @@
+
+typedef enum {
+    kCCDirectorProjection2D,
+    kCCDirectorProjection3D,
+    kCCDirectorProjectionCustom,
+    kCCDirectorProjectionDefault = kCCDirectorProjection3D,
+} ccDirectorProjection;
+
+class CCDirector : public CCObject
+{
+    CCScene* getRunningScene(void);
+
+    double getAnimationInterval(void);
+
+    bool isDisplayStats(void);
+    void setDisplayStats(bool bDisplayStats);
+
+    bool isPaused(void);
+    unsigned int getTotalFrames(void);
+
+	CCEGLViewProtocol* getOpenGLView(void);
+
+    CCSize getWinSize(void);
+    CCSize getWinSizeInPixels(void);
+
+    CCPoint convertToGL(CCPoint obPoint);
+    CCPoint convertToUI(CCPoint obPoint);
+
+	void pause();
+	void resume();
+	void purgeCachedData(void);
+
+    void runWithScene(CCScene *pScene);
+    void pushScene(CCScene *pScene);
+    void popScene(void);
+    void popToRootScene();
+    void replaceScene(CCScene *pScene);
+    void end @ endToLua ();
+
+
+	/** Pauses the running scene for lua
+	 */
+	void RegisterPauseHandler(const char* pszFuncName);
+
+	/** Resumes the paused scene for lua
+	 */
+	void RegisterResumeHandler(const char* pszFuncName);
+
+	/** register back for lua
+	 */
+	void RegisterBackHandler(const char* pszFuncName);
+
+	/** register error log for lua
+	 */
+	void RegisterErrorHandler(const char* pszFuncName);
+
+	/** register Push log for lua
+	 */
+	void RegisterSocketPushHandler(const char* pszFuncName);
+	const char* GetSocketPushHandler();
+
+	/** register Socket Error log for lua
+	 */
+	void RegisterSocketErrorHandler(const char* pszFuncName);
+    float getContentScaleFactor(void);
+    void setContentScaleFactor(float scaleFactor);
+
+    CCScheduler* getScheduler();
+    CCActionManager* getActionManager();
+    CCTouchDispatcher* getTouchDispatcher();
+    // CCKeypadDispatcher* getKeypadDispatcher();
+    // CCAccelerometer* getAccelerometer();
+
+	void setDepthTest(bool var);
+	void setProjection(ccDirectorProjection kProjection);
+	ccDirectorProjection getProjection(void);
+
+	CCNode* getNotificationNode();
+    void setNotificationNode(CCNode *node);
+
+	float getZEye(void);
+	CCSize getVisibleSize();
+    CCPoint getVisibleOrigin();
+
+    static CCDirector* sharedDirector(void);
+};
