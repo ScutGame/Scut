@@ -186,13 +186,18 @@ namespace ZyGames.Framework.Script
         /// <returns></returns>
         protected string FormatScriptCode(string path, string code, string ext)
         {
+            code = (code ?? "").Replace("/", ".").Replace("\\", ".");
             if (code.EndsWith(".cs") ||
                 code.EndsWith(".py") ||
                 code.EndsWith(".lua"))
             {
-                return string.Format("{0}.{1}", path, code).ToLower();
+                return code.StartsWith(path)
+                    ? string.Format("{0}", code).ToLower()
+                    : string.Format("{0}.{1}", path, code).ToLower();
             }
-            return string.Format("{0}.{1}{2}", path, code, ext).ToLower();
+            return code.StartsWith(path)
+                ? string.Format("{0}{1}", code, ext).ToLower()
+                : string.Format("{0}.{1}{2}", path, code, ext).ToLower();
         }
 
         /// <summary>

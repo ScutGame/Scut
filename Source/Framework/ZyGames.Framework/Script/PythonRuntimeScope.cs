@@ -129,8 +129,7 @@ namespace ZyGames.Framework.Script
         /// <returns></returns>
         public override object Execute(string scriptCode, string typeName, params object[] args)
         {
-            string code = FormatScriptCode(SettupInfo.PythonScriptPath, scriptCode, ".py");
-            object scriptScope = ExecutePython(code);
+            object scriptScope = ExecutePython(scriptCode);
             if (scriptScope != null)
             {
                 return scriptScope;
@@ -149,8 +148,7 @@ namespace ZyGames.Framework.Script
         /// <returns></returns>
         public override bool InvokeMenthod(string scriptCode, string typeName, object[] typeArgs, string method, params object[] methodArgs)
         {
-            string code = FormatScriptCode(SettupInfo.PythonScriptPath, scriptCode, ".py");
-            object scriptScope = ExecutePython(code);
+            object scriptScope = ExecutePython(scriptCode);
             if (scriptScope != null)
             {
                 MethodInfo methodInfo = scriptScope.GetType().GetMethod(method);

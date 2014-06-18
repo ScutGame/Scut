@@ -240,7 +240,7 @@ namespace ZyGames.Framework.Cache.Generic
 
 
         /// <summary>
-        /// 通过Redis键获取实体对象
+        /// 通过Redis键从缓存中获取实体对象
         /// </summary>
         /// <param name="redisKey"></param>
         /// <returns></returns>
@@ -251,7 +251,7 @@ namespace ZyGames.Framework.Cache.Generic
         }
 
         /// <summary>
-        /// 通过Redis键获取实体对象
+        /// 通过Redis键从缓存中获取实体对象
         /// </summary>
         /// <param name="redisKey"></param>
         /// <param name="itemSet"></param>

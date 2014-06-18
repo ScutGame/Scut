@@ -211,6 +211,7 @@ namespace ZyGames.Framework.Script
                 t.Value.Source = null;
                 return src;
             }).ToArray();
+            if (sources.Length == 0) return;
             //加载实体程序集
             _modelAssembly = ScriptCompiler.InjectionCompile(SettupInfo.RuntimePrivateBinPath, sources, refAssemblyNames, assemblyName, SettupInfo.ScriptIsDebug, false, out _modelAssemblyPath);
 
@@ -227,6 +228,7 @@ namespace ZyGames.Framework.Script
                 t.Value.Source = null;
                 return SettupInfo.ScriptIsDebug ? t.Value.FileName : src;
             }).ToArray();
+            if (sources.Length == 0) return;
 
             //调试模式使用File编译
             var result = SettupInfo.ScriptIsDebug
@@ -357,6 +359,8 @@ namespace ZyGames.Framework.Script
             var assmeblyList = GetAssemblies();
             foreach (var assmebly in assmeblyList)
             {
+                if (assmebly == null) continue;
+
                 pyCode.AppendFormat(@"clr.AddReference('{0}')", assmebly.GetName().Name);
                 pyCode.AppendLine();
             }
