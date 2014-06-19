@@ -300,10 +300,20 @@ namespace ZyGames.Framework.RPC.IO
         /// <exception cref="ArgumentOutOfRangeException"></exception>
         public byte[] ReadByte(int count)
         {
+            VerifyBufferLength(count);
             byte[] bytes = new byte[count];
             int len = _msBuffers.Read(bytes, 0, count);
             _currRecordPos += len;
             return bytes;
+        }
+
+        private void VerifyBufferLength(int count)
+        {
+            long len = Length - Offset;
+            if (count < 0 || count > len)
+            {
+                throw new ArgumentOutOfRangeException(string.Format("Read {0} byte len overflow max {1} len.", count, len));
+            }
         }
 
         /// <summary>
@@ -311,8 +321,10 @@ namespace ZyGames.Framework.RPC.IO
         /// </summary>
         /// <param name="count"></param>
         /// <returns></returns>
+        /// <exception cref="ArgumentOutOfRangeException"></exception>
         public byte[] PeekByte(int count)
         {
+            VerifyBufferLength(count);
             byte[] bytes = new byte[count];
             int len = _msBuffers.Read(bytes, 0, count);
             _msBuffers.Position = _msBuffers.Position - len;
