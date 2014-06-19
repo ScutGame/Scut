@@ -151,12 +151,25 @@ namespace ZyGames.Framework.Common.Log
             stringBuilder.AppendFormat("Time:{0}-{1}\r\n", DateTime.Now, info);
             if (current != null)
             {
-                stringBuilder.AppendFormat("Url:{0}\r\n", current.Request.Url);
-                if (null != current.Request.UrlReferrer)
+                HttpRequest request = null;
+                try
                 {
-                    stringBuilder.AppendFormat("UrlReferrer:{0}\r\n", current.Request.UrlReferrer);
+                    //IIS 7.0 集成模式不能用
+                    request = current.Request;
                 }
-                stringBuilder.AppendFormat("UserHostAddress:{0}\r\n", current.Request.UserHostAddress);
+                catch
+                {
+                }
+
+                if (request != null)
+                {
+                    stringBuilder.AppendFormat("Url:{0}\r\n", current.Request.Url);
+                    if (null != current.Request.UrlReferrer)
+                    {
+                        stringBuilder.AppendFormat("UrlReferrer:{0}\r\n", current.Request.UrlReferrer);
+                    }
+                    stringBuilder.AppendFormat("UserHostAddress:{0}\r\n", current.Request.UserHostAddress);
+                }
             }
             if (ex != null)
             {

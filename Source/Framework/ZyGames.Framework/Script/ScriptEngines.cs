@@ -135,7 +135,7 @@ namespace ZyGames.Framework.Script
                 _settupInfo.ModelChangedBefore(_runtimeDomain.Scope.ModelAssembly);
             }
 
-            _runtimeDomain = new ScriptRuntimeDomain(typeof(ScriptRuntimeDomain).Name, new[] { _settupInfo.RuntimePath, ScriptCompiler.ScriptPath });
+            _runtimeDomain = new ScriptRuntimeDomain(typeof(ScriptRuntimeDomain).Name, new[] { _settupInfo.RuntimePrivateBinPath, ScriptCompiler.ScriptPath });
 
             ScriptDomainContext domainContext = _runtimeDomain.InitDomainContext();
             foreach (var assemblyName in _settupInfo.ReferencedAssemblyNames)
