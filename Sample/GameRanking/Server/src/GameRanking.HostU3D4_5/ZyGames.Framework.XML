@@ -1226,14 +1226,14 @@
         </member>
         <member name="M:ZyGames.Framework.Cache.Generic.CacheFactory.GetPersonalEntity(System.String)">
             <summary>
-            通过Redis键获取实体对象
+            通过Redis键从缓存中获取实体对象
             </summary>
             <param name="redisKey"></param>
             <returns></returns>
         </member>
         <member name="M:ZyGames.Framework.Cache.Generic.CacheFactory.GetPersonalEntity(System.String,ZyGames.Framework.Cache.Generic.CacheItemSet@)">
             <summary>
-            通过Redis键获取实体对象
+            通过Redis键从缓存中获取实体对象
             </summary>
             <param name="redisKey"></param>
             <param name="itemSet"></param>
@@ -3873,6 +3873,11 @@
         <member name="T:ZyGames.Framework.Data.DbProviderType">
             <summary>
             数据提供者类型
+            </summary>
+        </member>
+        <member name="F:ZyGames.Framework.Data.DbProviderType.Unkown">
+            <summary>
+            
             </summary>
         </member>
         <member name="F:ZyGames.Framework.Data.DbProviderType.MsSql">
@@ -8939,6 +8944,16 @@
             HashCode
             </summary>
         </member>
+        <member name="P:ZyGames.Framework.RPC.Sockets.ExSocket.IsClosed">
+            <summary>
+            Is closed socket.
+            </summary>
+        </member>
+        <member name="P:ZyGames.Framework.RPC.Sockets.ExSocket.Connected">
+            <summary>
+            Is connected
+            </summary>
+        </member>
         <member name="P:ZyGames.Framework.RPC.Sockets.ExSocket.WorkSocket">
             <summary>
             Gets the work socket.
@@ -12110,7 +12125,7 @@
             <param name="obj"></param>
             <param name="method"></param>
         </member>
-        <member name="M:ZyGames.Framework.Script.LuaRuntimeScope.LuaRegister(System.Object[])">
+        <member name="M:ZyGames.Framework.Script.LuaRuntimeScope.LuaRegisterObject(System.Object[])">
             <summary>
             
             </summary>
@@ -12476,6 +12491,11 @@
             Get Script generate path.
             </summary>
         </member>
+        <member name="T:ZyGames.Framework.Script.ScriptLoaded">
+            <summary>
+            script loaded delegate
+            </summary>
+        </member>
         <member name="T:ZyGames.Framework.Script.ScriptEngines">
             <summary>
             脚本对象引擎
@@ -12559,7 +12579,7 @@
             <param name="method"></param>
             <returns></returns>
         </member>
-        <member name="M:ZyGames.Framework.Script.ScriptEngines.LuaRegister(System.Object[])">
+        <member name="M:ZyGames.Framework.Script.ScriptEngines.LuaRegisterObject(System.Object[])">
             <summary>
             向Lua注册NET的方法,方法需要加LuaMethod属性
             </summary>
@@ -12607,6 +12627,11 @@
             Dispose
             </summary>
         </member>
+        <member name="E:ZyGames.Framework.Script.ScriptEngines.OnLoaded">
+            <summary>
+            Script loaded event
+            </summary>
+        </member>
         <member name="P:ZyGames.Framework.Script.ScriptEngines.IsError">
             <summary>
             Is error
@@ -12622,11 +12647,12 @@
             
             </summary>
         </member>
-        <member name="M:ZyGames.Framework.Script.ScriptRuntimeDomain.#ctor(System.String)">
+        <member name="M:ZyGames.Framework.Script.ScriptRuntimeDomain.#ctor(System.String,System.String[])">
             <summary>
             
             </summary>
             <param name="name"></param>
+            <param name="privateBinPaths"></param>
             <returns></returns>
         </member>
         <member name="M:ZyGames.Framework.Script.ScriptRuntimeDomain.InitDomainContext">
@@ -12670,7 +12696,7 @@
             IMainScript
             </summary>
         </member>
-        <member name="P:ZyGames.Framework.Script.ScriptRuntimeDomain.SetPrivateBinPaths">
+        <member name="P:ZyGames.Framework.Script.ScriptRuntimeDomain.PrivateBinPath">
             <summary>
             
             </summary>
