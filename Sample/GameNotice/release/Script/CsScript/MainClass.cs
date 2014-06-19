@@ -41,6 +41,8 @@ namespace Game.Script
         protected override void OnStartAffer()
         {
             ActionFactory.SetActionIgnoreAuthorize(2001, 404);
+            ScriptEngines.OnLoaded += ScriptProxy.Load;
+            ScriptProxy.RegistMethodd();
             InitNotice();
         }
 

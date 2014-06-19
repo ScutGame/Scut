@@ -1226,14 +1226,14 @@
         </member>
         <member name="M:ZyGames.Framework.Cache.Generic.CacheFactory.GetPersonalEntity(System.String)">
             <summary>
-            通过Redis键获取实体对象
+            通过Redis键从缓存中获取实体对象
             </summary>
             <param name="redisKey"></param>
             <returns></returns>
         </member>
         <member name="M:ZyGames.Framework.Cache.Generic.CacheFactory.GetPersonalEntity(System.String,ZyGames.Framework.Cache.Generic.CacheItemSet@)">
             <summary>
-            通过Redis键获取实体对象
+            通过Redis键从缓存中获取实体对象
             </summary>
             <param name="redisKey"></param>
             <param name="itemSet"></param>
@@ -12491,6 +12491,11 @@
             Get Script generate path.
             </summary>
         </member>
+        <member name="T:ZyGames.Framework.Script.ScriptLoaded">
+            <summary>
+            script loaded delegate
+            </summary>
+        </member>
         <member name="T:ZyGames.Framework.Script.ScriptEngines">
             <summary>
             脚本对象引擎
@@ -12620,6 +12625,11 @@
         <member name="M:ZyGames.Framework.Script.ScriptEngines.Dispose">
             <summary>
             Dispose
+            </summary>
+        </member>
+        <member name="E:ZyGames.Framework.Script.ScriptEngines.OnLoaded">
+            <summary>
+            Script loaded event
             </summary>
         </member>
         <member name="P:ZyGames.Framework.Script.ScriptEngines.IsError">
