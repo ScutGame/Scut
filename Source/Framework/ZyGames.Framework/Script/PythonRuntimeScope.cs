@@ -53,7 +53,6 @@ namespace ZyGames.Framework.Script
         public PythonRuntimeScope(ScriptSettupInfo settupInfo)
             : base(settupInfo)
         {
-            _pythonCodeCache = new DictionaryExtend<string, PythonFileInfo>();
         }
 
         /// <summary>
@@ -63,6 +62,7 @@ namespace ZyGames.Framework.Script
         {
             if (!SettupInfo.DisablePython)
             {
+                _pythonCodeCache = new DictionaryExtend<string, PythonFileInfo>();
                 string refPath = Path.GetDirectoryName(SettupInfo.PythonReferenceLibFile);
                 if (!string.IsNullOrEmpty(refPath) && !Directory.Exists(refPath))
                 {
@@ -170,7 +170,7 @@ namespace ZyGames.Framework.Script
         public object ExecutePython(string scriptCode)
         {
             string code = FormatScriptCode(SettupInfo.PythonScriptPath, scriptCode, ".py");
-            var scriptInfo = _pythonCodeCache[code] as PythonFileInfo;
+            var scriptInfo = _pythonCodeCache != null ? _pythonCodeCache[code] as PythonFileInfo : null;
             if (!SettupInfo.DisablePython && scriptInfo != null)
             {
                 var scope = _scriptEngine.CreateScope();

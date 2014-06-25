@@ -51,10 +51,19 @@ namespace ZyGames.Framework.Game.Contract.Action
     /// </summary>
     public class ScriptAction : AuthorizeAction
     {
+		/// <summary>
+		/// The _script scope.
+		/// </summary>
         protected readonly dynamic _scriptScope;
         private readonly bool _ignoreAuthorize;
-        protected dynamic _urlParam;
-        protected dynamic _actionResult;
+		/// <summary>
+		/// The _url parameter.
+		/// </summary>
+		protected dynamic _urlParam;
+		/// <summary>
+		/// The _action result.
+		/// </summary>
+		protected dynamic _actionResult;
         private ScriptType _scriptType;
 
         /// <summary>

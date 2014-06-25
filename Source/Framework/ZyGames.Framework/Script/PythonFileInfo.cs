@@ -33,6 +33,7 @@ namespace ZyGames.Framework.Script
     ///<summary>
     /// Python文件信息
     ///</summary>
+    [Serializable]
     public class PythonFileInfo : ScriptFileInfo
     {
         ///<summary>

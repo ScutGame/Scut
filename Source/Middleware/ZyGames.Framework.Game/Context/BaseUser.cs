@@ -110,7 +110,7 @@ namespace ZyGames.Framework.Game.Context
         /// 
         /// </summary>
         /// <returns></returns>
-        [Obsolete("no use")]
+        //[Obsolete("no use")]
         public virtual string GetSessionId()
         {
             return string.Empty;

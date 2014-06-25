@@ -29,6 +29,7 @@ namespace ZyGames.Framework.Script
     /// <summary>
     /// CSharp文件信息
     /// </summary>
+    [Serializable]
     public class CSharpFileInfo : ScriptFileInfo
     {
         /// <summary>

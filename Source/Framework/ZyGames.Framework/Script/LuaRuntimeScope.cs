@@ -38,6 +38,13 @@ namespace ZyGames.Framework.Script
         private dynamic _luaEngine;
         private string scriptPath;
         private const string FileFilter = "*.lua";
+#if LuaInterface
+        private const string Lua_Namespace = "LuaInterface";
+        private const string LUA_LIB = Lua_Namespace + ".dll";
+#else
+        private const string Lua_Namespace = "NLua";
+        private const string LUA_LIB = Lua_Namespace + ".dll";
+#endif
 
         /// <summary>
         /// 
@@ -70,13 +77,13 @@ namespace ZyGames.Framework.Script
             Assembly luaInterfaceAssembly = null;
             try
             {
-                luaInterfaceAssembly = Assembly.LoadFrom(Path.Combine(SettupInfo.RuntimePrivateBinPath, "LuaInterface.dll"));
+                luaInterfaceAssembly = Assembly.LoadFrom(Path.Combine(SettupInfo.RuntimePrivateBinPath, LUA_LIB));
             }
             catch (Exception ex)
             {
                 throw new Exception("Error loading Lua library, check \"lua5.dll\" operating platform x86 or x64 or linux", ex);
             }
-            Type type = luaInterfaceAssembly.GetType("LuaInterface.Lua", false, true);
+            Type type = luaInterfaceAssembly.GetType(Lua_Namespace + ".Lua", false, true);
             if (type != null)
             {
                 _luaEngine = type.CreateInstance();
@@ -262,6 +269,8 @@ namespace ZyGames.Framework.Script
 
         private void RegisterMethod()
         {
+            var writeMethod = typeof(Console).GetMethod("WriteLine", new[] { typeof(string) });
+            LuaRegister("CPrint", null, writeMethod);
         }
 
 

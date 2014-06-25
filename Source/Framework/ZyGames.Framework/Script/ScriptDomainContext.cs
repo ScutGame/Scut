@@ -23,6 +23,7 @@ THE SOFTWARE.
 ****************************************************************************/
 using System;
 using System.Collections.Concurrent;
+using System.Linq;
 using System.Reflection;
 using ZyGames.Framework.Common;
 
@@ -86,8 +87,7 @@ namespace ZyGames.Framework.Script
         public object GetInstance(string assemblyKey, string typeName, params Object[] args)
         {
             var type = GetTypeFrom(assemblyKey, typeName);
-            Object obj = type.CreateInstance(args);
-            return obj;
+            return type != null ? type.CreateInstance(args) : null;
         }
 
         /// <summary>

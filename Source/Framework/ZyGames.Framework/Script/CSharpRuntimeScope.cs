@@ -22,6 +22,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ****************************************************************************/
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -53,8 +54,6 @@ namespace ZyGames.Framework.Script
         public CSharpRuntimeScope(ScriptSettupInfo settupInfo)
             : base(settupInfo)
         {
-            _modelCodeCache = new DictionaryExtend<string, ScriptFileInfo>();
-            _csharpCodeCache = new DictionaryExtend<string, ScriptFileInfo>();
         }
 
         /// <summary>
@@ -71,6 +70,8 @@ namespace ZyGames.Framework.Script
         /// </summary>
         public override void Init()
         {
+            _modelCodeCache = new DictionaryExtend<string, ScriptFileInfo>();
+            _csharpCodeCache = new DictionaryExtend<string, ScriptFileInfo>();
             _modelScriptPath = Path.Combine(SettupInfo.RuntimePath, SettupInfo.ScriptRelativePath, SettupInfo.ModelScriptPath);
             AddWatchPath(_modelScriptPath, FileFilter);
 

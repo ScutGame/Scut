@@ -23,10 +23,6 @@ THE SOFTWARE.
 ****************************************************************************/
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.IO;
-using System.Threading;
 
 namespace ZyGames.Framework.Script
 {
@@ -34,6 +30,7 @@ namespace ZyGames.Framework.Script
     /// <summary>
     /// 脚本文件信息
     /// </summary>
+    [Serializable]
     public abstract class ScriptFileInfo
     {
         private readonly string _fileCode;
