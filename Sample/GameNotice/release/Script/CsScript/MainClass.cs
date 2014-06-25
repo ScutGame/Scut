@@ -43,7 +43,7 @@ namespace Game.Script
             ActionFactory.SetActionIgnoreAuthorize(2001, 404);
             ScriptEngines.OnLoaded += ScriptProxy.Load;
             ScriptProxy.RegistMethodd();
-            InitNotice();
+            //InitNotice();
         }
 
         protected override void OnServiceStop()

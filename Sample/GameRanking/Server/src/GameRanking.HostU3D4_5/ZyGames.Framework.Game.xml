@@ -2819,6 +2819,21 @@
             不检查的ActionID
             </summary>
         </member>
+        <member name="F:ZyGames.Framework.Game.Contract.Action.ScriptAction._scriptScope">
+            <summary>
+            The _script scope.
+            </summary>
+        </member>
+        <member name="F:ZyGames.Framework.Game.Contract.Action.ScriptAction._urlParam">
+            <summary>
+            The _url parameter.
+            </summary>
+        </member>
+        <member name="F:ZyGames.Framework.Game.Contract.Action.ScriptAction._actionResult">
+            <summary>
+            The _action result.
+            </summary>
+        </member>
         <member name="M:ZyGames.Framework.Game.Contract.Action.ScriptAction.#ctor(ZyGames.Framework.Game.Contract.Action.ScriptType,System.Int32,ZyGames.Framework.Game.Service.ActionGetter,System.Object,System.Boolean)">
             <summary>
             /

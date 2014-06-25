@@ -8219,6 +8219,7 @@
             </summary>
             <param name="count"></param>
             <returns></returns>
+            <exception cref="T:System.ArgumentOutOfRangeException"></exception>
         </member>
         <member name="M:ZyGames.Framework.RPC.IO.MessageStructure.ReadBuffer">
             <summary>

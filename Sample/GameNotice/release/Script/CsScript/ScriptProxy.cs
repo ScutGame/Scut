@@ -22,6 +22,7 @@ namespace Game.Script
             }
             catch (Exception ex)
             {
+                Console.WriteLine(ex.Message);
             }
         }
 

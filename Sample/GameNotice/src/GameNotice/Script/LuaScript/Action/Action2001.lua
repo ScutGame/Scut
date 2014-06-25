@@ -11,6 +11,7 @@ function Action2001:getUrlElement(httpGet, parent)
 end
 
 function Action2001:takeAction(urlParam, parent)
+	CPrint("lua print test...")
 	local actionResult = {}
 	actionResult.PageCount = 0
 	actionResult.ItemCount = 0
