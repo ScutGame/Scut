@@ -59,6 +59,9 @@ OSChina代码库：https://git.oschina.net/scutgame/Scut<br />
 
 更新日志
 ----------------
+###版本：6.5.8.3 (2014-6-25) Release
+> 1. 修改Lua脚本支持Linux平台部署
+
 ###版本：6.5.8.2 (2014-6-19) Unstable
 > 1. 增加脚本重新加载后触发Loaded事件接口
 > 2. 修改通讯流读取出错出后再次读取时内存会溢出问题
