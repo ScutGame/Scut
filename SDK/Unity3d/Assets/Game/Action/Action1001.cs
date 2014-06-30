@@ -69,7 +69,7 @@ public class Action1001 : BaseAction//GameAction
     {
         if (_responseData != null)
         {
-            UnityEngine.Debug.Log(string.Format("ok, count:{0}", _responseData.PageCount));
+            UnityEngine.Debug.Log(string.Format("The action{0} receive ok, record count:{1}", ActionId, _responseData.PageCount));
         }
     }
 }
