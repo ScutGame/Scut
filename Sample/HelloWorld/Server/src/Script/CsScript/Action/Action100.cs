@@ -1,4 +1,4 @@
-/****************************************************************************
+﻿/****************************************************************************
 Copyright (c) 2013-2015 scutgame.com
 
 http://www.scutgame.com
@@ -21,21 +21,41 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ****************************************************************************/
-using System;
 
-namespace HelloWorld.Script.CsScript.Action
+using ZyGames.Framework.Game.Contract;
+using ZyGames.Framework.Game.Service;
+
+namespace GameServer.CsScript.Action
 {
-
     /// <summary>
-    /// ActionID定义描述
+    /// 100_Hello World
     /// </summary>
-    public class ActionIDDefine
+    public class Action100 : BaseStruct
     {
-        ///<summary>
-        ///hello
-        ///</summary>
-        public const Int16 Cst_Action1001 = 1001;
+        private string content;
 
 
+        public Action100(HttpGet httpGet)
+            : base(100, httpGet)
+        {
+
+        }
+
+        public override void BuildPacket()
+        {
+            this.PushIntoStack(content);
+
+        }
+
+        public override bool GetUrlElement()
+        {
+            return true;
+        }
+
+        public override bool TakeAction()
+        {
+            content = "Hello World for C#!";
+            return true;
+        }
     }
 }

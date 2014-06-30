@@ -1,4 +1,4 @@
-/****************************************************************************
+ï»¿/****************************************************************************
 Copyright (c) 2013-2015 scutgame.com
 
 http://www.scutgame.com
@@ -21,45 +21,41 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ****************************************************************************/
-
-using HelloWorld.Script.CsScript.Action;
+using System;
+using ZyGames.Framework.Cache.Generic;
+using ZyGames.Framework.Game.Context;
 using ZyGames.Framework.Game.Contract;
+using ZyGames.Framework.Game.Runtime;
+using ZyGames.Framework.Game.Service;
+using ZyGames.Framework.Script;
 
-namespace GameServer.CsScript.Action
+namespace Game.Script
 {
-    /// <summary>
-    /// 1001_hello¡¾ÒÑÍê³É¡¿
-    /// </summary>
-    public class Action1001 : BaseAction
+    public class MainClass : GameSocketHost, IMainScript
     {
-        private string content;
 
-
-        public Action1001(HttpGet httpGet)
-            : base(ActionIDDefine.Cst_Action1001, httpGet)
+        protected override BaseUser GetUser(int userId)
         {
-
+            return (BaseUser)CacheFactory.GetPersonalEntity("GameServer.Model.GameUser", userId.ToString(), userId);
         }
 
-        public override void BuildPacket()
+        protected override void OnStartAffer()
         {
-            this.PushIntoStack(content);
+            ActionFactory.SetActionIgnoreAuthorize(100);
 
+            //Lua script regist method
+            ScriptEngines.OnLoaded += ScriptProxy.Load;
+            ScriptProxy.RegistMethodd();
         }
 
-        public override bool GetUrlElement()
+        protected override void OnServiceStop()
         {
-            if (true)
-            {
-                return true;
-            }
-            return false;
+            GameEnvironment.Stop();
         }
 
-        public override bool TakeAction()
+        protected override void OnRequested(ActionGetter actionGetter, BaseGameResponse response)
         {
-            content = "Hello World!";
-            return true;
+            Console.WriteLine("Client {0} request action {1}", actionGetter.GetSessionId(), actionGetter.GetActionId());
         }
     }
 }
