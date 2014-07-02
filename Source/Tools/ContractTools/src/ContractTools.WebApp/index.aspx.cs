@@ -537,6 +537,7 @@ namespace ContractTools.WebApp
                         DateTime modifyTime = (DateTime)paramInfo.ModifyDate;
                         if (DateTime.Now - modifyTime < TimeSpan.FromDays(3))
                         {
+                            e.Row.ForeColor = Color.Black;
                             e.Row.BackColor = Color.Yellow;
                         }
                     }
