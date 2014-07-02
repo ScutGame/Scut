@@ -22,6 +22,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ****************************************************************************/
 using System;
+using System.Collections.Generic;
 using System.Web.UI.WebControls;
 using ContractTools.WebApp.Base;
 using ContractTools.WebApp.Model;
@@ -39,16 +40,31 @@ namespace ContractTools.WebApp
         {
             if (!IsPostBack)
             {
-                ddlAgreement.Items.Clear();
-                var agreementList = DbDataLoader.GetAgreement(SlnID);
-                ddlAgreement.DataSource = agreementList;
-                ddlAgreement.DataTextField = "Title";
-                ddlAgreement.DataValueField = "AgreementID";
-                ddlAgreement.DataBind();
-               
-                if(ddlAgreement.Items.Count==0)
+                try
                 {
-                    ddlAgreement.Items.Add(new ListItem("无接口分类","0"));
+                    ddlAgreement.Items.Clear();
+                    var agreementList = DbDataLoader.GetAgreement(SlnID);
+                    ddlAgreement.DataSource = agreementList;
+                    ddlAgreement.DataTextField = "Title";
+                    ddlAgreement.DataValueField = "AgreementID";
+                    ddlAgreement.DataBind();
+
+                    if (ddlAgreement.Items.Count == 0)
+                    {
+                        ddlAgreement.Items.Add(new ListItem("选择分类", "0"));
+                    }
+
+                    ddVersion.Items.Clear();
+                    var versiontList = DbDataLoader.GetVersion(SlnID);
+                    versiontList.Insert(0, new VersionMode() { ID = 0, SlnID = SlnID, Title = "选择版本" });
+                    ddVersion.DataSource = versiontList;
+                    ddVersion.DataTextField = "Title";
+                    ddVersion.DataValueField = "ID";
+                    ddVersion.DataBind();
+                    ddVersion.SelectedValue = VerID.ToString();
+                }
+                catch (Exception)
+                {
                 }
             }
         }
@@ -61,6 +77,17 @@ namespace ContractTools.WebApp
                     return 0;
                 }
                 return Convert.ToInt32(Request.Params["slnID"]);
+            }
+        }
+        protected int VerID
+        {
+            get
+            {
+                if (string.IsNullOrEmpty(Request["VerID"]))
+                {
+                    return 0;
+                }
+                return Convert.ToInt32(Request["VerID"]);
             }
         }
         protected int ContractID
@@ -79,23 +106,24 @@ namespace ContractTools.WebApp
         {
             try
             {
-                
+
                 ContractModel model = new ContractModel();
-                model.ID = Convert.ToInt32((string) txtID.Text.Trim());
+                model.ID = Convert.ToInt32((string)txtID.Text.Trim());
                 model.Descption = txtDescption.Text.Trim();
                 model.ParentID = 1;
                 model.SlnID = SlnID;
+                model.VerID = Convert.ToInt32(ddVersion.Text.Trim());
                 model.AgreementID = ddlAgreement.SelectedValue.ToInt();
                 if (DbDataLoader.Add(model) > 0)
                 {
-                    Response.Redirect(String.Format("index.aspx?ID={0}&slnID={1}", model.ID, model.SlnID));
+                    Response.Redirect(String.Format("index.aspx?ID={0}&slnID={1}&VerID={2}", model.ID, model.SlnID, model.VerID));
                     return;
                 }
 
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
-                Page.RegisterStartupScript("", "<script language=javascript>alert('添加失败,填写重复！')</script>");          
+                Page.RegisterStartupScript("", "<script language=javascript>alert('添加失败,填写重复！')</script>");
             }
         }
     }

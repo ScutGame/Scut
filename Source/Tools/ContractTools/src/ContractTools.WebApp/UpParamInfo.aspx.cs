@@ -27,6 +27,7 @@ using System.Linq;
 using System.Web.UI.WebControls;
 using ContractTools.WebApp.Base;
 using ContractTools.WebApp.Model;
+using ZyGames.Framework.Common;
 
 namespace ContractTools.WebApp
 {
@@ -61,6 +62,17 @@ namespace ContractTools.WebApp
                 return Convert.ToInt32(Request.Params["slnID"]);
             }
         }
+        protected int VerID
+        {
+            get
+            {
+                if (string.IsNullOrEmpty(Request["VerID"]))
+                {
+                    return 0;
+                }
+                return Convert.ToInt32(Request["VerID"]);
+            }
+        }
         protected int ContractID
         {
             get
@@ -77,6 +89,7 @@ namespace ContractTools.WebApp
             ContractModel model = new ContractModel();
             model.ID = ContractID;
             model.SlnID = SlnID;
+            model.VerID = ddVersion.Text.ToInt() ;
             model.Descption = txtDescption.Text.Trim();
             model.AgreementID = Convert.ToInt32((string) ddlAgreement.SelectedValue);
             if (DbDataLoader.Update(model))
@@ -98,15 +111,25 @@ namespace ContractTools.WebApp
 
             if (ddlAgreement.Items.Count == 0)
             {
-                ddlAgreement.Items.Add(new ListItem("无接口分类", "0"));
+                ddlAgreement.Items.Add(new ListItem("选择分类", "0"));
             }
+
+            ddVersion.Items.Clear();
+            var versiontList = DbDataLoader.GetVersion(SlnID);
+            versiontList.Insert(0, new VersionMode() { ID = 0, SlnID = SlnID, Title = "选择版本" });
+            ddVersion.DataSource = versiontList;
+            ddVersion.DataTextField = "Title";
+            ddVersion.DataValueField = "ID";
+            ddVersion.DataBind();
+
             if (!Request.QueryString["ID"].Equals(""))
             {
-                ContractModel model = DbDataLoader.GetContract(SlnID, ContractID);
+                ContractModel model = DbDataLoader.GetContract(SlnID, ContractID, 0);
                 if (model != null)
                 {
                     txtDescption.Text = model.Descption;
                     ddlAgreement.SelectedValue = model.AgreementID.ToString();
+                    ddVersion.SelectedValue = model.VerID.ToString();
                 }
             }
 

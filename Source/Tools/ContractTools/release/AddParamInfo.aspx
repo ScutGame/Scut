@@ -24,6 +24,15 @@
                 </td>
             </tr>
             <tr>
+                <td>
+                    版本
+                </td>
+                <td>
+                    <asp:DropDownList ID="ddVersion" runat="server" Width="150px" AutoPostBack="True" ></asp:DropDownList>
+                    <strong style="color: Red">*</strong>
+                </td>
+            </tr>
+            <tr>
                 <td style="text-align: left">
                     <p style="text-align: left">
                         参数类型</p>

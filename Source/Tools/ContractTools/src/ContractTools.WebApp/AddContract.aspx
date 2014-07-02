@@ -46,7 +46,16 @@ return false;
                         接口分类
                     </td>
                     <td>
-                        <asp:DropDownList ID="ddlAgreement" runat="server" Width="236px" AutoPostBack="True" >
+                        <asp:DropDownList ID="ddlAgreement" runat="server" Width="160px" AutoPostBack="True" >
+                    </asp:DropDownList>
+                    </td>
+                </tr>
+                 <tr>
+                    <td>
+                        版本
+                    </td>
+                    <td>
+                        <asp:DropDownList ID="ddVersion" runat="server" Width="160px" AutoPostBack="True" >
                     </asp:DropDownList>
                     </td>
                 </tr>
@@ -76,8 +85,9 @@ return false;
                         </strong></strong>
                     </td>
                 </tr>
-                <tr>
-                    <td class="style1" colspan="2">
+                <tr><td>
+                    </td>
+                    <td class="style1">
                         <asp:Button ID="butSubmit" runat="server" Text="提交" OnClick="butSubmit_Click" />
                     </td>
                 </tr>

@@ -55,6 +55,18 @@ namespace ContractTools.WebApp
                 return Convert.ToInt32(Request.Params["slnID"]);
             }
         }
+
+        protected int VerID
+        {
+            get
+            {
+                if (string.IsNullOrEmpty(Request.QueryString["VerID"]))
+                {
+                    return 0;
+                }
+                return Convert.ToInt32(Request.Params["VerID"]);
+            }
+        }
         protected int ContractID
         {
             get
@@ -72,6 +84,14 @@ namespace ContractTools.WebApp
         public void Bind()
         {
 
+            ddVersion.Items.Clear();
+            var versiontList = DbDataLoader.GetVersion(SlnID);
+            versiontList.Insert(0, new VersionMode() { ID = 0, SlnID = SlnID, Title = "选择版本" });
+            ddVersion.DataSource = versiontList;
+            ddVersion.DataTextField = "Title";
+            ddVersion.DataValueField = "ID";
+            ddVersion.DataBind();
+            ddVersion.SelectedValue = VerID.ToString();
 
             if (!Request.QueryString["ID"].Equals(""))
             {
@@ -109,8 +129,9 @@ namespace ContractTools.WebApp
             mode.MinValue = Convert.ToInt32((string)txtMinValue.Text.Trim());
             mode.MaxValue = Convert.ToInt32((string)txtMaxValue.Text.Trim());
             mode.CreateDate = DateTime.Now;
+            mode.VerID = ddVersion.Text.ToInt();
 
-            var paramList = DbDataLoader.GetParamInfo(SlnID, ContractID, mode.ParamType).OrderBy(p => p.SortID).ToList();
+            var paramList = DbDataLoader.GetParamInfo(SlnID, ContractID, mode.ParamType, mode.VerID).OrderBy(p => p.SortID).ToList();
             if (paramList.Count == 0 || paramList[0].SortID == 0)
             {
                 mode.SortID = 1;

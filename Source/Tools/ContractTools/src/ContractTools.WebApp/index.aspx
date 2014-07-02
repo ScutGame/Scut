@@ -178,7 +178,7 @@
             </tr>
             <tr align="left" colspan="2">
             <td>
-             <asp:DropDownList ID="ddlAgreement" runat="server" Width="236px" AutoPostBack="True"
+                    <asp:DropDownList ID="ddlAgreement" runat="server" Width="236px" AutoPostBack="True"
                         OnSelectedIndexChanged="ddlAgreement_SelectedIndexChanged">
                     </asp:DropDownList>
                     <span style="padding-left: 40px;">&nbsp;<a href="AgreementList.aspx?GameID=<%=this.ddlSolution.SelectedValue %>" target="_blank">接口分类</a></span>
@@ -186,6 +186,12 @@
                         <asp:HyperLink ID="btnTestCase" runat="server">测试用例</asp:HyperLink>
                     </span>
             </td>
+            </tr>
+            <tr>
+                <td><asp:DropDownList ID="ddVersion" runat="server" Width="236px" AutoPostBack="True" OnSelectedIndexChanged="ddVersion_SelectedIndexChanged">
+                    </asp:DropDownList>
+                    <span style="padding-left: 40px;">&nbsp;<a href="VersionAdd.aspx?GameID=<%=this.ddlSolution.SelectedValue %>" target="_blank">增加版本</a></span>
+                </td>
             </tr>
             <tr>
                 <td align="left" colspan="2">

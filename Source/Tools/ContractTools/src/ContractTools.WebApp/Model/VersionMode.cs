@@ -29,54 +29,19 @@ using System.Text;
 
 namespace ContractTools.WebApp.Model
 {
-    public class ContractModel
+    public class VersionMode
     {
-
-        public int SlnID
-        {
-            get;
-            set;
-        }
+        public int SlnID { get; set; }
 
         public int ID
         {
-            set;
             get;
-        }
-
-        public string Descption
-        {
             set;
-            get;
         }
-
-        public int ParentID
+        public string Title
         {
+            get;
             set;
-            get;
         }
-
-        public bool Complated
-        {
-            set;
-            get;
-        }
-
-        public int AgreementID
-        {
-            set;
-            get;
-        }
-
-        public string Uname
-        {
-            get
-            {
-                return string.Format("{0}_{1}【{2}】", ID, Descption, Complated ? "已完成" : "未完成");
-            }
-        }
-
-        public int VerID { get; set; }
     }
-
 }

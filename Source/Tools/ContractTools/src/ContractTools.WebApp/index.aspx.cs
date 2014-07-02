@@ -67,22 +67,35 @@ namespace ContractTools.WebApp
         {
             if (!IsPostBack)
             {
-                //try
-                //{
-                //    hi_SlnId.Value = SlnID;
-                //}
-                //catch
-                //{
-                //}
-                Bind();
                 try
                 {
+                    Bind();
                     DropGetList.SelectedValue = ContractID;
+                    QueryResult();
                 }
                 catch
                 {
                 }
-                QueryResult();
+            }
+        }
+
+        protected int VerID
+        {
+            get
+            {
+                if (string.IsNullOrEmpty(Request["VerID"]))
+                {
+                    string val = GetCookies(ddlSolution.Text + "_Ver");
+                    int verId;
+                    if (int.TryParse(val, out verId))
+                    {
+                        return verId;
+                    }
+                    return 0;
+                }
+
+                SetCookies(ddlSolution.Text + "_Ver", Request["VerID"]);
+                return Convert.ToInt32(Request["VerID"]);
             }
         }
 
@@ -146,18 +159,21 @@ namespace ContractTools.WebApp
 
             int gameId = ddlSolution.SelectedValue.ToInt();
             BindAgreement(gameId);
-            BindContractTree(gameId);
+            BindVersion(gameId);
+            ddVersion.SelectedValue = VerID.ToString();
+            int verId = ddVersion.Text.ToInt();
+            BindContractTree(gameId, verId);
 
 
             if (ddlSolution.Text.Length > 0)
             {
-                BindContract(Convert.ToInt32((string)ddlSolution.Text));
+                BindContract(ddlSolution.Text.ToInt(), ddVersion.Text.ToInt());
             }
         }
 
-        private void BindContractTree(int gameId)
+        private void BindContractTree(int gameId, int versionId)
         {
-            var contractList = DbDataLoader.GetContract(gameId);
+            var contractList = DbDataLoader.GetContract(gameId, versionId);
             foreach (var contract in contractList)
             {
                 if (contract.AgreementID > 0)
@@ -181,7 +197,7 @@ namespace ContractTools.WebApp
         private void BindAgreement(int gameId)
         {
             ddlAgreement.Items.Clear();
-            ddlAgreement.Items.Add(new ListItem("全部", "0"));
+            ddlAgreement.Items.Add(new ListItem("选择分类", "0"));
             var agreementList = DbDataLoader.GetAgreement(gameId);
             TreeList.Nodes.Clear();
             leftStyle = "display:none;";
@@ -200,11 +216,22 @@ namespace ContractTools.WebApp
             TreeList.DataBind();
             ddlAgreement.SelectedValue = "0";
         }
+        private void BindVersion(int gameId)
+        {
+            ddVersion.Items.Clear();
+            ddVersion.Items.Add(new ListItem("选择版本", "0"));
+            var versionList = DbDataLoader.GetVersion(gameId);
+            foreach (var version in versionList)
+            {
+                ddVersion.Items.Add(new ListItem(version.Title, version.ID.ToString()));
+            }
+            ddVersion.SelectedValue = "0";
+        }
 
-        private void BindContract(int slnID)
+        private void BindContract(int slnID, int versionId)
         {
             DropGetList.Items.Clear();
-            var contractList = DbDataLoader.GetContract(slnID);
+            var contractList = DbDataLoader.GetContract(slnID, versionId);
             if (contractList.Count > 0)
             {
                 DropGetList.DataSource = contractList;
@@ -234,7 +261,7 @@ namespace ContractTools.WebApp
                 var reqParams = paramList.Where(p => p.ParamType == 1).OrderBy(p => p.SortID).ToList();
                 var respParams = paramList.Where(p => p.ParamType == 2).OrderBy(p => p.SortID).ToList();
                 int contractId = DropGetList.Text.ToInt();
-                string parameter = string.Format("?ID={0}&slnID={1}", contractId, ddlSolution.Text);
+                string parameter = string.Format("?ID={0}&slnID={1}&VerID={2}", contractId, ddlSolution.Text, ddVersion.Text);
                 UnitTestLink.NavigateUrl = "UnitTest.aspx" + parameter;
                 AddRecordLink.NavigateUrl = "AddParamInfo.aspx" + parameter;
                 AddProtocolLink.NavigateUrl = "AddContract.aspx" + parameter;
@@ -246,13 +273,14 @@ namespace ContractTools.WebApp
                 syncLink.NavigateUrl = "SyncModelInfo.aspx" + parameter;
                 btnTestCase.NavigateUrl = "TestCase.aspx" + parameter;
                 btnTestCase.Target = "_blank";
-                string tileName = DropGetList.SelectedItem.Text;
-                int index = tileName.IndexOf("【");
+                string tileName = (DropGetList.SelectedItem == null ? "" : DropGetList.SelectedItem.Text) ?? "";
+                int index = tileName.IndexOf("【", System.StringComparison.Ordinal);
                 if (index != -1)
                 {
                     tileName = tileName.Substring(0, index);
                 }
                 int slnId = ddlSolution.Text.ToInt();
+                int verId = ddVersion.Text.ToInt();
                 if (gvGetlist.Rows.Count != 0)
                 {
                     txtContent.Visible = true;
@@ -270,7 +298,7 @@ namespace ContractTools.WebApp
                         string tempActionDefine = TemplateHelper.ReadTemp(Path.Combine(Server.MapPath("~"), "Template/ActionIDDefine.txt"));
 
                         txtContent.Text = TemplateHelper.FormatTemp(tempContent, contractId, respParams, reqParams, slnRecord, tileName);
-                        var contractDs = DbDataLoader.GetContract(slnId);
+                        var contractDs = DbDataLoader.GetContract(slnId, verId);
                         txtActionDefine.Text = TemplateHelper.FormatActionDefineTemp(tempActionDefine, contractDs, slnRecord);
                         txtActionDefine.Visible = true;
                     }
@@ -317,7 +345,7 @@ namespace ContractTools.WebApp
         {
             int slnId = ddlSolution.Text.ToInt();
             int conId = DropGetList.Text.ToInt();
-            return DbDataLoader.GetParamInfo(slnId, conId);
+            return DbDataLoader.GetParamInfo(slnId, conId, ddVersion.Text.ToInt());
         }
 
         protected void gvGetlist_RowEditing(object sender, GridViewEditEventArgs e)
@@ -495,6 +523,17 @@ namespace ContractTools.WebApp
 
                     if (paramInfo != null)
                     {
+                        if (paramInfo.FieldType == FieldType.Record || paramInfo.FieldType == FieldType.End)
+                        {
+                            e.Row.Font.Italic = true;
+                            e.Row.Font.Bold = true;
+                        }
+                        if (paramInfo.VerID < ddVersion.Text.ToInt())
+                        {
+                            e.Row.Font.Italic = true;
+                            e.Row.ForeColor = Color.White;
+                            e.Row.BackColor = Color.SlateGray;
+                        }
                         DateTime modifyTime = (DateTime)paramInfo.ModifyDate;
                         if (DateTime.Now - modifyTime < TimeSpan.FromDays(3))
                         {
@@ -627,7 +666,7 @@ namespace ContractTools.WebApp
         protected void ddlSolution_SelectedIndexChanged(object sender, EventArgs e)
         {
             SetCookies(string.Empty, ddlSolution.Text);
-            BindContract(Convert.ToInt32((string)ddlSolution.SelectedValue));
+            BindContract(ddlSolution.Text.ToInt(), ddVersion.Text.ToInt());
             try
             {
                 if (!string.IsNullOrEmpty(GetCookies(ddlSolution.Text)))
@@ -647,11 +686,12 @@ namespace ContractTools.WebApp
 
             int gameId = ddlSolution.SelectedValue.ToInt();
             BindAgreement(gameId);
-            BindContractTree(gameId);
+            int verId = ddVersion.Text.ToInt();
+            BindContractTree(gameId, verId);
         }
         protected void ddlAgreement_SelectedIndexChanged(object sender, EventArgs e)
         {
-            var list = DbDataLoader.GetContractByAgreement(ddlSolution.SelectedValue.ToInt(), ddlAgreement.SelectedValue.ToInt());
+            var list = DbDataLoader.GetContractByAgreement(ddlSolution.Text.ToInt(), ddlAgreement.Text.ToInt(), ddVersion.Text.ToInt());
             if (list.Count > 0)
             {
                 DropGetList.DataSource = list;
@@ -667,7 +707,10 @@ namespace ContractTools.WebApp
         }
         protected void btnConfig_Click(object sender, EventArgs e)
         {
-            string url = string.Format("ClientConfigInfo.aspx?ID={0}&SlnID={1}", DropGetList.Text.Length == 0 ? "0" : DropGetList.Text, ddlSolution.Text.Length == 0 ? "0" : ddlSolution.Text);
+            string url = string.Format("ClientConfigInfo.aspx?ID={0}&SlnID={1}&VerID={2}",
+                DropGetList.Text.Length == 0 ? "0" : DropGetList.Text,
+                ddlSolution.Text.Length == 0 ? "0" : ddlSolution.Text,
+                ddVersion.Text);
             Response.Redirect(url, false);
         }
 
@@ -734,6 +777,13 @@ namespace ContractTools.WebApp
                 SetCookies(ddlSolution.Text, DropGetList.Text);
                 QueryResult();
             }
+        }
+
+        protected void ddVersion_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            BindContract(ddlSolution.Text.ToInt(), ddVersion.Text.ToInt());
+            QueryResult();
+            SetCookies(ddlSolution.Text + "_Ver", ddVersion.Text);
         }
 
     }

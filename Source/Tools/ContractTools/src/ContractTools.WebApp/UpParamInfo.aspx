@@ -21,19 +21,28 @@
                 </tr>
                 <tr>
                     <td>
-                        接口分类
-                    </td>
-                    <td>
-                        <asp:DropDownList ID="ddlAgreement" runat="server" Width="236px" >
-                    </asp:DropDownList>
-                    </td>
-                </tr>
-                <tr>
-                    <td>
                         协议ID
                     </td>
                     <td class="style5">
                         <asp:Label ID="IdLabel" runat="server"></asp:Label>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        接口分类
+                    </td>
+                    <td>
+                        <asp:DropDownList ID="ddlAgreement" runat="server" Width="160px" >
+                    </asp:DropDownList>
+                    </td>
+                </tr>
+                 <tr>
+                    <td>
+                        版本
+                    </td>
+                    <td>
+                        <asp:DropDownList ID="ddVersion" runat="server" Width="160px" AutoPostBack="True" >
+                    </asp:DropDownList>
                     </td>
                 </tr>
                 <tr>
@@ -46,7 +55,9 @@
                     </td>
                 </tr>
                 <tr>
-                    <td class="style1" colspan="2">
+                    <td>
+                    </td>
+                    <td class="style1">
                         <asp:Button ID="butSubmit" runat="server" Text="修改" OnClick="butSubmit_Click" />
                     </td>
                 </tr>

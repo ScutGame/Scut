@@ -121,3 +121,17 @@ CREATE TABLE [Contract](
 )WITH (PAD_INDEX  = OFF, STATISTICS_NORECOMPUTE  = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS  = ON, ALLOW_PAGE_LOCKS  = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 
+go
+create table ContractVersion
+(
+	ID	int identity(1,1),
+	Title	varchar(100),
+	SlnID	int not null,
+	primary key(id)
+)
+
+go
+
+alter table [Contract] add [VerId] int not null default(0);
+alter table [ParamInfo] add [VerId] int not null default(0);
+go

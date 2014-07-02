@@ -122,5 +122,15 @@ CREATE TABLE `solutions` (
 -- Records of solutions
 -- ----------------------------
 
+create table ContractVersion
+(
+  `ID`	int(11) NOT NULL AUTO_INCREMENT,
+  `Title`	varchar(100),
+  `SlnID`	int not null,
+  primary key(`ID`)
+) ENGINE=InnoDB DEFAULT CHARSET=gbk;
+
+alter table `Contract` add `VerId` int not null default '0';
+alter table `ParamInfo` add `VerId` int not null default '0';
 
 select 'create table successfully!';

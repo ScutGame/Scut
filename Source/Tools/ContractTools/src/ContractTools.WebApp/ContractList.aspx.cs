@@ -51,6 +51,17 @@ namespace ContractTools.WebApp
                 return Convert.ToInt32(Request.Params["slnID"]);
             }
         }
+        protected int VerID
+        {
+            get
+            {
+                if (string.IsNullOrEmpty(Request["VerID"]))
+                {
+                    return 0;
+                }
+                return Convert.ToInt32(Request["VerID"]);
+            }
+        }
         protected int ContractID
         {
             get
@@ -79,7 +90,7 @@ namespace ContractTools.WebApp
             }
 
             ddContract.Items.Clear();
-            var contractList = DbDataLoader.GetContract(slnID);
+            var contractList = DbDataLoader.GetContract(slnID, VerID);
             if (contractList.Count > 0)
             {
                 ddContract.DataSource = contractList;

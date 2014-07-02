@@ -163,5 +163,12 @@ namespace ContractTools.WebApp.Model
             get;
             set;
         }
+        
+        public int VerID
+        {
+            get;
+            set;
+        }
+
     }
 }

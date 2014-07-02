@@ -21,62 +21,46 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ****************************************************************************/
-
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+using ContractTools.WebApp.Base;
+using ContractTools.WebApp.Model;
+using ZyGames.Framework.Common.Log;
 
-namespace ContractTools.WebApp.Model
+namespace ContractTools.WebApp
 {
-    public class ContractModel
+    /// <summary>
+    /// 增加版本
+    /// </summary>
+    public partial class VersionAdd : System.Web.UI.Page
     {
 
-        public int SlnID
+        protected void Page_Load(object sender, EventArgs e)
         {
-            get;
-            set;
-        }
-
-        public int ID
-        {
-            set;
-            get;
-        }
-
-        public string Descption
-        {
-            set;
-            get;
-        }
-
-        public int ParentID
-        {
-            set;
-            get;
-        }
-
-        public bool Complated
-        {
-            set;
-            get;
-        }
-
-        public int AgreementID
-        {
-            set;
-            get;
-        }
-
-        public string Uname
-        {
-            get
+            if (!IsPostBack)
             {
-                return string.Format("{0}_{1}【{2}】", ID, Descption, Complated ? "已完成" : "未完成");
+               
             }
         }
 
-        public int VerID { get; set; }
-    }
+        protected void butSubmit_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                VersionMode model = new VersionMode();
+                model.Title = Title.Text.Trim();
+                model.SlnID = Convert.ToInt32(Request.QueryString["gameid"]);
+                if (DbDataLoader.Add(model) > 0)
+                {
+                    Page.RegisterStartupScript("", "<script language=javascript>alert('添加成功！')</script>");      
+                }
 
+            }
+            catch(Exception ex)
+            {
+                TraceLog.WriteError("AgreementAdd:{0}", ex);
+                Page.RegisterStartupScript("", "<script language=javascript>alert('添加失败,填写重复！')</script>");          
+            }
+        }
+
+    }
 }

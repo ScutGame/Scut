@@ -23,6 +23,7 @@ THE SOFTWARE.
 ****************************************************************************/
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
@@ -46,6 +47,17 @@ namespace ContractTools.WebApp.Base
         }
 
         #region SolutionModel
+
+        public static int Add(VersionMode model)
+        {
+            var command = _dbBaseProvider.CreateCommandStruct("ContractVersion", CommandMode.Insert);
+            command.AddParameter("SlnID", model.SlnID);
+            command.AddParameter("Title", model.Title);
+            command.ReturnIdentity = true;
+            command.Parser();
+            return _dbBaseProvider.ExecuteQuery(CommandType.Text, command.Sql, command.Parameters);
+
+        }
 
         public static int Add(SolutionModel model)
         {
@@ -226,6 +238,7 @@ namespace ContractTools.WebApp.Base
             command.AddParameter("SlnID", model.SlnID);
             command.AddParameter("Complated", model.Complated);
             command.AddParameter("AgreementID", model.AgreementID);
+            command.AddParameter("VerId", model.VerID);
             command.Parser();
             return _dbBaseProvider.ExecuteQuery(CommandType.Text, command.Sql, command.Parameters);
         }
@@ -250,6 +263,10 @@ namespace ContractTools.WebApp.Base
             command.AddParameter("Descption", model.Descption);
             command.AddParameter("ParentID", model.ParentID);
             command.AddParameter("Complated", model.Complated);
+            if (model.VerID > 0)
+            {
+                command.AddParameter("VerId", model.VerID);
+            }
             if (model.AgreementID > 0)
             {
                 command.AddParameter("AgreementID", model.AgreementID);
@@ -281,32 +298,45 @@ namespace ContractTools.WebApp.Base
             return false;
         }
 
-        public static List<ContractModel> GetContract(int slnId)
+        public static List<ContractModel> GetContract(int slnId, int versionId)
         {
             return GetContract(f =>
             {
-                f.Condition = f.FormatExpression("SlnID");
+                if (versionId > 0)
+                {
+                    f.Condition = string.Format("{0} AND ", f.FormatExpression("VerId", "<="));
+                    f.AddParam("VerId", versionId);
+                }
+                f.Condition += f.FormatExpression("SlnID");
                 f.AddParam("SlnID", slnId);
             });
         }
 
-        public static ContractModel GetContract(int slnId, int contractId)
+        public static ContractModel GetContract(int slnId, int contractId, int versionId)
         {
             return GetContract(f =>
             {
-                f.Condition = string.Format("{0} AND {1}",
-                    f.FormatExpression("ID"),
-                    f.FormatExpression("SlnID"));
+                if (versionId > 0)
+                {
+                    f.Condition = string.Format("{0} AND ", f.FormatExpression("VerId", "<="));
+                    f.AddParam("VerId", versionId);
+                }
+                f.Condition += string.Format("{0} AND {1}", f.FormatExpression("ID"), f.FormatExpression("SlnID"));
                 f.AddParam("ID", contractId);
                 f.AddParam("SlnID", slnId);
             }).FirstOrDefault();
         }
 
-        public static List<ContractModel> GetContractByAgreement(int slnId, int agreementID)
+        public static List<ContractModel> GetContractByAgreement(int slnId, int agreementID, int versionId)
         {
             return GetContract(f =>
             {
-                f.Condition = f.FormatExpression("SlnID");
+                if (versionId > 0)
+                {
+                    f.Condition = string.Format("{0} AND ", f.FormatExpression("VerId", "<="));
+                    f.AddParam("VerId", versionId);
+                }
+                f.Condition += f.FormatExpression("SlnID");
                 f.AddParam("SlnID", slnId);
                 if (agreementID > 0)
                 {
@@ -320,7 +350,7 @@ namespace ContractTools.WebApp.Base
         public static List<ContractModel> GetContract(Action<CommandFilter> match)
         {
             var command = _dbBaseProvider.CreateCommandStruct("Contract", CommandMode.Inquiry);
-            command.Columns = "ID,Descption,ParentID,SlnID,Complated,AgreementID";
+            command.Columns = "ID,Descption,ParentID,SlnID,Complated,AgreementID,VerId";
             command.OrderBy = "SlnID ASC,ID ASC";
             command.Filter = _dbBaseProvider.CreateCommandFilter();
             if (match != null)
@@ -340,6 +370,7 @@ namespace ContractTools.WebApp.Base
                     model.SlnID = reader["SlnID"].ToInt();
                     model.Complated = reader["Complated"].ToBool();
                     model.AgreementID = reader["AgreementID"].ToInt();
+                    model.VerID = reader["VerId"].ToInt();
                     list.Add(model);
                 }
             }
@@ -348,7 +379,7 @@ namespace ContractTools.WebApp.Base
 
         public static bool CopyContract(int slnID, int contractID, int copySlnID, int copyContractID)
         {
-            var contract = GetContract(slnID, contractID);
+            var contract = GetContract(slnID, contractID, 0);
             if (contract == null)
             {
                 return false;
@@ -366,7 +397,7 @@ namespace ContractTools.WebApp.Base
 
             if (Add(contractcopy) > 0)
             {
-                var paramList = GetParamInfo(slnID, contractID);
+                var paramList = GetParamInfo(slnID, contractID, 0);
                 foreach (var paramInfo in paramList)
                 {
                     var info = new ParamInfoModel()
@@ -425,6 +456,7 @@ namespace ContractTools.WebApp.Base
             command.AddParameter("ModifyDate", model.ModifyDate);
             command.AddParameter("MinValue", model.MinValue);
             command.AddParameter("MaxValue", model.MaxValue);
+            command.AddParameter("VerID", model.VerID);
             command.Parser();
             return _dbBaseProvider.ExecuteQuery(CommandType.Text, command.Sql, command.Parameters);
         }
@@ -461,6 +493,10 @@ namespace ContractTools.WebApp.Base
             command.AddParameter("MinValue", model.MinValue);
             command.AddParameter("MaxValue", model.MaxValue);
             command.AddParameter("ModifyDate", model.ModifyDate);
+            if (model.VerID > 0)
+            {
+                command.AddParameter("VerID", model.VerID);
+            }
             command.Filter = _dbBaseProvider.CreateCommandFilter();
             command.Filter.Condition = _dbBaseProvider.FormatFilterParam("ID");
             command.Filter.AddParam("ID", model.ID);
@@ -489,11 +525,16 @@ namespace ContractTools.WebApp.Base
             return _dbBaseProvider.ExecuteQuery(CommandType.Text, command.Sql, command.Parameters) > 0;
         }
 
-        public static List<ParamInfoModel> GetParamInfo(int slnId, int contractId, int paramType)
+        public static List<ParamInfoModel> GetParamInfo(int slnId, int contractId, int paramType, int versionId)
         {
             return GetParamInfo(f =>
             {
-                f.Condition = string.Format("{0} AND {1} AND {2}",
+                if (versionId > 0)
+                {
+                    f.Condition = string.Format("{0} AND ", f.FormatExpression("VerID", "<="));
+                    f.AddParam("VerID", versionId);
+                }
+                f.Condition += string.Format("{0} AND {1} AND {2}",
                     f.FormatExpression("ContractID"),
                     f.FormatExpression("SlnID"),
                     f.FormatExpression("ParamType"));
@@ -503,11 +544,16 @@ namespace ContractTools.WebApp.Base
             });
         }
 
-        public static List<ParamInfoModel> GetParamInfo(int slnId, int contractId)
+        public static List<ParamInfoModel> GetParamInfo(int slnId, int contractId, int versionId)
         {
             return GetParamInfo(f =>
             {
-                f.Condition = string.Format("{0} AND {1}",
+                if (versionId > 0)
+                {
+                    f.Condition = string.Format("{0} AND ", f.FormatExpression("VerID", "<="));
+                    f.AddParam("VerID", versionId);
+                }
+                f.Condition += string.Format("{0} AND {1}",
                     f.FormatExpression("ContractID"),
                     f.FormatExpression("SlnID"));
                 f.AddParam("ContractID", contractId);
@@ -518,7 +564,7 @@ namespace ContractTools.WebApp.Base
         public static List<ParamInfoModel> GetParamInfo(Action<CommandFilter> match)
         {
             var command = _dbBaseProvider.CreateCommandStruct("ParamInfo", CommandMode.Inquiry);
-            command.Columns = "ID,SlnID,ContractID,ParamType,Field,FieldType,Descption,FieldValue,Required,Remark,SortID,Creator,CreateDate,Modifier,ModifyDate,MinValue,MaxValue";
+            command.Columns = "ID,SlnID,ContractID,ParamType,Field,FieldType,Descption,FieldValue,Required,Remark,SortID,Creator,CreateDate,Modifier,ModifyDate,MinValue,MaxValue,VerID";
             command.OrderBy = "PARAMTYPE ASC,SORTID ASC,ID ASC";
             command.Filter = _dbBaseProvider.CreateCommandFilter();
             if (match != null)
@@ -549,7 +595,7 @@ namespace ContractTools.WebApp.Base
                     model.ModifyDate = reader["ModifyDate"].ToDateTime();
                     model.MinValue = reader["MinValue"].ToInt();
                     model.MaxValue = reader["MaxValue"].ToInt();
-
+                    model.VerID = reader["VerID"].ToInt();
                     list.Add(model);
                 }
             }
@@ -638,5 +684,26 @@ namespace ContractTools.WebApp.Base
 
         #endregion
 
+        public static List<VersionMode> GetVersion(int gameId)
+        {
+            var command = _dbBaseProvider.CreateCommandStruct("ContractVersion", CommandMode.Inquiry);
+            command.Columns = "ID,SlnID,Title";
+            command.OrderBy = "SlnID ASC,ID ASC";
+            command.Filter = _dbBaseProvider.CreateCommandFilter();
+            command.Parser();
+            var list = new List<VersionMode>();
+            using (var reader = _dbBaseProvider.ExecuteReader(CommandType.Text, command.Sql, command.Parameters))
+            {
+                while (reader.Read())
+                {
+                    VersionMode model = new VersionMode();
+                    model.ID = reader["ID"].ToInt();
+                    model.SlnID = reader["SlnID"].ToInt();
+                    model.Title = reader["Title"].ToNotNullString();
+                    list.Add(model);
+                }
+            }
+            return list;
+        }
     }
 }

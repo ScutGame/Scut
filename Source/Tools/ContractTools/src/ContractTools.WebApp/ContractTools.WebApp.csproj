@@ -166,6 +166,7 @@
     <Compile Include="Model\ParamInfoModel.cs" />
     <Compile Include="Model\ParamType.cs" />
     <Compile Include="Model\SolutionModel.cs" />
+    <Compile Include="Model\VersionMode.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Search.aspx.cs">
       <DependentUpon>Search.aspx</DependentUpon>
@@ -209,6 +210,12 @@
     <Compile Include="UpParamInfo.aspx.designer.cs">
       <DependentUpon>UpParamInfo.aspx</DependentUpon>
     </Compile>
+    <Compile Include="VersionAdd.aspx.cs">
+      <DependentUpon>VersionAdd.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="VersionAdd.aspx.designer.cs">
+      <DependentUpon>VersionAdd.aspx</DependentUpon>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <Content Include="AddContract.aspx" />
@@ -232,6 +239,7 @@
     <Content Include="Template\pythonmodel.txt" />
     <Content Include="UnitTest.aspx" />
     <Content Include="UpParamInfo.aspx" />
+    <Content Include="VersionAdd.aspx" />
     <Content Include="Web.config">
       <SubType>Designer</SubType>
     </Content>

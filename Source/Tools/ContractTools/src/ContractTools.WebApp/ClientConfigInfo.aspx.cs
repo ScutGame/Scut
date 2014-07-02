@@ -51,6 +51,17 @@ namespace ContractTools.WebApp
                 return Convert.ToInt32(Request.Params["slnID"]);
             }
         }
+        protected int VerID
+        {
+            get
+            {
+                if (string.IsNullOrEmpty(Request["VerID"]))
+                {
+                    return 0;
+                }
+                return Convert.ToInt32(Request["VerID"]);
+            }
+        }
         protected int ContractID
         {
             get
@@ -71,7 +82,7 @@ namespace ContractTools.WebApp
                 var slnModel = DbDataLoader.GetSolution(SlnID);
                 this.txtServerUrl.Text = slnModel == null ? "" : slnModel.Url;
                 ddlContract.Items.Clear();
-                var contractList = DbDataLoader.GetContract(SlnID);
+                var contractList = DbDataLoader.GetContract(SlnID, VerID);
                 if (contractList.Count > 0)
                 {
                     ddlContract.DataSource = contractList;
@@ -87,8 +98,8 @@ namespace ContractTools.WebApp
         {
             int contractID = int.Parse(ddlContract.Text);
             MessageHead msg = new MessageHead();
-            
-            var paramList = DbDataLoader.GetParamInfo(SlnID, contractID);
+
+            var paramList = DbDataLoader.GetParamInfo(SlnID, contractID, VerID);
             string requestParams = GetRequestParams(paramList, contractID, txtVersion.Text);
             string serverUrl = txtServerUrl.Text;
             string[] keyNames = txtKeyName.Text.Split(new char[] { ',' });
