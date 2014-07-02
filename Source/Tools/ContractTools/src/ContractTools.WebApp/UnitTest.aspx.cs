@@ -446,7 +446,7 @@ namespace ContractTools.WebApp
                                     if (i == 0)
                                         headContent.AppendFormat("<td align=\"center\"><strong>{0}</strong>({1})</td>",
                                                                  fieldName, fieldType);
-                                    builderContent.AppendFormat("<td align=\"center\">&nbsp;{0}</td>", fieldValue);
+                                    builderContent.AppendFormat("<td align=\"center\">&nbsp;{0}</td>", (fieldValue ?? "").Replace("{", "%7B").Replace("}", "%7D"));
                                     columnNum++;
                                 }
                                 if (fieldType == FieldType.Record)
@@ -481,6 +481,7 @@ namespace ContractTools.WebApp
                 catch (Exception ex)
                 {
                     builderContent.AppendFormat("<tr><td align=\"left\">{0}行出错{1}</td></tr>", (i + 1), ex.Message);
+                    break; //读流出错，直接退出
                 }
             }
 
