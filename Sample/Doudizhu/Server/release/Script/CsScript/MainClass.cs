@@ -37,6 +37,7 @@ using ZyGames.Framework.Game.Com.Rank;
 using ZyGames.Framework.Game.Context;
 using ZyGames.Framework.Game.Contract;
 using ZyGames.Framework.Game.Runtime;
+using ZyGames.Framework.RPC.Sockets;
 using ZyGames.Framework.Script;
 
 namespace Game.Script
@@ -49,6 +50,18 @@ namespace Game.Script
         protected override BaseUser GetUser(int userId)
         {
             return (BaseUser)CacheFactory.GetPersonalEntity("ZyGames.Doudizhu.Model.GameUser", userId.ToString(), userId);
+        }
+
+        protected override void OnConnectCompleted(object sender, ConnectionEventArgs e)
+        {
+            Console.WriteLine("客户端IP:[{0}]已与服务器连接成功", e.Socket.RemoteEndPoint);
+            base.OnConnectCompleted(sender, e);
+        }
+
+        protected override void OnDisconnected(GameSession session)
+        {
+            Console.WriteLine("客户端UserId:[{0}]已与服务器断开", session.UserId);
+            base.OnDisconnected(session);
         }
 
         protected override void OnStartAffer()
