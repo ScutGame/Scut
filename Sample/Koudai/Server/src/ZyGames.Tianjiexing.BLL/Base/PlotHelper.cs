@@ -538,6 +538,7 @@ namespace ZyGames.Tianjiexing.BLL.Base
                         {
                             if (item.Type == 0)
                             {
+                                item.RemoveParentEvent();
                                 itemList.Add(item);
                             }
                             return true;

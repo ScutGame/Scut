@@ -16,8 +16,6 @@ from ZyGames.Framework.Cache.Generic import *
 from ZyGames.Tianjiexing.Model.Config import *
 class UrlParam():
     Result = True;
-    parent.ErrorCode = 0;
-    parent.ErrorInfo = "";
     Ops = 0;
     MultipleType = 1;
     GeneralID = 0;
