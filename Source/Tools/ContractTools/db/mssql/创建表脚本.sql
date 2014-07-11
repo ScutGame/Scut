@@ -27,7 +27,7 @@ GO
 SET QUOTED_IDENTIFIER ON
 GO
 CREATE TABLE [Solutions](
-	[SlnID] [int] IDENTITY(1,1) NOT NULL,
+	[SlnID] [int] IDENTITY(100,1) NOT NULL,
 	[SlnName] [varchar](100) NOT NULL,
 	[Namespace] [varchar](200) NULL,
 	[RefNamespace] [varchar](200) NULL,
@@ -45,7 +45,7 @@ GO
 SET QUOTED_IDENTIFIER ON
 GO
 CREATE TABLE [ParamInfo](
-	[ID] [int] IDENTITY(1,1) NOT NULL,
+	[ID] [int] IDENTITY(17000,1) NOT NULL,
 	[ContractID] [int] NOT NULL,
 	[ParamType] [smallint] NOT NULL,
 	[Field] [varchar](30) NOT NULL,
@@ -74,7 +74,7 @@ GO
 SET QUOTED_IDENTIFIER ON
 GO
 CREATE TABLE [enuminfo](
-	[id] [int] IDENTITY(1,1) NOT NULL,
+	[id] [int] IDENTITY(1000,1) NOT NULL,
 	[SlnID] [int] NOT NULL,
 	[enumName] [nvarchar](50) NOT NULL,
 	[enumDescription] [nvarchar](200) NULL,
@@ -91,7 +91,7 @@ GO
 SET QUOTED_IDENTIFIER ON
 GO
 CREATE TABLE [AgreementClass](
-	[AgreementID] [int] IDENTITY(1,1) NOT NULL,
+	[AgreementID] [int] IDENTITY(100,1) NOT NULL,
 	[GameID] [int] NULL,
 	[Title] [varchar](200) NULL,
 	[Describe] [varchar](max) NULL,

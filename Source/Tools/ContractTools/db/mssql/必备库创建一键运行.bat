@@ -29,6 +29,8 @@ exit
 
 Sqlcmd -S %dbServer% -U %dbAcount% -P %dbPass% -d master -i 创建表脚本.sql -v gameuser="%gameuser%" dbpath="%dbpath%" 
 @echo 正在创建数据库成功!
-
+@echo 正在导入数据...
+Sqlcmd -S %dbServer% -U %dbAcount% -P %dbPass% -d master -i ScutContractData.sql -v gameuser="%gameuser%" dbpath="%dbpath%"
+@echo 导入数据成功!
 @echo 执行成功
 ECHO 运行结束！& PAUSE
