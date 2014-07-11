@@ -167,17 +167,24 @@
             </summary>
             <typeparam name="T">类型EventArgs的子类</typeparam>
         </member>
-        <member name="M:ZyGames.Framework.Common.Event.CustomEvent`1.AddSingle(ZyGames.Framework.Common.Event.CustomEventHandle{`0})">
+        <member name="M:ZyGames.Framework.Common.Event.CustomEvent`1.Reset">
+            <summary>
+            Reset event
+            </summary>
+        </member>
+        <member name="M:ZyGames.Framework.Common.Event.CustomEvent`1.AddSingle(ZyGames.Framework.Common.Event.CustomEventHandle{`0},System.Object)">
             <summary>
             注册单一事件
             </summary>
             <param name="handle"></param>
+            <param name="target"></param>
         </member>
-        <member name="M:ZyGames.Framework.Common.Event.CustomEvent`1.Add(ZyGames.Framework.Common.Event.CustomEventHandle{`0})">
+        <member name="M:ZyGames.Framework.Common.Event.CustomEvent`1.Add(ZyGames.Framework.Common.Event.CustomEventHandle{`0},System.Object)">
             <summary>
             增加事件
             </summary>
             <param name="handle"></param>
+            <param name="target"></param>
         </member>
         <member name="M:ZyGames.Framework.Common.Event.CustomEvent`1.Remove(ZyGames.Framework.Common.Event.CustomEventHandle{`0})">
             <summary>
@@ -204,6 +211,11 @@
             释放对象
             </summary>
             <param name="disposing"></param>
+        </member>
+        <member name="P:ZyGames.Framework.Common.Event.CustomEvent`1.Parent">
+            <summary>
+            父类对象引用
+            </summary>
         </member>
         <member name="T:ZyGames.Framework.Common.HttpUtils">
             <summary>

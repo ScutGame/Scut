@@ -2345,6 +2345,17 @@
             <summary>
             获取Action处理的输出字节流
             </summary>
+            <param name="actionDispatcher"></param>
+            <param name="actionId"></param>
+            <param name="baseUser"></param>
+            <param name="urlParam"></param>
+            <param name="actionGetter"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ZyGames.Framework.Game.Contract.ActionFactory.GetActionResponse(ZyGames.Framework.Game.Contract.IActionDispatcher,System.Int32,ZyGames.Framework.Game.Context.BaseUser,ZyGames.Framework.Game.Service.ActionGetter)">
+            <summary>
+            获取Action处理的输出字节流
+            </summary>
             <returns></returns>
         </member>
         <member name="M:ZyGames.Framework.Game.Contract.ActionFactory.Process(ZyGames.Framework.Game.Service.BaseStruct,ZyGames.Framework.Game.Service.ActionGetter,ZyGames.Framework.Game.Service.BaseGameResponse,System.Func{System.Int32,ZyGames.Framework.Game.Context.BaseUser})">
@@ -3058,12 +3069,19 @@
             
             </summary>
         </member>
+        <member name="P:ZyGames.Framework.Game.Service.ActionGetter.Item(System.String)">
+            <summary>
+            
+            </summary>
+            <param name="key"></param>
+            <returns></returns>
+        </member>
         <member name="T:ZyGames.Framework.Game.Contract.Action.AndroidPayAction">
             <summary>
             触控安卓充值
             </summary>
         </member>
-        <member name="M:ZyGames.Framework.Game.Contract.Action.AndroidPayAction.#ctor(System.Int16,ZyGames.Framework.Game.Contract.HttpGet)">
+        <member name="M:ZyGames.Framework.Game.Contract.Action.AndroidPayAction.#ctor(System.Int16,ZyGames.Framework.Game.Service.ActionGetter)">
             <summary>
             Initializes a new instance of the <see cref="T:ZyGames.Framework.Game.Contract.Action.AndroidPayAction"/> class.
             </summary>
@@ -3092,7 +3110,7 @@
             App store detail action.
             </summary>
         </member>
-        <member name="M:ZyGames.Framework.Game.Contract.Action.AppStoreDetailAction.#ctor(System.Int16,ZyGames.Framework.Game.Contract.HttpGet)">
+        <member name="M:ZyGames.Framework.Game.Contract.Action.AppStoreDetailAction.#ctor(System.Int16,ZyGames.Framework.Game.Service.ActionGetter)">
             <summary>
             Initializes a new instance of the <see cref="T:ZyGames.Framework.Game.Contract.Action.AppStoreDetailAction"/> class.
             </summary>
@@ -3121,7 +3139,7 @@
             Appstor 充值
             </summary>
         </member>
-        <member name="M:ZyGames.Framework.Game.Contract.Action.AppStorePayAction.#ctor(System.Int16,ZyGames.Framework.Game.Contract.HttpGet)">
+        <member name="M:ZyGames.Framework.Game.Contract.Action.AppStorePayAction.#ctor(System.Int16,ZyGames.Framework.Game.Service.ActionGetter)">
             <summary>
             Initializes a new instance of the <see cref="T:ZyGames.Framework.Game.Contract.Action.AppStorePayAction"/> class.
             </summary>
@@ -3344,7 +3362,7 @@
             The login proxy.
             </summary>
         </member>
-        <member name="M:ZyGames.Framework.Game.Contract.Action.LoginAction.#ctor(System.Int16,ZyGames.Framework.Game.Contract.HttpGet)">
+        <member name="M:ZyGames.Framework.Game.Contract.Action.LoginAction.#ctor(System.Int16,ZyGames.Framework.Game.Service.ActionGetter)">
             <summary>
             Initializes a new instance of the <see cref="T:ZyGames.Framework.Game.Contract.Action.LoginAction"/> class.
             </summary>
@@ -3424,7 +3442,7 @@
             The access token360.
             </summary>
         </member>
-        <member name="M:ZyGames.Framework.Game.Contract.Action.LoginExtendAction.#ctor(System.Int16,ZyGames.Framework.Game.Contract.HttpGet)">
+        <member name="M:ZyGames.Framework.Game.Contract.Action.LoginExtendAction.#ctor(System.Int16,ZyGames.Framework.Game.Service.ActionGetter)">
             <summary>
             Initializes a new instance of the <see cref="T:ZyGames.Framework.Game.Contract.Action.LoginExtendAction"/> class.
             </summary>
@@ -3512,7 +3530,7 @@
             The _pay status.
             </summary>
         </member>
-        <member name="M:ZyGames.Framework.Game.Contract.Action.PayNormalAction.#ctor(System.Int16,ZyGames.Framework.Game.Contract.HttpGet)">
+        <member name="M:ZyGames.Framework.Game.Contract.Action.PayNormalAction.#ctor(System.Int16,ZyGames.Framework.Game.Service.ActionGetter)">
             <summary>
             Initializes a new instance of the <see cref="T:ZyGames.Framework.Game.Contract.Action.PayNormalAction"/> class.
             </summary>
@@ -3546,7 +3564,7 @@
             The access token360.
             </summary>
         </member>
-        <member name="M:ZyGames.Framework.Game.Contract.Action.ReAccessTokenAction.#ctor(System.Int16,ZyGames.Framework.Game.Contract.HttpGet)">
+        <member name="M:ZyGames.Framework.Game.Contract.Action.ReAccessTokenAction.#ctor(System.Int16,ZyGames.Framework.Game.Service.ActionGetter)">
             <summary>
             Initializes a new instance of the <see cref="T:ZyGames.Framework.Game.Contract.Action.ReAccessTokenAction"/> class.
             </summary>
@@ -3641,7 +3659,7 @@
             The device I.
             </summary>
         </member>
-        <member name="M:ZyGames.Framework.Game.Contract.Action.RegisterAction.#ctor(System.Int16,ZyGames.Framework.Game.Contract.HttpGet)">
+        <member name="M:ZyGames.Framework.Game.Contract.Action.RegisterAction.#ctor(System.Int16,ZyGames.Framework.Game.Service.ActionGetter)">
             <summary>
             Initializes a new instance of the <see cref="T:ZyGames.Framework.Game.Contract.Action.RegisterAction"/> class.
             </summary>
@@ -3708,7 +3726,7 @@
             Sdk91 pay action.
             </summary>
         </member>
-        <member name="M:ZyGames.Framework.Game.Contract.Action.Sdk91PayAction.#ctor(System.Int16,ZyGames.Framework.Game.Contract.HttpGet)">
+        <member name="M:ZyGames.Framework.Game.Contract.Action.Sdk91PayAction.#ctor(System.Int16,ZyGames.Framework.Game.Service.ActionGetter)">
             <summary>
             Initializes a new instance of the <see cref="T:ZyGames.Framework.Game.Contract.Action.Sdk91PayAction"/> class.
             </summary>
@@ -3902,6 +3920,11 @@
         <member name="P:ZyGames.Framework.Game.Contract.GameSession.LastActivityTime">
             <summary>
             最后活动时间
+            </summary>
+        </member>
+        <member name="P:ZyGames.Framework.Game.Contract.GameSession.IsClosed">
+            <summary>
+            是否标识关闭状态
             </summary>
         </member>
         <member name="P:ZyGames.Framework.Game.Contract.GameSession.Connected">
@@ -7997,7 +8020,7 @@
             登录代理
             </summary>
         </member>
-        <member name="M:ZyGames.Framework.Game.Sns.LoginProxy.#ctor(ZyGames.Framework.Game.Contract.HttpGet)">
+        <member name="M:ZyGames.Framework.Game.Sns.LoginProxy.#ctor(ZyGames.Framework.Game.Service.ActionGetter)">
             <summary>
             Initializes a new instance of the <see cref="T:ZyGames.Framework.Game.Sns.LoginProxy"/> class.
             </summary>
