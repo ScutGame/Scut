@@ -56,7 +56,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Newtonsoft.Json">
-      <HintPath>..\..\..\..\..\Release\6.3.7.5\Lib\Newtonsoft.Json.dll</HintPath>
+      <HintPath>..\..\..\..\..\Release\6.5.8.5\Lib\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core">
@@ -71,13 +71,13 @@
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
     <Reference Include="ZyGames.Framework">
-      <HintPath>..\..\..\..\..\Release\6.3.7.5\Lib\ZyGames.Framework.dll</HintPath>
+      <HintPath>..\..\..\..\..\Release\6.5.8.5\Lib\ZyGames.Framework.dll</HintPath>
     </Reference>
     <Reference Include="ZyGames.Framework.Common">
-      <HintPath>..\..\..\..\..\Release\6.3.7.5\Lib\ZyGames.Framework.Common.dll</HintPath>
+      <HintPath>..\..\..\..\..\Release\6.5.8.5\Lib\ZyGames.Framework.Common.dll</HintPath>
     </Reference>
     <Reference Include="ZyGames.Framework.Game">
-      <HintPath>..\..\..\..\..\Release\6.3.7.5\Lib\ZyGames.Framework.Game.dll</HintPath>
+      <HintPath>..\..\..\..\..\Release\6.5.8.5\Lib\ZyGames.Framework.Game.dll</HintPath>
     </Reference>
     <Reference Include="System.Configuration" />
   </ItemGroup>

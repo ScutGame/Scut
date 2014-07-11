@@ -40,6 +40,14 @@
             <param name="key">实体Key或personerId</param>
             <returns></returns>
         </member>
+        <member name="M:ZyGames.Framework.Cache.Generic.BaseCacheStruct`1.TryRecoverFromDb(ZyGames.Framework.Net.DbDataFilter,System.String)">
+            <summary>
+            尝试从DB中恢复数据
+            </summary>
+            <param name="filter"></param>
+            <param name="personalId"></param>
+            <returns></returns>
+        </member>
         <member name="M:ZyGames.Framework.Cache.Generic.BaseCacheStruct`1.SchemaTable">
             <summary>
             获取实体数据架构信息
@@ -320,6 +328,11 @@
             </summary>
             <param name="changeEvent"></param>
         </member>
+        <member name="M:ZyGames.Framework.Event.IItemChangeEvent.RemoveParentEvent">
+            <summary>
+            移除与父类事件绑定
+            </summary>
+        </member>
         <member name="M:ZyGames.Framework.Event.IItemChangeEvent.UnChangeNotify(System.Object,ZyGames.Framework.Event.CacheItemEventArgs)">
             <summary>
             解除变更事件通知
@@ -449,6 +462,16 @@
             locked modify value.
             </summary>
             <param name="action"></param>
+        </member>
+        <member name="M:ZyGames.Framework.Event.EntityChangeEvent.DelayNotify">
+            <summary>
+            推迟数据改变通知
+            </summary>
+        </member>
+        <member name="M:ZyGames.Framework.Event.EntityChangeEvent.TriggerNotify">
+            <summary>
+            触发通知
+            </summary>
         </member>
         <member name="M:ZyGames.Framework.Event.EntityChangeEvent.NotifyByModify">
             <summary>
@@ -2157,6 +2180,13 @@
             </summary>
             <param name="key">Group键</param>
         </member>
+        <member name="M:ZyGames.Framework.Cache.Generic.IDataContainer`1.TryRecoverFromDb``1(ZyGames.Framework.Net.TransReceiveParam,System.Collections.Generic.List{``0}@)">
+            <summary>
+            尝试从DB中恢复数据
+            </summary>
+            <param name="receiveParam"></param>
+            <param name="dataList"></param>
+        </member>
         <member name="P:ZyGames.Framework.Cache.Generic.IDataContainer`1.IsReadonly">
             <summary>
             是否只读容器
@@ -2355,6 +2385,15 @@
             
             </summary>
             <param name="callback"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ZyGames.Framework.Cache.Generic.EntityContainer`1.TryRecoverFromDb``1(ZyGames.Framework.Net.TransReceiveParam,System.Collections.Generic.List{``0}@)">
+            <summary>
+            尝试从DB中恢复数据
+            </summary>
+            <typeparam name="V"></typeparam>
+            <param name="receiveParam"></param>
+            <param name="dataList"></param>
             <returns></returns>
         </member>
         <member name="M:ZyGames.Framework.Cache.Generic.EntityContainer`1.TryGetCacheItem``1(System.String,System.Boolean,``0@,ZyGames.Framework.Model.LoadingStatus@)">
@@ -2768,6 +2807,21 @@
             <param name="receiveParam"></param>
             <param name="dataList"></param>
             <returns>return null is load error</returns>
+        </member>
+        <member name="M:ZyGames.Framework.Cache.Generic.Pool.BaseCachePool.TryLoadFromDb``1(ZyGames.Framework.Net.TransReceiveParam,System.Collections.Generic.List{``0}@)">
+            <summary>
+            尝试从数据库中加载数据,并更新到Redis
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:ZyGames.Framework.Cache.Generic.Pool.BaseCachePool.TryLoadHistory``1(System.String,System.Collections.Generic.List{``0}@)">
+            <summary>
+            从历史库中加载数据
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="redisKey"></param>
+            <param name="dataList"></param>
+            <returns></returns>
         </member>
         <member name="M:ZyGames.Framework.Cache.Generic.Pool.BaseCachePool.SendData``1(``0[],ZyGames.Framework.Net.TransSendParam)">
             <summary>
@@ -5624,17 +5678,19 @@
             
             </summary>
         </member>
-        <member name="M:ZyGames.Framework.Event.CacheItemChangeEvent.AddSingleItemEvent(ZyGames.Framework.Common.Event.CustomEventHandle{ZyGames.Framework.Event.CacheItemEventArgs})">
+        <member name="M:ZyGames.Framework.Event.CacheItemChangeEvent.AddSingleItemEvent(ZyGames.Framework.Common.Event.CustomEventHandle{ZyGames.Framework.Event.CacheItemEventArgs},System.Object)">
             <summary>
             增加单一
             </summary>
             <param name="handle"></param>
+            <param name="target"></param>
         </member>
-        <member name="M:ZyGames.Framework.Event.CacheItemChangeEvent.AddItemEvent(ZyGames.Framework.Common.Event.CustomEventHandle{ZyGames.Framework.Event.CacheItemEventArgs})">
+        <member name="M:ZyGames.Framework.Event.CacheItemChangeEvent.AddItemEvent(ZyGames.Framework.Common.Event.CustomEventHandle{ZyGames.Framework.Event.CacheItemEventArgs},System.Object)">
             <summary>
             增加
             </summary>
             <param name="handle"></param>
+            <param name="target"></param>
         </member>
         <member name="M:ZyGames.Framework.Event.CacheItemChangeEvent.RemoveItemEvent(ZyGames.Framework.Common.Event.CustomEventHandle{ZyGames.Framework.Event.CacheItemEventArgs})">
             <summary>
@@ -5997,12 +6053,12 @@
         </member>
         <member name="F:ZyGames.Framework.Model.CacheType.Entity">
             <summary>
-            单一实体方式 global
+            单一实体方式ShareEntity
             </summary>
         </member>
         <member name="F:ZyGames.Framework.Model.CacheType.Dictionary">
             <summary>
-            字典方式 user
+            Personal结构
             </summary>
         </member>
         <member name="F:ZyGames.Framework.Model.CacheType.Queue">
@@ -8947,12 +9003,12 @@
         </member>
         <member name="P:ZyGames.Framework.RPC.Sockets.ExSocket.IsClosed">
             <summary>
-            Is closed socket.
+            Is closed flag.
             </summary>
         </member>
         <member name="P:ZyGames.Framework.RPC.Sockets.ExSocket.Connected">
             <summary>
-            Is connected
+            Is connected of socket
             </summary>
         </member>
         <member name="P:ZyGames.Framework.RPC.Sockets.ExSocket.WorkSocket">

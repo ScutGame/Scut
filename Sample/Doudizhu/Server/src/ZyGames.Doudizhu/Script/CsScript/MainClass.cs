@@ -60,7 +60,7 @@ namespace Game.Script
 
         protected override void OnDisconnected(GameSession session)
         {
-            Console.WriteLine("客户端UserId:[{0}]已与服务器断开", session.UserId);
+            Console.WriteLine("客户端UserId:[{0}]已与服务器断开", session.EndAddress);
             base.OnDisconnected(session);
         }
 
