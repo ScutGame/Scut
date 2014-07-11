@@ -83,6 +83,8 @@ namespace ZyGames.Framework.RPC.Sockets
         ThreadSafeStack<SocketAsyncEventArgs> acceptEventArgsPool;
         ThreadSafeStack<SocketAsyncEventArgs> ioEventArgsPool;
         Timer expireTimer;
+        private bool _isStart;
+
         /// <summary>
         /// Gets the connections.
         /// </summary>
@@ -178,6 +180,7 @@ namespace ZyGames.Framework.RPC.Sockets
             listenSocket.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, true);
             listenSocket.Bind(this.socketSettings.LocalEndPoint);
             listenSocket.Listen(socketSettings.Backlog);
+            _isStart = true;
             PostAccept();
         }
 
@@ -201,6 +204,10 @@ namespace ZyGames.Framework.RPC.Sockets
             }
 
             this.maxConnectionsEnforcer.WaitOne();
+            if (!_isStart)
+            {
+                return;
+            }
             bool willRaiseEvent = listenSocket.AcceptAsync(acceptEventArgs);
             if (!willRaiseEvent)
             {
@@ -571,8 +578,7 @@ namespace ZyGames.Framework.RPC.Sockets
         /// </summary>
         public void Close()
         {
-            listenSocket.Close();
-
+            _isStart = false;
             lock (clientSockets)
             {
                 foreach (var socket in clientSockets)
@@ -583,6 +589,7 @@ namespace ZyGames.Framework.RPC.Sockets
 
             while (clientSockets.Count != 0) Thread.Sleep(10);
             DisposeAllSaeaObjects();
+            listenSocket.Close();
         }
 
         private void DisposeAllSaeaObjects()

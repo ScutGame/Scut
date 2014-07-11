@@ -82,7 +82,7 @@ namespace ZyGames.Framework.Game.Contract
         /// </summary>
         /// <param name="key"></param>
         /// <returns></returns>
-        public string this[string key]
+        public override string this[string key]
         {
             get { return _param[key]; }
             set { _param[key] = value; }

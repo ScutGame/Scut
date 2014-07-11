@@ -36,13 +36,13 @@ namespace ZyGames.Framework.Game.Sns
     public class LoginProxy
     {
         private const string defaultArgs = "Pid,Pwd,DeviceID";
-        private HttpGet _httpGet;
+        private ActionGetter _httpGet;
         private string retailID = string.Empty;
 		/// <summary>
 		/// Initializes a new instance of the <see cref="ZyGames.Framework.Game.Sns.LoginProxy"/> class.
 		/// </summary>
 		/// <param name="httpGet">Http get.</param>
-        public LoginProxy(HttpGet httpGet)
+        public LoginProxy(ActionGetter httpGet)
         {
             this._httpGet = httpGet;
             if (_httpGet != null)

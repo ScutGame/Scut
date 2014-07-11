@@ -101,6 +101,7 @@ namespace ZyGames.Framework.Game.Runtime
         public static bool IsRunning
         {
             get { return _isRunning == 1; }
+            set { Interlocked.Exchange(ref _isRunning, value ? 1 : 0); }
         }
 
         /// <summary>
@@ -129,7 +130,7 @@ namespace ZyGames.Framework.Game.Runtime
         /// <param name="cacheSetting">Cache setting.</param>
         public static void Start(EnvironmentSetting setting, CacheSetting cacheSetting)
         {
-            if (_isRunning == 1) return;
+            if (IsRunning) return;
 
             Console.WriteLine("{0} Server is starting...", DateTime.Now.ToString("HH:mm:ss"));
             _setting = setting;
@@ -176,7 +177,7 @@ namespace ZyGames.Framework.Game.Runtime
             Language.SetLang();
             CacheFactory.Initialize(cacheSetting);
             Global = new ContextCacheSet<CacheItem>("__gameenvironment_global");
-            Interlocked.Exchange(ref _isRunning, 1);
+            IsRunning = true;
         }
 
 
@@ -185,7 +186,7 @@ namespace ZyGames.Framework.Game.Runtime
         {
             try
             {
-                Interlocked.Exchange(ref _isRunning, 0);
+                IsRunning = false;
                 TraceLog.ReleaseWrite("Wait for the update before Model script...");
                 CacheFactory.UpdateNotify(true);
                 var task = System.Threading.Tasks.Task.Factory.StartNew(() =>
@@ -228,7 +229,7 @@ namespace ZyGames.Framework.Game.Runtime
                 CacheFactory.ResetCache();
                 SensitiveWordService.Init();
                 TraceLog.ReleaseWrite("Update Model script success.");
-                Interlocked.Exchange(ref _isRunning, 1);
+                IsRunning = true;
             }
             catch (Exception ex)
             {
@@ -254,7 +255,7 @@ namespace ZyGames.Framework.Game.Runtime
         {
             CacheFactory.UpdateNotify(true);
             CacheFactory.Dispose();
-            Interlocked.Exchange(ref _isRunning, 0);
+            IsRunning = false;
         }
 
     }

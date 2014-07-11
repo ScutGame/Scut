@@ -191,6 +191,11 @@ namespace ZyGames.Framework.Game.Contract
         /// <summary>
         /// 获取Action处理的输出字节流
         /// </summary>
+        /// <param name="actionDispatcher"></param>
+        /// <param name="actionId"></param>
+        /// <param name="baseUser"></param>
+        /// <param name="urlParam"></param>
+        /// <param name="actionGetter"></param>
         /// <returns></returns>
         public static byte[] GetActionResponse(IActionDispatcher actionDispatcher, int actionId, BaseUser baseUser, string urlParam, out ActionGetter actionGetter)
         {
@@ -204,13 +209,21 @@ namespace ZyGames.Framework.Game.Contract
                 userId,
                 actionId,
                 urlParam);
-
             RequestPackage requestPackage = new RequestPackage(0, sessionId, actionId, userId);
             requestPackage.UrlParam = param;
             requestPackage.IsUrlParam = true;
             requestPackage.Session = session;
             requestPackage.ReceiveTime = DateTime.Now;
             actionGetter = new HttpGet(requestPackage);
+            return GetActionResponse(actionDispatcher, actionId, baseUser, actionGetter);
+        }
+
+        /// <summary>
+        /// 获取Action处理的输出字节流
+        /// </summary>
+        /// <returns></returns>
+        public static byte[] GetActionResponse(IActionDispatcher actionDispatcher, int actionId, BaseUser baseUser, ActionGetter actionGetter)
+        {
             BaseStruct baseStruct = FindRoute(GameEnvironment.Setting.ActionTypeName, actionGetter, actionId);
             SocketGameResponse response = new SocketGameResponse();
             response.WriteErrorCallback += actionDispatcher.ResponseError;

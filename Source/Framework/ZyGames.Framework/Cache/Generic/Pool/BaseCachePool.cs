@@ -183,7 +183,6 @@ namespace ZyGames.Framework.Cache.Generic.Pool
         /// <returns>return null is load error</returns>
         public bool TryReceiveData<T>(TransReceiveParam receiveParam, out List<T> dataList) where T : AbstractEntity, new()
         {
-            bool result = false;
             dataList = null;
             //表为空时，不加载数据
             if (receiveParam.Schema == null ||
@@ -209,13 +208,40 @@ namespace ZyGames.Framework.Cache.Generic.Pool
                     return true;
                 }
                 //从Redis历史记录表中加载
-                result = TryLoadHistory(receiveParam.RedisKey, out dataList);
+                if (TryLoadHistory(receiveParam.RedisKey, out dataList))
+                {
+                    //Share类型的如果没有数据尝试从DB中取
+                    if (dataList.Count == 0 && receiveParam.Schema.CacheType == CacheType.Entity)
+                    {
+                        return TryLoadFromDb(receiveParam, out dataList);
+                    }
+                    return true;
+                }
             }
-
-            return result;
-
+            return false;
         }
 
+        /// <summary>
+        /// 尝试从数据库中加载数据,并更新到Redis
+        /// </summary>
+        /// <returns></returns>
+        public bool TryLoadFromDb<T>(TransReceiveParam receiveParam, out List<T> dataList) where T : AbstractEntity, new()
+        {
+            if (_dbTransponder.TryReceiveData(receiveParam, out dataList) && dataList.Count > 0)
+            {
+                //恢复到Redis
+                return RedisConnectionPool.TryUpdateEntity(dataList);
+            }
+            return false;
+        }
+
+        /// <summary>
+        /// 从历史库中加载数据
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="redisKey"></param>
+        /// <param name="dataList"></param>
+        /// <returns></returns>
         public bool TryLoadHistory<T>(string redisKey, out List<T> dataList)
         {
             redisKey = RedisConnectionPool.GetRedisEntityKeyName(redisKey);

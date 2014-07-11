@@ -67,6 +67,18 @@ namespace ZyGames.Framework.Event
         internal abstract void RemoveChildrenListener(object changeEvent);
 
         /// <summary>
+        /// 移除与父类事件绑定
+        /// </summary>
+        public void RemoveParentEvent()
+        {
+            var obj = ItemEvent.Parent as IItemChangeEvent;
+            if (obj != null)
+            {
+                obj.RemoveChildrenListener(this);
+            }
+        }
+
+        /// <summary>
         /// 解除变更事件通知
         /// </summary>
         /// <param name="sender"></param>

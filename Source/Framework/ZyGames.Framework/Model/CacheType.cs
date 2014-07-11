@@ -33,11 +33,11 @@ namespace ZyGames.Framework.Model
         /// </summary>
         None,
         /// <summary>
-        /// 单一实体方式 global
+        /// 单一实体方式ShareEntity
         /// </summary>
         Entity,
         /// <summary>
-        /// 字典方式 user
+        /// Personal结构
         /// </summary>
         Dictionary,
         /// <summary>

@@ -27,6 +27,7 @@ using System.Linq;
 using ZyGames.Framework.Collection.Generic;
 using ZyGames.Framework.Common;
 using ZyGames.Framework.Common.Log;
+using ZyGames.Framework.Data;
 using ZyGames.Framework.Model;
 using ZyGames.Framework.Net;
 using ZyGames.Framework.Redis;
@@ -117,6 +118,26 @@ namespace ZyGames.Framework.Cache.Generic
             get { return DataContainer.Count; }
         }
 
+        /// <summary>
+        /// 尝试从DB中恢复数据
+        /// </summary>
+        /// <param name="filter"></param>
+        /// <param name="personalId"></param>
+        /// <returns></returns>
+        public bool TryRecoverFromDb(DbDataFilter filter, string personalId = "")
+        {
+            List<T> dataList;
+            string redisKey = CreateRedisKey(personalId);
+            TransReceiveParam receiveParam = new TransReceiveParam(redisKey);
+            receiveParam.Schema = SchemaTable();
+            receiveParam.DbFilter = filter;
+            receiveParam.Capacity = receiveParam.Schema.Capacity;
+            if (DataContainer.TryRecoverFromDb(receiveParam, out dataList))
+            {
+                return InitCache(dataList, receiveParam.Schema.PeriodTime);
+            }
+            return false;
+        }
         /// <summary>
         /// 获取实体数据架构信息
         /// </summary>

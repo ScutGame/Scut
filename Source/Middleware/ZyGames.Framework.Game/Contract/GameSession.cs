@@ -121,7 +121,8 @@ namespace ZyGames.Framework.Game.Contract
                     var session = pair.Value;
                     if (session.LastActivityTime < MathUtils.Now.AddSeconds(-Timeout))
                     {
-                        pair.Value.Close();
+                        pair.Value.Reset();
+                        //todo session
                         TraceLog.ReleaseWriteDebug("User {0} sessionId{1} is expire {2}({3}sec)",
                             session.UserId,
                             session.SessionId,
@@ -191,7 +192,7 @@ namespace ZyGames.Framework.Game.Contract
                 throw new ArgumentOutOfRangeException("param is error");
             }
             _globalSession[keyCode] = session;
-            OnChanged();
+            OnChangedSave();
             return session;
         }
 
@@ -215,7 +216,7 @@ namespace ZyGames.Framework.Game.Contract
                 GameSession temp;
                 if (_globalSession.TryRemove(newSessionKey, out temp))
                 {
-                    OnChanged();
+                    OnChangedSave();
                 }
             }
         }
@@ -329,6 +330,7 @@ namespace ZyGames.Framework.Game.Contract
         private void InitSocket(ExSocket exSocket, Action<ExSocket, byte[], int, int> sendCallback)
         {
             _exSocket = exSocket;
+            _remoteAddress = _exSocket.RemoteEndPoint.ToString();
             _sendCallback = sendCallback;
         }
 
@@ -359,16 +361,27 @@ namespace ZyGames.Framework.Game.Contract
         public void Close()
         {
             GameSession session;
+            if (_globalSession.TryGetValue(KeyCode, out session) && session._exSocket != null)
+            {
+                //设置Socket为Closed的状态, 并未将物理连接马上中断
+                session._exSocket.IsClosed = true;
+            }
+        }
+
+        private void Reset()
+        {
+            GameSession session;
             if (_globalSession.TryRemove(KeyCode, out session) && session._exSocket != null)
             {
+                //设置Socket为Closed的状态, 并未将物理连接马上中断
                 session._exSocket.IsClosed = true;
-                OnChanged();
             }
             Guid code;
             _userHash.TryRemove(UserId, out code);
         }
 
-        private static void OnChanged()
+
+        private static void OnChangedSave()
         {
             Interlocked.Exchange(ref _isChanged, 1);
         }
@@ -442,6 +455,15 @@ namespace ZyGames.Framework.Game.Contract
         /// </summary>
         [ProtoMember(5)]
         public DateTime LastActivityTime { get; internal set; }
+
+        /// <summary>
+        /// 是否标识关闭状态
+        /// </summary>
+        [JsonIgnore]
+        public bool IsClosed
+        {
+            get { return _exSocket != null && _exSocket.IsClosed; }
+        }
 
         /// <summary>
         /// 是否已连接

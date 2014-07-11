@@ -217,7 +217,7 @@ namespace ZyGames.Framework.Game.Contract
                 return true;
             }
 
-            if (package.ActionId == ((int)ActionEnum.Heartbeat))
+            if (session != null && package.ActionId == ((int)ActionEnum.Heartbeat))
             {
                 // 客户端tcp心跳包
                 session.Refresh();
@@ -337,7 +337,7 @@ namespace ZyGames.Framework.Game.Contract
                 byte[] data = new byte[0];
                 if (!string.IsNullOrEmpty(package.RouteName))
                 {
-                    HttpGet httpGet = new HttpGet(package);
+                    ActionGetter httpGet = ActionDispatcher.GetActionGetter(package);
                     if (CheckRemote(package.RouteName, httpGet))
                     {
                         MessageStructure response = new MessageStructure();
@@ -469,7 +469,7 @@ namespace ZyGames.Framework.Game.Contract
                 var httpresponse = new SocketGameResponse();
                 httpresponse.WriteErrorCallback += new ActionDispatcher().ResponseError;
 
-                HttpGet httpGet = new HttpGet(new RequestPackage() { UrlParam = data, Session = session });
+                ActionGetter httpGet = ActionDispatcher.GetActionGetter(new RequestPackage() { UrlParam = data, Session = session });
                 httpGet["UserHostAddress"] = session.EndAddress;
                 httpGet["ssid"] = session.KeyCode.ToString("N");
                 httpGet["http"] = "1";
@@ -604,9 +604,9 @@ namespace ZyGames.Framework.Game.Contract
             GC.SuppressFinalize(this);
         }
 
-        private delegate void RemoteHandle(HttpGet httpGet, MessageHead head, MessageStructure writer);
+        private delegate void RemoteHandle(ActionGetter httpGet, MessageHead head, MessageStructure writer);
 
-        private void OnCallRemote(string route, HttpGet httpGet, MessageStructure response)
+        private void OnCallRemote(string route, ActionGetter httpGet, MessageStructure response)
         {
             try
             {
@@ -620,7 +620,7 @@ namespace ZyGames.Framework.Game.Contract
                 }
                 string routeFile = "";
                 string typeName = string.Format("Game.Script.Remote.{0}", routeName);
-                int actionId = httpGet.ActionId;
+                int actionId = httpGet.GetActionId();
                 MessageHead head = new MessageHead(actionId);
                 if (!ScriptEngines.SettupInfo.DisablePython)
                 {

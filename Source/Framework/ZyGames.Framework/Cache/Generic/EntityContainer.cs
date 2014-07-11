@@ -664,6 +664,18 @@ namespace ZyGames.Framework.Cache.Generic
             }
         }
 
+        /// <summary>
+        /// 尝试从DB中恢复数据
+        /// </summary>
+        /// <typeparam name="V"></typeparam>
+        /// <param name="receiveParam"></param>
+        /// <param name="dataList"></param>
+        /// <returns></returns>
+        public bool TryRecoverFromDb<V>(TransReceiveParam receiveParam, out List<V> dataList ) where V : AbstractEntity, new()
+        {
+            return _cachePool.TryLoadFromDb(receiveParam, out dataList);
+        }
+
         protected override void Dispose(bool disposing)
         {
             if (disposing)

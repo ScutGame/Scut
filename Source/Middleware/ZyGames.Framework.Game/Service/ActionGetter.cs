@@ -102,6 +102,17 @@ namespace ZyGames.Framework.Game.Service
         /// <summary>
         /// 
         /// </summary>
+        /// <param name="key"></param>
+        /// <returns></returns>
+        public virtual string this[string key]
+        {
+            get { throw new NotImplementedException(); }
+            set { throw new NotImplementedException(); }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
         /// <param name="param"></param>
         /// <returns></returns>
         public virtual int GetIntValue(string param)

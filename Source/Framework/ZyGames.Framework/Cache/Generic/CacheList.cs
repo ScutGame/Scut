@@ -81,6 +81,12 @@ namespace ZyGames.Framework.Cache.Generic
             _list = length > 0 ? new List<T>(length) : new List<T>();
         }
 
+        public override void AddChildrenListener(object changeEvent)
+        {
+            CheckSingleBindEvent(changeEvent);
+            base.AddChildrenListener(changeEvent);
+        }
+
         /// <summary>
         /// 
         /// </summary>
@@ -110,6 +116,7 @@ namespace ZyGames.Framework.Cache.Generic
             }
             set
             {
+                AddChildrenListener(value);
                 lock (_syncRoot)
                 {
                     if (index < _list.Count)
@@ -122,7 +129,6 @@ namespace ZyGames.Framework.Cache.Generic
                         _list.Add(value);
                     }
                 }
-                AddChildrenListener(value);
                 Notify(value, CacheItemChangeType.Modify, PropertyName);
             }
         }
@@ -149,11 +155,11 @@ namespace ZyGames.Framework.Cache.Generic
         /// <param name="item"></param>
         public void Add(T item)
         {
+            AddChildrenListener(item);
             lock (_syncRoot)
             {
                 _list.Add(item);
             }
-            AddChildrenListener(item);
             Notify(item, CacheItemChangeType.Add, PropertyName);
         }
 
@@ -169,13 +175,13 @@ namespace ZyGames.Framework.Cache.Generic
             {
                 if (math(item))
                 {
+                    AddChildrenListener(item);
                     _list.Add(item);
                     result = true;
                 }
             }
             if (result)
             {
-                AddChildrenListener(item);
                 Notify(item, CacheItemChangeType.Add, PropertyName);
             }
             return result;
@@ -300,11 +306,11 @@ namespace ZyGames.Framework.Cache.Generic
         /// <param name="item"></param>
         public void Insert(int index, T item)
         {
+            AddChildrenListener(item);
             lock (_syncRoot)
             {
                 _list.Insert(index, item);
             }
-            AddChildrenListener(item);
             Notify(item, CacheItemChangeType.Remove, PropertyName);
         }
 
@@ -400,11 +406,11 @@ namespace ZyGames.Framework.Cache.Generic
         /// <param name="comparison"></param>
         public void InsertSort(T item, Comparison<T> comparison)
         {
+            AddChildrenListener(item);
             lock (_syncRoot)
             {
                 _list.InsertSort(item, comparison);
             }
-            AddChildrenListener(item);
             Notify(item, CacheItemChangeType.Add, PropertyName);
         }
 

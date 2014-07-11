@@ -129,18 +129,20 @@ namespace ZyGames.Framework.Event
         /// 增加单一
         /// </summary>
         /// <param name="handle"></param>
-        public void AddSingleItemEvent(CustomEventHandle<CacheItemEventArgs> handle)
+        /// <param name="target"></param>
+        public void AddSingleItemEvent(CustomEventHandle<CacheItemEventArgs> handle, object target)
         {
-            AddSingle(handle);
+            AddSingle(handle, target);
         }
 
         /// <summary>
         /// 增加
         /// </summary>
         /// <param name="handle"></param>
-        public void AddItemEvent(CustomEventHandle<CacheItemEventArgs> handle)
+        /// <param name="target"></param>
+        public void AddItemEvent(CustomEventHandle<CacheItemEventArgs> handle, object target)
         {
-            Add(handle);
+            Add(handle, target);
         }
 
         /// <summary>

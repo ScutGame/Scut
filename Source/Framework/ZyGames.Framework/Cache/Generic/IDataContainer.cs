@@ -266,5 +266,11 @@ namespace ZyGames.Framework.Cache.Generic
         /// <param name="key">Group键</param>
         void UnChangeNotify(string key);
 
+        /// <summary>
+        /// 尝试从DB中恢复数据
+        /// </summary>
+        /// <param name="receiveParam"></param>
+        /// <param name="dataList"></param>
+        bool TryRecoverFromDb<V>(TransReceiveParam receiveParam, out List<V> dataList) where V : AbstractEntity, new();
     }
 }

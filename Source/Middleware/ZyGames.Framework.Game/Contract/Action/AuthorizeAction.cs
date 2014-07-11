@@ -153,10 +153,12 @@ namespace ZyGames.Framework.Game.Contract.Action
                     {
                         return session.SessionId == sessionId ? LoginStatus.Success : LoginStatus.Logined;
                     }
+
+                    //todo session
                     session = GameSession.Get(sessionId);
-                    TraceLog.ReleaseWriteDebug("CheckUser Sid:{0},Uid:{1},session info:{2}", sessionId, userId,
+                    TraceLog.ReleaseWriteDebug("User no login, Sid:{0},Uid:{1},session info:{2}", sessionId, userId,
                         session == null ? "is empty" :
-                        string.Format("{0}, bind sid:{1}", session.UserId, GameSession.GetUserBindSid(userId))
+                        string.Format("bind uid:{0}", session.UserId)
                         );
                 }
             }

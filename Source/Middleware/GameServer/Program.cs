@@ -47,7 +47,11 @@ namespace GameServer
             {
                 ConsoleColor currentForeColor = Console.ForegroundColor;
                 var setting = new EnvironmentSetting();
-                Console.ForegroundColor = ConsoleColor.DarkYellow;
+                try
+                {
+                    Console.ForegroundColor = ConsoleColor.DarkYellow;
+                }
+                catch { }
                 Console.WriteLine(string.Format(CharFormat,
                     Assembly.GetExecutingAssembly().GetName().Version,
                     setting.ProductCode,
