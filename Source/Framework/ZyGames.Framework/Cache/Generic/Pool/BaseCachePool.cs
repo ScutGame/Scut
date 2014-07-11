@@ -227,10 +227,14 @@ namespace ZyGames.Framework.Cache.Generic.Pool
         /// <returns></returns>
         public bool TryLoadFromDb<T>(TransReceiveParam receiveParam, out List<T> dataList) where T : AbstractEntity, new()
         {
-            if (_dbTransponder.TryReceiveData(receiveParam, out dataList) && dataList.Count > 0)
+            if (_dbTransponder.TryReceiveData(receiveParam, out dataList))
             {
-                //恢复到Redis
-                return RedisConnectionPool.TryUpdateEntity(dataList);
+                if (dataList.Count > 0)
+                {
+                    //恢复到Redis
+                    return RedisConnectionPool.TryUpdateEntity(dataList);
+                }
+                return true;
             }
             return false;
         }
