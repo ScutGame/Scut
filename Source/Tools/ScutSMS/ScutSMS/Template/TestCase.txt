@@ -1,0 +1,21 @@
+﻿using ZyGames.Framework.RPC.IO;
+using ZyGames.Test;
+
+namespace ZyGames.Game.Test.Case
+{
+    /// <summary>
+    /// #Desp#
+    /// </summary>
+    public class #Step# : CaseStep
+    {
+        protected override void SetUrlElement()
+        {
+            #SetUrlElement#
+        }
+
+        protected override bool DecodePacket(MessageStructure reader, MessageHead head)
+        {
+            return true;
+        }
+    }
+}

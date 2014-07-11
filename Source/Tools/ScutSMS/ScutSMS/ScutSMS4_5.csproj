@@ -1,0 +1,244 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{F5E974BA-1060-4711-8B2E-FAE4E68EAF31}</ProjectGuid>
+    <OutputType>WinExe</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Scut.SMS</RootNamespace>
+    <AssemblyName>ScutSMS</AssemblyName>
+    <TargetFrameworkVersion>v4.5.1</TargetFrameworkVersion>
+    <TargetFrameworkProfile>
+    </TargetFrameworkProfile>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
+    <PlatformTarget>x86</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>TRACE;DEBUG;NET4_5</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE;NET4_5</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationIcon>Resource\scut36.ico</ApplicationIcon>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Newtonsoft.Json, Version=4.5.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\Release\6.5.8.3\Lib\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="NLog">
+      <HintPath>..\..\..\..\Release\6.5.8.3\Lib\NLog.dll</HintPath>
+    </Reference>
+    <Reference Include="protobuf-net">
+      <HintPath>..\..\..\..\Release\6.5.8.3\Lib\protobuf-net.dll</HintPath>
+    </Reference>
+    <Reference Include="ServiceStack.Common">
+      <HintPath>..\..\..\..\Release\6.5.8.3\Lib\ServiceStack.Common.dll</HintPath>
+    </Reference>
+    <Reference Include="ServiceStack.Interfaces">
+      <HintPath>..\..\..\..\Release\6.5.8.3\Lib\ServiceStack.Interfaces.dll</HintPath>
+    </Reference>
+    <Reference Include="ServiceStack.Redis">
+      <HintPath>..\..\..\..\Release\6.5.8.3\Lib\ServiceStack.Redis.dll</HintPath>
+    </Reference>
+    <Reference Include="ServiceStack.Text">
+      <HintPath>..\..\..\..\Release\6.5.8.3\Lib\ServiceStack.Text.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.configuration" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Web" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Deployment" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
+    <Reference Include="ZyGames.Framework">
+      <HintPath>..\..\..\..\Release\6.5.8.3\Lib\ZyGames.Framework.dll</HintPath>
+    </Reference>
+    <Reference Include="ZyGames.Framework.Common">
+      <HintPath>..\..\..\..\Release\6.5.8.3\Lib\ZyGames.Framework.Common.dll</HintPath>
+    </Reference>
+    <Reference Include="ZyGames.Framework.Game">
+      <HintPath>..\..\..\..\Release\6.5.8.3\Lib\ZyGames.Framework.Game.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="AboutBox.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="AboutBox.Designer.cs">
+      <DependentUpon>AboutBox.cs</DependentUpon>
+    </Compile>
+    <Compile Include="BaseForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="CacheUpdateQueueForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="CacheUpdateQueueForm.Designer.cs">
+      <DependentUpon>CacheUpdateQueueForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Comm\AssemblyHelper.cs" />
+    <Compile Include="Comm\JsonHelper.cs" />
+    <Compile Include="Config\AppSetting.cs" />
+    <Compile Include="Config\ConnectionString.cs" />
+    <Compile Include="Config\DbProviderType.cs" />
+    <Compile Include="Config\DefaultConfig.cs" />
+    <Compile Include="Config\GameSetting.cs" />
+    <Compile Include="Config\ProtertyObjectConverter.cs" />
+    <Compile Include="ContractForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ContractForm.Designer.cs">
+      <DependentUpon>ContractForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="DatabaseUpdateQueueForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="DatabaseUpdateQueueForm.Designer.cs">
+      <DependentUpon>DatabaseUpdateQueueForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="SqlQueueForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="SqlQueueForm.Designer.cs">
+      <DependentUpon>SqlQueueForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="MainForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="MainForm.Designer.cs">
+      <DependentUpon>MainForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Program.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ProtobufChecker.cs" />
+    <Compile Include="RedisForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="RedisForm.Designer.cs">
+      <DependentUpon>RedisForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Config\RedisSetting.cs" />
+    <Compile Include="RedisKeyForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="RedisKeyForm.Designer.cs">
+      <DependentUpon>RedisKeyForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="RedisSettingFactory.cs" />
+    <Compile Include="ServerManager.cs" />
+    <Compile Include="SettingForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="SettingForm.Designer.cs">
+      <DependentUpon>SettingForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="TemplateFactory.cs" />
+    <Compile Include="TestCaseForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="TestCaseForm.Designer.cs">
+      <DependentUpon>TestCaseForm.cs</DependentUpon>
+    </Compile>
+    <EmbeddedResource Include="AboutBox.resx">
+      <DependentUpon>AboutBox.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="CacheUpdateQueueForm.resx">
+      <DependentUpon>CacheUpdateQueueForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ContractForm.resx">
+      <DependentUpon>ContractForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="DatabaseUpdateQueueForm.resx">
+      <DependentUpon>DatabaseUpdateQueueForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="MainForm.resx">
+      <DependentUpon>MainForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="RedisForm.resx">
+      <DependentUpon>RedisForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="RedisKeyForm.resx">
+      <DependentUpon>RedisKeyForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="SettingForm.resx">
+      <DependentUpon>SettingForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="SqlQueueForm.resx">
+      <DependentUpon>SqlQueueForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="TestCaseForm.resx">
+      <DependentUpon>TestCaseForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <None Include="app.config" />
+    <None Include="NLog.config">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+    <Compile Include="Properties\Settings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Settings.settings</DependentUpon>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Template\TestCase.txt" />
+    <None Include="Resource\TestCase.png" />
+    <None Include="Resource\Search.png" />
+    <None Include="Resource\setting.png" />
+    <None Include="Resource\scut36.ico" />
+    <None Include="Resource\redis.png" />
+    <None Include="Resource\about.png" />
+    <None Include="Resource\dirfile.png" />
+    <None Include="Resource\editquiry.png" />
+    <None Include="Resource\save.png" />
+    <None Include="Resource\contract.png" />
+    <Content Include="Resource\scut.png" />
+  </ItemGroup>
+  <ItemGroup />
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>
