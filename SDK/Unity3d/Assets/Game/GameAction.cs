@@ -17,7 +17,7 @@ public abstract class GameAction
     {
         get { return Head.ActionId; }
     }
-
+	public event Action<object> Callback;
     public PackageHead Head { get; private set; }
 
     public byte[] Send(object userData)
@@ -47,11 +47,14 @@ public abstract class GameAction
         }
     }
 
-    public void Callback(object userData)
+    public void OnCallback(object responseData)
     {
         try
         {
-            Process(userData);
+            if(Callback != null)
+			{
+				Callback(responseData);	
+			}
         }
         catch (Exception ex)
         {
@@ -69,6 +72,6 @@ public abstract class GameAction
 
     protected abstract void DecodePackage(NetReader reader);
 
-    protected abstract void Process(object userData);
+    public abstract object GetResonseData();
 
 }

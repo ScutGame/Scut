@@ -122,15 +122,17 @@ public class Net : MonoBehaviour, IHttpCallback
     /// Send
     /// </summary>
     /// <param name="actionId"></param>
+    /// <param name="callback"></param>
     /// <param name="userData"></param>
     /// <param name="bShowLoading"></param>
-    public void Send(int actionId, object userData, bool bShowLoading = true)
+    public void Send(int actionId, Action<object> callback, object userData, bool bShowLoading = true)
     {
         GameAction gameAction = ActionFactory.Create(actionId);
         if (gameAction == null)
         {
             throw new ArgumentException(string.Format("Not found {0} of GameAction object.", actionId));
         }
+        gameAction.Callback += callback;
         if (NetWriter.IsSocket())
         {
             SocketRequest(gameAction, userData, HeadFormater, bShowLoading);
@@ -160,7 +162,6 @@ public class Net : MonoBehaviour, IHttpCallback
         gameAction.Head.MsgId = NetWriter.MsgId - 1;
 
         SocketPackage package = new SocketPackage();
-        package.UserData = userData;
         package.MsgId = gameAction.Head.MsgId;
         package.ActionId = gameAction.ActionId;
         package.Action = gameAction;
@@ -219,7 +220,6 @@ public class Net : MonoBehaviour, IHttpCallback
         httpPackage.ActionId = gameAction.ActionId;
         httpPackage.Action = gameAction;
         httpPackage.Reader = new NetReader(formater);
-        httpPackage.UserData = userData;
 
         if (RequestNotify != null && showLoading)
         {
@@ -280,7 +280,8 @@ public class Net : MonoBehaviour, IHttpCallback
 
         if (result && package.Action != null && package.Action.TryDecodePackage(reader))
         {
-            package.Action.Callback(package.UserData);
+            object responseData = package.Action.GetResonseData();
+            package.Action.OnCallback(responseData);
         }
         else
         {

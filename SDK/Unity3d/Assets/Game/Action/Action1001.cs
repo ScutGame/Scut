@@ -32,8 +32,6 @@ public class Action1001 : BaseAction//GameAction
             writer.writeInt32("PageIndex", 1);
             writer.writeInt32("PageSize", 10);
         }
-
-
     }
 
     protected override void DecodePackage(NetReader reader)
@@ -65,11 +63,12 @@ public class Action1001 : BaseAction//GameAction
         }
     }
 
-    protected override void Process(object userData)
+    public override object GetResonseData()
     {
         if (_responseData != null)
         {
-            UnityEngine.Debug.Log(string.Format("The action{0} receive ok, record count:{1}", ActionId, _responseData.PageCount));
+            UnityEngine.Debug.Log(string.Format("The action{0} receive ok, record count:{1}", ActionId, _responseData.Items==null?0:_responseData.Items.Count));
         }
+		return _responseData;
     }
 }

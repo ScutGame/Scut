@@ -18,7 +18,8 @@ public class Action1000 : GameAction
     {
     }
 
-    protected override void Process(object userData)
+    public override object GetResonseData()
     {
+		return null;
     }
 }
