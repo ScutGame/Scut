@@ -22,6 +22,7 @@ public class Net : MonoBehaviour, IHttpCallback
     /// <param name="strMsg"></param>
     public delegate void NetError(eNetError nType, int actionId, string strMsg);
 
+
     public enum Status
     {
         eStartRequest = 0,
@@ -61,6 +62,41 @@ public class Net : MonoBehaviour, IHttpCallback
     {
         get { return NETSUCCESS; }
     }
+
+    public void OnPushCallback(SocketPackage package)
+    {
+        try
+        {
+            if(package == null) return;
+
+            GameAction gameAction = ActionFactory.Create(package.ActionId);
+            if (gameAction == null)
+            {
+                throw new ArgumentException(string.Format("Not found {0} of GameAction object.", package.ActionId));
+            }
+            NetReader reader = package.Reader;
+            bool result = true;
+            if (CommonCallback != null)
+            {
+                result = CommonCallback(reader);
+            }
+
+            if (result && gameAction.TryDecodePackage(reader))
+            {
+                object responseData = gameAction.GetResonseData();
+                gameAction.OnCallback(responseData);
+            }
+            else
+            {
+                Debug.Log("Decode package fail.");
+            }
+        }
+        catch (Exception ex)
+        {
+            Debug.LogException(ex);
+        }
+    }
+
     public void RequestDelegate(Net.Status eState)
     {
         //todo user implement loading method
@@ -158,6 +194,7 @@ public class Net : MonoBehaviour, IHttpCallback
             string[] arr = strUrl.Split(new char[] { ':' });
             int nPort = int.Parse(arr[1]);
             mSocket = new SocketConnect(arr[0], nPort, formater);
+            mSocket.PushCallback += OnPushCallback;
         }
         gameAction.Head.MsgId = NetWriter.MsgId - 1;
 
@@ -186,7 +223,7 @@ public class Net : MonoBehaviour, IHttpCallback
         {
             RequestDelegate(Status.eEndRequest);
         }
-        if (package.ErrorCode != 0)
+        if (package.ErrorCode >= 10000)
         {
             if (package.ErrorCode == -2)
             {

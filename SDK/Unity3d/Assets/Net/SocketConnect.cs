@@ -3,6 +3,12 @@ using System.Collections.Generic;
 using System.Net.Sockets;
 using System.Threading;
 
+
+/// <summary>
+/// 
+/// </summary>
+/// <param name="package"></param>
+public delegate void NetPushCallback(SocketPackage package);
 /// <summary>
 /// 
 /// </summary>
@@ -21,6 +27,23 @@ public class SocketConnect
     private readonly Queue<SocketPackage> _receiveQueue;
     private const int TimeOut = 30;//30秒的超时时间
     private Thread _thread = null;
+
+    /// <summary>
+    /// 注册网络Push回调方法
+    /// </summary>
+    public event NetPushCallback PushCallback;
+
+    protected virtual void OnPushCallback(SocketPackage package)
+    {
+        try
+        {
+            NetPushCallback handler = PushCallback;
+            if (handler != null) handler.BeginInvoke(package, null, null);
+        }
+        catch (Exception)
+        {
+        }
+    }
 
     enum ErrorCode
     {
@@ -119,27 +142,36 @@ public class SocketConnect
                         //UnityEngine.Debug.Log("Socket receive ok, revLen:" + recnum + ", actionId:" + reader.ActionId + ", msgId:" + reader.RmId + ", packLen:" + reader.Buffer.Length);
                         lock (_sendList)
                         {
+                            //find pack in send queue.
                             foreach (SocketPackage package in _sendList)
                             {
                                 if (package.MsgId == reader.RmId)
                                 {
                                     package.Reader = reader;
-                                    package.ErrorCode = (int)ErrorCode.Success;
-                                    package.ErrorMsg = "success";
+                                    package.ErrorCode = reader.StatusCode;
+                                    package.ErrorMsg = reader.Description;
                                     findPackage = package;
                                     break;
                                 }
 
                             }
                         }
-                        foreach (SocketPackage package in ActionPools)
+                        if (findPackage == null)
                         {
-                            if (package.ActionId == reader.ActionId)
+                            lock (_receiveQueue)
                             {
-                                package.Reader = reader;
-                                package.ErrorCode = (int)ErrorCode.Success;
-                                package.ErrorMsg = "success";
-                                findPackage = package;
+                                //find pack in receive queue.
+                                foreach (SocketPackage package in ActionPools)
+                                {
+                                    if (package.ActionId == reader.ActionId)
+                                    {
+                                        package.Reader = reader;
+                                        package.ErrorCode = reader.StatusCode;
+                                        package.ErrorMsg = reader.Description;
+                                        findPackage = package;
+                                        break;
+                                    }
+                                }
                             }
                         }
                         if (findPackage != null)
@@ -152,6 +184,17 @@ public class SocketConnect
                             {
                                 _sendList.Remove(findPackage);
                             }
+                        }
+                        else
+                        {
+                            //server push pack.
+                            SocketPackage package = new SocketPackage();
+                            package.MsgId = reader.RmId;
+                            package.ActionId = reader.ActionId;
+                            package.ErrorCode = reader.StatusCode;
+                            package.ErrorMsg = reader.Description;
+                            package.Reader = reader;
+                            OnPushCallback(package);
                         }
 
                     }
