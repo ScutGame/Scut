@@ -38,7 +38,7 @@ namespace Game.Script
             HttpListenerRequest request = context.Request;
             byte[] content;
             var bytes = GetRequestStream(request.InputStream);
-            MessagePack head = ReadMessageHead(bytes, out content);
+            MessagePack  head = ReadMessageHead(bytes, out content);
             if (head == null)
             {
                 return false;

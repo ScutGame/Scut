@@ -4057,9 +4057,25 @@
         </member>
         <member name="M:ZyGames.Framework.Game.Contract.IActionDispatcher.TryDecodePackage(ZyGames.Framework.RPC.Sockets.ConnectionEventArgs,ZyGames.Framework.Game.Contract.RequestPackage@)">
             <summary>
-            
+            decode package for socket
             </summary>
             <param name="e"></param>
+            <param name="package"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ZyGames.Framework.Game.Contract.IActionDispatcher.TryDecodePackage(System.Net.HttpListenerContext,ZyGames.Framework.Game.Contract.RequestPackage@)">
+            <summary>
+            decode package for http
+            </summary>
+            <param name="context"></param>
+            <param name="package"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ZyGames.Framework.Game.Contract.IActionDispatcher.TryDecodePackage(System.Web.HttpContext,ZyGames.Framework.Game.Contract.RequestPackage@)">
+            <summary>
+            decode package for http
+            </summary>
+            <param name="context"></param>
             <param name="package"></param>
             <returns></returns>
         </member>
@@ -4079,12 +4095,12 @@
             <param name="errorCode"></param>
             <param name="errorInfo"></param>
         </member>
-        <member name="T:ZyGames.Framework.Game.Contract.ActionDispatcher">
+        <member name="T:ZyGames.Framework.Game.Contract.ScutActionDispatcher">
             <summary>
             Action分发器
             </summary>
         </member>
-        <member name="M:ZyGames.Framework.Game.Contract.ActionDispatcher.TryDecodePackage(ZyGames.Framework.RPC.Sockets.ConnectionEventArgs,ZyGames.Framework.Game.Contract.RequestPackage@)">
+        <member name="M:ZyGames.Framework.Game.Contract.ScutActionDispatcher.TryDecodePackage(ZyGames.Framework.RPC.Sockets.ConnectionEventArgs,ZyGames.Framework.Game.Contract.RequestPackage@)">
             <summary>
             Decode request package
             </summary>
@@ -5997,6 +6013,11 @@
         <member name="P:ZyGames.Framework.Game.Runtime.EnvironmentSetting.GamePort">
             <summary>
             socket port
+            </summary>
+        </member>
+        <member name="P:ZyGames.Framework.Game.Runtime.EnvironmentSetting.ActionDispatcher">
+            <summary>
+            Action repeater
             </summary>
         </member>
         <member name="T:ZyGames.Framework.Game.Service.HttpGameResponse">
