@@ -95,6 +95,7 @@ namespace ZyGames.Framework.Game.Contract
         public IActionDispatcher ActionDispatcher
         {
             get { return GameEnvironment.Setting.ActionDispatcher; }
+            set { GameEnvironment.Setting.ActionDispatcher = value; }
         }
 
         /// <summary>
