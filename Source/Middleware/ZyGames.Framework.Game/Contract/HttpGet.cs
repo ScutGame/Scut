@@ -75,6 +75,7 @@ namespace ZyGames.Framework.Game.Contract
             _session = package.Session;
             InitData(_paramString);
             SessionId = _session != null ? _session.SessionId : "";
+
         }
 
         /// <summary>

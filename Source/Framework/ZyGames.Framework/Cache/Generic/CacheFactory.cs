@@ -140,9 +140,20 @@ namespace ZyGames.Framework.Cache.Generic
                         entity = dict[entityKey];
                     }
                 }
+                if (entity == null)
+                {
+                    //新版本Hash格式
+                    var data = client.HGet(typeName, RedisConnectionPool.ToByteKey(entityKey));
+                    if (data != null && type != null)
+                    {
+                        entity = ProtoBufUtils.Deserialize(data, type);
+                    }
+                }
+
                 if (isRemove && entity == null && type != null)
                 {
-                    string setId = (isEntityType ? typeName : redisKey) + ":remove";
+                    //临时队列删除Entity
+                    string setId = (isEntityType ? RedisConnectionPool.ConvertKeyFromType(typeName) : redisKey) + ":remove";
                     var data = client.Get<byte[]>(setId);
                     if (data != null)
                     {
@@ -186,12 +197,12 @@ namespace ZyGames.Framework.Cache.Generic
             if (string.IsNullOrEmpty(persionKey))
             {
                 isEntityType = true;
-                redisKey = string.Format("{0}_{1}", typeName, entityKey);
+                redisKey = string.Format("{0}_{1}", RedisConnectionPool.ConvertKeyFromType(typeName), entityKey);
             }
             else
             {
                 //私有类型
-                redisKey = string.Format("{0}_{1}", typeName, persionKey);
+                redisKey = string.Format("{0}_{1}", RedisConnectionPool.ConvertKeyFromType(typeName), persionKey);
             }
             string formatString = entityTypeNameFormat;
             if (isEntityType)
@@ -200,18 +211,19 @@ namespace ZyGames.Framework.Cache.Generic
             }
             if (type == null)
             {
-                type = Type.GetType(string.Format(formatString, typeName, asmName), false, true);
+                string entityTypeName = RedisConnectionPool.ConvertTypeFromKey(typeName);
+                type = Type.GetType(string.Format(formatString, entityTypeName, asmName), false, true);
                 if (Equals(type, null))
                 {
                     var enitityAsm = ScriptEngines.GetEntityAssembly();
                     if (enitityAsm != null)
                     {
                         asmName = enitityAsm.GetName().Name;
-                        type = Type.GetType(string.Format(formatString, typeName, asmName), false, true);
+                        type = Type.GetType(string.Format(formatString, entityTypeName, asmName), false, true);
                         if (Equals(type, null))
                         {
                             //调试模式下type为空处理
-                            type = enitityAsm.GetType( typeName, false, true);
+                            type = enitityAsm.GetType(entityTypeName, false, true);
                         }
                     }
                 }
@@ -233,7 +245,7 @@ namespace ZyGames.Framework.Cache.Generic
             {
                 key += "|" + AbstractEntity.CreateKeyCode(keys);
             }
-            string redisKey = string.Format("{0}_{1}", entityType, key);
+            string redisKey = string.Format("{0}_{1}", RedisConnectionPool.ConvertKeyFromType(entityType), key);
             CacheItemSet itemSet;
             return GetPersonalEntity(redisKey, out itemSet);
         }
@@ -474,7 +486,7 @@ namespace ZyGames.Framework.Cache.Generic
             {
                 TraceLog.WriteError("Access to cache \"{0}\" data failed because the object has been disposed.", typeof(T).FullName);
             }
-           
+
             EntityContainer<T> cacheSet = null;
             if (isReadonly)
             {

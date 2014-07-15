@@ -310,7 +310,7 @@ namespace ZyGames.Framework.Cache.Generic
                     int index = 0;
                     foreach (var entity in valueList)
                     {
-                        key = string.Format("{0}_{1}", entity.GetType().FullName, entity.GetKeyCode());
+                        key = string.Format("{0}_{1}", RedisConnectionPool.ConvertKeyFromType(entity.GetType().FullName), entity.GetKeyCode());
                         keyBytes[index] = RedisConnectionPool.ToByteKey(key);
                         byte[] stateBytes = BufferUtils.GetBytes(entity.IsDelete ? 1 : 0);
                         valueBytes[index] = BufferUtils.MergeBytes(
@@ -629,11 +629,11 @@ namespace ZyGames.Framework.Cache.Generic
                         asmName = "," + enitityAsm.GetName().Name;
                     }
 
-                    Type type = Type.GetType(string.Format("{0}{1}", typeName, asmName), false, true);
+                    Type type = Type.GetType(string.Format("{0}{1}", RedisConnectionPool.ConvertTypeFromKey(typeName), asmName), false, true);
                     if (type == null)
                     {
                         //调试模式下type为空处理
-                        type = enitityAsm.GetType(typeName, false, true);
+                        type = enitityAsm != null ? enitityAsm.GetType(RedisConnectionPool.ConvertTypeFromKey(typeName), false, true) : null;
                         if (type == null)
                         {
                             throw new ArgumentTypeException(string.Format("Get entity \"{0}\" type is null", entityParentKey));

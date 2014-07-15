@@ -299,7 +299,7 @@ namespace ZyGames.Framework.Game.Contract
                     shareParam.AppendFormat("&{0}={1}", parameter.Key, parameter.Value);
                 }
             }
-            IActionDispatcher actionDispatcher = new ActionDispatcher();
+            IActionDispatcher actionDispatcher = new ScutActionDispatcher();
             ActionGetter actionParam;
             byte[] sendData = GetActionResponse(actionDispatcher, actionId, null, shareParam.ToString(), out actionParam);
             foreach (var user in userList)
@@ -344,7 +344,7 @@ namespace ZyGames.Framework.Game.Contract
                     shareParam.AppendFormat("&{0}={1}", parameter.Key, parameter.Value);
                 }
             }
-            IActionDispatcher actionDispatcher = new ActionDispatcher();
+            IActionDispatcher actionDispatcher = new ScutActionDispatcher();
             foreach (var user in userList)
             {
                 if (user == default(T))

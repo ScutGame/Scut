@@ -446,5 +446,14 @@ namespace ZyGames.Framework.Redis
         {
             return Encoding.UTF8.GetString(keyBytes);
         }
+
+        internal static string ConvertKeyFromType(string typeName)
+        {
+            return typeName.Replace("_", "%11");
+        }
+        internal static string ConvertTypeFromKey(string key)
+        {
+            return key.TrimStart(EntityKeyPreChar.ToCharArray()).Replace("%11", "_");
+        }
     }
 }

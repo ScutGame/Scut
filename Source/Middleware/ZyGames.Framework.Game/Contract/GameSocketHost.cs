@@ -92,14 +92,16 @@ namespace ZyGames.Framework.Game.Contract
         /// <summary>
         /// Action repeater
         /// </summary>
-        public IActionDispatcher ActionDispatcher { get; set; }
+        public IActionDispatcher ActionDispatcher
+        {
+            get { return GameEnvironment.Setting.ActionDispatcher; }
+        }
 
         /// <summary>
         /// 
         /// </summary>
         protected GameSocketHost()
         {
-            ActionDispatcher = new ActionDispatcher();
             int port = GameEnvironment.Setting.GamePort;
             IPEndPoint localEndPoint = new IPEndPoint(IPAddress.Any, port);
 
@@ -350,7 +352,7 @@ namespace ZyGames.Framework.Game.Contract
                     SocketGameResponse response = new SocketGameResponse();
                     response.WriteErrorCallback += ActionDispatcher.ResponseError;
                     ActionGetter actionGetter = ActionDispatcher.GetActionGetter(package);
-                    DoAction(actionGetter, response);
+                    DoHttpAction(actionGetter, response);
                     data = response.ReadByte();
                 }
                 try
@@ -411,68 +413,35 @@ namespace ZyGames.Framework.Game.Contract
                 HttpListener listener = (HttpListener)result.AsyncState;
                 HttpListenerContext context = listener.EndGetContext(result);
                 listener.BeginGetContext(OnHttpRequest, listener);
-                HttpListenerRequest request = context.Request;
-                HttpListenerResponse response = context.Response;
-                string sid = request.QueryString["sid"];
-                GameSession session;
-                if (string.IsNullOrEmpty(sid))
-                {
-                    session = GameSession.CreateNew(Guid.NewGuid(), request);
-                }
-                else
-                {
-                    session = GameSession.Get(sid) ?? GameSession.CreateNew(Guid.NewGuid(), request);
-                }
 
-                string data = "";
-                if (Environment.OSVersion.Platform == PlatformID.Unix)
+                RequestPackage package;
+                if (!ActionDispatcher.TryDecodePackage(context, out package))
                 {
-                    if (string.Compare(request.HttpMethod, "get", true) == 0)
-                    {
-                        data = request.RawUrl.Substring(8);
-                        data = HttpUtility.UrlDecode(data);
-                    }
-                }
-                else
-                {
-                    data = request.QueryString["d"];
-                }
-
-                if (string.IsNullOrEmpty(data))
-                {
-                    using (var reader = new StreamReader(request.InputStream, request.ContentEncoding))
-                    {
-                        data = reader.ReadToEnd();
-                        data = HttpUtility.ParseQueryString(data)["d"];
-                    }
-                }
-
-                int statuscode = 0;
-                Dictionary<string, string> param = new Dictionary<string, string>(StringComparer.InvariantCultureIgnoreCase);
-                if (data != null)
-                {
-                    var nvc = HttpUtility.ParseQueryString(data);
-                    foreach (var key in nvc.AllKeys)
-                    {
-                        param[key] = nvc[key];
-                    }
-                }
-                statuscode = CheckHttpParam(param);
-
-                if (statuscode != (int)HttpStatusCode.OK)
-                {
-                    response.StatusCode = statuscode;
-                    response.Close();
                     return;
                 }
 
-                var httpresponse = new SocketGameResponse();
-                httpresponse.WriteErrorCallback += new ActionDispatcher().ResponseError;
+                GameSession session;
+                if (string.IsNullOrEmpty(package.SessionId))
+                {
+                    session = GameSession.CreateNew(Guid.NewGuid(), context.Request);
+                }
+                else
+                {
+                    session = GameSession.Get(package.SessionId) ?? GameSession.CreateNew(Guid.NewGuid(), context.Request);
+                }
+                package.Session = session;
+                package.ReceiveTime = DateTime.Now;
 
-                ActionGetter httpGet = ActionDispatcher.GetActionGetter(new RequestPackage() { UrlParam = data, Session = session });
-                httpGet["UserHostAddress"] = session.EndAddress;
-                httpGet["ssid"] = session.KeyCode.ToString("N");
-                httpGet["http"] = "1";
+                ActionGetter httpGet = ActionDispatcher.GetActionGetter(package);
+                if (package.IsUrlParam)
+                {
+                    httpGet["UserHostAddress"] = session.EndAddress;
+                    httpGet["ssid"] = session.KeyCode.ToString("N");
+                    httpGet["http"] = "1";
+                }
+
+                var httpresponse = new SocketGameResponse();
+                httpresponse.WriteErrorCallback += new ScutActionDispatcher().ResponseError;
 
                 var clientConnection = new HttpClientConnection
                 {
@@ -482,10 +451,21 @@ namespace ZyGames.Framework.Game.Contract
                     GameResponse = httpresponse
                 };
                 clientConnection.TimeoutTimer = new Timer(OnHttpRequestTimeout, clientConnection, httpRequestTimeout, Timeout.Infinite);
-
-
-                DoAction(httpGet, httpresponse);
-                byte[] respData = httpresponse.ReadByte();
+                byte[] respData = new byte[0];
+                if (!string.IsNullOrEmpty(package.RouteName))
+                {
+                    if (CheckRemote(package.RouteName, httpGet))
+                    {
+                        MessageStructure response = new MessageStructure();
+                        OnCallRemote(package.RouteName, httpGet, response);
+                        respData = response.PopBuffer();
+                    }
+                }
+                else
+                {
+                    DoHttpAction(httpGet, httpresponse);
+                    respData = httpresponse.ReadByte();
+                }
                 OnHttpResponse(clientConnection, respData, 0, respData.Length);
 
             }
@@ -493,19 +473,6 @@ namespace ZyGames.Framework.Game.Contract
             {
                 TraceLog.WriteError("OnHttpRequest error:{0}", ex);
             }
-        }
-
-        private int CheckHttpParam(Dictionary<string, string> param)
-        {
-            if (!param.ContainsKey("actionid"))
-            {
-                return (int)HttpStatusCode.BadRequest;
-            }
-            if (!param.ContainsKey("msgid"))
-            {
-                return (int)HttpStatusCode.BadRequest;
-            }
-            return (int)HttpStatusCode.OK;
         }
 
         private void OnHttpRequestTimeout(object state)
@@ -661,7 +628,7 @@ namespace ZyGames.Framework.Game.Contract
             return true;
         }
 
-        private void DoAction(ActionGetter actionGetter, BaseGameResponse response)
+        private void DoHttpAction(ActionGetter actionGetter, BaseGameResponse response)
         {
             if (GameEnvironment.IsRunning)
             {

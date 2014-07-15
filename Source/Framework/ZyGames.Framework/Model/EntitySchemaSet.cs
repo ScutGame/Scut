@@ -36,6 +36,7 @@ using ZyGames.Framework.Common.Log;
 using ZyGames.Framework.Common.Timing;
 using ZyGames.Framework.Data;
 using ZyGames.Framework.Event;
+using ZyGames.Framework.Redis;
 
 namespace ZyGames.Framework.Model
 {
@@ -156,9 +157,9 @@ namespace ZyGames.Framework.Model
         {
             if (string.IsNullOrEmpty(personalKey))
             {
-                return string.Format("{0}", type.FullName);
+                return string.Format("{0}", RedisConnectionPool.ConvertKeyFromType(type.FullName));
             }
-            return string.Format("{0}_{1}", type.FullName, personalKey);
+            return string.Format("{0}_{1}", RedisConnectionPool.ConvertKeyFromType(type.FullName), personalKey);
         }
 
         /// <summary>

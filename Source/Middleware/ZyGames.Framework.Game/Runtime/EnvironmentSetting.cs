@@ -31,6 +31,7 @@ using System.Reflection;
 using System.Text;
 using ZyGames.Framework.Cache.Generic;
 using ZyGames.Framework.Common.Configuration;
+using ZyGames.Framework.Game.Contract;
 
 namespace ZyGames.Framework.Game.Runtime
 {
@@ -55,6 +56,7 @@ namespace ZyGames.Framework.Game.Runtime
         private static readonly int actionGZipOutLength;
         private static readonly string actionTypeName;
         private static readonly string scriptTypeName;
+        private static readonly string entityAssemblyName;
 
         static EnvironmentSetting()
         {
@@ -88,6 +90,7 @@ namespace ZyGames.Framework.Game.Runtime
                 }
             }
             scriptTypeName = ConfigUtils.GetSetting("Game.Action.Script.TypeName", "Game.Script.Action{0}");
+            entityAssemblyName = ConfigUtils.GetSetting("Game.Entity.AssemblyName");
         }
 
         private static string GetLocalIp()
@@ -126,6 +129,13 @@ namespace ZyGames.Framework.Game.Runtime
             GameIpAddress = gameIpAddress;
             ActionTypeName = actionTypeName;
             ScriptTypeName = scriptTypeName;
+            try
+            {
+                EntityAssembly = Assembly.LoadFrom(entityAssemblyName);
+            }
+            catch{}
+
+            ActionDispatcher = new ScutActionDispatcher();
         }
 
         /// <summary>
@@ -220,6 +230,11 @@ namespace ZyGames.Framework.Game.Runtime
             get;
             private set;
         }
+
+        /// <summary>
+        /// Action repeater
+        /// </summary>
+        public IActionDispatcher ActionDispatcher { get; set; }
 
         ///// <summary>
         ///// Before starting the script engine process.
