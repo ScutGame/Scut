@@ -20,22 +20,24 @@ public class TestGUI : MonoBehaviour
 
     void OnGUI()
     {
-
+        GUILayout.BeginArea(new Rect(10,10,500, 100));
+        GUILayout.BeginHorizontal();
         // Now create any Controls you like, and they will be displayed with the custom Skin
-        if (GUILayout.Button("Click Http"))
+        if (GUILayout.Button("Get ranking for Http"))
         {
             //NetWriter.SetUrl("http://127.0.0.1:8036/service.aspx");
             NetWriter.SetUrl("http://ph.scutgame.com/service.aspx");
             Net.Instance.Send((int)ActionType.RankSelect, OnRankingCallback, null);
         }
-
+        GUILayout.Space(20);
         // Any Controls created here will use the default Skin and not the custom Skin
-        if (GUILayout.Button("Click Socket"))
+        if (GUILayout.Button("Get ranking for Socket"))
         {
             NetWriter.SetUrl("ph.scutgame.com:9001");
             Net.Instance.Send((int)ActionType.RankSelect, OnRankingCallback, null);
         }
-
+        GUILayout.EndHorizontal();
+        GUILayout.EndArea();
         OnRankGUI();
     }
 

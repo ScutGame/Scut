@@ -22,6 +22,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ****************************************************************************/
 using System;
+using System.IO;
 using System.Runtime.Serialization;
 using ProtoBuf;
 
@@ -55,7 +56,25 @@ namespace ZyGames.Framework.Common.Serialization
         /// <param name="context"></param>
         protected ProtoObject(SerializationInfo info, StreamingContext context)
         {
-            Serializer.Merge(info, this);
+            byte[] buffer = (byte[])info.GetValue("proto", typeof(byte[]));
+            using (MemoryStream memoryStream = new MemoryStream(buffer))
+            {
+                Serializer.Merge(memoryStream, this);
+            }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="info"></param>
+        /// <param name="context"></param>
+        public void GetObjectData(SerializationInfo info, StreamingContext context)
+        {
+            using (MemoryStream memoryStream = new MemoryStream())
+            {
+                Serializer.Serialize(memoryStream, this);
+                info.AddValue("proto", memoryStream.ToArray());
+            }
         }
 
         /// <summary>
@@ -189,18 +208,5 @@ namespace ZyGames.Framework.Common.Serialization
         // etc
 
 
-
-        #region ISerializable Members
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="info"></param>
-        /// <param name="context"></param>
-        public void GetObjectData(SerializationInfo info, StreamingContext context)
-        {
-            Serializer.Serialize(info, this);
-        }
-
-        #endregion
     }
 }
