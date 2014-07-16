@@ -63,7 +63,7 @@ public class Action1001 : BaseAction//GameAction
         }
     }
 
-    public override object GetResonseData()
+    public override object GetResponseData()
     {
         if (_responseData != null)
         {

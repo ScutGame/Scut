@@ -18,7 +18,7 @@ public class Action1000 : GameAction
     {
     }
 
-    public override object GetResonseData()
+    public override object GetResponseData()
     {
 		return null;
     }

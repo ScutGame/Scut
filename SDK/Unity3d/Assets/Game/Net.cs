@@ -83,7 +83,7 @@ public class Net : MonoBehaviour, IHttpCallback
 
             if (result && gameAction.TryDecodePackage(reader))
             {
-                object responseData = gameAction.GetResonseData();
+                object responseData = gameAction.GetResponseData();
                 gameAction.OnCallback(responseData);
             }
             else
@@ -317,7 +317,7 @@ public class Net : MonoBehaviour, IHttpCallback
 
         if (result && package.Action != null && package.Action.TryDecodePackage(reader))
         {
-            object responseData = package.Action.GetResonseData();
+            object responseData = package.Action.GetResponseData();
             package.Action.OnCallback(responseData);
         }
         else

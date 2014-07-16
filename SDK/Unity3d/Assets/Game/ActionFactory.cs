@@ -21,29 +21,20 @@ public abstract class ActionFactory
         GameAction gameAction = null;
         try
         {
-            switch ((ActionType)actionId)
+            string name = string.Format(ActionFormat, actionId);
+            var type = (Type)lookupType[name];
+            lock (lookupType)
             {
-                case ActionType.RankAdd: return new Action1000();
-                case ActionType.RankSelect: return new Action1001();
-                default:
-                    throw new ArgumentOutOfRangeException("actionId");
+                if (type == null)
+                {
+                    type = Type.GetType(name);
+                    lookupType[name] = type;
+                }
             }
-
-            //reason:IOS does not support reflect
-            //string name = string.Format(ActionFormat, actionId);
-            //var type = (Type)lookupType[name];
-            //lock (lookupType)
-            //{
-            //    if (type == null)
-            //    {
-            //        type = Type.GetType(name);
-            //        lookupType[name] = type;
-            //    }
-            //}
-            //if (type != null)
-            //{
-            //    gameAction = FastActivator.Create(type) as GameAction;
-            //}
+            if (type != null)
+            {
+                gameAction = Activator.CreateInstance(type) as GameAction;
+            }
         }
         catch (Exception ex)
         {

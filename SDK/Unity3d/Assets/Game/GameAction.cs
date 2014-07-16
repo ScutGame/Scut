@@ -72,6 +72,6 @@ public abstract class GameAction
 
     protected abstract void DecodePackage(NetReader reader);
 
-    public abstract object GetResonseData();
+    public abstract object GetResponseData();
 
 }
