@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Data;
+using System.Collections.Generic;
 ##RefNamespace##
 
 namespace ##Namespace##
@@ -8,29 +8,42 @@ namespace ##Namespace##
     /// <summary>
     /// ##Description##
     /// </summary>
-    public class Action##ID## : BaseAction
+    /// <remarks>继续BaseStruct类:不检查用户合法性请求;AuthorizeAction:有验证合法性</remarks>
+    public class Action##ID## : AuthorizeAction
     {
         ##Field##
 
-        public Action##ID##(HttpGet httpGet)
-            : base(ActionIDDefine.Cst_Action##ID##, httpGet)
+        public Action##ID##(ActionGetter actionGetter)
+            : base(ActionIDDefine.Cst_Action##ID##, actionGetter)
         {
             
         }
 
-        public override void BuildPacket()
-        {
-##johc##
-        }
-
+        /// <summary>
+        /// 客户端请求的参数较验
+        /// </summary>
+        /// <returns>false:中断后面的方式执行并返回Error</returns>
         public override bool GetUrlElement()
         {
 ##Judge##
         }
 
+        /// <summary>
+        /// 业务逻辑处理
+        /// </summary>
+        /// <returns>false:中断后面的方式执行并返回Error</returns>
         public override bool TakeAction()
         {
             return true;
         }
+
+        /// <summary>
+        /// 下发给客户的包结构数据
+        /// </summary>
+        public override void BuildPacket()
+        {
+##johc##
+        }
+
     }
 }
