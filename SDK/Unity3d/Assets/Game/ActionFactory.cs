@@ -1,7 +1,6 @@
-﻿using System;
+using System;
 using System.Collections;
 using UnityEngine;
-using ZyGames.Framework.Common.Reflect;
 
 /// <summary>
 /// 游戏Action处理工厂
@@ -38,7 +37,7 @@ public abstract class ActionFactory
         }
         catch (Exception ex)
         {
-            UnityEngine.Debug.LogError("GameAction create error:" + ex);
+            Debug.LogError("GameAction create error:" + ex);
         }
         return gameAction;
     }
