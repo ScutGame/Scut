@@ -27,6 +27,8 @@ public class SocketConnect
     private readonly Queue<SocketPackage> _receiveQueue;
     private const int TimeOut = 30;//30秒的超时时间
     private Thread _thread = null;
+    private const int HearInterval = 10000;
+    private Timer _heartbeatThread = null;
 
     /// <summary>
     /// 注册网络Push回调方法
@@ -260,10 +262,28 @@ public class SocketConnect
                 _socket = null;
                 throw;
             }
+            if (_heartbeatThread == null)
+            {
+                _heartbeatThread = new Timer(SendHeartbeatPackage, null, HearInterval, HearInterval);
+            }
             _thread = new Thread(new ThreadStart(CheckReceive));
             _thread.Start();
         }
 
+    }
+
+    private void SendHeartbeatPackage(object state)
+    {
+        try
+        {
+            NetWriter writer = NetWriter.Instance;
+            writer.writeInt32("actionId", 1);
+            byte[] data = writer.PostData();
+            PostSend(data);
+        }
+        catch (Exception)
+        {
+        }
     }
 
     private void EnsureConnected()
@@ -334,7 +354,7 @@ public class SocketConnect
 
         try
         {
-            bool bRet = PostSend(data);
+            PostSend(data);
             //UnityEngine.Debug.Log("Socket send actionId:" + package.ActionId + ", msgId:" + package.MsgId + ", send result:" + bRet);
         }
         catch (Exception ex)

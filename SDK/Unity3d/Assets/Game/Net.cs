@@ -5,7 +5,7 @@ using UnityEngine;
 
 public class Net : MonoBehaviour, IHttpCallback
 {
-    public delegate bool CanRequestDelegate(int actionId, object userData);
+    public delegate bool CanRequestDelegate(int actionId, ActionParam actionParam);
     public delegate void RequestNotifyDelegate(Status eStatus);
     /// <summary>
     /// 网络请求回调统一处理方法
@@ -83,8 +83,8 @@ public class Net : MonoBehaviour, IHttpCallback
 
             if (result && gameAction.TryDecodePackage(reader))
             {
-                object responseData = gameAction.GetResponseData();
-                gameAction.OnCallback(responseData);
+                ActionResult actionResult = gameAction.GetResponseData();
+                gameAction.OnCallback(actionResult);
             }
             else
             {
@@ -159,9 +159,9 @@ public class Net : MonoBehaviour, IHttpCallback
     /// </summary>
     /// <param name="actionId"></param>
     /// <param name="callback"></param>
-    /// <param name="userData"></param>
+    /// <param name="actionParam"></param>
     /// <param name="bShowLoading"></param>
-    public void Send(int actionId, Action<object> callback, object userData, bool bShowLoading = true)
+    public void Send(int actionId, Action<ActionResult> callback, ActionParam actionParam, bool bShowLoading = true)
     {
         GameAction gameAction = ActionFactory.Create(actionId);
         if (gameAction == null)
@@ -171,11 +171,11 @@ public class Net : MonoBehaviour, IHttpCallback
         gameAction.Callback += callback;
         if (NetWriter.IsSocket())
         {
-            SocketRequest(gameAction, userData, HeadFormater, bShowLoading);
+            SocketRequest(gameAction, actionParam, HeadFormater, bShowLoading);
         }
         else
         {
-            HttpRequest(gameAction, userData, HeadFormater, bShowLoading);
+            HttpRequest(gameAction, actionParam, HeadFormater, bShowLoading);
         }
     }
 
@@ -183,10 +183,10 @@ public class Net : MonoBehaviour, IHttpCallback
     /// parse input data
     /// </summary>
     /// <param name="gameAction"></param>
-    /// <param name="userData"></param>
+    /// <param name="actionParam"></param>
     /// <param name="formater"></param>
     /// <param name="bShowLoading"></param>
-    private void SocketRequest(GameAction gameAction, object userData, IHeadFormater formater, bool bShowLoading)
+    private void SocketRequest(GameAction gameAction, ActionParam actionParam, IHeadFormater formater, bool bShowLoading)
     {
         if (mSocket == null)
         {
@@ -204,7 +204,7 @@ public class Net : MonoBehaviour, IHttpCallback
         package.Action = gameAction;
         package.HasLoading = bShowLoading;
         package.SendTime = DateTime.Now;
-        byte[] data = gameAction.Send(userData);
+        byte[] data = gameAction.Send(actionParam);
         NetWriter.resetData();
         if (bShowLoading)
         {
@@ -241,16 +241,16 @@ public class Net : MonoBehaviour, IHttpCallback
         }
     }
 
-    private void HttpRequest(GameAction gameAction, object userData, IHeadFormater formater, bool bShowLoading)
+    private void HttpRequest(GameAction gameAction, ActionParam actionParam, IHeadFormater formater, bool bShowLoading)
     {
-        StartCoroutine(HttpGetRequest(gameAction, userData, formater, bShowLoading));
+        StartCoroutine(HttpGetRequest(gameAction, actionParam, formater, bShowLoading));
         NetWriter.resetData();
     }
 
-    private IEnumerator HttpGetRequest(GameAction gameAction, object userData, IHeadFormater formater, bool showLoading)
+    private IEnumerator HttpGetRequest(GameAction gameAction, ActionParam actionParam, IHeadFormater formater, bool showLoading)
     {
         string url = NetWriter.GetUrl();
-        byte[] postData = gameAction.Send(userData);
+        byte[] postData = gameAction.Send(actionParam);
         DateTime start = DateTime.Now;
         HttpPackage httpPackage = new HttpPackage();
         httpPackage.WwwObject = new WWW(url, postData);
@@ -277,15 +277,14 @@ public class Net : MonoBehaviour, IHttpCallback
         {
             httpPackage.IsOverTime = true;
         }
-        OnHttpRespond(httpPackage, userData);
+        OnHttpRespond(httpPackage);
     }
 
     /// <summary>
     /// http respond
     /// </summary>
     /// <param name="package"></param>
-    /// <param name="userdata"></param>
-    public void OnHttpRespond(HttpPackage package, object userdata)
+    public void OnHttpRespond(HttpPackage package)
     {
         if (package.error != null)
         {
@@ -317,8 +316,8 @@ public class Net : MonoBehaviour, IHttpCallback
 
         if (result && package.Action != null && package.Action.TryDecodePackage(reader))
         {
-            object responseData = package.Action.GetResponseData();
-            package.Action.OnCallback(responseData);
+            ActionResult actionResult = package.Action.GetResponseData();
+            package.Action.OnCallback(actionResult);
         }
         else
         {

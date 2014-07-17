@@ -17,14 +17,14 @@ public abstract class GameAction
     {
         get { return Head.ActionId; }
     }
-	public event Action<object> Callback;
+    public event Action<ActionResult> Callback;
     public PackageHead Head { get; private set; }
 
-    public byte[] Send(object userData)
+    public byte[] Send(ActionParam actionParam)
     {
         NetWriter writer = NetWriter.Instance;
         SetActionHead(writer);
-        SendParameter(writer, userData);
+        SendParameter(writer, actionParam);
         return writer.PostData();
     }
 
@@ -47,13 +47,13 @@ public abstract class GameAction
         }
     }
 
-    public void OnCallback(object responseData)
+    public void OnCallback(ActionResult result)
     {
         try
         {
             if(Callback != null)
 			{
-				Callback(responseData);	
+				Callback(result);	
 			}
         }
         catch (Exception ex)
@@ -68,10 +68,10 @@ public abstract class GameAction
         writer.writeInt32("actionId", ActionId);
     }
 
-    protected abstract void SendParameter(NetWriter writer, object userData);
+    protected abstract void SendParameter(NetWriter writer, ActionParam actionParam);
 
     protected abstract void DecodePackage(NetReader reader);
 
-    public abstract object GetResponseData();
+    public abstract ActionResult GetResponseData();
 
 }
