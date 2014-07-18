@@ -1,0 +1,2550 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>ZyGames.Framework.Common</name>
+    </assembly>
+    <members>
+        <member name="T:ZyGames.Framework.Common.BaseDisposable">
+            <summary>
+            对象显示回收基类
+            </summary>
+        </member>
+        <member name="M:ZyGames.Framework.Common.BaseDisposable.Dispose">
+            <summary>
+            显示释放对象资源
+            </summary>
+        </member>
+        <member name="M:ZyGames.Framework.Common.BaseDisposable.CheckDisposed">
+            <summary>
+            检查对象是否已被显示释放了
+            </summary>
+        </member>
+        <member name="M:ZyGames.Framework.Common.BaseDisposable.Dispose(System.Boolean)">
+            <summary>
+            
+            </summary>
+            <param name="disposing"></param>
+        </member>
+        <member name="T:ZyGames.Framework.Common.Build.AssemblyBuilder">
+            <summary>
+            Assemblly builder.
+            </summary>
+        </member>
+        <member name="M:ZyGames.Framework.Common.Build.AssemblyBuilder.ReadAssembly(System.String,System.Security.Policy.Evidence)">
+            <summary>
+            Read assembly.
+            </summary>
+        </member>
+        <member name="M:ZyGames.Framework.Common.Build.AssemblyBuilder.ReadAssembly(System.IO.Stream,System.Security.Policy.Evidence)">
+            <summary>
+            
+            </summary>
+            <param name="stream"></param>
+            <param name="evidence"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ZyGames.Framework.Common.Build.AssemblyBuilder.ReadAssembly(System.String)">
+            <summary>
+            
+            </summary>
+            <param name="assemblyPath"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ZyGames.Framework.Common.Build.AssemblyBuilder.BuildToStream(System.String,System.IO.Stream@)">
+            <summary>
+            
+            </summary>
+            <param name="assemblyPath"></param>
+            <param name="outputAssembly"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ZyGames.Framework.Common.Build.AssemblyBuilder.BuildToFile(System.String,System.String,System.String)">
+            <summary>
+            
+            </summary>
+            <param name="assemblyPath"></param>
+            <param name="currentPath"></param>
+            <param name="savePath"></param>
+            <returns></returns>
+        </member>
+        <member name="T:ZyGames.Framework.Common.Build.WeavingEntityTask">
+            <summary>
+            实体属性重构生成
+            </summary>
+        </member>
+        <member name="M:ZyGames.Framework.Common.Build.WeavingEntityTask.Execute">
+            <summary>
+            
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="P:ZyGames.Framework.Common.Build.WeavingEntityTask.SolutionDir">
+            <summary>
+            Gets or sets the solution dir.
+            </summary>
+            <value>The solution dir.</value>
+        </member>
+        <member name="P:ZyGames.Framework.Common.Build.WeavingEntityTask.FilePattern">
+            <summary>
+            过滤文件类型
+            </summary>
+        </member>
+        <member name="T:ZyGames.Framework.Common.Configuration.ConfigUtils">
+            <summary>
+            操作Web.config文档
+            </summary>
+        </member>
+        <member name="M:ZyGames.Framework.Common.Configuration.ConfigUtils.GetSetting(System.String,System.Int32)">
+            <summary>
+            读取Config配置文件的Add结点键int配置值
+            </summary>
+            <param name="key">键值Key</param>
+            <param name="defaultValue">默认值</param>
+            <returns></returns>
+        </member>
+        <member name="M:ZyGames.Framework.Common.Configuration.ConfigUtils.GetSetting(System.String,System.Decimal)">
+            <summary>
+            读取Config配置文件的Add结点键decimal配置值
+            </summary>
+            <param name="key">键值Key</param>
+            <param name="defaultValue">默认值</param>
+            <returns></returns>
+        </member>
+        <member name="M:ZyGames.Framework.Common.Configuration.ConfigUtils.GetSetting(System.String,System.Boolean)">
+            <summary>
+            读取Config配置文件的Add结点键bool配置值
+            </summary>
+            <param name="key">键值Key</param>
+            <param name="defaultValue">默认值</param>
+            <returns></returns>
+        </member>
+        <member name="M:ZyGames.Framework.Common.Configuration.ConfigUtils.GetSetting(System.String,System.String)">
+            <summary>
+            读取Config配置文件的Add结点键配置值
+            </summary>
+            <param name="key">键值Key</param>
+            <param name="defaultValue">默认值</param>
+            <returns></returns>
+        </member>
+        <member name="M:ZyGames.Framework.Common.Configuration.ConfigUtils.GetSetting(System.String)">
+            <summary>
+            读取Config配置文件的Add结点键值
+            </summary>
+            <param name="key">键值Key</param>
+            <returns></returns>
+        </member>
+        <member name="M:ZyGames.Framework.Common.Configuration.ConfigUtils.GetConnectionString(System.String,System.String)">
+            <summary>
+            获取连接字符串
+            </summary>
+            <param name="connName">键值Key</param>
+            <param name="mKey">解密密钥</param>
+            <returns></returns>
+        </member>
+        <member name="M:ZyGames.Framework.Common.Configuration.ConfigUtils.GetConnectionString(System.String)">
+            <summary>
+            获取连接字符串
+            </summary>
+            <param name="connName"></param>
+            <returns></returns>
+        </member>
+        <member name="P:ZyGames.Framework.Common.Configuration.ConfigUtils.SettingsCollection">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="T:ZyGames.Framework.Common.Event.CustomEventHandle`1">
+            <summary>
+            自定义事件处理委托
+            </summary>
+            <typeparam name="T">类型EventArgs的子类</typeparam>
+            <param name="sender"></param>
+            <param name="args"></param>
+        </member>
+        <member name="T:ZyGames.Framework.Common.Event.CustomEvent`1">
+            <summary>
+            自定的事模型
+            </summary>
+            <typeparam name="T">类型EventArgs的子类</typeparam>
+        </member>
+        <member name="M:ZyGames.Framework.Common.Event.CustomEvent`1.Reset">
+            <summary>
+            Reset event
+            </summary>
+        </member>
+        <member name="M:ZyGames.Framework.Common.Event.CustomEvent`1.AddSingle(ZyGames.Framework.Common.Event.CustomEventHandle{`0},System.Object)">
+            <summary>
+            注册单一事件
+            </summary>
+            <param name="handle"></param>
+            <param name="target"></param>
+        </member>
+        <member name="M:ZyGames.Framework.Common.Event.CustomEvent`1.Add(ZyGames.Framework.Common.Event.CustomEventHandle{`0},System.Object)">
+            <summary>
+            增加事件
+            </summary>
+            <param name="handle"></param>
+            <param name="target"></param>
+        </member>
+        <member name="M:ZyGames.Framework.Common.Event.CustomEvent`1.Remove(ZyGames.Framework.Common.Event.CustomEventHandle{`0})">
+            <summary>
+            移除事件
+            </summary>
+            <param name="handle"></param>
+        </member>
+        <member name="M:ZyGames.Framework.Common.Event.CustomEvent`1.Notify(System.Object,`0)">
+            <summary>
+            事件通知
+            </summary>
+            <param name="sender"></param>
+            <param name="args"></param>
+        </member>
+        <member name="M:ZyGames.Framework.Common.Event.CustomEvent`1.NotifyAll(System.Object,`0)">
+            <summary>
+            事件通知
+            </summary>
+            <param name="sender"></param>
+            <param name="args"></param>
+        </member>
+        <member name="M:ZyGames.Framework.Common.Event.CustomEvent`1.Dispose(System.Boolean)">
+            <summary>
+            释放对象
+            </summary>
+            <param name="disposing"></param>
+        </member>
+        <member name="P:ZyGames.Framework.Common.Event.CustomEvent`1.Parent">
+            <summary>
+            父类对象引用
+            </summary>
+        </member>
+        <member name="T:ZyGames.Framework.Common.HttpUtils">
+            <summary>
+            Http mothod
+            </summary>
+        </member>
+        <member name="F:ZyGames.Framework.Common.HttpUtils.XmlContentType">
+            <summary>
+            The content type xml.
+            </summary>
+        </member>
+        <member name="F:ZyGames.Framework.Common.HttpUtils.StreamContentType">
+            <summary>
+            stream
+            </summary>
+        </member>
+        <member name="M:ZyGames.Framework.Common.HttpUtils.GetString(System.String,System.Text.Encoding,System.String)">
+            <summary>
+            Get request
+            </summary>
+            <param name="url"></param>
+            <param name="encoding"></param>
+            <param name="contentType"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ZyGames.Framework.Common.HttpUtils.Get(System.String,System.String)">
+            <summary>
+            Get request
+            </summary>
+            <param name="url"></param>
+            <param name="contentType"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ZyGames.Framework.Common.HttpUtils.Get(System.String,System.String,System.Nullable{System.Int32},System.String,System.Net.CookieCollection)">
+            <summary>  
+            Get request  
+            </summary>  
+            <param name="url">URL</param>
+            <param name="contentType"></param>
+            <param name="timeout">请求的超时时间</param>  
+            <param name="userAgent">请求的客户端浏览器信息，可以为空</param>  
+            <param name="cookies">随同HTTP请求发送的Cookie信息，如果不需要身份验证可以为空</param>  
+            <returns></returns>  
+        </member>
+        <member name="M:ZyGames.Framework.Common.HttpUtils.PostString(System.String,System.String,System.Text.Encoding,System.String)">
+            <summary>
+            Post request
+            </summary>
+            <param name="url"></param>
+            <param name="parameters"></param>
+            <param name="encoding"></param>
+            <param name="contentType"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ZyGames.Framework.Common.HttpUtils.Post(System.String,System.Collections.Generic.IDictionary{System.String,System.String},System.Text.Encoding,System.String)">
+            <summary>
+            Post request
+            </summary>
+            <param name="url"></param>
+            <param name="parameters"></param>
+            <param name="encoding"></param>
+            <param name="contentType"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ZyGames.Framework.Common.HttpUtils.Post(System.String,System.String,System.Text.Encoding,System.String)">
+            <summary>
+            
+            </summary>
+            <param name="url"></param>
+            <param name="parameters"></param>
+            <param name="encoding"></param>
+            <param name="contentType"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ZyGames.Framework.Common.HttpUtils.Post(System.String,System.String,System.Nullable{System.Int32},System.String,System.Text.Encoding,System.String,System.Net.CookieCollection)">
+            <summary>  
+            Post request 
+            </summary>  
+            <param name="url">请求的URL</param>  
+            <param name="parameters">随同请求POST的参数</param>
+            <param name="timeout">请求的超时时间</param>  
+            <param name="userAgent">请求的客户端浏览器信息，可以为空</param>  
+            <param name="encoding">发送HTTP请求时所用的编码</param>  
+            <param name="contentType"></param>
+            <param name="cookies">随同HTTP请求发送的Cookie信息，如果不需要身份验证可以为空</param>  
+            <returns></returns>  
+        </member>
+        <member name="T:ZyGames.Framework.Common.Locking.LockCallback">
+            <summary>
+            锁回调委托
+            </summary>
+        </member>
+        <member name="T:ZyGames.Framework.Common.Locking.ILocking">
+            <summary>
+            锁操作接口
+            </summary>
+        </member>
+        <member name="M:ZyGames.Framework.Common.Locking.ILocking.TryEnterLock">
+            <summary>
+            尝试进入锁
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="P:ZyGames.Framework.Common.Locking.ILocking.IsLocked">
+            <summary>
+            是否已锁成功
+            </summary>
+        </member>
+        <member name="T:ZyGames.Framework.Common.Locking.IMonitorStrategy">
+            <summary>
+            Monitor锁策略接口
+            </summary>
+        </member>
+        <member name="M:ZyGames.Framework.Common.Locking.IMonitorStrategy.TryEnterLock(ZyGames.Framework.Common.Locking.LockCallback)">
+            <summary>
+            尝试进入锁
+            </summary>
+            <param name="handle"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ZyGames.Framework.Common.Locking.IMonitorStrategy.Lock">
+            <summary>
+            获取锁操作接口
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="T:ZyGames.Framework.Common.Locking.MonitorLockStrategy">
+            <summary>
+            Monitor锁策略
+            </summary>
+        </member>
+        <member name="M:ZyGames.Framework.Common.Locking.MonitorLockStrategy.#ctor">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:ZyGames.Framework.Common.Locking.MonitorLockStrategy.#ctor(System.Int32)">
+            <summary>
+            
+            </summary>
+            <param name="timeOut"></param>
+        </member>
+        <member name="M:ZyGames.Framework.Common.Locking.MonitorLockStrategy.TryEnterLock(ZyGames.Framework.Common.Locking.LockCallback)">
+            <summary>
+            
+            </summary>
+            <param name="handle"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ZyGames.Framework.Common.Locking.MonitorLockStrategy.Lock">
+            <summary>
+            
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="T:ZyGames.Framework.Common.Locking.WriteLockSlim">
+            <summary>
+            过期不使用
+            </summary>
+        </member>
+        <member name="T:ZyGames.Framework.Common.Log.BaseLog">
+            <summary>
+            BaseLog 的摘要说明
+            保存日志到文本的接口类
+            </summary>
+        </member>
+        <member name="F:ZyGames.Framework.Common.Log.BaseLog.MFolderName">
+            <summary>
+            文件夹名称
+            </summary>
+        </member>
+        <member name="M:ZyGames.Framework.Common.Log.BaseLog.#ctor">
+            <summary>
+            缺省构造器
+            </summary>
+        </member>
+        <member name="M:ZyGames.Framework.Common.Log.BaseLog.#ctor(System.String)">
+            <summary>
+            接收日志目录信息构造器
+            </summary>
+            <param name="folderName">日志目录信息</param>
+        </member>
+        <member name="M:ZyGames.Framework.Common.Log.BaseLog.SaveLog(System.String)">
+            <summary>
+            记录一些基本信息（非异常日志）
+            </summary>
+            <param name="message">记录的消息内容</param>
+        </member>
+        <member name="M:ZyGames.Framework.Common.Log.BaseLog.SaveLog(System.Exception)">
+            <summary>
+            记录异常日志信息
+            </summary>
+            <param name="aExObj">异常对象</param>
+        </member>
+        <member name="M:ZyGames.Framework.Common.Log.BaseLog.SaveLog(System.String,System.Exception)">
+            <summary>
+            记录异常日志信息
+            </summary>
+            <param name="message">消息内容</param>
+            <param name="aExObj">异常对象</param>
+        </member>
+        <member name="M:ZyGames.Framework.Common.Log.BaseLog.SaveDebugLog(System.String)">
+            <summary>
+            记录异常日志到Debug目录
+            </summary>
+            <param name="message"></param>
+        </member>
+        <member name="M:ZyGames.Framework.Common.Log.BaseLog.SaveFatalLog(System.String)">
+            <summary>
+            记录异常日志到Fatal目录
+            </summary>
+            <param name="message"></param>
+        </member>
+        <member name="M:ZyGames.Framework.Common.Log.BaseLog.SaveWarnLog(System.String)">
+            <summary>
+            记录异常日志到Warn目录
+            </summary>
+            <param name="message"></param>
+        </member>
+        <member name="M:ZyGames.Framework.Common.Log.BaseLog.SaveWarnLog(System.String,System.Exception)">
+            <summary>
+            记录异常日志到Warn目录
+            </summary>
+            <param name="message"></param>
+            <param name="ex"></param>
+        </member>
+        <member name="M:ZyGames.Framework.Common.Log.BaseLog.SaveComplementLog(System.String)">
+            <summary>
+            记录异常日志到Complement目录
+            </summary>
+            <param name="message"></param>
+        </member>
+        <member name="M:ZyGames.Framework.Common.Log.BaseLog.SaveComplementLog(System.String,System.Exception)">
+            <summary>
+            记录异常日志到Complement目录
+            </summary>
+            <param name="message"></param>
+            <param name="ex"></param>
+        </member>
+        <member name="T:ZyGames.Framework.Common.Log.TraceLog">
+            <summary>
+            日志操作类
+            </summary>
+            <example>
+            <code>
+            public class Program
+            {
+                static void Main()
+                {
+                    TraceLog.ReleaseWrite("Hello {0}", "Kim")
+                    TraceLog.WriteError("Error {0}", new Exception("error test."))
+                }
+            }
+            </code>
+            </example>
+        </member>
+        <member name="M:ZyGames.Framework.Common.Log.TraceLog.Write(System.String,System.Object[])">
+            <summary>
+            只在编译器的DEBUG下输出到Debug目录
+            </summary>
+            <param name="message"></param>
+            <param name="args"></param>
+        </member>
+        <member name="M:ZyGames.Framework.Common.Log.TraceLog.WriteInfo(System.String,System.Object[])">
+            <summary>
+            只在编译器的DEBUG下输出到Info目录
+            </summary>
+            <param name="message"></param>
+            <param name="args"></param>
+        </member>
+        <member name="M:ZyGames.Framework.Common.Log.TraceLog.WriteError(System.String,System.Object[])">
+            <summary>
+            记录出错日志到Error目录下
+            </summary>
+            <param name="message"></param>
+            <param name="args"></param>
+        </member>
+        <member name="M:ZyGames.Framework.Common.Log.TraceLog.WriteWarn(System.String,System.Object[])">
+            <summary>
+            记录出错日志到Warn目录下
+            </summary>
+            <param name="message"></param>
+            <param name="args"></param>
+        </member>
+        <member name="M:ZyGames.Framework.Common.Log.TraceLog.WriteComplement(System.String,System.Object[])">
+            <summary>
+            记录出错日志到Complement目录下
+            </summary>
+            <param name="message"></param>
+            <param name="args"></param>
+        </member>
+        <member name="M:ZyGames.Framework.Common.Log.TraceLog.WriteTo(System.String,System.String,System.Object[])">
+            <summary>
+            Write to custom log
+            </summary>
+            <param name="name">dir name</param>
+            <param name="message"></param>
+            <param name="args"></param>
+        </member>
+        <member name="M:ZyGames.Framework.Common.Log.TraceLog.WriteSqlError(System.String,System.Object[])">
+            <summary>
+            Write sql error.
+            </summary>
+            <param name="message"></param>
+            <param name="args"></param>
+        </member>
+        <member name="M:ZyGames.Framework.Common.Log.TraceLog.ReleaseWrite(System.String,System.Object[])">
+            <summary>
+            在DEBUG和Release下输出到Info目录
+            </summary>
+            <param name="message"></param>
+            <param name="args"></param>
+        </member>
+        <member name="M:ZyGames.Framework.Common.Log.TraceLog.ReleaseWriteDebug(System.String,System.Object[])">
+            <summary>
+            记录出错日志到Debug目录下
+            </summary>
+            <param name="message"></param>
+            <param name="args"></param>
+        </member>
+        <member name="M:ZyGames.Framework.Common.Log.TraceLog.ReleaseWriteFatal(System.String,System.Object[])">
+            <summary>
+            记录出错日志到Fatal目录下
+            </summary>
+            <param name="message"></param>
+            <param name="args"></param>
+        </member>
+        <member name="T:ZyGames.Framework.Common.MathUtils">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="F:ZyGames.Framework.Common.MathUtils.ZeroNum">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="F:ZyGames.Framework.Common.MathUtils.SqlMinDate">
+            <summary>
+            Sql最小时间范围
+            </summary>
+        </member>
+        <member name="M:ZyGames.Framework.Common.MathUtils.DiffDate(System.DateTime)">
+            <summary>
+            获取与当前时间差异
+            </summary>
+            <param name="date"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ZyGames.Framework.Common.MathUtils.DiffDate(System.DateTime,System.DateTime)">
+            <summary>
+            获取两个时间之间的差异
+            </summary>
+            <param name="date1"></param>
+            <param name="date2"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ZyGames.Framework.Common.MathUtils.ToDefaultValue(System.Type)">
+            <summary>
+            Convert to default value by type.
+            </summary>
+            <param name="type"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ZyGames.Framework.Common.MathUtils.ToHexMd5Hash(System.String)">
+            <summary>
+            
+            </summary>
+            <param name="str"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ZyGames.Framework.Common.MathUtils.ToHex(System.Byte[])">
+            <summary>
+            转换成16进制编码字串
+            </summary>
+            <param name="bytes">The bytes.</param>
+            <returns></returns>
+        </member>
+        <member name="M:ZyGames.Framework.Common.MathUtils.ToHex(System.Byte[],System.Int32,System.Int32)">
+            <summary>
+            转换成16进制编码字串
+            </summary>
+            <param name="bytes">The bytes.</param>
+            <param name="offset">The offset.</param>
+            <param name="count">The count.</param>
+            <returns></returns>
+        </member>
+        <member name="M:ZyGames.Framework.Common.MathUtils.RoundCustom(System.Decimal,System.Int32)">
+            <summary>
+            四舍五入
+            </summary>
+            <param name="value"></param>
+            <param name="decimals">保留的小数位</param>
+            <returns></returns>
+        </member>
+        <member name="M:ZyGames.Framework.Common.MathUtils.RoundCustom(System.Double,System.Int32)">
+            <summary>
+            四舍五入
+            </summary>
+            <param name="value"></param>
+            <param name="decimals">保留的小数位</param>
+            <returns></returns>
+        </member>
+        <member name="M:ZyGames.Framework.Common.MathUtils.RoundCustom(System.Decimal)">
+            <summary>
+            四舍五入
+            </summary>
+            <param name="value"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ZyGames.Framework.Common.MathUtils.RoundCustom(System.Double)">
+            <summary>
+            四舍五入
+            </summary>
+            <param name="value"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ZyGames.Framework.Common.MathUtils.IsMach(System.String,System.String)">
+            <summary>
+            指定的值是否匹配正则
+            </summary>
+            <param name="pattern"></param>
+            <param name="value"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ZyGames.Framework.Common.MathUtils.IsMachVarName(System.String)">
+            <summary>
+            指定的值是否匹配变量命名
+            </summary>
+            <param name="value"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ZyGames.Framework.Common.MathUtils.Addition(System.Int64,System.Int64)">
+            <summary>
+            
+            </summary>
+            <param name="value"></param>
+            <param name="addValue"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ZyGames.Framework.Common.MathUtils.Addition(System.Int64,System.Int64,System.Int64)">
+            <summary>
+            加法运算
+            </summary>
+            <param name="value"></param>
+            <param name="addValue">增加的值</param>
+            <param name="maxValue">最大值,超出取最大值</param>
+            <returns></returns>
+        </member>
+        <member name="M:ZyGames.Framework.Common.MathUtils.Addition(System.Int32,System.Int32)">
+            <summary>
+            
+            </summary>
+            <param name="value"></param>
+            <param name="addValue"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ZyGames.Framework.Common.MathUtils.Addition(System.Int32,System.Int32,System.Int32)">
+            <summary>
+            
+            </summary>
+            <param name="value"></param>
+            <param name="addValue"></param>
+            <param name="maxValue"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ZyGames.Framework.Common.MathUtils.Addition(System.Int16,System.Int16)">
+            <summary>
+            
+            </summary>
+            <param name="value"></param>
+            <param name="addValue"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ZyGames.Framework.Common.MathUtils.Addition(System.Int16,System.Int16,System.Int16)">
+            <summary>
+            
+            </summary>
+            <param name="value"></param>
+            <param name="addValue"></param>
+            <param name="maxValue"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ZyGames.Framework.Common.MathUtils.Addition(System.Byte,System.Byte)">
+            <summary>
+            
+            </summary>
+            <param name="value"></param>
+            <param name="addValue"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ZyGames.Framework.Common.MathUtils.Addition(System.Byte,System.Byte,System.Byte)">
+            <summary>
+            
+            </summary>
+            <param name="value"></param>
+            <param name="addValue"></param>
+            <param name="maxValue"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ZyGames.Framework.Common.MathUtils.Addition(System.Single,System.Single)">
+            <summary>
+            
+            </summary>
+            <param name="value"></param>
+            <param name="addValue"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ZyGames.Framework.Common.MathUtils.Addition(System.Single,System.Single,System.Single)">
+            <summary>
+            
+            </summary>
+            <param name="value"></param>
+            <param name="addValue"></param>
+            <param name="maxValue"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ZyGames.Framework.Common.MathUtils.Addition(System.Double,System.Double)">
+            <summary>
+            
+            </summary>
+            <param name="value"></param>
+            <param name="addValue"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ZyGames.Framework.Common.MathUtils.Addition(System.Double,System.Double,System.Double)">
+            <summary>
+            
+            </summary>
+            <param name="value"></param>
+            <param name="addValue"></param>
+            <param name="maxValue"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ZyGames.Framework.Common.MathUtils.Addition(System.Decimal,System.Decimal)">
+            <summary>
+            
+            </summary>
+            <param name="value"></param>
+            <param name="addValue"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ZyGames.Framework.Common.MathUtils.Addition(System.Decimal,System.Decimal,System.Decimal)">
+            <summary>
+            
+            </summary>
+            <param name="value"></param>
+            <param name="addValue"></param>
+            <param name="maxValue"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ZyGames.Framework.Common.MathUtils.Subtraction(System.Int64,System.Int64)">
+            <summary>
+            
+            </summary>
+            <param name="value"></param>
+            <param name="subValue"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ZyGames.Framework.Common.MathUtils.Subtraction(System.Int64,System.Int64,System.Int64)">
+            <summary>
+            减法运算
+            </summary>
+            <param name="value"></param>
+            <param name="subValue">减少的值</param>
+            <param name="minValue">最小值,超出取最小值</param>
+            <returns></returns>
+        </member>
+        <member name="M:ZyGames.Framework.Common.MathUtils.Subtraction(System.Int32,System.Int32)">
+            <summary>
+            
+            </summary>
+            <param name="value"></param>
+            <param name="subValue"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ZyGames.Framework.Common.MathUtils.Subtraction(System.Int32,System.Int32,System.Int32)">
+            <summary>
+            
+            </summary>
+            <param name="value"></param>
+            <param name="subValue"></param>
+            <param name="minValue"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ZyGames.Framework.Common.MathUtils.Subtraction(System.Int16,System.Int16)">
+            <summary>
+            
+            </summary>
+            <param name="value"></param>
+            <param name="subValue"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ZyGames.Framework.Common.MathUtils.Subtraction(System.Int16,System.Int16,System.Int16)">
+            <summary>
+            
+            </summary>
+            <param name="value"></param>
+            <param name="subValue"></param>
+            <param name="minValue"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ZyGames.Framework.Common.MathUtils.Subtraction(System.Byte,System.Byte)">
+            <summary>
+            
+            </summary>
+            <param name="value"></param>
+            <param name="subValue"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ZyGames.Framework.Common.MathUtils.Subtraction(System.Byte,System.Byte,System.Byte)">
+            <summary>
+            
+            </summary>
+            <param name="value"></param>
+            <param name="subValue"></param>
+            <param name="minValue"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ZyGames.Framework.Common.MathUtils.Subtraction(System.Single,System.Single)">
+            <summary>
+            
+            </summary>
+            <param name="value"></param>
+            <param name="subValue"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ZyGames.Framework.Common.MathUtils.Subtraction(System.Single,System.Single,System.Single)">
+            <summary>
+            
+            </summary>
+            <param name="value"></param>
+            <param name="subValue"></param>
+            <param name="minValue"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ZyGames.Framework.Common.MathUtils.Subtraction(System.Double,System.Double)">
+            <summary>
+            
+            </summary>
+            <param name="value"></param>
+            <param name="subValue"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ZyGames.Framework.Common.MathUtils.Subtraction(System.Double,System.Double,System.Double)">
+            <summary>
+            
+            </summary>
+            <param name="value"></param>
+            <param name="subValue"></param>
+            <param name="minValue"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ZyGames.Framework.Common.MathUtils.Subtraction(System.Decimal,System.Decimal)">
+            <summary>
+            
+            </summary>
+            <param name="value"></param>
+            <param name="subValue"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ZyGames.Framework.Common.MathUtils.Subtraction(System.Decimal,System.Decimal,System.Decimal)">
+            <summary>
+            
+            </summary>
+            <param name="value"></param>
+            <param name="subValue"></param>
+            <param name="minValue"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ZyGames.Framework.Common.MathUtils.GetPaging``1(System.Collections.Generic.List{``0},System.Int32,System.Int32,System.Int32@,System.Int32@)">
+            <summary>
+            分页
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="list"></param>
+            <param name="pageIndex"></param>
+            <param name="pageSize"></param>
+            <param name="pageCount"></param>
+            <param name="recordCount"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ZyGames.Framework.Common.MathUtils.IsEmpty(System.String)">
+            <summary>
+            同string.IsNullOrEmpty
+            </summary>
+            <param name="value"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ZyGames.Framework.Common.MathUtils.IsNullOrDbNull(System.Object)">
+            <summary>
+            判断对象是否为空或DBNull或new object()对象
+            </summary>
+            <param name="value"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ZyGames.Framework.Common.MathUtils.InsertSort``1(System.Collections.Generic.List{``0},``0,System.Comparison{``0})">
+            <summary>
+            插入排序,List是有序的
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="list"></param>
+            <param name="item"></param>
+            <param name="comparison"></param>
+        </member>
+        <member name="M:ZyGames.Framework.Common.MathUtils.QuickSort``1(System.Collections.Generic.List{``0},System.Comparison{``0})">
+            <summary>
+            
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="list"></param>
+            <param name="comparison"></param>
+        </member>
+        <member name="M:ZyGames.Framework.Common.MathUtils.ToNotNullString(System.Object)">
+            <summary>
+            将对象转换成字符串，Null为string.Empty
+            </summary>
+            <param name="value"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ZyGames.Framework.Common.MathUtils.ToNotNullString(System.Object,System.String)">
+            <summary>
+            
+            </summary>
+            <param name="value"></param>
+            <param name="defValue"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ZyGames.Framework.Common.MathUtils.ToLong(System.Object)">
+            <summary>
+            将对象转换成长整型值
+            </summary>
+            <param name="value"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ZyGames.Framework.Common.MathUtils.ToCeilingInt(System.Object)">
+            <summary>
+            向上取整
+            </summary>
+            <param name="value"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ZyGames.Framework.Common.MathUtils.ToFloorInt(System.Object)">
+            <summary>
+            向下取整
+            </summary>
+            <param name="value"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ZyGames.Framework.Common.MathUtils.ToInt(System.Object)">
+            <summary>
+            将对象转换成整型值
+            </summary>
+            <param name="value"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ZyGames.Framework.Common.MathUtils.ToShort(System.Object)">
+            <summary>
+            将对象转换成短整型值
+            </summary>
+            <param name="value"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ZyGames.Framework.Common.MathUtils.ToDouble(System.Object)">
+            <summary>
+            将对象转换成双精度值
+            </summary>
+            <param name="value"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ZyGames.Framework.Common.MathUtils.ToDecimal(System.Object)">
+            <summary>
+            将对象转换成单精度值
+            </summary>
+            <param name="value"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ZyGames.Framework.Common.MathUtils.ToBool(System.Object)">
+            <summary>
+            将对象转换成布尔值
+            </summary>
+            <param name="value"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ZyGames.Framework.Common.MathUtils.ToByte(System.Object)">
+            <summary>
+            将对象转换成字节值
+            </summary>
+            <param name="value"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ZyGames.Framework.Common.MathUtils.ToDateTime(System.Object)">
+            <summary>
+            将对象转换成时间值
+            </summary>
+            <param name="value"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ZyGames.Framework.Common.MathUtils.ToDateTime(System.Object,System.DateTime)">
+            <summary>
+            将对象转换成时间值
+            </summary>
+            <param name="value"></param>
+            <param name="defValue"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ZyGames.Framework.Common.MathUtils.ToEnum``1(System.Object)">
+            <summary>
+            将对象转换成枚举值
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="value"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ZyGames.Framework.Common.MathUtils.ToEnum(System.Object,System.Type)">
+            <summary>
+            
+            </summary>
+            <param name="value"></param>
+            <param name="type"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ZyGames.Framework.Common.MathUtils.ParseJson``1(System.String)">
+            <summary>
+            解析Json成对象
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="jsonStr"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ZyGames.Framework.Common.MathUtils.ToJson(System.Object)">
+            <summary>
+            将对象序列化成string
+            </summary>
+            <param name="value"></param>
+            <returns></returns>
+        </member>
+        <member name="P:ZyGames.Framework.Common.MathUtils.Now">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:ZyGames.Framework.Common.MathUtils.RuntimeBinPath">
+            <summary>
+            Get runtime bin path.
+            </summary>
+        </member>
+        <member name="P:ZyGames.Framework.Common.MathUtils.RuntimePath">
+            <summary>
+            Get runtime path.
+            </summary>
+        </member>
+        <member name="T:ZyGames.Framework.Common.ObjectExtend">
+            <summary>
+            对象扩展方法
+            </summary>
+        </member>
+        <member name="M:ZyGames.Framework.Common.ObjectExtend.CreateInstance``1(System.Type,System.Object[])">
+            <summary>
+            快速创建实例
+            </summary>
+            <typeparam name="T">Object类型</typeparam>
+            <param name="type">指定实例的类型</param>
+            <param name="args">创建实体的构造参数</param>
+            <returns>返回创建实例</returns>
+        </member>
+        <member name="M:ZyGames.Framework.Common.ObjectExtend.CreateInstance(System.Type,System.Object[])">
+            <summary>
+            
+            </summary>
+            <param name="type"></param>
+            <param name="args"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ZyGames.Framework.Common.ObjectExtend.IsEmpty(System.String)">
+            <summary>
+            同string.IsNullOrEmpty
+            </summary>
+            <param name="value"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ZyGames.Framework.Common.ObjectExtend.IsNullOrDbNull(System.Object)">
+            <summary>
+            判断对象是否为空或DBNull或new object()对象
+            </summary>
+            <param name="value"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ZyGames.Framework.Common.ObjectExtend.GetPaging``1(System.Collections.Generic.List{``0},System.Int32,System.Int32,System.Int32@)">
+            <summary>
+            
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="list"></param>
+            <param name="pageIndex"></param>
+            <param name="pageSize"></param>
+            <param name="pageCount"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ZyGames.Framework.Common.ObjectExtend.GetPaging``1(System.Collections.Generic.List{``0},System.Int32,System.Int32,System.Int32@,System.Int32@)">
+            <summary>
+            获取数据分页
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="list"></param>
+            <param name="pageIndex"></param>
+            <param name="pageSize"></param>
+            <param name="pageCount"></param>
+            <param name="recordCount"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ZyGames.Framework.Common.ObjectExtend.InsertSort``1(System.Collections.Generic.List{``0},``0,System.Comparison{``0})">
+            <summary>
+            插入排序,List是有序的
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="list"></param>
+            <param name="item"></param>
+            <param name="comparison"></param>
+        </member>
+        <member name="M:ZyGames.Framework.Common.ObjectExtend.QuickSort``1(System.Collections.Generic.List{``0})">
+            <summary>
+            
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="list"></param>
+        </member>
+        <member name="M:ZyGames.Framework.Common.ObjectExtend.QuickSort``1(System.Collections.Generic.List{``0},System.Comparison{``0})">
+            <summary>
+            快速排序
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="list"></param>
+            <param name="comparison"></param>
+        </member>
+        <member name="M:ZyGames.Framework.Common.ObjectExtend.ParseJson``1(System.String)">
+            <summary>
+            解析Json成对象
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="jsonStr"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ZyGames.Framework.Common.ObjectExtend.ToJson``1(System.Collections.Generic.List{``0})">
+            <summary>
+            将对象序列化成string
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="list"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ZyGames.Framework.Common.ObjectExtend.ToNotNullString(System.Object)">
+            <summary>
+            将对象转换成字符串，Null为string.Empty
+            </summary>
+            <param name="value"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ZyGames.Framework.Common.ObjectExtend.ToNotNullString(System.Object,System.String)">
+            <summary>
+            
+            </summary>
+            <param name="value"></param>
+            <param name="defValue"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ZyGames.Framework.Common.ObjectExtend.ToCeilingInt(System.Object)">
+            <summary>
+            向上取整
+            </summary>
+            <param name="value"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ZyGames.Framework.Common.ObjectExtend.ToFloorInt(System.Object)">
+            <summary>
+            向下取整
+            </summary>
+            <param name="value"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ZyGames.Framework.Common.ObjectExtend.ToLong(System.Object)">
+            <summary>
+            将对象转换成整型值
+            </summary>
+            <param name="value"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ZyGames.Framework.Common.ObjectExtend.ToInt(System.Object)">
+            <summary>
+            将对象转换成整型值
+            </summary>
+            <param name="value"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ZyGames.Framework.Common.ObjectExtend.ToShort(System.Object)">
+            <summary>
+            将对象转换成短整型值
+            </summary>
+            <param name="value"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ZyGames.Framework.Common.ObjectExtend.ToDouble(System.Object)">
+            <summary>
+            将对象转换成双精度值
+            </summary>
+            <param name="value"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ZyGames.Framework.Common.ObjectExtend.ToDecimal(System.Object)">
+            <summary>
+            将对象转换成单精度值
+            </summary>
+            <param name="value"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ZyGames.Framework.Common.ObjectExtend.ToBool(System.Object)">
+            <summary>
+            将对象转换成布尔值
+            </summary>
+            <param name="value"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ZyGames.Framework.Common.ObjectExtend.ToByte(System.Object)">
+            <summary>
+            将对象转换成字节值
+            </summary>
+            <param name="value"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ZyGames.Framework.Common.ObjectExtend.ToDateTime(System.Object)">
+            <summary>
+            将对象转换成时间值
+            </summary>
+            <param name="value"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ZyGames.Framework.Common.ObjectExtend.ToDateTime(System.Object,System.DateTime)">
+            <summary>
+            将对象转换成时间值
+            </summary>
+            <param name="value"></param>
+            <param name="defValue"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ZyGames.Framework.Common.ObjectExtend.ToEnum``1(System.Object)">
+            <summary>
+            将对象转换成枚举值
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="value"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ZyGames.Framework.Common.ObjectExtend.ToEnum(System.Object,System.Type)">
+            <summary>
+            
+            </summary>
+            <param name="value"></param>
+            <param name="type"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ZyGames.Framework.Common.ObjectExtend.IsValid(System.Int64)">
+            <summary>
+            
+            </summary>
+            <param name="value"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ZyGames.Framework.Common.ObjectExtend.IsValid(System.Int64,System.Int64,System.Int64)">
+            <summary>
+            检查值范围是否有效
+            </summary>
+            <param name="value"></param>
+            <param name="minValue"></param>
+            <param name="maxValue"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ZyGames.Framework.Common.ObjectExtend.IsValid(System.Int32)">
+            <summary>
+            
+            </summary>
+            <param name="value"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ZyGames.Framework.Common.ObjectExtend.IsValid(System.Int32,System.Int32,System.Int32)">
+            <summary>
+            检查值范围是否有效
+            </summary>
+        </member>
+        <member name="M:ZyGames.Framework.Common.ObjectExtend.IsValid(System.Int16)">
+            <summary>
+            
+            </summary>
+            <param name="value"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ZyGames.Framework.Common.ObjectExtend.IsValid(System.Int16,System.Int16,System.Int16)">
+            <summary>
+            检查值范围是否有效
+            </summary>
+        </member>
+        <member name="M:ZyGames.Framework.Common.ObjectExtend.IsValid(System.Byte)">
+            <summary>
+            
+            </summary>
+            <param name="value"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ZyGames.Framework.Common.ObjectExtend.IsValid(System.Byte,System.Byte,System.Byte)">
+            <summary>
+            检查值范围是否有效
+            </summary>
+        </member>
+        <member name="M:ZyGames.Framework.Common.ObjectExtend.IsValid(System.Double)">
+            <summary>
+            
+            </summary>
+            <param name="value"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ZyGames.Framework.Common.ObjectExtend.IsValid(System.Double,System.Double,System.Double)">
+            <summary>
+            检查值范围是否有效
+            </summary>
+        </member>
+        <member name="M:ZyGames.Framework.Common.ObjectExtend.IsValid(System.Decimal)">
+            <summary>
+            
+            </summary>
+            <param name="value"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ZyGames.Framework.Common.ObjectExtend.IsValid(System.Decimal,System.Decimal,System.Decimal)">
+            <summary>
+            检查值范围是否有效
+            </summary>
+        </member>
+        <member name="T:ZyGames.Framework.Common.RandomUtils">
+            <summary>
+            随机管理类
+            </summary>
+        </member>
+        <member name="M:ZyGames.Framework.Common.RandomUtils.RandomNickName(System.String[],System.String[])">
+            <summary>
+            随机取名字
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:ZyGames.Framework.Common.RandomUtils.NextBool(System.Double)">
+            <summary>
+            
+            </summary>
+            <param name="rate"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ZyGames.Framework.Common.RandomUtils.GetRandom">
+            <summary>
+            获取随机概率值1-100
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:ZyGames.Framework.Common.RandomUtils.GetRandom(System.Int32,System.Int32)">
+            <summary>
+            获取随机概率值
+            </summary>
+            <param name="minNum">大小或包含最小值</param>
+            <param name="maxNum">小于最大值</param>
+            <returns></returns>
+        </member>
+        <member name="M:ZyGames.Framework.Common.RandomUtils.IsHitNew(System.Double)">
+            <summary>
+            是否命中，不限制浮点位数
+            </summary>
+            <param name="value"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ZyGames.Framework.Common.RandomUtils.IsHit(System.Int32)">
+            <summary>
+            是否命中
+            </summary>
+            <param name="percent">百分比概率值</param>
+            <returns></returns>
+        </member>
+        <member name="M:ZyGames.Framework.Common.RandomUtils.IsHitByTh(System.Decimal)">
+            <summary>
+            是否命中1000
+            </summary>
+            <param name="percent"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ZyGames.Framework.Common.RandomUtils.IsHit(System.Double)">
+            <summary>
+            是否命中
+            </summary>
+            <param name="percent">含百分比形式值</param>
+            <returns></returns>
+        </member>
+        <member name="M:ZyGames.Framework.Common.RandomUtils.IsHit(System.Decimal)">
+            <summary>
+            是否命中
+            </summary>
+            <param name="percent">含百分比形式值</param>
+            <returns></returns>
+        </member>
+        <member name="M:ZyGames.Framework.Common.RandomUtils.GetHitIndex(System.Int32[])">
+            <summary>
+            获取命中的索引
+            </summary>
+            <param name="percents">概率数组</param>
+            <example>
+            int[] percents = { 20, 4, 10, 12, 18, 18, 18 }
+            </example>
+            <returns></returns>
+        </member>
+        <member name="M:ZyGames.Framework.Common.RandomUtils.GetHitIndex(System.Double[])">
+            <summary>
+            支持最大4位小数
+            </summary>
+            <param name="percents"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ZyGames.Framework.Common.RandomUtils.GetHitIndexByTH(System.Int32[])">
+            <summary>
+            获取命中的索引1000
+            </summary>
+            <param name="percents">概率数组</param>
+            <example>
+            int[] percents = { 20, 4, 10, 12, 18, 18, 18 }
+            </example>
+            <returns></returns>
+        </member>
+        <member name="M:ZyGames.Framework.Common.RandomUtils.GetRandom(System.Int32,System.Int32,System.Int32,System.Int32)">
+            <summary>
+            获取随机范围数组
+            </summary>
+            <param name="count">数组大小</param>
+            <param name="randomMax">随机最大值</param>
+            <param name="totalMin">随机总数最小值</param>
+            <param name="totalMax">随机总数最大值</param>
+            <returns></returns>
+        </member>
+        <member name="M:ZyGames.Framework.Common.RandomUtils.GetRandom(System.Int32,System.Int32,System.Int32,System.Int32,System.Int32)">
+            <summary>
+            
+            </summary>
+            <param name="count"></param>
+            <param name="randomMin"></param>
+            <param name="randomMax"></param>
+            <param name="totalMin"></param>
+            <param name="totalMax"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ZyGames.Framework.Common.RandomUtils.GetRandomArray``1(``0[],System.Int32)">
+            <summary>
+            从数组中随机取N个记录
+            </summary>
+            <param name="array"></param>
+            <param name="count"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ZyGames.Framework.Common.RandomUtils.GetRandomNew(System.Int32,System.Int32,System.Int32,System.Int32,System.Int32)">
+            <summary>
+            获取特定条范围的随机数
+            </summary>
+            <param name="count">数组长度</param>
+            <param name="randomMin">数组单项最小值</param>
+            <param name="randomMax">数组单项最大值</param>
+            <param name="totalMin">总和最小值</param>
+            <param name="totalMax">总和最大值</param>
+            <returns></returns>
+        </member>
+        <member name="M:ZyGames.Framework.Common.RandomUtils.GetRandomNew(System.Int32,System.Int32,System.Int32,System.Int32)">
+            <summary>
+            获取特定条范围的随机数
+            </summary>
+            <param name="count">数组长度</param>
+            <param name="randomMin">数组单项最小值</param>
+            <param name="randomMax">数组单项最大值</param>
+            <param name="total">总和</param>
+            <returns></returns>
+        </member>
+        <member name="T:ZyGames.Framework.Common.Reflect.FastActivator">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:ZyGames.Framework.Common.Reflect.FastActivator.Create(System.Type,System.Object[])">
+            <summary>
+            Creates an instance of the specified type using a generated factory to avoid using Reflection.
+            </summary>
+            <param Name="type">The type to be created.</param>
+            <param name="type"></param>
+            <param name="args"></param>
+            <returns>The newly created instance.</returns>
+        </member>
+        <member name="T:ZyGames.Framework.Common.Reflect.MemberSet">
+            <summary>
+            Represents an abstracted view of the members defined for a type
+            </summary>
+        </member>
+        <member name="M:ZyGames.Framework.Common.Reflect.MemberSet.GetEnumerator">
+            <summary>
+            Return a sequence of all defined members
+            </summary>
+        </member>
+        <member name="P:ZyGames.Framework.Common.Reflect.MemberSet.Item(System.Int32)">
+            <summary>
+            Get a member by index
+            </summary>
+        </member>
+        <member name="P:ZyGames.Framework.Common.Reflect.MemberSet.Count">
+            <summary>
+            The number of members defined for this type
+            </summary>
+        </member>
+        <member name="T:ZyGames.Framework.Common.Reflect.Member">
+            <summary>
+            Represents an abstracted view of an individual member defined for a type
+            </summary>
+        </member>
+        <member name="M:ZyGames.Framework.Common.Reflect.Member.IsDefined(System.Type)">
+            <summary>
+            Is the attribute specified defined on this type
+            </summary>
+        </member>
+        <member name="P:ZyGames.Framework.Common.Reflect.Member.Name">
+            <summary>
+            The name of this member
+            </summary>
+        </member>
+        <member name="P:ZyGames.Framework.Common.Reflect.Member.Type">
+            <summary>
+            The type of value stored in this member
+            </summary>
+        </member>
+        <member name="T:ZyGames.Framework.Common.Reflect.ObjectAccessor">
+            <summary>
+            Represents an individual object, allowing access to members by-name
+            </summary>
+        </member>
+        <member name="M:ZyGames.Framework.Common.Reflect.ObjectAccessor.Equals(System.Object)">
+            <summary>
+            Use the target types definition of equality
+            </summary>
+        </member>
+        <member name="M:ZyGames.Framework.Common.Reflect.ObjectAccessor.GetHashCode">
+            <summary>
+            Obtain the hash of the target object
+            </summary>
+        </member>
+        <member name="M:ZyGames.Framework.Common.Reflect.ObjectAccessor.ToString">
+            <summary>
+            Use the target's definition of a string representation
+            </summary>
+        </member>
+        <member name="M:ZyGames.Framework.Common.Reflect.ObjectAccessor.Create(System.Object)">
+            <summary>
+            Wraps an individual object, allowing by-name access to that instance
+            </summary>
+        </member>
+        <member name="M:ZyGames.Framework.Common.Reflect.ObjectAccessor.Create(System.Object,System.Boolean)">
+            <summary>
+            Wraps an individual object, allowing by-name access to that instance
+            </summary>
+        </member>
+        <member name="P:ZyGames.Framework.Common.Reflect.ObjectAccessor.Item(System.String)">
+            <summary>
+            Get or Set the value of a named member for the underlying object
+            </summary>
+        </member>
+        <member name="P:ZyGames.Framework.Common.Reflect.ObjectAccessor.Target">
+            <summary>
+            The object represented by this instance
+            </summary>
+        </member>
+        <member name="T:ZyGames.Framework.Common.Reflect.TypeAccessor">
+            <summary>
+            Provides by-name member-access to objects of a given type
+            </summary>
+        </member>
+        <member name="M:ZyGames.Framework.Common.Reflect.TypeAccessor.CreateNew">
+            <summary>
+            Create a new instance of this type
+            </summary>
+        </member>
+        <member name="M:ZyGames.Framework.Common.Reflect.TypeAccessor.GetMembers">
+            <summary>
+            Query the members available for this type
+            </summary>
+        </member>
+        <member name="M:ZyGames.Framework.Common.Reflect.TypeAccessor.Init">
+            <summary>
+            init
+            </summary>
+        </member>
+        <member name="M:ZyGames.Framework.Common.Reflect.TypeAccessor.Create(System.Type)">
+            <summary>
+            Provides a type-specific accessor, allowing by-name access for all objects of that type
+            </summary>
+            <remarks>The accessor is cached internally; a pre-existing accessor may be returned</remarks>
+        </member>
+        <member name="M:ZyGames.Framework.Common.Reflect.TypeAccessor.Create(System.Type,System.Boolean)">
+            <summary>
+            Provides a type-specific accessor, allowing by-name access for all objects of that type
+            </summary>
+            <remarks>The accessor is cached internally; a pre-existing accessor may be returned</remarks>
+        </member>
+        <member name="P:ZyGames.Framework.Common.Reflect.TypeAccessor.CreateNewSupported">
+            <summary>
+            Does this type support new instances via a parameterless constructor?
+            </summary>
+        </member>
+        <member name="P:ZyGames.Framework.Common.Reflect.TypeAccessor.GetMembersSupported">
+            <summary>
+            Can this type be queried for member availability?
+            </summary>
+        </member>
+        <member name="P:ZyGames.Framework.Common.Reflect.TypeAccessor.Item(System.Object,System.String)">
+            <summary>
+            Get or set the value of a named member on the target instance
+            </summary>
+        </member>
+        <member name="T:ZyGames.Framework.Common.Reflect.TypeAccessor.RuntimeTypeAccessor">
+            <summary>
+            A TypeAccessor based on a Type implementation, with available member metadata
+            </summary>
+        </member>
+        <member name="M:ZyGames.Framework.Common.Reflect.TypeAccessor.RuntimeTypeAccessor.GetMembers">
+            <summary>
+            Query the members available for this type
+            </summary>
+        </member>
+        <member name="P:ZyGames.Framework.Common.Reflect.TypeAccessor.RuntimeTypeAccessor.Type">
+            <summary>
+            Returns the Type represented by this accessor
+            </summary>
+        </member>
+        <member name="P:ZyGames.Framework.Common.Reflect.TypeAccessor.RuntimeTypeAccessor.GetMembersSupported">
+            <summary>
+            Can this type be queried for member availability?
+            </summary>
+        </member>
+        <member name="T:ZyGames.Framework.Common.Security.BASE64Decoder">
+            <summary>
+            BASE64编码
+            </summary>
+        </member>
+        <member name="M:ZyGames.Framework.Common.Security.BASE64Decoder.#ctor">
+            <summary>
+            
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:ZyGames.Framework.Common.Security.BASE64Decoder.#ctor(System.Char[])">
+            <summary>
+            
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:ZyGames.Framework.Common.Security.BASE64Decoder.decode">
+            <summary>
+            
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="T:ZyGames.Framework.Common.Security.BASE64Encoder">
+            <summary>
+            BASE64Encoder 的摘要说明
+            </summary>
+        </member>
+        <member name="M:ZyGames.Framework.Common.Security.BASE64Encoder.#ctor">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:ZyGames.Framework.Common.Security.BASE64Encoder.#ctor(System.Byte[])">
+            <summary>
+            
+            </summary>
+            <param name="input"></param>
+        </member>
+        <member name="M:ZyGames.Framework.Common.Security.BASE64Encoder.encode">
+            <summary>
+            
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="T:ZyGames.Framework.Common.Security.CryptoHelper">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:ZyGames.Framework.Common.Security.CryptoHelper.UrlParamUrlEncodeRun(System.String)">
+            <summary>
+            
+            </summary>
+            <param name="UrlParam"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ZyGames.Framework.Common.Security.CryptoHelper.UrlParamUrlDecodeRun(System.String)">
+            <summary>
+            
+            </summary>
+            <param name="UrlParam"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ZyGames.Framework.Common.Security.CryptoHelper.MD5_Encrypt(System.String,System.String)">
+            <summary>
+            
+            </summary>
+            <param name="source"></param>
+            <param name="encoding"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ZyGames.Framework.Common.Security.CryptoHelper.MD5_Encrypt(System.String)">
+            <summary>
+            
+            </summary>
+            <param name="source"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ZyGames.Framework.Common.Security.CryptoHelper.MD5_Encrypt(System.String,System.Text.Encoding)">
+            <summary>
+            
+            </summary>
+            <param name="source"></param>
+            <param name="encoding"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ZyGames.Framework.Common.Security.CryptoHelper.MD5_Encrypt(System.String,System.String,System.Text.Encoding)">
+            <summary>
+            
+            </summary>
+            <param name="source"></param>
+            <param name="addKey"></param>
+            <param name="encoding"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ZyGames.Framework.Common.Security.CryptoHelper.MD5_Encrypt(System.Byte[])">
+            <summary>
+            
+            </summary>
+            <param name="bytes"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ZyGames.Framework.Common.Security.CryptoHelper.ToFileMd5Hash(System.String)">
+            <summary>
+            获取文件的MD5 Hash值
+            </summary>
+            <param name="fileName"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ZyGames.Framework.Common.Security.CryptoHelper.ToMd5Hash(System.String)">
+            <summary>
+            
+            </summary>
+            <param name="str"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ZyGames.Framework.Common.Security.CryptoHelper.ToMd5Hash(System.Byte[])">
+            <summary>
+            
+            </summary>
+            <param name="bytes"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ZyGames.Framework.Common.Security.CryptoHelper.RegUser_MD5_Pwd(System.String)">
+            <summary>
+            
+            </summary>
+            <param name="strpwd"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ZyGames.Framework.Common.Security.CryptoHelper.DES_Encrypt(System.String,System.String)">
+            <summary>
+            
+            </summary>
+            <param name="source"></param>
+            <param name="key"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ZyGames.Framework.Common.Security.CryptoHelper.DES_Encrypt(System.String)">
+            <summary>
+            
+            </summary>
+            <param name="source"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ZyGames.Framework.Common.Security.CryptoHelper.DES_Decrypt(System.String)">
+            <summary>
+            
+            </summary>
+            <param name="source"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ZyGames.Framework.Common.Security.CryptoHelper.DES_Decrypt(System.String,System.String,System.String)">
+            <summary>
+            
+            </summary>
+            <param name="source"></param>
+            <param name="key">8 length</param>
+            <param name="iv"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ZyGames.Framework.Common.Security.CryptoHelper.DES16_Encrypt(System.String,System.String,System.String)">
+            <summary>
+            Des encrypt
+            </summary>
+            <param name="toEncrypt"></param>
+            <param name="privateKey">16 length</param>
+            <param name="privateIv"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ZyGames.Framework.Common.Security.CryptoHelper.DES16_Decrypt(System.String,System.String,System.String)">
+            <summary>
+            Des decrypt
+            </summary>
+            <param name="toDecrypt"></param>
+            <param name="privateKey"></param>
+            <param name="privateIv"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ZyGames.Framework.Common.Security.CryptoHelper.SHA1_Encrypt(System.String)">
+            <summary>
+            
+            </summary>
+            <param name="source"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ZyGames.Framework.Common.Security.CryptoHelper.HttpBase64Encode(System.String)">
+            <summary>
+            
+            </summary>
+            <param name="source"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ZyGames.Framework.Common.Security.CryptoHelper.HttpBase64Decode(System.String)">
+            <summary>
+            
+            </summary>
+            <param name="source"></param>
+            <returns></returns>
+        </member>
+        <member name="P:ZyGames.Framework.Common.Security.CryptoHelper.Key">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="T:ZyGames.Framework.Common.Security.DESAlgorithmNew">
+            <summary>
+            DESAlgorithmNew 的摘要说明
+            </summary>
+        </member>
+        <member name="M:ZyGames.Framework.Common.Security.DESAlgorithmNew.#ctor">
+            <summary>
+            初始化加解密数据结构
+            </summary>
+        </member>
+        <member name="M:ZyGames.Framework.Common.Security.DESAlgorithmNew.encode(System.String,System.String)">
+            <summary>
+            对dataIn使用key进行加密
+            </summary>
+            <param name="key"></param>
+            <param name="dataIn"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ZyGames.Framework.Common.Security.DESAlgorithmNew.decode(System.String,System.Char[])">
+            <summary>
+            对data数据使用key进行解密
+            </summary>
+            <param name="key"></param>
+            <param name="data"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ZyGames.Framework.Common.Security.DESAlgorithmNew.desRun(System.Byte[],System.Int32,System.Byte[],System.Int32,System.Byte)">
+            <summary>
+            
+            </summary>
+            <param name="outb"></param>
+            <param name="outIndex"></param>
+            <param name="inb"></param>
+            <param name="inIndex"></param>
+            <param name="type"></param>
+        </member>
+        <member name="M:ZyGames.Framework.Common.Security.DESAlgorithmNew.EncodePwd(System.String,System.String)">
+            <summary>
+            使用securityKey 对 SourcePwd进行加密
+            </summary>
+            <param name="sourcePwd"></param>
+            <param name="securityKey"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ZyGames.Framework.Common.Security.DESAlgorithmNew.DecodePwd(System.String,System.String)">
+            <summary>
+            对字符串解密
+            </summary>
+            <param name="pwd"></param>
+            <param name="securityKey"></param>
+            <returns></returns>
+        </member>
+        <member name="T:ZyGames.Framework.Common.Security.DesCopy">
+            <summary>
+            加密类
+            </summary>
+        </member>
+        <member name="M:ZyGames.Framework.Common.Security.DesCopy.#ctor">
+            <summary>
+            构造函数逻辑
+            </summary>
+        </member>
+        <member name="M:ZyGames.Framework.Common.Security.DesCopy.Copy(System.Byte[],System.Int32,System.Byte[]@,System.Int32,System.Int32)">
+            <summary>
+             The unsafe keyword allows pointers to be used within the following method:
+            </summary>
+            <param name="src"></param>
+            <param name="srcIndex"></param>
+            <param name="dst"></param>
+            <param name="dstIndex"></param>
+            <param name="count"></param>
+        </member>
+        <member name="M:ZyGames.Framework.Common.Security.DesCopy.Copy(System.Char[],System.Int32,System.Char[]@,System.Int32,System.Int32)">
+            <summary>
+            // The unsafe keyword allows pointers to be used within the following method:
+            </summary>
+            <param name="src"></param>
+            <param name="srcIndex"></param>
+            <param name="dst"></param>
+            <param name="dstIndex"></param>
+            <param name="count"></param>
+        </member>
+        <member name="M:ZyGames.Framework.Common.Security.DesCopy.MoveByte(System.Int32,System.Int32)">
+            <summary>
+            特殊的右移位操作，补0右移，如果是负数，需要进行特殊的转换处理（右移位）
+            </summary>
+            <param name="value"></param>
+            <param name="pos"></param>
+            <returns></returns>
+        </member>
+        <member name="T:ZyGames.Framework.Common.Serialization.JsonUtils">
+            <summary>
+            Json序列化反序列化器
+            </summary>
+        </member>
+        <member name="M:ZyGames.Framework.Common.Serialization.JsonUtils.SerializeCustom(System.Object)">
+            <summary>
+            序列化成中国标准时间,精确值到秒
+            </summary>
+            <param name="entity">待序列化的对象</param>
+            <returns></returns>
+        </member>
+        <member name="M:ZyGames.Framework.Common.Serialization.JsonUtils.SerializeCustom(System.Object,System.String)">
+            <summary>
+            序列化成中国标准时间,精确值到秒
+            </summary>
+            <param name="entity">待序列化的对象</param>
+            <param name="formatDate">指定日期格式</param>
+            <returns></returns>
+        </member>
+        <member name="M:ZyGames.Framework.Common.Serialization.JsonUtils.Serialize(System.Object,Newtonsoft.Json.JsonConverter[])">
+            <summary>
+            序列化
+            </summary>
+            <param name="entity">待序列化的对象</param>
+            <param name="converters">自定转换的处理</param>
+            <returns></returns>
+        </member>
+        <member name="M:ZyGames.Framework.Common.Serialization.JsonUtils.DeserializeCustom``1(System.String,System.String)">
+            <summary>
+            自定义日期反序列化
+            </summary>
+            <typeparam name="T">对象类型</typeparam>
+            <param name="entity">待反序列化的对象</param>
+            <param name="formatDate">指定日期格式</param>
+            <returns></returns>
+        </member>
+        <member name="M:ZyGames.Framework.Common.Serialization.JsonUtils.Deserialize``1(System.String,Newtonsoft.Json.JsonConverter[])">
+            <summary>
+            反序列化
+            </summary>
+            <typeparam name="T">对象类型</typeparam>
+            <param name="entity">待反序列化的对象</param>
+            <param name="converters">自定转换的处理</param>
+            <returns></returns>
+        </member>
+        <member name="M:ZyGames.Framework.Common.Serialization.JsonUtils.DeserializeCustom(System.String,System.Type,System.String)">
+            <summary>
+            自定义日期反序列化
+            </summary>
+            <param name="entity">待反序列化的对象</param>
+            <param name="type">对象类型</param>
+            <param name="formatDate">指定日期格式</param>
+            <returns></returns>
+        </member>
+        <member name="M:ZyGames.Framework.Common.Serialization.JsonUtils.Deserialize(System.String,System.Type,Newtonsoft.Json.JsonConverter[])">
+            <summary>
+            反序列化
+            </summary>
+            <param name="entity">待反序列化的对象</param>
+            <param name="type">对象类型</param>
+            <param name="converters">自定转换的处理</param>
+            <returns></returns>
+        </member>
+        <member name="T:ZyGames.Framework.Common.Serialization.ProtoBufUtils">
+            <summary>
+            Protobuf序列化与反序列化
+            </summary>
+        </member>
+        <member name="M:ZyGames.Framework.Common.Serialization.ProtoBufUtils.Initialize">
+            <summary>
+            Initialize RuntimeTypeModel.
+            </summary>
+        </member>
+        <member name="M:ZyGames.Framework.Common.Serialization.ProtoBufUtils.Serialize(System.Object,System.String)">
+            <summary>
+            使用protobuf序列化对象为二进制文件
+            </summary>
+            <param name="obj"></param>
+            <param name="serializeFilePath"></param>
+        </member>
+        <member name="M:ZyGames.Framework.Common.Serialization.ProtoBufUtils.Deserialize(System.String,System.Type)">
+            <summary>
+            使用protobuf反序列化二进制文件为对象
+            </summary>
+            <param name="serializeFilePath">反序列化对象的物理文件路径</param>
+            <param name="type">the type.</param>
+        </member>
+        <member name="M:ZyGames.Framework.Common.Serialization.ProtoBufUtils.ProtobufSerialize``1(``0)">
+            <summary>
+            使用protobuf把对象序列化为Byte数组
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="obj"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ZyGames.Framework.Common.Serialization.ProtoBufUtils.Serialize(System.Object,System.Boolean)">
+            <summary>
+            使用protobuf把对象序列化为Byte数组
+            </summary>
+            <param name="obj">序列化的对象</param>
+            <param name="autoUseGzip"> </param>
+            <returns></returns>
+        </member>
+        <member name="M:ZyGames.Framework.Common.Serialization.ProtoBufUtils.ProtobufDeserialize``1(System.Byte[])">
+            <summary>
+            
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="data"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ZyGames.Framework.Common.Serialization.ProtoBufUtils.Deserialize``1(System.Byte[])">
+            <summary>
+            使用protobuf反序列化二进制数组为对象
+            </summary>
+            <typeparam name="T">需要反序列化的对象类型，必须声明[ProtoContract]特征，且相应属性必须声明[ProtoMember(序号)]特征</typeparam>
+            <param name="data">二进字节数据</param>
+            <returns></returns>
+        </member>
+        <member name="M:ZyGames.Framework.Common.Serialization.ProtoBufUtils.Deserialize(System.Byte[],System.Type)">
+            <summary>
+            使用protobuf反序列化二进制数组为对象
+            </summary>
+            <param name="data">二进字节数据</param>
+            <param name="type">反序列化的类型.</param>
+            <returns></returns>
+        </member>
+        <member name="M:ZyGames.Framework.Common.Serialization.ProtoBufUtils.SerializeAutoGZip(System.Object,System.Boolean)">
+            <summary>
+            序列化对象为二进制数组,并gzip压缩
+            </summary>
+            <param name="obj">序列化的对象</param>
+            <param name="autoUseGzip"> </param>
+            <returns></returns>
+        </member>
+        <member name="M:ZyGames.Framework.Common.Serialization.ProtoBufUtils.IsCompressed(System.Byte[])">
+            <summary>
+            用于判断指定的bytes是否处于gzip状态
+            </summary>
+            <param name="data"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ZyGames.Framework.Common.Serialization.ProtoBufUtils.DeserializeAutoGZip(System.Byte[],System.Type)">
+            <summary>
+            反序列化二进制数组为对象,并gzip压缩
+            </summary>
+            <param name="data"></param>
+            <param name="type"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ZyGames.Framework.Common.Serialization.ProtoBufUtils.LoadProtobufType(System.Reflection.Assembly)">
+            <summary>
+            动态绑定实体对象的子类类型
+            </summary>
+            <param name="assembly"></param>
+        </member>
+        <member name="P:ZyGames.Framework.Common.Serialization.ProtoBufUtils.CompressOutLength">
+            <summary>
+            byte数组压缩超出(默认10k)开启压缩
+            </summary>
+        </member>
+        <member name="T:ZyGames.Framework.Common.Serialization.ProtoObject">
+            <summary>
+            支持ProtoBuf的Object类型
+            </summary>
+        </member>
+        <member name="M:ZyGames.Framework.Common.Serialization.ProtoObject.#ctor">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:ZyGames.Framework.Common.Serialization.ProtoObject.#ctor(System.Object)">
+            <summary>
+            
+            </summary>
+            <param name="obj"></param>
+        </member>
+        <member name="M:ZyGames.Framework.Common.Serialization.ProtoObject.#ctor(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)">
+            <summary>
+            
+            </summary>
+            <param name="info"></param>
+            <param name="context"></param>
+        </member>
+        <member name="M:ZyGames.Framework.Common.Serialization.ProtoObject.ToString">
+            <summary>
+            重载Tostring方法
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:ZyGames.Framework.Common.Serialization.ProtoObject.GetObjectData(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)">
+            <summary>
+            
+            </summary>
+            <param name="info"></param>
+            <param name="context"></param>
+        </member>
+        <member name="P:ZyGames.Framework.Common.Serialization.ProtoObject.Value">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="T:ZyGames.Framework.Common.Timing.BaseTask">
+            <summary>
+            任务接口
+            </summary>
+        </member>
+        <member name="M:ZyGames.Framework.Common.Timing.BaseTask.#ctor(System.Int32)">
+            <summary>
+            
+            </summary>
+            <param name="interval"></param>
+        </member>
+        <member name="M:ZyGames.Framework.Common.Timing.BaseTask.SetNextTrigger(System.Int64)">
+            <summary>
+            更新下次执行时间
+            </summary>
+            <param name="nextTrigger"></param>
+        </member>
+        <member name="M:ZyGames.Framework.Common.Timing.BaseTask.GetTiming">
+            <summary>
+            获取定时时间
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:ZyGames.Framework.Common.Timing.BaseTask.Proccess(System.Object)">
+            <summary>
+            启动
+            </summary>
+            <param name="obj"></param>
+        </member>
+        <member name="M:ZyGames.Framework.Common.Timing.BaseTask.DoExecute(System.Object)">
+            <summary>
+            执行任务处理
+            </summary>
+            <param name="obj"></param>
+        </member>
+        <member name="P:ZyGames.Framework.Common.Timing.BaseTask.TaskName">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:ZyGames.Framework.Common.Timing.BaseTask.Running">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:ZyGames.Framework.Common.Timing.BaseTask.Timing">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:ZyGames.Framework.Common.Timing.BaseTask.Interval">
+            <summary>
+            间隔时间(毫秒)
+            </summary>
+        </member>
+        <member name="P:ZyGames.Framework.Common.Timing.BaseTask.IntevalTicks">
+            <summary>
+            间隔刻度
+            </summary>
+        </member>
+        <member name="P:ZyGames.Framework.Common.Timing.BaseTask.NextTriggerTime">
+            <summary>
+            下次执行时间
+            </summary>
+        </member>
+        <member name="T:ZyGames.Framework.Common.Timing.CacheRemovedReason">
+            <summary>
+            Cachey removed reason.
+            </summary>
+        </member>
+        <member name="F:ZyGames.Framework.Common.Timing.CacheRemovedReason.None">
+            <summary>
+            The none.
+            </summary>
+        </member>
+        <member name="F:ZyGames.Framework.Common.Timing.CacheRemovedReason.Expired">
+            <summary>
+            The expired.
+            </summary>
+        </member>
+        <member name="F:ZyGames.Framework.Common.Timing.CacheRemovedReason.Append">
+            <summary>
+            The append.
+            </summary>
+        </member>
+        <member name="F:ZyGames.Framework.Common.Timing.CacheRemovedReason.Changed">
+            <summary>
+            The changed.
+            </summary>
+        </member>
+        <member name="F:ZyGames.Framework.Common.Timing.CacheRemovedReason.Removed">
+            <summary>
+            The removed.
+            </summary>
+        </member>
+        <member name="T:ZyGames.Framework.Common.Timing.CacheListenerHandle">
+            <summary>
+            
+            </summary>
+            <param name="key"></param>
+            <param name="value"></param>
+            <param name="reason"></param>
+        </member>
+        <member name="T:ZyGames.Framework.Common.Timing.CacheListener">
+            <summary>
+            缓存定时监听器,
+            适用场合：刷新的时间间隔并不要求精确
+            </summary>
+        </member>
+        <member name="M:ZyGames.Framework.Common.Timing.CacheListener.#ctor(System.String,System.Int32,ZyGames.Framework.Common.Timing.CacheListenerHandle)">
+            <summary>
+            
+            </summary>
+            <param name="cacheKey"></param>
+            <param name="secondsTimeOut"></param>
+            <param name="listenerHandle"></param>
+        </member>
+        <member name="M:ZyGames.Framework.Common.Timing.CacheListener.#ctor(System.String,System.Int32,ZyGames.Framework.Common.Timing.CacheListenerHandle,System.String)">
+            <summary>
+            
+            </summary>
+            <param name="cacheKey"></param>
+            <param name="secondsTimeOut">0:不过期</param>
+            <param name="listenerHandle">过期回调方法</param>
+            <param name="dependency">缓存文件依赖</param>
+        </member>
+        <member name="M:ZyGames.Framework.Common.Timing.CacheListener.Start">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:ZyGames.Framework.Common.Timing.CacheListener.Stop">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:ZyGames.Framework.Common.Timing.CacheListener.Items">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:ZyGames.Framework.Common.Timing.CacheListener.DueTime">
+            <summary>
+            延迟执行时间，单位毫秒
+            </summary>
+        </member>
+        <member name="T:ZyGames.Framework.Common.Timing.CodeTimer">
+            <summary>
+            Code timer
+            </summary>
+        </member>
+        <member name="M:ZyGames.Framework.Common.Timing.CodeTimer.Initialize">
+            <summary>
+            init
+            </summary>
+        </member>
+        <member name="M:ZyGames.Framework.Common.Timing.CodeTimer.Time(System.String,System.Action)">
+            <summary>
+            time action
+            </summary>
+            <param name="name"></param>
+            <param name="action"></param>
+        </member>
+        <member name="M:ZyGames.Framework.Common.Timing.CodeTimer.Time(System.String,System.Int32,System.Action)">
+            <summary>
+            time action
+            </summary>
+            <param name="name"></param>
+            <param name="iteration">cycle Count</param>
+            <param name="action"></param>
+            <code>
+            Time("test1", 1, () => { });
+            </code>
+        </member>
+        <member name="T:ZyGames.Framework.Common.Timing.PlanConfig">
+            <summary>
+            计划配置信息
+            </summary>
+        </member>
+        <member name="M:ZyGames.Framework.Common.Timing.PlanConfig.#ctor(ZyGames.Framework.Common.Timing.PlanConfig.PlanCallback,System.DayOfWeek,System.String,System.String,System.Boolean,System.Int32,System.String)">
+            <summary>
+            第几周
+            </summary>
+            <param name="callback"></param>
+            <param name="week"></param>
+            <param name="beginTime"></param>
+            <param name="endTime"></param>
+            <param name="secondInterval"></param>
+            <param name="isCycle"></param>
+            <param name="name"></param>
+        </member>
+        <member name="M:ZyGames.Framework.Common.Timing.PlanConfig.#ctor(ZyGames.Framework.Common.Timing.PlanConfig.PlanCallback,System.Boolean,System.Int32,System.String)">
+            <summary>
+            
+            </summary>
+            <param name="callback"></param>
+            <param name="isCycle"></param>
+            <param name="secondInterval"></param>
+            <param name="name"></param>
+        </member>
+        <member name="M:ZyGames.Framework.Common.Timing.PlanConfig.#ctor(ZyGames.Framework.Common.Timing.PlanConfig.PlanCallback,System.String,System.String,System.Boolean,System.Int32,System.String)">
+            <summary>
+            
+            </summary>
+            <param name="callback"></param>
+            <param name="beginTime"></param>
+            <param name="endTime"></param>
+            <param name="isCycle"></param>
+            <param name="secondInterval"></param>
+            <param name="name"></param>
+        </member>
+        <member name="M:ZyGames.Framework.Common.Timing.PlanConfig.AutoStart">
+            <summary>
+            自动开始
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:ZyGames.Framework.Common.Timing.PlanConfig.ResetDate">
+            <summary>
+            重置日期
+            </summary>
+        </member>
+        <member name="M:ZyGames.Framework.Common.Timing.PlanConfig.SetDiffInterval(System.Int32)">
+            <summary>
+            设置误差间隔
+            </summary>
+        </member>
+        <member name="P:ZyGames.Framework.Common.Timing.PlanConfig.Name">
+            <summary>
+            名称
+            </summary>
+        </member>
+        <member name="P:ZyGames.Framework.Common.Timing.PlanConfig.Callback">
+            <summary>
+            回调委托
+            </summary>
+        </member>
+        <member name="P:ZyGames.Framework.Common.Timing.PlanConfig.Target">
+            <summary>
+            目标对象
+            </summary>
+        </member>
+        <member name="P:ZyGames.Framework.Common.Timing.PlanConfig.IsCycle">
+            <summary>
+            是否循环
+            </summary>
+        </member>
+        <member name="P:ZyGames.Framework.Common.Timing.PlanConfig.IsExpired">
+            <summary>
+            是否过期,过期的计划将被移除定时执行任务
+            </summary>
+        </member>
+        <member name="P:ZyGames.Framework.Common.Timing.PlanConfig.IsEnd">
+            <summary>
+            是否结束
+            </summary>
+        </member>
+        <member name="P:ZyGames.Framework.Common.Timing.PlanConfig.SecondInterval">
+            <summary>
+            间隔秒，0:为单次
+            </summary>
+        </member>
+        <member name="T:ZyGames.Framework.Common.Timing.PlanConfig.PlanCallback">
+            <summary>
+            
+            </summary>
+            <param name="planConfig"></param>
+        </member>
+        <member name="T:ZyGames.Framework.Common.Timing.PlanConfig.PlanCycle">
+            <summary>
+            计划周期
+            </summary>
+        </member>
+        <member name="T:ZyGames.Framework.Common.Timing.RunTimeWatch">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:ZyGames.Framework.Common.Timing.RunTimeWatch.#ctor(System.String)">
+            <summary>
+            
+            </summary>
+            <param name="message"></param>
+        </member>
+        <member name="M:ZyGames.Framework.Common.Timing.RunTimeWatch.Dispose">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:ZyGames.Framework.Common.Timing.RunTimeWatch.Elapsed">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="T:ZyGames.Framework.Common.Timing.TaskDispatch">
+            <summary>
+            任务调度类
+            </summary>
+        </member>
+        <member name="M:ZyGames.Framework.Common.Timing.TaskDispatch.StartTask">
+            <summary>
+            
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:ZyGames.Framework.Common.Timing.TaskDispatch.Add(ZyGames.Framework.Common.Timing.BaseTask)">
+            <summary>
+            
+            </summary>
+            <param name="task"></param>
+        </member>
+        <member name="M:ZyGames.Framework.Common.Timing.TaskDispatch.Start">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:ZyGames.Framework.Common.Timing.TaskDispatch.Stop">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:ZyGames.Framework.Common.Timing.TaskDispatch.Finalize">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="T:ZyGames.Framework.Common.Timing.TimeListener">
+            <summary>
+            定时器监听管理
+            使用场合:对间隔时间比较精确
+            </summary>
+        </member>
+        <member name="M:ZyGames.Framework.Common.Timing.TimeListener.SetTimer(System.Int32)">
+            <summary>
+            设置定时器
+            </summary>
+            <param name="msInterval"></param>
+        </member>
+        <member name="M:ZyGames.Framework.Common.Timing.TimeListener.SetTimer(System.Int32,System.Int32)">
+            <summary>
+            设置定时器
+            </summary>
+            <param name="msInterval"></param>
+            <param name="dueTime"></param>
+        </member>
+        <member name="M:ZyGames.Framework.Common.Timing.TimeListener.Dispose">
+            <summary>
+            显示释放
+            </summary>
+        </member>
+        <member name="M:ZyGames.Framework.Common.Timing.TimeListener.Append(ZyGames.Framework.Common.Timing.PlanConfig)">
+            <summary>
+            增加定时任务计划
+            </summary>
+            <param name="planConfig"></param>
+        </member>
+        <member name="M:ZyGames.Framework.Common.Timing.TimeListener.Remove(System.Predicate{ZyGames.Framework.Common.Timing.PlanConfig})">
+            <summary>
+            移除定时任务计划
+            </summary>
+            <param name="match"></param>
+            <returns></returns>
+        </member>
+        <member name="T:ZyGames.Framework.Common.VersionConfig">
+            <summary>
+            版本信息
+            </summary>
+        </member>
+        <member name="M:ZyGames.Framework.Common.VersionConfig.#ctor">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:ZyGames.Framework.Common.VersionConfig.#ctor(System.Int32,System.Int32)">
+            <summary>
+            
+            </summary>
+            <param name="minVersion"></param>
+            <param name="maxVersion"></param>
+        </member>
+        <member name="P:ZyGames.Framework.Common.VersionConfig.NextId">
+            <summary>
+            取下一个版本号
+            </summary>
+        </member>
+        <member name="P:ZyGames.Framework.Common.VersionConfig.Id">
+            <summary>
+            
+            </summary>
+        </member>
+    </members>
+</doc>
