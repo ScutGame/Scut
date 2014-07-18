@@ -234,16 +234,12 @@ namespace ZyGames.Framework.Redis
                         else
                         {
                             value = client.HGet(hashId, keyCode);
-                            //修正Persional结构当多个Key时，以PersionalId加载不了数据问题
+                            //修正未使用Persional作为Key时,加载数据为空问题,修改成加载所有
                             if (value == null
                                 && !string.IsNullOrEmpty(keyValue)
                                 && typeof(T).IsSubclassOf(typeof(BaseEntity)))
                             {
-                                var resultKeys = client.HKeys(hashId).Where(k => ToStringKey(k).IndexOf(keyValue, StringComparison.Ordinal) != -1).ToArray();
-                                if (resultKeys.Length > 0)
-                                {
-                                    valueBytes = client.HMGet(hashId, resultKeys);
-                                }
+                                valueBytes = client.HGetAll(hashId).Where((b, index) => index % 2 == 1).ToArray();
                             }
                         }
                     });
@@ -257,7 +253,7 @@ namespace ZyGames.Framework.Redis
                         }
                         if (valueBytes != null)
                         {
-                            list = valueBytes.Select(b => ProtoBufUtils.Deserialize<T>(b)).ToList();
+                            list = valueBytes.Select(ProtoBufUtils.Deserialize<T>).ToList();
                             return true;
                         }
                     }
@@ -432,10 +428,16 @@ namespace ZyGames.Framework.Redis
         /// <returns></returns>
         public static string GetRedisEntityKeyName(string typeName)
         {
+            typeName = GetRootKey(typeName);
             string hashId = typeName.StartsWith(EntityKeyPreChar)
                 ? typeName
                 : EntityKeyPreChar + typeName;
             return hashId;
+        }
+
+        internal static string GetRootKey(string redisKey)
+        {
+            return redisKey.Split('_')[0];
         }
 
         internal static byte[] ToByteKey(string key)

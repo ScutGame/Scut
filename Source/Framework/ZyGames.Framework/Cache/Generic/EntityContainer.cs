@@ -99,6 +99,22 @@ namespace ZyGames.Framework.Cache.Generic
             get { return _container.LoadingStatus; }
         }
 
+        public CacheItemSet[] ChildrenItem
+        {
+            get
+            {
+                int index = 0;
+                CacheItemSet[] items = new CacheItemSet[Container.Count];
+                Container.Foreach<CacheItemSet>((key, itemSet) =>
+                {
+                    items[index] = itemSet;
+                    index++;
+                    return true;
+                });
+                return items;
+            }
+        }
+
         private BaseCollection Container
         {
             get
@@ -326,6 +342,33 @@ namespace ZyGames.Framework.Cache.Generic
             return false;
         }
 
+        public List<V> LoadFrom<V>(TransReceiveParam receiveParam) where V : AbstractEntity, new()
+        {
+            List<V> dataList = null;
+            if (_container != null && _loadFactory != null)
+            {
+                if (_container.IsEmpty)
+                {
+                    Initialize();
+                }
+                if (_container.LoadingStatus != LoadingStatus.None)
+                {
+                    //ReLoad时需要清除掉之前的
+                    _container.Collection.Clear();
+                }
+                _container.OnLoadFactory(() =>
+                {
+                    if (_cachePool.TryReceiveData(receiveParam, out dataList))
+                    {
+                        return true;
+                    }
+                    return false;
+                }, false);
+
+            }
+            return dataList;
+        }
+
         /// <summary>
         /// 
         /// </summary>
@@ -470,11 +513,12 @@ namespace ZyGames.Framework.Cache.Generic
         {
             var lazy = new Lazy<CacheItemSet>(() =>
             {
-                BaseCollection itemData = IsReadonly
+                BaseCollection itemCollection = IsReadonly
                     ? (BaseCollection)new ReadonlyCacheCollection()
                     : new CacheCollection();
                 var itemSet = CreateItemSet(CacheType.Dictionary, periodTime);
-                itemSet.SetItem(itemData);
+                itemSet.HasCollection = true;
+                itemSet.SetItem(itemCollection);
                 return itemSet;
             });
 
@@ -671,7 +715,7 @@ namespace ZyGames.Framework.Cache.Generic
         /// <param name="receiveParam"></param>
         /// <param name="dataList"></param>
         /// <returns></returns>
-        public bool TryRecoverFromDb<V>(TransReceiveParam receiveParam, out List<V> dataList ) where V : AbstractEntity, new()
+        public bool TryRecoverFromDb<V>(TransReceiveParam receiveParam, out List<V> dataList) where V : AbstractEntity, new()
         {
             return _cachePool.TryLoadFromDb(receiveParam, out dataList);
         }

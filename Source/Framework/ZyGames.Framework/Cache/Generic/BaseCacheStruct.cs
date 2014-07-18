@@ -102,6 +102,14 @@ namespace ZyGames.Framework.Cache.Generic
         }
 
         /// <summary>
+        /// Get ItemSet array
+        /// </summary>
+        public CacheItemSet[] ChildrenItem
+        {
+            get { return DataContainer.ChildrenItem; }
+        }
+
+        /// <summary>
         /// 数据是否改变
         /// </summary>
         /// <param name="key">实体Key或personerId</param>
@@ -109,13 +117,6 @@ namespace ZyGames.Framework.Cache.Generic
         protected bool HasChangeCache(string key)
         {
             return DataContainer.HasChange(key);
-        }
-        /// <summary>
-        /// 容器数量
-        /// </summary>
-        public int Count
-        {
-            get { return DataContainer.Count; }
         }
 
         /// <summary>
@@ -337,6 +338,28 @@ namespace ZyGames.Framework.Cache.Generic
             itemSet.OnLoadError();
             TraceLog.WriteError("Try load cache data:{0} error.", typeof(T).FullName);
             return false;
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="receiveParam"></param>
+        /// <param name="match"></param>
+        protected void LoadFrom(TransReceiveParam receiveParam, Predicate<T> match)
+        {
+            List<T> dataList = DataContainer.LoadFrom<T>(receiveParam);
+            if (DataContainer.LoadStatus == LoadingStatus.Success && dataList != null)
+            {
+                int periodTime = receiveParam.Schema.PeriodTime;
+                var tempList = match == null ? dataList : dataList.FindAll(match);
+                var pairs = tempList.GroupBy(t => t.PersonalId).ToList();
+                foreach (var pair in pairs)
+                {
+                    CacheItemSet itemSet = InitContainer(pair.Key, periodTime);
+                    InitCache(pair.ToList(), periodTime);
+                    itemSet.OnLoadSuccess();
+                }
+            }
         }
 
         /// <summary>

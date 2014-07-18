@@ -58,6 +58,10 @@ namespace ZyGames.Framework.Cache.Generic
         /// 
         /// </summary>
         LoadingStatus LoadStatus { get; }
+        /// <summary>
+        /// 
+        /// </summary>
+        CacheItemSet[] ChildrenItem { get;}
         ///// <summary>
         ///// 获取容器对象
         ///// </summary>
@@ -121,6 +125,11 @@ namespace ZyGames.Framework.Cache.Generic
         /// 加载全部数据
         /// </summary>
         LoadingStatus Load();
+
+        /// <summary>
+        /// 
+        /// </summary>
+        List<V> LoadFrom<V>(TransReceiveParam receiveParam) where V : AbstractEntity, new();
 
         /// <summary>
         /// 加载指定Key数据
