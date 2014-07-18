@@ -2,7 +2,15 @@
 using System.Collections.Generic;
 using System.Net.Sockets;
 using System.Threading;
+using UnityEngine;
 
+
+enum ErrorCode
+{
+    Success = 0,
+    ConnectError = -1,
+    TimeOutError = -2,
+}
 
 /// <summary>
 /// 
@@ -45,13 +53,6 @@ public class SocketConnect
         catch (Exception)
         {
         }
-    }
-
-    enum ErrorCode
-    {
-        Success = 0,
-        ConnectError = -1,
-        TimeOutError = -2,
     }
 
     public SocketConnect(string host, int port, IHeadFormater formater)
@@ -112,7 +113,7 @@ public class SocketConnect
                 {
                     if (_socket.Available == 0)
                     {
-                        UnityEngine.Debug.Log("Close Socket");
+                        Debug.Log("Close Socket");
                         Close();
                         break;
                     }
@@ -141,7 +142,11 @@ public class SocketConnect
                         reader.pushNetStream(data, NetworkType.Socket);
                         SocketPackage findPackage = null;
 
-                        //UnityEngine.Debug.Log("Socket receive ok, revLen:" + recnum + ", actionId:" + reader.ActionId + ", msgId:" + reader.RmId + ", packLen:" + reader.Buffer.Length);
+                        //Debug.Log("Socket receive ok, revLen:" + recnum 
+                        //    + ", actionId:" + reader.ActionId
+                        //    + ", msgId:" + reader.RmId
+                        //    + ", error:" + reader.StatusCode + reader.Description 
+                        //    + ", packLen:" + reader.Buffer.Length);
                         lock (_sendList)
                         {
                             //find pack in send queue.
@@ -279,10 +284,15 @@ public class SocketConnect
             NetWriter writer = NetWriter.Instance;
             writer.writeInt32("actionId", 1);
             byte[] data = writer.PostData();
-            PostSend(data);
+            NetWriter.resetData();
+            if (!PostSend(data))
+            {
+                Debug.Log("send heartbeat paketage fail");
+            }
         }
-        catch (Exception)
+        catch (Exception ex)
         {
+            Debug.LogException(ex);
         }
     }
 
@@ -327,19 +337,17 @@ public class SocketConnect
             bool success = asyncSend.AsyncWaitHandle.WaitOne(5000, true);
             if (!success)
             {
-                UnityEngine.Debug.Log("asyncSend error close socket");
+                Debug.Log("asyncSend error close socket");
                 Close();
                 return false;
             }
-
+            return true;
         }
-        return true;
+        return false;
 
     }
     private void sendCallback(IAsyncResult asyncSend)
     {
-
-
     }
     public void Send(byte[] data, SocketPackage package)
     {

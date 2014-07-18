@@ -42,6 +42,11 @@ public class DES
     }
 
     #region Encrypt
+    public static string EncryptString(string input)
+    {
+        return Encoding.UTF8.GetString(Encrypt(m_desKey.Key, m_iv, input));
+    }
+
     public static byte[] Encrypt(string input)
     {
         return Encrypt(m_desKey.Key, m_iv, input);
