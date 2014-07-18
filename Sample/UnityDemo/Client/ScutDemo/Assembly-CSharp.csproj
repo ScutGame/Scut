@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>10.0.20506</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{FE1AF359-67C6-1441-3535-7F63C0094761}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>AssemblyCSharp</RootNamespace>
+    <AssemblyName>Assembly-CSharp</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>Temp\bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE;UNITY_STANDALONE_WIN;ENABLE_MICROPHONE;ENABLE_IMAGEEFFECTS;ENABLE_WEBCAM;ENABLE_AUDIO_FMOD;UNITY_STANDALONE;ENABLE_NETWORK;ENABLE_MONO;ENABLE_PHYSICS;ENABLE_TERRAIN;ENABLE_CACHING;ENABLE_SUBSTANCE;ENABLE_GENERICS;ENABLE_CLOTH;ENABLE_MOVIES;ENABLE_AUDIO;ENABLE_WWW;ENABLE_SHADOWS;ENABLE_DUCK_TYPING;UNITY_4_1_2;UNITY_4_1;ENABLE_PROFILER;UNITY_EDITOR;UNITY_TEAM_LICENSE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <NoWarn>0169</NoWarn>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>Temp\bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <NoWarn>0169</NoWarn>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="UnityEngine">
+      <HintPath>C:\Program Files %28x86%29\Unity\Editor\Data\Managed\UnityEngine.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEditor">
+      <HintPath>C:\Program Files %28x86%29\Unity\Editor\Data\Managed\UnityEditor.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Assets\Script\Action\Action1002.cs" />
+    <Compile Include="Assets\Script\Action\Action1004.cs" />
+    <Compile Include="Assets\Script\Action\Action1005.cs" />
+    <Compile Include="Assets\Script\Action\Action1008.cs" />
+    <Compile Include="Assets\Script\Action\ActionType.cs" />
+    <Compile Include="Assets\Script\Action\BaseAction.cs" />
+    <Compile Include="Assets\Script\ActionFactory.cs" />
+    <Compile Include="Assets\Script\ActionParam.cs" />
+    <Compile Include="Assets\Script\ActionResult.cs" />
+    <Compile Include="Assets\Script\GameAction.cs" />
+    <Compile Include="Assets\Script\Net.cs" />
+    <Compile Include="Assets\Script\View\GameSetting.cs" />
+    <Compile Include="Assets\Script\View\Login.cs" />
+    <Compile Include="Assets\Script\View\Main.cs" />
+    <Compile Include="Assets\Script\View\Regist.cs" />
+    <Compile Include="Assets\Scut\Net\DefaultHeadFormater.cs" />
+    <Compile Include="Assets\Scut\Net\HttpPackage.cs" />
+    <Compile Include="Assets\Scut\Net\IHeadFormater.cs" />
+    <Compile Include="Assets\Scut\Net\IHttpCallBack.cs" />
+    <Compile Include="Assets\Scut\Net\NetPackage.cs" />
+    <Compile Include="Assets\Scut\Net\NetReader.cs" />
+    <Compile Include="Assets\Scut\Net\NetWriter.cs" />
+    <Compile Include="Assets\Scut\Net\NetworkType.cs" />
+    <Compile Include="Assets\Scut\Net\PackageHead.cs" />
+    <Compile Include="Assets\Scut\Net\SocketConnect.cs" />
+    <Compile Include="Assets\Scut\Net\SocketPackage.cs" />
+    <Compile Include="Assets\Scut\Security\DES.cs" />
+    <Compile Include="Assets\Scut\Security\DESAlgorithmNew.cs" />
+    <Compile Include="Assets\Scut\Security\DesCopy.cs" />
+    <Compile Include="Assets\Scut\Security\MD5Utils.cs" />
+    <Compile Include="Assets\Scut\Serialization\ProtoBufUtils.cs" />
+    <Compile Include="Assets\Scut\Serialization\ProtoObject.cs" />
+    <Reference Include="ICSharpCode.SharpZipLib">
+      <HintPath>Assets\Lib\ICSharpCode.SharpZipLib.dll</HintPath>
+    </Reference>
+    <Reference Include="protobuf-net">
+      <HintPath>Assets\Lib\protobuf-net.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="Assembly-CSharp-firstpass.csproj">
+      <Project>{037F771F-8C53-00EE-1C19-B3BC7E3C5B70}</Project>
+      <Name>Assembly-CSharp-firstpass</Name>
+    </ProjectReference>
+    <ProjectReference Include="Assembly-UnityScript-firstpass.unityproj">
+      <Project>{39B97C5F-67CC-D872-60B8-EF9DDFD18867}</Project>
+      <Name>Assembly-UnityScript-firstpass</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+	   Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>
