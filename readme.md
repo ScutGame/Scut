@@ -59,49 +59,55 @@ OSChina代码库：https://git.oschina.net/scutgame/Scut<br />
 
 更新日志
 ----------------
-###版本：6.5.8.5 (2014-7-11) Release
+###版本：6.5.8.6 (2014-7-18) Stable
+> 1. 增加从Redis中加载数据到Cache可设置筛选条件
+> 2. 修改在Web项目中的不能支持自定协议问题
+> 3. 修改Shard类型的Model在Redis中为空时会尝试从DB中加载数据
+> 4. 修改Model命名空间包含下划线字符时在Redis中存取数据错误问题
+
+###版本：6.5.8.5 (2014-7-11) Stable
 > 1. 增加支持从db中恢复数据功能
 > 2. 修改Model的Change事件被绑定多次的问题
 > 3. 修改中间件HttpGet不支持自定协议的问题
 > 4. 修改网络间断时Session被释放问题
 
 
-###版本：6.5.8.3 (2014-6-25) Release
+###版本：6.5.8.3 (2014-6-25) Stable
 > 1. 修改Lua脚本支持Linux平台部署
 
-###版本：6.5.8.2 (2014-6-19) Unstable
+###版本：6.5.8.2 (2014-6-19) UnStable
 > 1. 增加脚本重新加载后触发Loaded事件接口
 > 2. 修改通讯流读取出错出后再次读取时内存会溢出问题
 > 3. 修改GameSession信息有变化才同步到Redis
 > 4. 修改未能找到对应的Python脚本的问题
 
-###版本：6.5.8.1 (2014-6-13) Release
+###版本：6.5.8.1 (2014-6-13) Stable
 > 1. 修改在Linux平台检测数据库连接出错的问题
 > 2. 修改中间件当乐和UC渠道不能登录问题
 > 3. 增加支持32位系统的安装程序包
 
 
-###版本：6.5.8.0 (2014-5-30) Release
+###版本：6.5.8.0 (2014-5-30) Stable
 > 1. 增加Lua脚本语言支持
 > 2. 增加游戏服务启动进度
 > 3. 增加Server启动时检测网络是否可以访问
 > 4. 修改Server正在关闭时Socket连接出错问题
 
-###版本：6.3.7.5 (2014-5-9) Release
+###版本：6.3.7.5 (2014-5-9) Stable
 > 1. 增加客户端与服务端通讯支持自定义的消息结构，支持Unity3d对象接入
 > 2. 增加Http操作工具类
 > 3. 修改实体对象修改锁不能重入问题
 > 4. 修改Action封包出异常时的下发Push类型包的问题
 
 
-###版本：6.3.7.3 (2014-4-30) Release
+###版本：6.3.7.3 (2014-4-30) Stable
 > 1. 修改动态脚本使用实体继承的方式编译出错
 > 2. 修改使用实体继承的方式不能Protobuf序列化问题
 > 3. 修改加载旧版存储结构的Redis数据问题
 > 4. 增加ScutSMS工具的帮助文档（含游戏服参数配置说明）
 
 
-###版本：6.3.7.2 (2014-4-25) Release
+###版本：6.3.7.2 (2014-4-25) Stable
 > 1. 修改缓存更新与删除一起处理时未能删除数据问题
 > 2. 修改实体数据在Redis中以Hash方式存储
 > 3. 修改使用Redis自带的连接池管理类
@@ -111,20 +117,20 @@ OSChina代码库：https://git.oschina.net/scutgame/Scut<br />
 > 7. 增加CacheStruct类LoadingStatus属性，在缓存中查找Key时是对象为空，还是由于从Redis取数据异常导致为空
 
 
-###版本：6.2.7.0 (2014-4-4) Release
+###版本：6.2.7.0 (2014-4-4) Stable
 > 1. 升级底层类库到.Net Framework 4.5.1版本
 > 2. 增加Action=2与服务端Socket断开接口
 > 3. 修改更新Python脚本时ReferenceLib.py文件被占用问题
 
 
-###版本：6.1.6.5 (2014-3-14) Release
+###版本：6.1.6.5 (2014-3-14) Stable
 > 1. 增加CSharp脚本不需要验证访问Action设置
 > 2. 增加脚本引擎可以执行py/C# Source脚本片段
 > 3. 修改Change Key写入Redis有丢失的问题
 > 4. 修改Changed Eventg事件通知使用异步调用
 
 
-###版本：6.1.6.2 (2014-3-7) Release
+###版本：6.1.6.2 (2014-3-7) Stable
 > 1. 增加输入Log文件可划分目录
 > 2. 修改GameSession初始加载Redis数据出错问题
 > 3. 修改Language使用非脚本无法配置Type问题
@@ -132,13 +138,13 @@ OSChina代码库：https://git.oschina.net/scutgame/Scut<br />
 > 5. 修改屏蔽词中间件取不到数据问题
 > 6. 修改使用Timer与Task开启线程crash掉的问题
 
-###版本：6.1.6.0 (2014-2-28) Release
+###版本：6.1.6.0 (2014-2-28) Stable
 > 1. 增加Session停服恢复功能
 > 2. 增加Server Console打印logo字符画信息
 > 3. 修改Server Console回车无法退出问题
 > 4. 修改强制停服写入Redis的数据丢失问题
 
-###版本：6.1.5.8 (2014-2-19) Release
+###版本：6.1.5.8 (2014-2-19) Stable
 > 1. 增加通讯协议写入流支持可Protobuf序列化的对象
 > 2. 增加Action通讯流可支持Gzip压缩
 > 3. 修改语言包为空异常的问题
@@ -147,7 +153,7 @@ OSChina代码库：https://git.oschina.net/scutgame/Scut<br />
 > 6. 修改生成Sql表结构语句BUG
 > 7. 修改渠道登录中间件不能正常登录问题
 
-###版本：6.1.5.6 (2014-1-26) Release
+###版本：6.1.5.6 (2014-1-26) Stable
 > 1. 增加exe版(console），web版本(IIS)的游戏服宿主程序
 > 2. 增加Model支持脚本化，实现不停服更新
 > 3. 增加Language支持脚本化
@@ -156,31 +162,31 @@ OSChina代码库：https://git.oschina.net/scutgame/Scut<br />
 > 6. 修改消息队列写MSSQL数据库时SqlParamter被占用问题
 
 
-###版本：6.1.5.5 (2014-1-10) Release
+###版本：6.1.5.5 (2014-1-10) Stable
 > 1. 增加对对象属性的原子操作方法
 > 2. 修改全局缓存序列化时存储到Redis内存溢出问题
 > 3. 修改Protobuf不能序列化私有成员的问题
 
 
-###版本：6.1.5.3 (2013-12-31) Release
+###版本：6.1.5.3 (2013-12-31) Stable
 > 1. 增加游戏运行环境配置类
 > 2. 增加Sync模型支持，简化部分数据通讯协议
 > 3. 修改数据库为可选配置
 > 4. 修改生成MySql语句含有关键词问题
 
 
-###版本：6.0.5.2 (2013-12-5) Release
+###版本：6.0.5.2 (2013-12-5) Stable
 > 1. 增加C#脚本中能引用多个C#脚本文件的支持
 > 2. 修正Web应用程序中使用C#脚本解析不到Bin目录的问题
 
 
-###版本：6.0.5.1 (2013-12-4) Release
+###版本：6.0.5.1 (2013-12-4) Stable
 > 1. 修正缓存删除时不会更新到Redis的问题
 > 2. 修正Model组合3个以上子类时Change事件未绑定的问题
 > 3. 修正中间层MySql与MsSql数据库Sql语句分页问题
 
 
-###版本：6.0.5.0 (2013-11-29) Release
+###版本：6.0.5.0 (2013-11-29) Stable
 > 1. 增加C#脚本支持
 > 2. 增加Pay和Sns中间件对Mysql数据库支持
 > 3. 精简布署步骤，取消Redis写入程序，将其移到游戏底层运行
@@ -190,7 +196,7 @@ OSChina代码库：https://git.oschina.net/scutgame/Scut<br />
 
 What's Scut Game Server Framework？
 =================
-Scut is a free, open source, stable game server framework, which support C#/Python script. Scut's design philosophy is to "Developing online game easier"，It includes a development framework and no-sql/database storage services, and many game system modules. Save a lot of game developers working hours，it allows the user to focus on business logic. Scut Game Server Framework also provide ScutSDK(eg. for Cocos2d-x) which make communications between server and client very easy.
+Scut is a free, open source, Stable game server framework, which support C#/Python script. Scut's design philosophy is to "Developing online game easier"，It includes a development framework and no-sql/database storage services, and many game system modules. Save a lot of game developers working hours，it allows the user to focus on business logic. Scut Game Server Framework also provide ScutSDK(eg. for Cocos2d-x) which make communications between server and client very easy.
 
 Benefits Features
 ----------------
