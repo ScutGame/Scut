@@ -62,7 +62,7 @@ OSChina代码库：https://git.oschina.net/scutgame/Scut<br />
 ###版本：6.5.8.6 (2014-7-18) Stable
 > 1. 增加从Redis中加载数据到Cache可设置筛选条件
 > 2. 修改在Web项目中的不能支持自定协议问题
-> 3. 修改Shard类型的Model在Redis中为空时会尝试从DB中加载数据
+> 3. 修改Share类型的Model在Redis中为空时会尝试从DB中加载数据
 > 4. 修改Model命名空间包含下划线字符时在Redis中存取数据错误问题
 
 ###版本：6.5.8.5 (2014-7-11) Stable
