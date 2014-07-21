@@ -107,7 +107,7 @@ namespace ZyGames.Framework.Model
         public int ColumnLength { get; set; }
 
         /// <summary>
-        /// decimal类型指精度范围
+        /// 列的小数位数
         /// </summary>
         public int ColumnScale { get; set; }
 

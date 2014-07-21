@@ -81,7 +81,7 @@ namespace ZyGames.Framework.Model
         /// </summary>
         public int ColumnLength { get; set; }
         /// <summary>
-        /// 
+        /// 列的小数位数
         /// </summary>
         public int ColumnScale { get; set; }
         /// <summary>

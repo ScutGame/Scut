@@ -391,6 +391,9 @@ namespace ZyGames.Framework.Model
                    fieldType == typeof(bool) ||
                    fieldType == typeof(decimal) ||
                    fieldType == typeof(DateTime) ||
+                   fieldType == typeof(ulong) ||
+                   fieldType == typeof(uint) ||
+                   fieldType == typeof(ushort) ||
                    fieldType.IsEnum;
         }
 
@@ -410,6 +413,9 @@ namespace ZyGames.Framework.Model
             if (fieldType == typeof(double)) return "double";
             if (fieldType == typeof(bool)) return "bool";
             if (fieldType == typeof(decimal)) return "decimal";
+            if (fieldType == typeof(ulong)) return "ulong";
+            if (fieldType == typeof(uint)) return "uint";
+            if (fieldType == typeof(ushort)) return "ushort";
             if (fieldType == typeof(DateTime)) return "datetime";
             if (fieldType.IsEnum) return "int";
             return fieldType.Name.ToLower();

@@ -254,6 +254,17 @@ namespace ZyGames.Framework.Common
         {
             return MathUtils.ToDecimal(value);
         }
+
+        /// <summary>
+        /// 将对象转换成单精度浮点值
+        /// </summary>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        public static float ToFloat(this object value)
+        {
+            return MathUtils.ToFloat(value);
+        }
+
         /// <summary>
         /// 将对象转换成布尔值
         /// </summary>
@@ -271,6 +282,33 @@ namespace ZyGames.Framework.Common
         public static byte ToByte(this object value)
         {
             return MathUtils.ToByte(value);
+        }
+        /// <summary>
+        /// 将对象转换成64位无符号
+        /// </summary>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        public static UInt64 ToUInt64(this object value)
+        {
+            return MathUtils.ToUInt64(value);
+        }
+        /// <summary>
+        /// 将对象转换成32位无符号
+        /// </summary>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        public static UInt32 ToUInt32(this object value)
+        {
+            return MathUtils.ToUInt32(value);
+        }
+        /// <summary>
+        /// 将对象转换成16位无符号
+        /// </summary>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        public static UInt16 ToUInt16(this object value)
+        {
+            return MathUtils.ToUInt16(value);
         }
         /// <summary>
         /// 将对象转换成时间值

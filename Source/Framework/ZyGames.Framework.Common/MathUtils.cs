@@ -729,22 +729,6 @@ namespace ZyGames.Framework.Common
         }
 
         /// <summary>
-        /// 将对象转换成长整型值
-        /// </summary>
-        /// <param name="value"></param>
-        /// <returns></returns>
-        public static long ToLong(object value)
-        {
-            try
-            {
-                return Convert.ToInt64(value.IsNullOrDbNull() ? 0 : value);
-            }
-            catch
-            {
-                throw new ArgumentException(string.Format("\"{0}\" converted to type long fail.", value));
-            }
-        }
-        /// <summary>
         /// 向上取整
         /// </summary>
         /// <param name="value"></param>
@@ -794,6 +778,22 @@ namespace ZyGames.Framework.Common
             }
         }
 
+        /// <summary>
+        /// 将对象转换成长整型值
+        /// </summary>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        public static long ToLong(object value)
+        {
+            try
+            {
+                return Convert.ToInt64(value.IsNullOrDbNull() ? 0 : value);
+            }
+            catch
+            {
+                throw new ArgumentException(string.Format("\"{0}\" converted to type long fail.", value));
+            }
+        }
         /// <summary>
         /// 将对象转换成整型值
         /// </summary>
@@ -869,6 +869,22 @@ namespace ZyGames.Framework.Common
             }
         }
         /// <summary>
+        /// 将对象转换成单精度浮点值
+        /// </summary>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        public static float ToFloat(object value)
+        {
+            try
+            {
+                return Convert.ToSingle(value.IsNullOrDbNull() ? 0 : value);
+            }
+            catch
+            {
+                throw new ArgumentException(string.Format("\"{0}\" converted to type decimal fail.", value));
+            }
+        }
+        /// <summary>
         /// 将对象转换成布尔值
         /// </summary>
         /// <param name="value"></param>
@@ -906,6 +922,55 @@ namespace ZyGames.Framework.Common
             catch
             {
                 throw new ArgumentException(string.Format("\"{0}\" converted to type byte fail.", value));
+            }
+        }
+
+        /// <summary>
+        /// 将对象转换成64位无符号
+        /// </summary>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        public static UInt64 ToUInt64(object value)
+        {
+            try
+            {
+                return Convert.ToUInt64(value.IsNullOrDbNull() ? 0 : value);
+            }
+            catch
+            {
+                throw new ArgumentException(string.Format("\"{0}\" converted to type UInt64 fail.", value));
+            }
+        }
+        /// <summary>
+        /// 将对象转换成32位无符号
+        /// </summary>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        public static UInt32 ToUInt32(object value)
+        {
+            try
+            {
+                return Convert.ToUInt32(value.IsNullOrDbNull() ? 0 : value);
+            }
+            catch
+            {
+                throw new ArgumentException(string.Format("\"{0}\" converted to type ToUInt32 fail.", value));
+            }
+        }
+        /// <summary>
+        /// 将对象转换成16位无符号
+        /// </summary>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        public static UInt16 ToUInt16(object value)
+        {
+            try
+            {
+                return Convert.ToUInt16(value.IsNullOrDbNull() ? 0 : value);
+            }
+            catch
+            {
+                throw new ArgumentException(string.Format("\"{0}\" converted to type ToUInt16 fail.", value));
             }
         }
         /// <summary>

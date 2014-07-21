@@ -777,6 +777,10 @@ namespace ZyGames.Framework.Model
             {
                 return value.ToDouble();
             }
+            if (columnType == typeof(float))
+            {
+                return value.ToFloat();
+            }
             if (columnType == typeof(bool))
             {
                 return value.ToBool();
@@ -796,6 +800,18 @@ namespace ZyGames.Framework.Model
             if (columnType.IsEnum)
             {
                 return value.ToEnum(columnType);
+            }
+            if (columnType == typeof(UInt64))
+            {
+                return value.ToUInt64();
+            }
+            if (columnType == typeof(UInt32))
+            {
+                return value.ToUInt32();
+            }
+            if (columnType == typeof(UInt16))
+            {
+                return value.ToUInt16();
             }
             return value;
         }

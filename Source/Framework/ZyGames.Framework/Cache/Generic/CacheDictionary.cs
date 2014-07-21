@@ -74,7 +74,10 @@ namespace ZyGames.Framework.Cache.Generic
             _cacheStruct = new ConcurrentDictionary<T, V>();
             ExpiredHandle = expiredHandle;
         }
-
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="changeEvent"></param>
         public override void AddChildrenListener(object changeEvent)
         {
             CheckSingleBindEvent(changeEvent);

@@ -80,7 +80,10 @@ namespace ZyGames.Framework.Cache.Generic
             ExpiredHandle = expiredHandle;
             _list = length > 0 ? new List<T>(length) : new List<T>();
         }
-
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="changeEvent"></param>
         public override void AddChildrenListener(object changeEvent)
         {
             CheckSingleBindEvent(changeEvent);
