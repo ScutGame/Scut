@@ -449,10 +449,20 @@ namespace ZyGames.Framework.Redis
             return Encoding.UTF8.GetString(keyBytes);
         }
 
+        /// <summary>
+        /// 从TypeName转成成Redis的Key
+        /// </summary>
+        /// <param name="typeName"></param>
+        /// <returns></returns>
         internal static string ConvertKeyFromType(string typeName)
         {
             return typeName.Replace("_", "%11");
         }
+        /// <summary>
+        /// 从Redis的Key转成成TypeName
+        /// </summary>
+        /// <param name="key"></param>
+        /// <returns></returns>
         internal static string ConvertTypeFromKey(string key)
         {
             return key.TrimStart(EntityKeyPreChar.ToCharArray()).Replace("%11", "_");

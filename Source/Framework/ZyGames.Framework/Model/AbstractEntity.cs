@@ -753,9 +753,17 @@ namespace ZyGames.Framework.Model
 
         internal object ParseValueType(object value, Type columnType)
         {
-            if (columnType == typeof(int))
+            if (columnType == typeof(Int64))
+            {
+                return value.ToLong();
+            }
+            if (columnType == typeof(Int32))
             {
                 return value.ToInt();
+            }
+            if (columnType == typeof(Int16))
+            {
+                return value.ToShort();
             }
             if (columnType == typeof(string))
             {

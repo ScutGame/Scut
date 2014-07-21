@@ -690,6 +690,7 @@ namespace ZyGames.Framework.Model
         /// <returns></returns>
         public static bool TryGet(string typeName, out SchemaTable schema)
         {
+            typeName = RedisConnectionPool.ConvertTypeFromKey(typeName);
             return SchemaSet.TryGetValue(typeName, out schema);
         }
 
