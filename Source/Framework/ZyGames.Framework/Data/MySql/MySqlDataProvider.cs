@@ -536,9 +536,40 @@ namespace ZyGames.Framework.Data.MySql
         /// <param name="paramName"></param>
         /// <param name="value"></param>
         /// <returns></returns>
+        public override IDataParameter CreateParameterByLongText(string paramName, object value)
+        {
+            return MySqlParamHelper.MakeInParam(paramName, MySqlDbType.LongText, 0, value);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="paramName"></param>
+        /// <param name="value"></param>
+        /// <returns></returns>
         public override IDataParameter CreateParameterByText(string paramName, object value)
         {
             return MySqlParamHelper.MakeInParam(paramName, MySqlDbType.Text, 0, value);
+        }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="paramName"></param>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        public override IDataParameter CreateParameterLongBlob(string paramName, object value)
+        {
+            return MySqlParamHelper.MakeInParam(paramName, MySqlDbType.LongBlob, 0, value);
+        }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="paramName"></param>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        public override IDataParameter CreateParameterByBlob(string paramName, object value)
+        {
+            return MySqlParamHelper.MakeInParam(paramName, MySqlDbType.Blob, 0, value);
         }
 
         /// <summary>

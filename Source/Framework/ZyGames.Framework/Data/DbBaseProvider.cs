@@ -186,13 +186,33 @@ namespace ZyGames.Framework.Data
         /// <returns></returns>
         public abstract IDataParameter CreateParameterByGuid(string paramName, object value);
         /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="paramName"></param>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        public abstract IDataParameter CreateParameterByLongText(string paramName, object value);
+        /// <summary>
         /// 创建Text类型的参数
         /// </summary>
         /// <param name="paramName"></param>
         /// <param name="value"></param>
         /// <returns></returns>
         public abstract IDataParameter CreateParameterByText(string paramName, object value);
-
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="paramName"></param>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        public abstract IDataParameter CreateParameterLongBlob(string paramName, object value);
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="paramName"></param>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        public abstract IDataParameter CreateParameterByBlob(string paramName, object value);
         /// <summary>
         /// 创建CommandStruct对象
         /// </summary>
@@ -254,5 +274,6 @@ namespace ZyGames.Framework.Data
         /// <param name="name"></param>
         /// <returns></returns>
         public abstract string FormatName(string name);
+
     }
 }

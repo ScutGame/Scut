@@ -193,35 +193,16 @@ namespace ZyGames.Framework.Net.Sql
                     continue;
                 }
                 object fieldValue = null;
-                if (fieldAttr.IsJson)
+                if (fieldAttr.IsSerialized)
                 {
                     var value = reader[columnName];
-                    if (fieldAttr.ColumnType.IsSubclassOf(typeof(Array)))
+                    if (fieldAttr.DbType == ColumnDbType.LongBlob || fieldAttr.DbType == ColumnDbType.Blob)
                     {
-                        value = value.ToString().StartsWith("[") ? value : "[" + value + "]";
+                        fieldValue = DeserializeBinaryObject(schemaTable, entity, value, fieldAttr, columnName);
                     }
-                    try
+                    else
                     {
-                        string tempValue = value.ToNotNullString();
-                        if (!string.IsNullOrEmpty(fieldAttr.JsonDateTimeFormat) &&
-                            tempValue.IndexOf(@"\/Date(") == -1)
-                        {
-                            fieldValue = JsonUtils.DeserializeCustom(tempValue, fieldAttr.ColumnType, fieldAttr.JsonDateTimeFormat);
-                        }
-                        else
-                        {
-                            fieldValue = JsonUtils.Deserialize(tempValue, fieldAttr.ColumnType);
-                        }
-                    }
-                    catch (Exception ex)
-                    {
-                        TraceLog.WriteError("Table:{0} key:{1} column:{2} deserialize json error:{3} to {4}\r\nException:{5}",
-                            schemaTable.Name,
-                            entity.GetKeyCode(),
-                            columnName,
-                            fieldValue,
-                            fieldAttr.ColumnType.FullName,
-                            ex);
+                        fieldValue = DeserializeJsonObject(schemaTable, entity, value, fieldAttr, columnName);
                     }
                     if (fieldValue is EntityChangeEvent)
                     {
@@ -250,5 +231,60 @@ namespace ZyGames.Framework.Net.Sql
             }
         }
 
+        private object DeserializeBinaryObject(SchemaTable schemaTable, AbstractEntity entity, object value, SchemaColumn fieldAttr, string columnName)
+        {
+            try
+            {
+                if (value is byte[])
+                {
+                    byte[] buffer = value as byte[];
+                    return ProtoBufUtils.Deserialize(buffer, fieldAttr.ColumnType);
+                }
+                throw new Exception("value is not byte[] type.");
+            }
+            catch (Exception ex)
+            {
+                TraceLog.WriteError("Table:{0} key:{1} column:{2} deserialize binary error:byte[] to {3}\r\nException:{4}",
+                    schemaTable.Name,
+                    entity.GetKeyCode(),
+                    columnName,
+                    fieldAttr.ColumnType.FullName,
+                    ex);
+            }
+            return null;
+        }
+
+        private static object DeserializeJsonObject(SchemaTable schemaTable, AbstractEntity entity, object value,
+            SchemaColumn fieldAttr, string columnName)
+        {
+            try
+            {
+                if (fieldAttr.ColumnType.IsSubclassOf(typeof(Array)))
+                {
+                    value = value.ToString().StartsWith("[") ? value : "[" + value + "]";
+                }
+                string tempValue = value.ToNotNullString();
+                if (!string.IsNullOrEmpty(fieldAttr.JsonDateTimeFormat) &&
+                    tempValue.IndexOf(@"\/Date(") == -1)
+                {
+                    return JsonUtils.DeserializeCustom(tempValue, fieldAttr.ColumnType, fieldAttr.JsonDateTimeFormat);
+                }
+                else
+                {
+                    return JsonUtils.Deserialize(tempValue, fieldAttr.ColumnType);
+                }
+            }
+            catch (Exception ex)
+            {
+                TraceLog.WriteError("Table:{0} key:{1} column:{2} deserialize json error:{3} to {4}\r\nException:{5}",
+                    schemaTable.Name,
+                    entity.GetKeyCode(),
+                    columnName,
+                    value,
+                    fieldAttr.ColumnType.FullName,
+                    ex);
+            }
+            return null;
+        }
     }
 }

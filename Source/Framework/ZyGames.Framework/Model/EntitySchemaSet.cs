@@ -496,7 +496,7 @@ namespace ZyGames.Framework.Model
                     column.Disable = entityField.Disable;
                     column.MinRange = entityField.MinRange;
                     column.MaxRange = entityField.MaxRange;
-                    column.IsJson = entityField.IsJsonSerialize;
+                    column.IsSerialized = entityField.IsJsonSerialize;
                     column.JsonDateTimeFormat = entityField.JsonDateTimeFormat;
                     column.ColumnType = property.PropertyType;
                     column.DbType = entityField.DbType;
@@ -769,7 +769,7 @@ namespace ZyGames.Framework.Model
                 else
                 {
                     if ((column.Type == typeof(decimal) && keypair.Value.ColumnScale > 0 && column.Scale != keypair.Value.ColumnScale)
-                        || (!keypair.Value.IsJson &&
+                        || (!keypair.Value.IsSerialized &&
                             keypair.Value.ColumnType != typeof(byte[]) &&
                             column.Type != keypair.Value.ColumnType &&
                             keypair.Value.ColumnType.IsEnum && column.Type != typeof(int))

@@ -128,7 +128,17 @@ namespace ZyGames.Framework.Model
         /// <summary>
         /// 是否使用Json序列化
         /// </summary>
+        [Obsolete("use IsSerialized.")]
         public bool IsJson
+        {
+            get { return IsSerialized; }
+            set { IsSerialized = value; }
+        }
+
+        /// <summary>
+        /// 是否序列化存储
+        /// </summary>
+        public bool IsSerialized
         {
             get;
             set;

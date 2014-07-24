@@ -125,7 +125,7 @@ namespace ZyGames.Framework.Data.Sql
             }
             else if (value is Byte[])
             {
-                return SqlDbType.VarBinary;
+                return SqlDbType.Image;
             }
             else if (value is long)
             {

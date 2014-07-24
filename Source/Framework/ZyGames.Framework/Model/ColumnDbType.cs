@@ -49,6 +49,18 @@ namespace ZyGames.Framework.Model
         /// <summary>
         /// Text
         /// </summary>
-        Text
+        Text,
+        /// <summary>
+        /// 
+        /// </summary>
+        LongText,
+        /// <summary>
+        /// 
+        /// </summary>
+        Blob,
+        /// <summary>
+        /// 
+        /// </summary>
+        LongBlob,
     }
 }

@@ -210,8 +210,17 @@ namespace ZyGames.Framework.Net.Sql
                 case ColumnDbType.UniqueIdentifier:
                     parameter = dbProvider.CreateParameterByGuid(columnName, (Guid)value);
                     break;
+                case ColumnDbType.LongText:
+                    parameter = dbProvider.CreateParameterByLongText(columnName, value);
+                    break;
                 case ColumnDbType.Text:
                     parameter = dbProvider.CreateParameterByText(columnName, value);
+                    break;
+                case ColumnDbType.LongBlob:
+                    parameter = dbProvider.CreateParameterLongBlob(columnName, value);
+                    break;
+                case ColumnDbType.Blob:
+                    parameter = dbProvider.CreateParameterByBlob(columnName, value);
                     break;
                 default:
                     parameter = dbProvider.CreateParameter(columnName, value);
@@ -250,31 +259,61 @@ namespace ZyGames.Framework.Net.Sql
             }
 
             //序列化Json
-            if (schemaColumn.IsJson)
+            if (schemaColumn.IsSerialized)
             {
-                try
+                if (schemaColumn.DbType == ColumnDbType.LongBlob || schemaColumn.DbType == ColumnDbType.Blob)
                 {
-                    value = value ?? string.Empty;
-                    if (!string.IsNullOrEmpty(schemaColumn.JsonDateTimeFormat))
-                    {
-                        value = JsonUtils.SerializeCustom(value);
-                    }
-                    else
-                    {
-                        value = JsonUtils.Serialize(value);
-                    }
-
+                    value = SerializeBinaryObject(schemaTable, schemaColumn, value);
                 }
-                catch (Exception ex)
+                else
                 {
-                    TraceLog.WriteError("Table:{0} column:\"{0}\" json serialize error:\r\n:{1}",
-                        schemaTable.Name,
-                        schemaColumn.Name,
-                        ex);
-                    return false;
+                    value = SerializeJson(schemaTable, schemaColumn, value);
                 }
+                if (value == null) return false;
             }
             return true;
+        }
+
+        private static object SerializeBinaryObject(SchemaTable schemaTable, SchemaColumn schemaColumn, object value)
+        {
+            try
+            {
+                value = ProtoBufUtils.Serialize(value);
+            }
+            catch (Exception ex)
+            {
+                TraceLog.WriteError("Table:{0} column:\"{0}\" serialize error:\r\n:{1}",
+                    schemaTable.Name,
+                    schemaColumn.Name,
+                    ex);
+                return null;
+            }
+            return value;
+        }
+
+        private static object SerializeJson(SchemaTable schemaTable, SchemaColumn schemaColumn, object value)
+        {
+            try
+            {
+                value = value ?? string.Empty;
+                if (!string.IsNullOrEmpty(schemaColumn.JsonDateTimeFormat))
+                {
+                    value = JsonUtils.SerializeCustom(value);
+                }
+                else
+                {
+                    value = JsonUtils.Serialize(value);
+                }
+            }
+            catch (Exception ex)
+            {
+                TraceLog.WriteError("Table:{0} column:\"{0}\" json serialize error:\r\n:{1}",
+                    schemaTable.Name,
+                    schemaColumn.Name,
+                    ex);
+                return null;
+            }
+            return value;
         }
     }
 }

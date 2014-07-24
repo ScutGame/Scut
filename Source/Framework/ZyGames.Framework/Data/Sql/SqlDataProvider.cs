@@ -570,9 +570,40 @@ namespace ZyGames.Framework.Data.Sql
         /// <param name="paramName"></param>
         /// <param name="value"></param>
         /// <returns></returns>
+        public override IDataParameter CreateParameterByLongText(string paramName, object value)
+        {
+            return SqlParamHelper.MakeInParam(paramName, SqlDbType.Text, 0, value);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="paramName"></param>
+        /// <param name="value"></param>
+        /// <returns></returns>
         public override IDataParameter CreateParameterByText(string paramName, object value)
         {
             return SqlParamHelper.MakeInParam(paramName, SqlDbType.Text, 0, value);
+        }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="paramName"></param>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        public override IDataParameter CreateParameterLongBlob(string paramName, object value)
+        {
+            return SqlParamHelper.MakeInParam(paramName, SqlDbType.Image, 0, value);
+        }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="paramName"></param>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        public override IDataParameter CreateParameterByBlob(string paramName, object value)
+        {
+            return SqlParamHelper.MakeInParam(paramName, SqlDbType.VarBinary, 0, value);
         }
 
         /// <summary>
