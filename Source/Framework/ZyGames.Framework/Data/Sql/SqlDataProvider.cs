@@ -380,9 +380,18 @@ namespace ZyGames.Framework.Data.Sql
                     : "VarChar(255)";
             }
 
-            if (string.Equals(dbType, "text", StringComparison.CurrentCultureIgnoreCase))
+            if (string.Equals(dbType, "text", StringComparison.CurrentCultureIgnoreCase)||
+                string.Equals(dbType, "longtext", StringComparison.CurrentCultureIgnoreCase))
             {
-                return dbType;
+                return "text";
+            }
+            if (string.Equals(dbType, "blob", StringComparison.CurrentCultureIgnoreCase))
+            {
+                return "varbinary(max)";
+            }
+            if (string.Equals(dbType, "longblob", StringComparison.CurrentCultureIgnoreCase))
+            {
+                return "image";
             }
 
             return "sql_variant";

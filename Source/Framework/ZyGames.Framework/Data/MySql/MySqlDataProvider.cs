@@ -340,12 +340,19 @@ namespace ZyGames.Framework.Data.MySql
                     ? length >= 4000 ? "longtext" : "VarChar(" + length + ")"
                     : "VarChar(255)";
             }
-
+            
             if (string.Equals(dbType, "text", StringComparison.CurrentCultureIgnoreCase))
             {
-                return dbType;
+                return "text";
             }
-
+            if (string.Equals(dbType, "longtext", StringComparison.CurrentCultureIgnoreCase))
+            {
+                return "longtext";
+            }
+            if (string.Equals(dbType, "longblob", StringComparison.CurrentCultureIgnoreCase))
+            {
+                return "longblob";
+            }
             return "blob";
         }
 

@@ -22,38 +22,38 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ****************************************************************************/
 using System;
-using System.Collections.Generic;
+using System.Collections.Concurrent;
 using System.Linq;
 using System.Text;
+using ZyGames.Framework.Common.Log;
 
 namespace ZyGames.Framework.RPC.Sockets
 {
     class ThreadSafeStack<T> where T : class
     {
-        private Stack<T> stack;
+        private ConcurrentStack<T> stack;
 
         public ThreadSafeStack(int capacity)
         {
-            stack = new Stack<T>(capacity);
+            stack = new ConcurrentStack<T>();
         }
 
         public int Count { get { return stack.Count; } }
 
         public T Pop()
         {
-            lock (stack)
+            T result;
+            if (stack.TryPop(out result))
             {
-                var result = stack.Pop();
                 return result;
             }
+            TraceLog.WriteError("\"{0}\" stack is out of.", typeof(T).FullName);
+            return null;
         }
 
         public void Push(T item)
         {
-            lock (stack)
-            {
-                stack.Push(item);
-            }
+            stack.Push(item);
         }
     }
 }

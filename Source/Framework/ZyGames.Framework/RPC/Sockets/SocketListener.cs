@@ -302,8 +302,11 @@ namespace ZyGames.Framework.RPC.Sockets
         private void ReleaseIOEventArgs(SocketAsyncEventArgs ioEventArgs)
         {
             var dataToken = (DataToken)ioEventArgs.UserToken;
-            dataToken.Reset(true);
-            dataToken.Socket = null;
+            if (dataToken != null)
+            {
+                dataToken.Reset(true);
+                dataToken.Socket = null;
+            }
             ioEventArgs.AcceptSocket = null;
             ioEventArgsPool.Push(ioEventArgs);
         }
