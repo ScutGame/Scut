@@ -14,9 +14,9 @@ public class Action1005 : BaseAction
     protected override void SendParameter(NetWriter writer, ActionParam actionParam)
     {
         //default url param
-        writer.writeString("UserName", actionParam["roleName"]);
-        writer.writeString("Sex", actionParam["Sex"]);
-        writer.writeString("HeadID", actionParam["HeadID"]);
+        writer.writeString("UserName", actionParam.Get<string>("roleName"));
+        writer.writeString("Sex",  actionParam.Get<string>("Sex"));
+        writer.writeString("HeadID",  actionParam.Get<string>("HeadID"));
         writer.writeString("RetailID", GameSetting.Instance.RetailID);
         writer.writeString("Pid", GameSetting.Instance.Pid);
         writer.writeInt32("MobileType", GameSetting.Instance.MobileType);

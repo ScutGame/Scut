@@ -34,15 +34,15 @@ public class Action1004 : BaseAction//GameAction
         //默认Scut流格式解包
         actionResult["SessionID"] = reader.readString();
         actionResult["UserID"] = reader.readString();
-        actionResult["UserType"] = reader.getInt().ToString();
+        actionResult["UserType"] = reader.getInt();
         actionResult["LoginTime"] = reader.readString();
-        actionResult["GuideID"] = reader.getInt().ToString();
+        actionResult["GuideID"] = reader.getInt();
         actionResult["PassportId"] = reader.readString();
         actionResult["RefeshToken"] = reader.readString();
         actionResult["QihooUserID"] = reader.readString();
         actionResult["Scope"] = reader.readString();
-        NetWriter.setUserID(ulong.Parse(actionResult["UserID"]));
-        NetWriter.setSessionID(actionResult["SessionID"]);
+        NetWriter.setUserID(ulong.Parse(actionResult["UserID"].ToString()));
+        NetWriter.setSessionID(actionResult.Get<string>("SessionID"));
 
     }
 

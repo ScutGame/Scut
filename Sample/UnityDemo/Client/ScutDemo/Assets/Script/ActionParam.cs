@@ -4,12 +4,12 @@ using System.Linq;
 
 public class ActionParam
 {
-    private Dictionary<string, string> _param;
+    private Dictionary<string, object> _param;
     private object _value;
 
     public ActionParam()
     {
-        _param = new Dictionary<string, string>(StringComparer.CurrentCultureIgnoreCase);
+        _param = new Dictionary<string, object>(StringComparer.CurrentCultureIgnoreCase);
     }
 
     public ActionParam(object value)
@@ -20,15 +20,15 @@ public class ActionParam
 
     public bool HasValue { get; private set; }
 
-    public KeyValuePair<string, string>[] ToArray()
+    public KeyValuePair<string, object>[] ToArray()
     {
-        return _param != null ? _param.ToArray() : new KeyValuePair<string, string>[0];
+        return _param != null ? _param.ToArray() : new KeyValuePair<string, object>[0];
     }
 
-    public void Foreach(Func<string, string, bool> func)
+    public void Foreach(Func<string, object, bool> func)
     {
         if (_param == null) return;
-        foreach (KeyValuePair<string, string> pair in _param)
+        foreach (KeyValuePair<string, object> pair in _param)
         {
             if (!func(pair.Key, pair.Value))
             {
@@ -37,12 +37,17 @@ public class ActionParam
         }
     }
 
+    public T Get<T>(string name)
+    {
+        return (T)this[name];
+    }
+
     /// <summary>
     /// Find param
     /// </summary>
     /// <param name="name"></param>
     /// <returns></returns>
-    public string this[string name]
+    public object this[string name]
     {
         get
         {

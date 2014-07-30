@@ -20,15 +20,15 @@ public class Action1008 : BaseAction
     {
         actionResult = new ActionResult();
         //默认Scut流格式解包
-        actionResult["RoleID"] = reader.getInt().ToString();
+        actionResult["RoleID"] = reader.getInt();
         actionResult["RoleName"] = reader.readString();
         actionResult["HeadImg"] = reader.readString();
-        actionResult["Sex"] = reader.getByte().ToString();
-        actionResult["LvNum"] = reader.getInt().ToString();
-        actionResult["ExperienceNum"] = reader.getInt().ToString();
-        actionResult["LifeNum"] = reader.getInt().ToString();
-        actionResult["LifeMaxNum"] = reader.getInt().ToString();
-        GameSetting.Instance.RoleName = actionResult["RoleName"];
+        actionResult["Sex"] = reader.getByte();
+        actionResult["LvNum"] = reader.getInt();
+        actionResult["ExperienceNum"] = reader.getInt();
+        actionResult["LifeNum"] = reader.getInt();
+        actionResult["LifeMaxNum"] = reader.getInt();
+        GameSetting.Instance.RoleName = actionResult.Get<string>("RoleName");
     }
 
     public override ActionResult GetResponseData()

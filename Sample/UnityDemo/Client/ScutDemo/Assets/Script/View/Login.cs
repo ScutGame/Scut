@@ -78,14 +78,14 @@ public class Login : MonoBehaviour
     {
         if (actionResult != null)
         {
-            user = actionResult["passportID"];
-            pwd = actionResult["password"];
+            user = actionResult.Get<string>("passportID");
+            pwd = actionResult.Get<string>("password");
         }
     }
 
     private void LoginCallback(ActionResult actionResult)
     {
-        if (actionResult != null && int.Parse(actionResult["GuideID"]) == (int)ActionType.CreateRote)
+        if (actionResult != null && actionResult.Get<int>("GuideID") == (int)ActionType.CreateRote)
         {
             Application.LoadLevelAsync("RoleScene");
             return;
