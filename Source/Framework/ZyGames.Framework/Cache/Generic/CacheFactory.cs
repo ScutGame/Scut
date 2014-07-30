@@ -276,7 +276,8 @@ namespace ZyGames.Framework.Cache.Generic
             if (keys.Length == 2 && !string.IsNullOrEmpty(keys[0]))
             {
                 CacheContainer container;
-                if (_writePools != null && _writePools.TryGetValue(keys[0], out  container))
+                string typeName = RedisConnectionPool.ConvertTypeFromKey(keys[0]);
+                if (_writePools != null && _writePools.TryGetValue(typeName, out  container))
                 {
                     string[] childKeys = keys[1].Split('|');
                     string personalKey = childKeys[0];
