@@ -29,7 +29,7 @@ public class Action1001 : BaseAction//GameAction
             //默认url参数格式
             actionParam.Foreach((k, v) =>
             {
-                writer.writeString(k, v);
+                writer.writeString(k, v.ToString());
                 return true;
             });
         }
