@@ -50,7 +50,22 @@ namespace ZyGames.Framework.Game.Service
         /// <summary>
         /// 跟踪BUFFER
         /// </summary>
-        protected StringBuilder _traceBuffer = new StringBuilder();
+        private StringBuilder _traceBuffer;
+
+        private bool _isDebug;
+
+        /// <summary>
+        /// 是否启用调试跟踪流
+        /// </summary>
+        private bool IsDebug
+        {
+            get { return _isDebug; }
+            set
+            {
+                _isDebug = value;
+                _traceBuffer = _isDebug ? new StringBuilder() : null;
+            }
+        }
 
         /// <summary>
         /// long类型
@@ -70,7 +85,7 @@ namespace ZyGames.Framework.Game.Service
             PushIntoStackObj(obj);
         }
         /// <summary>
-        /// 输出Short类型
+        /// 输出Short类型,Lua脚本只有int类型
         /// </summary>
         /// <param name="obj"></param>
         public void PushShortIntoStack(int obj)
@@ -137,6 +152,14 @@ namespace ZyGames.Framework.Game.Service
             PushIntoStackObj(obj);
         }
         /// <summary>
+        /// DateTime类型
+        /// </summary>
+        /// <param name="obj"></param>
+        public void PushIntoStack(DateTime obj)
+        {
+            PushIntoStackObj(obj);
+        }
+        /// <summary>
         /// 将数据加到栈尾
         /// </summary>
         /// <param name="obj"></param>
@@ -151,7 +174,7 @@ namespace ZyGames.Framework.Game.Service
         /// </summary>
         /// <param name="obj"></param>
         /// <param name="useGzip"></param>
-        public void PushIntoStack(object obj, bool useGzip = true)
+        public void PushIntoStack(object obj, bool useGzip)
         {
             //尝试进行protoBuf序列化
             try
@@ -172,20 +195,23 @@ namespace ZyGames.Framework.Game.Service
         /// <param name="obj"></param>
         private void PushIntoStackObj(object obj)
         {
-            if (_traceBuffer.Length > 0)
+            if (IsDebug && _traceBuffer != null)
             {
-                _traceBuffer.Append(",");
-            }
-            if (obj is DataStruct)
-            {
-                _traceBuffer.AppendLine();
-                _traceBuffer.Append("{");
-                _traceBuffer.AppendFormat("\"Struct\":{0}", ((DataStruct)obj).GetTraceString());
-                _traceBuffer.Append("}");
-            }
-            else
-            {
-                _traceBuffer.AppendFormat("\"Item\":\"{0}\"", obj);
+                if (_traceBuffer.Length > 0)
+                {
+                    _traceBuffer.Append(",");
+                }
+                if (obj is DataStruct)
+                {
+                    _traceBuffer.AppendLine();
+                    _traceBuffer.Append("{");
+                    _traceBuffer.AppendFormat("\"Struct\":{0}", ((DataStruct)obj).GetTraceString());
+                    _traceBuffer.Append("}");
+                }
+                else
+                {
+                    _traceBuffer.AppendFormat("\"Item\":\"{0}\"", obj);
+                }
             }
             PushIntoStackObj(obj, -1);
         }
@@ -196,7 +222,7 @@ namespace ZyGames.Framework.Game.Service
         /// <returns></returns>
         public string GetTraceString()
         {
-            return _traceBuffer.ToString();
+            return _traceBuffer != null ? _traceBuffer.ToString() : "";
         }
         /// <summary>
         /// 清空输出栈
@@ -258,17 +284,17 @@ namespace ZyGames.Framework.Game.Service
             {
                 return GetFloatLen();
             }
-            else if (type == typeof(Int64))
+            else if (type == typeof(Int64) || type == typeof(UInt64) || type == typeof(DateTime))
             {
                 return GetLongLen();
             }
-            else if (type == typeof(Int32) || type.IsEnum)
+            else if (type == typeof(Int32) || type == typeof(UInt32) || type.IsEnum)
             {
-                return GetDWordLen();
+                return GetIntLen();
             }
-            else if (type == typeof(Int16))
+            else if (type == typeof(Int16) || type == typeof(UInt16))
             {
-                return GetWordLen();
+                return GetShortLen();
             }
             else if (type == typeof(Byte))
             {
@@ -321,11 +347,23 @@ namespace ZyGames.Framework.Game.Service
                 }
                 else if (type == typeof(Int32) || type.IsEnum)
                 {
-                    WriteDWord(response, Convert.ToInt32(obj));
+                    WriteInt(response, Convert.ToInt32(obj));
                 }
                 else if (type == typeof(Int16))
                 {
-                    WriteWord(response, Convert.ToInt16(obj));
+                    WriteShort(response, Convert.ToInt16(obj));
+                }
+                else if (type == typeof(UInt64))
+                {
+                    WriteULong(response, Convert.ToUInt64(obj));
+                }
+                else if (type == typeof(UInt32))
+                {
+                    WriteUInt(response, Convert.ToUInt32(obj));
+                }
+                else if (type == typeof(UInt16))
+                {
+                    WriteUShort(response, Convert.ToUInt16(obj));
                 }
                 else if (type == typeof(Byte))
                 {
@@ -334,6 +372,10 @@ namespace ZyGames.Framework.Game.Service
                 else if (type == typeof(bool))
                 {
                     WriteBool(response, Convert.ToBoolean(obj));
+                }
+                else if (type == typeof(DateTime))
+                {
+                    WriteDateTime(response, Convert.ToDateTime(obj));
                 }
                 else if (type == typeof(DataStruct))
                 {
@@ -345,7 +387,7 @@ namespace ZyGames.Framework.Game.Service
                 {
                     //By Seamoon已序列化好的内容，直接写入
                     var bytes = (byte[])(obj);
-                    WriteDWord(response, bytes.Length);
+                    WriteInt(response, bytes.Length);
                     response.Write(bytes);
                 }
             }
@@ -387,7 +429,7 @@ namespace ZyGames.Framework.Game.Service
         protected void WriteActionNum(BaseGameResponse response)
         {
             int iActionNum = GetContentLen();
-            WriteDWord(response, iActionNum);
+            WriteInt(response, iActionNum);
         }
         /// <summary>
         /// 写入字节流
@@ -430,17 +472,18 @@ namespace ZyGames.Framework.Game.Service
         /// </summary>
         /// <param name="response"></param>
         /// <param name="aValue"></param>
-        protected static void WriteLong(BaseGameResponse response, Int64 aValue)
+        protected static void WriteBool(BaseGameResponse response, Boolean aValue)
         {
             byte[] outputStream = BitConverter.GetBytes(aValue);
             response.Write(outputStream);
         }
+
         /// <summary>
         /// 
         /// </summary>
         /// <param name="response"></param>
         /// <param name="aValue"></param>
-        protected static void WriteBool(BaseGameResponse response, Boolean aValue)
+        protected static void WriteLong(BaseGameResponse response, Int64 aValue)
         {
             byte[] outputStream = BitConverter.GetBytes(aValue);
             response.Write(outputStream);
@@ -451,7 +494,7 @@ namespace ZyGames.Framework.Game.Service
         /// </summary>
         /// <param name="aValue"></param>
         /// <param name="response"></param>
-        protected static void WriteDWord(BaseGameResponse response, Int32 aValue)
+        protected static void WriteInt(BaseGameResponse response, Int32 aValue)
         {
             byte[] outputStream = BitConverter.GetBytes(aValue);
             response.Write(outputStream);
@@ -461,7 +504,28 @@ namespace ZyGames.Framework.Game.Service
         /// </summary>
         /// <param name="aValue"></param>
         /// <param name="response"></param>
-        protected static void WriteWord(BaseGameResponse response, Int16 aValue)
+        protected static void WriteShort(BaseGameResponse response, Int16 aValue)
+        {
+            byte[] outputStream = BitConverter.GetBytes(aValue);
+            response.Write(outputStream);
+        }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="response"></param>
+        /// <param name="aValue"></param>
+        protected static void WriteULong(BaseGameResponse response, UInt64 aValue)
+        {
+            byte[] outputStream = BitConverter.GetBytes(aValue);
+            response.Write(outputStream);
+        }
+
+        /// <summary>
+        /// 写入字节流
+        /// </summary>
+        /// <param name="aValue"></param>
+        /// <param name="response"></param>
+        protected static void WriteUInt(BaseGameResponse response, UInt32 aValue)
         {
             byte[] outputStream = BitConverter.GetBytes(aValue);
             response.Write(outputStream);
@@ -469,14 +533,36 @@ namespace ZyGames.Framework.Game.Service
         /// <summary>
         /// 写入字节流
         /// </summary>
+        /// <param name="aValue"></param>
+        /// <param name="response"></param>
+        protected static void WriteUShort(BaseGameResponse response, UInt16 aValue)
+        {
+            byte[] outputStream = BitConverter.GetBytes(aValue);
+            response.Write(outputStream);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="response"></param>
+        /// <param name="value"></param>
+        protected static void WriteDateTime(BaseGameResponse response, DateTime value)
+        {
+            byte[] outputStream = BitConverter.GetBytes(value.Ticks);
+            response.Write(outputStream);
+        }
+
+        /// <summary>
+        /// 写入字节流
+        /// </summary>
         /// <param name="aByte"></param>
-        /// <param name="m_Response"></param>
-        protected static void WriteByte(BaseGameResponse m_Response, byte aByte)
+        /// <param name="response"></param>
+        protected static void WriteByte(BaseGameResponse response, byte aByte)
         {
             byte[] outputStream = new byte[1];
             outputStream[0] = aByte;
             //m_Response.OutputStream.Write(outputStream, 0, outputStream.Length);
-            m_Response.Write(outputStream);
+            response.Write(outputStream);
         }
 
         #region //计算输出对象长度
@@ -520,7 +606,7 @@ namespace ZyGames.Framework.Game.Service
         /// 计算int型数据下发时，占用的字节长度
         /// </summary>
         /// <returns></returns>
-        public static int GetDWordLen()
+        public static int GetIntLen()
         {
             return 4;
         }
@@ -528,7 +614,7 @@ namespace ZyGames.Framework.Game.Service
         /// 计算short型数据下发时，占用的字节长度
         /// </summary>
         /// <returns></returns>
-        public static int GetWordLen()
+        public static int GetShortLen()
         {
             return 2;
         }

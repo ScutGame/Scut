@@ -164,7 +164,37 @@ namespace ZyGames.Framework.Game.Service
         {
             this.actionId = aActionId;
         }
+        /// <summary>
+        /// 
+        /// </summary>
+        public void PushIntoStack(UInt64 obj)
+        {
+            dataStruct.PushIntoStack(obj);
+        }
+        /// <summary>
+        /// int类型
+        /// </summary>
+        /// <param name="obj"></param>
+        public void PushIntoStack(UInt32 obj)
+        {
+            dataStruct.PushIntoStack(obj);
+        }
+        /// <summary>
+        /// short类型
+        /// </summary>
+        /// <param name="obj"></param>
+        public void PushIntoStack(UInt16 obj)
+        {
+            dataStruct.PushIntoStack(obj);
+        }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        public void PushIntoStack(long obj)
+        {
+            dataStruct.PushIntoStack(obj);
+        }
         /// <summary>
         /// int类型
         /// </summary>
@@ -178,6 +208,14 @@ namespace ZyGames.Framework.Game.Service
         /// </summary>
         /// <param name="obj"></param>
         public void PushIntoStack(short obj)
+        {
+            dataStruct.PushIntoStack(obj);
+        }
+        /// <summary>
+        /// bool类型
+        /// </summary>
+        /// <param name="obj"></param>
+        public void PushIntoStack(bool obj)
         {
             dataStruct.PushIntoStack(obj);
         }
@@ -197,6 +235,38 @@ namespace ZyGames.Framework.Game.Service
         {
             dataStruct.PushIntoStack(obj);
         }
+        /// <summary>
+        /// 
+        /// </summary>
+        public void PushIntoStack(double obj)
+        {
+            dataStruct.PushIntoStack(obj);
+        }
+        /// <summary>
+        /// 
+        /// </summary>
+        public void PushIntoStack(float obj)
+        {
+            dataStruct.PushIntoStack(obj);
+        }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="obj"></param>
+        public void PushIntoStack(DateTime obj)
+        {
+            dataStruct.PushIntoStack(obj);
+        }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="obj"></param>
+        /// <param name="useGzip"></param>
+        public void PushIntoStack(object obj, bool useGzip)
+        {
+            dataStruct.PushIntoStack(obj, useGzip);
+        }
+
         /// <summary>
         /// 将数据加到栈尾
         /// </summary>
