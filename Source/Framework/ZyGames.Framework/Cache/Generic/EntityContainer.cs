@@ -363,7 +363,7 @@ namespace ZyGames.Framework.Cache.Generic
                         return true;
                     }
                     return false;
-                }, false);
+                }, true);
 
             }
             return dataList;
