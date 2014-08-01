@@ -89,6 +89,7 @@ namespace ContractTools.WebApp.Base
                     val = ms.ReadInt().ToString();
                     result = true;
                     break;
+                case FieldType.Password:
                 case FieldType.String:
                     val = ms.ReadString();
                     result = true;
@@ -117,11 +118,27 @@ namespace ContractTools.WebApp.Base
                     val = ms.ReadDouble().ToString();
                     result = true;
                     break;
+                case FieldType.Date:
+                    val = ms.ReadDateTime().ToString();
+                    result = true;
+                    break;
+                case FieldType.ULong:
+                    val = ms.ReadUInt64().ToString();
+                    result = true;
+                    break;
+                case FieldType.UInt:
+                    val = ms.ReadUInt32().ToString();
+                    result = true;
+                    break;
+                case FieldType.UShort:
+                    val = ms.ReadUInt16().ToString();
+                    result = true;
+                    break;
                 case FieldType.Record:
                     break;
                 case FieldType.End:
                     break;
-                case FieldType.Head:
+                case FieldType.Void:
                     break;
                 default:
                     break;
@@ -130,7 +147,7 @@ namespace ContractTools.WebApp.Base
             return result;
         }
 
-        private static string GetSign(string requestParams)
+        public static string GetSign(string requestParams)
         {
             string sign = "";
             if (!string.IsNullOrEmpty(SignKey))

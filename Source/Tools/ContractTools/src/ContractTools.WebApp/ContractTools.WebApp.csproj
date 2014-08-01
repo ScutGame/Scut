@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
@@ -49,19 +49,17 @@
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="MySql.Data, Version=6.7.4.0, Culture=neutral, PublicKeyToken=c5687fc88969c44d, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\..\Release\6.5.8.5\Lib\MySql.Data.dll</HintPath>
+      <HintPath>..\Lib\MySql.Data.dll</HintPath>
     </Reference>
     <Reference Include="Newtonsoft.Json, Version=4.5.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\..\Release\6.5.8.5\Lib\Newtonsoft.Json.dll</HintPath>
+      <HintPath>..\Lib\Newtonsoft.Json.dll</HintPath>
     </Reference>
-    <Reference Include="NLog, Version=2.0.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\..\Release\6.5.8.5\Lib\NLog.dll</HintPath>
+    <Reference Include="NLog">
+      <HintPath>..\Lib\NLog.dll</HintPath>
     </Reference>
-    <Reference Include="protobuf-net, Version=2.0.0.594, Culture=neutral, PublicKeyToken=257b51d87d2e4d67, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\..\Release\6.5.8.5\Lib\protobuf-net.dll</HintPath>
+    <Reference Include="protobuf-net">
+      <HintPath>..\Lib\protobuf-net.dll</HintPath>
     </Reference>
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="System.Web.DynamicData" />
@@ -77,16 +75,14 @@
     <Reference Include="System.Web.Services" />
     <Reference Include="System.EnterpriseServices" />
     <Reference Include="System.Xml.Linq" />
-    <Reference Include="ZyGames.Framework, Version=6.0.0.30457, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\..\Release\6.5.8.5\Lib\ZyGames.Framework.dll</HintPath>
+    <Reference Include="ZyGames.Framework">
+      <HintPath>..\Lib\ZyGames.Framework.dll</HintPath>
     </Reference>
-    <Reference Include="ZyGames.Framework.Common, Version=6.0.0.33063, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\..\Release\6.5.8.5\Lib\ZyGames.Framework.Common.dll</HintPath>
+    <Reference Include="ZyGames.Framework.Common">
+      <HintPath>..\Lib\ZyGames.Framework.Common.dll</HintPath>
     </Reference>
     <Reference Include="ZyGames.Framework.Game">
-      <HintPath>..\..\..\..\..\Release\6.5.8.5\Lib\ZyGames.Framework.Game.dll</HintPath>
+      <HintPath>..\Lib\ZyGames.Framework.Game.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -118,12 +114,22 @@
     <Compile Include="AgreementAdd.aspx.designer.cs">
       <DependentUpon>AgreementAdd.aspx</DependentUpon>
     </Compile>
+    <Compile Include="AgreementEdit.aspx.cs">
+      <DependentUpon>AgreementEdit.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="AgreementEdit.aspx.designer.cs">
+      <DependentUpon>AgreementEdit.aspx</DependentUpon>
+    </Compile>
     <Compile Include="AgreementList.aspx.cs">
       <DependentUpon>AgreementList.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="AgreementList.aspx.designer.cs">
       <DependentUpon>AgreementList.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Base\BasePage.cs">
+      <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="Base\DbDataLoader.cs" />
     <Compile Include="Base\JsonObject.cs" />
@@ -138,12 +144,26 @@
     <Compile Include="ClientConfigInfo.aspx.designer.cs">
       <DependentUpon>ClientConfigInfo.aspx</DependentUpon>
     </Compile>
-    <Compile Include="ContractList.aspx.cs">
-      <DependentUpon>ContractList.aspx</DependentUpon>
+    <Compile Include="ContractCopy.aspx.cs">
+      <DependentUpon>ContractCopy.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="ContractList.aspx.designer.cs">
-      <DependentUpon>ContractList.aspx</DependentUpon>
+    <Compile Include="ContractCopy.aspx.designer.cs">
+      <DependentUpon>ContractCopy.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="ContractDebug.aspx.cs">
+      <DependentUpon>ContractDebug.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="ContractDebug.aspx.designer.cs">
+      <DependentUpon>ContractDebug.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="ContractEdit.aspx.cs">
+      <DependentUpon>ContractEdit.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="ContractEdit.aspx.designer.cs">
+      <DependentUpon>ContractEdit.aspx</DependentUpon>
     </Compile>
     <Compile Include="Default.aspx.cs">
       <DependentUpon>Default.aspx</DependentUpon>
@@ -152,12 +172,19 @@
     <Compile Include="Default.aspx.designer.cs">
       <DependentUpon>Default.aspx</DependentUpon>
     </Compile>
-    <Compile Include="index.aspx.cs">
-      <DependentUpon>index.aspx</DependentUpon>
+    <Compile Include="EnumEdit.aspx.cs">
+      <DependentUpon>EnumEdit.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="index.aspx.designer.cs">
-      <DependentUpon>index.aspx</DependentUpon>
+    <Compile Include="EnumEdit.aspx.designer.cs">
+      <DependentUpon>EnumEdit.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Main.Master.cs">
+      <DependentUpon>Main.Master</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Main.Master.designer.cs">
+      <DependentUpon>Main.Master</DependentUpon>
     </Compile>
     <Compile Include="Model\AgreementModel.cs" />
     <Compile Include="Model\ContractModel.cs" />
@@ -168,79 +195,51 @@
     <Compile Include="Model\SolutionModel.cs" />
     <Compile Include="Model\VersionMode.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Search.aspx.cs">
-      <DependentUpon>Search.aspx</DependentUpon>
+    <Compile Include="Solutions.aspx.cs">
+      <DependentUpon>Solutions.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="Search.aspx.designer.cs">
-      <DependentUpon>Search.aspx</DependentUpon>
+    <Compile Include="Solutions.aspx.designer.cs">
+      <DependentUpon>Solutions.aspx</DependentUpon>
     </Compile>
-    <Compile Include="SolutionAdd.aspx.cs">
-      <DependentUpon>SolutionAdd.aspx</DependentUpon>
+    <Compile Include="VersionEdit.aspx.cs">
+      <DependentUpon>VersionEdit.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="SolutionAdd.aspx.designer.cs">
-      <DependentUpon>SolutionAdd.aspx</DependentUpon>
-    </Compile>
-    <Compile Include="SolutionsList.aspx.cs">
-      <DependentUpon>SolutionsList.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="SolutionsList.aspx.designer.cs">
-      <DependentUpon>SolutionsList.aspx</DependentUpon>
-    </Compile>
-    <Compile Include="SyncModelInfo.aspx.cs">
-      <DependentUpon>SyncModelInfo.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="SyncModelInfo.aspx.designer.cs">
-      <DependentUpon>SyncModelInfo.aspx</DependentUpon>
-    </Compile>
-    <Compile Include="UnitTest.aspx.cs">
-      <DependentUpon>UnitTest.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="UnitTest.aspx.designer.cs">
-      <DependentUpon>UnitTest.aspx</DependentUpon>
-    </Compile>
-    <Compile Include="UpParamInfo.aspx.cs">
-      <DependentUpon>UpParamInfo.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="UpParamInfo.aspx.designer.cs">
-      <DependentUpon>UpParamInfo.aspx</DependentUpon>
-    </Compile>
-    <Compile Include="VersionAdd.aspx.cs">
-      <DependentUpon>VersionAdd.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="VersionAdd.aspx.designer.cs">
-      <DependentUpon>VersionAdd.aspx</DependentUpon>
+    <Compile Include="VersionEdit.aspx.designer.cs">
+      <DependentUpon>VersionEdit.aspx</DependentUpon>
     </Compile>
   </ItemGroup>
   <ItemGroup>
     <Content Include="AddContract.aspx" />
     <Content Include="addenum.aspx" />
     <Content Include="AddParamInfo.aspx" />
+    <Content Include="AgreementEdit.aspx" />
     <Content Include="ClientConfigInfo.aspx" />
-    <Content Include="ContractList.aspx" />
+    <Content Include="ContractCopy.aspx" />
+    <Content Include="ContractDebug.aspx" />
+    <Content Include="ContractEdit.aspx" />
     <Content Include="Default.aspx" />
-    <Content Include="index.aspx" />
-    <Content Include="Search.aspx" />
-    <Content Include="SolutionAdd.aspx" />
-    <Content Include="SolutionsList.aspx" />
-    <Content Include="SyncModelInfo.aspx" />
+    <Content Include="EnumEdit.aspx" />
+    <Content Include="Images\edit.png" />
+    <Content Include="Images\edit_add.png" />
+    <Content Include="Images\panel_title.gif" />
+    <Content Include="Images\search.png" />
+    <Content Include="Images\title_icon.png" />
+    <Content Include="skin.css" />
+    <Content Include="Solutions.aspx" />
     <Content Include="Template\ActionIDDefine.txt" />
     <Content Include="AgreementAdd.aspx" />
     <Content Include="AgreementList.aspx" />
-    <Content Include="Template\CustomerModel.txt" />
     <Content Include="flashpeak.css" />
     <Content Include="js\jquery-1.10.2.min.js" />
-    <Content Include="Template\model.txt" />
-    <Content Include="Template\pythonmodel.txt" />
-    <Content Include="UnitTest.aspx" />
-    <Content Include="UpParamInfo.aspx" />
-    <Content Include="VersionAdd.aspx" />
+    <Content Include="Template\ClientCsharpCode.txt" />
+    <Content Include="Template\ClientLuaCode.txt" />
+    <Content Include="Template\ServerCsharpCode.txt" />
+    <Content Include="Template\ServerCsharpSelfCode.txt" />
+    <Content Include="Template\ServerLuaCode.txt" />
+    <Content Include="Template\ServerPythonCode.txt" />
+    <Content Include="VersionEdit.aspx" />
     <Content Include="Web.config">
       <SubType>Designer</SubType>
     </Content>
@@ -255,7 +254,7 @@
     <Content Include="NLog.config" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Properties\PublishProfiles\配置文件1.pubxml" />
+    <Content Include="Main.Master" />
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>

@@ -26,16 +26,28 @@ namespace ContractTools.WebApp.Model
 {
     public enum FieldType
     {
+        /// <summary>
+        /// 密码类型string
+        /// </summary>
+        Password = -1,
         Int = 1,
         String,
         Short,
         Byte,
         Record,
         End,
-        Head,
+        /// <summary>
+        /// 7不输出
+        /// </summary>
+        Void,
         Long,
         Bool,
         Float,
-        Double
+        Double,
+        Date,
+        UInt,
+        UShort,
+        ULong
+
     }
 }

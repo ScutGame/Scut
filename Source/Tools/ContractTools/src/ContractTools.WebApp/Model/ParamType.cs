@@ -34,10 +34,10 @@ namespace ContractTools.WebApp.Model
         /// <summary>
         /// request
         /// </summary>
-        public static string sts = "请求";
+        public static string Request = "请求";
         /// <summary>
         /// response
         /// </summary>
-        public static string stc = "返回";
+        public static string Response = "返回";
     }
 }

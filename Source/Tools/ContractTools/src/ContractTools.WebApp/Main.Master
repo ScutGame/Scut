@@ -1,0 +1,37 @@
+﻿<%@ Master Language="C#" AutoEventWireup="true" CodeBehind="Main.master.cs" Inherits="ContractTools.WebApp.Main" %>
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head runat="server">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <title>协议工具平台</title>
+    <link href="skin.css" rel="stylesheet" />
+    <asp:ContentPlaceHolder ID="head" runat="server">
+    </asp:ContentPlaceHolder>
+</head>
+<body>
+    <form id="form1" runat="server">
+    <div class="layout">
+		<div class="topbar">
+		    <ul>
+		        <li><a href="Default.aspx?edit=true">项目主页</a></li>
+		        <li><asp:HyperLink ID="hlSolution" runat="server" Target="_top">项目管理</asp:HyperLink></li>
+		        <li><asp:HyperLink ID="hlVersion" runat="server" Target="_top">版本管理</asp:HyperLink></li>
+		        <li><asp:HyperLink ID="hlEnum" runat="server" Target="_top">枚举管理</asp:HyperLink></li>
+		        <li><asp:HyperLink ID="hlAgreement" runat="server" Target="_top">类别管理</asp:HyperLink></li>
+		        <li><asp:HyperLink ID="hlContract" runat="server" Target="_top">新增协议</asp:HyperLink></li>
+		        <li><asp:HyperLink ID="hlContractEdit" runat="server" Target="_top">编辑协议</asp:HyperLink></li>
+		        <li><asp:HyperLink ID="hlContractCopy" runat="server" Target="_top">Copy协议</asp:HyperLink></li>
+		    </ul>
+		</div>
+        <asp:ContentPlaceHolder ID="ContentPlaceHolder1" runat="server">
+        
+        </asp:ContentPlaceHolder>
+        <div class="botbar">
+		    <span>Copyright &copy; 2014 Scut, Inc.</span>
+		</div>
+    </div>
+    </form>
+</body>
+</html>

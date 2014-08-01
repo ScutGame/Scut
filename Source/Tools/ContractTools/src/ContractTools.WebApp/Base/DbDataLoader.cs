@@ -48,16 +48,6 @@ namespace ContractTools.WebApp.Base
 
         #region SolutionModel
 
-        public static int Add(VersionMode model)
-        {
-            var command = _dbBaseProvider.CreateCommandStruct("ContractVersion", CommandMode.Insert);
-            command.AddParameter("SlnID", model.SlnID);
-            command.AddParameter("Title", model.Title);
-            command.ReturnIdentity = true;
-            command.Parser();
-            return _dbBaseProvider.ExecuteQuery(CommandType.Text, command.Sql, command.Parameters);
-
-        }
 
         public static int Add(SolutionModel model)
         {
@@ -327,7 +317,7 @@ namespace ContractTools.WebApp.Base
             }).FirstOrDefault();
         }
 
-        public static List<ContractModel> GetContractByAgreement(int slnId, int agreementID, int versionId)
+        public static List<ContractModel> GetContractByAgreement(int slnId, int agreementId, int versionId)
         {
             return GetContract(f =>
             {
@@ -338,10 +328,10 @@ namespace ContractTools.WebApp.Base
                 }
                 f.Condition += f.FormatExpression("SlnID");
                 f.AddParam("SlnID", slnId);
-                if (agreementID > 0)
+                if (agreementId > 0)
                 {
                     f.Condition += " AND " + f.FormatExpression("AgreementID");
-                    f.AddParam("AgreementID", agreementID);
+                    f.AddParam("AgreementID", agreementId);
                 }
             });
         }
@@ -484,10 +474,16 @@ namespace ContractTools.WebApp.Base
             command.AddParameter("Field", model.Field);
             command.AddParameter("FieldType", model.FieldType);
             command.AddParameter("Descption", model.Descption);
-            command.AddParameter("FieldValue", model.FieldValue);
+            if (!string.IsNullOrEmpty(model.FieldValue))
+            {
+                command.AddParameter("FieldValue", model.FieldValue);
+            }
             command.AddParameter("Required", model.Required);
             command.AddParameter("Remark", model.Remark);
-            command.AddParameter("SortID", model.SortID);
+            if (model.SortID > -1)
+            {
+                command.AddParameter("SortID", model.SortID);
+            }
             command.AddParameter("Creator", model.Creator);
             command.AddParameter("Modifier", model.Modifier);
             command.AddParameter("MinValue", model.MinValue);
@@ -522,7 +518,8 @@ namespace ContractTools.WebApp.Base
                 command.Filter.AddParam("ID", model.ID);
             }
             command.Parser();
-            return _dbBaseProvider.ExecuteQuery(CommandType.Text, command.Sql, command.Parameters) > 0;
+            _dbBaseProvider.ExecuteQuery(CommandType.Text, command.Sql, command.Parameters);
+            return true;
         }
 
         public static List<ParamInfoModel> GetParamInfo(int slnId, int contractId, int paramType, int versionId)
@@ -684,12 +681,50 @@ namespace ContractTools.WebApp.Base
 
         #endregion
 
+        #region version
+        public static int Add(VersionMode model)
+        {
+            var command = _dbBaseProvider.CreateCommandStruct("ContractVersion", CommandMode.Insert);
+            command.AddParameter("SlnID", model.SlnID);
+            command.AddParameter("Title", model.Title);
+            command.ReturnIdentity = true;
+            command.Parser();
+            return _dbBaseProvider.ExecuteQuery(CommandType.Text, command.Sql, command.Parameters);
+
+        }
+        public static bool Update(VersionMode model)
+        {
+            var command = _dbBaseProvider.CreateCommandStruct("ContractVersion", CommandMode.Modify);
+            if (model.SlnID > 0)
+            {
+                command.AddParameter("SlnID", model.SlnID);
+            }
+            command.AddParameter("Title", model.Title);
+            command.Filter = _dbBaseProvider.CreateCommandFilter();
+            command.Filter.Condition = _dbBaseProvider.FormatFilterParam("ID");
+            command.Filter.AddParam("ID", model.ID);
+            command.Parser();
+            return _dbBaseProvider.ExecuteQuery(CommandType.Text, command.Sql, command.Parameters) > 0;
+        }
+
+        public static bool Delete(VersionMode model)
+        {
+            var command = _dbBaseProvider.CreateCommandStruct("ContractVersion", CommandMode.Delete);
+            command.Filter = _dbBaseProvider.CreateCommandFilter();
+            command.Filter.Condition = _dbBaseProvider.FormatFilterParam("ID");
+            command.Filter.AddParam("ID", model.ID);
+            command.Parser();
+            return _dbBaseProvider.ExecuteQuery(CommandType.Text, command.Sql, command.Parameters) > 0;
+        }
+
         public static List<VersionMode> GetVersion(int gameId)
         {
             var command = _dbBaseProvider.CreateCommandStruct("ContractVersion", CommandMode.Inquiry);
             command.Columns = "ID,SlnID,Title";
             command.OrderBy = "SlnID ASC,ID ASC";
             command.Filter = _dbBaseProvider.CreateCommandFilter();
+            command.Filter.Condition = _dbBaseProvider.FormatFilterParam("SlnID");
+            command.Filter.AddParam("SlnID", gameId);
             command.Parser();
             var list = new List<VersionMode>();
             using (var reader = _dbBaseProvider.ExecuteReader(CommandType.Text, command.Sql, command.Parameters))
@@ -705,5 +740,6 @@ namespace ContractTools.WebApp.Base
             }
             return list;
         }
+        #endregion
     }
 }

@@ -93,6 +93,7 @@ namespace ContractTools.WebApp
             ddVersion.DataBind();
             ddVersion.SelectedValue = VerID.ToString();
 
+            droParamType.SelectedValue = Request["ptype"] ?? "2";
             if (!Request.QueryString["ID"].Equals(""))
             {
                 string ID = Request.QueryString["ID"];
