@@ -1,1 +1,0 @@
-ROBOCOPY src release *.dll *.exe *.config *.cs *.py *.lua /S /PURGE /XD bin obj log temp ScriptRuntimeDomain

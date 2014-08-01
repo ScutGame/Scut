@@ -1,1 +1,0 @@
-CreateObject("WScript.Shell").Run "MainApp.exe 640 960", 1
