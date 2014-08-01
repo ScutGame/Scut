@@ -20,6 +20,14 @@ namespace ##Namespace##
         }
 
         /// <summary>
+        /// 检查的Action是否需要授权访问
+        /// </summary>
+        protected override bool IgnoreActionId
+        {
+            get{ return true; }
+        }
+
+        /// <summary>
         /// 客户端请求的参数较验
         /// </summary>
         /// <returns>false:中断后面的方式执行并返回Error</returns>

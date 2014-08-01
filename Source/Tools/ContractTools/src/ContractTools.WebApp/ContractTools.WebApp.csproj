@@ -81,52 +81,14 @@
     <Reference Include="ZyGames.Framework.Common">
       <HintPath>..\Lib\ZyGames.Framework.Common.dll</HintPath>
     </Reference>
-    <Reference Include="ZyGames.Framework.Game">
-      <HintPath>..\Lib\ZyGames.Framework.Game.dll</HintPath>
-    </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AddContract.aspx.cs">
-      <DependentUpon>AddContract.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="AddContract.aspx.designer.cs">
-      <DependentUpon>AddContract.aspx</DependentUpon>
-    </Compile>
-    <Compile Include="addenum.aspx.cs">
-      <DependentUpon>addenum.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="addenum.aspx.designer.cs">
-      <DependentUpon>addenum.aspx</DependentUpon>
-    </Compile>
-    <Compile Include="AddParamInfo.aspx.cs">
-      <DependentUpon>AddParamInfo.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="AddParamInfo.aspx.designer.cs">
-      <DependentUpon>AddParamInfo.aspx</DependentUpon>
-    </Compile>
-    <Compile Include="AgreementAdd.aspx.cs">
-      <DependentUpon>AgreementAdd.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="AgreementAdd.aspx.designer.cs">
-      <DependentUpon>AgreementAdd.aspx</DependentUpon>
-    </Compile>
     <Compile Include="AgreementEdit.aspx.cs">
       <DependentUpon>AgreementEdit.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="AgreementEdit.aspx.designer.cs">
       <DependentUpon>AgreementEdit.aspx</DependentUpon>
-    </Compile>
-    <Compile Include="AgreementList.aspx.cs">
-      <DependentUpon>AgreementList.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="AgreementList.aspx.designer.cs">
-      <DependentUpon>AgreementList.aspx</DependentUpon>
     </Compile>
     <Compile Include="Base\BasePage.cs">
       <SubType>ASPXCodeBehind</SubType>
@@ -137,13 +99,6 @@
     <Compile Include="Base\LuaScriptHelper.cs" />
     <Compile Include="Base\TemplateHelper.cs" />
     <Compile Include="Base\NetHelper.cs" />
-    <Compile Include="ClientConfigInfo.aspx.cs">
-      <DependentUpon>ClientConfigInfo.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="ClientConfigInfo.aspx.designer.cs">
-      <DependentUpon>ClientConfigInfo.aspx</DependentUpon>
-    </Compile>
     <Compile Include="ContractCopy.aspx.cs">
       <DependentUpon>ContractCopy.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
@@ -211,11 +166,7 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="AddContract.aspx" />
-    <Content Include="addenum.aspx" />
-    <Content Include="AddParamInfo.aspx" />
     <Content Include="AgreementEdit.aspx" />
-    <Content Include="ClientConfigInfo.aspx" />
     <Content Include="ContractCopy.aspx" />
     <Content Include="ContractDebug.aspx" />
     <Content Include="ContractEdit.aspx" />
@@ -229,8 +180,6 @@
     <Content Include="skin.css" />
     <Content Include="Solutions.aspx" />
     <Content Include="Template\ActionIDDefine.txt" />
-    <Content Include="AgreementAdd.aspx" />
-    <Content Include="AgreementList.aspx" />
     <Content Include="flashpeak.css" />
     <Content Include="js\jquery-1.10.2.min.js" />
     <Content Include="Template\ClientCsharpCode.txt" />
@@ -255,6 +204,9 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Main.Master" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Properties\PublishProfiles\xy.scutgame.com.pubxml" />
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>

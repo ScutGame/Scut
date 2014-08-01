@@ -1,16 +1,359 @@
-﻿<%@ Page Language="C#" AutoEventWireup="true" CodeBehind="Default.aspx.cs" Inherits="ContractTools.WebApp.Default" %>
+﻿<%@ Page Language="C#" AutoEventWireup="true" CodeBehind="Default.aspx.cs" Inherits="ContractTools.WebApp.Default" ValidateRequest="false" %>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head runat="server">
-    <title></title>
+    <title>协议工具平台</title>
+    <link href="skin.css" rel="stylesheet" />
 </head>
 <body>
     <form id="form1" runat="server">
-    <div>
-    
-    </div>
+        <div class="layout">
+            <% if (IsEdit){ %>
+            <div class="topbar">
+                <ul>
+                    <li>
+                        <asp:HyperLink ID="hlSolution" runat="server" Target="_top">项目管理</asp:HyperLink></li>
+                    <li>
+                        <asp:HyperLink ID="hlVersion" runat="server" Target="_top">版本管理</asp:HyperLink></li>
+                    <li>
+                        <asp:HyperLink ID="hlEnum" runat="server" Target="_top">枚举管理</asp:HyperLink></li>
+                    <li>
+                        <asp:HyperLink ID="hlAgreement" runat="server" Target="_top">类别管理</asp:HyperLink></li>
+                    <li>
+                        <asp:HyperLink ID="hlContract" runat="server" Target="_top">新增协议</asp:HyperLink></li>
+                    <li>
+                        <asp:HyperLink ID="hlContractEdit" runat="server" Target="_top">编辑协议</asp:HyperLink></li>
+                    <li>
+                        <asp:HyperLink ID="hlContractCopy" runat="server" Target="_top">Copy协议</asp:HyperLink></li>
+                </ul>
+            </div>
+            <% } %>
+            <div class="left">
+                <div class="toolbar">
+                    <span>
+                        <asp:HyperLink ID="hlTopEdit" runat="server" CssClass="edit" ToolTip="开启或关闭编辑">项目</asp:HyperLink>:</span>
+                    <asp:DropDownList ID="ddlSolution" runat="server" Width="130px" AutoPostBack="True" OnSelectedIndexChanged="OnSolutionChanged"></asp:DropDownList>
+                    <span>版本:</span>
+                    <asp:DropDownList ID="ddVersion" runat="server" Width="80px" AutoPostBack="True" OnSelectedIndexChanged="OnVersionChanged"></asp:DropDownList>
+                    <span>协议:</span>
+                    <asp:DropDownList ID="ddlAgreement" runat="server" Width="130px" AutoPostBack="True" OnSelectedIndexChanged="OnAgreementChanged"></asp:DropDownList>
+                    <asp:DropDownList ID="ddContract" runat="server" Width="250px" AutoPostBack="True" OnSelectedIndexChanged="OnContractChanged"></asp:DropDownList>
+                </div>
+                <% if (IsEdit){ %>
+                <div class="content">
+                    <table style="width: 100%; background: #f0f0f0; padding: 5px;" cellspacing="4">
+                        <tr>
+                            <td style="width: 40%; text-align: right;"><span class="space">参数类型:</span></td>
+                            <td>
+                                <asp:DropDownList ID="ddParamType" runat="server" Width="100px">
+                                    <asp:ListItem Value="1">请求</asp:ListItem>
+                                    <asp:ListItem Value="2" Selected="True">返回</asp:ListItem>
+                                </asp:DropDownList>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="text-align: right;vertical-align: top;">
+                                <span class="space">字段类型:</span></td>
+                            <td>
+                                <asp:DropDownList ID="ddFieldType" runat="server" Width="100px">
+                                    <asp:ListItem Value="1">Int</asp:ListItem>
+                                    <asp:ListItem Value="2">String</asp:ListItem>
+                                    <asp:ListItem Value="3">Short</asp:ListItem>
+                                    <asp:ListItem Value="4">Byte</asp:ListItem>
+                                    <asp:ListItem Value="5">Record</asp:ListItem>
+                                    <asp:ListItem Value="6">End</asp:ListItem>
+                                    <asp:ListItem Value="7">Void</asp:ListItem>
+                                    <asp:ListItem Value="8">Long</asp:ListItem>
+                                    <asp:ListItem Value="9">Bool</asp:ListItem>
+                                    <asp:ListItem Value="10">Float</asp:ListItem>
+                                    <asp:ListItem Value="11">Double</asp:ListItem>
+                                    <asp:ListItem Value="12">Date</asp:ListItem>
+                                    <asp:ListItem Value="13">UInt</asp:ListItem>
+                                    <asp:ListItem Value="14">UShort</asp:ListItem>
+                                    <asp:ListItem Value="15">ULong</asp:ListItem>
+                                </asp:DropDownList>
+                                <br><span>【注：Record-是循环体开始标记；End-是循环体结束标记；Void-不使用；UInt-是无负数整数】</span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="text-align: right">
+                                <span class="space">字段名:</span></td>
+                            <td>
+                                <asp:TextBox ID="txtField" runat="server" Width="100px"></asp:TextBox>
+                                <asp:CheckBox runat="server" ID="ckRequired" Text="必传参数" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="text-align: right">
+                                <span class="space">字段说明:</span>
+                            </td>
+                            <td style="text-align: left;">
+                                <asp:TextBox ID="txtRemark" runat="server" TextMode="MultiLine" Height="30px" Width="200px"></asp:TextBox></td>
+                        </tr>
+                        <tr>
+                            <td colspan="2" style="padding-top: 5px; text-align: center;">
+                                <asp:Button ID="btnParamAdd" runat="server" Text="新增参数" OnClick="btnParamAdd_Click" CssClass="btn" />
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+                <% } %>
+                <div class="subnav">
+                    <span class="title">请求参数</span>
+                </div>
+                <div class="content-grid">
+                    <asp:GridView ID="gvReqParams" runat="server" Width="100%" AutoGenerateColumns="False" CssClass="grid"
+                        OnRowDataBound="OnGridRowDataBound" OnRowCancelingEdit="OnGridRowCancelingEdit"
+                        OnRowEditing="OnGridRowEditing" OnRowUpdating="OnGridRowUpdating">
+                        <Columns>
+                            <asp:TemplateField Visible="False">
+                                <EditItemTemplate>
+                                    <asp:Label ID="IDLabel" runat="server" Text='<%# Bind("ID") %>'></asp:Label>
+                                </EditItemTemplate>
+                                <ItemTemplate>
+                                    <asp:Label ID="IDLabel" runat="server" Text='<%# Bind("ID") %>'></asp:Label>
+                                </ItemTemplate>
+                            </asp:TemplateField>
+                            <asp:TemplateField HeaderText="参数名" ItemStyle-Width="12%" ItemStyle-HorizontalAlign="Left">
+                                <EditItemTemplate>
+                                    <asp:TextBox ID="txtField" runat="server" Text='<%# Bind("Field") %>' Width="90%"></asp:TextBox>
+                                </EditItemTemplate>
+                                <ItemTemplate>
+                                    <asp:Label ID="LabField" runat="server" Text='<%# Bind("Field") %>'></asp:Label>
+                                </ItemTemplate>
+                                <ItemStyle Width="10%"></ItemStyle>
+                            </asp:TemplateField>
+                            <asp:TemplateField HeaderText="参数类型" ItemStyle-Width="5%" ItemStyle-HorizontalAlign="Left">
+                                <EditItemTemplate>
+                                    <asp:DropDownList ID="droFieldType" runat="server" SelectedValue='<%# Bind("FieldTypeId") %>'
+                                        Width="90%">
+                                        <asp:ListItem Value="1">Int</asp:ListItem>
+                                        <asp:ListItem Value="2">String</asp:ListItem>
+                                        <asp:ListItem Value="3">Short</asp:ListItem>
+                                        <asp:ListItem Value="4">Byte</asp:ListItem>
+                                        <asp:ListItem Value="7">Void</asp:ListItem>
+                                        <asp:ListItem Value="8">Long</asp:ListItem>
+                                        <asp:ListItem Value="9">Bool</asp:ListItem>
+                                        <asp:ListItem Value="10">Float</asp:ListItem>
+                                        <asp:ListItem Value="11">Double</asp:ListItem>
+                                        <asp:ListItem Value="12">Date</asp:ListItem>
+                                        <asp:ListItem Value="13">UInt</asp:ListItem>
+                                        <asp:ListItem Value="14">UShort</asp:ListItem>
+                                        <asp:ListItem Value="15">ULong</asp:ListItem>
+                                    </asp:DropDownList>
+                                </EditItemTemplate>
+                                <ItemTemplate>
+                                    <asp:Label ID="LabFieldType" runat="server" Text='<%# Bind("FieldTypeId") %>'></asp:Label>
+                                </ItemTemplate>
+                                <ItemStyle Width="5%"></ItemStyle>
+                            </asp:TemplateField>
+                            <asp:TemplateField HeaderText="必传参数" ItemStyle-Width="5%">
+                                <EditItemTemplate>
+                                    <asp:DropDownList ID="droRequired" runat="server" SelectedValue='<%# Bind("Required") %>'
+                                        Width="90%">
+                                        <asp:ListItem Value="False">False</asp:ListItem>
+                                        <asp:ListItem Value="True">True</asp:ListItem>
+                                    </asp:DropDownList>
+                                </EditItemTemplate>
+                                <ItemTemplate>
+                                    <asp:Label ID="LabRrequired" runat="server" Text='<%# Bind("Required") %>'></asp:Label>
+                                </ItemTemplate>
+                                <ItemStyle Width="5%"></ItemStyle>
+                            </asp:TemplateField>
+                            <asp:TemplateField HeaderText="默认值" ItemStyle-Width="5%">
+                                <EditItemTemplate>
+                                    <asp:TextBox ID="txtFieldValue" runat="server" Text='<%# Bind("FieldValue") %>' Width="100%"></asp:TextBox>
+                                </EditItemTemplate>
+                                <ItemTemplate>
+                                    <asp:Label ID="LabFieldValue" runat="server" Text='<%# Bind("FieldValue") %>'></asp:Label>
+                                </ItemTemplate>
+                                <ItemStyle Width="5%"></ItemStyle>
+                            </asp:TemplateField>
+                            <asp:TemplateField HeaderText="参数描述" ItemStyle-Width="16%" ItemStyle-HorizontalAlign="Left">
+                                <EditItemTemplate>
+                                    <asp:TextBox ID="txtDescption" runat="server" Text='<%# Bind("Descption") %><%# Bind("Remark") %>' Width="90%" TextMode="MultiLine"></asp:TextBox>
+                                </EditItemTemplate>
+                                <ItemTemplate>
+                                    <asp:Label ID="LabDescption" runat="server" Text='<%# Bind("Descption") %><%# Bind("Remark") %>'></asp:Label>
+                                </ItemTemplate>
+                                <ItemStyle Width="16%"></ItemStyle>
+                            </asp:TemplateField>
+                            <asp:CommandField ShowEditButton="True" ItemStyle-Width="6%" ItemStyle-HorizontalAlign="Center">
+                                <ItemStyle HorizontalAlign="Center" Width="6%"></ItemStyle>
+                            </asp:CommandField>
+                            <asp:TemplateField ShowHeader="False" HeaderText="操作" ItemStyle-Width="4%" ItemStyle-HorizontalAlign="Center">
+                                <ItemTemplate>
+                                    <asp:LinkButton ID="LinkButton1" runat="server" CausesValidation="False" OnClientClick="return confirm('是否删除')"
+                                        CommandArgument='<%#Eval("id")%>' Text="删除" OnCommand="OnRespGridDelete"></asp:LinkButton>
+                                </ItemTemplate>
+                                <ItemStyle Width="4%"></ItemStyle>
+                            </asp:TemplateField>
+                        </Columns>
+                        <AlternatingRowStyle CssClass="grid-row-alt" />
+                        <FooterStyle CssClass="grid-row" />
+                        <HeaderStyle CssClass="grid-head" />
+                        <RowStyle CssClass="grid-row" />
+                        <SelectedRowStyle CssClass="grid-row-select" />
+                        <EditRowStyle CssClass="grid-row-select" />
+                    </asp:GridView>
+                </div>
+                <div class="subnav">
+                    <span class="title">返回参数</span>
+                </div>
+                <div class="content-grid">
+                    <asp:GridView ID="gvRespParams" runat="server" Width="100%" AutoGenerateColumns="False" CssClass="grid"
+                        OnRowDataBound="OnGridRowDataBound" OnRowCancelingEdit="OnGridRowCancelingEdit"
+                        OnRowEditing="OnGridRowEditing" OnRowUpdating="OnGridRowUpdating">
+                        <Columns>
+                            <asp:TemplateField Visible="False">
+                                <EditItemTemplate>
+                                    <asp:Label ID="IDLabel" runat="server" Text='<%# Bind("ID") %>'></asp:Label>
+                                </EditItemTemplate>
+                                <ItemTemplate>
+                                    <asp:Label ID="IDLabel" runat="server" Text='<%# Bind("ID") %>'></asp:Label>
+                                </ItemTemplate>
+                            </asp:TemplateField>
+                            <asp:TemplateField HeaderText="参数类型" ItemStyle-Width="5%" ItemStyle-HorizontalAlign="Left">
+                                <EditItemTemplate>
+                                    <asp:DropDownList ID="droFieldType" runat="server" SelectedValue='<%# Bind("FieldTypeId") %>'
+                                        Width="90%">
+                                        <asp:ListItem Value="1">Int</asp:ListItem>
+                                        <asp:ListItem Value="2">String</asp:ListItem>
+                                        <asp:ListItem Value="3">Short</asp:ListItem>
+                                        <asp:ListItem Value="4">Byte</asp:ListItem>
+                                        <asp:ListItem Value="5">Record</asp:ListItem>
+                                        <asp:ListItem Value="6">End</asp:ListItem>
+                                        <asp:ListItem Value="7">Void</asp:ListItem>
+                                        <asp:ListItem Value="8">Long</asp:ListItem>
+                                        <asp:ListItem Value="9">Bool</asp:ListItem>
+                                        <asp:ListItem Value="10">Float</asp:ListItem>
+                                        <asp:ListItem Value="11">Double</asp:ListItem>
+                                        <asp:ListItem Value="12">Date</asp:ListItem>
+                                        <asp:ListItem Value="13">UInt</asp:ListItem>
+                                        <asp:ListItem Value="14">UShort</asp:ListItem>
+                                        <asp:ListItem Value="15">ULong</asp:ListItem>
+                                    </asp:DropDownList>
+                                </EditItemTemplate>
+                                <ItemTemplate>
+                                    <asp:Label ID="LabFieldType" runat="server" Text='<%# Bind("FieldTypeId") %>'></asp:Label>
+                                </ItemTemplate>
+                                <ItemStyle Width="5%"></ItemStyle>
+                            </asp:TemplateField>
+                            <asp:TemplateField HeaderText="参数名" ItemStyle-Width="12%" ItemStyle-HorizontalAlign="Left">
+                                <EditItemTemplate>
+                                    <asp:TextBox ID="txtField" runat="server" Text='<%# Bind("Field") %>' Width="90%"></asp:TextBox>
+                                </EditItemTemplate>
+                                <ItemTemplate>
+                                    <asp:Label ID="LabField" runat="server" Text='<%# Bind("Field") %>'></asp:Label>
+                                </ItemTemplate>
+                                <ItemStyle Width="10%"></ItemStyle>
+                            </asp:TemplateField>
+                            <asp:TemplateField HeaderText="参数描述" ItemStyle-Width="16%" ItemStyle-HorizontalAlign="Left">
+                                <EditItemTemplate>
+                                    <asp:TextBox ID="txtDescption" runat="server" Text='<%# Bind("Descption") %><%# Eval("Remark") %>' Width="90%" TextMode="MultiLine"></asp:TextBox>
+                                </EditItemTemplate>
+                                <ItemTemplate>
+                                    <asp:Label ID="LabDescption" runat="server" Text='<%# Bind("Descption") %><%# Bind("Remark") %>'></asp:Label>
+                                </ItemTemplate>
+                                <ItemStyle Width="16%"></ItemStyle>
+                            </asp:TemplateField>
+                            <asp:TemplateField HeaderText="排序ID" ItemStyle-Width="8%" ItemStyle-HorizontalAlign="Center">
+                                <EditItemTemplate>
+                                    <asp:TextBox ID="txtSortID" runat="server" Text='<%# Bind("SortID") %>' Width="90%"></asp:TextBox>
+                                </EditItemTemplate>
+                                <ItemTemplate>
+                                    <asp:LinkButton ID="btnSortAsc" runat="server" CausesValidation="False" CommandArgument='<%#Eval("id")+","+Eval("ParamType")+","+Eval("SortID")%>'
+                                        Text="↑上移" OnCommand="btnSortAsc_Command"></asp:LinkButton>&nbsp;&nbsp;
+                                    <asp:LinkButton ID="btnSortDes" runat="server" CausesValidation="False" CommandArgument='<%#Eval("id")+","+Eval("ParamType")+","+Eval("SortID")%>'
+                                        Text="↓下移" OnCommand="btnSortDes_Command"></asp:LinkButton>
+                                </ItemTemplate>
+                                <ItemStyle Width="8%"></ItemStyle>
+                            </asp:TemplateField>
+                            <asp:CommandField ShowEditButton="True" ItemStyle-Width="6%" ItemStyle-HorizontalAlign="Center">
+                                <ItemStyle HorizontalAlign="Center" Width="6%"></ItemStyle>
+                            </asp:CommandField>
+                            <asp:TemplateField ShowHeader="False" HeaderText="操作" ItemStyle-Width="4%" ItemStyle-HorizontalAlign="Center">
+                                <ItemTemplate>
+                                    <asp:LinkButton ID="LinkButton1" runat="server" CausesValidation="False" OnClientClick="return confirm('是否删除')"
+                                        CommandArgument='<%#Eval("id")%>' Text="删除" OnCommand="OnRespGridDelete"></asp:LinkButton>
+                                </ItemTemplate>
+                                <ItemStyle Width="4%"></ItemStyle>
+                            </asp:TemplateField>
+                        </Columns>
+                        <AlternatingRowStyle CssClass="grid-row-alt" />
+                        <FooterStyle CssClass="grid-row" />
+                        <HeaderStyle CssClass="grid-head" />
+                        <RowStyle CssClass="grid-row" />
+                        <SelectedRowStyle CssClass="grid-row-select" />
+                        <EditRowStyle CssClass="grid-row-select" />
+                    </asp:GridView>
+                </div>
+                <div class="bottombar">
+                    <% if (IsEdit){ %>
+                    <span>
+                        <asp:Button runat="server" ID="btnNoCompalte" OnClick="OnNoCompaltedClick" Text="未完成" /></span>
+                    <span>
+                        <asp:Button runat="server" ID="btnCompalte" OnClick="OnCompaltedClick" Text="已完成" /></span>
+                    <% } %>
+                    <span>
+                        <asp:CheckBox runat="server" ID="ckSelfAction"  Text="自定义的协议" /></span>
+                </div>
+            </div>
+            <div class="fx-space"></div>
+            <div class="right">
+                <div id="navbox">
+                    <ul id="tab_nav">
+                        <li><a href="#tab_1">服务端代码</a></li>
+                        <li><a href="#tab_2">客户端代码</a></li>
+                        <li><a href="#tab_3">枚举参数</a></li>
+                        <li><a href="#tab_4">协议调试</a></li>
+                        <%--<li><a href="#tab_5">协议配置</a></li>--%>
+                    </ul>
+                    <div id="tab_content">
+                        <div id="tab_1" class="tab_item">
+                            <div class="toolbar">
+                                <span style="padding-left: 5px;">脚本类型:</span>
+                                <asp:DropDownList ID="ddServerCodeType" runat="server" AutoPostBack="True" OnSelectedIndexChanged="OnServerCodeTypeChanged">
+                                    <asp:ListItem Value="C#"></asp:ListItem>
+                                    <asp:ListItem Value="Python"></asp:ListItem>
+                                    <asp:ListItem Value="Lua"></asp:ListItem>
+                                </asp:DropDownList>
+                            </div>
+                            <div style="width: 100%; height: 542px;">
+                                <asp:TextBox ID="txtServerCode" runat="server" TextMode="MultiLine" CssClass="codeBox"></asp:TextBox>
+                            </div>
+                        </div>
+                        <div id="tab_2" class="tab_item">
+                            <div class="toolbar">
+                                <span style="padding-left: 5px;">脚本类型:</span>
+                                <asp:DropDownList ID="ddClientCodeType" runat="server" AutoPostBack="True" OnSelectedIndexChanged="OnClientCodeTypeChanged">
+                                    <asp:ListItem Value="Lua">Cocos2d-x of Lua</asp:ListItem>
+                                    <asp:ListItem Value="C#">Unity3d of C#</asp:ListItem>
+                                </asp:DropDownList>
+                            </div>
+                            <div style="width: 100%; height: 542px;">
+                                <asp:TextBox ID="txtClientCode" runat="server" TextMode="MultiLine" CssClass="codeBox"></asp:TextBox>
+                            </div>
+                        </div>
+                        <div id="tab_3" class="tab_item">
+                            <asp:Label ID="lblEnumDescp" runat="server"></asp:Label>
+                        </div>
+                        <div id="tab_4" class="tab_item">
+                            <iframe id="ifrTest" runat="server" style="width: 100%; height: 100%; border: 0;"></iframe>
+                        </div>
+                        <div id="tab_5" class="tab_item">
+                            <iframe id="ifrClientConfig" runat="server" style="width: 100%; height: 100%; border: 0;"></iframe>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+            <div class="botbar">
+                <span>Copyright &copy; 2014 Scut, Inc.</span>
+            </div>
+        </div>
     </form>
 </body>
 </html>
