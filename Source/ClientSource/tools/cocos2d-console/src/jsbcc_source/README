@@ -1,6 +1,0 @@
-jsbcc stands for JavasSript Byte Code Compiler. 
-It compiles javascript files to SpiderMonkey byte code files. It supports Mac and win32 now.
-Usage:
-	jsbcc input_js_file [byte_code_file]
-
-	
