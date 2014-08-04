@@ -15,6 +15,11 @@ namespace GameWebServer
         {
             try
             {
+                var setting = GameEnvironment.Setting;
+                if (setting == null)
+                {
+                    throw new NullReferenceException("Game environment's setting is null.");
+                }
                 var actionDispatcher = GameEnvironment.Setting.ActionDispatcher;
                 RequestPackage package;
                 if (!actionDispatcher.TryDecodePackage(HttpContext.Current, out package))

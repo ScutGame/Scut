@@ -581,7 +581,7 @@ namespace ZyGames.Framework.Game.Contract
         /// <returns></returns>
         public override bool CheckSign()
         {
-            string signKey = GameEnvironment.Setting.ProductSignKey;
+            string signKey = GameEnvironment.Setting != null ? GameEnvironment.Setting.ProductSignKey : "";
             if (string.IsNullOrEmpty(signKey))
             {
                 return true;

@@ -160,6 +160,30 @@ namespace ZyGames.Framework.Game.Service
             PushIntoStackObj(obj);
         }
         /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="obj"></param>
+        public void PushIntoStack(UInt16 obj)
+        {
+            PushIntoStackObj(obj);
+        }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="obj"></param>
+        public void PushIntoStack(UInt32 obj)
+        {
+            PushIntoStackObj(obj);
+        }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="obj"></param>
+        public void PushIntoStack(UInt64 obj)
+        {
+            PushIntoStackObj(obj);
+        }
+        /// <summary>
         /// 将数据加到栈尾
         /// </summary>
         /// <param name="obj"></param>

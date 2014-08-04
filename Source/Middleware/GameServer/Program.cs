@@ -25,6 +25,8 @@ using System;
 using System.Reflection;
 using ZyGames.Framework.Common.Log;
 using ZyGames.Framework.Game.Runtime;
+using ZyGames.Framework.Game.Service;
+using ZyGames.Framework.RPC.IO;
 using ZyGames.Framework.Script;
 
 namespace GameServer
@@ -45,6 +47,19 @@ namespace GameServer
         {
             try
             {
+                UInt16 a = 1;
+                DataStruct ds = new DataStruct();
+                ds.PushIntoStack(a);
+                SocketGameResponse res = new SocketGameResponse();
+                ds.WriteAction(res, 1001, 0, "", 1);
+                byte[] arr = res.ReadByte();
+                MessageStructure ms = new MessageStructure(arr);
+                var head = ms.ReadHead();
+                int b = ms.ReadShort();
+                if (head!=null && b > 0)
+                {
+                    
+                }
                 ConsoleColor currentForeColor = Console.ForegroundColor;
                 var setting = new EnvironmentSetting();
                 try

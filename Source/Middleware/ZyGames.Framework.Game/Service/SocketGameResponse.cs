@@ -36,8 +36,12 @@ namespace ZyGames.Framework.Game.Service
     {
         static SocketGameResponse()
         {
-            MessageStructure.EnableGzip = GameEnvironment.Setting.ActionEnableGZip;
-            MessageStructure.EnableGzipMinByte = GameEnvironment.Setting.ActionGZipOutLength;
+            var setting = GameEnvironment.Setting;
+            if (setting != null)
+            {
+                MessageStructure.EnableGzip = setting.ActionEnableGZip;
+                MessageStructure.EnableGzipMinByte = setting.ActionGZipOutLength;
+            }
         }
 
         private MessageStructure _buffers;

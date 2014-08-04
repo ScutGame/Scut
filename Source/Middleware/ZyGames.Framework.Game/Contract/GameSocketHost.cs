@@ -94,16 +94,24 @@ namespace ZyGames.Framework.Game.Contract
         /// </summary>
         public IActionDispatcher ActionDispatcher
         {
-            get { return GameEnvironment.Setting.ActionDispatcher; }
-            set { GameEnvironment.Setting.ActionDispatcher = value; }
+            get { return _setting == null ? null : _setting.ActionDispatcher; }
+            set
+            {
+                if (_setting != null)
+                {
+                    _setting.ActionDispatcher = value;
+                }
+            }
         }
 
+        private EnvironmentSetting _setting;
         /// <summary>
         /// 
         /// </summary>
         protected GameSocketHost()
         {
-            int port = GameEnvironment.Setting.GamePort;
+            _setting = GameEnvironment.Setting;
+            int port = _setting != null ? _setting.GamePort : 0;
             IPEndPoint localEndPoint = new IPEndPoint(IPAddress.Any, port);
 
             int maxConnections = ConfigUtils.GetSetting("MaxConnections", 10000);
