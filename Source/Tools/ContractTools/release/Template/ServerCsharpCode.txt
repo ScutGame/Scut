@@ -14,7 +14,7 @@ namespace ##Namespace##
         ##Field##
 
         public Action##ID##(ActionGetter actionGetter)
-            : base(ActionIDDefine.Cst_Action##ID##, actionGetter)
+            : base((short)##ID##, actionGetter)
         {
             
         }
