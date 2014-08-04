@@ -25,8 +25,6 @@ using System;
 using System.Reflection;
 using ZyGames.Framework.Common.Log;
 using ZyGames.Framework.Game.Runtime;
-using ZyGames.Framework.Game.Service;
-using ZyGames.Framework.RPC.IO;
 using ZyGames.Framework.Script;
 
 namespace GameServer
