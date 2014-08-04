@@ -298,7 +298,7 @@
                         <asp:Button runat="server" ID="btnCompalte" OnClick="OnCompaltedClick" Text="已完成" /></span>
                     <% } %>
                     <span>
-                        <asp:CheckBox runat="server" ID="ckSelfAction"  Text="自定义的协议" /></span>
+                        <asp:CheckBox runat="server" ID="ckSelfAction"  Text="自定义的协议" AutoPostBack="True" OnCheckedChanged="OnSelfActionChanged"/></span>
                 </div>
             </div>
             <div class="fx-space"></div>

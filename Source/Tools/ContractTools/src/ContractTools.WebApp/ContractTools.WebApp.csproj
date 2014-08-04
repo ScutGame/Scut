@@ -179,9 +179,9 @@
     <Content Include="Images\title_icon.png" />
     <Content Include="skin.css" />
     <Content Include="Solutions.aspx" />
-    <Content Include="Template\ActionIDDefine.txt" />
     <Content Include="flashpeak.css" />
     <Content Include="js\jquery-1.10.2.min.js" />
+    <Content Include="Template\ClientCsharpSelfCode.txt" />
     <Content Include="Template\ClientCsharpCode.txt" />
     <Content Include="Template\ClientLuaCode.txt" />
     <Content Include="Template\ServerCsharpCode.txt" />

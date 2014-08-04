@@ -223,8 +223,7 @@ namespace ContractTools.WebApp
             }
             else if (ddClientCodeType.Text == "C#")
             {
-                //todo not
-                clientTemp = Path.Combine(Server.MapPath("~"), "Template/ClientCsharpCode.txt");
+                clientTemp = Path.Combine(Server.MapPath("~"), isSelfAction ? "Template/ClientCsharpSelfCode.txt" : "Template/ClientCsharpCode.txt");
                 txtClientCode.Text = TemplateHelper.FromatClientCsharpTemp(TemplateHelper.ReadTemp(clientTemp), contractId, responseParams, requestParams, tileName);
             }
 
@@ -326,6 +325,11 @@ namespace ContractTools.WebApp
             int verId = ddVersion.Text.ToInt();
             int contractId = ddContract.Text.ToInt();
             BindResult(slnId, verId, contractId);
+        }
+
+        protected void OnSelfActionChanged(object sender, EventArgs e)
+        {
+            BindGrid();
         }
 
         protected void OnGridRowEditing(object sender, GridViewEditEventArgs e)
@@ -549,6 +553,8 @@ namespace ContractTools.WebApp
                 if (DbDataLoader.Add(mode) > 0)
                 {
                     BindGrid(mode.SlnID, mode.VerID, mode.ContractID);
+                    txtField.Text = "";
+                    txtRemark.Text = "";
                 }
                 else
                 {

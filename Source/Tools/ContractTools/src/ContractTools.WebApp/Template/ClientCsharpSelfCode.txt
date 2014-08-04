@@ -1,0 +1,37 @@
+﻿using System;
+using UnityEngine;
+using ZyGames.Framework.Common.Serialization;
+
+public class Action##ID## : GameAction
+{
+    private ActionResult actionResult;
+
+    public Action##ID##()
+        : base((int)ActionType.Regist)
+    {
+    }
+
+    protected override void SendParameter(NetWriter writer, ActionParam actionParam)
+    {
+        if (actionParam.HasValue)
+        {
+            //设置自定的请求参数
+            //T requestPack = actionParam.GetValue<T>();
+            //byte[] data = ProtoBufUtils.Serialize(requestPack);
+            //writer.SetBodyData(data);
+        }
+    }
+
+    protected override void DecodePackage(NetReader reader)
+    {
+        //解服务器下发的包
+        T responseData = ProtoBufUtils.Deserialize<T>(reader.Buffer);
+        actionResult = new ActionResult(responseData);
+
+    }
+
+    public override ActionResult GetResponseData()
+    {
+        return actionResult;
+    }
+}

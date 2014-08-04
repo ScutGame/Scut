@@ -12,7 +12,7 @@ namespace ##Namespace##
     public class Action##ID## : AuthorizeAction
     {
         public Action##ID##(ActionGetter actionGetter)
-            : base(ActionIDDefine.Cst_Action##ID##, actionGetter)
+            : base((short)##ID##, actionGetter)
         {
             
         }
@@ -31,7 +31,9 @@ namespace ##Namespace##
         /// <returns>false:中断后面的方式执行并返回Error</returns>
         public override bool GetUrlElement()
         {
-
+            byte[] data = (byte[])actionGetter.GetMessage();
+            //使用protobuf反序列化
+            //T t = ProtoBufUtils.Deserialize<T>(data);
         }
 
         /// <summary>
@@ -40,6 +42,7 @@ namespace ##Namespace##
         /// <returns>false:中断后面的方式执行并返回Error</returns>
         public override bool TakeAction()
         {
+            //在这里处理业务
             return true;
         }
 
@@ -48,6 +51,7 @@ namespace ##Namespace##
         /// </summary>
         public override byte[] BuildResponsePack()
         {
+            //ProtoBufUtils.Serialize(resutObject);
             return new byte[0];
         }
 
