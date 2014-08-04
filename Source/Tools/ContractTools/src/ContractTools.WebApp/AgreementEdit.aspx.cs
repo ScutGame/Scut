@@ -45,6 +45,7 @@ namespace ContractTools.WebApp
                 model.GameID = Convert.ToInt32(Request.QueryString["gameid"]);
                 if (DbDataLoader.Add(model) > 0)
                 {
+                    BindData();
                     Page.RegisterStartupScript("", "<script language=javascript>alert('添加成功！')</script>");
                 }
 

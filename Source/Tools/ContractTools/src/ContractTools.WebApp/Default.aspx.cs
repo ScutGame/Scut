@@ -203,7 +203,8 @@ namespace ContractTools.WebApp
 
         private void BindSourceCode(int slnId, int versionId, int contractId, List<ParamInfoModel> requestParams, List<ParamInfoModel> responseParams)
         {
-            string tileName = (ddContract.SelectedItem.Text) ?? "";
+            var modol = DbDataLoader.GetContract(slnId, contractId, 0);
+            string tileName = modol != null ? modol.Descption : "Action " + contractId;
             int index = tileName.IndexOf("【", System.StringComparison.Ordinal);
             if (index != -1)
             {
