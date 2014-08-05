@@ -469,6 +469,7 @@ namespace ZyGames.Framework.Cache.Generic
         /// <returns></returns>
         public bool AddOrUpdateGroup(string groupKey, string key, T entityData, int periodTime)
         {
+            bool result = false;
             CacheItemSet itemSet = InitGroupContainer(groupKey, periodTime);
             if (itemSet != null && !Equals(entityData, default(T)))
             {
@@ -476,11 +477,18 @@ namespace ZyGames.Framework.Cache.Generic
                 T oldValue;
                 if (data.TryGetValue(key, out oldValue))
                 {
-                    return data.TryUpdate(key, entityData, oldValue);
+                    result = data.TryUpdate(key, entityData, oldValue);
                 }
-                return data.TryAdd(key, entityData);
+                else
+                {
+                    result = data.TryAdd(key, entityData);
+                }
+                if (itemSet.LoadingStatus == LoadingStatus.None)
+                {
+                    itemSet.OnLoadSuccess();
+                }
             }
-            return false;
+            return result;
         }
         /// <summary>
         /// 
@@ -497,6 +505,7 @@ namespace ZyGames.Framework.Cache.Generic
             {
                 if (!Equals(entityData, default(T)) && ((BaseCollection)itemSet.GetItem()).TryAdd(key, entityData))
                 {
+                    itemSet.OnLoadSuccess();
                     return true;
                 }
             }
@@ -551,6 +560,7 @@ namespace ZyGames.Framework.Cache.Generic
             {
                 var temp = new CacheItemSet(CacheType.Queue, periodTime, IsReadonly);
                 temp.SetItem(new CacheQueue<T>(expiredHandle));
+                temp.OnLoadSuccess();
                 return temp;
             });
 
