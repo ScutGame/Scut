@@ -60,7 +60,7 @@ namespace ZyGames.Framework.Game.Runtime
 
         private static int _isRunning;
 
-        private static EnvironmentSetting _setting;
+        private static EnvironmentSetting _setting = new EnvironmentSetting();
         ///<summary>
         /// The environment configuration information.
         ///</summary>
@@ -157,7 +157,6 @@ namespace ZyGames.Framework.Game.Runtime
                 ProtoBufUtils.LoadProtobufType(_setting.EntityAssembly);
                 EntitySchemaSet.LoadAssembly(_setting.EntityAssembly);
             }
-            EntitySchemaSet.StartCheckTableTimer();
 
             ZyGameBaseConfigManager.Intialize();
             //init script.
@@ -176,6 +175,7 @@ namespace ZyGames.Framework.Game.Runtime
             ScriptEngines.Initialize();
             Language.SetLang();
             CacheFactory.Initialize(cacheSetting);
+            EntitySchemaSet.StartCheckTableTimer();
             Global = new ContextCacheSet<CacheItem>("__gameenvironment_global");
             IsRunning = true;
         }

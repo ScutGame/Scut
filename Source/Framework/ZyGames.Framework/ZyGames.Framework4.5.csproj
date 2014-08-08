@@ -200,6 +200,9 @@
     <Compile Include="RPC\IO\RequestParam.cs" />
     <Compile Include="RPC\IO\Sender.cs" />
     <Compile Include="RPC\IO\SignUtils.cs" />
+    <Compile Include="RPC\Service\HttpRemoteClient.cs" />
+    <Compile Include="RPC\Service\RemoteClient.cs" />
+    <Compile Include="RPC\Service\SocketRemoteClient.cs" />
     <Compile Include="RPC\Sockets\BufferManager.cs" />
     <Compile Include="RPC\Sockets\ClientSocket.cs" />
     <Compile Include="RPC\Sockets\ClientSocketSettings.cs" />

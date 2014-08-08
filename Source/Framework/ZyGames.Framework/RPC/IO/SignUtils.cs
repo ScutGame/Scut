@@ -21,11 +21,6 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ****************************************************************************/
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Web.Security;
 
 namespace ZyGames.Framework.RPC.IO
 {
@@ -34,20 +29,22 @@ namespace ZyGames.Framework.RPC.IO
     /// </summary>
     public sealed class SignUtils
     {
-		/// <summary>
-		/// The default key.
-		/// </summary>
+        /// <summary>
+        /// The default key of 32 bit.
+        /// </summary>
         public const string DefaultKey = "44CAC8ED53714BF18D60C5C7B6296000";
 
+
         /// <summary>
-        /// 
+        /// md5 encode sign
         /// </summary>
         /// <param name="str"></param>
+        /// <param name="key"></param>
         /// <returns></returns>
-        public static string PasswordMd5(string str)
+        public static string EncodeSign(string str, string key = DefaultKey)
         {
-            string attachParam = str + DefaultKey;
-            return ZyGames.Framework.Common.Security.CryptoHelper.MD5_Encrypt(attachParam);
+            string attachParam = str + key;
+            return ZyGames.Framework.Common.Security.CryptoHelper.MD5_Encrypt(attachParam).ToLower();
         }
     }
 }

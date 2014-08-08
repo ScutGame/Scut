@@ -103,6 +103,11 @@ namespace ZyGames.Framework.Game.Service
         protected bool IsPush = false;
 
         /// <summary>
+        /// 是否影响输出, True：不响应
+        /// </summary>
+        protected bool IsNotRespond;
+
+        /// <summary>
         /// 请求上来的消息编号，主动下发编号为0
         /// </summary>
         protected int MsgId = 0;
@@ -281,7 +286,10 @@ namespace ZyGames.Framework.Game.Service
         /// </summary>
         public void WriteAction(BaseGameResponse response)
         {
-            dataStruct.WriteAction(response, actionId, errorCode, errorInfo, MsgId, St);
+            if (!IsNotRespond)
+            {
+                dataStruct.WriteAction(response, actionId, errorCode, errorInfo, MsgId, St);
+            }
         }
 
         /// <summary>
@@ -301,7 +309,11 @@ namespace ZyGames.Framework.Game.Service
             this.iVisitEndTime = DateTime.Now;
             WatchAction();
             this.SaveActionLogToDB(LogActionStat.Fail, logActionResult);
-            response.WriteError(actionGetter, errorCode, errorInfo);
+
+            if (!IsNotRespond)
+            {
+                response.WriteError(actionGetter, errorCode, errorInfo);
+            }
             //dataStruct.WriteAction(response, actionId, errorCode, errorInfo, MsgId, St);
         }
 
@@ -335,7 +347,10 @@ namespace ZyGames.Framework.Game.Service
         /// </summary>
         public virtual void WriteResponse(BaseGameResponse response)
         {
-            BuildPacket();
+            if (!IsNotRespond)
+            {
+                BuildPacket();
+            }
             WriteAction(response);
             WriteEnd();
         }
@@ -369,7 +384,7 @@ namespace ZyGames.Framework.Game.Service
         /// </summary>
         public virtual void BuildPacket()
         {
-            
+
         }
 
         #region //日志记录

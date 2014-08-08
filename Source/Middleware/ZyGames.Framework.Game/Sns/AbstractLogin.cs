@@ -67,6 +67,14 @@ namespace ZyGames.Framework.Game.Sns
             get;
             protected set;
         }
+        /// <summary>
+        /// 
+        /// </summary>
+        public int UserType
+        {
+            get;
+            protected set;
+        }
 
         /// <summary>
         /// 

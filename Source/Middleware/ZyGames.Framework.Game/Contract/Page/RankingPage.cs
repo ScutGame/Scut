@@ -23,11 +23,8 @@ THE SOFTWARE.
 ****************************************************************************/
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using ZyGames.Framework.Common;
 using ZyGames.Framework.Common.Log;
-using ZyGames.Framework.Game.Com;
 using ZyGames.Framework.Game.Com.Rank;
 
 namespace ZyGames.Framework.Game.Contract.Page

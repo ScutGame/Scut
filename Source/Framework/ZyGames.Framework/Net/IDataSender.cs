@@ -23,7 +23,6 @@ THE SOFTWARE.
 ****************************************************************************/
 using System;
 using System.Collections.Generic;
-using ZyGames.Framework.Data;
 using ZyGames.Framework.Model;
 
 namespace ZyGames.Framework.Net

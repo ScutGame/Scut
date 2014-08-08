@@ -57,6 +57,7 @@ namespace ZyGames.Framework.Game.Runtime
         private static readonly string actionTypeName;
         private static readonly string scriptTypeName;
         private static readonly string entityAssemblyName;
+        private static readonly string remoteTypeName;
 
         static EnvironmentSetting()
         {
@@ -91,6 +92,8 @@ namespace ZyGames.Framework.Game.Runtime
             }
             scriptTypeName = ConfigUtils.GetSetting("Game.Action.Script.TypeName", "Game.Script.Action{0}");
             entityAssemblyName = ConfigUtils.GetSetting("Game.Entity.AssemblyName");
+
+            remoteTypeName = ConfigUtils.GetSetting("Game.Remote.Script.TypeName", "Game.Script.Remote.{0}");
         }
 
         private static string GetLocalIp()
@@ -129,11 +132,12 @@ namespace ZyGames.Framework.Game.Runtime
             GameIpAddress = gameIpAddress;
             ActionTypeName = actionTypeName;
             ScriptTypeName = scriptTypeName;
+            RemoteTypeName = remoteTypeName;
             try
             {
                 EntityAssembly = Assembly.LoadFrom(entityAssemblyName);
             }
-            catch{}
+            catch { }
 
             ActionDispatcher = new ScutActionDispatcher();
         }
@@ -213,6 +217,10 @@ namespace ZyGames.Framework.Game.Runtime
         /// </summary>
         public string ScriptTypeName { get; set; }
 
+        /// <summary>
+        /// Remote type name.
+        /// </summary>
+        public string RemoteTypeName { get; set; }
         /// <summary>
         /// local ip
         /// </summary>

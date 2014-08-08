@@ -24,7 +24,6 @@ THE SOFTWARE.
 using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Text;
 using ZyGames.Framework.Common;
 using ZyGames.Framework.Common.Log;
 using ZyGames.Framework.Common.Serialization;
@@ -121,18 +120,18 @@ namespace ZyGames.Framework.Net.Sql
                 TraceLog.WriteError("Class:{0} is not change column.", data.GetType().FullName);
                 return null;
             }
-
+            string tableName = schemaTable.GetTableName();
             if (data.IsDelete)
             {
-                command = dbProvider.CreateCommandStruct(schemaTable.Name, CommandMode.Delete);
+                command = dbProvider.CreateCommandStruct(tableName, CommandMode.Delete);
             }
             else if (schemaTable.AccessLevel == AccessLevel.WriteOnly)
             {
-                command = dbProvider.CreateCommandStruct(schemaTable.Name, CommandMode.Insert);
+                command = dbProvider.CreateCommandStruct(tableName, CommandMode.Insert);
             }
             else
             {
-                command = dbProvider.CreateCommandStruct(schemaTable.Name, CommandMode.ModifyInsert);
+                command = dbProvider.CreateCommandStruct(tableName, CommandMode.ModifyInsert);
             }
             //StringBuilder changeLog = new StringBuilder();
             //changeLog.AppendFormat("\"Keys\":\"{0}\"", data.GetKeyCode());
@@ -166,7 +165,7 @@ namespace ZyGames.Framework.Net.Sql
             string[] keyList = schemaTable.Keys;
             if (keyList.Length == 0)
             {
-                throw new ArgumentNullException(string.Format("Table:{0} key is empty.", schemaTable.Name));
+                throw new ArgumentNullException(string.Format("Table:{0} key is empty.", schemaTable.EntityName));
             }
             string condition = string.Empty;
             command.Filter = dbProvider.CreateCommandFilter();
@@ -283,7 +282,7 @@ namespace ZyGames.Framework.Net.Sql
             catch (Exception ex)
             {
                 TraceLog.WriteError("Table:{0} column:\"{0}\" serialize error:\r\n:{1}",
-                    schemaTable.Name,
+                    schemaTable.EntityName,
                     schemaColumn.Name,
                     ex);
                 return null;
@@ -308,7 +307,7 @@ namespace ZyGames.Framework.Net.Sql
             catch (Exception ex)
             {
                 TraceLog.WriteError("Table:{0} column:\"{0}\" json serialize error:\r\n:{1}",
-                    schemaTable.Name,
+                    schemaTable.EntityName,
                     schemaColumn.Name,
                     ex);
                 return null;

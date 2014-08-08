@@ -82,6 +82,7 @@ namespace ZyGames.Framework.Game.Sns
 
             if (!string.IsNullOrEmpty(UserID) && UserID != "0")
             {
+                UserType = SnsManager.GetUserType(PassportID);
                 if (string.IsNullOrEmpty(SessionID))
                 {
                     SessionID = GetSessionId();

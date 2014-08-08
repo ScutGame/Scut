@@ -22,9 +22,6 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ****************************************************************************/
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace ZyGames.Framework.RPC.IO
 {
@@ -49,20 +46,20 @@ namespace ZyGames.Framework.RPC.IO
         /// 
         /// </summary>
         /// <returns></returns>
-        public byte[] ToByte()
+        public byte[] ToBytes()
         {
-            byte[] headByte = _head.ToByte();
+            byte[] headByte = _head.ToBytes();
             _head.PacketLength = headByte.Length + _data.Length;
-            byte[] body = new byte[_head.PacketLength + 4];
+            byte[] packetBytes = new byte[_head.PacketLength + 4];
             int pos = 0;
 
-            Buffer.BlockCopy(BitConverter.GetBytes(_head.PacketLength), 0, body, pos, 4);
+            Buffer.BlockCopy(BitConverter.GetBytes(_head.PacketLength), 0, packetBytes, pos, 4);
             pos += 4;
-            Buffer.BlockCopy(headByte, 0, body, pos, headByte.Length);
+            Buffer.BlockCopy(headByte, 0, packetBytes, pos, headByte.Length);
             pos += headByte.Length;
-            Buffer.BlockCopy(_data, 0, body, pos, _data.Length);
+            Buffer.BlockCopy(_data, 0, packetBytes, pos, _data.Length);
 
-            return body;
+            return packetBytes;
         }
 
     }

@@ -22,9 +22,13 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ****************************************************************************/
 using System;
+using System.Collections.Specialized;
 using System.Reflection;
+using System.Text;
 using ZyGames.Framework.Common.Log;
 using ZyGames.Framework.Game.Runtime;
+using ZyGames.Framework.RPC.IO;
+using ZyGames.Framework.RPC.Service;
 using ZyGames.Framework.Script;
 
 namespace GameServer

@@ -27,7 +27,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
 using Microsoft.Scripting.Hosting;
-using Microsoft.Scripting.Utils;
 using ZyGames.Framework.Common.Log;
 
 namespace ZyGames.Framework.Plugin.PythonScript

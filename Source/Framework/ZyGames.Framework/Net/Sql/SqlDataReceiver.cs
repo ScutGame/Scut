@@ -99,7 +99,8 @@ namespace ZyGames.Framework.Net.Sql
                     TraceLog.WriteError("The {0} schema config is empty.", typeof(T).FullName);
                     return null;
                 }
-                if (string.IsNullOrEmpty(_schema.Name))
+                string tableName = _schema.GetTableName();
+                if (string.IsNullOrEmpty(tableName))
                 {
                     TraceLog.WriteError("The {0} schema table name is empty.", _schema.EntityType.FullName);
                     return null;
@@ -111,7 +112,7 @@ namespace ZyGames.Framework.Net.Sql
                     TraceLog.WriteError("The {0} ConnectKey:{1} is empty.", _schema.EntityType.FullName, _schema.ConnectKey);
                     return null;
                 }
-                var command = dbprovider.CreateCommandStruct(_schema.Name, CommandMode.Inquiry);
+                var command = dbprovider.CreateCommandStruct(tableName, CommandMode.Inquiry);
                 var columns = _schema.GetColumnNames();
                 command.Columns = string.Join(",", columns);
                 command.OrderBy = (string.IsNullOrEmpty(_filter.OrderColumn) ? _schema.OrderColumn : _filter.OrderColumn) ?? "";
@@ -217,7 +218,7 @@ namespace ZyGames.Framework.Net.Sql
                     }
                     catch (Exception ex)
                     {
-                        TraceLog.WriteError("Table:{0} column:{1} parse value error:\r\n{0}", schemaTable.Name, columnName, ex);
+                        TraceLog.WriteError("Table:{0} column:{1} parse value error:\r\n{0}", schemaTable.EntityName, columnName, ex);
                     }
                 }
                 if (fieldAttr.CanWrite)
@@ -245,7 +246,7 @@ namespace ZyGames.Framework.Net.Sql
             catch (Exception ex)
             {
                 TraceLog.WriteError("Table:{0} key:{1} column:{2} deserialize binary error:byte[] to {3}\r\nException:{4}",
-                    schemaTable.Name,
+                    schemaTable.EntityName,
                     entity.GetKeyCode(),
                     columnName,
                     fieldAttr.ColumnType.FullName,
@@ -277,7 +278,7 @@ namespace ZyGames.Framework.Net.Sql
             catch (Exception ex)
             {
                 TraceLog.WriteError("Table:{0} key:{1} column:{2} deserialize json error:{3} to {4}\r\nException:{5}",
-                    schemaTable.Name,
+                    schemaTable.EntityName,
                     entity.GetKeyCode(),
                     columnName,
                     value,

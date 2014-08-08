@@ -38,6 +38,11 @@ namespace ZyGames.Framework.Game.Sns
         /// 
         /// </summary>
         string UserID { get; }
+
+        /// <summary>
+        /// 用户类型
+        /// </summary>
+        int UserType { get; }
         /// <summary>
         /// 
         /// </summary>

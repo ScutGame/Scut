@@ -200,9 +200,10 @@ namespace ZyGames.Framework.Redis
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="redisKey"></param>
+        /// <param name="table"></param>
         /// <param name="list"></param>
         /// <returns></returns>
-        public static bool TryGetEntity<T>(string redisKey, out List<T> list) where T : AbstractEntity
+        public static bool TryGetEntity<T>(string redisKey, SchemaTable table, out List<T> list) where T : AbstractEntity
         {
             list = new List<T>();
             bool result = false;
@@ -220,6 +221,7 @@ namespace ZyGames.Framework.Redis
                 }
                 byte[][] valueBytes = null;
                 byte[] value = null;
+                bool isFilter = false;
                 try
                 {
                     ProcessReadOnly(client =>
@@ -234,11 +236,13 @@ namespace ZyGames.Framework.Redis
                         else
                         {
                             value = client.HGet(hashId, keyCode);
-                            //修正未使用Persional作为Key时,加载数据为空问题,修改成加载所有
-                            if (value == null
+                            //修正未使用Persional作为Key,而是多个Key时,加载数据为空问题,修改成加载所有
+                            if (value == null && table != null
                                 && !string.IsNullOrEmpty(keyValue)
-                                && typeof(T).IsSubclassOf(typeof(BaseEntity)))
+                                && typeof(T).IsSubclassOf(typeof(BaseEntity))
+                                && table.Keys.Length > 1)
                             {
+                                isFilter = true;
                                 valueBytes = client.HGetAll(hashId).Where((b, index) => index % 2 == 1).ToArray();
                             }
                         }
@@ -253,7 +257,14 @@ namespace ZyGames.Framework.Redis
                         }
                         if (valueBytes != null)
                         {
-                            list = valueBytes.Select(ProtoBufUtils.Deserialize<T>).ToList();
+                            if (isFilter)
+                            {
+                                list = valueBytes.Select(ProtoBufUtils.Deserialize<T>).Where(t => t.PersonalId == keyValue).ToList();
+                            }
+                            else
+                            {
+                                list = valueBytes.Select(ProtoBufUtils.Deserialize<T>).ToList();
+                            }
                             return true;
                         }
                     }

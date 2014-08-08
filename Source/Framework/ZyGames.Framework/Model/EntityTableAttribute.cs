@@ -175,6 +175,11 @@ namespace ZyGames.Framework.Model
         }
 
         /// <summary>
+        /// 表名的格式
+        /// </summary>
+        public string TableNameFormat { get; set; }
+
+        /// <summary>
         /// 绑定分组字段
         /// </summary>
         public string PersonalName

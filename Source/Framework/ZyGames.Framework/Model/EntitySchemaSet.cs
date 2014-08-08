@@ -22,7 +22,6 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ****************************************************************************/
 using System;
-using System.Collections;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
@@ -55,8 +54,8 @@ namespace ZyGames.Framework.Model
         private static int LogPriorBuildMonth = ConfigUtils.GetSetting("Log.PriorBuild.Month", 3);
 
         private static DictionaryExtend<string, SchemaTable> SchemaSet = new DictionaryExtend<string, SchemaTable>();
-        private static ConcurrentQueue<string> _logTables = new ConcurrentQueue<string>();
-        private static CacheListener _tableListener = new CacheListener("__EntitySchemaSet_CheckLogTable", 24 * 60 * 60, OnCheckLogTable);//间隔1天
+        private static ConcurrentQueue<SchemaTable> _dynamicTables = new ConcurrentQueue<SchemaTable>();
+        private static CacheListener _tableListener = new CacheListener("__EntitySchemaSet_CheckDynamicTable", 60 * 60, OnCheckDynamicTable);//间隔1小时
         private static Assembly _entityAssembly;
 
         /// <summary>
@@ -83,30 +82,23 @@ namespace ZyGames.Framework.Model
         public static int CacheQueuePeriod { get; set; }
 
 
-        private static void OnCheckLogTable(string key, object value, CacheRemovedReason reason)
+        private static void OnCheckDynamicTable(string key, object value, CacheRemovedReason reason)
         {
             try
             {
-                var tableTypes = _logTables.ToList();
-                foreach (var type in tableTypes)
+                var tableTypes = _dynamicTables.ToList();
+                foreach (var schema in tableTypes)
                 {
-                    SchemaTable schema;
-                    if (!SchemaSet.TryGetValue(type, out schema))
-                    {
-                        continue;
-                    }
                     DbBaseProvider dbprovider = DbConnectionProvider.CreateDbProvider(schema);
                     if (dbprovider == null)
                     {
                         continue;
                     }
                     string tableName = "";
-                    string format = "";
-                    for (int i = 0; i < LogPriorBuildMonth; i++)
+                    int count = LogPriorBuildMonth > 1 ? LogPriorBuildMonth : 2;
+                    for (int i = 0; i < count; i++)
                     {
-                        int month = i;
-                        format = LogTableNameFormat.Replace("$date", DateTime.Now.AddMonths(month).ToString("yyyyMM"));
-                        tableName = string.Format(format, schema.SpecialName);
+                        tableName = schema.GetTableName(i);
 
                         DbColumn[] columns;
                         if (!dbprovider.CheckTable(tableName, out columns))
@@ -198,11 +190,12 @@ namespace ZyGames.Framework.Model
                     schema.CacheType = entityTable.CacheType;
                     schema.IsStoreInDb = entityTable.IsStoreInDb;
                     schema.IsPersistence = entityTable.IsPersistence;
-                    schema.Name = string.IsNullOrEmpty(entityTable.TableName) ? type.Name : entityTable.TableName;
+                    schema.EntityName = string.IsNullOrEmpty(entityTable.TableName) ? type.Name : entityTable.TableName;
                     schema.ConnectKey = string.IsNullOrEmpty(entityTable.ConnectKey) ? "" : entityTable.ConnectKey;
                     schema.Condition = entityTable.Condition;
                     schema.OrderColumn = entityTable.OrderColumn;
                     //schema.DelayLoad = entityTable.DelayLoad;
+                    schema.NameFormat = entityTable.TableNameFormat;
                     SetPeriodTime(schema);
                     schema.Capacity = entityTable.Capacity;
                     schema.PersonalName = entityTable.PersonalName;
@@ -265,7 +258,7 @@ namespace ZyGames.Framework.Model
             sb.AppendLine("--The following code is automatically generated");
             sb.AppendLine("g__schema = {}");
 
-            var list = SchemaSet.Values.Where(p => p.IsEntitySync).OrderBy(p => p.Name).ToList();
+            var list = SchemaSet.Values.Where(p => p.IsEntitySync).OrderBy(p => p.EntityName).ToList();
             foreach (var schema in list)
             {
                 sb.AppendLine(ExportSync(schema));
@@ -281,7 +274,7 @@ namespace ZyGames.Framework.Model
         public static string ExportSync(SchemaTable schema)
         {
             StringBuilder sb = new StringBuilder();
-            sb.AppendFormat("g__schema[\"{0}\"] = ", schema.Name);
+            sb.AppendFormat("g__schema[\"{0}\"] = ", schema.EntityName);
             sb.AppendLine("{");
             var columns = schema.GetColumns();
             int index = 0;
@@ -457,16 +450,14 @@ namespace ZyGames.Framework.Model
             {
                 throw new ArgumentNullException("type");
             }
-            //modify if exits then update.
-            //if (Exits(type))
-            //{
-            //    return;
-            //}
 
-            if (type.IsSubclassOf(typeof(LogEntity)))
+            if (type.IsSubclassOf(typeof(LogEntity)) && string.IsNullOrEmpty(schema.NameFormat))
             {
-                schema.IsLog = true;
-                _logTables.Enqueue(type.FullName);
+                schema.NameFormat = LogTableNameFormat;
+            }
+            if (!string.IsNullOrEmpty(schema.NameFormat) && !Exits(type))
+            {
+                _dynamicTables.Enqueue(schema);
             }
 
             //加载成员属性
@@ -700,13 +691,14 @@ namespace ZyGames.Framework.Model
             return SchemaSet.TryGetValue(typeName, out schema);
         }
 
+
         private static T FindAttribute<T>(object[] attrList) where T : Attribute, new()
         {
             if (attrList.Length > 0)
             {
                 foreach (var attr in attrList)
                 {
-                    if (attr != null && attr is T)
+                    if (attr is T)
                     {
                         return (T)attr;
                     }
@@ -721,7 +713,7 @@ namespace ZyGames.Framework.Model
         /// <param name="schema"></param>
         private static void CheckTableSchema(SchemaTable schema)
         {
-            string tableName = schema.Name;
+            string tableName = schema.GetTableName();
             try
             {
                 DbBaseProvider dbprovider = DbConnectionProvider.CreateDbProvider(schema);

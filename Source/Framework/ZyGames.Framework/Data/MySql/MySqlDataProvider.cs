@@ -27,7 +27,6 @@ using System.Data;
 using System.Text;
 using ZyGames.Framework.Common;
 using MySql.Data.MySqlClient;
-using ZyGames.Framework.Common.Log;
 
 namespace ZyGames.Framework.Data.MySql
 {

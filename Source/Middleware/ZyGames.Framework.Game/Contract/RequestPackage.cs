@@ -22,10 +22,8 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ****************************************************************************/
 using System;
-using System.Security.Cryptography.X509Certificates;
 using Newtonsoft.Json;
 using ProtoBuf;
-using ZyGames.Framework.Common.Serialization;
 
 namespace ZyGames.Framework.Game.Contract
 {
@@ -106,6 +104,12 @@ namespace ZyGames.Framework.Game.Contract
         [ProtoMember(9)]
         public string UrlParam { get; set; }
 
+        /// <summary>
+        /// 远程代理客户端的标识ID
+        /// </summary>
+        [ProtoMember(10)]
+        public string ProxyId { get; set; }
+
 
         /// <summary>
         /// Message of custom
@@ -116,10 +120,26 @@ namespace ZyGames.Framework.Game.Contract
         /// GameSession
         /// </summary>
         [JsonIgnore]
-        public GameSession Session { get; internal protected set; }
+        public GameSession Session { get; protected set; }
+
         /// <summary>
         /// Receive time
         /// </summary>
-        public DateTime ReceiveTime { get; internal protected set; }
+        public DateTime ReceiveTime { get; protected set; }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="session"></param>
+        /// <param name="proxyId"></param>
+        public void Bind(GameSession session)
+        {
+            if (session != null)
+            {
+                session.ProxyId = ProxyId;
+            }
+            Session = session;
+            ReceiveTime = DateTime.Now;
+        }
     }
 }

@@ -212,8 +212,7 @@ namespace ZyGames.Framework.Game.Contract
             RequestPackage requestPackage = new RequestPackage(0, sessionId, actionId, userId);
             requestPackage.UrlParam = param;
             requestPackage.IsUrlParam = true;
-            requestPackage.Session = session;
-            requestPackage.ReceiveTime = DateTime.Now;
+            requestPackage.Bind(session);
             actionGetter = new HttpGet(requestPackage);
             return GetActionResponse(actionDispatcher, actionId, baseUser, actionGetter);
         }

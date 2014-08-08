@@ -22,33 +22,26 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ****************************************************************************/
 using System;
-using System.Collections.Generic;
 using System.Collections.Concurrent;
 using System.IO;
 using System.Net;
-using System.Text;
 using System.Threading;
-using System.Web;
 using ZyGames.Framework.Common;
 using ZyGames.Framework.Common.Configuration;
 using ZyGames.Framework.Common.Log;
-using ZyGames.Framework.Common.Reflect;
-using ZyGames.Framework.Game.Context;
 using ZyGames.Framework.Game.Lang;
 using ZyGames.Framework.Game.Runtime;
 using ZyGames.Framework.Game.Service;
-using ZyGames.Framework.Net;
 using ZyGames.Framework.RPC.Sockets;
 using ZyGames.Framework.RPC.IO;
 using ZyGames.Framework.RPC.Sockets.Threading;
-using ZyGames.Framework.Script;
 
 namespace ZyGames.Framework.Game.Contract
 {
     /// <summary>
     /// 游戏服Socket通讯宿主基类
     /// </summary>
-    public abstract class GameSocketHost
+    public abstract class GameSocketHost : GameBaseHost
     {
         private static int httpRequestTimeout = ConfigUtils.GetSetting("Game.Http.Timeout", "120000").ToInt();
         private ConcurrentQueue<RequestPackage> requestQueue = new ConcurrentQueue<RequestPackage>();
@@ -201,8 +194,7 @@ namespace ZyGames.Framework.Game.Contract
                 {
                     return;
                 }
-                package.Session = session;
-                package.ReceiveTime = DateTime.Now;
+                package.Bind(session);
                 requestQueue.Enqueue(package);
                 singal.Set();
             }
@@ -348,11 +340,11 @@ namespace ZyGames.Framework.Game.Contract
                 byte[] data = new byte[0];
                 if (!string.IsNullOrEmpty(package.RouteName))
                 {
-                    ActionGetter httpGet = ActionDispatcher.GetActionGetter(package);
-                    if (CheckRemote(package.RouteName, httpGet))
+                    ActionGetter actionGetter = ActionDispatcher.GetActionGetter(package);
+                    if (CheckRemote(package.RouteName, actionGetter))
                     {
                         MessageStructure response = new MessageStructure();
-                        OnCallRemote(package.RouteName, httpGet, response);
+                        OnCallRemote(package.RouteName, actionGetter, response);
                         data = response.PopBuffer();
                     }
                 }
@@ -361,7 +353,7 @@ namespace ZyGames.Framework.Game.Contract
                     SocketGameResponse response = new SocketGameResponse();
                     response.WriteErrorCallback += ActionDispatcher.ResponseError;
                     ActionGetter actionGetter = ActionDispatcher.GetActionGetter(package);
-                    DoHttpAction(actionGetter, response);
+                    DoAction(actionGetter, response);
                     data = response.ReadByte();
                 }
                 try
@@ -430,16 +422,16 @@ namespace ZyGames.Framework.Game.Contract
                 }
 
                 GameSession session;
-                if (string.IsNullOrEmpty(package.SessionId))
+                if (package.ProxySid != Guid.Empty)
                 {
-                    session = GameSession.CreateNew(Guid.NewGuid(), context.Request);
+                    session = GameSession.Get(package.ProxySid) ?? GameSession.CreateNew(package.ProxySid, context.Request);
+                    session.ProxySid = package.ProxySid;
                 }
                 else
                 {
                     session = GameSession.Get(package.SessionId) ?? GameSession.CreateNew(Guid.NewGuid(), context.Request);
                 }
-                package.Session = session;
-                package.ReceiveTime = DateTime.Now;
+                package.Bind(session);
 
                 ActionGetter httpGet = ActionDispatcher.GetActionGetter(package);
                 if (package.IsUrlParam)
@@ -472,7 +464,7 @@ namespace ZyGames.Framework.Game.Contract
                 }
                 else
                 {
-                    DoHttpAction(httpGet, httpresponse);
+                    DoAction(httpGet, httpresponse);
                     respData = httpresponse.ReadByte();
                 }
                 OnHttpResponse(clientConnection, respData, 0, respData.Length);
@@ -528,7 +520,7 @@ namespace ZyGames.Framework.Game.Contract
         /// <summary>
         /// 
         /// </summary>
-        public void Start(string[] args)
+        public override void Start(string[] args)
         {
             socketLintener.StartListen();
             if (EnableHttp)
@@ -551,7 +543,7 @@ namespace ZyGames.Framework.Game.Contract
         /// <summary>
         /// 
         /// </summary>
-        public void Stop()
+        public override void Stop()
         {
             Interlocked.Exchange(ref _runningQueue, 0);
             if (EnableHttp)
@@ -580,91 +572,6 @@ namespace ZyGames.Framework.Game.Contract
             GC.SuppressFinalize(this);
         }
 
-        private delegate void RemoteHandle(ActionGetter httpGet, MessageHead head, MessageStructure writer);
-
-        private void OnCallRemote(string route, ActionGetter httpGet, MessageStructure response)
-        {
-            try
-            {
-                string[] mapList = route.Split('.');
-                string funcName = "";
-                string routeName = "";
-                if (mapList.Length > 1)
-                {
-                    funcName = mapList[mapList.Length - 1];
-                    routeName = string.Join("/", mapList, 0, mapList.Length - 1);
-                }
-                string routeFile = "";
-                string typeName = string.Format("Game.Script.Remote.{0}", routeName);
-                int actionId = httpGet.GetActionId();
-                MessageHead head = new MessageHead(actionId);
-                if (!ScriptEngines.SettupInfo.DisablePython)
-                {
-                    routeFile = string.Format("Remote.{0}", routeName);
-                    dynamic scope = ScriptEngines.ExecutePython(routeFile);
-                    if (scope != null)
-                    {
-                        var funcHandle = scope.GetVariable<RemoteHandle>(funcName);
-                        if (funcHandle != null)
-                        {
-                            funcHandle(httpGet, head, response);
-                            response.WriteBuffer(head);
-                            return;
-                        }
-                    }
-                }
-                routeFile = string.Format("Remote.{0}", routeName);
-                var instance = (object)ScriptEngines.Execute(routeFile, typeName);
-                if (instance != null)
-                {
-                    var result = ObjectAccessor.Create(instance, true)[funcName];
-                }
-            }
-            catch (Exception ex)
-            {
-                TraceLog.WriteError("{0}", ex);
-            }
-        }
-
-        /// <summary>
-        /// Checks the remote.
-        /// </summary>
-        /// <returns><c>true</c>, if remote was checked, <c>false</c> otherwise.</returns>
-        /// <param name="route">Route.</param>
-        /// <param name="actionGetter">Http get.</param>
-        protected virtual bool CheckRemote(string route, ActionGetter actionGetter)
-        {
-            return true;
-        }
-
-        private void DoHttpAction(ActionGetter actionGetter, BaseGameResponse response)
-        {
-            if (GameEnvironment.IsRunning)
-            {
-                OnRequested(actionGetter, response);
-                ActionFactory.Request(actionGetter, response, GetUser);
-            }
-            else
-            {
-                response.WriteError(actionGetter, Language.Instance.ErrorCode, Language.Instance.ServerMaintain);
-            }
-        }
-
-        /// <summary>
-        /// Raises the requested event.
-        /// </summary>
-        /// <param name="actionGetter">Http get.</param>
-        /// <param name="response">Response.</param>
-        protected virtual void OnRequested(ActionGetter actionGetter, BaseGameResponse response)
-        {
-        }
-
-        /// <summary>
-        /// Get user object by userid
-        /// </summary>
-        /// <param name="userId"></param>
-        /// <returns></returns>
-        protected abstract BaseUser GetUser(int userId);
 
         /// <summary>
         /// Raises the start affer event.

@@ -28,7 +28,6 @@ using ZyGames.Framework.Common;
 using ZyGames.Framework.Common.Log;
 using ZyGames.Framework.Common.Serialization;
 using ZyGames.Framework.Data;
-using ZyGames.Framework.Event;
 using ZyGames.Framework.Model;
 using ZyGames.Framework.Net;
 using ZyGames.Framework.Redis;
@@ -186,7 +185,7 @@ namespace ZyGames.Framework.Cache.Generic.Pool
             dataList = null;
             //表为空时，不加载数据
             if (receiveParam.Schema == null ||
-                string.IsNullOrEmpty(receiveParam.Schema.Name) ||
+                string.IsNullOrEmpty(receiveParam.Schema.EntityName) ||
                 DbConnectionProvider.CreateDbProvider(receiveParam.Schema) == null)
             {
                 //DB is optional and can no DB configuration

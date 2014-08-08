@@ -22,9 +22,11 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ****************************************************************************/
 using System;
+using System.Globalization;
 using System.Linq;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using ZyGames.Framework.Common;
 
 namespace ZyGames.Framework.Model
 {
@@ -131,9 +133,9 @@ namespace ZyGames.Framework.Model
         }
 
         /// <summary>
-        /// 是否是日志表
+        /// 表名的格式:$date[yyyyMMdd] or $week
         /// </summary>
-        public bool IsLog { get; set; }
+        public string NameFormat { get; set; }
 
         /// <summary>
         /// 主键
@@ -145,33 +147,12 @@ namespace ZyGames.Framework.Model
         }
 
         /// <summary>
-        /// 实体名
+        /// Gets or sets the entity name.
         /// </summary>
-        public string Name
-        {
-            get
-            {
-                if (IsLog)
-                {
-                    string format = EntitySchemaSet.LogTableNameFormat.Replace("$date", DateTime.Now.ToString("yyyyMM"));
-                    return string.Format(format, SpecialName);
-                }
-                return SpecialName;
-            }
-            set
-            {
-                SpecialName = value;
-            }
-        }
-
-        /// <summary>
-        /// Gets or sets the name of the special.
-        /// </summary>
-        /// <value>The name of the special.</value>
-        internal string SpecialName
+        public string EntityName
         {
             get;
-            private set;
+            set;
         }
 
         /// <summary>
@@ -236,6 +217,76 @@ namespace ZyGames.Framework.Model
             get;
             set;
         }
+        private const string DateVarString = "$date";
+        private const string WeekOfYearString = "$week";
+        /// <summary>
+        /// 获取动态的表名
+        /// </summary>
+        /// <param name="increase">使用表达式时的日期增量,默认当天</param>
+        /// <returns></returns>
+        public string GetTableName(int increase = 0)
+        {
+            string format = NameFormat ?? "";
+            DateTime date = DateTime.Now;
+            int weekOfYear = 0;
+            //处理日期周
+            if (format.IndexOf(WeekOfYearString, StringComparison.CurrentCultureIgnoreCase) != -1)
+            {
+                date = date.AddDays(increase * 7);
+                weekOfYear = MathUtils.ToWeekOfYear(date);
+                format = format.Replace(WeekOfYearString, weekOfYear.ToString());
+            }
+            int index = format.IndexOf(DateVarString, StringComparison.CurrentCultureIgnoreCase);
+            if (index > -1)
+            {
+                string formatStart = format.Substring(0, index);
+                string dateStr = date.AddMonths(increase).ToString("yyyyMM");
+                string formatEnd = "";
+                if (format.Length - index > DateVarString.Length)
+                {
+                    formatEnd = format.Substring(index + DateVarString.Length);
+                    //查找是否有日期格式
+                    int dateIndex = formatEnd.IndexOf("[", StringComparison.CurrentCultureIgnoreCase);
+                    if (dateIndex > -1)
+                    {
+                        int indexTo = formatEnd.IndexOf("]", StringComparison.CurrentCultureIgnoreCase);
+                        if (indexTo > -1 && indexTo > dateIndex)
+                        {
+                            string dateFormat = formatEnd.Substring(dateIndex + 1, indexTo - dateIndex - 1);
+                            //若是周数有增加时，其它则不增了
+                            if (weekOfYear == 0)
+                            {
+                                date = GetIncreaseDateTime(increase, dateFormat, date);
+                            }
+                            dateStr = date.ToString(dateFormat);
+                            formatEnd = formatEnd.Substring(indexTo + 1);
+                        }
+                    }
+                }
+                format = formatStart + dateStr + formatEnd;
+            }
+            return string.IsNullOrEmpty(format) ? EntityName : string.Format(format, EntityName);
+        }
 
+        private static DateTime GetIncreaseDateTime(int increase, string dateFormat, DateTime date)
+        {
+            if (dateFormat.EndsWith("yy", StringComparison.CurrentCultureIgnoreCase))
+            {
+                date = date.AddYears(increase);
+            }
+            else if (dateFormat.EndsWith("MM", false, CultureInfo.CurrentCulture))
+            {
+                date = date.AddMonths(increase);
+            }
+            else if (dateFormat.EndsWith("d", StringComparison.CurrentCultureIgnoreCase))
+            {
+                date = date.AddDays(increase);
+            }
+            else if (dateFormat.EndsWith("h", StringComparison.CurrentCultureIgnoreCase))
+            {
+                date = date.AddHours(increase);
+            }
+            return date;
+        }
     }
 }

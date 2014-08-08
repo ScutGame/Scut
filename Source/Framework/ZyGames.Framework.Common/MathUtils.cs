@@ -52,6 +52,35 @@ namespace ZyGames.Framework.Common
         }
 
         /// <summary>
+        /// 当天时间一年中是第几周
+        /// </summary>
+        public static int WeekOfYear
+        {
+            get { return ToWeekOfYear(Now); }
+        }
+
+        /// <summary>
+        /// 指定时间一年中是第几周
+        /// </summary>
+        /// <returns></returns>
+        public static int ToWeekOfYear(DateTime date)
+        {
+            int dayOfYear = date.DayOfYear;
+            DateTime tempDate = new DateTime(date.Year, 1, 1);
+            int tempDayOfWeek = (int)tempDate.DayOfWeek;
+            tempDayOfWeek = tempDayOfWeek == 0 ? 7 : tempDayOfWeek;
+            int index = (int)date.DayOfWeek;
+            index = index == 0 ? 7 : index;
+            DateTime retStartDay = date.AddDays(-(index - 1));
+            DateTime retEndDay = date.AddDays(6 - index);
+            int weekIndex = (int)Math.Ceiling(((double)dayOfYear + tempDayOfWeek - 1) / 7);
+            if (retStartDay.Year < retEndDay.Year)
+            {
+                weekIndex = 1;
+            }
+            return weekIndex;
+        }
+        /// <summary>
         /// 获取与当前时间差异
         /// </summary>
         /// <param name="date"></param>

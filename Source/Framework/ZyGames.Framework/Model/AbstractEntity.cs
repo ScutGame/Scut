@@ -435,7 +435,7 @@ namespace ZyGames.Framework.Model
                 }
                 if (string.IsNullOrEmpty(value))
                 {
-                    TraceLog.WriteError("Entity {0} primary key is empty.", entitySchema.Name);
+                    TraceLog.WriteError("Entity {0} primary key is empty.", entitySchema.EntityName);
                 }
             }
 

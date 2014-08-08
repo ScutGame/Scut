@@ -21,11 +21,10 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ****************************************************************************/
-using System;
+
 using System.Collections.Generic;
 using ZyGames.Framework.Model;
 using ZyGames.Framework.Net.Redis;
-using ZyGames.Framework.Redis;
 
 namespace ZyGames.Framework.Net
 {
@@ -44,7 +43,7 @@ namespace ZyGames.Framework.Net
         public bool TryReceiveData<T>(TransReceiveParam receiveParam, out List<T> dataList) where T : AbstractEntity, new()
         {
 
-            using (IDataReceiver getter = new RedisDataGetter(receiveParam.RedisKey))
+            using (IDataReceiver getter = new RedisDataGetter(receiveParam.RedisKey, receiveParam.Schema))
             {
                 return getter.TryReceive<T>(out dataList);
             }

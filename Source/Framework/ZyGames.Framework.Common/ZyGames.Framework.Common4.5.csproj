@@ -74,6 +74,9 @@
     <Compile Include="Build\WeavingEntityTask.cs" />
     <Compile Include="Configuration\ConfigUtils.cs" />
     <Compile Include="Event\CustomEvent.cs" />
+    <Compile Include="Event\EventNotifier.cs" />
+    <Compile Include="Event\NotifyEventArgs.cs" />
+    <Compile Include="Event\TimeoutNotifyEventArgs.cs" />
     <Compile Include="HttpUtils.cs" />
     <Compile Include="Locking\ILocking.cs" />
     <Compile Include="Locking\IMonitorStrategy.cs" />

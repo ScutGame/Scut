@@ -1,11 +1,7 @@
 ﻿using System;
 using System.Web;
-using ZyGames.Framework.Cache.Generic;
 using ZyGames.Framework.Common.Log;
-using ZyGames.Framework.Game.Context;
-using ZyGames.Framework.Game.Contract;
-using ZyGames.Framework.Game.Runtime;
-using ZyGames.Framework.Game.Service;
+using ZyGames.Framework.Script;
 
 namespace GameWebServer
 {
@@ -15,20 +11,7 @@ namespace GameWebServer
         {
             try
             {
-                var setting = GameEnvironment.Setting;
-                if (setting == null)
-                {
-                    throw new NullReferenceException("Game environment's setting is null.");
-                }
-                var actionDispatcher = GameEnvironment.Setting.ActionDispatcher;
-                RequestPackage package;
-                if (!actionDispatcher.TryDecodePackage(HttpContext.Current, out package))
-                {
-                    return;
-                }
-                ActionGetter actionGetter = actionDispatcher.GetActionGetter(package);
-                BaseGameResponse response = new HttpGameResponse(HttpContext.Current.Response);
-                ActionFactory.RequestScript(actionGetter, response, GetUser);
+                ScriptEngines.RequestMainProgram(HttpContext.Current);
             }
             catch (Exception ex)
             {
@@ -36,9 +19,5 @@ namespace GameWebServer
             }
         }
 
-        private BaseUser GetUser(int userId)
-        {
-            return (BaseUser)CacheFactory.GetPersonalEntity("GameServer.Model.GameUser", userId.ToString(), userId);
-        }
     }
 }

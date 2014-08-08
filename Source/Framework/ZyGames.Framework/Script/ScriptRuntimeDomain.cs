@@ -1,11 +1,5 @@
 ﻿using System;
-using System.Collections.Concurrent;
-using System.IO;
-using System.Linq;
-using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
-using ZyGames.Framework.Common;
+using ZyGames.Framework.Common.Log;
 
 namespace ZyGames.Framework.Script
 {
@@ -86,12 +80,19 @@ namespace ZyGames.Framework.Script
         /// </summary>
         public ScriptRuntimeScope CreateScope(ScriptSettupInfo settupInfo)
         {
-            var type = typeof(ScriptRuntimeScope);
-            string amsKey = type.Assembly.GetName().Name;
-            _scope = _context.GetInstance(amsKey, type.FullName, settupInfo) as ScriptRuntimeScope;
-            if (_scope != null)
+            try
             {
-                _scope.Init();
+                var type = typeof(ScriptRuntimeScope);
+                string amsKey = type.Assembly.GetName().Name;
+                _scope = _context.GetInstance(amsKey, type.FullName, settupInfo) as ScriptRuntimeScope;
+                if (_scope != null)
+                {
+                    _scope.Init();
+                }
+            }
+            catch (Exception ex)
+            {
+                TraceLog.WriteError("Script runtime create scope error:{0}", ex);
             }
             return _scope;
         }
@@ -105,8 +106,9 @@ namespace ZyGames.Framework.Script
             {
                 AppDomain.Unload(_currDomain);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                TraceLog.WriteError("Script domain error:{0}", ex);
             }
         }
 

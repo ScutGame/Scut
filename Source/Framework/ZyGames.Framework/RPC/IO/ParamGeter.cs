@@ -34,22 +34,27 @@ namespace ZyGames.Framework.RPC.IO
     /// </summary>
     public class ParamGeter : IDisposable
     {
+        private const string SignName = "sign";
+        private readonly string _signKey;
         private string _requestParam;
         private Dictionary<string, string> _paramSet;
+
         /// <summary>
         /// 
         /// </summary>
         /// <param name="param"></param>
-        public ParamGeter(string param)
+        /// <param name="signKey"></param>
+        public ParamGeter(string param, string signKey = "")
         {
+            _signKey = signKey;
             _paramSet = new Dictionary<string, string>();
             InitData(param);
         }
 
         private void InitData(string param)
         {
-            param = HttpUtility.UrlDecode(param, Encoding.UTF8);
-            int index = param.LastIndexOf("&sign=");
+            param = HttpUtility.UrlDecode(param, Encoding.UTF8) ?? "";
+            int index = param.LastIndexOf(string.Format("&{0}=", SignName), StringComparison.OrdinalIgnoreCase);
             if (index != -1)
             {
                 _requestParam = param.Substring(0, index);
@@ -79,12 +84,12 @@ namespace ZyGames.Framework.RPC.IO
         /// <returns></returns>
         public bool CheckSign()
         {
-            if (_paramSet.ContainsKey("sign"))
+            if (_paramSet.ContainsKey(SignName))
             {
                 if (_requestParam != null)
                 {
-                    string key = SignUtils.PasswordMd5(_requestParam);
-                    if (!string.IsNullOrEmpty(key) && key.ToLower() == _paramSet["sign"].ToString())
+                    string key = SignUtils.EncodeSign(_requestParam, _signKey);
+                    if (!string.IsNullOrEmpty(key) && key == _paramSet[SignName])
                     {
                         return true;
                     }

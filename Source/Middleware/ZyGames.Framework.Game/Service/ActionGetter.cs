@@ -47,7 +47,14 @@ namespace ZyGames.Framework.Game.Service
         {
             return ReqPackage.ActionId;
         }
-
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        public virtual string GetRouteName()
+        {
+            return ReqPackage.RouteName;
+        }
         /// <summary>
         /// get current UserId.
         /// </summary>

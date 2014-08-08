@@ -21,7 +21,6 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ****************************************************************************/
-using System;
 
 namespace ZyGames.Framework.RPC.IO
 {
@@ -33,10 +32,10 @@ namespace ZyGames.Framework.RPC.IO
         internal int PacketLength { get; set; }
 
         /// <summary>
-        /// 
+        /// to bytes.
         /// </summary>
         /// <returns></returns>
-        public abstract byte[] ToByte();
+        public abstract byte[] ToBytes();
     }
 
     ///<summary>
@@ -47,7 +46,7 @@ namespace ZyGames.Framework.RPC.IO
 		/// 
 		/// </summary>
 		/// <returns></returns>
-        public override byte[] ToByte()
+        public override byte[] ToBytes()
         {
             return new byte[0];
         }

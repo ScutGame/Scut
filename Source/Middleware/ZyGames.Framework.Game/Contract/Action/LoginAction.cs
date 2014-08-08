@@ -22,11 +22,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ****************************************************************************/
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using ZyGames.Framework.Common;
-using ZyGames.Framework.Game.Context;
 using ZyGames.Framework.Game.Lang;
 using ZyGames.Framework.Game.Runtime;
 using ZyGames.Framework.Game.Service;
@@ -163,25 +159,35 @@ namespace ZyGames.Framework.Game.Contract.Action
             }
             return true;
         }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        protected virtual ILogin CreateLogin()
+        {
+            return LoginProxy.GetLogin();
+        }
         /// <summary>
         /// 子类实现Action处理
         /// </summary>
         /// <returns></returns>
         public override bool TakeAction()
         {
-            ILogin login = LoginProxy.GetLogin();
+            ILogin login = CreateLogin();
             if (login != null && login.CheckLogin())
             {
                 Uid = login.UserID;
                 Sid = Current.SessionId;
                 UserId = Uid.ToInt();
                 PassportId = login.PassportID;
+                UserType = login.UserType;
                 var session = GameSession.Get(Sid);
                 if (session != null)
                 {
                     session.BindIdentity(UserId);
                 }
-                UserType = SnsManager.GetUserType(PassportId);
+                
                 SetParameter(login);
                 if (!GetError() && DoSuccess(UserId))
                 {

@@ -23,7 +23,6 @@ THE SOFTWARE.
 ****************************************************************************/
 using System;
 using System.Collections.Generic;
-using ZyGames.Framework.Collection.Generic;
 using ZyGames.Framework.Common;
 using ZyGames.Framework.Common.Log;
 using ZyGames.Framework.Data;
@@ -338,7 +337,7 @@ namespace ZyGames.Framework.Cache.Generic
             //Model实体设置检查
             if ("10000".Equals(key))
             {
-                TraceLog.WriteError("Entity:{0} GetIdentityId method set value is error.", DataContainer.RootKey);
+                TraceLog.WriteError("The {0} entity's attr cacheType is share.", DataContainer.RootKey);
             }
             return ProcessLoadParam(key);
         }

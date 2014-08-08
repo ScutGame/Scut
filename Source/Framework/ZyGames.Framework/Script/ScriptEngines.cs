@@ -28,6 +28,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Threading;
+using System.Web;
 using ZyGames.Framework.Common;
 using ZyGames.Framework.Common.Log;
 using ZyGames.Framework.Common.Serialization;
@@ -50,7 +51,6 @@ namespace ZyGames.Framework.Script
         private static List<FileSystemWatcher> _watcherList;
         private static HashSet<string> _changedFiles;
         private static Timer _changeWatchingTimer;
-
         /// <summary>
         /// Script loaded event
         /// </summary>
@@ -322,6 +322,18 @@ namespace ZyGames.Framework.Script
             }
             return false;
         }
+
+        /// <summary>
+        /// Request of main class.
+        /// </summary>
+        public static void RequestMainProgram(HttpContext context)
+        {
+            if (_runtimeDomain.MainInstance != null)
+            {
+                ((dynamic)_runtimeDomain.MainInstance).Request(context);
+            }
+        }
+
         /// <summary>
         /// stop main class.
         /// </summary>
