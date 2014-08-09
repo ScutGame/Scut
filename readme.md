@@ -61,11 +61,11 @@ Update Log
 ###Version: 6.5.8.6 (2014-7-18) Stable
 ```
 1 Add the load from the Redis data to the Cache can be set to filter;
-2 Modifiy the Web project can not support custom protocol;
-3 Modifiy the Share type of Model in Redis null will try to load data from DB;
-4 Modifiy the Model namespace contains an underscore character when the data access in Redis bug;
+2 Modify the Web project can not support custom protocol;
+3 Modify the Share type of Model in Redis null will try to load data from DB;
+4 Modify the Model namespace has '_' character when the data access in Redis;
 
-old version: http://scutgame.com/log
+old version [more](http://scutgame.com/log).
 ```
 
 License
