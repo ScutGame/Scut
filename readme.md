@@ -49,10 +49,16 @@ Benefits Features
 </ul>
 
 
+Demo
+----------------
+https://github.com/ScutGame/Scut-samples
+
+
 Resource
 ----------------
 HomePage: http://www.scutgame.com<br />
 Github: https://github.com/scutgame<br />
+Oschina: https://git.oschina.net/scutgame/Scut<br />
 QQ Group: 138266675<br />
 
 
@@ -60,10 +66,10 @@ Update Log
 ----------------
 ###Version: 6.5.8.6 (2014-7-18) Stable
 ```
-1 Add the load from the Redis data to the Cache can be set to filter;
-2 Modify the Web project can not support custom protocol;
-3 Modify the Share type of Model in Redis null will try to load data from DB;
-4 Modify the Model namespace has '_' character when the data access in Redis;
+1.Add the load from the Redis data to the Cache can be set to filter;
+2.Modify the Web project can not support custom protocol;
+3.Modify the Share type of Model in Redis null will try to load data from DB;
+4.Modify the Model namespace has '_' character when the data access in Redis;
 ```
 old version [more](http://scutgame.com/log).
 
