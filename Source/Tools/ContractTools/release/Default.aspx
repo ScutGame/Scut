@@ -58,6 +58,7 @@
                                 <span class="space">字段类型:</span></td>
                             <td>
                                 <asp:DropDownList ID="ddFieldType" runat="server" Width="100px">
+                                    <asp:ListItem Value="-1">Password</asp:ListItem>
                                     <asp:ListItem Value="1">Int</asp:ListItem>
                                     <asp:ListItem Value="2">String</asp:ListItem>
                                     <asp:ListItem Value="3">Short</asp:ListItem>
@@ -128,7 +129,7 @@
                             <asp:TemplateField HeaderText="参数类型" ItemStyle-Width="5%" ItemStyle-HorizontalAlign="Left">
                                 <EditItemTemplate>
                                     <asp:DropDownList ID="droFieldType" runat="server" SelectedValue='<%# Bind("FieldTypeId") %>'
-                                        Width="90%">
+                                        Width="90%"><asp:ListItem Value="-1">Password</asp:ListItem>
                                         <asp:ListItem Value="1">Int</asp:ListItem>
                                         <asp:ListItem Value="2">String</asp:ListItem>
                                         <asp:ListItem Value="3">Short</asp:ListItem>

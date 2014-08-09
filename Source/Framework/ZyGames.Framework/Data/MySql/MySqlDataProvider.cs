@@ -282,7 +282,7 @@ namespace ZyGames.Framework.Data.MySql
         /// <returns></returns>
         private string ConvertToDbType(Type type, string dbType, long length, int scale, bool isKey, string fieldName)
         {
-            if (type.Equals(typeof(Int64)))
+            if (type.Equals(typeof(Int64)) || type.Equals(typeof(UInt64)))
             {
                 return "BigInt";
             }
@@ -302,7 +302,7 @@ namespace ZyGames.Framework.Data.MySql
             {
                 return "Float";
             }
-            if (type.IsEnum || type.Equals(typeof(Int32)))
+            if (type.IsEnum || type.Equals(typeof(Int32)) || type.Equals(typeof(UInt32)))
             {
                 return "Int";
             }
@@ -310,7 +310,7 @@ namespace ZyGames.Framework.Data.MySql
             {
                 return "Real";
             }
-            if (type.Equals(typeof(Int16)))
+            if (type.Equals(typeof(Int16)) || type.Equals(typeof(UInt16)))
             {
                 return "SmallInt";
             }

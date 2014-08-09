@@ -321,7 +321,7 @@ namespace ZyGames.Framework.Data.Sql
 
         private string ConvertToDbType(Type type, string dbType, long length, int scale, bool isKey)
         {
-            if (type.Equals(typeof(Int64)))
+            if (type.Equals(typeof(Int64)) || type.Equals(typeof(UInt64)))
             {
                 return "BigInt";
             }
@@ -341,7 +341,7 @@ namespace ZyGames.Framework.Data.Sql
             {
                 return "Float";
             }
-            if (type.IsEnum || type.Equals(typeof(Int32)))
+            if (type.IsEnum || type.Equals(typeof(Int32)) || type.Equals(typeof(UInt32)))
             {
                 return "Int";
             }
@@ -349,7 +349,7 @@ namespace ZyGames.Framework.Data.Sql
             {
                 return "Real";
             }
-            if (type.Equals(typeof(Int16)))
+            if (type.Equals(typeof(Int16)) || type.Equals(typeof(UInt16)))
             {
                 return "SmallInt";
             }
@@ -379,7 +379,7 @@ namespace ZyGames.Framework.Data.Sql
                     : "VarChar(255)";
             }
 
-            if (string.Equals(dbType, "text", StringComparison.CurrentCultureIgnoreCase)||
+            if (string.Equals(dbType, "text", StringComparison.CurrentCultureIgnoreCase) ||
                 string.Equals(dbType, "longtext", StringComparison.CurrentCultureIgnoreCase))
             {
                 return "text";
