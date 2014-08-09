@@ -64,9 +64,9 @@ Update Log
 2 Modify the Web project can not support custom protocol;
 3 Modify the Share type of Model in Redis null will try to load data from DB;
 4 Modify the Model namespace has '_' character when the data access in Redis;
-
-old version [more](http://scutgame.com/log).
 ```
+old version [more](http://scutgame.com/log).
+
 
 License
 --------------
