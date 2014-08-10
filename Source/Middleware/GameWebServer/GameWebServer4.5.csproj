@@ -117,11 +117,11 @@
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Script\Model\GuestUser.cs" />
-    <Compile Include="Script\Model\UserRanking.cs" />
-    <Compile Include="Script\CsScript\Action\Action1000.cs" />
-    <Compile Include="Script\CsScript\Action\Action1001.cs" />
-    <Compile Include="Script\CsScript\Locale\SimplifiedLanguage.cs" />
+    <None Include="Script\Model\GuestUser.cs" />
+    <None Include="Script\Model\UserRanking.cs" />
+    <None Include="Script\CsScript\Action\Action1000.cs" />
+    <None Include="Script\CsScript\Action\Action1001.cs" />
+    <None Include="Script\CsScript\Locale\SimplifiedLanguage.cs" />
     <Compile Include="Service.aspx.cs">
       <DependentUpon>Service.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
@@ -129,7 +129,7 @@
     <Compile Include="Service.aspx.designer.cs">
       <DependentUpon>Service.aspx</DependentUpon>
     </Compile>
-    <Compile Include="Script\CsScript\MainClass.cs" />
+    <None Include="Script\CsScript\MainClass.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="NLog.config" />
