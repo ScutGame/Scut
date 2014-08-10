@@ -26,6 +26,7 @@ using System.Collections;
 using System.Text;
 using System.Web;
 using ZyGames.Framework.Common;
+using ZyGames.Framework.Common.Log;
 
 namespace ZyGames.Framework.RPC.IO
 {
@@ -215,7 +216,7 @@ namespace ZyGames.Framework.RPC.IO
             string sign = "";
             foreach (string key in keys)
             {
-                string value = (string)_params[key];
+                string value = GetString(key);
                 if (!String.Equals(signName, key, StringComparison.OrdinalIgnoreCase))
                 {
                     sb.Append(key + "=" + value + "&");
@@ -236,17 +237,22 @@ namespace ZyGames.Framework.RPC.IO
         public string ToPostString()
         {
             StringBuilder sb = new StringBuilder();
-            foreach (DictionaryEntry param in _params)
+            ArrayList keys = new ArrayList(_params.Keys);
+            keys.Sort();
+            foreach (string key in keys)
             {
-                string value = param.Value.ToString();
+                string value = GetString(key);
                 if (FilterSignValue(value)
-                       && !String.Equals(signName, param.Key.ToString(), StringComparison.OrdinalIgnoreCase))
+                       && !String.Equals(signName, key, StringComparison.OrdinalIgnoreCase))
                 {
-                    sb.AppendFormat("{0}={1}&", param.Key, HttpUtility.UrlEncode(value, _encoding));
+                    sb.AppendFormat("{0}={1}&", key, HttpUtility.UrlEncode(value, _encoding));
                 }
             }
-            sb.AppendFormat("{0}={1}", signName, CreateSign());
-            return sb.ToString();
+            string paramStr = sb.ToString().TrimEnd('&');
+            string sign = EncryptSign(paramStr);
+            TraceLog.ReleaseWriteDebug("{0} {1}",paramStr,sign);
+            paramStr += string.Format("&{0}={1}", signName, sign);
+            return paramStr;
         }
 
         /// <summary>
@@ -259,25 +265,6 @@ namespace ZyGames.Framework.RPC.IO
             return true;
         }
 
-        /// <summary>
-        /// 
-        /// </summary>
-        protected string CreateSign()
-        {
-            StringBuilder sb = new StringBuilder();
-            ArrayList keys = new ArrayList(_params.Keys);
-            keys.Sort();
-            foreach (string key in keys)
-            {
-                string value = GetString(key);
-                if (FilterSignValue(value)
-                    && !string.Equals(signName, key, StringComparison.OrdinalIgnoreCase))
-                {
-                    sb.Append(key + "=" + value + "&");
-                }
-            }
-            return EncryptSign(sb.ToString());
-        }
 
         /// <summary>
         /// 签名加密

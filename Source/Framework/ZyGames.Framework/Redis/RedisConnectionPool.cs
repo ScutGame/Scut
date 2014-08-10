@@ -249,7 +249,10 @@ namespace ZyGames.Framework.Redis
                             {
                                 isFilter = true;
                                 byte[][] resultKeys = client.HKeys(hashId).Where(k => ContainKey(k, keyCode, AbstractEntity.KeyCodeJoinChar)).ToArray();
-                                valueBytes = client.HMGet(hashId, resultKeys);//.Where((b, index) => index % 2 == 1).ToArray();
+                                if (resultKeys.Length > 0)
+                                {
+                                    valueBytes = client.HMGet(hashId, resultKeys);//.Where((b, index) => index % 2 == 1).ToArray();
+                                }
                             }
                         }
                     });

@@ -98,7 +98,7 @@ namespace ZyGames.Framework.Game.Contract
             {
                 string[] mapList = routePath.Split('.');
                 string funcName = "";
-                string routeName = "";
+                string routeName = routePath;
                 if (mapList.Length > 1)
                 {
                     funcName = mapList[mapList.Length - 1];
