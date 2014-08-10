@@ -72,7 +72,7 @@ namespace ZyGames.Framework.Game.Contract.Action
             {
                 return true;
             }
-            BaseUser gameUser;
+            IUser gameUser;
             LoginStatus status = CheckUser(Sid, UserId, out gameUser);
 
             if (IsRunLoader)
@@ -101,7 +101,7 @@ namespace ZyGames.Framework.Game.Contract.Action
                 default:
                     break;
             }
-            if (gameUser != null && gameUser.IsFengJinStatus)
+            if (gameUser != null && gameUser.IsLock)
             {
                 ErrorCode = Language.Instance.TimeoutCode;
                 ErrorInfo = Language.Instance.AcountIsLocked;
@@ -135,7 +135,7 @@ namespace ZyGames.Framework.Game.Contract.Action
         /// <param name="sessionId">Session I.</param>
         /// <param name="userId">User identifier.</param>
         /// <param name="gameUser">Game user.</param>
-        protected LoginStatus CheckUser(string sessionId, int userId, out BaseUser gameUser)
+        protected LoginStatus CheckUser(string sessionId, int userId, out IUser gameUser)
         {
             gameUser = null;
             if (UserFactory != null)
@@ -164,7 +164,7 @@ namespace ZyGames.Framework.Game.Contract.Action
         /// </summary>
         /// <param name="actionId">Action identifier.</param>
         /// <param name="gameUser">Game user.</param>
-        protected void DoRefresh(int actionId, BaseUser gameUser)
+        protected void DoRefresh(int actionId, IUser gameUser)
         {
             if (EnablePayNotify != null)
             {

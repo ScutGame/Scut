@@ -197,7 +197,7 @@ namespace ZyGames.Framework.Game.Context
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <returns></returns>
-        public T GetUser<T>() where T : BaseUser
+        public T GetUser<T>() where T : IUser
         {
             return (T)User;
         }
@@ -205,7 +205,7 @@ namespace ZyGames.Framework.Game.Context
         /// <summary>
         /// 当前玩家对象
         /// </summary>
-        public BaseUser User
+        public IUser User
         {
             get;
             set;

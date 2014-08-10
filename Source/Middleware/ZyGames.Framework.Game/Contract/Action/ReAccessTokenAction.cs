@@ -91,7 +91,7 @@ namespace ZyGames.Framework.Game.Contract.Action
             return true;
         }
 
-        private BaseUser GetUser()
+        private IUser GetUser()
         {
             return UserFactory == null ? null : UserFactory(UserId);
         }
@@ -104,7 +104,7 @@ namespace ZyGames.Framework.Game.Contract.Action
             var user = GetUser();
             if (user!=null)
             {
-                AccessToken360 = user.Token360 ?? AccessToken360;
+                AccessToken360 = user.Token ?? AccessToken360;
             }
             string appKey = "";
             string appSecret = "";
@@ -135,7 +135,7 @@ namespace ZyGames.Framework.Game.Contract.Action
             if (getToken != null)
             {
                 AccessToken360 = getToken.access_token;
-                user.Token360 = AccessToken360;
+                user.Token = AccessToken360;
             }
             return true;
         }

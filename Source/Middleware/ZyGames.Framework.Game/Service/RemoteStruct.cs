@@ -32,7 +32,13 @@ namespace ZyGames.Framework.Game.Service
     /// </summary>
     public abstract class RemoteStruct
     {
+        /// <summary>
+        /// 
+        /// </summary>
         protected readonly ActionGetter ParamGetter;
+        /// <summary>
+        /// 
+        /// </summary>
         protected readonly MessageStructure Response;
 
         /// <summary>

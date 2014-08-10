@@ -35,9 +35,9 @@ namespace Game.Script
         public MainClass()
         {
         }
-        protected override BaseUser GetUser(int userId)
+        protected override IUser GetUser(int userId)
         {
-            return (BaseUser)CacheFactory.GetPersonalEntity("GameServer.Model.GameUser", userId.ToString(), userId);
+            return (IUser)CacheFactory.GetPersonalEntity("GameServer.Model.GameUser", userId.ToString(), userId);
         }
 
         protected override void OnStartAffer()

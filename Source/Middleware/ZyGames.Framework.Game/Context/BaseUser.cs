@@ -35,7 +35,7 @@ namespace ZyGames.Framework.Game.Context
     /// 游戏角色
     /// </summary>
     [Serializable, ProtoContract]
-    public abstract class BaseUser : BaseEntity
+    public abstract class BaseUser : BaseEntity, IUser
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="ZyGames.Framework.Game.Context.BaseUser"/> class.
@@ -50,6 +50,7 @@ namespace ZyGames.Framework.Game.Context
         protected BaseUser(AccessLevel access)
             : base(access)
         {
+            OnlineInterval = new TimeSpan(0, 1, 0);
         }
 
         private ContextCacheSet<CacheItem> _userData;
@@ -70,14 +71,14 @@ namespace ZyGames.Framework.Game.Context
         }
 
         /// <summary>
-        /// 在线间隔小时数
+        /// 在线间隔
         /// </summary>
-        protected int OnlineHourInterval = 8;
+        protected TimeSpan OnlineInterval;
         /// <summary>
         /// Gets a value indicating whether this instance is feng jin status.
         /// </summary>
         /// <value><c>true</c> if this instance is feng jin status; otherwise, <c>false</c>.</value>
-        public abstract bool IsFengJinStatus { get; }
+        public abstract bool IsLock { get; }
         /// <summary>
         /// Gets or sets the online date.
         /// </summary>
@@ -87,11 +88,11 @@ namespace ZyGames.Framework.Game.Context
         /// Gets a value indicating whether this instance is inlining.
         /// </summary>
         /// <value><c>true</c> if this instance is inlining; otherwise, <c>false</c>.</value>
-        public bool IsInlining
+        public bool IsOnlining
         {
             get
             {
-                return MathUtils.DiffDate(OnlineDate).TotalHours > OnlineHourInterval;
+                return MathUtils.DiffDate(OnlineDate) > OnlineInterval;
             }
         }
         /// <summary>
@@ -101,10 +102,10 @@ namespace ZyGames.Framework.Game.Context
         public string RemoteAddress { get; set; }
 
         /// <summary>
-        /// 360渠道Token
+        /// 渠道Token
         /// </summary>
         [JsonIgnore]
-        public string Token360 { get; set; }
+        public string Token { get; set; }
 
         /// <summary>
         /// 

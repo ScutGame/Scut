@@ -113,7 +113,7 @@ namespace ZyGames.Framework.Game.Contract
                     client.HeartPacket = Encoding.ASCII.GetBytes(post);
                 }
             }
-            catch (Exception e)
+            catch
             {
             }
         }

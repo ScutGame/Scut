@@ -45,7 +45,7 @@ namespace ZyGames.Framework.Game.Contract
         /// </summary>
         /// <param name="userId"></param>
         /// <returns></returns>
-        protected abstract BaseUser GetUser(int userId);
+        protected abstract IUser GetUser(int userId);
 
         /// <summary>
         /// 

@@ -93,7 +93,7 @@ namespace GameServer.Model
             return RetailId;
         }
 
-        public override bool IsFengJinStatus
+        public override bool IsLock
         {
             get { return false; }
         }

@@ -66,7 +66,7 @@ namespace ZyGames.Framework.Game.Service
         /// <summary>
         /// User创建工厂
         /// </summary>
-        public Func<int, BaseUser> UserFactory { get; set; }
+        public Func<int, IUser> UserFactory { get; set; }
 
         /// <summary>
         /// 当前游戏上下文对象

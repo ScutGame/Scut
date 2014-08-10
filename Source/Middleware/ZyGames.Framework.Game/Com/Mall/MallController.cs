@@ -91,7 +91,7 @@ namespace ZyGames.Framework.Game.Com.Mall
 		/// <param name="goods">Goods.</param>
 		/// <param name="goodsNum">Goods number.</param>
 		/// <param name="errorCode">Error code.</param>
-        public bool TradeGoods(BaseUser user, GoodsData goods, int goodsNum, out TradeErrorCode errorCode)
+        public bool TradeGoods(IUser user, GoodsData goods, int goodsNum, out TradeErrorCode errorCode)
         {
             bool result = false;
             if (_tradeStrategy.TryEnterTraded(goods))
@@ -134,7 +134,7 @@ namespace ZyGames.Framework.Game.Com.Mall
         /// <param name="goodsNum"></param>
         /// <param name="payAmount"></param>
         /// <param name="items"></param>
-        protected virtual void TradeSuccess(BaseUser user, GoodsData goods, int goodsNum, double payAmount, object items)
+        protected virtual void TradeSuccess(IUser user, GoodsData goods, int goodsNum, double payAmount, object items)
         {
 
         }
@@ -156,7 +156,7 @@ namespace ZyGames.Framework.Game.Com.Mall
         /// <param name="amount"></param>
         /// <param name="errorCode"></param>
         /// <returns></returns>
-        protected abstract bool HasTraded(BaseUser user, GoodsData goods, int goodsNum, out double amount, out TradeErrorCode errorCode);
+        protected abstract bool HasTraded(IUser user, GoodsData goods, int goodsNum, out double amount, out TradeErrorCode errorCode);
 
         /// <summary>
         /// 支付代币
@@ -165,7 +165,7 @@ namespace ZyGames.Framework.Game.Com.Mall
         /// <param name="tradeType"></param>
         /// <param name="payAmount"></param>
         /// <returns></returns>
-        protected abstract bool PayAmount(BaseUser user, int tradeType, double payAmount);
+        protected abstract bool PayAmount(IUser user, int tradeType, double payAmount);
 
         /// <summary>
         /// 派送商品
@@ -173,7 +173,7 @@ namespace ZyGames.Framework.Game.Com.Mall
         /// <param name="user"></param>
         /// <param name="items"></param>
         /// <returns></returns>
-        protected abstract bool SendGoods(BaseUser user, object items);
+        protected abstract bool SendGoods(IUser user, object items);
 
 
     }

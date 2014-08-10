@@ -40,7 +40,7 @@ namespace ZyGames.Framework.Game.Com.Generic
         /// 
         /// </summary>
         /// <param name="user"></param>
-        public void Notify(BaseUser user)
+        public void Notify(IUser user)
         {
             int gameId = GameEnvironment.ProductCode;
             int serverId = GameEnvironment.ProductServerId;
