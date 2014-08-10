@@ -35,11 +35,11 @@ namespace ZyGames.Framework.Game.Service
         /// <summary>
         /// 
         /// </summary>
-        protected readonly ActionGetter ParamGetter;
+        protected readonly ActionGetter paramGetter;
         /// <summary>
         /// 
         /// </summary>
-        protected readonly MessageStructure Response;
+        protected readonly MessageStructure response;
 
         /// <summary>
         /// init
@@ -48,8 +48,8 @@ namespace ZyGames.Framework.Game.Service
         /// <param name="response"></param>
         protected RemoteStruct(ActionGetter paramGetter, MessageStructure response)
         {
-            ParamGetter = paramGetter;
-            Response = response;
+            this.paramGetter = paramGetter;
+            this.response = response;
         }
 
         /// <summary>
@@ -110,10 +110,10 @@ namespace ZyGames.Framework.Game.Service
 
         private void WriteRemote()
         {
-            int msgId = ParamGetter.GetMsgId();
-            int actionId = ParamGetter.GetActionId();
+            int msgId = paramGetter.GetMsgId();
+            int actionId = paramGetter.GetActionId();
             var head = new MessageHead(msgId, actionId, ErrorCode, ErrorInfo);
-            Response.WriteBuffer(head);
+            response.WriteBuffer(head);
         }
 
         /// <summary>
@@ -121,10 +121,10 @@ namespace ZyGames.Framework.Game.Service
         /// </summary>
         protected virtual void WriteError()
         {
-            int msgId = ParamGetter.GetMsgId();
-            int actionId = ParamGetter.GetActionId();
+            int msgId = paramGetter.GetMsgId();
+            int actionId = paramGetter.GetActionId();
             var head = new MessageHead(msgId, actionId, (int)MessageError.SystemError, ErrorInfo);
-            Response.WriteBuffer(head);
+            response.WriteBuffer(head);
         }
 
         /// <summary>

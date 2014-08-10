@@ -131,7 +131,6 @@ namespace ZyGames.Framework.Game.Contract
         /// 
         /// </summary>
         /// <param name="session"></param>
-        /// <param name="proxyId"></param>
         public void Bind(GameSession session)
         {
             if (session != null)
