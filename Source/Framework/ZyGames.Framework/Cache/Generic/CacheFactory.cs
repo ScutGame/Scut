@@ -153,7 +153,7 @@ namespace ZyGames.Framework.Cache.Generic
                 if (isRemove && entity == null && type != null)
                 {
                     //临时队列删除Entity
-                    string setId = (isEntityType ? RedisConnectionPool.ConvertKeyFromType(typeName) : redisKey) + ":remove";
+                    string setId = (isEntityType ? RedisConnectionPool.EncodeTypeName(typeName) : redisKey) + ":remove";
                     var data = client.Get<byte[]>(setId);
                     if (data != null)
                     {
@@ -197,12 +197,12 @@ namespace ZyGames.Framework.Cache.Generic
             if (string.IsNullOrEmpty(persionKey))
             {
                 isEntityType = true;
-                redisKey = string.Format("{0}_{1}", RedisConnectionPool.ConvertKeyFromType(typeName), entityKey);
+                redisKey = string.Format("{0}_{1}", RedisConnectionPool.EncodeTypeName(typeName), entityKey);
             }
             else
             {
                 //私有类型
-                redisKey = string.Format("{0}_{1}", RedisConnectionPool.ConvertKeyFromType(typeName), persionKey);
+                redisKey = string.Format("{0}_{1}", RedisConnectionPool.EncodeTypeName(typeName), persionKey);
             }
             string formatString = entityTypeNameFormat;
             if (isEntityType)
@@ -211,7 +211,7 @@ namespace ZyGames.Framework.Cache.Generic
             }
             if (type == null)
             {
-                string entityTypeName = RedisConnectionPool.ConvertTypeFromKey(typeName);
+                string entityTypeName = RedisConnectionPool.DecodeTypeName(typeName);
                 type = Type.GetType(string.Format(formatString, entityTypeName, asmName), false, true);
                 if (Equals(type, null))
                 {
@@ -245,7 +245,7 @@ namespace ZyGames.Framework.Cache.Generic
             {
                 key += "|" + AbstractEntity.CreateKeyCode(keys);
             }
-            string redisKey = string.Format("{0}_{1}", RedisConnectionPool.ConvertKeyFromType(entityType), key);
+            string redisKey = string.Format("{0}_{1}", RedisConnectionPool.EncodeTypeName(entityType), key);
             CacheItemSet itemSet;
             return GetPersonalEntity(redisKey, out itemSet);
         }
@@ -276,7 +276,7 @@ namespace ZyGames.Framework.Cache.Generic
             if (keys.Length == 2 && !string.IsNullOrEmpty(keys[0]))
             {
                 CacheContainer container;
-                string typeName = RedisConnectionPool.ConvertTypeFromKey(keys[0]);
+                string typeName = RedisConnectionPool.DecodeTypeName(keys[0]);
                 if (_writePools != null && _writePools.TryGetValue(typeName, out  container))
                 {
                     string[] childKeys = keys[1].Split('|');

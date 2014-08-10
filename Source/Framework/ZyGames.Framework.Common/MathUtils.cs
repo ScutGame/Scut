@@ -23,6 +23,7 @@ THE SOFTWARE.
 ****************************************************************************/
 using System;
 using System.Collections.Generic;
+using System.Text;
 using System.Text.RegularExpressions;
 using ZyGames.Framework.Common.Security;
 using ZyGames.Framework.Common.Serialization;
@@ -98,6 +99,93 @@ namespace ZyGames.Framework.Common
         public static TimeSpan DiffDate(DateTime date1, DateTime date2)
         {
             return date1 - date2;
+        }
+
+        /// <summary>
+        /// char转成两个字节
+        /// </summary>
+        /// <param name="c"></param>
+        /// <returns></returns>
+        public static byte[] CharToByte(char c)
+        {
+            byte[] b = new byte[2];
+            b[0] = (byte)((c & 0xFF00) >> 8);
+            b[1] = (byte)(c & 0xFF);
+            return b[0] == 0 ? new byte[] { b[1] } : b;
+        }
+
+        /// <summary>
+        /// 使用两个字节转成char
+        /// </summary>
+        /// <param name="bytes"></param>
+        /// <param name="startIndex"></param>
+        /// <returns></returns>
+        public static char ByteToChar(byte[] bytes, int startIndex = 0)
+        {
+            if (bytes == null || bytes.Length == 0)
+            {
+                throw new ArgumentOutOfRangeException("b");
+            }
+            if (startIndex > bytes.Length - 1)
+            {
+                throw new ArgumentOutOfRangeException("startIndex");
+            }
+            return bytes.Length > 1
+                ? (char)(((bytes[startIndex] & 0xFF) << 8) | (bytes[startIndex + 1] & 0xFF))
+                : (char)(bytes[startIndex] & 0xFF);
+        }
+        /// <summary>
+        /// 合并
+        /// </summary>
+        /// <param name="args"></param>
+        /// <returns></returns>
+        public static byte[] Join(params byte[][] args)
+        {
+            Int32 length = 0;
+            foreach (byte[] tempbyte in args)
+            {
+                length += tempbyte.Length;
+            }
+            Byte[] bytes = new Byte[length];
+            Int32 tempLength = 0;
+            foreach (byte[] tempByte in args)
+            {
+                tempByte.CopyTo(bytes, tempLength);
+                tempLength += tempByte.Length;
+            }
+            return bytes;
+        }
+        /// <summary>
+        /// 查找数组中包含另一数组的启始索引
+        /// </summary>
+        /// <param name="bytes"></param>
+        /// <param name="pattern"></param>
+        /// <returns></returns>
+        public static int IndexOf(byte[] bytes, byte[] pattern)
+        {
+            int index = -1;
+            int pos = 0;
+            while (pos < bytes.Length)
+            {
+                if (bytes[pos] == pattern[0])
+                {
+                    index = pos;
+                    for (int i = 1; i < pattern.Length; i++)
+                    {
+                        if (pattern[i] != bytes[pos + i])
+                        {
+                            index = -1;
+                            break;
+                        }
+                    }
+                    if (index > 0)
+                    {
+                        break;
+                    }
+                }
+                pos++;
+            }
+            return index;
         }
 
         /// <summary>

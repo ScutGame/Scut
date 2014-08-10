@@ -43,7 +43,7 @@ namespace ZyGames.Framework.Model
         /// <summary>
         /// 
         /// </summary>
-        protected const char KeyCodeJoinChar = '-';
+        internal protected const char KeyCodeJoinChar = '~';
 
         /// <summary>
         /// 
@@ -60,6 +60,25 @@ namespace ZyGames.Framework.Model
 
         private ObjectAccessor _typeAccessor;
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="keyCode"></param>
+        /// <returns></returns>
+        public static string EncodeKeyCode(string keyCode)
+        {
+            return keyCode.Replace(KeyCodeJoinChar.ToString(), "%45");
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="keyCode"></param>
+        /// <returns></returns>
+        public static string DecodeKeyCode(string keyCode)
+        {
+            return keyCode.Replace("%45", KeyCodeJoinChar.ToString());
+        }
 
         /// <summary>
         /// 
@@ -408,9 +427,9 @@ namespace ZyGames.Framework.Model
             {
                 if (value.Length > 0)
                 {
-                    value += "-";
+                    value += KeyCodeJoinChar;
                 }
-                value += key.ToNotNullString();
+                value += EncodeKeyCode(key.ToNotNullString());
             }
             return value;
         }
@@ -431,7 +450,7 @@ namespace ZyGames.Framework.Model
                     {
                         value += KeyCodeJoinChar;
                     }
-                    value += GetPropertyValue(key).ToNotNullString();
+                    value += EncodeKeyCode(GetPropertyValue(key).ToNotNullString());
                 }
                 if (string.IsNullOrEmpty(value))
                 {
@@ -737,7 +756,7 @@ namespace ZyGames.Framework.Model
             SchemaTable schemaTable;
             if (EntitySchemaSet.TryGet(typeName, out schemaTable))
             {
-                string[] keyValues = keyCode.Split(KeyCodeJoinChar);
+                string[] keyValues = DecodeKeyCode(keyCode).Split(KeyCodeJoinChar);
                 for (int i = 0; i < schemaTable.Keys.Length; i++)
                 {
                     string columnName = schemaTable.Keys[i];

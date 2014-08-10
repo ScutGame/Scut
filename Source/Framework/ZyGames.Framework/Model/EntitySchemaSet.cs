@@ -149,9 +149,9 @@ namespace ZyGames.Framework.Model
         {
             if (string.IsNullOrEmpty(personalKey))
             {
-                return string.Format("{0}", RedisConnectionPool.ConvertKeyFromType(type.FullName));
+                return string.Format("{0}", RedisConnectionPool.EncodeTypeName(type.FullName));
             }
-            return string.Format("{0}_{1}", RedisConnectionPool.ConvertKeyFromType(type.FullName), personalKey);
+            return string.Format("{0}_{1}", RedisConnectionPool.EncodeTypeName(type.FullName), personalKey);
         }
 
         /// <summary>
@@ -687,7 +687,7 @@ namespace ZyGames.Framework.Model
         /// <returns></returns>
         public static bool TryGet(string typeName, out SchemaTable schema)
         {
-            typeName = RedisConnectionPool.ConvertTypeFromKey(typeName);
+            typeName = RedisConnectionPool.DecodeTypeName(typeName);
             return SchemaSet.TryGetValue(typeName, out schema);
         }
 
