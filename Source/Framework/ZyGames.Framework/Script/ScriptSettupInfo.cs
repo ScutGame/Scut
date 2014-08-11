@@ -182,7 +182,7 @@ namespace ZyGames.Framework.Script
         {
             ScriptDecodeHandle handler = DecodeCallback;
             if (handler != null) return handler(source, ext);
-            return "";
+            return source;
         }
     }
 }

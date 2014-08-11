@@ -291,7 +291,7 @@ namespace ZyGames.Framework.Cache.Generic
         /// Send to queue pool
         /// </summary>
         /// <param name="entityList"></param>
-        public static void Send(AbstractEntity[] entityList)
+        public static void Send(params AbstractEntity[] entityList)
         {
             string key = "";
             try
@@ -609,8 +609,7 @@ namespace ZyGames.Framework.Cache.Generic
                 string[] entityKeys = entityTypeKey.Split(',')[0].Split('_');
                 string typeName = entityKeys[0];
                 byte[] entityKeyBytes = RedisConnectionPool.ToByteKey(entityKeys[1]);
-                typeKeyValuePairs.Add(
-                    new KeyValuePair<string, byte[][]>(typeName, new[] { entityKeyBytes, keyBytes, headBytes })
+                typeKeyValuePairs.Add(new KeyValuePair<string, byte[][]>(typeName, new[] { entityKeyBytes, keyBytes, headBytes })
                 );
             }
             var sqlList = new List<KeyValuePair<string, KeyValuePair<byte[], long>>>();

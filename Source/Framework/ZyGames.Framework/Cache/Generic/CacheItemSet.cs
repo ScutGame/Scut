@@ -192,7 +192,7 @@ namespace ZyGames.Framework.Cache.Generic
 
         private void PutToChangeKeys(AbstractEntity entity)
         {
-            DataSyncQueueManager.Send(new[] { entity });
+            DataSyncQueueManager.Send(entity);
         }
 
         /// <summary>
