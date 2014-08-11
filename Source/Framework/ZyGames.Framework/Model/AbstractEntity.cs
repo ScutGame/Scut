@@ -43,7 +43,7 @@ namespace ZyGames.Framework.Model
         /// <summary>
         /// 
         /// </summary>
-        internal protected const char KeyCodeJoinChar = '~';
+        internal protected const char KeyCodeJoinChar = '-';
 
         /// <summary>
         /// 

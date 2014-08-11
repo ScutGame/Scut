@@ -171,7 +171,6 @@ namespace ZyGames.Framework.Game.Runtime
             }
             ScriptEngines.RegisterModelChangedBefore(OnModelChangeBefore);
             ScriptEngines.RegisterModelChangedAfter(OnModelChangeAtfer);
-
             ScriptEngines.Initialize();
             Language.SetLang();
             CacheFactory.Initialize(cacheSetting);

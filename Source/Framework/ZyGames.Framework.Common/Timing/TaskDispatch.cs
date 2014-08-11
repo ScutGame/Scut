@@ -37,6 +37,15 @@ namespace ZyGames.Framework.Common.Timing
     {
         private static object threadLock = new object();
         private static TaskDispatch _TaskDispatch = null;
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public bool Running
+        {
+            get { return _running; }
+        }
+
         /// <summary>
         /// 
         /// </summary>

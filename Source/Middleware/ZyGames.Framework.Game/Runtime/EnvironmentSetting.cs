@@ -29,15 +29,20 @@ using System.Net;
 using System.Net.Sockets;
 using System.Reflection;
 using System.Text;
+using Microsoft.Scripting.Hosting;
+using ServiceStack.Text;
 using ZyGames.Framework.Cache.Generic;
 using ZyGames.Framework.Common.Configuration;
+using ZyGames.Framework.Common.Log;
 using ZyGames.Framework.Game.Contract;
+using ZyGames.Framework.Script;
 
 namespace ZyGames.Framework.Game.Runtime
 {
     /// <summary>
     /// The environment configuration information.
     /// </summary>
+    [Serializable]
     public class EnvironmentSetting
     {
         private static readonly string productDesEnKey;
@@ -57,6 +62,7 @@ namespace ZyGames.Framework.Game.Runtime
         private static readonly string actionTypeName;
         private static readonly string scriptTypeName;
         private static readonly string entityAssemblyName;
+        private static readonly string decodeFuncTypeName;
         private static readonly string remoteTypeName;
 
         static EnvironmentSetting()
@@ -92,8 +98,11 @@ namespace ZyGames.Framework.Game.Runtime
             }
             scriptTypeName = ConfigUtils.GetSetting("Game.Action.Script.TypeName", "Game.Script.Action{0}");
             entityAssemblyName = ConfigUtils.GetSetting("Game.Entity.AssemblyName");
+            decodeFuncTypeName = ConfigUtils.GetSetting("Game.Script.DecodeFunc.TypeName", "");
 
             remoteTypeName = ConfigUtils.GetSetting("Game.Remote.Script.TypeName", "Game.Script.Remote.{0}");
+
+            LoadDecodeFunc();
         }
 
         private static string GetLocalIp()
@@ -135,12 +144,41 @@ namespace ZyGames.Framework.Game.Runtime
             RemoteTypeName = remoteTypeName;
             try
             {
-                EntityAssembly = Assembly.LoadFrom(entityAssemblyName);
+                if (!string.IsNullOrEmpty(entityAssemblyName))
+                {
+                    EntityAssembly = Assembly.LoadFrom(entityAssemblyName);
+                }
             }
-            catch { }
-
+            catch (Exception ex)
+            {
+                TraceLog.WriteError("Load entity assembly error:\"{0}\" {1}", entityAssemblyName, ex);
+            }
             ActionDispatcher = new ScutActionDispatcher();
         }
+
+        private static dynamic _scriptDecodeTarget;
+        private static void LoadDecodeFunc()
+        {
+            try
+            {
+                if (string.IsNullOrEmpty(decodeFuncTypeName)) return;
+                var type = Type.GetType(decodeFuncTypeName, true, true);
+                _scriptDecodeTarget = type.CreateInstance();
+                ScriptEngines.SettupInfo.DecodeCallback += DecodeCallback;
+            }
+            catch (Exception ex)
+            {
+                TraceLog.WriteError("Load DecodeFunc type error:\"{0}\" {1}", decodeFuncTypeName, ex);
+            }
+        }
+
+        private static string DecodeCallback(string source, string ext)
+        {
+            if (_scriptDecodeTarget == null)
+                return "";
+            return _scriptDecodeTarget.DecodeCallback(source, ext);
+        }
+
 
         /// <summary>
         /// Request signature key.

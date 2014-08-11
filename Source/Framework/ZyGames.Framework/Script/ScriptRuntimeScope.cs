@@ -133,13 +133,9 @@ namespace ZyGames.Framework.Script
         /// <param name="source">脚本文件</param>
         /// <param name="ext">扩展名</param>
         /// <returns></returns>
-        protected virtual string Decode(string source, string ext)
+        protected string Decode(string source, string ext)
         {
-            if (SettupInfo.DecodeCallback != null)
-            {
-                return SettupInfo.DecodeCallback(source, ext);
-            }
-            return source;
+            return SettupInfo.OnDecodeCallback(source, ext);
         }
 
         /// <summary>

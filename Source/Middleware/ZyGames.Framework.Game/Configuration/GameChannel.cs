@@ -36,7 +36,10 @@ namespace ZyGames.Framework.Game.Configuration
         channelDanle,
         channel10086,
         channel360,
-        channelMIUI
+        channelMIUI,
+        channelAnySDK,
+        channelTencent,
+        channelFeiliu,
     }
     /// <summary>
     /// 游戏渠道对象
@@ -78,6 +81,11 @@ namespace ZyGames.Framework.Game.Configuration
                     break;
                 case ChannelType.channelMIUI:
                     Url = "http://mis.migc.xiaomi.com/api/biz/service/verifySession.do";
+                    break;
+                case ChannelType.channelAnySDK:
+                    Url = "http://oauth.anysdk.com/api/User/LoginOauth/";
+                    break;
+                case ChannelType.channelTencent:
                     break;
                 default:
                     break;

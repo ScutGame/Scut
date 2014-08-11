@@ -250,7 +250,6 @@ namespace ZyGames.Framework.RPC.IO
             }
             string paramStr = sb.ToString().TrimEnd('&');
             string sign = EncryptSign(paramStr);
-            TraceLog.ReleaseWriteDebug("{0} {1}",paramStr,sign);
             paramStr += string.Format("&{0}={1}", signName, sign);
             return paramStr;
         }

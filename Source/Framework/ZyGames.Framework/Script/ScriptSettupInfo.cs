@@ -31,6 +31,12 @@ using ZyGames.Framework.Common.Configuration;
 namespace ZyGames.Framework.Script
 {
     /// <summary>
+    /// 
+    /// </summary>
+    /// <returns></returns>
+    public delegate string ScriptDecodeHandle(string source, string ext);
+
+    /// <summary>
     /// Script settup info
     /// </summary>
     [Serializable]
@@ -158,11 +164,6 @@ namespace ZyGames.Framework.Script
         public List<string> ReferencedAssemblyNames { get; set; }
 
         /// <summary>
-        /// 脚本解码回调方法
-        /// </summary>
-        public Func<string, string, string> DecodeCallback { get; set; }
-
-        /// <summary>
         /// Register model script has changed before event.
         /// </summary>
         public Action<Assembly> ModelChangedBefore { get; set; }
@@ -171,5 +172,17 @@ namespace ZyGames.Framework.Script
         /// Register model script has changed after event.
         /// </summary>
         public Action<Assembly> ModelChangedAfter { get; set; }
+
+        /// <summary>
+        /// 脚本解码回调方法
+        /// </summary>
+        public event ScriptDecodeHandle DecodeCallback;
+
+        internal virtual string OnDecodeCallback(string source, string ext)
+        {
+            ScriptDecodeHandle handler = DecodeCallback;
+            if (handler != null) return handler(source, ext);
+            return "";
+        }
     }
 }
