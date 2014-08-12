@@ -37,34 +37,34 @@ namespace ZyGames.Framework.Game.Contract.Action
     /// </summary>
     public abstract class ReAccessTokenAction : BaseStruct
     {
-		/// <summary>
-		/// The access token360.
-		/// </summary>
+        /// <summary>
+        /// The access token360.
+        /// </summary>
         protected string AccessToken360;
         private string RetailID = string.Empty;
         private string RefeshToken = string.Empty;
         private string Scope = string.Empty;
-		/// <summary>
-		/// Initializes a new instance of the <see cref="ZyGames.Framework.Game.Contract.Action.ReAccessTokenAction"/> class.
-		/// </summary>
-		/// <param name="actionId">Action identifier.</param>
-		/// <param name="httpGet">Http get.</param>
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ZyGames.Framework.Game.Contract.Action.ReAccessTokenAction"/> class.
+        /// </summary>
+        /// <param name="actionId">Action identifier.</param>
+        /// <param name="httpGet">Http get.</param>
         protected ReAccessTokenAction(short actionId, ActionGetter httpGet)
             : base(actionId, httpGet)
         {
 
         }
-		/// <summary>
-		/// 创建返回协议内容输出栈
-		/// </summary>
+        /// <summary>
+        /// 创建返回协议内容输出栈
+        /// </summary>
         public override void BuildPacket()
         {
             PushIntoStack(AccessToken360);
         }
-		/// <summary>
-		/// 接收用户请求的参数，并根据相应类进行检测
-		/// </summary>
-		/// <returns></returns>
+        /// <summary>
+        /// 接收用户请求的参数，并根据相应类进行检测
+        /// </summary>
+        /// <returns></returns>
         public override bool GetUrlElement()
         {
             if (actionGetter.GetString("RetailID", ref RetailID)
@@ -76,10 +76,10 @@ namespace ZyGames.Framework.Game.Contract.Action
             return false;
         }
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <returns></returns>
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
         public override bool CheckAction()
         {
             if (!GameEnvironment.IsRunning)
@@ -91,25 +91,21 @@ namespace ZyGames.Framework.Game.Contract.Action
             return true;
         }
 
-        private IUser GetUser()
-        {
-            return UserFactory == null ? null : UserFactory(UserId);
-        }
-		/// <summary>
-		/// 子类实现Action处理
-		/// </summary>
-		/// <returns></returns>
+        /// <summary>
+        /// 子类实现Action处理
+        /// </summary>
+        /// <returns></returns>
         public override bool TakeAction()
         {
-            var user = GetUser();
-            if (user!=null)
+            var user = Current.User;
+            if (user != null)
             {
                 AccessToken360 = user.Token ?? AccessToken360;
             }
             string appKey = "";
             string appSecret = "";
             string url = "{0}?grant_type=refresh_token&refresh_token={1}&client_id={2}&client_secret={3}&scope={4}";
-            
+
             GameChannel gameChannel = ZyGameBaseConfigManager.GameSetting.GetChannelSetting(ChannelType.channel360);
             if (gameChannel != null)
             {

@@ -227,6 +227,11 @@ namespace ZyGames.Framework.Data
             return result;
         }
 
+        /// <summary>
+        /// Sql process queue
+        /// </summary>
+        /// <param name="identityId"></param>
+        /// <returns></returns>
         internal static string GetSqlQueueKey(int identityId)
         {
             int index = identityId % SqlSyncQueueNum;

@@ -136,7 +136,6 @@
     <Compile Include="Configuration\ZyGameBaseConfigManager.cs" />
     <Compile Include="Context\BaseUser.cs" />
     <Compile Include="Context\EncryptionManager.cs" />
-    <Compile Include="Context\GameContext.cs" />
     <Compile Include="Context\HttpRequestManager.cs" />
     <Compile Include="Context\IUser.cs" />
     <Compile Include="Contract\ActionEnum.cs" />

@@ -288,6 +288,52 @@ namespace ZyGames.Framework.Cache.Generic
         #endregion
 
         /// <summary>
+        /// Send entity to db saved.
+        /// </summary>
+        /// <param name="entityList"></param>
+        public static void SendToDb(params AbstractEntity[] entityList)
+        {
+            string key = "";
+            try
+            {
+                if (entityList == null || entityList.Length == 0) return;
+
+                var sender = new SqlDataSender();
+                var groupList = entityList.GroupBy(t => t.GetIdentityId());
+                var sqlList = new List<KeyValuePair<string, KeyValuePair<byte[], long>>>();
+
+                foreach (var g in groupList)
+                {
+                    var valueList = g.ToList();
+
+                    foreach (var entity in valueList)
+                    {
+                        if (entity == null) continue;
+
+                        SqlStatement statement = sender.GenerateSqlQueue(entity);
+                        var sqlValueBytes = ProtoBufUtils.Serialize(statement);
+                        string sqlQueueKey = SqlStatementManager.GetSqlQueueKey(statement.IdentityID);
+                        sqlList.Add(new KeyValuePair<string, KeyValuePair<byte[], long>>(sqlQueueKey,
+                            new KeyValuePair<byte[], long>(sqlValueBytes, DateTime.Now.Ticks)));
+                    }
+                }
+                RedisConnectionPool.Process(client =>
+                {
+                    var groupSqlList = sqlList.GroupBy(t => t.Key);
+                    foreach (var g in groupSqlList)
+                    {
+                        var pairs = g.Select(t => t.Value).ToList();
+                        client.ZAdd(g.Key, pairs);
+                    }
+                });
+            }
+            catch (Exception ex)
+            {
+                TraceLog.WriteError("Send To Db key:{0} error:{1}", key, ex);
+            }
+        }
+
+        /// <summary>
         /// Send to queue pool
         /// </summary>
         /// <param name="entityList"></param>
@@ -328,6 +374,11 @@ namespace ZyGames.Framework.Cache.Generic
             }
         }
 
+        /// <summary>
+        /// Sync to redis queue's key
+        /// </summary>
+        /// <param name="identityId"></param>
+        /// <returns></returns>
         private static string GetRedisSyncQueueKey(int identityId)
         {
             int queueIndex = identityId % DataSyncQueueNum;
@@ -345,6 +396,11 @@ namespace ZyGames.Framework.Cache.Generic
                 SqlWaitSyncQueueNum > 1 ? ":" + queueIndex : "");
             return queueKey;
         }
+
+        /// <summary>
+        /// Check to be synchronized queue of redis
+        /// </summary>
+        /// <param name="state"></param>
         private static void OnCheckRedisSyncQueue(object state)
         {
             int identity = (int)state;
@@ -401,7 +457,12 @@ namespace ZyGames.Framework.Cache.Generic
             }
         }
 
-
+        /// <summary>
+        /// Process synchronized queue of redis
+        /// </summary>
+        /// <param name="sysnWorkingQueueKey"></param>
+        /// <param name="keys"></param>
+        /// <param name="values"></param>
         private static void DoProcessRedisSyncQueue(string sysnWorkingQueueKey, byte[][] keys, byte[][] values)
         {
             try
@@ -493,7 +554,10 @@ namespace ZyGames.Framework.Cache.Generic
             }
         }
 
-
+        /// <summary>
+        /// Check to be synchronized wait queue of Sql
+        /// </summary>
+        /// <param name="state"></param>
         private static void OnCheckSqlWaitSyncQueue(object state)
         {
             int identity = (int)state;
@@ -575,6 +639,12 @@ namespace ZyGames.Framework.Cache.Generic
             }
         }
 
+        /// <summary>
+        /// Process synchronized wait queue of Sql
+        /// </summary>
+        /// <param name="waitQueueKey"></param>
+        /// <param name="keys"></param>
+        /// <param name="values"></param>
         private static void DoProcessSqlWaitSyncQueue(string waitQueueKey, byte[][] keys, byte[][] values)
         {
             try
@@ -583,7 +653,7 @@ namespace ZyGames.Framework.Cache.Generic
 
                 RedisConnectionPool.Process(client =>
                 {
-                    var sqlList = FindEntityFromRedis(sqlSender, client, keys, values);
+                    var sqlList = GenerateSqlFrom(sqlSender, client, keys, values);
                     var groupSqlList = sqlList.GroupBy(t => t.Key);
                     foreach (var g in groupSqlList)
                     {
@@ -598,7 +668,15 @@ namespace ZyGames.Framework.Cache.Generic
             }
         }
 
-        private static List<KeyValuePair<string, KeyValuePair<byte[], long>>> FindEntityFromRedis(SqlDataSender sender, RedisClient client, byte[][] keys, byte[][] values)
+        /// <summary>
+        /// Generate Sql statements from the Keys-Values
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="client"></param>
+        /// <param name="keys"></param>
+        /// <param name="values"></param>
+        /// <returns></returns>
+        private static IEnumerable<KeyValuePair<string, KeyValuePair<byte[], long>>> GenerateSqlFrom(SqlDataSender sender, RedisClient client, byte[][] keys, byte[][] values)
         {
             var typeKeyValuePairs = new List<KeyValuePair<string, byte[][]>>();
             for (int i = 0; i < keys.Length; i++)
@@ -700,6 +778,7 @@ namespace ZyGames.Framework.Cache.Generic
             Buffer.BlockCopy(buffer, headBytes.Length, valBytes, 0, valBytes.Length);
             DecodeHeadBytes(headBytes, out identity, out state);
         }
+
         private static void DecodeHeadBytes(byte[] buffer, out int identity, out int state)
         {
             var idBytes = new byte[4];

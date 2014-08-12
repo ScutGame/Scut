@@ -22,8 +22,6 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ****************************************************************************/
 using System;
-using ZyGames.Framework.Cache.Generic;
-using ZyGames.Framework.Game.Context;
 using ZyGames.Framework.Game.Contract;
 using ZyGames.Framework.Game.Runtime;
 using ZyGames.Framework.Script;
@@ -34,10 +32,6 @@ namespace Game.Script
     {
         public MainClass()
         {
-        }
-        protected override IUser GetUser(int userId)
-        {
-            return (IUser)CacheFactory.GetPersonalEntity("GameServer.Model.GameUser", userId.ToString(), userId);
         }
 
         protected override void OnStartAffer()

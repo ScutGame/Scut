@@ -63,15 +63,11 @@ namespace ZyGames.Framework.Game.Service
             }
             set { _userId = value; }
         }
-        /// <summary>
-        /// User创建工厂
-        /// </summary>
-        public Func<int, IUser> UserFactory { get; set; }
 
         /// <summary>
-        /// 当前游戏上下文对象
+        /// 当前游戏会话
         /// </summary>
-        public GameContext Current { get; private set; }
+        public GameSession Current { get; private set; }
 
         /// <summary>
         /// 兼容子类变量名
@@ -147,19 +143,11 @@ namespace ZyGames.Framework.Game.Service
                 St = st;
             }
             Sid = actionGetter.GetSessionId();
-            InitContext(Sid, actionId, UserId);
+            Current = GameSession.Get(Sid) ?? GameSession.Get(_userId);
             InitAction();
             InitChildAction();
         }
 
-        private void InitContext(string sessionId, int actionId, int userId)
-        {
-            Current = GameContext.GetInstance(sessionId, actionId, userId);
-            if (userId > 0 && UserFactory != null)
-            {
-                Current.User = UserFactory(userId);
-            }
-        }
         /// <summary>
         /// 
         /// </summary>
@@ -167,8 +155,8 @@ namespace ZyGames.Framework.Game.Service
         public ILocking RequestLock()
         {
             ILocking strategy = null;
-            strategy = Current.MonitorLock.Lock();
-            if (strategy == null || !strategy.TryEnterLock())
+            if (Current != null) strategy = Current.MonitorLock.Lock();
+            if (strategy != null && !strategy.TryEnterLock())
             {
                 ErrorCode = Language.Instance.ErrorCode;
                 if (!IsRealse) ErrorInfo = Language.Instance.ServerBusy;
@@ -212,10 +200,6 @@ namespace ZyGames.Framework.Game.Service
                     return false;
                 }
                 result = TakeAction();
-                if (Current != null && Current.UserId == 0 && UserId > 0)
-                {
-                    Current.SetValue(UserId);
-                }
                 TakeActionAffter(result);
             }
             catch (Exception ex)

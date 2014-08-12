@@ -40,13 +40,7 @@ namespace ZyGames.Framework.Game.Contract
     /// </summary>
     public abstract class GameBaseHost
     {
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="userId"></param>
-        /// <returns></returns>
-        protected abstract IUser GetUser(int userId);
-
+        
         /// <summary>
         /// 
         /// </summary>
@@ -68,7 +62,7 @@ namespace ZyGames.Framework.Game.Contract
             if (GameEnvironment.IsRunning)
             {
                 OnRequested(actionGetter, response);
-                ActionFactory.Request(actionGetter, response, GetUser);
+                ActionFactory.Request(actionGetter, response);
             }
             else
             {

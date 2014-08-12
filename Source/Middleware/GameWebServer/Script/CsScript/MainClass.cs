@@ -24,9 +24,5 @@ namespace Game.Script
             base.OnRequested(actionGetter, response);
         }
 
-        protected override IUser GetUser(int userId)
-        {
-            return (IUser)CacheFactory.GetPersonalEntity("GameServer.Model.GameUser", userId.ToString(), userId);
-        }
     }
 }

@@ -317,6 +317,7 @@ namespace ZyGames.Framework.Game.Contract
                     if (MathUtils.Now.Subtract(package.ReceiveTime).TotalSeconds >= 30)
                     {
                         Interlocked.Increment(ref timeoutDropNum);
+                        TraceLog.WriteError("package action-{0} timeout error, url param:{1}", package.ActionId, package.UrlParam);
                         continue;
                     }
                     requestQueue.Enqueue(package);

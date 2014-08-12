@@ -86,7 +86,9 @@ namespace ZyGames.Framework.Game.Sns
                 return false;
             }
         }
-
+        /// <summary>
+        /// 
+        /// </summary>
         public class AnySDKResult
         {
             /// <summary>
@@ -108,6 +110,9 @@ namespace ZyGames.Framework.Game.Sns
 
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
         public class AnySDKResultdata
         {
             /// <summary>

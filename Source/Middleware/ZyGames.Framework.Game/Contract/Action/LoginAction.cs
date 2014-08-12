@@ -23,6 +23,7 @@ THE SOFTWARE.
 ****************************************************************************/
 using System;
 using ZyGames.Framework.Common;
+using ZyGames.Framework.Game.Context;
 using ZyGames.Framework.Game.Lang;
 using ZyGames.Framework.Game.Runtime;
 using ZyGames.Framework.Game.Service;
@@ -182,30 +183,27 @@ namespace ZyGames.Framework.Game.Contract.Action
                 UserId = Uid.ToInt();
                 PassportId = login.PassportID;
                 UserType = login.UserType;
-                var session = GameSession.Get(Sid);
-                if (session != null)
-                {
-                    session.BindIdentity(UserId);
-                }
-                
+
                 SetParameter(login);
-                if (!GetError() && DoSuccess(UserId))
+                IUser user;
+                if (!GetError() && DoSuccess(UserId, out user))
                 {
-                    if (UserFactory != null)
+                    var session = GameSession.Get(Sid);
+                    if (session != null)
                     {
-                        var user = UserFactory(UserId);
                         if (user != null)
                         {
-                            Current.User = user;
+                            session.Bind(user);
                         }
+                        return true;
                     }
-                    return true;
                 }
             }
             else
             {
                 Uid = string.Empty;
                 Sid = string.Empty;
+                UserId = 0;
                 ErrorCode = Language.Instance.ErrorCode;
                 ErrorInfo = Language.Instance.PasswordError;
             }
@@ -227,11 +225,13 @@ namespace ZyGames.Framework.Game.Contract.Action
         {
             return true;
         }
+
         /// <summary>
         /// Dos the success.
         /// </summary>
         /// <returns><c>true</c>, if success was done, <c>false</c> otherwise.</returns>
         /// <param name="userId">User identifier.</param>
-        protected abstract bool DoSuccess(int userId);
+        /// <param name="user"></param>
+        protected abstract bool DoSuccess(int userId, out IUser user);
     }
 }
