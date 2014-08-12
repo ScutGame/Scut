@@ -69,12 +69,19 @@ QQ Group: 138266675<br />
 
 Update Log
 ----------------
-###Version: 6.5.8.6 (2014-7-18) Stable
+###Version: 6.7.8.7 (2014-8-15) Stable
 ```
-1.Add the load from the Redis data to the Cache can be set to filter;
-2.Modify the Web project can not support custom protocol;
-3.Modify the Share type of Model in Redis null will try to load data from DB;
-4.Modify the Model namespace has '_' character when the data access in Redis;
+增加服务器之间http/socket通讯支持
+增加请求支持单向模式，不输出响应
+增加ulong、uint、ushort的通讯参数类型
+增加脚本加密发布，提供ScutSecurity类库支持
+增加EventNotifier类管理异步与超时处理事件
+增加数据库表名支持DateTime格式化生成规则
+增加数据库字段支持blob类型存储
+增加Model字段支持ulong,ushort,uint类型
+
+修改优化Session与User对象
+修改Redis多个Key时加载数据的问题
 ```
 old version [more](http://scutgame.com/log).
 
