@@ -26,7 +26,6 @@ using System.Collections;
 using System.Text;
 using System.Web;
 using ZyGames.Framework.Common;
-using ZyGames.Framework.Common.Log;
 
 namespace ZyGames.Framework.RPC.IO
 {
@@ -35,7 +34,10 @@ namespace ZyGames.Framework.RPC.IO
     /// </summary>
     public class RequestParam
     {
-        private readonly string _signKey;
+        /// <summary>
+        /// Get or set signKey
+        /// </summary>
+        public static string SignKey { get; set; }
 
         class myCultureComparer : IEqualityComparer
         {
@@ -68,9 +70,8 @@ namespace ZyGames.Framework.RPC.IO
         /// <summary>
         /// Initializes a new instance of the <see cref="ZyGames.Framework.RPC.IO.RequestParam"/> class.
         /// </summary>
-        public RequestParam(string signKey = "")
+        public RequestParam()
         {
-            _signKey = signKey;
             _params = new Hashtable(3, (float).8, new myCultureComparer());
             _encoding = Encoding.UTF8;
         }
@@ -272,7 +273,7 @@ namespace ZyGames.Framework.RPC.IO
         /// <returns></returns>
         protected virtual string EncryptSign(string sign)
         {
-            return SignUtils.EncodeSign(sign, _signKey);
+            return SignUtils.EncodeSign(sign, SignKey);
         }
     }
 }

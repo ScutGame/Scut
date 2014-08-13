@@ -26,6 +26,7 @@ using System.Collections.Generic;
 using System.Linq;
 using ZyGames.Framework.Cache.Generic.Pool;
 using ZyGames.Framework.Common;
+using ZyGames.Framework.Common.Serialization;
 using ZyGames.Framework.Model;
 
 namespace ZyGames.Framework.Cache.Generic
@@ -48,7 +49,7 @@ namespace ZyGames.Framework.Cache.Generic
         /// </summary>
         public static void Reset()
         {
-            _momoryPools = new CachePool(null, null, false);
+            _momoryPools = new CachePool(null, null, false, new ProtobufCacheSerializer());
         }
 
         private CacheContainer _container;

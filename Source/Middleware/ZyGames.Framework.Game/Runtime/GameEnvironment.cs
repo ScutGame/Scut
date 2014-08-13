@@ -107,9 +107,9 @@ namespace ZyGames.Framework.Game.Runtime
         /// <summary>
         /// Initialize entity cache.
         /// </summary>
-        public static void InitializeCache()
+        public static void InitializeCache(ICacheSerializer serializer)
         {
-            CacheFactory.Initialize(new CacheSetting());
+            CacheFactory.Initialize(new CacheSetting(), serializer);
         }
 
         /// <summary>
@@ -141,7 +141,7 @@ namespace ZyGames.Framework.Game.Runtime
                 TraceLog.WriteError(error);
                 return;
             }
-            RedisConnectionPool.Initialize();
+            RedisConnectionPool.Initialize(_setting.Serializer);
             if (!RedisConnectionPool.CheckConnect())
             {
                 string error = string.Format("Error: the redis server is not started.");
@@ -173,7 +173,7 @@ namespace ZyGames.Framework.Game.Runtime
             ScriptEngines.RegisterModelChangedAfter(OnModelChangeAtfer);
             ScriptEngines.Initialize();
             Language.SetLang();
-            CacheFactory.Initialize(cacheSetting);
+            CacheFactory.Initialize(cacheSetting, _setting.Serializer);
             EntitySchemaSet.StartCheckTableTimer();
             Global = new ContextCacheSet<CacheItem>("__gameenvironment_global");
             IsRunning = true;

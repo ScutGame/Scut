@@ -154,6 +154,23 @@ namespace ZyGames.Framework.Cache.Generic
         /// <summary>
         /// 
         /// </summary>
+        /// <param name="collection"></param>
+        public void AddRange(IList<T> collection)
+        {
+            lock (_syncRoot)
+            {
+                foreach (var item in collection)
+                {
+                    AddChildrenListener(item);
+                }
+                _list.AddRange(collection);
+            }
+            Notify(this, CacheItemChangeType.Add, PropertyName);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
         /// <param name="item"></param>
         public void Add(T item)
         {

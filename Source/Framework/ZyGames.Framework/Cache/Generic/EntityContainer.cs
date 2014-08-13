@@ -179,6 +179,23 @@ namespace ZyGames.Framework.Cache.Generic
             });
         }
 
+        public T TakeEntityFromKey(string key)
+        {
+            T value = default(T);
+            string entityKey = key;
+            Container.Foreach<CacheItemSet>((k, itemSet) =>
+            {
+                BaseCollection enityGroup = (BaseCollection)itemSet.GetItem();
+                if (enityGroup.ContainsKey(entityKey))
+                {
+                    value = enityGroup[entityKey] as T;
+                    return false;
+                }
+                return true;
+            });
+            return value;
+        }
+
         /// <summary>
         /// 遍历
         /// </summary>
@@ -418,6 +435,7 @@ namespace ZyGames.Framework.Cache.Generic
             itemSet.OnLoadSuccess();
             return true;
         }
+
 
         private CacheItemSet CreateItemSet(CacheType cacheType, int periodTime)
         {

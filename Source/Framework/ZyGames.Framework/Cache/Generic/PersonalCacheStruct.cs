@@ -101,6 +101,19 @@ namespace ZyGames.Framework.Cache.Generic
             TryFindKey(personalId, out data, keys);
             return data;
         }
+
+        /// <summary>
+        /// 取子类的Key,不需要personalId,不加载数据
+        /// </summary>
+        /// <param name="keys"></param>
+        /// <returns></returns>
+        public T TakeSubKey(params object[] keys)
+        {
+            string key = AbstractEntity.CreateKeyCode(keys);
+            return DataContainer.TakeEntityFromKey(key);
+        }
+
+
         /// <summary>
         /// 
         /// </summary>
@@ -211,7 +224,7 @@ namespace ZyGames.Framework.Cache.Generic
         }
 
         /// <summary>
-        /// 在整个缓存中查找
+        /// 在整个缓存中查找,不加载数据
         /// </summary>
         /// <param name="match">查找匹配条件</param>
         /// <returns></returns>

@@ -73,6 +73,7 @@ namespace ZyGames.Framework.Cache.Generic
         private const int DefSqlSyncWaitQueueNum = 2;
         private const int DefDataSyncQueueNum = 2;
         private static System.Action<string, byte[][], byte[][]> _asyncSendHandle;
+        private static ICacheSerializer _serializer { get; set; }
 
         /// <summary>
         /// Data sync queue num
@@ -94,6 +95,7 @@ namespace ZyGames.Framework.Cache.Generic
         static DataSyncQueueManager()
         {
             _asyncSendHandle += OnAsyncSend;
+            _serializer = new ProtobufCacheSerializer();
             DataSyncQueueNum = ConfigUtils.GetSetting("DataSyncQueueNum", DefDataSyncQueueNum);
             if (DataSyncQueueNum < 1) DataSyncQueueNum = DefDataSyncQueueNum;
             SqlWaitSyncQueueNum = ConfigUtils.GetSetting("SqlWaitSyncQueueNum", DefSqlSyncWaitQueueNum);
@@ -120,8 +122,10 @@ namespace ZyGames.Framework.Cache.Generic
         /// Start
         /// </summary>
         /// <param name="setting"></param>
-        public static void Start(CacheSetting setting)
+        /// <param name="serializer"></param>
+        public static void Start(CacheSetting setting, ICacheSerializer serializer)
         {
+            _serializer = serializer;
             _queueWatchTimers = new Timer[DataSyncQueueNum];
             for (int i = 0; i < DataSyncQueueNum; i++)
             {
@@ -362,7 +366,7 @@ namespace ZyGames.Framework.Cache.Generic
                             BufferUtils.GetBytes(idBytes.Length + stateBytes.Length),
                             idBytes,
                             stateBytes,
-                            ProtoBufUtils.Serialize(entity));
+                            _serializer.Serialize(entity));
                         index++;
                     }
                     _asyncSendHandle.BeginInvoke(queueKey, keyBytes, valueBytes, null, null);
@@ -738,7 +742,7 @@ namespace ZyGames.Framework.Cache.Generic
                         }
                         else if (buffer != null)
                         {
-                            entity = ProtoBufUtils.Deserialize(buffer, type) as AbstractEntity;
+                            entity = _serializer.Deserialize(buffer, type) as AbstractEntity;
                         }
                         if (entity != null)
                         {

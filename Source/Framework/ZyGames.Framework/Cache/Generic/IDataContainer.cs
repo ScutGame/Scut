@@ -81,10 +81,16 @@ namespace ZyGames.Framework.Cache.Generic
         bool TryGetCache(string key, out CacheItemSet itemSet);
 
         /// <summary>
+        /// 遍历取
+        /// </summary>
+        T TakeEntityFromKey(string key);
+
+        /// <summary>
         /// 遍历实体
         /// </summary>
         /// <param name="func">遍历项委托方法，返回值为:false结束遍历</param>
         void ForeachEntity(Func<string, T, bool> func);
+
 
         /// <summary>
         /// 遍历

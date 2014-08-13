@@ -25,6 +25,7 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using ProtoBuf;
+using ZyGames.Framework.Common.Serialization;
 using ZyGames.Framework.Net;
 
 namespace ZyGames.Framework.Cache.Generic.Pool
@@ -38,8 +39,8 @@ namespace ZyGames.Framework.Cache.Generic.Pool
         private readonly bool _isReadOnly;
         private ConcurrentDictionary<string, CacheContainer> _cacheStruct;
 
-        public CachePool(ITransponder dbTransponder, ITransponder redisTransponder, bool isReadOnly)
-            : base(dbTransponder, redisTransponder)
+        public CachePool(ITransponder dbTransponder, ITransponder redisTransponder, bool isReadOnly, ICacheSerializer serializer)
+            : base(dbTransponder, redisTransponder, serializer)
         {
             _isReadOnly = isReadOnly;
             _cacheStruct = new ConcurrentDictionary<string, CacheContainer>();

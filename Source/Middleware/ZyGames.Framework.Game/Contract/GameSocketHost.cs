@@ -22,7 +22,6 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ****************************************************************************/
 using System;
-using System.Collections.Concurrent;
 using System.IO;
 using System.Net;
 using System.Threading;
@@ -34,7 +33,6 @@ using ZyGames.Framework.Game.Runtime;
 using ZyGames.Framework.Game.Service;
 using ZyGames.Framework.RPC.Sockets;
 using ZyGames.Framework.RPC.IO;
-using ZyGames.Framework.RPC.Sockets.Threading;
 
 namespace ZyGames.Framework.Game.Contract
 {
@@ -44,12 +42,7 @@ namespace ZyGames.Framework.Game.Contract
     public abstract class GameSocketHost : GameBaseHost
     {
         private static int httpRequestTimeout = ConfigUtils.GetSetting("Game.Http.Timeout", "120000").ToInt();
-        private ConcurrentQueue<RequestPackage> requestQueue = new ConcurrentQueue<RequestPackage>();
-        private ConcurrentQueue<RequestPackage> lockedQueue = new ConcurrentQueue<RequestPackage>();
-
-        private ManualResetEvent singal = new ManualResetEvent(false);
-        private Thread queueProcessThread;
-        private SmartThreadPool threadPool;
+        //private SmartThreadPool threadPool;
         private SocketListener socketLintener;
         private HttpListener httpListener;
 
@@ -57,30 +50,7 @@ namespace ZyGames.Framework.Game.Contract
         /// The enable http.
         /// </summary>
         protected bool EnableHttp;
-        /// <summary>
-        /// The receive number.
-        /// </summary>
-        internal protected int receiveNum;
 
-        /// <summary>
-        /// The timeout drop number.
-        /// </summary>
-        internal int timeoutDropNum = 0;
-        /// <summary>
-        /// The running number.
-        /// </summary>
-        internal protected int runningNum;
-        private Timer _LockedQueueChecker;
-        /// <summary>
-        /// is running process queue.
-        /// </summary>
-        private int _runningQueue;
-
-        /// <summary>
-        /// Gets the blocking number.
-        /// </summary>
-        /// <value>The blocking number.</value>
-        internal protected int blockingNum { get { return lockedQueue.Count; } }
 
         /// <summary>
         /// Action repeater
@@ -114,8 +84,8 @@ namespace ZyGames.Framework.Game.Contract
             int expireInterval = ConfigUtils.GetSetting("ExpireInterval", 600) * 1000;
             int expireTime = ConfigUtils.GetSetting("ExpireTime", 3600) * 1000;
 
-            threadPool = new SmartThreadPool(180 * 1000, 100, 5);
-            threadPool.Start();
+            //threadPool = new SmartThreadPool(180 * 1000, 100, 5);
+            //threadPool.Start();
 
             var socketSettings = new SocketSettings(maxConnections, backlog, maxAcceptOps, bufferSize, localEndPoint, expireInterval, expireTime);
             socketLintener = new SocketListener(socketSettings);
@@ -141,10 +111,6 @@ namespace ZyGames.Framework.Game.Contract
                     httpListener.Prefixes.Add(string.Format("{0}:{1}/{2}/", address, httpPort, httpName));
                 }
             }
-            Interlocked.Exchange(ref _runningQueue, 1);
-            queueProcessThread = new Thread(ProcessQueue);
-            queueProcessThread.Start();
-            _LockedQueueChecker = new Timer(LockedQueueChecker, null, 100, 100);
         }
 
         private void socketLintener_OnConnectCompleted(object sender, ConnectionEventArgs e)
@@ -182,7 +148,6 @@ namespace ZyGames.Framework.Game.Contract
         {
             try
             {
-                Interlocked.Increment(ref receiveNum);
                 OnReceivedBefore(e);
                 RequestPackage package;
                 if (!ActionDispatcher.TryDecodePackage(e, out package))
@@ -195,8 +160,7 @@ namespace ZyGames.Framework.Game.Contract
                     return;
                 }
                 package.Bind(session);
-                requestQueue.Enqueue(package);
-                singal.Set();
+                ProcessPackage(package);
             }
             catch (Exception ex)
             {
@@ -226,7 +190,6 @@ namespace ZyGames.Framework.Game.Contract
                 session.Refresh();
                 OnHeartbeat(session);
                 session.ExitSession();
-                Interlocked.Decrement(ref runningNum);
                 return true;
             }
             return false;
@@ -266,73 +229,8 @@ namespace ZyGames.Framework.Game.Contract
         {
         }
 
-        void ProcessQueue(object state)
+        private void ProcessPackage(RequestPackage package)
         {
-            try
-            {
-                while (_runningQueue == 1)
-                {
-                    singal.WaitOne();
-                    while (_runningQueue == 1)
-                    {
-                        try
-                        {
-                            RequestPackage package;
-                            if (requestQueue.TryDequeue(out package))
-                            {
-                                if (package.Session == null || !package.Session.EnterSession()) lockedQueue.Enqueue(package);
-                                else
-                                {
-                                    Interlocked.Increment(ref runningNum);
-                                    threadPool.QueueWorkItem(ProcessPackage, package);
-                                }
-                            }
-                            else
-                            {
-                                break;
-                            }
-                        }
-                        catch (Exception ex)
-                        {
-                            TraceLog.WriteError("ProcessQueue request error:{0}", ex);
-                        }
-                    }
-                    //if (isInStopping) break;
-                    singal.Reset();
-                }
-            }
-            catch (Exception er)
-            {
-                TraceLog.WriteError("ProcessQueue error:{0}", er);
-            }
-        }
-
-        void LockedQueueChecker(object state)
-        {
-            try
-            {
-                RequestPackage package;
-                while (lockedQueue.TryDequeue(out package))
-                {
-                    if (MathUtils.Now.Subtract(package.ReceiveTime).TotalSeconds >= 30)
-                    {
-                        Interlocked.Increment(ref timeoutDropNum);
-                        TraceLog.WriteError("package action-{0} timeout error, url param:{1}", package.ActionId, package.UrlParam);
-                        continue;
-                    }
-                    requestQueue.Enqueue(package);
-                    singal.Set();
-                }
-            }
-            catch (Exception ex)
-            {
-                TraceLog.WriteError("LockedQueue error:{0}", ex);
-            }
-        }
-
-        private void ProcessPackage(object state)
-        {
-            var package = (RequestPackage)state;
             if (package == null) return;
 
             var session = package.Session;
@@ -377,7 +275,6 @@ namespace ZyGames.Framework.Game.Contract
             finally
             {
                 session.ExitSession();
-                Interlocked.Decrement(ref runningNum);
             }
         }
 
@@ -546,7 +443,6 @@ namespace ZyGames.Framework.Game.Contract
         /// </summary>
         public override void Stop()
         {
-            Interlocked.Exchange(ref _runningQueue, 0);
             if (EnableHttp)
             {
                 httpListener.Stop();
@@ -555,17 +451,9 @@ namespace ZyGames.Framework.Game.Contract
             OnServiceStop();
             try
             {
-                singal.Set();
-                threadPool.Dispose();
-                queueProcessThread.Abort();
-                _LockedQueueChecker.Dispose();
-                singal.Dispose();
+                //threadPool.Dispose();
                 EntitySyncManger.Dispose();
-
-                threadPool = null;
-                queueProcessThread = null;
-                _LockedQueueChecker = null;
-                singal = null;
+                //threadPool = null;
             }
             catch
             {

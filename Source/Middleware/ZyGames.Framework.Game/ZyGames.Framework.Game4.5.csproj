@@ -143,6 +143,7 @@
     <Compile Include="Contract\Action\LuaAction.cs" />
     <Compile Include="Contract\GameBaseHost.cs" />
     <Compile Include="Contract\GameHttpHost.cs" />
+    <Compile Include="Contract\RemotePackage.cs" />
     <Compile Include="Contract\RemoteService.cs" />
     <Compile Include="Service\ActionGetter.cs" />
     <Compile Include="Contract\Action\AndroidPayAction.cs" />

@@ -22,8 +22,12 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ****************************************************************************/
 using System;
+using System.Collections.Generic;
 using System.Text;
 using System.Web;
+using System.Web.UI.WebControls;
+using ZyGames.Framework.Collection.Generic;
+using ZyGames.Framework.Common.Log;
 using ZyGames.Framework.Game.Runtime;
 using ZyGames.Framework.RPC.IO;
 using ZyGames.Framework.RPC.Service;
@@ -35,16 +39,20 @@ namespace ZyGames.Framework.Game.Contract
     /// </summary>
     public class RemoteService
     {
+        static RemoteService()
+        {
+            RequestParam.SignKey = GameEnvironment.Setting.ProductSignKey;
+        }
+
         /// <summary>
         /// Create http proxy
         /// </summary>
         /// <param name="proxyId"></param>
         /// <param name="url"></param>
-        /// <param name="callback"></param>
         /// <returns></returns>
-        public static RemoteService CreateHttpProxy(string proxyId, string url, RemoteCallback callback)
+        public static RemoteService CreateHttpProxy(string proxyId, string url)
         {
-            return CreateHttpProxy(proxyId, url, Encoding.UTF8, null, callback);
+            return CreateHttpProxy(proxyId, url, Encoding.UTF8, null);
         }
 
         /// <summary>
@@ -54,13 +62,14 @@ namespace ZyGames.Framework.Game.Contract
         /// <param name="url"></param>
         /// <param name="encoding"></param>
         /// <param name="timeout"></param>
-        /// <param name="callback"></param>
         /// <returns></returns>
-        public static RemoteService CreateHttpProxy(string proxyId, string url, Encoding encoding, int? timeout, RemoteCallback callback)
+        public static RemoteService CreateHttpProxy(string proxyId, string url, Encoding encoding, int? timeout)
         {
             var client = new HttpRemoteClient(url, encoding, timeout);
-            client.Callback += callback;
-            return new RemoteService(proxyId, client);
+            client.Callback += OnNetHttpCallback;
+            var proxy = new RemoteService(proxyId, client);
+            client.RemoteTarget = proxy;
+            return proxy;
         }
 
         /// <summary>
@@ -70,22 +79,105 @@ namespace ZyGames.Framework.Game.Contract
         /// <param name="host"></param>
         /// <param name="port"></param>
         /// <param name="heartInterval"></param>
-        /// <param name="callback"></param>
         /// <returns></returns>
-        public static RemoteService CreateTcpProxy(string proxyId, string host, int port, int heartInterval, RemoteCallback callback)
+        public static RemoteService CreateTcpProxy(string proxyId, string host, int port, int heartInterval)
         {
             var client = new SocketRemoteClient(host, port, heartInterval);
-            client.Callback += callback;
-            return new RemoteService(proxyId, client);
+            client.Callback += OnNetTcpCallback;
+            var proxy = new RemoteService(proxyId, client);
+            client.RemoteTarget = proxy;
+            return proxy;
         }
-        
+
+        private static void OnNetTcpCallback(object sender, RemoteEventArgs e)
+        {
+            try
+            {
+                RemoteService proxy = sender as RemoteService;
+                if (proxy == null)
+                {
+                    return;
+                }
+                try
+                {
+                    using (var ms = new MessageStructure(e.Data))
+                    {
+                        var head = ms.ReadHeadGzip();
+                        if (head != null)
+                        {
+                            var package = proxy.Find(head.MsgId);
+                            if (package != null)
+                            {
+                                package.Message = ms.ReadBuffer();
+                                proxy.Remove(head.MsgId);
+                                package.OnCallback();
+                                return;
+                            }
+                        }
+                    }
+                }
+                catch (Exception)
+                { }
+                proxy.OnPushedHandle(e);
+            }
+            catch (Exception ex)
+            {
+                TraceLog.WriteError("OnNetTcpCallback error:{0}", ex);
+            }
+        }
+
+        private static void OnNetHttpCallback(object sender, RemoteEventArgs e)
+        {
+            try
+            {
+                RemoteService proxy = sender as RemoteService;
+                if (proxy == null)
+                {
+                    return;
+                }
+                using (var ms = new MessageStructure(e.Data))
+                {
+                    var head = ms.ReadHeadGzip();
+                    if (head != null)
+                    {
+                        var package = proxy.Find(head.MsgId);
+                        if (package != null)
+                        {
+                            package.Message = ms.ReadBuffer();
+                            proxy.Remove(head.MsgId);
+                            package.OnCallback();
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                TraceLog.WriteError("OnNetHttpCallback error:{0}", ex);
+            }
+        }
+
         private readonly string _proxyId;
         private readonly RemoteClient _client;
         private int _msgId;
         private string _sessionId = "";
         private int _userId = 0;
         private string _proxySessionId = "";
+        private DictionaryExtend<int, RemotePackage> _packagePools;
+        /// <summary>
+        /// 
+        /// </summary>
+        public event RemoteCallback PushedHandle;
 
+        private void OnPushedHandle(RemoteEventArgs e)
+        {
+            RemoteCallback handler = PushedHandle;
+            if (handler != null) handler(this, e);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public int PackageCount { get { return _packagePools.Count; } }
 
         /// <summary>
         /// init
@@ -94,6 +186,7 @@ namespace ZyGames.Framework.Game.Contract
         /// <param name="client"></param>
         private RemoteService(string proxyId, RemoteClient client)
         {
+            _packagePools = new DictionaryExtend<int, RemotePackage>();
             _proxySessionId = Guid.NewGuid().ToString("N");
             _proxyId = string.IsNullOrEmpty(proxyId) ? _proxySessionId : proxyId;
             _client = client;
@@ -107,7 +200,7 @@ namespace ZyGames.Framework.Game.Contract
                 if (_client is SocketRemoteClient)
                 {
                     var client = _client as SocketRemoteClient;
-                    RequestParam heartParam = CreateParameter();
+                    RequestParam heartParam = new RequestParam();
                     heartParam["ActionId"] = (int)ActionEnum.Heartbeat;
                     string post = string.Format("?d={0}", HttpUtility.UrlEncode(heartParam.ToPostString()));
                     client.HeartPacket = Encoding.ASCII.GetBytes(post);
@@ -121,35 +214,44 @@ namespace ZyGames.Framework.Game.Contract
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="routePath">Call method path</param>
+        /// <param name="routePath">Call method path, ex:className.method</param>
         /// <param name="param"></param>
-        public void Call(string routePath, RequestParam param)
+        /// <param name="callback"></param>
+        public void Call(string routePath, RequestParam param, Action<RemotePackage> callback)
         {
             _msgId++;
             param["MsgId"] = _msgId;
             param["route"] = routePath;
-            string post = string.Format("d={0}", HttpUtility.UrlEncode(param.ToPostString()));
-            if (_client.IsSocket)
-            {
-                post = "?" + post;
-            }
-            _client.Send(post);
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <returns></returns>
-        public RequestParam CreateParameter()
-        {
-            var param = new RequestParam(GameEnvironment.Setting.ProductSignKey);
             param["Sid"] = _sessionId;
             param["Uid"] = _userId;
             param["ActionId"] = 0;
             param["ssid"] = _proxySessionId;
             param["isproxy"] = true;
             param["proxyId"] = _proxyId;
-            return param;
+            string post = string.Format("d={0}", HttpUtility.UrlEncode(param.ToPostString()));
+            if (_client.IsSocket)
+            {
+                post = "?" + post;
+            }
+            var responsePack = new RemotePackage { MsgId = _msgId, RouteName = routePath };
+            responsePack.Callback += callback;
+            PutToWaitQueue(responsePack);
+            _client.Send(post);
+        }
+
+        private void PutToWaitQueue(RemotePackage package)
+        {
+            _packagePools[package.MsgId] = package;
+        }
+
+        private RemotePackage Find(int msgId)
+        {
+            return _packagePools[msgId];
+        }
+
+        private bool Remove(int msgId)
+        {
+            return _packagePools.Remove(msgId);
         }
     }
 }

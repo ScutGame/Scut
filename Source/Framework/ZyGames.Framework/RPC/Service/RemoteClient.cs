@@ -49,13 +49,18 @@ namespace ZyGames.Framework.RPC.Service
     /// RemoteCallback delegate
     /// </summary>
     /// <param name="e"></param>
-    public delegate void RemoteCallback(RemoteEventArgs e);
+    public delegate void RemoteCallback(object sender, RemoteEventArgs e);
 
     /// <summary>
     /// Remote client
     /// </summary>
     public abstract class RemoteClient
     {
+        /// <summary>
+        /// Remote Target
+        /// </summary>
+        public object RemoteTarget { get; set; }
+
         /// <summary>
         /// callback event.
         /// </summary>
@@ -85,7 +90,7 @@ namespace ZyGames.Framework.RPC.Service
         protected virtual void OnCallback(RemoteEventArgs e)
         {
             RemoteCallback handler = Callback;
-            if (handler != null) handler(e);
+            if (handler != null) handler(RemoteTarget, e);
         }
 
         /// <summary>

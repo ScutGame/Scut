@@ -197,6 +197,7 @@ namespace ZyGames.Framework.Net.Sql
                 if (fieldAttr.IsSerialized)
                 {
                     var value = reader[columnName];
+                    //指定序列化方式
                     if (fieldAttr.DbType == ColumnDbType.LongBlob || fieldAttr.DbType == ColumnDbType.Blob)
                     {
                         fieldValue = DeserializeBinaryObject(schemaTable, entity, value, fieldAttr, columnName);

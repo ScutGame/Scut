@@ -50,9 +50,11 @@ namespace ZyGames.Framework.Redis
         internal const string EntityKeySplitChar = "_";
         private static PooledRedisClientManager _pooledRedis;
         private static RedisPoolSetting _defaultSetting;
+        private static ICacheSerializer _serializer;
 
         static RedisConnectionPool()
         {
+            _serializer = new ProtobufCacheSerializer();
             _defaultSetting = new RedisPoolSetting
             {
                 Host = ConfigUtils.GetSetting("Redis.Host", "localhost"),
@@ -68,16 +70,20 @@ namespace ZyGames.Framework.Redis
         /// <summary>
         /// init
         /// </summary>
-        public static void Initialize()
+        /// <param name="serializer"></param>
+        public static void Initialize(ICacheSerializer serializer)
         {
-            Initialize(_defaultSetting);
+            Initialize(_defaultSetting, serializer);
         }
+
         /// <summary>
         /// init
         /// </summary>
         /// <param name="setting">pool setting</param>
-        public static void Initialize(RedisPoolSetting setting)
+        /// <param name="serializer"></param>
+        public static void Initialize(RedisPoolSetting setting, ICacheSerializer serializer)
         {
+            _serializer = serializer;
             string[] readWriteHosts = setting.Host.Split(',');
             string[] readOnlyHosts = setting.ReadOnlyHost.Split(',');
             var redisConfig = new RedisClientManagerConfig
@@ -261,18 +267,18 @@ namespace ZyGames.Framework.Redis
                     {
                         if (value != null)
                         {
-                            list = new List<T> { ProtoBufUtils.Deserialize<T>(value) };
+                            list = new List<T> { (T)_serializer.Deserialize(value, typeof(T)) };
                             return true;
                         }
                         if (valueBytes != null)
                         {
                             if (isFilter)
                             {
-                                list = valueBytes.Select(ProtoBufUtils.Deserialize<T>).Where(t => t.PersonalId == keyValue).ToList();
+                                list = valueBytes.Select(t => (T)_serializer.Deserialize(t, typeof(T))).Where(t => t.PersonalId == keyValue).ToList();
                             }
                             else
                             {
-                                list = valueBytes.Select(ProtoBufUtils.Deserialize<T>).ToList();
+                                list = valueBytes.Select(t => (T)_serializer.Deserialize(t, typeof(T))).ToList();
                             }
                             return true;
                         }
@@ -304,7 +310,7 @@ namespace ZyGames.Framework.Redis
                         byte[][] keyCodes = new byte[buffers.Length][];
                         for (int i = 0; i < buffers.Length; i++)
                         {
-                            T entity = ProtoBufUtils.Deserialize<T>(buffers[i]);
+                            T entity = (T)_serializer.Deserialize(buffers[i], typeof(T));
                             keyCodes[i] = ToByteKey(entity.GetKeyCode());
                             list.Add(entity);
                         }
@@ -328,7 +334,7 @@ namespace ZyGames.Framework.Redis
 
                         try
                         {
-                            var dataSet = ProtoBufUtils.Deserialize<Dictionary<string, T>>(buffers);
+                            var dataSet = (Dictionary<string, T>)_serializer.Deserialize(buffers, typeof(Dictionary<string, T>));
                             if (dataSet != null)
                             {
                                 list = dataSet.Values.ToList();
@@ -338,22 +344,25 @@ namespace ZyGames.Framework.Redis
                         {
                             //try get entity type data
                             list = new List<T>();
-                            T temp = ProtoBufUtils.Deserialize<T>(buffers);
+                            T temp = (T)_serializer.Deserialize(buffers,typeof(T));
                             list.Add(temp);
                         }
                         //转移到新格式
-                        byte[][] keyCodes = new byte[list.Count][];
-                        byte[][] values = new byte[list.Count][];
-                        for (int i = 0; i < list.Count; i++)
+                        if (list != null)
                         {
-                            T entity = list[i];
-                            keyCodes[i] = ToByteKey(entity.GetKeyCode());
-                            values[i] = ProtoBufUtils.Serialize(entity);
-                        }
-                        if (keyCodes.Length > 0)
-                        {
-                            UpdateEntity(typeof(T).FullName, keyCodes, values);
-                            Process(client => client.Remove(redisKey));
+                            byte[][] keyCodes = new byte[list.Count][];
+                            byte[][] values = new byte[list.Count][];
+                            for (int i = 0; i < list.Count; i++)
+                            {
+                                T entity = list[i];
+                                keyCodes[i] = ToByteKey(entity.GetKeyCode());
+                                values[i] = _serializer.Serialize(entity);
+                            }
+                            if (keyCodes.Length > 0)
+                            {
+                                UpdateEntity(typeof (T).FullName, keyCodes, values);
+                                Process(client => client.Remove(redisKey));
+                            }
                         }
                     }
                     result = true;
@@ -412,7 +421,7 @@ namespace ZyGames.Framework.Redis
                         }
                         entity.Reset();
                         keys.Add(keybytes);
-                        values.Add(ProtoBufUtils.Serialize(entity));
+                        values.Add(_serializer.Serialize(entity));
                     }
                     UpdateEntity(typeName, keys.ToArray(), values.ToArray(), removeKeys.ToArray());
                     return true;

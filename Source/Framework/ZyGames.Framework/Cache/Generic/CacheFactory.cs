@@ -57,9 +57,9 @@ namespace ZyGames.Framework.Cache.Generic
         /// <summary>
         /// Initialize cache.
         /// </summary>
-        public static void Initialize(CacheSetting setting)
+        public static void Initialize(CacheSetting setting, ICacheSerializer serializer)
         {
-            Initialize(new DbTransponder(), new RedisTransponder(), setting);
+            Initialize(new DbTransponder(), new RedisTransponder(), setting, serializer);
         }
 
         /// <summary>
@@ -68,13 +68,14 @@ namespace ZyGames.Framework.Cache.Generic
         /// <param name="dbTransponder">db trans object</param>
         /// <param name="redisTransponder">redis trans object</param>
         /// <param name="setting">setting.</param>
-        public static void Initialize(ITransponder dbTransponder, ITransponder redisTransponder, CacheSetting setting)
+        /// <param name="serializer"></param>
+        public static void Initialize(ITransponder dbTransponder, ITransponder redisTransponder, CacheSetting setting, ICacheSerializer serializer)
         {
-            _readonlyPools = new CachePool(dbTransponder, redisTransponder, true);
-            _writePools = new CachePool(dbTransponder, redisTransponder, false) { Setting = setting };
+            _readonlyPools = new CachePool(dbTransponder, redisTransponder, true, serializer);
+            _writePools = new CachePool(dbTransponder, redisTransponder, false, serializer) { Setting = setting };
 
             EntitySchemaSet.InitSchema(typeof(EntityHistory));
-            DataSyncQueueManager.Start(setting);
+            DataSyncQueueManager.Start(setting, serializer);
             InitListener("__CachePoolListener", setting.ExpiredInterval, "__CachePoolUpdateListener", setting.UpdateInterval);
             if (setting.AutoRunEvent)
             {
@@ -112,8 +113,9 @@ namespace ZyGames.Framework.Cache.Generic
         /// <param name="key"></param>
         /// <param name="isRemove"></param>
         /// <param name="type"></param>
+        /// <param name="serializer"></param>
         /// <returns></returns>
-        public static dynamic GetEntityFromRedis(string key, bool isRemove, Type type = null)
+        public static dynamic GetEntityFromRedis(string key, bool isRemove, Type type, ICacheSerializer serializer)
         {
             string typeName;
             string asmName;
@@ -128,7 +130,7 @@ namespace ZyGames.Framework.Cache.Generic
                     var data = client.Get<byte[]>(redisKey);
                     if (data != null && type != null)
                     {
-                        entity = ProtoBufUtils.Deserialize(data, type);
+                        entity = serializer.Deserialize(data, type);
                     }
                 }
                 else
@@ -136,7 +138,7 @@ namespace ZyGames.Framework.Cache.Generic
                     var data = client.Get<byte[]>(redisKey);
                     if (data != null && type != null)
                     {
-                        var dict = (IDictionary)ProtoBufUtils.Deserialize(data, type);
+                        var dict = (IDictionary)serializer.Deserialize(data, type);
                         entity = dict[entityKey];
                     }
                 }
@@ -146,7 +148,7 @@ namespace ZyGames.Framework.Cache.Generic
                     var data = client.HGet(typeName, RedisConnectionPool.ToByteKey(entityKey));
                     if (data != null && type != null)
                     {
-                        entity = ProtoBufUtils.Deserialize(data, type);
+                        entity = serializer.Deserialize(data, type);
                     }
                 }
 
@@ -157,12 +159,12 @@ namespace ZyGames.Framework.Cache.Generic
                     var data = client.Get<byte[]>(setId);
                     if (data != null)
                     {
-                        var dict = (IDictionary)ProtoBufUtils.Deserialize(data, type);
+                        var dict = (IDictionary)serializer.Deserialize(data, type);
                         entity = dict[entityKey];
                         dict.Remove(entityKey);
                         if (dict.Count > 0)
                         {
-                            client.Set(setId, ProtoBufUtils.Serialize(dict));
+                            client.Set(setId, serializer.Serialize(dict));
                         }
                         else
                         {
@@ -341,6 +343,7 @@ namespace ZyGames.Framework.Cache.Generic
                             }
                         }
                         entityKeys.Add(setId);
+                        //转存到DB使用protobuf
                         byte[] keyValues = ProtoBufUtils.Serialize(client.HGetAll(setId));
                         var history = new EntityHistory() { Key = key, Value = keyValues };
                         entityList.Add(history);

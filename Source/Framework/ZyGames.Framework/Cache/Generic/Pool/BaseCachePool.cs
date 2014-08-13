@@ -41,15 +41,19 @@ namespace ZyGames.Framework.Cache.Generic.Pool
     {
         private ITransponder _dbTransponder;
         private ITransponder _redisTransponder;
+        private readonly ICacheSerializer _serializer;
+
         /// <summary>
         /// 
         /// </summary>
         /// <param name="dbTransponder"></param>
         /// <param name="redisTransponder"></param>
-        protected BaseCachePool(ITransponder dbTransponder, ITransponder redisTransponder)
+        /// <param name="serializer"></param>
+        protected BaseCachePool(ITransponder dbTransponder, ITransponder redisTransponder, ICacheSerializer serializer)
         {
             _dbTransponder = dbTransponder;
             _redisTransponder = redisTransponder;
+            _serializer = serializer;
         }
 
         internal abstract void Init();
@@ -278,11 +282,12 @@ namespace ZyGames.Framework.Cache.Generic.Pool
                         EntityHistory history = historyList.Count > 0 ? historyList[0] : null;
                         if (history != null && history.Value != null && history.Value.Length > 0)
                         {
+                            //从DB备份中取使用protobuf
                             byte[][] bufferBytes = ProtoBufUtils.Deserialize<byte[][]>(history.Value);
                             byte[][] keys = bufferBytes.Where((b, index) => index % 2 == 0).ToArray();
                             byte[][] values = bufferBytes.Where((b, index) => index % 2 == 1).ToArray();
                             RedisConnectionPool.Process(client => client.HMSet(entityNameKey, keys, values));
-                            dataList = values.Select(value => ProtoBufUtils.Deserialize<T>(value)).ToList();
+                            dataList = values.Select(value => (T)_serializer.Deserialize(value, typeof(T))).ToList();
                             result = true;
                         }
                         else

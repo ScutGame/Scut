@@ -34,6 +34,7 @@ using ServiceStack.Text;
 using ZyGames.Framework.Cache.Generic;
 using ZyGames.Framework.Common.Configuration;
 using ZyGames.Framework.Common.Log;
+using ZyGames.Framework.Common.Serialization;
 using ZyGames.Framework.Game.Contract;
 using ZyGames.Framework.Script;
 
@@ -64,6 +65,7 @@ namespace ZyGames.Framework.Game.Runtime
         private static readonly string entityAssemblyName;
         private static readonly string decodeFuncTypeName;
         private static readonly string remoteTypeName;
+        private static ICacheSerializer serializer;
 
         static EnvironmentSetting()
         {
@@ -101,8 +103,21 @@ namespace ZyGames.Framework.Game.Runtime
             decodeFuncTypeName = ConfigUtils.GetSetting("Game.Script.DecodeFunc.TypeName", "");
 
             remoteTypeName = ConfigUtils.GetSetting("Game.Remote.Script.TypeName", "Game.Script.Remote.{0}");
-
             LoadDecodeFunc();
+            InitSerializer();
+        }
+
+        private static void InitSerializer()
+        {
+            string type = ConfigUtils.GetSetting("Cache.Serializer", "Protobuf");
+            if (string.Equals(type, "json", StringComparison.OrdinalIgnoreCase))
+            {
+                serializer = new JsonCacheSerializer(Encoding.UTF8);
+            }
+            else
+            {
+                serializer = new ProtobufCacheSerializer();
+            }
         }
 
         private static string GetLocalIp()
@@ -154,6 +169,7 @@ namespace ZyGames.Framework.Game.Runtime
                 TraceLog.WriteError("Load entity assembly error:\"{0}\" {1}", entityAssemblyName, ex);
             }
             ActionDispatcher = new ScutActionDispatcher();
+            Serializer = serializer;
         }
 
         private static dynamic _scriptDecodeTarget;
@@ -282,6 +298,7 @@ namespace ZyGames.Framework.Game.Runtime
         /// </summary>
         public IActionDispatcher ActionDispatcher { get; set; }
 
+        public ICacheSerializer Serializer { get; set; }
         ///// <summary>
         ///// Before starting the script engine process.
         ///// </summary>

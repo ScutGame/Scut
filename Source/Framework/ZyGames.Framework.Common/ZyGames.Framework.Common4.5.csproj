@@ -100,7 +100,10 @@
     <Compile Include="Security\CryptoHelper.cs" />
     <Compile Include="Security\DESAlgorithmNew.cs" />
     <Compile Include="Security\DesCopy.cs" />
+    <Compile Include="Serialization\ICacheSerializer.cs" />
+    <Compile Include="Serialization\JsonCacheSerializer.cs" />
     <Compile Include="Serialization\JsonUtils.cs" />
+    <Compile Include="Serialization\ProtobufCacheSerializer.cs" />
     <Compile Include="Serialization\ProtoBufUtils.cs" />
     <Compile Include="Serialization\ProtoObject.cs" />
     <Compile Include="Timing\BaseTask.cs" />
