@@ -19,6 +19,7 @@ namespace ScutServerManager.Config
             ConnectTimeout = DefaultConfig.ConnectTimeout;
             PoolTimeOut = DefaultConfig.PoolTimeOut;
             ConnectionString = new ConnectionString();
+            Serializer = DefaultConfig.CacheSerializer;
         }
 
         //DefaultValueAttribute("1.0"),BrowsableAttribute(false),ReadOnlyAttribute(true)]
@@ -67,5 +68,9 @@ namespace ScutServerManager.Config
         DescriptionAttribute("Redis move to databases connectionstring.")]
         public ConnectionString ConnectionString { get; set; }
 
+        [ProtoMember(10), CategoryAttribute("Redis"),
+        DefaultValue(DefaultConfig.CacheSerializer),
+        DescriptionAttribute("Redis serialize storage mode.")]
+        public StorageMode Serializer { get; set; }
     }
 }

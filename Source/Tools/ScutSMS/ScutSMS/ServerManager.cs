@@ -39,8 +39,6 @@ using ZyGames.Framework.Common.Log;
 using ZyGames.Framework.Common.Serialization;
 using ZyGames.Framework.Data;
 using ZyGames.Framework.Game.Contract;
-using ZyGames.Framework.Model;
-using ZyGames.Framework.Net;
 using ZyGames.Framework.Redis;
 using DbProviderType = ScutServerManager.Config.DbProviderType;
 using JsonUtils = ZyGames.Framework.Common.Serialization.JsonUtils;
@@ -49,7 +47,6 @@ namespace Scut.SMS
 {
     public class ServerManager
     {
-
         public ServerManager()
         {
             _redisSearchPatternList = new List<string>();
@@ -81,8 +78,6 @@ namespace Scut.SMS
             }
         }
 
-
-
         public int RedisSearchTop { get; set; }
 
         #region Methond
@@ -92,6 +87,11 @@ namespace Scut.SMS
             try
             {
                 RedisConfig = RedisSettingFactory.Load();
+
+                ICacheSerializer serializer = RedisConfig.Serializer == StorageMode.Protobuf
+                    ? (ICacheSerializer)new ProtobufCacheSerializer()
+                    : new JsonCacheSerializer(Encoding.UTF8);
+
                 RedisConnectionPool.Initialize(new RedisPoolSetting()
                 {
                     Host = RedisConfig.Host,
@@ -100,7 +100,7 @@ namespace Scut.SMS
                     MaxReadPoolSize = 2,
                     DbIndex = RedisConfig.Db
 
-                });
+                }, serializer);
             }
             catch (Exception ex)
             {
@@ -622,15 +622,15 @@ namespace Scut.SMS
             SaveKeyValue(appSettings, parent, "Product.ClientDesDeKey", () => setting.ClientDesDeKey, DefaultConfig.ClientDesDeKey);
             SaveKeyValue(appSettings, parent, "Game.Port", () => setting.SocketPort, DefaultConfig.SocketPort, true);
             SaveKeyValue(appSettings, parent, "Redis.Host", () => setting.Redis.Host, DefaultConfig.RedisHost, true);
-            SaveKeyValue(appSettings, parent, "Redis.ReadHost", () => setting.Redis.ReadOnlyHost, DefaultConfig.ReadOnlyHost);
-            SaveKeyValue(appSettings, parent, "Redis.Db", () => setting.Redis.Db, DefaultConfig.RedisDb);
+            SaveKeyValue(appSettings, parent, "Redis.ReadHost", () => setting.Redis.ReadOnlyHost, DefaultConfig.ReadOnlyHost, true);
+            SaveKeyValue(appSettings, parent, "Redis.Db", () => setting.Redis.Db, DefaultConfig.RedisDb, true);
             SaveKeyValue(appSettings, parent, "Redis.ConnectTimeout", () => setting.Redis.ConnectTimeout, DefaultConfig.ConnectTimeout);
             SaveKeyValue(appSettings, parent, "Redis.PoolTimeOut", () => setting.Redis.PoolTimeOut, DefaultConfig.PoolTimeOut);
             SaveKeyValue(appSettings, parent, "Redis.Pool.MaxWritePoolSize", () => setting.Redis.MaxWritePoolSize, DefaultConfig.MaxWritePoolSize);
             SaveKeyValue(appSettings, parent, "Redis.Pool.MaxReadPoolSize", () => setting.Redis.MaxReadPoolSize, DefaultConfig.MaxReadPoolSize);
 
-            SaveKeyValue(appSettings, parent, "Game.Http.Host", () => setting.HttpHost, DefaultConfig.HttpHost);
-            SaveKeyValue(appSettings, parent, "Game.Http.Port", () => setting.HttpPort, DefaultConfig.HttpPort);
+            SaveKeyValue(appSettings, parent, "Game.Http.Host", () => setting.HttpHost, DefaultConfig.HttpHost, true);
+            SaveKeyValue(appSettings, parent, "Game.Http.Port", () => setting.HttpPort, DefaultConfig.HttpPort, true);
             SaveKeyValue(appSettings, parent, "Game.Http.Name", () => setting.HttpName, DefaultConfig.HttpName);
             SaveKeyValue(appSettings, parent, "Game.Http.Timeout", () => setting.HttpTimeout, DefaultConfig.HttpTimeout);
             SaveKeyValue(appSettings, parent, "MaxConnections", () => setting.SocketMaxConnections, DefaultConfig.SocketMaxConnections);
@@ -644,7 +644,7 @@ namespace Scut.SMS
             SaveKeyValue(appSettings, parent, "Game.Action.AssemblyName", () => setting.ActionAssemblyName, DefaultConfig.ActionAssemblyName);
             SaveKeyValue(appSettings, parent, "Game.Action.Script.TypeName", () => setting.ActionScriptTypeName, DefaultConfig.ActionScriptTypeName);
             SaveKeyValue(appSettings, parent, "Python_Disable", () => setting.PythonDisable, DefaultConfig.PythonDisable);
-            SaveKeyValue(appSettings, parent, "Script_IsDebug", () => setting.ScriptIsDebug, DefaultConfig.ScriptIsDebug);
+            SaveKeyValue(appSettings, parent, "Script_IsDebug", () => setting.ScriptIsDebug, DefaultConfig.ScriptIsDebug, true);
             SaveKeyValue(appSettings, parent, "ScriptRelativePath", () => setting.ScriptRelativePath, DefaultConfig.ScriptRelativePath);
             SaveKeyValue(appSettings, parent, "CSharpRootPath", () => setting.CSharpRootPath, DefaultConfig.CSharpRootPath);
             SaveKeyValue(appSettings, parent, "PythonRootPath", () => setting.PythonRootPath, DefaultConfig.PythonRootPath);
@@ -652,10 +652,14 @@ namespace Scut.SMS
             SaveKeyValue(appSettings, parent, "Lua_Disable", () => setting.LuaDisable, DefaultConfig.LuaDisable);
             SaveKeyValue(appSettings, parent, "LuaRootPath", () => setting.LuaRootPath, DefaultConfig.LuaRootPath);
 
-            SaveKeyValue(appSettings, parent, "ScriptMainClass", () => setting.ScriptMainClass, DefaultConfig.ScriptMainClass);
-            SaveKeyValue(appSettings, parent, "ScriptMainTypeName", () => setting.ScriptMainTypeName, DefaultConfig.ScriptMainTypeName);
+            SaveKeyValue(appSettings, parent, "ScriptMainClass", () => setting.ScriptMainClass, DefaultConfig.ScriptMainClass, true);
+            SaveKeyValue(appSettings, parent, "ScriptMainTypeName", () => setting.ScriptMainTypeName, DefaultConfig.ScriptMainTypeName, true);
             SaveKeyValue(appSettings, parent, "ScriptSysAsmReferences", () => string.Join(";", setting.ScriptSysAsmReferences), "");
             SaveKeyValue(appSettings, parent, "ScriptAsmReferences", () => string.Join(";", setting.ScriptAsmReferences), "");
+
+            SaveKeyValue(appSettings, parent, "Game.Entity.AssemblyName", () => setting.ModelEntityAssemblyName, DefaultConfig.ModelEntityAssemblyName);
+            SaveKeyValue(appSettings, parent, "Game.Script.DecodeFunc.TypeName", () => setting.ScriptDecodeFuncTypeName, DefaultConfig.ScriptDecodeFuncTypeName, true);
+            SaveKeyValue(appSettings, parent, "Game.Remote.Script.TypeName", () => setting.RemoteScriptTypeName, DefaultConfig.RemoteScriptTypeName, true);
 
             SaveKeyValue(appSettings, parent, "Cache.global.period", () => setting.CacheGlobalPeriod, DefaultConfig.CacheGlobalPeriod);
             SaveKeyValue(appSettings, parent, "Cache.user.period", () => setting.CacheUserPeriod, DefaultConfig.CacheUserPeriod);
@@ -663,6 +667,7 @@ namespace Scut.SMS
             SaveKeyValue(appSettings, parent, "Cache.update.interval", () => setting.CacheUpdateInterval, DefaultConfig.CacheUpdateInterval);
             SaveKeyValue(appSettings, parent, "Cache.expired.interval", () => setting.CacheExpiredInterval, DefaultConfig.CacheExpiredInterval);
             SaveKeyValue(appSettings, parent, "Cache.enable.writetoDb", () => setting.CacheEnableWritetoDb, DefaultConfig.CacheEnableWritetoDb);
+            SaveKeyValue(appSettings, parent, "Cache.Serializer", () => setting.CacheSerializer, DefaultConfig.CacheSerializer);
             SaveKeyValue(appSettings, parent, "DataSyncQueueNum", () => setting.DataSyncQueueNum, DefaultConfig.DataSyncQueueNum);
             SaveKeyValue(appSettings, parent, "SqlWaitSyncQueueNum", () => setting.SqlWaitSyncQueueNum, DefaultConfig.SqlWaitSyncQueueNum);
             SaveKeyValue(appSettings, parent, "SqlSyncQueueNum", () => setting.SqlSyncQueueNum, DefaultConfig.SqlSyncQueueNum);
@@ -793,6 +798,15 @@ namespace Scut.SMS
                 case "ScriptAsmReferences":
                     setting.ScriptAsmReferences = value.Split(';');
                     break;
+                case "Game.Entity.AssemblyName":
+                    setting.ModelEntityAssemblyName = value;
+                    break;
+                case "Game.Script.DecodeFunc.TypeName":
+                    setting.ScriptDecodeFuncTypeName = value;
+                    break;
+                case "Game.Remote.Script.TypeName":
+                    setting.RemoteScriptTypeName = value;
+                    break;
 
                 case "Cache.global.period":
                     setting.CacheGlobalPeriod = Convert.ToInt32(value);
@@ -811,6 +825,9 @@ namespace Scut.SMS
                     break;
                 case "Cache.enable.writetoDb":
                     setting.CacheEnableWritetoDb = Convert.ToBoolean(value);
+                    break;
+                case "Cache.Serializer":
+                    setting.CacheSerializer = (StorageMode)Convert.ToInt32(value);
                     break;
                 case "DataSyncQueueNum":
                     setting.DataSyncQueueNum = Convert.ToInt32(value);
@@ -912,7 +929,8 @@ namespace Scut.SMS
                 bool isError = false;
                 foreach (var key in keys)
                 {
-                    var buffer = client.Get<byte[]>(key);
+                    byte[] buffer = ProtoBufUtils.Serialize(client.HGetAll(key));
+                    //var buffer = client.Get<byte[]>(key);
                     if (buffer != null)
                     {
                         var command = proveder.CreateCommandStruct(HistoryTable, CommandMode.ModifyInsert);

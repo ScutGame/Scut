@@ -200,7 +200,7 @@ namespace Scut.SMS
         {
             try
             {
-                if (ShowConfirm("Are you sure move the key from the result view to the databases?") == DialogResult.No)
+                if (ShowConfirm(string.Format("Are you sure move the key from the result view count {0} to the databases?", keyDataGridView.Rows.Count)) == DialogResult.No)
                 {
                     return;
                 }

@@ -36,6 +36,12 @@ namespace ScutServerManager.Config
         Release
     }
 
+    public enum StorageMode
+    {
+        Protobuf,
+        Json
+    }
+
     public class GameSetting
     {
         public const string DbPaycenter = "PayCenter";
@@ -93,6 +99,9 @@ namespace ScutServerManager.Config
             ScriptMainTypeName = DefaultConfig.ScriptMainTypeName;
             ScriptAsmReferences = new string[0];
             ScriptSysAsmReferences = new string[0];
+            ModelEntityAssemblyName = DefaultConfig.ModelEntityAssemblyName;
+            ScriptDecodeFuncTypeName = DefaultConfig.ScriptDecodeFuncTypeName;
+            RemoteScriptTypeName = DefaultConfig.RemoteScriptTypeName;
 
             CacheGlobalPeriod = DefaultConfig.CacheGlobalPeriod;
             CacheUserPeriod = DefaultConfig.CacheUserPeriod;
@@ -103,6 +112,7 @@ namespace ScutServerManager.Config
             DataSyncQueueNum = DefaultConfig.DataSyncQueueNum;
             SqlWaitSyncQueueNum = DefaultConfig.SqlWaitSyncQueueNum;
             SqlSyncQueueNum = DefaultConfig.SqlSyncQueueNum;
+            CacheSerializer = DefaultConfig.CacheSerializer;
 
             LogTableNameFormat = DefaultConfig.LogTableNameFormat;
             LogPriorBuildMonth = DefaultConfig.LogPriorBuildMonth;
@@ -313,6 +323,21 @@ namespace ScutServerManager.Config
         public string ScriptMainTypeName { get; set; }
 
         [CategoryAttribute(CatScript),
+        DefaultValue(DefaultConfig.ModelEntityAssemblyName),
+        DescriptionAttribute("Model entity assembly name.")]
+        public string ModelEntityAssemblyName { get; set; }
+
+        [CategoryAttribute(CatScript),
+        DefaultValue(DefaultConfig.ScriptDecodeFuncTypeName),
+        DescriptionAttribute("Script DecodeFunc type name.")]
+        public string ScriptDecodeFuncTypeName { get; set; }
+
+        [CategoryAttribute(CatScript),
+        DefaultValue(DefaultConfig.RemoteScriptTypeName),
+        DescriptionAttribute("Remote script type name.")]
+        public string RemoteScriptTypeName { get; set; }
+
+        [CategoryAttribute(CatScript),
         DescriptionAttribute("CSharp script assmebly references, use ';' split.")]
         public string[] ScriptAsmReferences { get; set; }
 
@@ -367,6 +392,12 @@ namespace ScutServerManager.Config
         DefaultValue(DefaultConfig.SqlSyncQueueNum),
         DescriptionAttribute("Cache data sync to db queue num.")]
         public int SqlSyncQueueNum { get; set; }
+
+
+        [CategoryAttribute(CatCache),
+        DefaultValue(DefaultConfig.CacheSerializer),
+        DescriptionAttribute("Cache serialize to redis model(protobuf/json).")]
+        public StorageMode CacheSerializer { get; set; }
         #endregion
 
         #region Log

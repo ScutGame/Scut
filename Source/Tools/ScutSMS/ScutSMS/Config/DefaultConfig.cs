@@ -67,7 +67,11 @@ namespace ScutServerManager.Config
         public const string PythonRootPath = "PyScript";
         public const string LuaRootPath = "LuaScript";
         public const string ScriptMainClass = "MainClass.cs";
-        public const string ScriptMainTypeName = "";
+        public const string ScriptMainTypeName = "Game.Script.MainClass";
+        public const string ModelEntityAssemblyName = "";
+        public const string ScriptDecodeFuncTypeName = "ScutSecurity.ScriptDes,ScutSecurity";
+        public const string RemoteScriptTypeName = "Game.Script.Remote.{0}"; 
+
 
         public const int CacheGlobalPeriod = 259200;
         public const int CacheUserPeriod = 86400;
@@ -78,6 +82,7 @@ namespace ScutServerManager.Config
         public const int DataSyncQueueNum = 2;
         public const int SqlWaitSyncQueueNum = 2;
         public const int SqlSyncQueueNum = 2;
+        public const StorageMode  CacheSerializer = StorageMode.Protobuf;
 
         public const string LogTableNameFormat = "log_$date{0}";
         public const int LogPriorBuildMonth = 3;
