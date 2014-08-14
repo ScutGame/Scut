@@ -94,7 +94,17 @@ namespace ZyGames.Framework.Model
         /// <summary>
         /// 是否持久化到DB，当从Redis内存移除后
         /// </summary>
+        [Obsolete("", true)]
         public bool IsPersistence { get; set; }
+
+        /// <summary>
+        /// 自增的启始编号
+        /// </summary>
+        public long IncreaseStartNo { get; set; }
+        /// <summary>
+        /// 是否过期
+        /// </summary>
+        public bool IsExpired { get; set; }
 
         /// <summary>
         /// 生命周期，单位秒

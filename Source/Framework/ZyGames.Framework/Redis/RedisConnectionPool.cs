@@ -106,6 +106,25 @@ namespace ZyGames.Framework.Redis
         }
 
         /// <summary>
+        /// SetNo
+        /// </summary>
+        /// <param name="key"></param>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        public static long SetNo(string key, long value)
+        {
+            using (var client = GetClient())
+            {
+                var num = client.IncrementValue(key);
+                if (value > 0 && num < value)
+                {
+                    return client.Increment(key, (value - num).ToUInt32());
+                }
+                return num;
+            }
+        }
+
+        /// <summary>
         /// GetNo
         /// </summary>
         /// <param name="key"></param>
@@ -344,7 +363,7 @@ namespace ZyGames.Framework.Redis
                         {
                             //try get entity type data
                             list = new List<T>();
-                            T temp = (T)_serializer.Deserialize(buffers,typeof(T));
+                            T temp = (T)_serializer.Deserialize(buffers, typeof(T));
                             list.Add(temp);
                         }
                         //转移到新格式
@@ -360,7 +379,7 @@ namespace ZyGames.Framework.Redis
                             }
                             if (keyCodes.Length > 0)
                             {
-                                UpdateEntity(typeof (T).FullName, keyCodes, values);
+                                UpdateEntity(typeof(T).FullName, keyCodes, values);
                                 Process(client => client.Remove(redisKey));
                             }
                         }

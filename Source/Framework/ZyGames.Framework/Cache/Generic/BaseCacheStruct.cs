@@ -39,10 +39,21 @@ namespace ZyGames.Framework.Cache.Generic
     /// <typeparam name="T">AbstractEntity类型</typeparam>
     public abstract class BaseCacheStruct<T> : BaseDisposable where T : AbstractEntity, new()
     {
+        private const string PrimaryKeyFormat = "EntityPrimaryKey_{0}";
         static BaseCacheStruct()
         {
-            EntitySchemaSet.InitSchema(typeof(T));
-            CacheFactory.RegistUpdateNotify(new DefaultCacheStruct<T>());
+            try
+            {
+                var schema = EntitySchemaSet.InitSchema(typeof(T));
+                if (schema.IncreaseStartNo > 0)
+                {
+                    string key = string.Format(PrimaryKeyFormat, schema.EntityName);
+                    RedisConnectionPool.SetNo(key, schema.IncreaseStartNo);
+                }
+                CacheFactory.RegistUpdateNotify(new DefaultCacheStruct<T>());
+            }
+            catch (Exception)
+            { }
         }
         /// <summary>
         /// 
@@ -79,7 +90,7 @@ namespace ZyGames.Framework.Cache.Generic
         /// <returns></returns>
         public long GetNextNo()
         {
-            string key = "EntityPrimaryKey_" + typeof(T).Name;
+            string key = string.Format(PrimaryKeyFormat, typeof(T).Name);
             return RedisConnectionPool.GetNextNo(key);
         }
 
@@ -179,7 +190,7 @@ namespace ZyGames.Framework.Cache.Generic
         {
             return DataContainer.TryGetEntity(groupKey, out entiyData);
         }
-        
+
         /// <summary>
         /// 尝试获取分组
         /// </summary>

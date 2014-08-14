@@ -175,7 +175,7 @@ namespace ZyGames.Framework.Model
         /// 
         /// </summary>
         /// <param name="type"></param>
-        public static void InitSchema(Type type)
+        public static SchemaTable InitSchema(Type type)
         {
             SchemaTable schema = new SchemaTable();
             try
@@ -189,7 +189,8 @@ namespace ZyGames.Framework.Model
                     schema.AccessLevel = entityTable.AccessLevel;
                     schema.CacheType = entityTable.CacheType;
                     schema.IsStoreInDb = entityTable.IsStoreInDb;
-                    schema.IsPersistence = entityTable.IsPersistence;
+                    schema.IncreaseStartNo = entityTable.IncreaseStartNo;
+                    schema.IsExpired = entityTable.IsExpired;
                     schema.EntityName = string.IsNullOrEmpty(entityTable.TableName) ? type.Name : entityTable.TableName;
                     schema.ConnectKey = string.IsNullOrEmpty(entityTable.ConnectKey) ? "" : entityTable.ConnectKey;
                     schema.Condition = entityTable.Condition;
@@ -197,6 +198,11 @@ namespace ZyGames.Framework.Model
                     //schema.DelayLoad = entityTable.DelayLoad;
                     schema.NameFormat = entityTable.TableNameFormat;
                     SetPeriodTime(schema);
+                    //model other set
+                    if (entityTable.IsExpired && entityTable.PeriodTime > 0)
+                    {
+                        schema.PeriodTime = entityTable.PeriodTime;
+                    }
                     schema.Capacity = entityTable.Capacity;
                     schema.PersonalName = entityTable.PersonalName;
 
@@ -235,6 +241,7 @@ namespace ZyGames.Framework.Model
             {
                 throw new ArgumentException(string.Format("\"EntityTable.CacheType:{1}\" attribute of {0} class is error", type.FullName, schema.CacheType), "CacheType");
             }
+            return schema;
         }
 
         /// <summary>
@@ -416,7 +423,7 @@ namespace ZyGames.Framework.Model
 
         private static void SetPeriodTime(SchemaTable schema)
         {
-            if (schema.AccessLevel == AccessLevel.ReadOnly)
+            if (schema.AccessLevel == AccessLevel.ReadOnly || !schema.IsExpired)
             {
                 schema.PeriodTime = 0;
                 return;
@@ -450,7 +457,6 @@ namespace ZyGames.Framework.Model
             {
                 throw new ArgumentNullException("type");
             }
-
             if (type.IsSubclassOf(typeof(LogEntity)) && string.IsNullOrEmpty(schema.NameFormat))
             {
                 schema.NameFormat = LogTableNameFormat;
@@ -479,6 +485,7 @@ namespace ZyGames.Framework.Model
                     column.Id = number;
                     column.Name = string.IsNullOrEmpty(entityField.FieldName) ? property.Name : entityField.FieldName;
                     column.IsIdentity = entityField.IsIdentity;
+                    column.IdentityNo = entityField.IdentityNo;
                     column.IsKey = entityField.IsKey;
                     column.ColumnLength = entityField.ColumnLength;
                     column.ColumnScale = entityField.ColumnScale;
@@ -756,15 +763,28 @@ namespace ZyGames.Framework.Model
                     column.IsKey = keypair.Value.IsKey;
                     column.DbType = keypair.Value.DbType.ToString();
                     column.IsIdentity = keypair.Value.IsIdentity;
+                    column.IdentityNo = keypair.Value.IdentityNo;
                     list.Add(column);
                 }
                 else
                 {
+                    //no modify type: text,blob,byte[], enum,list,dict
                     if ((column.Type == typeof(decimal) && keypair.Value.ColumnScale > 0 && column.Scale != keypair.Value.ColumnScale)
+                        || (keypair.Value.IsSerialized && keypair.Value.DbType == ColumnDbType.Varchar && column.Type == typeof(string) && column.Length != keypair.Value.ColumnLength)
+                        || (keypair.Value.ColumnType.IsEnum && column.Type != typeof(int))
+                        || (keypair.Value.ColumnType == typeof(ushort) && column.Type != typeof(short))
+                        || (keypair.Value.ColumnType == typeof(uint) && column.Type != typeof(int))
+                        || (keypair.Value.ColumnType == typeof(ulong) && column.Type != typeof(long))
                         || (!keypair.Value.IsSerialized &&
                             keypair.Value.ColumnType != typeof(byte[]) &&
-                            column.Type != keypair.Value.ColumnType &&
-                            keypair.Value.ColumnType.IsEnum && column.Type != typeof(int))
+                            !keypair.Value.ColumnType.IsEnum &&
+                            !keypair.Value.IsDictionary &&
+                            !keypair.Value.IsList &&
+                            keypair.Value.ColumnType != typeof(ushort) &&
+                            keypair.Value.ColumnType != typeof(uint) &&
+                            keypair.Value.ColumnType != typeof(ulong) &&
+                            column.Type != keypair.Value.ColumnType
+                            )
                         )
                     {
                         column.Type = keypair.Value.ColumnType;
@@ -773,6 +793,8 @@ namespace ZyGames.Framework.Model
                         column.Isnullable = keypair.Value.Isnullable;
                         column.IsKey = keypair.Value.IsKey;
                         column.DbType = keypair.Value.DbType.ToString();
+                        column.IsIdentity = keypair.Value.IsIdentity;
+                        column.IdentityNo = keypair.Value.IdentityNo;
                         column.IsModify = true;
                         list.Add(column);
                     }
@@ -801,6 +823,7 @@ namespace ZyGames.Framework.Model
                 column.IsKey = keypair.Value.IsKey;
                 column.DbType = keypair.Value.DbType.ToString();
                 column.IsIdentity = keypair.Value.IsIdentity;
+                column.IdentityNo = keypair.Value.IdentityNo;
                 list.Add(column);
             }
             list.Sort((a, b) => a.Id.CompareTo(b.Id));

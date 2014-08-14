@@ -411,6 +411,7 @@ namespace ZyGames.Framework.Cache.Generic.Pool
                 {
                     if (itemPair.Value.HasChanged || !itemPair.Value.IsPeriod)
                     {
+                        //check child object expired process.
                         itemPair.Value.RemoveExpired(itemPair.Key);
                         continue;
                     }

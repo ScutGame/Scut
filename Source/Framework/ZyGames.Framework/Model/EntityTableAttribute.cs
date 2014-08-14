@@ -106,7 +106,7 @@ namespace ZyGames.Framework.Model
         /// <param name="isStoreInDb">缓存变动是否更新到数据库</param>
         /// <param name="connectKey">映射到数据连接Key配置</param>
         /// <param name="tableName">映射到表名</param>
-        /// <param name="periodTime">缓存的生命周期，0：永久</param>
+        /// <param name="periodTime">缓存的生命周期</param>
         /// <param name="personalName">绑定表中主键字段名，如：UserId</param>
         public EntityTableAttribute(AccessLevel accessLevel, CacheType cacheType, bool isStoreInDb, string connectKey, string tableName, int periodTime, string personalName)
         {
@@ -115,8 +115,9 @@ namespace ZyGames.Framework.Model
             IsStoreInDb = isStoreInDb;
             ConnectKey = connectKey;
             TableName = tableName;
-            //PeriodTime = periodTime;
+            PeriodTime = periodTime;
             PersonalName = personalName ?? "UserId";//默认值
+            IsExpired = true;
         }
         /// <summary>
         /// 访问权限级别
@@ -144,12 +145,23 @@ namespace ZyGames.Framework.Model
         /// <summary>
         /// 是否持久化到DB，当从Redis内存移除后
         /// </summary>
+        [Obsolete("", true)]
         public bool IsPersistence { get; set; }
 
-        ///// <summary>
-        ///// 生命周期，单位秒
-        ///// </summary>
-        //public int PeriodTime { get; set; }
+        /// <summary>
+        /// 自增的启始编号[Redis]
+        /// </summary>
+        public long IncreaseStartNo { get; set; }
+
+        /// <summary>
+        /// 是否过期
+        /// </summary>
+        public bool IsExpired { get; set; }
+
+        /// <summary>
+        /// 生命周期，单位秒
+        /// </summary>
+        public int PeriodTime { get; set; }
 
         /// <summary>
         /// 容量

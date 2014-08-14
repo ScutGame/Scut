@@ -144,6 +144,11 @@ namespace ZyGames.Framework.Model
         }
 
         /// <summary>
+        /// 自增开始编号
+        /// </summary>
+        public int IdentityNo { get; set; }
+
+        /// <summary>
         /// 禁用或排除数据库取值
         /// </summary>
         public bool Disable

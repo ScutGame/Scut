@@ -315,6 +315,11 @@ namespace ZyGames.Framework.Cache.Generic
                         if (entity == null) continue;
 
                         SqlStatement statement = sender.GenerateSqlQueue(entity);
+                        if (statement == null)
+                        {
+                            throw new Exception(string.Format("Generate sql of \"{0}\" entity error", entity.GetType().FullName));
+                        }
+
                         var sqlValueBytes = ProtoBufUtils.Serialize(statement);
                         string sqlQueueKey = SqlStatementManager.GetSqlQueueKey(statement.IdentityID);
                         sqlList.Add(new KeyValuePair<string, KeyValuePair<byte[], long>>(sqlQueueKey,
@@ -483,6 +488,7 @@ namespace ZyGames.Framework.Cache.Generic
                     try
                     {
                         string[] queueKey = RedisConnectionPool.ToStringKey(keyBytes).Split('_');
+                        string entityTypeName = RedisConnectionPool.DecodeTypeName(queueKey[0]);
                         string entityParentKey = RedisConnectionPool.GetRedisEntityKeyName(queueKey[0]);
                         byte[] entityKeyBytes = RedisConnectionPool.ToByteKey(queueKey[1]);
 
@@ -500,7 +506,14 @@ namespace ZyGames.Framework.Cache.Generic
                         {
                             setList.Add(new KeyValuePair<string, byte[][]>(entityParentKey, new[] { entityKeyBytes, entityValBytes }));
                         }
-                        if (_enableWriteToDb)
+
+                        bool isStoreInDb = true;
+                        SchemaTable schema;
+                        if (EntitySchemaSet.TryGet(entityTypeName, out schema))
+                        {
+                            isStoreInDb = schema.IsStoreInDb;
+                        }
+                        if (_enableWriteToDb && isStoreInDb)
                         {
                             //增加到Sql等待队列
                             string sqlWaitQueueKey = GetSqlWaitSyncQueueKey(identity);
@@ -748,6 +761,10 @@ namespace ZyGames.Framework.Cache.Generic
                         {
                             if (state == 1) entity.IsDelete = true;
                             SqlStatement statement = sender.GenerateSqlQueue(entity);
+                            if (statement == null)
+                            {
+                                throw new Exception(string.Format("Generate sql of \"{0}\" entity error", typeName));
+                            }
                             var sqlValueBytes = ProtoBufUtils.Serialize(statement);
                             string sqlQueueKey = SqlStatementManager.GetSqlQueueKey(statement.IdentityID);
                             sqlList.Add(new KeyValuePair<string, KeyValuePair<byte[], long>>(sqlQueueKey,

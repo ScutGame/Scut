@@ -42,6 +42,9 @@ namespace ZyGames.Framework.Model
             CanWrite = true;
         }
 
+        /// <summary>
+        /// 反射出的类型参数的个数
+        /// </summary>
         internal int GenericArgs { get; set; }
 
         /// <summary>
@@ -115,6 +118,11 @@ namespace ZyGames.Framework.Model
             get;
             set;
         }
+
+        /// <summary>
+        /// 自增开始编号
+        /// </summary>
+        public int IdentityNo { get; set; }
 
         /// <summary>
         /// 禁用或排除数据库取值

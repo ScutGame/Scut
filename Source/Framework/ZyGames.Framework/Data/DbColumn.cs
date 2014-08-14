@@ -77,6 +77,12 @@ namespace ZyGames.Framework.Data
 		/// <value><c>true</c> if this instance is identity; otherwise, <c>false</c>.</value>
 		public bool IsIdentity{ get; set; }
 
+
+        /// <summary>
+        /// 自增开始编号
+        /// </summary>
+        public int IdentityNo { get; set; }
+
         /// <summary>
         /// Db映射类型
         /// </summary>
