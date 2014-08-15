@@ -61,6 +61,7 @@ namespace ZyGames.Framework.Game.Contract
             }
             _session = GameSession.Get(SessionId)
                 ?? GameSession.CreateNew(Guid.NewGuid(), request);
+            SessionId = _session != null ? _session.SessionId : "";
         }
 
         /// <summary>

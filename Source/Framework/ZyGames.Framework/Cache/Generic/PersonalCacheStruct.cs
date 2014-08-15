@@ -82,7 +82,10 @@ namespace ZyGames.Framework.Cache.Generic
                 if (!collection.TryGetValue(key, out data))
                 {
                     //修正旧版本无personalId参数调用
-                    key = string.IsNullOrEmpty(key) ? personalId : AbstractEntity.CreateKeyCode(personalId, key);
+                    var tempKeys = new List<object>();
+                    tempKeys.Add(personalId);
+                    if (keys.Length > 0) tempKeys.AddRange(keys);
+                    key = string.IsNullOrEmpty(key) ? personalId : AbstractEntity.CreateKeyCode(tempKeys.ToArray());
                     collection.TryGetValue(key, out data);
                 }
             }
