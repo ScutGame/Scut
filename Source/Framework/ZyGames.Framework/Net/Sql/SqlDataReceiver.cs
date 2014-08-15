@@ -140,15 +140,7 @@ namespace ZyGames.Framework.Net.Sql
 
                 command.Parser();
                 sql = command.Sql;
-                try
-                {
-                    return dbprovider.ExecuteReader(CommandType.Text, command.Sql, command.Parameters);
-                }
-                catch (Exception)
-                {
-                    //重执行一次
-                    return dbprovider.ExecuteReader(CommandType.Text, command.Sql, command.Parameters);
-                }
+                return dbprovider.ExecuteReader(CommandType.Text, command.Sql, command.Parameters);
             }
             catch (Exception ex)
             {
