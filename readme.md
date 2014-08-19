@@ -56,13 +56,14 @@ Language:
 
 Demo
 ----------------
-https://github.com/ScutGame/Scut-samples
+https://github.com/ScutGame/Scut-samples<br />
+https://git.oschina.net/scutgame/Scut-samples
 
 
 Resource
 ----------------
 HomePage: http://www.scutgame.com<br />
-Github: https://github.com/scutgame<br />
+Github: https://github.com/scutgame/Scut<br />
 Oschina: https://git.oschina.net/scutgame/Scut<br />
 QQ Group: 138266675<br />
 
