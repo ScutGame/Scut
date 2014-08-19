@@ -235,22 +235,22 @@ namespace ContractTools.WebApp.Base
                             {
                                 case FieldType.UInt:
                                 case FieldType.Int:
-                                    fieldBuilder.Append("writer:writeInt32(\"");
+                                    fieldBuilder.Append("writer.writeInt32(\"");
                                     break;
                                 case FieldType.UShort:
                                 case FieldType.Short:
-                                    fieldBuilder.Append("writer:writeWord(\"");
+                                    fieldBuilder.Append("writer.writeWord(\"");
                                     break;
                                 case FieldType.Date:
                                 case FieldType.ULong:
                                 case FieldType.Long:
-                                    fieldBuilder.Append("writer:writeInt64(\"");
+                                    fieldBuilder.Append("writer.writeInt64(\"");
                                     break;
                                 case FieldType.Float:
-                                    fieldBuilder.Append("writer:writeFloat(\"");
+                                    fieldBuilder.Append("writer.writeFloat(\"");
                                     break;
                                 default:
-                                    fieldBuilder.Append("writer:writeString(\"");
+                                    fieldBuilder.Append("writer.writeString(\"");
                                     break;
                             }
                             fieldBuilder.Append(paramInfo.Field);
@@ -493,7 +493,7 @@ namespace ContractTools.WebApp.Base
                         subRecordVar = subRecordVar.Substring(0, subRecordVar.LastIndexOf('_'));
                     }
                     currTableVar = depth > 0 ? subTableVar : "actionResult";
-                    strTemp.AppendFormat("{0}{1}[\"Children{2}\"] = {3}",
+                    strTemp.AppendFormat("{0}{1}[\"Children{2}\"] = {3};",
                         currIndent,
                         currTableVar,
                         "_" + recordIndex,
