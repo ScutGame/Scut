@@ -255,7 +255,7 @@ namespace ContractTools.WebApp.Base
                             }
                             fieldBuilder.Append(paramInfo.Field);
                             fieldBuilder.Append("\", ");
-                            fieldBuilder.Append(ToFistWordCase(paramInfo.Field));
+                            fieldBuilder.AppendFormat("actionParam.Get<{1}>(\"{0}\")", ToFistWordCase(paramInfo.Field), paramInfo.FieldType.ToString().ToLower());
                             fieldBuilder.Append(");");
                         }
                     }

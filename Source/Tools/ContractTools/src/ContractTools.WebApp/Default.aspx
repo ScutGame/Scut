@@ -174,10 +174,12 @@
                             </asp:TemplateField>
                             <asp:TemplateField HeaderText="参数描述" ItemStyle-Width="16%" ItemStyle-HorizontalAlign="Left">
                                 <EditItemTemplate>
-                                    <asp:TextBox ID="txtDescption" runat="server" Text='<%# Bind("Descption") %><%# Bind("Remark") %>' Width="90%" TextMode="MultiLine"></asp:TextBox>
+                                    <asp:TextBox ID="hiDescption" runat="server" Text='<%# Bind("Descption") %>' Width="90%" Visible="False"></asp:TextBox>
+                                    <asp:TextBox ID="txtDescption" runat="server" Text='<%# Bind("Remark") %>' Width="90%" TextMode="MultiLine"></asp:TextBox>
                                 </EditItemTemplate>
                                 <ItemTemplate>
-                                    <asp:Label ID="LabDescption" runat="server" Text='<%# Bind("Descption") %><%# Bind("Remark") %>'></asp:Label>
+                                    <asp:Label ID="LabDescption" runat="server" Text='<%# Bind("Descption") %>'></asp:Label>
+                                    <asp:Label ID="LabRemark" runat="server" Text='<%# Bind("Remark") %>'></asp:Label>
                                 </ItemTemplate>
                                 <ItemStyle Width="16%"></ItemStyle>
                             </asp:TemplateField>
@@ -253,10 +255,12 @@
                             </asp:TemplateField>
                             <asp:TemplateField HeaderText="参数描述" ItemStyle-Width="16%" ItemStyle-HorizontalAlign="Left">
                                 <EditItemTemplate>
-                                    <asp:TextBox ID="txtDescption" runat="server" Text='<%# Bind("Descption") %><%# Eval("Remark") %>' Width="90%" TextMode="MultiLine"></asp:TextBox>
+                                    <asp:TextBox ID="hiDescption" runat="server" Text='<%# Bind("Descption") %>' Width="90%" Visible="False"></asp:TextBox>
+                                    <asp:TextBox ID="txtDescption" runat="server" Text='<%# Bind("Remark") %>' Width="90%" TextMode="MultiLine"></asp:TextBox>
                                 </EditItemTemplate>
                                 <ItemTemplate>
-                                    <asp:Label ID="LabDescption" runat="server" Text='<%# Bind("Descption") %><%# Bind("Remark") %>'></asp:Label>
+                                    <asp:Label ID="LabDescption" runat="server" Text='<%# Bind("Descption") %>'></asp:Label>
+                                    <asp:Label ID="labRemark" runat="server" Text='<%# Bind("Remark") %>'></asp:Label>
                                 </ItemTemplate>
                                 <ItemStyle Width="16%"></ItemStyle>
                             </asp:TemplateField>

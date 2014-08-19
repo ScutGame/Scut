@@ -360,9 +360,11 @@ namespace ContractTools.WebApp
                 mode.ID = keys.Value.ToInt();
                 mode.ContractID = ddContract.Text.ToInt();
                 mode.ParamType = keys.Values[1].ToInt();
-                mode.Field = ((TextBox)cell.FindControl("txtField")).Text.ToString().Trim();
+                mode.Field = ((TextBox)cell.FindControl("txtField")).Text.Trim();
                 mode.FieldType = ((DropDownList)cell.FindControl("droFieldType")).SelectedValue.ToEnum<FieldType>();
-                mode.Remark = ((TextBox)cell.FindControl("txtDescption")).Text.ToString().Trim();//合并到Remark字段
+                mode.Remark = string.Join(",", ((TextBox)cell.FindControl("hiDescption")).Text.Trim(),
+                    ((TextBox)cell.FindControl("txtDescption")).Text.Trim());//合并到Remark字段
+                mode.Descption = "";
 
                 var conRequired = (DropDownList)cell.FindControl("droRequired");
                 if (conRequired != null)
