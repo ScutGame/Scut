@@ -54,8 +54,8 @@ Source: "..\Lib\Newtonsoft.Json.dll"; DestDir: "{app}\Console"; Flags: ignorever
 Source: "..\Console\NLog.config"; DestDir: "{app}\Console"; Flags: ignoreversion
 Source: "..\Lib\NLog.dll"; DestDir: "{app}\Console"; Flags: ignoreversion
 Source: "..\Lib\protobuf-net.dll"; DestDir: "{app}\Console"; Flags: ignoreversion
-Source: "..\Lib\ScutSMS.exe"; DestDir: "{app}\Console"; Flags: ignoreversion
-Source: "..\Lib\ScutSMS Readme.chm"; DestDir: "{app}\Console"; Flags: ignoreversion
+Source: "..\Console\ScutSMS.exe"; DestDir: "{app}\Console"; Flags: ignoreversion
+Source: "..\Console\ScutSMS Readme.chm"; DestDir: "{app}\Console"; Flags: ignoreversion
 Source: "..\Lib\ServiceStack.Common.dll"; DestDir: "{app}\Console"; Flags: ignoreversion
 Source: "..\Lib\ServiceStack.Interfaces.dll"; DestDir: "{app}\Console"; Flags: ignoreversion
 Source: "..\Lib\ServiceStack.Redis.dll"; DestDir: "{app}\Console"; Flags: ignoreversion
