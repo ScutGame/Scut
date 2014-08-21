@@ -76,40 +76,39 @@ Language:
     $ git clone git://git.oschina.net/scutgame/Scut.git
 
 
-## Git for demo
+## Git for samples
 
     $ git clone git://github.com/ScutGame/Scut-samples.git
     or
     $ git clone git://git.oschina.net/scutgame/Scut-samples.git
+
+## Update Log
+
+### Version: 6.7.8.7 (2014-8-15) Stable
+
+* Add server to server for Http/Socket communication support
+* Add support for the one-way mode, not the output response
+* Add ulong/uint/ushort of communication parameter types
+* Add script encryption of release, use "ScutSecurity.dll" library
+* Add use "EventNotifier" of class asynchronous and timeout processing events
+* Add the name of the database table using date format
+* Add database field supported BLOB types
+* Add entity property supported ulong/ushort/uint types
+* Modify reconstruction of Session and User class
+* Modify entity definition multiple primary from the Redis loading data problem
+
+old version [more](http://scutgame.com/log).
 
 
 ## Resource
 
 HomePage: http://www.scutgame.com
 
-Github: https://github.com/scutgame/Scut
+Github: https://github.com/scutgame/Scut.git
 
-Oschina: https://git.oschina.net/scutgame/Scut
+Oschina: https://git.oschina.net/scutgame/Scut.git
 
 QQ Group: 138266675
-
-
-## Update Log
-
-### Version: 6.7.8.7 (2014-8-15) Stable
-
-* 增加服务器之间http/socket通讯支持
-* 增加请求支持单向模式，不输出响应
-* 增加ulong、uint、ushort的通讯参数类型
-* 增加脚本加密发布，提供ScutSecurity类库支持
-* 增加EventNotifier类管理异步与超时处理事件
-* 增加数据库表名支持DateTime格式化生成规则
-* 增加数据库字段支持blob类型存储
-* 增加Model字段支持ulong,ushort,uint类型
-* 修改优化Session与User对象
-* 修改Redis多个Key时加载数据的问题
-
-old version [more](http://scutgame.com/log).
 
 
 ## License
