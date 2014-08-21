@@ -1,94 +1,119 @@
-What's Scut Game Server Framework?
-=================
-Scut is a free, open source, Stable game server framework, which support C#/Python/Lua script. Scut's design philosophy is to "Developing online game easier", It includes a development framework and no-sql/database storage services, and many game system modules. Save a lot of game developers working hours, it allows the user to focus on business logic. Scut Game Server Framework also provide ScutSDK(eg. for Cocos2d-x) which make communications between server and client very easy.
+# README
 
-Benefits Features
-----------------
-###Platform
-<ul>
-<li>Windows
-<li>Linux
-<li>Mac
-</ul>
+[![Build Status](http://scutgame.com/images/passing.png?branch=6.7.8.7)](http://scutgame.com/download/)
 
-###Data Persistence (DBs)
-<ul>
-<li>SQL: MySQL/MS SQL Server
-<li>NoSQL: Redis
-</ul>
 
-###Protocols: Http/Socket
-<ul>
-<li>Transfer protocol is very lean and slim
-<li>Scut wraps up the networking layer of each client platform
-<li>Communicate cross-platform and cross-protocol
-<li>Code generate automaticly: forget about de-/serialization
-</ul>
+## What's Scut?
 
-###Server Dev Framework
+Scut is a free, open source, Stable game server framework, which support 
+C#/Python/Lua script. Scut's design philosophy is to "Developing online game easier", 
+It includes a development framework and no-sql/database storage services, 
+and many game system modules. Save a lot of game developers working hours, 
+it allows the user to focus on business logic. Scut Game Server Framework 
+also provide ScutSDK(eg. for Cocos2d-x) which make communications between 
+server and client very easy.
+
+
+## Requirements
+
+Scut is only supported on .Net Framework 4.5.1 and up, you need a Redis of NoSQL as well.
+
+
+## Benefits Features
+
+### Platform
+
+* Windows
+* Linux
+* Mac
+
+
+### Data Persistence (DBs)
+
+* SQL: MySQL/MS SQL Server
+* NoSQL: Redis
+
+
+### Protocols: Http/Socket
+
+* Transfer protocol is very lean and slim
+* Scut wraps up the networking layer of each client platform
+* Communicate cross-platform and cross-protocol
+* Code generate automaticly: forget about de-/serialization
+
+
+### Server Dev Framework
 Language:
-<ul>
-<li>C#
-<li>Python
-<li>Lua
-</ul>
+
+* C#
+* Python
+* Lua
 
 
-###Vast Support of Client Platforms
-<ul>
-<li>All client platforms interoperate(iOS vs Android vs PC)
-<li>Major client platforms supported
-<li>Android(eg. Cocos2d-x)
-<li>iOS(eg. Cocos2d-x)
-<li>Win32
-<li>.NET
-<li>Mac OSX
-<li>Mono
-<li>Xamarin
-</ul>
+### Vast Support of Client Platforms
 
-###Host Scut with major provider
-<ul>
-<li>Microsoft Azure
-<li>Amazon EC2
-</ul>
+* All client platforms interoperate(iOS vs Android vs PC)
+* Major client platforms supported
+* Android(eg. Cocos2d-x)
+* iOS(eg. Cocos2d-x)
+* Win32
+* .NET
+* Mac OSX
+* Mono
+* Xamarin
 
 
-Demo
-----------------
-https://github.com/ScutGame/Scut-samples<br />
-https://git.oschina.net/scutgame/Scut-samples
+### Host Scut with major provider
+
+* Microsoft Azure
+* Amazon EC2
 
 
-Resource
-----------------
-HomePage: http://www.scutgame.com<br />
-Github: https://github.com/scutgame/Scut<br />
-Oschina: https://git.oschina.net/scutgame/Scut<br />
-QQ Group: 138266675<br />
+## Git for developers
+
+    $ git clone git://github.com/ScutGame/Scut.git
+    or
+    $ git clone git://git.oschina.net/scutgame/Scut.git
 
 
-Update Log
-----------------
-###Version: 6.7.8.7 (2014-8-15) Stable
-```
-增加服务器之间http/socket通讯支持
-增加请求支持单向模式，不输出响应
-增加ulong、uint、ushort的通讯参数类型
-增加脚本加密发布，提供ScutSecurity类库支持
-增加EventNotifier类管理异步与超时处理事件
-增加数据库表名支持DateTime格式化生成规则
-增加数据库字段支持blob类型存储
-增加Model字段支持ulong,ushort,uint类型
+## Git for demo
 
-修改优化Session与User对象
-修改Redis多个Key时加载数据的问题
-```
+    $ git clone git://github.com/ScutGame/Scut-samples.git
+    or
+    $ git clone git://git.oschina.net/scutgame/Scut-samples.git
+
+
+## Resource
+
+HomePage: http://www.scutgame.com
+
+Github: https://github.com/scutgame/Scut
+
+Oschina: https://git.oschina.net/scutgame/Scut
+
+QQ Group: 138266675
+
+
+## Update Log
+
+### Version: 6.7.8.7 (2014-8-15) Stable
+
+* 增加服务器之间http/socket通讯支持
+* 增加请求支持单向模式，不输出响应
+* 增加ulong、uint、ushort的通讯参数类型
+* 增加脚本加密发布，提供ScutSecurity类库支持
+* 增加EventNotifier类管理异步与超时处理事件
+* 增加数据库表名支持DateTime格式化生成规则
+* 增加数据库字段支持blob类型存储
+* 增加Model字段支持ulong,ushort,uint类型
+* 修改优化Session与User对象
+* 修改Redis多个Key时加载数据的问题
+
 old version [more](http://scutgame.com/log).
 
 
-License
---------------
+## License
+
 FreeBSD License
 ```
 Copyright (c) 2013-2015 scutgame.com
