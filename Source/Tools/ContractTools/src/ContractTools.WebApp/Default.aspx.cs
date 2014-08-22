@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -287,6 +288,54 @@ namespace ContractTools.WebApp
             lblEnumDescp.Text = enumBuilder.ToString();
         }
 
+        private string FormatTips(string text)
+        {
+            int i, j;
+            int slnid = 0;
+            try
+            {
+                slnid = int.Parse(ddlSolution.Text);
+            }
+            catch
+            {
+            }
+            Hashtable ht = TemplateHelper.LoadEnumApplication(slnid, false);
+            StringBuilder sb = new StringBuilder();
+            while (true)
+            {
+                i = text.IndexOfAny(new char[] { '[', '【' });
+                if (i != -1)
+                {
+                    j = text.IndexOfAny(new char[] { ']', '】' });
+                    if (j != -1)
+                    {
+                        sb.Append(text.Substring(0, i));
+                        string innertext = text.Substring(i, j - i + 1);
+                        text = text.Substring(j + 1);
+                        innertext = innertext.Replace('[', '【').Replace(']', '】');
+                        if (ht.Contains(innertext))
+                        {
+                            sb.Append(string.Format("<a href='#' onmouseover='ShowPrompt(event, \"{1}\")'>{0}</a>", innertext, ht[innertext].ToString().Replace("\r", "").Replace("\n", "<br>")));
+                        }
+                        else
+                        {
+                            sb.Append(string.Format("<a href='#' onmouseover='ShowPrompt(event, \"{1}\")'>{0}</a>", innertext, "暂无此枚举信息"));
+                        }
+                    }
+                    else
+                    {
+                        sb.Append(text);
+                        break;
+                    }
+                }
+                else
+                {
+                    sb.Append(text);
+                    break;
+                }
+            }
+            return sb.ToString();
+        }
         #endregion
 
         #region event
@@ -362,7 +411,7 @@ namespace ContractTools.WebApp
                 mode.ParamType = keys.Values[1].ToInt();
                 mode.Field = ((TextBox)cell.FindControl("txtField")).Text.Trim();
                 mode.FieldType = ((DropDownList)cell.FindControl("droFieldType")).SelectedValue.ToEnum<FieldType>();
-                mode.Remark = string.Join(",", ((TextBox)cell.FindControl("hiDescption")).Text.Trim(),
+                mode.Remark = JoinArray(',', ((TextBox)cell.FindControl("hiDescption")).Text.Trim(),
                     ((TextBox)cell.FindControl("txtDescption")).Text.Trim());//合并到Remark字段
                 mode.Descption = "";
 
@@ -386,6 +435,17 @@ namespace ContractTools.WebApp
                 Response.Write("错误信息:" + erro.Message);
             }
 
+        }
+
+        private string JoinArray(char split, params string[] arr)
+        {
+            string str = string.Empty;
+            foreach (var s in arr)
+            {
+                if (string.IsNullOrEmpty(s)) continue;
+                str += s + split;
+            }
+            return str.TrimEnd(split);
         }
 
         protected void OnGridRowDataBound(object sender, GridViewRowEventArgs e)
@@ -417,6 +477,16 @@ namespace ContractTools.WebApp
                             e.Row.CssClass = "grid-row-change";
                         }
                     }
+                }
+                Label lblDescption = (Label)e.Row.FindControl("LabDescption");
+                if (lblDescption != null)
+                {
+                    lblDescption.Text = FormatTips(lblDescption.Text);
+                }
+                Label lblRemark = (Label)e.Row.FindControl("LabRemark");
+                if (lblRemark != null)
+                {
+                    lblRemark.Text = FormatTips(lblRemark.Text);
                 }
             }
         }

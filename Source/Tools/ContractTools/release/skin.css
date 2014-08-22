@@ -48,3 +48,5 @@ ul{ list-style: none;}
 .space{ padding-right: 5px;}
 
 .codeBox{ width: 100%;height: 542px;border: 0;}
+
+.promptStyle{border: solid 1px #eee;padding:3px;width: 200px;min-height: 100px;visibility: hidden;background-color: rgb(253,253,203);position: absolute;overflow:auto;}

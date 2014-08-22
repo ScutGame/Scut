@@ -6,8 +6,28 @@
 <head runat="server">
     <title>协议工具平台</title>
     <link href="skin.css" rel="stylesheet" />
+    <script language="javascript" type="text/javascript">
+        //传入 event 对象
+        function ShowPrompt(objEvent, text) {
+            var divObj = document.getElementById("promptDiv");
+            divObj.style.visibility = "visible";
+            //使用这一行代码，提示层将出现在鼠标附近
+
+            divObj.style.left = objEvent.clientX + 5 + "px";   //clientX 为鼠标在窗体中的 x 坐标值
+            divObj.innerHTML = text;
+            divObj.style.top = objEvent.clientY + 5 + "px";     //clientY 为鼠标在窗体中的 y 坐标值
+        }
+        //隐藏提示框
+
+        function HiddenPrompt() {
+            divObj = document.getElementById("promptDiv");
+            divObj.style.visibility = "hidden";
+        }
+
+    </script>
 </head>
 <body>
+        <div id="promptDiv" class="promptStyle" onmouseout="HiddenPrompt()"></div>
     <form id="form1" runat="server">
         <div class="layout">
             <% if (IsEdit){ %>
