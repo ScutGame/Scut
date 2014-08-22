@@ -78,9 +78,13 @@ Language:
 
 ## Git for samples
 
+If the Chinese downloaded using [oschina Git](https://git.oschina.net/scutgame/Scut-samples),
+else using [Github](https://github.com/ScutGame/Scut-samples)
+
     $ git clone git://github.com/ScutGame/Scut-samples.git
     or
     $ git clone git://git.oschina.net/scutgame/Scut-samples.git
+
 
 ## Update Log
 
