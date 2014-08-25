@@ -133,6 +133,14 @@ public class Net : MonoBehaviour, IHttpCallback
         }
     }
 
+    void OnApplicationQuit()
+    {
+        if (mSocket != null)
+        {
+            mSocket.Close();
+        }
+    }
+
     public static Net Instance
     {
         get
