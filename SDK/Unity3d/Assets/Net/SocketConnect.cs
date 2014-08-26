@@ -316,10 +316,18 @@ public class SocketConnect
             _socket.Shutdown(SocketShutdown.Both);
             _socket.Close();
             _socket = null;
+
+            _heartbeatThread.Dispose();
+            _heartbeatThread = null;
+
+            _thread.Abort();
+            _thread = null;
         }
         catch (Exception)
         {
             _socket = null;
+            _heartbeatThread = null;
+            _thread = null;
         }
     }
 
