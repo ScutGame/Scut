@@ -130,6 +130,11 @@ public class Net : MonoBehaviour, IHttpCallback
             {
                 OnSocketRespond(data);
             }
+            data = mSocket.DequeuePush();
+            if (data != null)
+            {
+                OnPushCallback(data);
+            }
         }
     }
 
@@ -176,6 +181,9 @@ public class Net : MonoBehaviour, IHttpCallback
         {
             throw new ArgumentException(string.Format("Not found {0} of GameAction object.", actionId));
         }
+        //if (SceneChangeManager.mInstance != null)
+        //    SceneChangeManager.mInstance.ShowLoading(true);
+
         gameAction.Callback += callback;
         if (NetWriter.IsSocket())
         {
@@ -202,7 +210,7 @@ public class Net : MonoBehaviour, IHttpCallback
             string[] arr = strUrl.Split(new char[] { ':' });
             int nPort = int.Parse(arr[1]);
             mSocket = new SocketConnect(arr[0], nPort, formater);
-            mSocket.PushCallback += OnPushCallback;
+            
         }
         gameAction.Head.MsgId = NetWriter.MsgId - 1;
 
@@ -348,4 +356,5 @@ public class Net : MonoBehaviour, IHttpCallback
         }
 
     }
+  
 }
