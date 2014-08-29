@@ -37,6 +37,11 @@ namespace ZyGames.Framework.Common.Event
     public class NotifyEventArgs : EventArgs
     {
         /// <summary>
+        /// Whether to interrupt
+        /// </summary>
+        public bool Interrupt { get; set; }
+
+        /// <summary>
         /// User object
         /// </summary>
         public object Target { get; set; }

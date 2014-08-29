@@ -560,6 +560,7 @@ namespace ZyGames.Framework.RPC.Sockets
         private void HandleBadAccept(SocketAsyncEventArgs acceptEventArgs)
         {
             ResetSAEAObject(acceptEventArgs);
+            acceptEventArgs.AcceptSocket = null;
             acceptEventArgsPool.Push(acceptEventArgs);
             maxConnectionsEnforcer.Release();
         }

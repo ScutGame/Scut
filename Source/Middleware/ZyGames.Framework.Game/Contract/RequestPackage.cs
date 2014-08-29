@@ -135,6 +135,7 @@ namespace ZyGames.Framework.Game.Contract
         {
             if (session != null)
             {
+                SessionId = session.SessionId;
                 session.ProxyId = ProxyId;
             }
             Session = session;

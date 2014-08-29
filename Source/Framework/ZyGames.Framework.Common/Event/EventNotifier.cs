@@ -92,6 +92,10 @@ namespace ZyGames.Framework.Common.Event
                             NotifyEventArgs handle;
                             if (_handlePools.TryDequeue(out handle))
                             {
+                                if (handle.Interrupt)
+                                {
+                                    continue;
+                                }
                                 if (handle.Check())
                                 {
                                     handle.OnCallback();
@@ -141,6 +145,10 @@ namespace ZyGames.Framework.Common.Event
                     NotifyEventArgs handle;
                     while (_asyncHandlePools.TryDequeue(out handle))
                     {
+                        if (handle.Interrupt)
+                        {
+                            continue;
+                        }
                         if (handle.Check())
                         {
                             handle.OnCallback();

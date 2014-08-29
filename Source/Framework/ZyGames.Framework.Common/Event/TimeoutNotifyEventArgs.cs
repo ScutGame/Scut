@@ -53,7 +53,8 @@ namespace ZyGames.Framework.Common.Event
         /// <returns></returns>
         protected internal override bool Check()
         {
-            return DateTime.Now - RefreshDate > Timeout;
+            return DateTime.Now - RefreshDate > Timeout &&
+                base.Check();
         }
 
         internal DateTime RefreshDate { get; set; }

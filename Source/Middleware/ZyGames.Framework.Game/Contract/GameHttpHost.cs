@@ -49,6 +49,7 @@ namespace ZyGames.Framework.Game.Contract
             package.Bind(session);
             ActionGetter actionGetter = actionDispatcher.GetActionGetter(package);
             BaseGameResponse response = new HttpGameResponse(context.Response);
+            response.WriteErrorCallback += actionDispatcher.ResponseError;
             DoAction(actionGetter, response);
         }
 

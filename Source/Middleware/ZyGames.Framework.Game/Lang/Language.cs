@@ -133,16 +133,24 @@ namespace ZyGames.Framework.Game.Lang
         /// The no login or timeout code
         /// </summary>
         public int TimeoutCode = 10001;
+
         /// <summary>
         /// Was kicked out of the server error code
         /// </summary>
         /// <value>The kicked out code.</value>
         public int KickedOutCode = 10002;
+
         /// <summary>
         /// Request param error code
         /// </summary>
         /// <value>The validate code.</value>
         public int ValidateCode = 10003;
+
+        /// <summary>
+        ///  Duplicate of error code
+        /// </summary>
+        /// <value>The kicked out code.</value>
+        public int DuplicateCode = 10004;
 
         /// <summary>
         /// 验签出错

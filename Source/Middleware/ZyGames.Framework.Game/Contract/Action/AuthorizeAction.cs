@@ -82,13 +82,19 @@ namespace ZyGames.Framework.Game.Contract.Action
             switch (status)
             {
                 case LoginStatus.NoLogin:
+                case LoginStatus.Timeout:
                     ErrorCode = Language.Instance.TimeoutCode;
                     ErrorInfo = Language.Instance.AcountNoLogin;
                     result = false;
                     break;
                 case LoginStatus.Logined:
-                    ErrorCode = Language.Instance.TimeoutCode;
+                    ErrorCode = Language.Instance.DuplicateCode;
                     ErrorInfo = Language.Instance.AcountLogined;
+                    result = false;
+                    break;
+                case LoginStatus.Exit:
+                    ErrorCode = Language.Instance.KickedOutCode;
+                    ErrorInfo = Language.Instance.AcountIsLocked;
                     result = false;
                     break;
                 case LoginStatus.Success:
@@ -129,13 +135,20 @@ namespace ZyGames.Framework.Game.Contract.Action
         /// Checks the user.
         /// </summary>
         /// <returns>The user.</returns>
-        /// <param name="gameUser">Game user.</param>
-        protected LoginStatus CheckUser(out IUser gameUser)
+        /// <param name="user">Game user.</param>
+        protected LoginStatus CheckUser(out IUser user)
         {
-            gameUser = null;
+            user = null;
             if (Current != null)
             {
-                return Current.IsAuthorized ? LoginStatus.Success : LoginStatus.Logined;
+                user = Current.User;
+                return Current.IsAuthorized
+                    ? LoginStatus.Success
+                    : Current.IsTimeout
+                        ? LoginStatus.Timeout
+                        : string.IsNullOrEmpty(Current.OldSessionId)
+                            ? LoginStatus.NoLogin
+                            : LoginStatus.Logined;
             }
             return LoginStatus.NoLogin;
         }

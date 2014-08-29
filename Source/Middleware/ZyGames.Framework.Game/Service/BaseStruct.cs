@@ -143,7 +143,11 @@ namespace ZyGames.Framework.Game.Service
                 St = st;
             }
             Sid = actionGetter.GetSessionId();
-            Current = GameSession.Get(Sid) ?? GameSession.Get(_userId);
+            Current = GameSession.Get(Sid);
+            if (Current == null)
+            {
+                Current = GameSession.Get(_userId);
+            }
             InitAction();
             InitChildAction();
         }

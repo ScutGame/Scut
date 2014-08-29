@@ -61,7 +61,7 @@ namespace ZyGames.Framework.Game.Contract
             _globalSession = new ConcurrentDictionary<Guid, GameSession>();
             _userHash = new ConcurrentDictionary<int, Guid>();
             _remoteHash = new ConcurrentDictionary<string, Guid>();
-            LoadUnLineData();
+            //LoadUnLineData();//不能恢复user对象
         }
 
         private static void LoadUnLineData()
@@ -78,7 +78,12 @@ namespace ZyGames.Framework.Game.Contract
                     var temp = ProtoBufUtils.Deserialize<ConcurrentDictionary<Guid, GameSession>>(data);
                     if (temp != null)
                     {
-                        _globalSession = temp;
+                        var paris = temp.Where(p =>
+                        {
+                            p.Value.UserId = 0;//reset userid
+                            return !p.Value.CheckExpired();
+                        }).ToArray();
+                        _globalSession = new ConcurrentDictionary<Guid, GameSession>(paris);
                     }
                 });
             }
@@ -92,8 +97,9 @@ namespace ZyGames.Framework.Game.Contract
         {
             try
             {
-                byte[] data = ProtoBufUtils.Serialize(_globalSession);
-                RedisConnectionPool.Process(client => client.Set(sessionRedisKey, data));
+                //不能恢复user对象 不需要存储
+                //byte[] data = ProtoBufUtils.Serialize(_globalSession);
+                //RedisConnectionPool.Process(client => client.Set(sessionRedisKey, data));
             }
             catch (Exception er)
             {
@@ -123,9 +129,9 @@ namespace ZyGames.Framework.Game.Contract
                 foreach (var pair in _globalSession)
                 {
                     var session = pair.Value;
-                    if (session.LastActivityTime < MathUtils.Now.AddSeconds(-Timeout))
+                    if (session != null && session.CheckExpired())
                     {
-                        pair.Value.Reset();
+                        session.Reset();
                         //todo session
                         TraceLog.ReleaseWriteDebug("User {0} sessionId{1} is expire {2}({3}sec)",
                             session.UserId,
@@ -314,6 +320,7 @@ namespace ZyGames.Framework.Game.Contract
         /// <summary>
         /// 获得锁策略
         /// </summary>
+        [JsonIgnore]
         public IMonitorStrategy MonitorLock
         {
             get { return _monitorLock; }
@@ -382,13 +389,12 @@ namespace ZyGames.Framework.Game.Contract
         /// <param name="user"></param>
         public void Bind(IUser user)
         {
-            UserId = user.GetUserId();
-            int preUserId = UserId;
-            if (preUserId > 0)
+            int userId = user.GetUserId();
+            if (userId > 0)
             {
                 //解除UserId与前一次的Session连接对象绑定
                 Guid sid;
-                if (_userHash.TryGetValue(preUserId, out sid))
+                if (_userHash.TryGetValue(userId, out sid))
                 {
                     var session = Get(sid);
                     if (session != null)
@@ -396,8 +402,9 @@ namespace ZyGames.Framework.Game.Contract
                         session.UnBind();
                     }
                 }
-                _userHash[preUserId] = KeyCode;
             }
+            _userHash[userId] = KeyCode;
+            UserId = userId;
             User = user;
         }
 
@@ -408,6 +415,7 @@ namespace ZyGames.Framework.Game.Contract
         {
             User = null;
             UserId = 0;
+            OldSessionId = SessionId;
         }
 
         /// <summary>
@@ -416,7 +424,7 @@ namespace ZyGames.Framework.Game.Contract
         [JsonIgnore]
         public bool IsAuthorized
         {
-            get { return User != null; }
+            get { return User != null && UserId > 0; }
         }
 
         /// <summary>
@@ -449,16 +457,26 @@ namespace ZyGames.Framework.Game.Contract
             }
         }
 
+        private bool CheckExpired()
+        {
+            return LastActivityTime < MathUtils.Now.AddSeconds(-Timeout);
+        }
+
         private void Reset()
         {
+            IsTimeout = true;
             GameSession session;
-            if (_globalSession.TryRemove(KeyCode, out session) && session._exSocket != null)
+            _globalSession.TryRemove(KeyCode, out session);
+            if (_exSocket != null)
             {
                 //设置Socket为Closed的状态, 并未将物理连接马上中断
-                session._exSocket.IsClosed = true;
+                _exSocket.IsClosed = true;
             }
             Guid code;
-            _userHash.TryRemove(UserId, out code);
+            if (_userHash.TryRemove(UserId, out code))
+            {
+                UnBind();
+            }
 
             if (!string.IsNullOrEmpty(ProxyId)) _remoteHash.TryRemove(ProxyId, out code);
         }
@@ -521,6 +539,12 @@ namespace ZyGames.Framework.Game.Contract
         /// </summary>
         [ProtoMember(5)]
         public DateTime LastActivityTime { get; internal set; }
+
+        /// <summary>
+        /// 是否会话超时
+        /// </summary>
+        [JsonIgnore]
+        public bool IsTimeout { get; set; }
 
         private string _proxyId;
 
