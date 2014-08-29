@@ -282,10 +282,10 @@ namespace ContractTools.WebApp
             }
             foreach (var dr in list)
             {
-                enumBuilder.AppendFormat("【{0}】－{1}<br>", dr.enumName, dr.enumDescription);
-                enumBuilder.AppendFormat("┗{0}<br><br>", dr.enumValueInfo.Replace("\r\n", "<br>┗").Replace("\n", "<br>┗").TrimEnd('┗'));
+                enumBuilder.AppendFormat("<div id=\"tabEnum_{0}\">【{0}】－{1}<br>", dr.enumName, dr.enumDescription);
+                enumBuilder.AppendFormat("┗{0}<br><br></div>", dr.enumValueInfo.Replace("\r\n", "<br>┗").Replace("\n", "<br>┗").TrimEnd('┗'));
             }
-            lblEnumDescp.Text = enumBuilder.ToString();
+            lblEnumDescp.InnerHtml = enumBuilder.ToString();
         }
 
         private string FormatTips(string text)
@@ -312,10 +312,12 @@ namespace ContractTools.WebApp
                         sb.Append(text.Substring(0, i));
                         string innertext = text.Substring(i, j - i + 1);
                         text = text.Substring(j + 1);
-                        innertext = innertext.Replace('[', '【').Replace(']', '】');
+                        innertext = innertext.TrimEnd().Replace('[', '【').Replace(']', '】');
                         if (ht.Contains(innertext))
                         {
-                            sb.Append(string.Format("<a href='#' onmouseover='ShowPrompt(event, \"{1}\")'>{0}</a>", innertext, ht[innertext].ToString().Replace("\r", "").Replace("\n", "<br>")));
+                            string enumName = innertext.Substring(1, innertext.Length - 2);
+                            string enumValuses = ht[innertext].ToString().Replace("\r", "").Replace("\n", "<br>");
+                            sb.Append(string.Format("<a href='#tabEnum_{2}' onmouseover='ShowPrompt(event, \"{1}\")'>{0}</a>", innertext, enumValuses, enumName));
                         }
                         else
                         {

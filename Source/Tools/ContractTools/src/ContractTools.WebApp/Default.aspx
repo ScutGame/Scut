@@ -363,7 +363,7 @@
                             </div>
                         </div>
                         <div id="tab_3" class="tab_item">
-                            <asp:Label ID="lblEnumDescp" runat="server"></asp:Label>
+                            <div id="lblEnumDescp" runat="server"></div>
                         </div>
                         <div id="tab_4" class="tab_item">
                             <iframe id="ifrTest" runat="server" style="width: 100%; height: 100%; border: 0;"></iframe>
