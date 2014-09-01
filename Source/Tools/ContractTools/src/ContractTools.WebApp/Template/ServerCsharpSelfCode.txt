@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 ##RefNamespace##
 
@@ -8,7 +8,7 @@ namespace ##Namespace##
     /// <summary>
     /// ##Description##
     /// </summary>
-    /// <remarks>继续BaseStruct类:不检查用户合法性请求;AuthorizeAction:有验证合法性</remarks>
+    /// <remarks>继续BaseStruct类:允许无身份认证的请求;AuthorizeAction:需要身份认证的请求</remarks>
     public class Action##ID## : AuthorizeAction
     {
         public Action##ID##(ActionGetter actionGetter)
