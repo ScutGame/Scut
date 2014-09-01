@@ -172,13 +172,13 @@ namespace ZyGames.Framework.Common
                     index = pos;
                     for (int i = 1; i < pattern.Length; i++)
                     {
-                        if (pattern[i] != bytes[pos + i])
+                        if (pos + i >= bytes.Length || pattern[i] != bytes[pos + i])
                         {
                             index = -1;
                             break;
                         }
                     }
-                    if (index > 0)
+                    if (index > -1)
                     {
                         break;
                     }
