@@ -58,7 +58,7 @@ namespace ZyGames.Framework.Common.Event
             Interlocked.Exchange(ref _runningQueue, 1);
             queueProcessThread = new Thread(ProcessQueue);
             queueProcessThread.Start();
-            _notifyTimer = new Timer(OnNotifyCallback, null, 100, 1000);
+            _notifyTimer = new Timer(OnNotifyCallback, null, 100, 100);
         }
 
         /// <summary>
