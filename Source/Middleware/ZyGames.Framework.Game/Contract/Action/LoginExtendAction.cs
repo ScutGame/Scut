@@ -54,7 +54,7 @@ namespace ZyGames.Framework.Game.Contract.Action
 		/// </summary>
 		/// <param name="actionId">Action identifier.</param>
 		/// <param name="httpGet">Http get.</param>
-        protected LoginExtendAction(short actionId, ActionGetter httpGet)
+        protected LoginExtendAction(int actionId, ActionGetter httpGet)
             : base(actionId, httpGet)
         {
         }

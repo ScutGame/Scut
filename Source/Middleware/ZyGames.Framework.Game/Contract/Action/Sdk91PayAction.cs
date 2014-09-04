@@ -44,7 +44,7 @@ namespace ZyGames.Framework.Game.Contract.Action
 		/// </summary>
 		/// <param name="aActionId">A action identifier.</param>
 		/// <param name="httpGet">Http get.</param>
-        public Sdk91PayAction(short aActionId, ActionGetter httpGet)
+        public Sdk91PayAction(int aActionId, ActionGetter httpGet)
             : base(aActionId, httpGet)
         {
         }

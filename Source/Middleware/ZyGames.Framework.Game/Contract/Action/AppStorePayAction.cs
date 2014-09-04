@@ -54,7 +54,7 @@ namespace ZyGames.Framework.Game.Contract.Action
 		/// </summary>
 		/// <param name="aActionId">A action identifier.</param>
 		/// <param name="httpGet">Http get.</param>
-        public AppStorePayAction(short aActionId, ActionGetter httpGet)
+        public AppStorePayAction(int aActionId, ActionGetter httpGet)
             : base(aActionId, httpGet)
         {
         }

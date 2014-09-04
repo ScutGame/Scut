@@ -49,7 +49,7 @@ namespace ZyGames.Framework.Game.Contract.Action
         /// </summary>
         /// <param name="actionId">Action identifier.</param>
         /// <param name="httpGet">Http get.</param>
-        protected ReAccessTokenAction(short actionId, ActionGetter httpGet)
+        protected ReAccessTokenAction(int actionId, ActionGetter httpGet)
             : base(actionId, httpGet)
         {
 

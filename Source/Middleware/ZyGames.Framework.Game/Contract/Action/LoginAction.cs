@@ -106,7 +106,7 @@ namespace ZyGames.Framework.Game.Contract.Action
         /// </summary>
         /// <param name="actionId">Action identifier.</param>
         /// <param name="httpGet">Http get.</param>
-        protected LoginAction(short actionId, ActionGetter httpGet)
+        protected LoginAction(int actionId, ActionGetter httpGet)
             : base(actionId, httpGet)
         {
             LoginProxy = new LoginProxy(httpGet);
