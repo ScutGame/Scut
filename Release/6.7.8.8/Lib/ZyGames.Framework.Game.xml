@@ -2800,7 +2800,7 @@
             Checks the user.
             </summary>
             <returns>The user.</returns>
-            <param name="gameUser">Game user.</param>
+            <param name="user">Game user.</param>
         </member>
         <member name="M:ZyGames.Framework.Game.Contract.Action.AuthorizeAction.DoRefresh(System.Int32,ZyGames.Framework.Game.Context.IUser)">
             <summary>
@@ -3237,7 +3237,7 @@
             触控安卓充值
             </summary>
         </member>
-        <member name="M:ZyGames.Framework.Game.Contract.Action.AndroidPayAction.#ctor(System.Int16,ZyGames.Framework.Game.Service.ActionGetter)">
+        <member name="M:ZyGames.Framework.Game.Contract.Action.AndroidPayAction.#ctor(System.Int32,ZyGames.Framework.Game.Service.ActionGetter)">
             <summary>
             Initializes a new instance of the <see cref="T:ZyGames.Framework.Game.Contract.Action.AndroidPayAction"/> class.
             </summary>
@@ -3266,7 +3266,7 @@
             App store detail action.
             </summary>
         </member>
-        <member name="M:ZyGames.Framework.Game.Contract.Action.AppStoreDetailAction.#ctor(System.Int16,ZyGames.Framework.Game.Service.ActionGetter)">
+        <member name="M:ZyGames.Framework.Game.Contract.Action.AppStoreDetailAction.#ctor(System.Int32,ZyGames.Framework.Game.Service.ActionGetter)">
             <summary>
             Initializes a new instance of the <see cref="T:ZyGames.Framework.Game.Contract.Action.AppStoreDetailAction"/> class.
             </summary>
@@ -3295,7 +3295,7 @@
             Appstor 充值
             </summary>
         </member>
-        <member name="M:ZyGames.Framework.Game.Contract.Action.AppStorePayAction.#ctor(System.Int16,ZyGames.Framework.Game.Service.ActionGetter)">
+        <member name="M:ZyGames.Framework.Game.Contract.Action.AppStorePayAction.#ctor(System.Int32,ZyGames.Framework.Game.Service.ActionGetter)">
             <summary>
             Initializes a new instance of the <see cref="T:ZyGames.Framework.Game.Contract.Action.AppStorePayAction"/> class.
             </summary>
@@ -3518,7 +3518,7 @@
             The login proxy.
             </summary>
         </member>
-        <member name="M:ZyGames.Framework.Game.Contract.Action.LoginAction.#ctor(System.Int16,ZyGames.Framework.Game.Service.ActionGetter)">
+        <member name="M:ZyGames.Framework.Game.Contract.Action.LoginAction.#ctor(System.Int32,ZyGames.Framework.Game.Service.ActionGetter)">
             <summary>
             Initializes a new instance of the <see cref="T:ZyGames.Framework.Game.Contract.Action.LoginAction"/> class.
             </summary>
@@ -3605,7 +3605,7 @@
             The access token360.
             </summary>
         </member>
-        <member name="M:ZyGames.Framework.Game.Contract.Action.LoginExtendAction.#ctor(System.Int16,ZyGames.Framework.Game.Service.ActionGetter)">
+        <member name="M:ZyGames.Framework.Game.Contract.Action.LoginExtendAction.#ctor(System.Int32,ZyGames.Framework.Game.Service.ActionGetter)">
             <summary>
             Initializes a new instance of the <see cref="T:ZyGames.Framework.Game.Contract.Action.LoginExtendAction"/> class.
             </summary>
@@ -3693,7 +3693,7 @@
             The _pay status.
             </summary>
         </member>
-        <member name="M:ZyGames.Framework.Game.Contract.Action.PayNormalAction.#ctor(System.Int16,ZyGames.Framework.Game.Service.ActionGetter)">
+        <member name="M:ZyGames.Framework.Game.Contract.Action.PayNormalAction.#ctor(System.Int32,ZyGames.Framework.Game.Service.ActionGetter)">
             <summary>
             Initializes a new instance of the <see cref="T:ZyGames.Framework.Game.Contract.Action.PayNormalAction"/> class.
             </summary>
@@ -3727,7 +3727,7 @@
             The access token360.
             </summary>
         </member>
-        <member name="M:ZyGames.Framework.Game.Contract.Action.ReAccessTokenAction.#ctor(System.Int16,ZyGames.Framework.Game.Service.ActionGetter)">
+        <member name="M:ZyGames.Framework.Game.Contract.Action.ReAccessTokenAction.#ctor(System.Int32,ZyGames.Framework.Game.Service.ActionGetter)">
             <summary>
             Initializes a new instance of the <see cref="T:ZyGames.Framework.Game.Contract.Action.ReAccessTokenAction"/> class.
             </summary>
@@ -3822,7 +3822,7 @@
             The device I.
             </summary>
         </member>
-        <member name="M:ZyGames.Framework.Game.Contract.Action.RegisterAction.#ctor(System.Int16,ZyGames.Framework.Game.Service.ActionGetter)">
+        <member name="M:ZyGames.Framework.Game.Contract.Action.RegisterAction.#ctor(System.Int32,ZyGames.Framework.Game.Service.ActionGetter)">
             <summary>
             Initializes a new instance of the <see cref="T:ZyGames.Framework.Game.Contract.Action.RegisterAction"/> class.
             </summary>
@@ -3901,7 +3901,7 @@
             Sdk91 pay action.
             </summary>
         </member>
-        <member name="M:ZyGames.Framework.Game.Contract.Action.Sdk91PayAction.#ctor(System.Int16,ZyGames.Framework.Game.Service.ActionGetter)">
+        <member name="M:ZyGames.Framework.Game.Contract.Action.Sdk91PayAction.#ctor(System.Int32,ZyGames.Framework.Game.Service.ActionGetter)">
             <summary>
             Initializes a new instance of the <see cref="T:ZyGames.Framework.Game.Contract.Action.Sdk91PayAction"/> class.
             </summary>
@@ -4134,6 +4134,11 @@
         <member name="P:ZyGames.Framework.Game.Contract.GameSession.LastActivityTime">
             <summary>
             最后活动时间
+            </summary>
+        </member>
+        <member name="P:ZyGames.Framework.Game.Contract.GameSession.IsTimeout">
+            <summary>
+            是否会话超时
             </summary>
         </member>
         <member name="P:ZyGames.Framework.Game.Contract.GameSession.ProxyId">
@@ -5058,6 +5063,12 @@
             Request param error code
             </summary>
             <value>The validate code.</value>
+        </member>
+        <member name="F:ZyGames.Framework.Game.Lang.Language.DuplicateCode">
+            <summary>
+             Duplicate of error code
+            </summary>
+            <value>The kicked out code.</value>
         </member>
         <member name="F:ZyGames.Framework.Game.Lang.Language.SignError">
             <summary>
@@ -6324,12 +6335,22 @@
         </member>
         <member name="F:ZyGames.Framework.Game.Service.LoginStatus.Logined">
             <summary>
-            已登录
+            已登录(重复的)
             </summary>
         </member>
         <member name="F:ZyGames.Framework.Game.Service.LoginStatus.Success">
             <summary>
             登录成功
+            </summary>
+        </member>
+        <member name="F:ZyGames.Framework.Game.Service.LoginStatus.Timeout">
+            <summary>
+            登录超时
+            </summary>
+        </member>
+        <member name="F:ZyGames.Framework.Game.Service.LoginStatus.Exit">
+            <summary>
+            退出登录
             </summary>
         </member>
         <member name="T:ZyGames.Framework.Game.Service.RemoteStruct">
@@ -6574,6 +6595,96 @@
             
             </summary>
         </member>
+        <member name="T:ZyGames.Framework.Game.Sns.LoginAnySdk">
+            <summary>
+            AnySDK
+            </summary>
+        </member>
+        <member name="M:ZyGames.Framework.Game.Sns.LoginAnySdk.#ctor(System.String,System.String,System.String,System.String)">
+            <summary>
+            Initializes a new instance of the <see cref="T:ZyGames.Framework.Game.Sns.LoginTencent"/> class.
+            </summary>
+        </member>
+        <member name="T:ZyGames.Framework.Game.Sns.LoginAnySdk.AnySDKResult">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:ZyGames.Framework.Game.Sns.LoginAnySdk.AnySDKResult.status">
+            <summary>
+            用于表达验证请求成功与否
+            </summary>
+        </member>
+        <member name="P:ZyGames.Framework.Game.Sns.LoginAnySdk.AnySDKResult.data">
+            <summary>
+            保存渠道平台返回的验证信息
+            </summary>
+        </member>
+        <member name="P:ZyGames.Framework.Game.Sns.LoginAnySdk.AnySDKResult.common">
+            <summary>
+            包含渠道编号、用户SDK标识，渠道用户uid
+            </summary>
+        </member>
+        <member name="P:ZyGames.Framework.Game.Sns.LoginAnySdk.AnySDKResult.ext">
+            <summary>
+            为空，开发商服务器可以在ext域中存放用户信息（比如开发商服务器内部设定用户标识）下发给客户端
+            </summary>
+        </member>
+        <member name="T:ZyGames.Framework.Game.Sns.LoginAnySdk.AnySDKResultdata">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:ZyGames.Framework.Game.Sns.LoginAnySdk.AnySDKResultdata.error_no">
+            <summary>
+            错误编号
+            </summary>
+        </member>
+        <member name="P:ZyGames.Framework.Game.Sns.LoginAnySdk.AnySDKResultdata.error">
+            <summary>
+            错误信息
+            </summary>
+        </member>
+        <member name="P:ZyGames.Framework.Game.Sns.LoginAnySdk.AnySDKResultdata.id">
+            <summary>
+            编号
+            </summary>
+        </member>
+        <member name="P:ZyGames.Framework.Game.Sns.LoginAnySdk.AnySDKResultdata.name">
+            <summary>
+            名称
+            </summary>
+        </member>
+        <member name="P:ZyGames.Framework.Game.Sns.LoginAnySdk.AnySDKResultdata.avatar">
+            <summary>
+            avatar
+            </summary>
+        </member>
+        <member name="P:ZyGames.Framework.Game.Sns.LoginAnySdk.AnySDKResultdata.sex">
+            <summary>
+            sex
+            </summary>
+        </member>
+        <member name="P:ZyGames.Framework.Game.Sns.LoginAnySdk.AnySDKResultdata.area">
+            <summary>
+            area
+            </summary>
+        </member>
+        <member name="P:ZyGames.Framework.Game.Sns.LoginAnySdk.AnySDKResultdata.nick">
+            <summary>
+            nick
+            </summary>
+        </member>
+        <member name="P:ZyGames.Framework.Game.Sns.LoginAnySdk.AnySDKResultdata.access_token">
+            <summary>
+            access_token
+            </summary>
+        </member>
+        <member name="P:ZyGames.Framework.Game.Sns.LoginAnySdk.AnySDKResultdata.refresh_token">
+            <summary>
+            refresh_token
+            </summary>
+        </member>
         <member name="T:ZyGames.Framework.Game.Sns.LoginDanLeV2">
             <summary>
             当乐0037
@@ -6653,6 +6764,27 @@
             <summary>
             The error_msg.
             </summary>
+        </member>
+        <member name="M:ZyGames.Framework.Game.Sns.LoginFeiliu.#ctor(System.String,System.String,System.String,System.String)">
+            <summary>
+            Initializes a new instance of the <see cref="T:ZyGames.Framework.Game.Sns.LoginTencent"/> class.
+            </summary>
+        </member>
+        <member name="M:ZyGames.Framework.Game.Sns.LoginFeiliu.Decrypt(System.String)">
+            <summary>
+            解密数据
+            </summary>
+            <param name="base64code">传入加密数据</param>
+            <returns>返回解密数据</returns>
+        </member>
+        <member name="M:ZyGames.Framework.Game.Sns.LoginFeiliu.RSADeCrtypto(System.Byte[],System.Security.Cryptography.RSAParameters,System.Boolean)">
+            <summary>
+            解密数据
+            </summary>
+            <param name="DataToDeCrypto">要解密的数据</param>
+            <param name="RSAKeyInfo"></param>
+            <param name="DoOAEPPadding"></param>
+            <returns></returns>
         </member>
         <member name="T:ZyGames.Framework.Game.Sns.LoginGFan">
             <summary>
@@ -6798,6 +6930,53 @@
             </summary>
             <value>The scope.</value>
         </member>
+        <member name="T:ZyGames.Framework.Game.Sns.LoginMeiZu">
+            <summary>
+            AnySDK
+            </summary>
+        </member>
+        <member name="M:ZyGames.Framework.Game.Sns.LoginMeiZu.#ctor(System.String,System.String,System.String)">
+            <summary>
+            Initializes a new instance of the <see cref="T:ZyGames.Framework.Game.Sns.LoginTencent"/> class.
+            </summary>
+        </member>
+        <member name="M:ZyGames.Framework.Game.Sns.LoginMeiZu.Md5Encode(System.String)">
+            <summary>
+            
+            </summary>
+            <param name="sourceStr"></param>
+            <returns></returns>
+        </member>
+        <member name="P:ZyGames.Framework.Game.Sns.LoginMeiZu.Datainfo.userid">
+            <summary>
+            玩家ID
+            </summary>
+        </member>
+        <member name="P:ZyGames.Framework.Game.Sns.LoginMeiZu.Datainfo.username">
+            <summary>
+            玩家名称
+            </summary>
+        </member>
+        <member name="T:ZyGames.Framework.Game.Sns.LoginMeiZu.Rejson">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:ZyGames.Framework.Game.Sns.LoginMeiZu.Rejson.state">
+            <summary>
+            状态
+            </summary>
+        </member>
+        <member name="P:ZyGames.Framework.Game.Sns.LoginMeiZu.Rejson.data">
+            <summary>
+            数据
+            </summary>
+        </member>
+        <member name="P:ZyGames.Framework.Game.Sns.LoginMeiZu.Rejson.message">
+            <summary>
+            信息
+            </summary>
+        </member>
         <member name="T:ZyGames.Framework.Game.Sns.LoginMIUI">
             <summary>
             Login MIU.
@@ -6857,6 +7036,106 @@
             Gets or sets the error message.
             </summary>
             <value>The error message.</value>
+        </member>
+        <member name="T:ZyGames.Framework.Game.Sns.LoginND">
+            <summary>
+            AnySDK
+            </summary>
+        </member>
+        <member name="M:ZyGames.Framework.Game.Sns.LoginND.#ctor(System.String,System.String)">
+            <summary>
+            Initializes a new instance of the <see cref="T:ZyGames.Framework.Game.Sns.LoginTencent"/> class.
+            </summary>
+        </member>
+        <member name="T:ZyGames.Framework.Game.Sns.LoginND.AnySDKResult">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:ZyGames.Framework.Game.Sns.LoginND.AnySDKResult.status">
+            <summary>
+            用于表达验证请求成功与否
+            </summary>
+        </member>
+        <member name="P:ZyGames.Framework.Game.Sns.LoginND.AnySDKResult.data">
+            <summary>
+            保存渠道平台返回的验证信息
+            </summary>
+        </member>
+        <member name="P:ZyGames.Framework.Game.Sns.LoginND.AnySDKResult.common">
+            <summary>
+            包含渠道编号、用户SDK标识，渠道用户uid
+            </summary>
+        </member>
+        <member name="P:ZyGames.Framework.Game.Sns.LoginND.AnySDKResult.ext">
+            <summary>
+            为空，开发商服务器可以在ext域中存放用户信息（比如开发商服务器内部设定用户标识）下发给客户端
+            </summary>
+        </member>
+        <member name="T:ZyGames.Framework.Game.Sns.LoginND.AnySDKResultdata">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:ZyGames.Framework.Game.Sns.LoginND.AnySDKResultdata.error_no">
+            <summary>
+            错误编号
+            </summary>
+        </member>
+        <member name="P:ZyGames.Framework.Game.Sns.LoginND.AnySDKResultdata.error">
+            <summary>
+            错误信息
+            </summary>
+        </member>
+        <member name="P:ZyGames.Framework.Game.Sns.LoginND.AnySDKResultdata.id">
+            <summary>
+            编号
+            </summary>
+        </member>
+        <member name="P:ZyGames.Framework.Game.Sns.LoginND.AnySDKResultdata.name">
+            <summary>
+            名称
+            </summary>
+        </member>
+        <member name="P:ZyGames.Framework.Game.Sns.LoginND.AnySDKResultdata.avatar">
+            <summary>
+            avatar
+            </summary>
+        </member>
+        <member name="P:ZyGames.Framework.Game.Sns.LoginND.AnySDKResultdata.sex">
+            <summary>
+            sex
+            </summary>
+        </member>
+        <member name="P:ZyGames.Framework.Game.Sns.LoginND.AnySDKResultdata.area">
+            <summary>
+            area
+            </summary>
+        </member>
+        <member name="P:ZyGames.Framework.Game.Sns.LoginND.AnySDKResultdata.nick">
+            <summary>
+            nick
+            </summary>
+        </member>
+        <member name="P:ZyGames.Framework.Game.Sns.LoginND.AnySDKResultdata.access_token">
+            <summary>
+            access_token
+            </summary>
+        </member>
+        <member name="P:ZyGames.Framework.Game.Sns.LoginND.AnySDKResultdata.refresh_token">
+            <summary>
+            refresh_token
+            </summary>
+        </member>
+        <member name="T:ZyGames.Framework.Game.Sns.LoginTencent">
+            <summary>
+            腾讯0018
+            </summary>
+        </member>
+        <member name="M:ZyGames.Framework.Game.Sns.LoginTencent.#ctor(System.String,System.String,System.String)">
+            <summary>
+            Initializes a new instance of the <see cref="T:ZyGames.Framework.Game.Sns.LoginTencent"/> class.
+            </summary>
         </member>
         <member name="T:ZyGames.Framework.Game.Task.TaskStatus">
             <summary>
