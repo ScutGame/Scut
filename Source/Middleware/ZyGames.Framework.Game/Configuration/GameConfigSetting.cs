@@ -29,6 +29,7 @@ using System.Linq;
 using System.Text;
 using System.Xml;
 using ZyGames.Framework.Common;
+using ZyGames.Framework.Common.Log;
 
 namespace ZyGames.Framework.Game.Configuration
 {
@@ -112,7 +113,16 @@ namespace ZyGames.Framework.Game.Configuration
             _sdkChannelDict.Clear();
             foreach (XmlElement childNode in sdkChannel.ChildNodes)
             {
-                ChannelType channelType = MathUtils.ToEnum<ChannelType>(childNode.Name);
+                ChannelType channelType;
+                try
+                {
+                    channelType = MathUtils.ToEnum<ChannelType>(childNode.Name);
+                }
+                catch(Exception ex)
+                {
+                    TraceLog.WriteError(string.Format("SDK Game.Config.xml error: childNode.Name = {0} ;  - ->{1}", childNode.Name, ex));
+                    continue;
+                }
                 GameChannel gameChannel = new GameChannel(channelType);
                 string url = childNode.GetAttribute("url");
                 if (!string.IsNullOrEmpty(url))

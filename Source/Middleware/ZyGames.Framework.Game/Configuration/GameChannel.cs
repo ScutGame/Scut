@@ -40,6 +40,8 @@ namespace ZyGames.Framework.Game.Configuration
         channelAnySDK,
         channelTencent,
         channelFeiliu,
+        channelMeiZu,
+        channelND
     }
     /// <summary>
     /// 游戏渠道对象

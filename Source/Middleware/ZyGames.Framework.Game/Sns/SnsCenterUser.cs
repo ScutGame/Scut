@@ -598,7 +598,7 @@ namespace ZyGames.Framework.Game.Sns
             }
         }
 
-        internal static bool CheckDevice(string device)
+        public static bool CheckDevice(string device)
         {
             if (device == string.Empty)
                 return true;
@@ -614,7 +614,7 @@ namespace ZyGames.Framework.Game.Sns
             return count <= 0;
         }
 
-        internal SnsUser GetUserInfo(string passportId)
+        public SnsUser GetUserInfo(string passportId)
         {
             SnsUser snsUser = new SnsUser();
             SetUserInfo(f =>
@@ -630,7 +630,7 @@ namespace ZyGames.Framework.Game.Sns
         /// </summary>
         /// <param name="openId"></param>
         /// <returns></returns>
-        internal SnsUser GetUserByWeixin(string openId)
+        public SnsUser GetUserByWeixin(string openId)
         {
             SnsUser snsUser = new SnsUser();
             SetUserInfo(f =>

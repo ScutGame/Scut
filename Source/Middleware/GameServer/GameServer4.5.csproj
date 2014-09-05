@@ -107,7 +107,7 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\ZyGames.Framework.Game\ZyGames.Framework.Game.csproj">
+    <ProjectReference Include="..\ZyGames.Framework.Game\ZyGames.Framework.Game4.5.csproj">
       <Project>{DE7024B7-7168-4262-A250-6A21B932EC3B}</Project>
       <Name>ZyGames.Framework.Game</Name>
     </ProjectReference>

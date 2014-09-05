@@ -17,7 +17,7 @@ namespace ZyGames.Framework.Game.Sns
     /// <summary>
     /// AnySDK
     /// </summary>
-    public class LoginAnySdk : AbstractLogin
+    public class LoginND : AbstractLogin
     {
         private string _retailID = string.Empty;
         private string _pid = string.Empty;
@@ -33,12 +33,11 @@ namespace ZyGames.Framework.Game.Sns
         /// <summary>
         /// Initializes a new instance of the <see cref="ZyGames.Framework.Game.Sns.LoginTencent"/> class.
         /// </summary>
-        public LoginAnySdk(string retailID, string retailUser, string token, string pid) 
+        public LoginND(string retailID, string retailUser) 
         {
-            this._retailID = pid;
+            this._retailID = retailID;
             this._retailUser = retailUser;
-            this._token = token;
-            GameChannel gameChannel = ZyGameBaseConfigManager.GameSetting.GetChannelSetting(ChannelType.channelAnySDK);
+            GameChannel gameChannel = ZyGameBaseConfigManager.GameSetting.GetChannelSetting(ChannelType.channelND);
             if (gameChannel != null)
             {
                 Url = gameChannel.Url;
