@@ -14,6 +14,23 @@ also provide ScutSDK(eg. for Cocos2d-x) which make communications between
 server and client very easy.
 
 
+## Git for developers
+
+    $ git clone git://github.com/ScutGame/Scut.git
+    or
+    $ git clone git://git.oschina.net/scutgame/Scut.git
+
+
+## Git for samples
+
+If the Chinese downloaded using [oschina git](https://git.oschina.net/scutgame/Scut-samples),
+else using [github](https://github.com/ScutGame/Scut-samples)
+
+    $ git clone git://github.com/ScutGame/Scut-samples.git
+    or
+    $ git clone git://git.oschina.net/scutgame/Scut-samples.git
+
+
 ## Requirements
 
 Scut is only supported on .Net Framework 4.5.1 and up, you need a Redis of NoSQL as well.
@@ -69,37 +86,13 @@ Language:
 * Amazon EC2
 
 
-## Git for developers
-
-    $ git clone git://github.com/ScutGame/Scut.git
-    or
-    $ git clone git://git.oschina.net/scutgame/Scut.git
-
-
-## Git for samples
-
-If the Chinese downloaded using [oschina Git](https://git.oschina.net/scutgame/Scut-samples),
-else using [Github](https://github.com/ScutGame/Scut-samples)
-
-    $ git clone git://github.com/ScutGame/Scut-samples.git
-    or
-    $ git clone git://git.oschina.net/scutgame/Scut-samples.git
-
-
 ## Update Log
 
-### Version: 6.7.8.7 (2014-8-15) Stable
+### Version: 6.7.8.8 (2014-9-5) Stable
 
-* Add server to server for Http/Socket communication support
-* Add support for the one-way mode, not the output response
-* Add ulong/uint/ushort of communication parameter types
-* Add script encryption of release, use "ScutSecurity.dll" library
-* Add use "EventNotifier" of class asynchronous and timeout processing events
-* Add the name of the database table using date format
-* Add database field supported BLOB types
-* Add entity property supported ulong/ushort/uint types
-* Modify reconstruction of Session and User class
-* Modify entity definition multiple primary from the Redis loading data problem
+* modified Http not responding request processing error
+* modified Secket push message loss problem
+* modified index key error from Redis
 
 old version [more](http://scutgame.com/log).
 
