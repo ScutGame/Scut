@@ -35,6 +35,7 @@ using Scut.SMS.Comm;
 using Scut.SMS.Config;
 using ScutServerManager.Config;
 using ServiceStack.Redis;
+using ZyGames.Framework.Common;
 using ZyGames.Framework.Common.Log;
 using ZyGames.Framework.Common.Serialization;
 using ZyGames.Framework.Data;
@@ -827,7 +828,7 @@ namespace Scut.SMS
                     setting.CacheEnableWritetoDb = Convert.ToBoolean(value);
                     break;
                 case "Cache.Serializer":
-                    setting.CacheSerializer = (StorageMode)Convert.ToInt32(value);
+                    setting.CacheSerializer = value.ToEnum<StorageMode>();
                     break;
                 case "DataSyncQueueNum":
                     setting.DataSyncQueueNum = Convert.ToInt32(value);

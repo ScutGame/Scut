@@ -329,7 +329,7 @@ namespace ScutServerManager.Config
 
         [CategoryAttribute(CatScript),
         DefaultValue(DefaultConfig.ScriptDecodeFuncTypeName),
-        DescriptionAttribute("Script DecodeFunc type name.")]
+        DescriptionAttribute("Script DecodeFunc type name. ex:ScutSecurity.ScriptDes,ScutSecurity")]
         public string ScriptDecodeFuncTypeName { get; set; }
 
         [CategoryAttribute(CatScript),

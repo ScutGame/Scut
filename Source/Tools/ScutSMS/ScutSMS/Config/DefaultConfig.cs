@@ -69,7 +69,7 @@ namespace ScutServerManager.Config
         public const string ScriptMainClass = "MainClass.cs";
         public const string ScriptMainTypeName = "Game.Script.MainClass";
         public const string ModelEntityAssemblyName = "";
-        public const string ScriptDecodeFuncTypeName = "ScutSecurity.ScriptDes,ScutSecurity";
+        public const string ScriptDecodeFuncTypeName = "";
         public const string RemoteScriptTypeName = "Game.Script.Remote.{0}"; 
 
 
