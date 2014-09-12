@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -35,19 +35,17 @@
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="MySql.Data, Version=6.7.4.0, Culture=neutral, PublicKeyToken=c5687fc88969c44d, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\Release\6.1.5.3\Lib\MySql.Data.dll</HintPath>
+      <HintPath>..\Lib\MySql.Data.dll</HintPath>
     </Reference>
     <Reference Include="Newtonsoft.Json, Version=4.5.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\Release\6.1.5.3\Lib\Newtonsoft.Json.dll</HintPath>
+      <HintPath>..\Lib\Newtonsoft.Json.dll</HintPath>
     </Reference>
-    <Reference Include="NLog, Version=2.0.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\Release\6.1.5.3\Lib\NLog.dll</HintPath>
+    <Reference Include="NLog">
+      <HintPath>..\Lib\NLog.dll</HintPath>
     </Reference>
-    <Reference Include="protobuf-net, Version=2.0.0.594, Culture=neutral, PublicKeyToken=257b51d87d2e4d67, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\Release\6.1.5.3\Lib\protobuf-net.dll</HintPath>
+    <Reference Include="protobuf-net">
+      <HintPath>..\Lib\protobuf-net.dll</HintPath>
     </Reference>
     <Reference Include="System.Web.DynamicData" />
     <Reference Include="System.Web.Entity" />
@@ -64,17 +62,14 @@
     <Reference Include="System.Configuration" />
     <Reference Include="System.Web.Services" />
     <Reference Include="System.EnterpriseServices" />
-    <Reference Include="ZyGames.Framework, Version=5.5.0.33610, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\Release\6.1.5.3\Lib\ZyGames.Framework.dll</HintPath>
+    <Reference Include="ZyGames.Framework">
+      <HintPath>..\Lib\ZyGames.Framework.dll</HintPath>
     </Reference>
-    <Reference Include="ZyGames.Framework.Common, Version=5.5.0.18677, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\Release\6.1.5.3\Lib\ZyGames.Framework.Common.dll</HintPath>
+    <Reference Include="ZyGames.Framework.Common">
+      <HintPath>..\Lib\ZyGames.Framework.Common.dll</HintPath>
     </Reference>
-    <Reference Include="ZyGames.Framework.Game, Version=3.5.0.27650, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\Release\6.1.5.3\Lib\ZyGames.Framework.Game.dll</HintPath>
+    <Reference Include="ZyGames.Framework.Game">
+      <HintPath>..\Lib\ZyGames.Framework.Game.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
