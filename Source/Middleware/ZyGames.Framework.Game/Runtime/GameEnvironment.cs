@@ -132,12 +132,12 @@ namespace ZyGames.Framework.Game.Runtime
         {
             if (IsRunning) return;
 
-            Console.WriteLine("{0} Server is starting...", DateTime.Now.ToString("HH:mm:ss"));
+            TraceLog.WriteLine("{0} Server is starting...", DateTime.Now.ToString("HH:mm:ss"));
             _setting = setting;
             if (!RedisConnectionPool.Ping("127.0.0.1"))
             {
                 string error = string.Format("Error: NIC is not connected or no network.");
-                Console.WriteLine(error);
+                TraceLog.WriteLine(error);
                 TraceLog.WriteError(error);
                 return;
             }
@@ -145,7 +145,7 @@ namespace ZyGames.Framework.Game.Runtime
             if (!RedisConnectionPool.CheckConnect())
             {
                 string error = string.Format("Error: the redis server is not started.");
-                Console.WriteLine(error);
+                TraceLog.WriteLine(error);
                 TraceLog.WriteError(error);
                 return;
             }
@@ -176,7 +176,6 @@ namespace ZyGames.Framework.Game.Runtime
             CacheFactory.Initialize(cacheSetting, _setting.Serializer);
             EntitySchemaSet.StartCheckTableTimer();
             Global = new ContextCacheSet<CacheItem>("__gameenvironment_global");
-            IsRunning = true;
         }
 
 

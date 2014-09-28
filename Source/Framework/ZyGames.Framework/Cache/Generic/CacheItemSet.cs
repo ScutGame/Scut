@@ -181,7 +181,7 @@ namespace ZyGames.Framework.Cache.Generic
         {
             if (OnChangedNotify != null)
             {
-                OnChangedNotify.BeginInvoke(sender, eventArgs, null, null);
+                OnChangedNotify(sender, eventArgs);
             }
         }
 

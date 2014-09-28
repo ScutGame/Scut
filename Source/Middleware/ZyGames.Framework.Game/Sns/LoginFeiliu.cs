@@ -1,10 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace ZyGames.Framework.Game.Sns
 {
@@ -14,10 +10,9 @@ namespace ZyGames.Framework.Game.Sns
 
         private string _retailID = string.Empty;
         private string _retailUser = string.Empty;
-        private string _uuid = string.Empty;
         private string _sign = string.Empty;
         private string _timestamp = string.Empty;
-        private string _PublicKey = string.Empty;
+        private string _publicKey = string.Empty;
         
 
         /// <summary>
@@ -27,7 +22,6 @@ namespace ZyGames.Framework.Game.Sns
         {
             this._retailID = retailID;
             this._retailUser = retailUser;
-            this._uuid = retailUser;
             this._sign = sign;
             this._timestamp = timestamp;
         }
@@ -57,10 +51,6 @@ namespace ZyGames.Framework.Game.Sns
         /// <returns>返回解密数据</returns>
         static public string Decrypt(string base64code)
         {
-
-            var a = new FileInfo("E:/100115_SignKey.pub").OpenRead();
-            var b = new BufferedStream(a);
-            //string c = 
             try
             {
                 UnicodeEncoding ByteConverter = new UnicodeEncoding();
@@ -85,7 +75,6 @@ namespace ZyGames.Framework.Game.Sns
             }
             catch (Exception e)
             {
-                Console.WriteLine(e);
                 return null;
             }
         }

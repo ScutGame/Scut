@@ -140,6 +140,25 @@ namespace ZyGames.Framework.Common.Log
             }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="message"></param>
+        public static void WriteLine(string message)
+        {
+            WriteLine(LogLevel.Info, message);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="level"></param>
+        /// <param name="message"></param>
+        public static void WriteLine(LogLevel level, string message)
+        {
+            _logger.Log(level, message);
+        }
+
         private static string BuildMessage(string info)
         {
             return LogHelper.BuildMessage(info, null);

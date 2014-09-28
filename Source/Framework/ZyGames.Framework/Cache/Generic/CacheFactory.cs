@@ -283,8 +283,10 @@ namespace ZyGames.Framework.Cache.Generic
                 {
                     string[] childKeys = keys[1].Split('|');
                     string personalKey = childKeys[0];
+                    string entityKey = childKeys.Length > 1 ? childKeys[1] : "";
                     if (!string.IsNullOrEmpty(personalKey) &&
-                        container.Collection.TryGetValue(personalKey, out itemSet))
+                        (container.Collection.TryGetValue(personalKey, out itemSet) ||
+                        container.Collection.TryGetValue(entityKey, out itemSet)))
                     {
                         switch (itemSet.ItemType)
                         {
@@ -295,7 +297,7 @@ namespace ZyGames.Framework.Cache.Generic
                                 var set = itemSet.ItemData as BaseCollection;
                                 if (set != null)
                                 {
-                                    set.TryGetValue(childKeys[1], out entity);
+                                    set.TryGetValue(entityKey, out entity);
                                 }
                                 break;
                             default:
@@ -374,14 +376,14 @@ namespace ZyGames.Framework.Cache.Generic
                         if (!_isRunning)
                         {
                             _isRunning = true;
-                            TraceLog.ReleaseWrite("缓存延迟更新执行开始");
+                            TraceLog.WriteLine("{0} Cache sync to storage start...", DateTime.Now.ToString("HH:mm:ss"));
                             UpdateNotify(true);
-                            TraceLog.ReleaseWrite("缓存延迟更新执行结束");
+                            TraceLog.WriteLine("{0} Cache sync to storage end.", DateTime.Now.ToString("HH:mm:ss"));
                             _isRunning = false;
                         }
                         else
                         {
-                            TraceLog.ReleaseWrite("缓存延迟更新正在执行中...");
+                            TraceLog.WriteLine("{0} Cache sync to storage doing...", DateTime.Now.ToString("HH:mm:ss"));
                         }
                     }
                     catch (Exception ex)
@@ -400,7 +402,7 @@ namespace ZyGames.Framework.Cache.Generic
                         {
                             _readonlyPools.DisposeCache();
                             _writePools.DisposeCache();
-                            TraceLog.ReleaseWrite("清理过期缓存结束...");
+                            TraceLog.WriteLine("{0} Clear expired cache end.", DateTime.Now.ToString("HH:mm:ss"));
                         }
                         catch (Exception ex)
                         {
@@ -425,7 +427,7 @@ namespace ZyGames.Framework.Cache.Generic
                 _cacheUpdateListener.Start();
             }
             System.Threading.Interlocked.Exchange(ref _isDisposed, 0);
-            TraceLog.WriteInfo("CacheFactory listen has started...");
+            TraceLog.WriteLine("{0} CacheFactory listen has started...", DateTime.Now.ToString("HH:mm:ss"));
         }
 
         /// <summary>
@@ -444,7 +446,7 @@ namespace ZyGames.Framework.Cache.Generic
                 _cacheUpdateListener = null;
             }
             //System.Threading.Interlocked.Exchange(ref _isDisposed, 1);
-            TraceLog.WriteInfo("CacheFactory listen has stoped");
+            TraceLog.WriteLine("CacheFactory listen has stoped");
         }
 
         /// <summary>

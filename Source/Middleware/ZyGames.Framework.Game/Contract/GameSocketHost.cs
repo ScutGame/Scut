@@ -184,12 +184,15 @@ namespace ZyGames.Framework.Game.Contract
                 return true;
             }
 
-            if (session != null && package.ActionId == ((int)ActionEnum.Heartbeat))
+            if (package.ActionId == ((int)ActionEnum.Heartbeat))
             {
-                // 客户端tcp心跳包
-                session.Refresh();
-                OnHeartbeat(session);
-                session.ExitSession();
+                if (session != null)
+                {
+                    // 客户端tcp心跳包
+                    session.Refresh();
+                    OnHeartbeat(session);
+                    session.ExitSession();
+                }
                 return true;
             }
             return false;
@@ -257,7 +260,7 @@ namespace ZyGames.Framework.Game.Contract
                 }
                 try
                 {
-                    if (data.Length > 0)
+                    if (session != null && data.Length > 0)
                     {
                         session.SendAsync(data, 0, data.Length);
                     }
@@ -274,7 +277,7 @@ namespace ZyGames.Framework.Game.Contract
             }
             finally
             {
-                session.ExitSession();
+                if (session != null) session.ExitSession();
             }
         }
 

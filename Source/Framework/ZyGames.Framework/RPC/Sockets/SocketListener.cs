@@ -75,24 +75,17 @@ namespace ZyGames.Framework.RPC.Sockets
         Logger logger = LogManager.GetLogger("SocketListener");
         BufferManager bufferManager;
         Socket listenSocket;
-        HashSet<ExSocket> clientSockets = new HashSet<ExSocket>();
+        //HashSet<ExSocket> clientSockets = new HashSet<ExSocket>();
         Semaphore maxConnectionsEnforcer;
         SocketSettings socketSettings;
         PrefixHandler prefixHandler;
         MessageHandler messageHandler;
         ThreadSafeStack<SocketAsyncEventArgs> acceptEventArgsPool;
         ThreadSafeStack<SocketAsyncEventArgs> ioEventArgsPool;
-        Timer expireTimer;
+        //Timer expireTimer;
         private bool _isStart;
 
-        /// <summary>
-        /// Gets the connections.
-        /// </summary>
-        /// <value>The connections.</value>
-        public int Connections
-        {
-            get { return clientSockets.Count; }
-        }
+
         /// <summary>
         /// Initializes a new instance of the <see cref="ZyGames.Framework.RPC.Sockets.SocketListener"/> class.
         /// </summary>
@@ -109,31 +102,31 @@ namespace ZyGames.Framework.RPC.Sockets
             this.acceptEventArgsPool = new ThreadSafeStack<SocketAsyncEventArgs>(socketSettings.MaxAcceptOps);
             this.maxConnectionsEnforcer = new Semaphore(this.socketSettings.MaxConnections, this.socketSettings.MaxConnections);
             Init();
-            expireTimer = new Timer(CheckExpire, null, socketSettings.ExpireInterval, socketSettings.ExpireInterval);
+            //expireTimer = new Timer(CheckExpire, null, socketSettings.ExpireInterval, socketSettings.ExpireInterval);
         }
 
-        private void CheckExpire(object state)
-        {
-            try
-            {
-                lock (clientSockets)
-                {
-                    var now = DateTime.Now;
-                    foreach (var socket in clientSockets)
-                    {
-                        if (now.Subtract(socket.LastAccessTime).TotalMilliseconds > socketSettings.ExpireTime)
-                        {
-                            socket.WorkSocket.Close();
-                        }
-                    }
-                    //logger.InfoFormat("客户端连接数：{0}", clientSockets.Count);
-                }
-            }
-            catch (Exception er)
-            {
-                TraceLog.WriteError("Socket listenner CheckExpire:{0}", er);
-            }
-        }
+        //private void CheckExpire(object state)
+        //{
+        //    try
+        //    {
+        //        lock (clientSockets)
+        //        {
+        //            var now = DateTime.Now;
+        //            foreach (var socket in clientSockets)
+        //            {
+        //                if (now.Subtract(socket.LastAccessTime).TotalMilliseconds > socketSettings.ExpireTime)
+        //                {
+        //                    socket.WorkSocket.Close();
+        //                }
+        //            }
+        //            //logger.InfoFormat("客户端连接数：{0}", clientSockets.Count);
+        //        }
+        //    }
+        //    catch (Exception er)
+        //    {
+        //        TraceLog.WriteError("Socket listenner CheckExpire:{0}", er);
+        //    }
+        //}
 
         private void Init()
         {
@@ -157,13 +150,13 @@ namespace ZyGames.Framework.RPC.Sockets
             }
         }
 
-        private void AddClient(ExSocket socket)
-        {
-            lock (clientSockets)
-            {
-                clientSockets.Add(socket);
-            }
-        }
+        //private void AddClient(ExSocket socket)
+        //{
+        //    lock (clientSockets)
+        //    {
+        //        clientSockets.Add(socket);
+        //    }
+        //}
 
         private SocketAsyncEventArgs CreateAcceptEventArgs()
         {
@@ -256,12 +249,12 @@ namespace ZyGames.Framework.RPC.Sockets
             }
             catch (ObjectDisposedException error)
             {
-                logger.Error("IO_Completed error", error);
+                logger.Error(string.Format("IO_Completed error:{0}", error));
                 ReleaseIOEventArgs(ioEventArgs);
             }
             catch (Exception ex)
             {
-                logger.Error("IO_Completed unkown error", ex);
+                logger.Error(string.Format("IO_Completed unkown error:{0}", ex));
             }
         }
 
@@ -285,7 +278,7 @@ namespace ZyGames.Framework.RPC.Sockets
             exSocket.LastAccessTime = DateTime.Now;
             dataToken.Socket = exSocket;
 
-            AddClient(exSocket);
+            //AddClient(exSocket);
 
             try
             {
@@ -363,7 +356,7 @@ namespace ZyGames.Framework.RPC.Sockets
                     if (dataToken.prefixBytesDone == 4 && (dataToken.messageLength > 10 * 1024 * 1024 || dataToken.messageLength <= 0))
                     {
                         //消息头已接收完毕，并且接收到的消息长度大于10M，socket传输的数据已紊乱，关闭掉
-                        logger.Warn("接收到的消息长度错误:{0}", dataToken.messageLength);
+                        logger.Warn("Receive Ip {1} message length error:{0}", dataToken.messageLength, ioEventArgs.RemoteEndPoint);
                         needPostAnother = false;
                         HandleCloseSocket(ioEventArgs);
                         break;
@@ -533,12 +526,12 @@ namespace ZyGames.Framework.RPC.Sockets
 
         private void HandleCloseSocket(SocketAsyncEventArgs ioEventArgs)
         {
-            bool needClose;
+            bool needClose = true;
             var dataToken = (DataToken)ioEventArgs.UserToken;
-            lock (clientSockets)
-            {
-                needClose = clientSockets.Remove(dataToken.Socket);
-            }
+            //lock (clientSockets)
+            //{
+            //    needClose = clientSockets.Remove(dataToken.Socket);
+            //}
 
             if (needClose)
             {
@@ -585,15 +578,15 @@ namespace ZyGames.Framework.RPC.Sockets
         public void Close()
         {
             _isStart = false;
-            lock (clientSockets)
-            {
-                foreach (var socket in clientSockets)
-                {
-                    socket.WorkSocket.Shutdown(SocketShutdown.Both);
-                }
-            }
+            //lock (clientSockets)
+            //{
+            //    foreach (var socket in clientSockets)
+            //    {
+            //        socket.WorkSocket.Shutdown(SocketShutdown.Both);
+            //    }
+            //}
 
-            while (clientSockets.Count != 0) Thread.Sleep(10);
+            //while (clientSockets.Count != 0) Thread.Sleep(10);
             DisposeAllSaeaObjects();
             listenSocket.Close();
         }

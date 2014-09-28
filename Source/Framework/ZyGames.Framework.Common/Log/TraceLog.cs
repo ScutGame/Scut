@@ -23,6 +23,7 @@ THE SOFTWARE.
 ****************************************************************************/
 using System;
 using System.Diagnostics;
+using System.Text;
 
 namespace ZyGames.Framework.Common.Log
 {
@@ -43,6 +44,31 @@ namespace ZyGames.Framework.Common.Log
     /// </example>
     public static class TraceLog
     {
+        /// <summary>
+        /// 堆栈跟踪输出
+        /// </summary>
+        /// <returns></returns>
+        public static string GetStackTrace()
+        {
+            StackTrace st = new StackTrace(true);
+            string stackIndent = "";
+            StringBuilder builder = new StringBuilder();
+            for (int i = 0; i < st.FrameCount; i++)
+            {
+                StackFrame sf = st.GetFrame(i);
+                //得到错误的方法
+                var method = sf.GetMethod();
+                builder.AppendFormat(stackIndent + "Method: {0}\r\n", method);
+                //得到错误的文件名
+                builder.AppendFormat(stackIndent + "File: {0}\r\n", sf.GetFileName());
+                //得到文件错误的行号
+                builder.AppendFormat(stackIndent + "Line: {0}\r\n", sf.GetFileLineNumber());
+                stackIndent += "++";
+            }
+
+            return builder.ToString();
+        }
+
         /// <summary>
         /// 只在编译器的DEBUG下输出到Debug目录
         /// </summary>
@@ -190,6 +216,21 @@ namespace ZyGames.Framework.Common.Log
                 str = string.Format("Trace>>" + message, args);
             }
             LogHelper.WriteFatal(str);
+        }
+
+        /// <summary>
+        /// Write line
+        /// </summary>
+        /// <param name="message"></param>
+        /// <param name="args"></param>
+        public static void WriteLine(string message, params object[] args)
+        {
+            string str = message;
+            if (args.Length > 0)
+            {
+                str = string.Format(message, args);
+            }
+            LogHelper.WriteLine(str);
         }
     }
 }

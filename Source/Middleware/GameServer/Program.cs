@@ -56,7 +56,7 @@ namespace GameServer
                     Console.ForegroundColor = ConsoleColor.DarkYellow;
                 }
                 catch { }
-                Console.WriteLine(string.Format(CharFormat,
+                TraceLog.WriteLine(string.Format(CharFormat,
                     Assembly.GetExecutingAssembly().GetName().Version,
                     setting.ProductCode,
                     setting.ProductServerId,
@@ -65,20 +65,20 @@ namespace GameServer
                 Console.ForegroundColor = currentForeColor;
                 if (ScriptEngines.RunMainProgram(args))
                 {
-                    Console.WriteLine("{0} Server has started successfully!", DateTime.Now.ToString("HH:mm:ss"));
-                    Console.WriteLine("# Server is listening...");
+                    GameEnvironment.IsRunning = true;
+                    TraceLog.WriteLine("{0} Server has started successfully!", DateTime.Now.ToString("HH:mm:ss"));
+                    TraceLog.WriteLine("# Server is listening...");
                 }
                 else
                 {
-                    Console.WriteLine("{0} Server failed to start!", DateTime.Now.ToString("HH:mm:ss"));
+                    TraceLog.WriteLine("{0} Server failed to start!", DateTime.Now.ToString("HH:mm:ss"));
                 }
                 Console.ReadKey();
                 ScriptEngines.StopMainProgram();
             }
             catch (Exception ex)
             {
-                Console.WriteLine("{0} Server failed to start!", DateTime.Now.ToString("HH:mm:ss"));
-                TraceLog.WriteError("Server failed to start error:{0}", ex);
+                TraceLog.WriteLine("{0} Server failed to start error:{1}", DateTime.Now.ToString("HH:mm:ss"), ex);
                 Console.ReadKey();
             }
         }

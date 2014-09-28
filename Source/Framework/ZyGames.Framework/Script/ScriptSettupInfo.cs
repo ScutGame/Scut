@@ -92,6 +92,11 @@ namespace ZyGames.Framework.Script
         }
 
         /// <summary>
+        /// 是否取消执行脚本
+        /// </summary>
+        public bool IsCancelRunning { get; set; }
+
+        /// <summary>
         /// 脚本文件改变延迟时间(ms)
         /// </summary>
         public int ScriptChangedDelay { get; set; }

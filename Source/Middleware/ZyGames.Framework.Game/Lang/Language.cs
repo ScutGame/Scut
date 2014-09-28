@@ -153,6 +153,12 @@ namespace ZyGames.Framework.Game.Lang
         public int DuplicateCode = 10004;
 
         /// <summary>
+        ///  Maintain of error code
+        /// </summary>
+        /// <value>The kicked out code.</value>
+        public int MaintainCode = 10005;
+
+        /// <summary>
         /// 验签出错
         /// </summary>
         public string SignError = "Sign error.";

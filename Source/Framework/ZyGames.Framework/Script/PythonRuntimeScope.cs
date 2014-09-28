@@ -100,7 +100,7 @@ namespace ZyGames.Framework.Script
             if (string.IsNullOrEmpty(libPath))
             {
                 TraceLog.WriteError("The environment variables:\"IRONPYTHONPATH\" is not be setting.");
-                Console.WriteLine("# Error>>The environment variables:\"IRONPYTHONPATH\" is not be setting.");
+                TraceLog.WriteLine("# Error>>The environment variables:\"IRONPYTHONPATH\" is not be setting.");
             }
             if (!string.IsNullOrEmpty(libPath))
             {
@@ -113,7 +113,7 @@ namespace ZyGames.Framework.Script
                 var dirList = Directory.GetDirectories(pythonPath, "*", SearchOption.AllDirectories);
                 searchPaths.AddRange(dirList);
             }
-            TraceLog.ReleaseWrite("The py path:{0}", string.Join(@";", searchPaths));
+            TraceLog.ReleaseWriteDebug("The py path:{0}", string.Join(@";", searchPaths));
             _scriptEngine.SetSearchPaths(searchPaths.ToArray());
 
             Load();

@@ -160,7 +160,7 @@ namespace ZyGames.Framework.Model
         /// <param name="assembly"></param>
         public static void LoadAssembly(Assembly assembly)
         {
-            Console.WriteLine("{0} Start checking table schema, please wait.", DateTime.Now.ToString("HH:mm:ss"));
+            TraceLog.WriteLine("{0} Start checking table schema, please wait.", DateTime.Now.ToString("HH:mm:ss"));
 
             _entityAssembly = assembly;
             var types = assembly.GetTypes().Where(p => p.GetCustomAttributes(typeof(EntityTableAttribute), false).Count() > 0).ToList();
@@ -168,7 +168,7 @@ namespace ZyGames.Framework.Model
             {
                 InitSchema(type);
             }
-            Console.WriteLine("{0} Check table schema successfully.", DateTime.Now.ToString("HH:mm:ss"));
+            TraceLog.WriteLine("{0} Check table schema successfully.", DateTime.Now.ToString("HH:mm:ss"));
         }
 
         /// <summary>

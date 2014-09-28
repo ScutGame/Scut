@@ -66,12 +66,16 @@ namespace ZyGames.Framework.Common.Event
             try
             {
                 NotifyCallback handler = Callback;
-                if (handler != null) handler.BeginInvoke(this, null, null);
+                if (handler != null) handler.BeginInvoke(this, EndCallback, null);
             }
             catch (Exception ex)
             {
                 TraceLog.WriteError("Notify callback error:{0}", ex);
             }
+        }
+
+        private void EndCallback(IAsyncResult ar)
+        {
         }
     }
 }

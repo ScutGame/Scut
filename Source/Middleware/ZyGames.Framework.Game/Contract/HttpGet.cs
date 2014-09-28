@@ -634,10 +634,10 @@ namespace ZyGames.Framework.Game.Contract
         /// 
         /// </summary>
         /// <returns></returns>
-        public override string GetSt()
-        {
-            return GetStringValue("St");
-        }
+        //public override string GetSt()
+        //{
+        //    return GetStringValue("St");
+        //}
 
         /// <summary>
         /// 

@@ -28,6 +28,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Web;
 using ZyGames.Framework.Common;
 using ZyGames.Framework.Common.Log;
@@ -163,9 +164,9 @@ namespace ZyGames.Framework.Script
             return scope;
         }
 
-        private static void PrintCompiledMessage()
+        private static void PrintCompiledMessage(string message = "script")
         {
-            Console.WriteLine("{0} Script compiled successfully.", DateTime.Now.ToString("HH:mm:ss"));
+            TraceLog.WriteLine("{1} {0} compiled successfully.", message, DateTime.Now.ToString("HH:mm:ss"));
         }
 
         private static void DoWatcherChanged(object state)
@@ -202,21 +203,22 @@ namespace ZyGames.Framework.Script
                             {
                                 //todo not testcase
                                 InitScriptRuntimeScope();
+                                PrintCompiledMessage("model script");
                                 isLoop = false;
                             }
                             else
                             {
                                 _runtimeDomain.Scope.InitCsharp();
-                                PrintCompiledMessage();
+                                PrintCompiledMessage("csharp script");
                             }
                             break;
                         case ".py":
                             _runtimeDomain.Scope.InitPython(group.ToArray());
-                            PrintCompiledMessage();
+                            PrintCompiledMessage("python script");
                             break;
                         case ".lua":
                             _runtimeDomain.Scope.InitLua();
-                            PrintCompiledMessage();
+                            PrintCompiledMessage("lua script");
                             break;
                         default:
                             throw new NotSupportedException(string.Format("Script type \"{0}\" not supported.", ext));
@@ -313,6 +315,11 @@ namespace ZyGames.Framework.Script
         /// </summary>
         public static bool RunMainProgram(params string[] args)
         {
+            if (_runtimeDomain == null)
+            {
+                return false;
+            }
+            _settupInfo.IsCancelRunning = false;
             string scriptCode = _settupInfo.ScriptMainProgram;
             _runtimeDomain.MainInstance = Execute(scriptCode, _settupInfo.ScriptMainTypeName);
             if (_runtimeDomain.MainInstance != null)
@@ -324,11 +331,35 @@ namespace ZyGames.Framework.Script
         }
 
         /// <summary>
+        /// 
+        /// </summary>
+        public static void CancelRunMain()
+        {
+            _settupInfo.IsCancelRunning = true;
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public static void RunMainWait()
+        {
+            RunMainAsync(_settupInfo).Wait();
+        }
+
+        private static async Task RunMainAsync(ScriptSettupInfo settupInfo)
+        {
+            while (!settupInfo.IsCancelRunning)
+            {
+                await Task.Delay(1000);
+            }
+        }
+
+        /// <summary>
         /// Request of main class.
         /// </summary>
         public static void RequestMainProgram(HttpContext context)
         {
-            if (_runtimeDomain.MainInstance != null)
+            if (_runtimeDomain != null && _runtimeDomain.MainInstance != null)
             {
                 ((dynamic)_runtimeDomain.MainInstance).Request(context);
             }
@@ -339,7 +370,7 @@ namespace ZyGames.Framework.Script
         /// </summary>
         public static void StopMainProgram()
         {
-            if (_runtimeDomain.MainInstance != null)
+            if (_runtimeDomain != null && _runtimeDomain.MainInstance != null)
             {
                 ((dynamic)_runtimeDomain.MainInstance).Stop();
             }

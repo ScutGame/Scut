@@ -210,7 +210,11 @@ namespace ZyGames.Framework.Common.Timing
                 default:
                     break;
             }
-            this._callback.BeginInvoke(key, arg.CacheItem.Value, reason, null, null);
+            this._callback.BeginInvoke(key, arg.CacheItem.Value, reason, EndCallback, null);
+        }
+
+        private void EndCallback(IAsyncResult ar)
+        {
         }
 
         private void OnRemoveCallback(string key, object value, CacheRemovedReason reason)

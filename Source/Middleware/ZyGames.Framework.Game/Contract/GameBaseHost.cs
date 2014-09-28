@@ -66,7 +66,7 @@ namespace ZyGames.Framework.Game.Contract
             }
             else
             {
-                response.WriteError(actionGetter, Language.Instance.ErrorCode, Language.Instance.ServerMaintain);
+                response.WriteError(actionGetter, Language.Instance.MaintainCode, Language.Instance.ServerMaintain);
             }
         }
 

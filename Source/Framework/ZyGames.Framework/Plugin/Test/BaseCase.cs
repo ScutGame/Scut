@@ -173,7 +173,7 @@ namespace ZyGames.Framework.Plugin.Test
         /// <param name="message"></param>
         public void WriteLine(string message)
         {
-            Console.WriteLine("{0}用例>>{1}", Name, message);
+            TraceLog.WriteLine("{0}用例>>{1}", Name, message);
         }
 
         private Stopwatch StartNewWatch()

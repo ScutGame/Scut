@@ -15,7 +15,10 @@ namespace GameWebServer
                 {
                     var setting = new EnvironmentSetting();
                     GameEnvironment.Start(setting);
-                    ScriptEngines.RunMainProgram();
+                    if (ScriptEngines.RunMainProgram())
+                    {
+                        GameEnvironment.IsRunning = true;
+                    }
                 }
             }
             catch (Exception ex)

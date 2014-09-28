@@ -103,7 +103,7 @@ namespace ZyGames.Framework.Common.Event
             {
                 try
                 {
-                    EventHandle.BeginInvoke(sender, args, null, null);
+                    EventHandle(sender, args);
                 }
                 catch (Exception ex)
                 {
@@ -135,7 +135,7 @@ namespace ZyGames.Framework.Common.Event
             {
                 if (handle != null)
                 {
-                    handle.BeginInvoke(sender, args, null, null);
+                    handle(sender, args);
                 }
             }
         }

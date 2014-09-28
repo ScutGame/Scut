@@ -23,6 +23,7 @@ THE SOFTWARE.
 ****************************************************************************/
 using System;
 using System.Diagnostics;
+using ZyGames.Framework.Common.Log;
 
 namespace ZyGames.Framework.Plugin.Test
 {
@@ -73,8 +74,7 @@ namespace ZyGames.Framework.Plugin.Test
             catch (Exception ex)
             {
                 string msg = string.Format("\"{0}\"用例>>测试失败:{1}", args.Case.Name, ex);
-                Trace.WriteLine(msg);
-                Console.WriteLine(msg);
+                TraceLog.WriteLine(msg);
             }
         }
     }

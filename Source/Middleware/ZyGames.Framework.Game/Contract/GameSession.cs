@@ -56,7 +56,8 @@ namespace ZyGames.Framework.Game.Contract
 
         static GameSession()
         {
-            Timeout = 600;
+            RequestTimeout = 1000;
+            Timeout = 60;
             clearTime = new Timer(OnClearSession, null, new TimeSpan(0, 0, 60), new TimeSpan(0, 0, 10));
             _globalSession = new ConcurrentDictionary<Guid, GameSession>();
             _userHash = new ConcurrentDictionary<int, Guid>();
@@ -116,6 +117,10 @@ namespace ZyGames.Framework.Game.Contract
         /// session timeout(sec).
         /// </summary>
         public static int Timeout { get; set; }
+        /// <summary>
+        /// Request timeout(ms)
+        /// </summary>
+        public static int RequestTimeout { get; set; }
 
         private static string GenerateSid(Guid guid)
         {
@@ -310,6 +315,24 @@ namespace ZyGames.Framework.Game.Contract
             return _remoteHash.Select(pair => Get(pair.Value)).ToList();
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        public static List<GameSession> GetOnlineAll()
+        {
+            List<GameSession> list = new List<GameSession>();
+            foreach (var pair in _globalSession)
+            {
+                var session = pair.Value;
+                if (!session.IsRemote && session.Connected && !session.CheckExpired())
+                {
+                    list.Add(session);
+                }
+            }
+            return list;
+        }
+
         private string _remoteAddress;
         private int _isInSession;
         private ExSocket _exSocket;
@@ -332,7 +355,7 @@ namespace ZyGames.Framework.Game.Contract
         /// </summary>
         private GameSession()
         {
-            _monitorLock = new MonitorLockStrategy();
+            _monitorLock = new MonitorLockStrategy(RequestTimeout);
             Refresh();
         }
 
@@ -457,6 +480,10 @@ namespace ZyGames.Framework.Game.Contract
             }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns>true:is expired</returns>
         private bool CheckExpired()
         {
             return LastActivityTime < MathUtils.Now.AddSeconds(-Timeout);

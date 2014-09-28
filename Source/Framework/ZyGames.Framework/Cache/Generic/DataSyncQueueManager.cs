@@ -22,6 +22,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ****************************************************************************/
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -64,6 +65,12 @@ namespace ZyGames.Framework.Cache.Generic
         /// </summary>
         public static readonly string SqlSyncWaitErrirQueueKey = "__QUEUE_SQL_SYNC_WAIT_ERROR";
 
+        private static int _entityQueueRunning;
+        public static Timer _entityQueueWacher;
+        public static Timer _entityQueueTimer;
+        public static HashSet<string> _entitySet = new HashSet<string>();
+        public static HashSet<string> _entityRemoteSet = new HashSet<string>();
+
         private static SmartThreadPool _threadPools;
         private static Timer[] _queueWatchTimers;
         private static bool _enableWriteToDb;
@@ -73,6 +80,27 @@ namespace ZyGames.Framework.Cache.Generic
         private const int DefSqlSyncWaitQueueNum = 2;
         private const int DefDataSyncQueueNum = 2;
         private static System.Action<string, byte[][], byte[][]> _asyncSendHandle;
+        //todo test
+        private static ConcurrentDictionary<string, KeyValuePair<int, string>> _checkVersions = new ConcurrentDictionary<string, KeyValuePair<int, string>>();
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public static int MinCheckCount = 100;
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public static int MaxCheckCount = 10000;
+
+        /// <summary>
+        /// test
+        /// </summary>
+        public static void ClearTrace()
+        {
+            _checkVersions.Clear();
+        }
+
         private static ICacheSerializer _serializer { get; set; }
 
         /// <summary>
@@ -126,6 +154,9 @@ namespace ZyGames.Framework.Cache.Generic
         public static void Start(CacheSetting setting, ICacheSerializer serializer)
         {
             _serializer = serializer;
+            _entityQueueTimer = new Timer(OnEntitySyncQueue, null, 60, 500);
+            _entityQueueWacher = new Timer(CheckEntityQueue, null, 60, 60000);
+
             _queueWatchTimers = new Timer[DataSyncQueueNum];
             for (int i = 0; i < DataSyncQueueNum; i++)
             {
@@ -143,6 +174,28 @@ namespace ZyGames.Framework.Cache.Generic
                     _sqlWaitTimers[i] = new Timer(OnCheckSqlWaitSyncQueue, i, 100, sqlSyncInterval);
                 }
                 SqlStatementManager.Start();
+            }
+        }
+
+        private static void CheckEntityQueue(object state)
+        {
+            try
+            {
+                //todo trace
+                int count = _entitySet.Count;
+                if (count > MinCheckCount)
+                {
+                    TraceLog.WriteWarn("CheckEntityQueue warn count:{0}", count);
+                    if (count > MaxCheckCount)
+                    {
+                        //大于1W，清空掉
+                        Interlocked.Exchange(ref _entityRemoteSet, new HashSet<string>());
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                TraceLog.WriteError("CheckEntityQueue:{0)", ex);
             }
         }
 
@@ -342,6 +395,82 @@ namespace ZyGames.Framework.Cache.Generic
             }
         }
 
+
+
+        private static void OnEntitySyncQueue(object state)
+        {
+            if (Interlocked.CompareExchange(ref _entityQueueRunning, 1, 0) == 0)
+            {
+                try
+                {
+                    var tempRemove = Interlocked.Exchange(ref _entityRemoteSet, new HashSet<string>());
+                    var temp = Interlocked.Exchange(ref _entitySet, new HashSet<string>());
+                    if (temp.Count == 0) return;
+                    using (var client = RedisConnectionPool.GetClient())
+                    {
+                        var pipeline = client.CreatePipeline();
+                        try
+                        {
+                            bool hasPost = false;
+                            foreach (var key in temp)
+                            {
+                                var keyValues = key.Split('_', '|');
+                                if (keyValues.Length != 3) continue;
+
+                                AbstractEntity entity = CacheFactory.GetPersonalEntity(key) as AbstractEntity;
+                                int id = keyValues[1].ToInt();
+                                string keyCode = keyValues[2];
+                                string redisKey = string.Format("{0}_{1}", keyValues[0], keyCode);
+                                string hashId = GetRedisSyncQueueKey(id);
+                                byte[] idBytes = BufferUtils.GetBytes(id);
+                                var keyBytes = RedisConnectionPool.ToByteKey(redisKey);
+                                bool isDelete;
+                                byte[] entityBytes;
+                                if (entity != null)
+                                {
+                                    isDelete = entity.IsDelete;
+                                    entityBytes = _serializer.Serialize(entity);
+                                }
+                                else if (tempRemove.Contains(key))
+                                {
+                                    entityBytes = new byte[0];
+                                    isDelete = true;
+                                }
+                                else
+                                {
+                                    TraceLog.WriteError("EntitySync queue key {0} faild object is null.", key);
+                                    continue;
+                                }
+                                byte[] stateBytes = BufferUtils.GetBytes(isDelete ? 1 : 0);
+                                byte[] values =
+                                    BufferUtils.MergeBytes(BufferUtils.GetBytes(idBytes.Length + stateBytes.Length),
+                                        idBytes, stateBytes, entityBytes);
+                                pipeline.QueueCommand(c => ((RedisClient)c).HSet(hashId, keyBytes, values));
+                                hasPost = true;
+                            }
+                            if (hasPost)
+                            {
+                                pipeline.Flush();
+                            }
+                        }
+                        finally
+                        {
+                            pipeline.Dispose();
+                        }
+                    }
+
+                }
+                catch (Exception ex)
+                {
+                    TraceLog.WriteError("EntitySync queue {0}", ex);
+                }
+                finally
+                {
+                    Interlocked.Exchange(ref _entityQueueRunning, 0);
+                }
+            }
+        }
+
         /// <summary>
         /// Send to queue pool
         /// </summary>
@@ -351,31 +480,46 @@ namespace ZyGames.Framework.Cache.Generic
             string key = "";
             try
             {
-                if (entityList == null || entityList.Length == 0) return;
-                var groupList = entityList.GroupBy(t => t.GetIdentityId());
-                foreach (var g in groupList)
+                //modify season:异步调用时不能保证提交的顺序，造成更新到Redis中不是最后一次的
+                lock (_entitySet)
                 {
-                    var valueList = g.ToList();
-                    byte[][] keyBytes = new byte[valueList.Count][];
-                    byte[][] valueBytes = new byte[valueList.Count][];
-                    string queueKey = GetRedisSyncQueueKey(g.Key);
-                    byte[] idBytes = BufferUtils.GetBytes(g.Key);
-
-                    int index = 0;
-                    foreach (var entity in valueList)
+                    foreach (var entity in entityList)
                     {
-                        key = string.Format("{0}_{1}", RedisConnectionPool.EncodeTypeName(entity.GetType().FullName), entity.GetKeyCode());
-                        keyBytes[index] = RedisConnectionPool.ToByteKey(key);
-                        byte[] stateBytes = BufferUtils.GetBytes(entity.IsDelete ? 1 : 0);
-                        valueBytes[index] = BufferUtils.MergeBytes(
-                            BufferUtils.GetBytes(idBytes.Length + stateBytes.Length),
-                            idBytes,
-                            stateBytes,
-                            _serializer.Serialize(entity));
-                        index++;
+                        key = string.Format("{0}_{1}|{2}",
+                            RedisConnectionPool.EncodeTypeName(entity.GetType().FullName),
+                            entity.GetIdentityId(),
+                          entity.GetKeyCode());
+
+                        //todo debug
+                        var stacktrace = TraceLog.GetStackTrace();
+                        var hashpair = new KeyValuePair<int, string>(entity.GetHashCode(), stacktrace);
+                        KeyValuePair<int, string> oldHashPair;
+                        if (_checkVersions.TryGetValue(key, out oldHashPair))
+                        {
+                            if (oldHashPair.Key != hashpair.Key)
+                            {
+                                TraceLog.ReleaseWriteDebug("Send {0}, hash:{1}/{2}, new stack:{3} \r\n old stack:{4}",
+                                    key, oldHashPair.Key, hashpair.Key, hashpair.Value, oldHashPair.Value);
+                                _checkVersions[key] = hashpair;
+                            }
+                        }
+                        else
+                        {
+                            _checkVersions[key] = new KeyValuePair<int, string>(entity.GetHashCode(), stacktrace);
+                        }
+                        //todo end debug
+
+                        if (!_entitySet.Contains(key))
+                        {
+                            _entitySet.Add(key);
+                        }
+                        if (entity.IsDelete && !_entityRemoteSet.Contains(key))
+                        {
+                            _entityRemoteSet.Add(key);
+                        }
                     }
-                    _asyncSendHandle.BeginInvoke(queueKey, keyBytes, valueBytes, null, null);
                 }
+
             }
             catch (Exception ex)
             {
@@ -739,7 +883,7 @@ namespace ZyGames.Framework.Cache.Generic
                     for (int i = 0; i < keyBuffers.Length; i++)
                     {
                         string keyCode = RedisConnectionPool.ToStringKey(keyBuffers[i]);
-                        var buffer = valueBuffers[i];
+                        var buffer = valueBuffers != null && valueBuffers.Length > i ? valueBuffers[i] : null;
                         var headBytes = headBuffers[i];
                         int identity;
                         int state;
@@ -772,8 +916,8 @@ namespace ZyGames.Framework.Cache.Generic
                         }
                         else
                         {
-                            throw new Exception(string.Format("Get \"{0}\" entity is null, keycode:{1},buffer len:{2}",
-                                typeName, keyCode, buffer == null ? -1 : buffer.Length));
+                            throw new Exception(string.Format("Get \"{0}\" entity is null, keycode:{1},buffer len:{2},state:{3}",
+                                typeName, keyCode, buffer == null ? -1 : buffer.Length, state));
                         }
                     }
                 }

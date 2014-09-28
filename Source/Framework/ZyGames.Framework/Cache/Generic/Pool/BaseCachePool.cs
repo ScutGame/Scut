@@ -208,6 +208,7 @@ namespace ZyGames.Framework.Cache.Generic.Pool
             {
                 if (dataList.Count > 0)
                 {
+                    TraceLog.ReleaseWrite("The data:{0} has been loaded {1}", receiveParam.RedisKey, dataList.Count);
                     return true;
                 }
                 //从Redis历史记录表中加载
@@ -218,6 +219,8 @@ namespace ZyGames.Framework.Cache.Generic.Pool
                     {
                         return TryLoadFromDb(receiveParam, out dataList);
                     }
+
+                    TraceLog.ReleaseWrite("The data:{0} has been loaded {1} from history.", receiveParam.RedisKey, dataList.Count);
                     return true;
                 }
             }
@@ -234,6 +237,7 @@ namespace ZyGames.Framework.Cache.Generic.Pool
             {
                 if (dataList.Count > 0)
                 {
+                    TraceLog.ReleaseWrite("The data:{0} has been loaded {1} from db.", receiveParam.RedisKey, dataList.Count);
                     //恢复到Redis
                     return RedisConnectionPool.TryUpdateEntity(dataList);
                 }
