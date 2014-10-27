@@ -192,12 +192,22 @@ namespace ZyGames.Framework.Game.Contract
                     // 客户端tcp心跳包
                     session.Refresh();
                     OnHeartbeat(session);
-                    ResponseHearbeat(package, session);
+                    BuildHearbeatPackage(package, session);
                     session.ExitSession();
                 }
                 return true;
             }
             return false;
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="package"></param>
+        /// <param name="session"></param>
+        protected virtual void BuildHearbeatPackage(RequestPackage package, GameSession session)
+        {
+
         }
 
         private GameSession GetSession(ConnectionEventArgs e, RequestPackage package)
@@ -219,7 +229,7 @@ namespace ZyGames.Framework.Game.Contract
             {
                 session = GameSession.Get(package.SessionId) ?? GameSession.Get(e.Socket.HashCode);
             }
-            if (session != null && !session.Connected)
+            if (session != null && (!session.Connected || !Equals(session.RemoteAddress, e.Socket.RemoteEndPoint.ToString())))
             {
                 GameSession.Recover(session, e.Socket.HashCode, e.Socket, socketLintener.PostSend);
             }
@@ -282,7 +292,12 @@ namespace ZyGames.Framework.Game.Contract
             }
         }
 
-        private void ResponseHearbeat(RequestPackage package, GameSession session)
+        /// <summary>
+        /// Response hearbeat stream.
+        /// </summary>
+        /// <param name="package"></param>
+        /// <param name="session"></param>
+        protected void ResponseHearbeat(RequestPackage package, GameSession session)
         {
             try
             {
@@ -299,6 +314,7 @@ namespace ZyGames.Framework.Game.Contract
                 TraceLog.WriteError("Post Heartbeat error:{0}", ex);
             }
         }
+
         /// <summary>
         /// 心跳包
         /// </summary>
