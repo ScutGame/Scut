@@ -173,13 +173,15 @@ namespace ZyGames.Framework.Script
                 options.ReferencedAssemblies.Add("Microsoft.CSharp.dll");
                 options.ReferencedAssemblies.Add("System.Configuration.dll");
                 options.ReferencedAssemblies.Add("System.Web.dll");
-
-                foreach (var assembly in refAssemblies)
+                if (refAssemblies != null)
                 {
-                    if (!string.IsNullOrEmpty(assembly) &&
-                        !options.ReferencedAssemblies.Contains(assembly))
+                    foreach (var assembly in refAssemblies)
                     {
-                        options.ReferencedAssemblies.Add(assembly);
+                        if (!string.IsNullOrEmpty(assembly) &&
+                            !options.ReferencedAssemblies.Contains(assembly))
+                        {
+                            options.ReferencedAssemblies.Add(assembly);
+                        }
                     }
                 }
                 CompilerResults cr = isFile

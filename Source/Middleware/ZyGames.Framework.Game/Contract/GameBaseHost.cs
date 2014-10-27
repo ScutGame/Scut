@@ -38,19 +38,61 @@ namespace ZyGames.Framework.Game.Contract
     /// <summary>
     /// 
     /// </summary>
-    public abstract class GameBaseHost
+    public abstract class GameBaseHost : IMainScript
     {
-        
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="args"></param>
-        public abstract void Start(string[] args);
 
         /// <summary>
         /// 
         /// </summary>
-        public abstract void Stop();
+        /// <param name="args"></param>
+        public virtual void Start(string[] args)
+        {
+            GameEnvironment.IsRunning = true;
+        }
+
+        public byte[] ProcessRequest(object package, object param)
+        {
+            var httpresponse = new SocketGameResponse();
+            ActionGetter actionGetter = null;
+            try
+            {
+                httpresponse.WriteErrorCallback += new ScutActionDispatcher().ResponseError;
+
+                RequestPackage p = package as RequestPackage;
+                actionGetter = param as ActionGetter;
+
+                if (!string.IsNullOrEmpty(p.RouteName))
+                {
+                    if (CheckRemote(p.RouteName, actionGetter))
+                    {
+                        MessageStructure response = new MessageStructure();
+                        OnCallRemote(p.RouteName, actionGetter, response);
+                        return response.PopBuffer();
+                    }
+                    httpresponse.WriteError(actionGetter, 10000, "No permission");
+                }
+                else
+                {
+                    DoAction(actionGetter, httpresponse);
+                }
+                return httpresponse.ReadByte();
+            }
+            catch (Exception ex)
+            {
+                TraceLog.WriteError("Request error:{0}", ex);
+                MessageStructure response = new MessageStructure();
+                response.WriteBuffer(new MessageHead(0, 10000, "request error"));
+                return response.PopBuffer();
+            }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public virtual void Stop()
+        {
+            GameEnvironment.IsRunning = false;
+        }
 
         /// <summary>
         /// 

@@ -154,6 +154,10 @@ namespace ZyGames.Framework.Data.Sql
             {
                 return SqlDbType.Int;
             }
+            else if (value is Guid)
+            {
+                return SqlDbType.UniqueIdentifier;
+            }
             return SqlDbType.VarChar;
         }
 

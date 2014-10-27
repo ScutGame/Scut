@@ -62,10 +62,13 @@ namespace GameServer
                     setting.ProductServerId,
                     setting.GamePort));
                 GameEnvironment.Start(setting);
-                Console.ForegroundColor = currentForeColor;
+                try
+                {
+                    Console.ForegroundColor = currentForeColor;
+                }
+                catch { }
                 if (ScriptEngines.RunMainProgram(args))
                 {
-                    GameEnvironment.IsRunning = true;
                     TraceLog.WriteLine("{0} Server has started successfully!", DateTime.Now.ToString("HH:mm:ss"));
                     TraceLog.WriteLine("# Server is listening...");
                 }

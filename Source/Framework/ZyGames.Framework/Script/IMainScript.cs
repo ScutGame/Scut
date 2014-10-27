@@ -35,6 +35,11 @@ namespace ZyGames.Framework.Script
         void Start(string[] args);
 
         /// <summary>
+        /// 
+        /// </summary>
+        byte[] ProcessRequest(object package, object param);
+
+        /// <summary>
         /// Stop
         /// </summary>
         void Stop();

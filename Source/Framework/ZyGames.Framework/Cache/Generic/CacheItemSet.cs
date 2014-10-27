@@ -37,7 +37,7 @@ namespace ZyGames.Framework.Cache.Generic
     /// 缓存项集合,缓存改变事件通知到此层为根，不需要再向上触发(父亲容器Change事件监听已禁用)
     /// </summary>
     [ProtoContract, Serializable]
-    public class CacheItemSet : EntityChangeEvent, IDisposable
+    public class CacheItemSet : IDisposable//EntityChangeEvent, 
     {
         private readonly CacheType _cacheItemType;
         private readonly bool _isReadOnly;
@@ -51,7 +51,7 @@ namespace ZyGames.Framework.Cache.Generic
         /// <param name="periodTime"></param>
         /// <param name="isReadOnly"></param>
         public CacheItemSet(CacheType cacheItemType, int periodTime, bool isReadOnly)
-            : base(isReadOnly)
+        //: base(isReadOnly)
         {
             LoadingStatus = LoadingStatus.None;
             _cacheItemType = cacheItemType;
@@ -133,13 +133,14 @@ namespace ZyGames.Framework.Cache.Generic
         public void SetItem(IDataExpired itemData)
         {
             _itemData = itemData;
-            if (!_isReadOnly)
-            {
-                BindEvent(_itemData);
-                Notify(itemData, CacheItemChangeType.Modify, PropertyName);
-            }
+            //if (!_isReadOnly)
+            //{
+            //    BindEvent(_itemData);
+            //    Notify(itemData, CacheItemChangeType.Modify, PropertyName);
+            //}
         }
-
+        #region event
+        /*
         /// <summary>
         /// 
         /// </summary>
@@ -155,11 +156,11 @@ namespace ZyGames.Framework.Cache.Generic
         /// <param name="eventArgs"></param>
         protected override void Notify(object sender, CacheItemEventArgs eventArgs)
         {
-            IItemChangeEvent val = sender as IItemChangeEvent;
-            if (val != null && !val.HasChanged)
-            {
-                return;
-            }
+            //IItemChangeEvent val = sender as IItemChangeEvent;
+            //if (val != null && !val.HasChanged)
+            //{
+            //    return;
+            //}
             _hasChanged = true;
             PutToChangeKeys(sender as AbstractEntity);
             DoChangedNotify(sender as AbstractEntity, eventArgs);
@@ -189,6 +190,8 @@ namespace ZyGames.Framework.Cache.Generic
         {
             _hasChanged = false;
         }
+        */
+        #endregion
 
         private void PutToChangeKeys(AbstractEntity entity)
         {
@@ -221,12 +224,13 @@ namespace ZyGames.Framework.Cache.Generic
         /// 移除过期数据
         /// </summary>
         /// <param name="key"></param>
-        public void RemoveExpired(string key)
+        public bool RemoveExpired(string key)
         {
             if (ItemData != null)
             {
-                ItemData.RemoveExpired(key);
+                return ItemData.RemoveExpired(key);
             }
+            return false;
         }
 
         /// <summary>
@@ -239,6 +243,10 @@ namespace ZyGames.Framework.Cache.Generic
                 return _period != null && _period.IsPeriod;
             }
         }
+        /// <summary>
+        /// 
+        /// </summary>
+        public bool HasChanged { get; private set; }
 
 
         /// <summary>
@@ -269,14 +277,42 @@ namespace ZyGames.Framework.Cache.Generic
         /// 
         /// </summary>
         /// <param name="disposing"></param>
-        protected override void Dispose(bool disposing)
+        protected virtual void Dispose(bool disposing)
         {
             if (disposing)
             {
                 _period = null;
                 _itemData = null;
             }
-            base.Dispose(disposing);
+            if (disposing)
+            {
+                GC.SuppressFinalize(this);
+            }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public void Dispose()
+        {
+            Dispose(true);
+        }
+
+
+        internal void ProcessExpired(string key)
+        {
+            if (_itemData is AbstractEntity)
+            {
+                ((AbstractEntity) _itemData).IsExpired = true;
+            }
+            else if (_itemData is BaseCollection)
+            {
+                ((BaseCollection)_itemData).Foreach<AbstractEntity>((k, t) =>
+                {
+                    t.IsExpired = true;
+                     return true;
+                 });
+            }
         }
     }
 }

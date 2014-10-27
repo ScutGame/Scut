@@ -22,6 +22,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ****************************************************************************/
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.NetworkInformation;
@@ -35,6 +36,7 @@ using ZyGames.Framework.Common;
 
 namespace ZyGames.Framework.Redis
 {
+
     /// <summary>
     /// 连接池管理
     /// </summary>
@@ -48,9 +50,11 @@ namespace ZyGames.Framework.Redis
         /// 
         /// </summary>
         internal const string EntityKeySplitChar = "_";
-        private static PooledRedisClientManager _pooledRedis;
+        //private static PooledRedisClientManager _pooledRedis;
         private static RedisPoolSetting _defaultSetting;
         private static ICacheSerializer _serializer;
+        private static RedisPoolSetting _setting;
+        private static ConcurrentDictionary<string, ObjectPoolWithExpire<RedisClient>> _poolCache = new ConcurrentDictionary<string, ObjectPoolWithExpire<RedisClient>>();
 
         static RedisConnectionPool()
         {
@@ -83,26 +87,27 @@ namespace ZyGames.Framework.Redis
         /// <param name="serializer"></param>
         public static void Initialize(RedisPoolSetting setting, ICacheSerializer serializer)
         {
+            _setting = setting;
             _serializer = serializer;
-            string[] readWriteHosts = setting.Host.Split(',');
-            string[] readOnlyHosts = setting.ReadOnlyHost.Split(',');
-            var redisConfig = new RedisClientManagerConfig
-            {
-                MaxWritePoolSize = setting.MaxWritePoolSize,
-                MaxReadPoolSize = setting.MaxReadPoolSize,
-                DefaultDb = setting.DbIndex,
-                AutoStart = false
-            };
-            _pooledRedis = new PooledRedisClientManager(readWriteHosts, readOnlyHosts, redisConfig);
-            if (setting.ConnectTimeout > 0)
-            {
-                _pooledRedis.ConnectTimeout = setting.ConnectTimeout;
-            }
-            if (setting.PoolTimeOut > 0)
-            {
-                _pooledRedis.PoolTimeout = setting.PoolTimeOut;
-            }
-            _pooledRedis.Start();
+            //string[] readWriteHosts = setting.Host.Split(',');
+            //string[] readOnlyHosts = setting.ReadOnlyHost.Split(',');
+            //var redisConfig = new RedisClientManagerConfig
+            //{
+            //    MaxWritePoolSize = setting.MaxWritePoolSize,
+            //    MaxReadPoolSize = setting.MaxReadPoolSize,
+            //    DefaultDb = setting.DbIndex,
+            //    AutoStart = false
+            //};
+            //_pooledRedis = new PooledRedisClientManager(readWriteHosts, readOnlyHosts, redisConfig);
+            //if (setting.ConnectTimeout > 0)
+            //{
+            //    _pooledRedis.ConnectTimeout = setting.ConnectTimeout;
+            //}
+            //if (setting.PoolTimeOut > 0)
+            //{
+            //    _pooledRedis.PoolTimeout = setting.PoolTimeOut;
+            //}
+            //_pooledRedis.Start();
         }
 
         /// <summary>
@@ -113,15 +118,20 @@ namespace ZyGames.Framework.Redis
         /// <returns></returns>
         public static long SetNo(string key, long value)
         {
-            using (var client = GetClient())
+            long increment = 0;
+            Process(client =>
             {
                 var num = client.IncrementValue(key);
                 if (value > 0 && num < value)
                 {
-                    return client.Increment(key, (value - num).ToUInt32());
+                    increment = client.Increment(key, (value - num).ToUInt32());
                 }
-                return num;
-            }
+                else
+                {
+                    increment = num;
+                }
+            });
+            return increment;
         }
 
         /// <summary>
@@ -132,10 +142,12 @@ namespace ZyGames.Framework.Redis
         /// <returns></returns>
         public static long GetNextNo(string key, uint increaseNum = 1)
         {
-            using (var client = GetClient())
+            long result = 0;
+            Process(client =>
             {
-                return client.Increment(key, increaseNum);
-            }
+                result = client.Increment(key, increaseNum);
+            });
+            return result;
         }
 
         /// <summary>
@@ -144,9 +156,14 @@ namespace ZyGames.Framework.Redis
         /// <param name="func"></param>
         public static void Process(Action<RedisClient> func)
         {
-            using (var client = GetClient())
+            var client = GetClient();
+            try
             {
                 func(client);
+            }
+            finally
+            {
+                PuttPool(client);
             }
         }
         /// <summary>
@@ -155,9 +172,14 @@ namespace ZyGames.Framework.Redis
         /// <param name="func"></param>
         public static void ProcessReadOnly(Action<RedisClient> func)
         {
-            using (var client = GetReadOnlyClient())
+            var client = GetReadOnlyClient();
+            try
             {
                 func(client);
+            }
+            finally
+            {
+                PuttPool(client);
             }
         }
         /// <summary>
@@ -169,14 +191,15 @@ namespace ZyGames.Framework.Redis
             bool result = false;
             try
             {
-                using (var client = GetClient())
+                Process(client =>
                 {
                     result = client.Ping();
-                }
-                using (var client = GetReadOnlyClient())
+                });
+
+                ProcessReadOnly(client =>
                 {
                     result = client.Ping();
-                }
+                });
                 return result;
             }
             catch (Exception ex)
@@ -208,13 +231,26 @@ namespace ZyGames.Framework.Redis
                 return false;
             }
         }
+
+        /// <summary>
+        /// Pool Count
+        /// </summary>
+        public static int PoolCount
+        {
+            get
+            {
+                return _poolCache.Sum(p => p.Value.PoolCount);
+            }
+        }
+
         /// <summary>
         /// Get read and write connection
         /// </summary>
         /// <returns></returns>
         public static RedisClient GetClient()
         {
-            return (RedisClient)_pooledRedis.GetClient();
+            return GetPool();
+            //return (RedisClient)_pooledRedis.GetClient();
         }
         /// <summary>
         /// Get read only connection
@@ -222,7 +258,51 @@ namespace ZyGames.Framework.Redis
         /// <returns></returns>
         public static RedisClient GetReadOnlyClient()
         {
-            return (RedisClient)_pooledRedis.GetReadOnlyClient();
+            return GetPool();
+            //return (RedisClient)_pooledRedis.GetReadOnlyClient();
+        }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="client"></param>
+        public static void PuttPool(RedisClient client)
+        {
+            var key = client.Host + client.Port;
+            ObjectPoolWithExpire<RedisClient> pool;
+            if (_poolCache.TryGetValue(key, out pool))
+            {
+                pool.Put(client);
+            }
+        }
+
+        private static RedisClient GetPool()
+        {
+            string[] arrs = _setting.Host.Split('@', ':');
+            var key = arrs.Length == 3 ? arrs[1] + arrs[2]
+                : arrs.Length == 2 ? arrs[0] + arrs[1]
+                : arrs[0];
+            ObjectPoolWithExpire<RedisClient> pool;
+            do
+            {
+                if (!_poolCache.TryGetValue(key, out pool))
+                {
+                    pool = new ObjectPoolWithExpire<RedisClient>(() => CreateRedisClient(_setting), true, 300);
+                    if (_poolCache.TryAdd(key, pool)) break;
+                }
+                else break;
+            } while (true);
+
+            return pool.Get();
+        }
+
+        private static RedisClient CreateRedisClient(RedisPoolSetting setting)
+        {
+            var client = new RedisClient(setting.Host);
+            if (setting.DbIndex > 0)
+            {
+                client.Db = setting.DbIndex;
+            }
+            return client;
         }
 
         /// <summary>
@@ -523,5 +603,6 @@ namespace ZyGames.Framework.Redis
         {
             return key.TrimStart(EntityKeyPreChar.ToCharArray()).Replace("%11", EntityKeySplitChar);
         }
+
     }
 }

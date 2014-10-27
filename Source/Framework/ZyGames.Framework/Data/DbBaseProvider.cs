@@ -89,6 +89,11 @@ namespace ZyGames.Framework.Data
         }
 
         /// <summary>
+        /// clear connection pools
+        /// </summary>
+        public abstract void ClearAllPools();
+
+        /// <summary>
         /// Check connect
         /// </summary>
         /// <returns></returns>

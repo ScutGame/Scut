@@ -33,7 +33,7 @@ namespace ZyGames.Framework.Cache.Generic
     /// 缓存块数据
     /// </summary>
     [ProtoContract, Serializable]
-    public abstract class BaseCollection : EntityChangeEvent, IDataExpired, IDictionary<string, object>, IDisposable
+    public abstract class BaseCollection : IDataExpired, IDictionary<string, object>, IDisposable
     {
         private readonly bool _isReadOnly;
 
@@ -43,7 +43,7 @@ namespace ZyGames.Framework.Cache.Generic
         /// <param name="isReadOnly"></param>
         /// <param name="disableEvent"></param>
         protected BaseCollection(bool isReadOnly, bool disableEvent)
-            : base(disableEvent)
+            //: base(disableEvent)
         {
             _isReadOnly = isReadOnly;
         }
@@ -294,6 +294,25 @@ namespace ZyGames.Framework.Cache.Generic
         public virtual bool RemoveExpired(string key)
         {
             return false;
+        }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="disposing"></param>
+        protected virtual void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                GC.SuppressFinalize(this);
+            }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public void Dispose()
+        {
+            Dispose(true);
         }
     }
 }

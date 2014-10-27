@@ -58,21 +58,21 @@ namespace ZyGames.Framework.Game.Cache
         {
             return true;
         }
-		/// <summary>
-		/// 加载子项数据工厂
-		/// </summary>
-		/// <returns></returns>
-		/// <param name="key">Key.</param>
+        /// <summary>
+        /// 加载子项数据工厂
+        /// </summary>
+        /// <returns></returns>
+        /// <param name="key">Key.</param>
         protected override bool LoadItemFactory(string key)
         {
             return true;
         }
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="dataList"></param>
-		/// <param name="periodTime"></param>
-		/// <returns></returns>
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="dataList"></param>
+        /// <param name="periodTime"></param>
+        /// <returns></returns>
         protected override bool InitCache(List<ChatMessage> dataList, int periodTime)
         {
             bool result = false;
@@ -111,21 +111,28 @@ namespace ZyGames.Framework.Game.Cache
             return new ChatMessage[0];
         }
 
-        private static bool OnExpired(string groupKey, CacheQueue<ChatMessage> messageQueue)
+        private static bool OnExpired(string groupKey, CacheQueue<ChatMessage> cache)
         {
-            while (messageQueue != null && messageQueue.Count > 0)
+            CacheQueue<ChatMessage> messageQueue;
+            if (new ChatCacheSet().DataContainer.TryGetQueue(GroupKey, out messageQueue))
             {
-                ChatMessage msg;
-                if(messageQueue.TryPeek(out msg))
+                while (messageQueue != null && messageQueue.Count > 0)
                 {
-                    if (msg != null && MathUtils.DiffDate(msg.SendDate).TotalSeconds > Timeout)
+                    ChatMessage msg;
+                    if (messageQueue.TryPeek(out msg))
                     {
-                        ChatMessage temp;
-                        messageQueue.TryDequeue(out temp);
-                    }
-                    else
-                    {
-                        break;
+                        if (msg != null && MathUtils.DiffDate(msg.SendDate).TotalSeconds > Timeout)
+                        {
+                            ChatMessage temp;
+                            if (messageQueue.TryDequeue(out temp))
+                            {
+                                temp.Dispose();
+                            }
+                        }
+                        else
+                        {
+                            break;
+                        }
                     }
                 }
             }

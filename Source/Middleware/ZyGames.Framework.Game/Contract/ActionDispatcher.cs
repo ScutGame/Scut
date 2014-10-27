@@ -29,6 +29,7 @@ using System.Text;
 using System.Web;
 using ZyGames.Framework.Common;
 using ZyGames.Framework.Game.Service;
+using ZyGames.Framework.RPC.Http;
 using ZyGames.Framework.RPC.IO;
 using ZyGames.Framework.RPC.Sockets;
 
@@ -46,6 +47,15 @@ namespace ZyGames.Framework.Game.Contract
         /// <param name="package"></param>
         /// <returns></returns>
         bool TryDecodePackage(ConnectionEventArgs e, out RequestPackage package);
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="context"></param>
+        /// <param name="package"></param>
+        /// <param name="statusCode"></param>
+        /// <returns></returns>
+        bool TryDecodePackage(HttpListenerRequest request, out RequestPackage package, out int statusCode);
 
         /// <summary>
         /// decode package for http
@@ -67,8 +77,9 @@ namespace ZyGames.Framework.Game.Contract
         /// 
         /// </summary>
         /// <param name="package"></param>
+        /// <param name="session"></param>
         /// <returns></returns>
-        ActionGetter GetActionGetter(RequestPackage package);
+        ActionGetter GetActionGetter(RequestPackage package, GameSession session);
 
         /// <summary>
         /// 
@@ -113,6 +124,7 @@ namespace ZyGames.Framework.Game.Contract
 
             foreach (var key in nvc.AllKeys)
             {
+                if (string.IsNullOrEmpty(key)) continue;
                 param[key] = nvc[key];
             }
             if (param.ContainsKey("route"))
@@ -150,17 +162,11 @@ namespace ZyGames.Framework.Game.Contract
 
             return true;
         }
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="context"></param>
-        /// <param name="package"></param>
-        /// <returns></returns>
-        public virtual bool TryDecodePackage(HttpListenerContext context, out RequestPackage package)
+
+        public bool TryDecodePackage(HttpListenerRequest request, out RequestPackage package, out int statusCode)
         {
+            statusCode = 200;
             package = null;
-            HttpListenerRequest request = context.Request;
-            HttpListenerResponse response = context.Response;
 
             string data = "";
             if (Environment.OSVersion.Platform == PlatformID.Unix)
@@ -199,8 +205,7 @@ namespace ZyGames.Framework.Game.Contract
 
             if (statuscode != (int)HttpStatusCode.OK)
             {
-                response.StatusCode = statuscode;
-                response.Close();
+                statusCode = statuscode;
                 return false;
             }
             //sessionId of proxy server
@@ -234,6 +239,28 @@ namespace ZyGames.Framework.Game.Contract
             };
 
             return true;
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="context"></param>
+        /// <param name="package"></param>
+        /// <returns></returns>
+        public virtual bool TryDecodePackage(HttpListenerContext context, out RequestPackage package)
+        {
+            HttpListenerRequest request = context.Request;
+            HttpListenerResponse response = context.Response;
+            int statuscode;
+
+            if (TryDecodePackage(request, out package, out statuscode))
+            {
+                return true;
+            }
+            response.StatusCode = statuscode;
+            response.Close();
+            return false;
+
         }
         /// <summary>
         /// 
@@ -284,10 +311,11 @@ namespace ZyGames.Framework.Game.Contract
         /// 
         /// </summary>
         /// <param name="package"></param>
+        /// <param name="session"></param>
         /// <returns></returns>
-        public virtual ActionGetter GetActionGetter(RequestPackage package)
+        public virtual ActionGetter GetActionGetter(RequestPackage package, GameSession session)
         {
-            return new HttpGet(package);
+            return new HttpGet(package, session);
         }
         /// <summary>
         /// 

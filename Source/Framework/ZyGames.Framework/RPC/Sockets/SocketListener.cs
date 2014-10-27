@@ -249,7 +249,8 @@ namespace ZyGames.Framework.RPC.Sockets
             }
             catch (ObjectDisposedException error)
             {
-                logger.Error(string.Format("IO_Completed error:{0}", error));
+                //modify disposed error ignore log
+                //logger.Error(string.Format("IO_Completed error:{0}", error));
                 ReleaseIOEventArgs(ioEventArgs);
             }
             catch (Exception ex)
@@ -356,7 +357,7 @@ namespace ZyGames.Framework.RPC.Sockets
                     if (dataToken.prefixBytesDone == 4 && (dataToken.messageLength > 10 * 1024 * 1024 || dataToken.messageLength <= 0))
                     {
                         //消息头已接收完毕，并且接收到的消息长度大于10M，socket传输的数据已紊乱，关闭掉
-                        logger.Warn("Receive Ip {1} message length error:{0}", dataToken.messageLength, ioEventArgs.RemoteEndPoint);
+                        logger.Warn("{0} Receive Ip {2} message length error:{1}",DateTime.Now.ToString("HH:mm:ss"), dataToken.messageLength, ioEventArgs.RemoteEndPoint);
                         needPostAnother = false;
                         HandleCloseSocket(ioEventArgs);
                         break;
@@ -532,6 +533,17 @@ namespace ZyGames.Framework.RPC.Sockets
             //{
             //    needClose = clientSockets.Remove(dataToken.Socket);
             //}
+            try
+            {
+                if (ioEventArgs.AcceptSocket != null)
+                {
+                    ioEventArgs.AcceptSocket.Shutdown(SocketShutdown.Both);
+                }
+            }
+            catch (Exception)
+            {
+                needClose = false;
+            }
 
             if (needClose)
             {
@@ -564,12 +576,7 @@ namespace ZyGames.Framework.RPC.Sockets
         /// <param name="socket">Socket.</param>
         public void CloseSocket(ExSocket socket)
         {
-            try
-            {
-                socket.WorkSocket.Shutdown(SocketShutdown.Both);
-            }
-            catch { }
-            socket.WorkSocket.Close();
+            socket.Close();
         }
 
         /// <summary>

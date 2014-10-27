@@ -52,6 +52,7 @@ namespace ZyGames.Framework.Model
         /// 预先建立的月份数
         /// </summary>
         private static int LogPriorBuildMonth = ConfigUtils.GetSetting("Log.PriorBuild.Month", 3);
+        private static bool EnableModifyTimeField = ConfigUtils.GetSetting("Schema.EnableModifyTimeField", false);
 
         private static DictionaryExtend<string, SchemaTable> SchemaSet = new DictionaryExtend<string, SchemaTable>();
         private static ConcurrentQueue<SchemaTable> _dynamicTables = new ConcurrentQueue<SchemaTable>();
@@ -521,6 +522,20 @@ namespace ZyGames.Framework.Model
                     keySet.Add(column.Name);
                 }
             }
+            //add modify time field
+            if (EnableModifyTimeField && schema.AccessLevel == AccessLevel.ReadWrite)
+            {
+                column = new SchemaColumn();
+                column.Id = number;
+                column.Name = "TempTimeModify";
+                column.Isnullable = true;
+                column.FieldModel = FieldModel.All;
+                column.ColumnType = typeof(DateTime);
+                column.DbType = ColumnDbType.DateTime;
+                column.JsonDateTimeFormat = "yyyy'-'MM'-'dd' 'HH':'mm':'ss";
+                schema.Columns.TryAdd(column.Name, column);
+            }
+
             schema.Keys = new string[keySet.Count];
             keySet.CopyTo(schema.Keys, 0);
 

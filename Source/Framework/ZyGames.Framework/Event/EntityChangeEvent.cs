@@ -109,7 +109,7 @@ namespace ZyGames.Framework.Event
         /// 当前对象绑定的Chang事件
         /// </summary>
         [JsonIgnore]
-        internal override CacheItemChangeEvent ItemEvent
+        public override CacheItemChangeEvent ItemEvent
         {
             get { return _itemEvent; }
         }
@@ -120,10 +120,11 @@ namespace ZyGames.Framework.Event
         /// 当前对象绑定的Chang事件
         /// </summary>
         [JsonIgnore]
-        internal override CacheItemChangeEvent ChildrenEvent
+        public override CacheItemChangeEvent ChildrenEvent
         {
             get { return _childrenEvent; }
         }
+
 
         /// <summary>
         /// 正在被修改中
@@ -294,7 +295,7 @@ namespace ZyGames.Framework.Event
         /// <summary>
         /// 触发通知
         /// </summary>
-        public void TriggerNotify()
+        public override void TriggerNotify()
         {
             Interlocked.Exchange(ref _modified, 0);
             Notify(this, CacheItemChangeType.Modify, PropertyName);

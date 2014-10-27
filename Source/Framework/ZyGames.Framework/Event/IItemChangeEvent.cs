@@ -22,6 +22,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ****************************************************************************/
 using System;
+using Newtonsoft.Json;
 
 namespace ZyGames.Framework.Event
 {
@@ -30,6 +31,12 @@ namespace ZyGames.Framework.Event
     /// </summary>
     public abstract class IItemChangeEvent : IDisposable
     {
+        /// <summary>
+        /// 
+        /// </summary>
+        [JsonIgnore]
+        public bool IsInCache { get; set; }
+
         /// <summary>
         /// 是否有变更
         /// </summary>
@@ -43,13 +50,17 @@ namespace ZyGames.Framework.Event
         /// <summary>
         /// 当前对象变更事件对象
         /// </summary>
-        internal abstract CacheItemChangeEvent ItemEvent { get; }
+        public abstract CacheItemChangeEvent ItemEvent { get; }
 
         /// <summary>
         /// 当前对象的子类变更事件对象
         /// </summary>
-        internal abstract CacheItemChangeEvent ChildrenEvent { get; }
-        
+        public abstract CacheItemChangeEvent ChildrenEvent { get; }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public abstract void TriggerNotify();
         /// <summary>
         /// 禁用子类事件通知
         /// </summary>

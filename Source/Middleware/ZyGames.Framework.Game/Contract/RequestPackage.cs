@@ -116,11 +116,11 @@ namespace ZyGames.Framework.Game.Contract
         /// </summary>
         public object Message { get; set; }
 
-        /// <summary>
-        /// GameSession
-        /// </summary>
-        [JsonIgnore]
-        public GameSession Session { get; protected set; }
+        ///// <summary>
+        ///// GameSession
+        ///// </summary>
+        //[JsonIgnore]
+        //public GameSession Session { get; protected set; }
 
         /// <summary>
         /// Receive time
@@ -138,7 +138,7 @@ namespace ZyGames.Framework.Game.Contract
                 SessionId = session.SessionId;
                 session.ProxyId = ProxyId;
             }
-            Session = session;
+            //Session = session;
             ReceiveTime = DateTime.Now;
         }
     }

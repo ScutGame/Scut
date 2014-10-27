@@ -30,6 +30,8 @@ using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Web;
+using Microsoft.Scripting;
+using Microsoft.Scripting.Hosting;
 using ZyGames.Framework.Common;
 using ZyGames.Framework.Common.Log;
 using ZyGames.Framework.Common.Serialization;
@@ -309,6 +311,13 @@ namespace ZyGames.Framework.Script
             return _runtimeDomain.Scope != null ? _runtimeDomain.Scope.ModelAssembly : null;
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        public static ScriptRuntimeScope RuntimeScope
+        {
+            get { return _runtimeDomain.Scope; }
+        }
 
         /// <summary>
         /// Run main class.
@@ -352,6 +361,18 @@ namespace ZyGames.Framework.Script
             {
                 await Task.Delay(1000);
             }
+        }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        public static IMainScript GetCurrentMainScript()
+        {
+            if (_runtimeDomain != null)
+            {
+                return _runtimeDomain.MainInstance;
+            }
+            return null;
         }
 
         /// <summary>
@@ -474,6 +495,18 @@ namespace ZyGames.Framework.Script
         public static dynamic ExecuteCSharpSource(string[] sources, string[] refAssemblies, string typeName, params object[] args)
         {
             return _runtimeDomain.Scope.ExecuteCSharpSource(sources, refAssemblies, typeName, args);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sources"></param>
+        /// <param name="refAssemblies"></param>
+        /// <param name="codeKind"></param>
+        /// <returns></returns>
+        public static ScriptScope ExecutePythonSource(string sources, string[] refAssemblies, SourceCodeKind codeKind = SourceCodeKind.Statements)
+        {
+            return _runtimeDomain.Scope.ExecutePythonSource(sources, refAssemblies, codeKind);
         }
 
         /// <summary>

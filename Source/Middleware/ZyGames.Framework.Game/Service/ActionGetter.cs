@@ -14,14 +14,20 @@ namespace ZyGames.Framework.Game.Service
         /// 
         /// </summary>
         protected RequestPackage ReqPackage;
+        /// <summary>
+        /// 
+        /// </summary>
+        protected GameSession _session;
 
         /// <summary>
         /// init
         /// </summary>
         /// <param name="package"></param>
-        public ActionGetter(RequestPackage package)
+        /// <param name="session"></param>
+        public ActionGetter(RequestPackage package, GameSession session)
         {
             ReqPackage = package;
+            _session = session;
         }
 
         /// <summary>
@@ -62,21 +68,33 @@ namespace ZyGames.Framework.Game.Service
         {
             return ReqPackage.UserId;
         }
-
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        public virtual string GetSessionId()
+        {
+            return SessionId;
+        }
         /// <summary>
         /// get current sessionid.
         /// </summary>
-        public virtual string GetSessionId()
-        {
-            return ReqPackage.SessionId;
-        }
+        public string SessionId { get { return _session != null ? _session.SessionId : ""; } }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        public GameSession GetSession()
+        {
+            return Session;
+        }
         /// <summary>
         /// get current session.
         /// </summary>
-        public virtual GameSession GetSession()
+        public GameSession Session
         {
-            return ReqPackage.Session;
+            get { return _session; }
         }
 
         /// <summary>

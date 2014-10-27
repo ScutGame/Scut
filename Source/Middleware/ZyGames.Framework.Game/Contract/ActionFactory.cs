@@ -195,6 +195,10 @@ namespace ZyGames.Framework.Game.Contract
         {
             int userId = baseUser != null ? baseUser.GetUserId() : 0;
             GameSession session = GameSession.Get(userId);
+            if (baseUser != null && session == null)
+            {
+                throw new Exception(string.Format("Uid {0} of session is expired.", userId));
+            }
             string sessionId = session != null ? session.SessionId : "";
             string param = string.Format("MsgId={0}&St={1}&Sid={2}&Uid={3}&ActionID={4}{5}",
                 0,
@@ -207,7 +211,7 @@ namespace ZyGames.Framework.Game.Contract
             requestPackage.UrlParam = param;
             requestPackage.IsUrlParam = true;
             requestPackage.Bind(session);
-            actionGetter = new HttpGet(requestPackage);
+            actionGetter = new HttpGet(requestPackage, session);
             return GetActionResponse(actionDispatcher, actionId, baseUser, actionGetter);
         }
 
@@ -222,9 +226,9 @@ namespace ZyGames.Framework.Game.Contract
             response.WriteErrorCallback += actionDispatcher.ResponseError;
             baseStruct.SetPush();
             baseStruct.DoInit();
-            using (ILocking locking = baseStruct.RequestLock())
+            if (actionGetter.Session.EnterLock(actionId))
             {
-                if (locking == null || locking.IsLocked)
+                try
                 {
                     if (!baseStruct.GetError() &&
                         baseStruct.ReadUrlElement() &&
@@ -238,6 +242,14 @@ namespace ZyGames.Framework.Game.Contract
                         baseStruct.WriteErrorAction(response);
                     }
                 }
+                finally
+                {
+                    actionGetter.Session.ExitLock(actionId);
+                }
+            }
+            else
+            {
+                baseStruct.WriteLockTimeoutAction(response, false);
             }
             return response.ReadByte();
         }
@@ -250,10 +262,11 @@ namespace ZyGames.Framework.Game.Contract
         /// <param name="response"></param>
         public static void Process(BaseStruct baseStruct, ActionGetter actionGetter, BaseGameResponse response)
         {
+            int actionId = actionGetter.GetActionId();
             baseStruct.DoInit();
-            using (ILocking locking = baseStruct.RequestLock())
+            if (actionGetter.Session.EnterLock(actionId))
             {
-                if (locking == null || locking.IsLocked)
+                try
                 {
                     if (!baseStruct.GetError() &&
                         baseStruct.ReadUrlElement() &&
@@ -267,6 +280,14 @@ namespace ZyGames.Framework.Game.Contract
                         baseStruct.WriteErrorAction(response);
                     }
                 }
+                finally
+                {
+                    actionGetter.Session.ExitLock(actionId);
+                }
+            }
+            else
+            {
+                baseStruct.WriteLockTimeoutAction(response);
             }
         }
 
@@ -281,38 +302,46 @@ namespace ZyGames.Framework.Game.Contract
         /// <param name="successHandle">成功回调</param>
         public static void BroadcastAction<T>(int actionId, List<T> userList, Parameters parameters, Action<T> successHandle) where T : IUser
         {
-            StringBuilder shareParam = new StringBuilder();
-            if (parameters != null)
+            try
             {
-                foreach (var parameter in parameters)
+                if (userList.Count == 0) return;
+                StringBuilder shareParam = new StringBuilder();
+                if (parameters != null)
                 {
-                    shareParam.AppendFormat("&{0}={1}", parameter.Key, parameter.Value);
-                }
-            }
-            IActionDispatcher actionDispatcher = new ScutActionDispatcher();
-            ActionGetter actionParam;
-            byte[] sendData = GetActionResponse(actionDispatcher, actionId, null, shareParam.ToString(), out actionParam);
-            foreach (T user in userList)
-            {
-                if (object.Equals(user, null))
-                {
-                    continue;
-                }
-                try
-                {
-                    GameSession session = GameSession.Get(user.GetUserId());
-                    if (session != null)
+                    foreach (var parameter in parameters)
                     {
-                        if (session.SendAsync(sendData, 0, sendData.Length))
-                        {
-                            if (successHandle != null) successHandle(user);
-                        }
+                        shareParam.AppendFormat("&{0}={1}", parameter.Key, parameter.Value);
                     }
                 }
-                catch (Exception ex)
+                IActionDispatcher actionDispatcher = new ScutActionDispatcher();
+                ActionGetter actionParam;
+                byte[] sendData = GetActionResponse(actionDispatcher, actionId, userList[0], shareParam.ToString(), out actionParam);
+                foreach (T user in userList)
                 {
-                    TraceLog.WriteError("BroadcastAction  action:{0} userId:{1} error:{2}", actionId, user.GetUserId(), ex);
+                    if (object.Equals(user, null))
+                    {
+                        continue;
+                    }
+                    try
+                    {
+                        GameSession session = GameSession.Get(user.GetUserId());
+                        if (session != null)
+                        {
+                            if (session.SendAsync(sendData, 0, sendData.Length))
+                            {
+                                if (successHandle != null) successHandle(user);
+                            }
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        TraceLog.WriteError("BroadcastAction  action:{0} userId:{1} error:{2}", actionId, user.GetUserId(), ex);
+                    }
                 }
+            }
+            catch (Exception ex)
+            {
+                TraceLog.WriteError("BroadcastAction  action:{0} error:{1}", actionId, ex);
             }
         }
 
@@ -326,37 +355,45 @@ namespace ZyGames.Framework.Game.Contract
         /// <param name="successHandle">成功回调</param>
         public static void SendAsyncAction<T>(List<T> userList, int actionId, Parameters parameters, Action<ActionGetter> successHandle) where T : IUser
         {
-            StringBuilder shareParam = new StringBuilder();
-            if (parameters != null)
+            try
             {
-                foreach (var parameter in parameters)
+
+                StringBuilder shareParam = new StringBuilder();
+                if (parameters != null)
                 {
-                    shareParam.AppendFormat("&{0}={1}", parameter.Key, parameter.Value);
-                }
-            }
-            IActionDispatcher actionDispatcher = new ScutActionDispatcher();
-            foreach (var user in userList)
-            {
-                if (object.Equals(user, null))
-                {
-                    continue;
-                }
-                try
-                {
-                    var session = GameSession.Get(user.GetUserId());
-                    ActionGetter actionParam;
-                    byte[] sendData = GetActionResponse(actionDispatcher, actionId, user, shareParam.ToString(), out actionParam);
-                    if (session != null &&
-                        session.SendAsync(sendData, 0, sendData.Length) &&
-                        actionParam != null)
+                    foreach (var parameter in parameters)
                     {
-                        successHandle(actionParam);
+                        shareParam.AppendFormat("&{0}={1}", parameter.Key, parameter.Value);
                     }
                 }
-                catch (Exception ex)
+                IActionDispatcher actionDispatcher = new ScutActionDispatcher();
+                foreach (var user in userList)
                 {
-                    TraceLog.WriteError("SendToClient action:{0} userId:{1} error:{2}", actionId, user.GetUserId(), ex);
+                    if (object.Equals(user, null))
+                    {
+                        continue;
+                    }
+                    try
+                    {
+                        var session = GameSession.Get(user.GetUserId());
+                        ActionGetter actionParam;
+                        byte[] sendData = GetActionResponse(actionDispatcher, actionId, user, shareParam.ToString(), out actionParam);
+                        if (session != null &&
+                            session.SendAsync(sendData, 0, sendData.Length) &&
+                            actionParam != null)
+                        {
+                            successHandle(actionParam);
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        TraceLog.WriteError("SendToClient action:{0} userId:{1} error:{2}", actionId, user.GetUserId(), ex);
+                    }
                 }
+            }
+            catch (Exception ex)
+            {
+                TraceLog.WriteError("SendToClient action:{0} error:{1}", actionId, ex);
             }
         }
 

@@ -106,6 +106,8 @@ namespace ZyGames.Framework.Common.Serialization
                     return _charsValue;
                 if (_binaryArrayValue != null)
                     return _binaryArrayValue;
+                if (_guidValue != null)
+                    return _guidValue;
                 return _stringValue;
             }
             set
@@ -146,6 +148,8 @@ namespace ZyGames.Framework.Common.Serialization
                     _charsValue = (char[])value;
                 else if (value is byte[][])
                     _binaryArrayValue = (byte[][])value;
+                else if (value is Guid)
+                    _guidValue = (Guid)value;
                 else if (value == null)
                 {
                     _isnullValue = true;
@@ -213,6 +217,8 @@ namespace ZyGames.Framework.Common.Serialization
         [ProtoMember(18)]
         private ulong? _ulongValue;
 
+        [ProtoMember(19)]
+        private Guid? _guidValue;
 
         #region ISerializable Members
         /// <summary>

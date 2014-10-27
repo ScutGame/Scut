@@ -56,9 +56,11 @@ namespace ZyGames.Framework.Game.Contract
 
         static GameSession()
         {
+            HeartbeatTimeout = 60;//60s
             RequestTimeout = 1000;
-            Timeout = 60;
-            clearTime = new Timer(OnClearSession, null, new TimeSpan(0, 0, 60), new TimeSpan(0, 0, 10));
+            Timeout = 2 * 60 * 60;//2H
+            clearTime = new Timer(OnClearSession, null, 60000, 60000);
+
             _globalSession = new ConcurrentDictionary<Guid, GameSession>();
             _userHash = new ConcurrentDictionary<int, Guid>();
             _remoteHash = new ConcurrentDictionary<string, Guid>();
@@ -114,11 +116,16 @@ namespace ZyGames.Framework.Game.Contract
         public static int Count { get { return _globalSession.Count; } }
 
         /// <summary>
-        /// session timeout(sec).
+        /// Heartbeat timeout(sec), default 60s
+        /// </summary>
+        public static int HeartbeatTimeout { get; set; }
+
+        /// <summary>
+        /// session timeout(sec), default 2h
         /// </summary>
         public static int Timeout { get; set; }
         /// <summary>
-        /// Request timeout(ms)
+        /// Request timeout(ms), default 1s
         /// </summary>
         public static int RequestTimeout { get; set; }
 
@@ -134,8 +141,11 @@ namespace ZyGames.Framework.Game.Contract
                 foreach (var pair in _globalSession)
                 {
                     var session = pair.Value;
-                    if (session != null && session.CheckExpired())
+                    if (session == null) continue;
+
+                    if (session.CheckExpired())
                     {
+                        session.DoHeartbeatTimeout();
                         session.Reset();
                         //todo session
                         TraceLog.ReleaseWriteDebug("User {0} sessionId{1} is expire {2}({3}sec)",
@@ -144,6 +154,12 @@ namespace ZyGames.Framework.Game.Contract
                             session.LastActivityTime,
                             Timeout);
 
+                    }
+                    else if (!session.IsHeartbeatTimeout &&
+                        HeartbeatTimeout > 0 &&
+                        session.LastActivityTime < MathUtils.Now.AddSeconds(-HeartbeatTimeout))
+                    {
+                        session.DoHeartbeatTimeout();
                     }
                 }
                 if (_isChanged == 1)
@@ -321,11 +337,22 @@ namespace ZyGames.Framework.Game.Contract
         /// <returns></returns>
         public static List<GameSession> GetOnlineAll()
         {
+            return GetOnlineAll(HeartbeatTimeout);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        public static List<GameSession> GetOnlineAll(int delayTime)
+        {
             List<GameSession> list = new List<GameSession>();
             foreach (var pair in _globalSession)
             {
                 var session = pair.Value;
-                if (!session.IsRemote && session.Connected && !session.CheckExpired())
+                if (!session.IsRemote && 
+                    session.Connected &&
+                    session.LastActivityTime > MathUtils.Now.AddSeconds(-delayTime))
                 {
                     list.Add(session);
                 }
@@ -338,24 +365,48 @@ namespace ZyGames.Framework.Game.Contract
         private ExSocket _exSocket;
         private Action<ExSocket, byte[], int, int> _sendCallback;
 
-        private readonly IMonitorStrategy _monitorLock;
-
         /// <summary>
-        /// 获得锁策略
+        /// Heartbeat Timeout event
         /// </summary>
-        [JsonIgnore]
-        public IMonitorStrategy MonitorLock
+        public event Action<GameSession> HeartbeatTimeoutHandle;
+
+        private void DoHeartbeatTimeout()
         {
-            get { return _monitorLock; }
+            try
+            {
+                IsHeartbeatTimeout = true;
+                Action<GameSession> handler = HeartbeatTimeoutHandle;
+                if (handler != null) handler(this);
+            }
+            catch (Exception)
+            {
+            }
         }
 
+        private readonly LockCachePool _monitorLock;
+
+        /// <summary>
+        /// 获得锁
+        /// </summary>
+        public bool EnterLock(int actionId)
+        {
+            return _monitorLock.TryEnter(actionId, RequestTimeout);
+        }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="actionId"></param>
+        public void ExitLock(int actionId)
+        {
+            _monitorLock.Exit(actionId);
+        }
 
         /// <summary>
         /// init proto deserialize use
         /// </summary>
         private GameSession()
         {
-            _monitorLock = new MonitorLockStrategy(RequestTimeout);
+            _monitorLock = new LockCachePool();
             Refresh();
         }
 
@@ -399,6 +450,8 @@ namespace ZyGames.Framework.Game.Contract
 
         internal void Refresh()
         {
+            IsTimeout = false;
+            IsHeartbeatTimeout = false;
             LastActivityTime = DateTime.Now;
             if (User != null)
             {
@@ -417,7 +470,7 @@ namespace ZyGames.Framework.Game.Contract
             {
                 //解除UserId与前一次的Session连接对象绑定
                 Guid sid;
-                if (_userHash.TryGetValue(userId, out sid))
+                if (_userHash.TryGetValue(userId, out sid) && sid != KeyCode)
                 {
                     var session = Get(sid);
                     if (session != null)
@@ -492,12 +545,15 @@ namespace ZyGames.Framework.Game.Contract
         private void Reset()
         {
             IsTimeout = true;
-            GameSession session;
-            _globalSession.TryRemove(KeyCode, out session);
             if (_exSocket != null)
             {
-                //设置Socket为Closed的状态, 并未将物理连接马上中断
-                _exSocket.IsClosed = true;
+                try
+                {
+                    //设置Socket为Closed的状态, 并未将物理连接马上中断
+                    _exSocket.IsClosed = true;
+                    _exSocket.Close();
+                }
+                catch { }
             }
             Guid code;
             if (_userHash.TryRemove(UserId, out code))
@@ -506,6 +562,11 @@ namespace ZyGames.Framework.Game.Contract
             }
 
             if (!string.IsNullOrEmpty(ProxyId)) _remoteHash.TryRemove(ProxyId, out code);
+            GameSession session;
+            if (_globalSession.TryRemove(KeyCode, out session))
+            {
+                session._monitorLock.Clear();
+            }
         }
 
 
@@ -518,6 +579,18 @@ namespace ZyGames.Framework.Game.Contract
         /// Remote end address
         /// </summary>
         [JsonIgnore]
+        public string RemoteAddress
+        {
+            get
+            {
+                return _remoteAddress;
+            }
+        }
+        /// <summary>
+        /// Remote end address
+        /// </summary>
+        [JsonIgnore]
+        [Obsolete]
         public string EndAddress
         {
             get
@@ -572,6 +645,12 @@ namespace ZyGames.Framework.Game.Contract
         /// </summary>
         [JsonIgnore]
         public bool IsTimeout { get; set; }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        [JsonIgnore]
+        public bool IsHeartbeatTimeout { get; set; }
 
         private string _proxyId;
 

@@ -431,6 +431,7 @@ namespace ZyGames.Framework.Cache.Generic
                     return false;
                 }
             }
+            entityData.IsInCache = true;
             itemSet.SetItem(entityData);
             itemSet.OnLoadSuccess();
             return true;
@@ -460,6 +461,8 @@ namespace ZyGames.Framework.Cache.Generic
             itemSet.SetItem(entityData);
             if (Container.TryAdd(entityKey, itemSet))
             {
+                entityData.IsInCache = true;
+                entityData.TriggerNotify();
                 itemSet.OnLoadSuccess();
                 return true;
             }
@@ -491,6 +494,7 @@ namespace ZyGames.Framework.Cache.Generic
             CacheItemSet itemSet = InitGroupContainer(groupKey, periodTime);
             if (itemSet != null && !Equals(entityData, default(T)))
             {
+                entityData.IsInCache = true;
                 var data = (BaseCollection)itemSet.GetItem();
                 T oldValue;
                 if (data.TryGetValue(key, out oldValue))
@@ -523,6 +527,8 @@ namespace ZyGames.Framework.Cache.Generic
             {
                 if (!Equals(entityData, default(T)) && ((BaseCollection)itemSet.GetItem()).TryAdd(key, entityData))
                 {
+                    entityData.IsInCache = true;
+                    entityData.TriggerNotify();
                     itemSet.OnLoadSuccess();
                     return true;
                 }
@@ -585,6 +591,8 @@ namespace ZyGames.Framework.Cache.Generic
             var itemSet = Container.GetOrAdd(groupKey, name => lazy.Value);
             if (itemSet != null)
             {
+                entityData.IsInCache = true;
+                //队列不存Redis,不触发事件
                 ((CacheQueue<T>)itemSet.GetItem()).Enqueue(entityData);
                 return true;
             }
@@ -732,7 +740,11 @@ namespace ZyGames.Framework.Cache.Generic
                 {
                     ChangeType = CacheItemChangeType.UnChange
                 };
-                itemSet.UnChangeNotify(this, e);
+                var itemData = itemSet.ItemData as IItemChangeEvent;
+                if (itemData != null)
+                {
+                    itemData.UnChangeNotify(this, e);
+                }
             }
         }
 

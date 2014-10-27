@@ -27,6 +27,7 @@ using System.Data;
 using System.Text;
 using ZyGames.Framework.Common;
 using MySql.Data.MySqlClient;
+using ZyGames.Framework.Common.Log;
 
 namespace ZyGames.Framework.Data.MySql
 {
@@ -42,6 +43,22 @@ namespace ZyGames.Framework.Data.MySql
         public MySqlDataProvider(ConnectionSetting connectionSetting)
             : base(connectionSetting)
         {
+        }
+
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public override void ClearAllPools()
+        {
+            try
+            {
+                MySqlConnection.ClearAllPools();
+            }
+            catch (Exception e)
+            {
+                TraceLog.WriteSqlError("ClearAllPools error:{0}", e);
+            }
         }
 
         /// <summary>
@@ -165,6 +182,9 @@ namespace ZyGames.Framework.Data.MySql
         {
             switch (toEnum)
             {
+                case MySqlDbType.Guid:
+                    return typeof(Guid);
+
                 case MySqlDbType.Int64:
                     return typeof(Int64);
                 case MySqlDbType.Binary:
@@ -214,6 +234,9 @@ namespace ZyGames.Framework.Data.MySql
 
             switch (sqlDbType)
             {
+                //case "guid":
+                //    dbType = MySqlDbType.Guid;
+                //    break;
                 case "int":
                     dbType = MySqlDbType.Int32;
                     break;
@@ -282,6 +305,19 @@ namespace ZyGames.Framework.Data.MySql
         /// <returns></returns>
         private string ConvertToDbType(Type type, string dbType, long length, int scale, bool isKey, string fieldName)
         {
+            if (string.Equals(dbType, "text", StringComparison.CurrentCultureIgnoreCase))
+            {
+                return "text";
+            }
+            if (string.Equals(dbType, "longtext", StringComparison.CurrentCultureIgnoreCase))
+            {
+                return "longtext";
+            }
+            if (string.Equals(dbType, "longblob", StringComparison.CurrentCultureIgnoreCase))
+            {
+                return "longblob";
+            }
+
             if (type.Equals(typeof(Int64)) || type.Equals(typeof(UInt64)))
             {
                 return "BigInt";
@@ -326,7 +362,7 @@ namespace ZyGames.Framework.Data.MySql
             if (string.Equals(dbType, "uniqueidentifier", StringComparison.CurrentCultureIgnoreCase) ||
                 type.Equals(typeof(Guid)))
             {
-                return "VarChar(32)";
+                return "VarChar(36)";
             }
             if (string.Equals(dbType, "varchar", StringComparison.CurrentCultureIgnoreCase) ||
                 type.Equals(typeof(String)))
@@ -340,18 +376,6 @@ namespace ZyGames.Framework.Data.MySql
                     : "VarChar(255)";
             }
 
-            if (string.Equals(dbType, "text", StringComparison.CurrentCultureIgnoreCase))
-            {
-                return "text";
-            }
-            if (string.Equals(dbType, "longtext", StringComparison.CurrentCultureIgnoreCase))
-            {
-                return "longtext";
-            }
-            if (string.Equals(dbType, "longblob", StringComparison.CurrentCultureIgnoreCase))
-            {
-                return "longblob";
-            }
             return "blob";
         }
 

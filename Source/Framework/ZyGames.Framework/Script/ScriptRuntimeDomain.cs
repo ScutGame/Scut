@@ -54,7 +54,7 @@ namespace ZyGames.Framework.Script
         /// <summary>
         /// IMainScript
         /// </summary>
-        public object MainInstance { get; set; }
+        public IMainScript MainInstance { get; set; }
 
         /// <summary>
         /// 

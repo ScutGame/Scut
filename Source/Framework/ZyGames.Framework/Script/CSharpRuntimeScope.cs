@@ -147,7 +147,15 @@ namespace ZyGames.Framework.Script
             var result = ScriptCompiler.CompileSource(sources, refAssemblies, "DynamicCode", SettupInfo.ScriptIsDebug, true);
             if (result != null)
             {
-                var type = result.CompiledAssembly.GetType(typeName, false, true);
+                Type type = null;
+                if (string.IsNullOrEmpty(typeName))
+                {
+                    type = result.CompiledAssembly.GetTypes()[0];
+                }
+                else
+                {
+                    type = result.CompiledAssembly.GetType(typeName, false, true);
+                }
                 if (type != null) return type.CreateInstance(args);
             }
             return null;

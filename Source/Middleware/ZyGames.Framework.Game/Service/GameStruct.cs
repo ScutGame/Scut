@@ -49,7 +49,7 @@ namespace ZyGames.Framework.Game.Service
         /// <summary>
         /// 默认的返回错误信息
         /// </summary>
-        public const string DefaultErrorInfo = "访问失败";
+        public const string DefaultErrorInfo = "Access fail";
 
         /// <summary>
         /// 接口访问处理情况
@@ -92,6 +92,16 @@ namespace ZyGames.Framework.Game.Service
         /// ActionID，接口编号
         /// </summary>
         protected int actionId;
+
+        /// <summary>
+        /// 本次登录SessionID句柄
+        /// </summary>
+        protected string Sid;
+        /// <summary>
+        /// 提交Action用户唯一ID
+        /// </summary>
+        protected string Uid;
+
         /// <summary>
         /// 是否是错误的URL请求串
         /// </summary>
@@ -319,6 +329,11 @@ namespace ZyGames.Framework.Game.Service
 
         private void WatchAction()
         {
+            var time = (iVisitEndTime - iVisitBeginTime).TotalMilliseconds;
+            if (time > ActionTimeOut)
+            {
+                TraceLog.WriteError("Action-{2} Uid:{3} access timeout {0}/{1}ms.", time, ActionTimeOut, actionId, Uid);
+            }
         }
 
         //protected void InitAction(System.Web.HttpResponse m_Response)

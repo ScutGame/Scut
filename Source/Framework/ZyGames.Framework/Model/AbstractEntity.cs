@@ -104,7 +104,7 @@ namespace ZyGames.Framework.Model
             : base(isReadOnly)
         {
             _isNew = true;
-            _isLoading = false;
+            IsInCache = false;
             _isReadOnly = isReadOnly;
         }
 
@@ -119,7 +119,7 @@ namespace ZyGames.Framework.Model
         /// <summary>
         /// 重置状态
         /// </summary>
-        internal void Reset()
+        public void Reset()
         {
             OnUnNew();
             DequeueChangePropertys();
@@ -142,18 +142,18 @@ namespace ZyGames.Framework.Model
         /// </summary>
         internal void SetValueBefore()
         {
-            _isLoading = true;
         }
 
         /// <summary>
         /// 设置属性值之后处理
         /// </summary>
-        internal void SetValueAfter()
+        public void SetValueAfter()
         {
             ResetChangePropertys();
-            _isLoading = false;
+            IsInCache = true;
             OnUnNew();
         }
+
         #region property
 
         /// <summary>
@@ -178,16 +178,17 @@ namespace ZyGames.Framework.Model
             }
         }
 
-        private bool _isLoading;
+
         /// <summary>
         /// 判断是否处理加载中设置属性,只读实体为False后才不可修改
         /// </summary>
         [JsonIgnore]
+        [Obsolete]
         public bool IsLoading
         {
             get
             {
-                return _isLoading;
+                return !IsInCache;
             }
         }
 
@@ -281,6 +282,19 @@ namespace ZyGames.Framework.Model
             }
         }
 
+        /// <summary>
+        /// entity modify time.
+        /// </summary>
+        [ProtoMember(100025)]
+        public DateTime TempTimeModify { get; set; }
+
+        /// <summary>
+        /// 
+        /// </summary>
+
+        [JsonIgnore]
+        public bool IsExpired { get; set; }
+
         #endregion
 
         /// <summary>
@@ -295,9 +309,12 @@ namespace ZyGames.Framework.Model
         /// <param name="eventArgs"></param>
         protected override void Notify(object sender, CacheItemEventArgs eventArgs)
         {
-            eventArgs.Source = sender;
+            if (!IsInCache || _isReadOnly || CheckExpired()) return;
+            //modify resean: not notify to ItemSet object.
+            //eventArgs.Source = sender;
             AddChangePropertys(eventArgs.PropertyName);
-            base.Notify(this, eventArgs);
+            //base.Notify(this, eventArgs);
+            PutToChangeKeys(this);
         }
 
         /// <summary>
@@ -307,12 +324,30 @@ namespace ZyGames.Framework.Model
         /// <param name="eventArgs"></param>
         protected override void NotifyByChildren(object sender, CacheItemEventArgs eventArgs)
         {
-            eventArgs.Source = sender;
+            if (!IsInCache || _isReadOnly || CheckExpired()) return;
+            //eventArgs.Source = sender;
             AddChangePropertys(eventArgs.PropertyName);
             //更改子类事件触发者
-            base.NotifyByChildren(this, eventArgs);
+            //base.NotifyByChildren(this, eventArgs);
+            PutToChangeKeys(this);
         }
 
+        private bool CheckExpired()
+        {
+            if (IsExpired)
+            {
+                TraceLog.WriteError("Not found entity {0} key {1}, it is disposed.\r\n{2}", GetSchema().EntityName, GetKeyCode(), TraceLog.GetStackTrace());
+                return true;
+            }
+            return false;
+        }
+        private void PutToChangeKeys(AbstractEntity entity)
+        {
+            if (!IsModifying)
+            {
+                DataSyncQueueManager.Send(entity);
+            }
+        }
         /// <summary>
         /// 设置UnChange事件通知
         /// </summary>
@@ -573,7 +608,7 @@ namespace ZyGames.Framework.Model
         private void AddChangePropertys(string propertyName)
         {
             //在加载初始数据时，不设置Change属性
-            if (!IsLoading && !string.IsNullOrEmpty(propertyName))
+            if (!string.IsNullOrEmpty(propertyName))
             {
                 _changePropertys.Enqueue(propertyName);
             }
@@ -756,14 +791,15 @@ namespace ZyGames.Framework.Model
             SchemaTable schemaTable;
             if (EntitySchemaSet.TryGet(typeName, out schemaTable))
             {
-                string[] keyValues = DecodeKeyCode(keyCode).Split(KeyCodeJoinChar);
+                string[] keyValues = keyCode.Split(KeyCodeJoinChar);
                 for (int i = 0; i < schemaTable.Keys.Length; i++)
                 {
                     string columnName = schemaTable.Keys[i];
                     var colAttr = schemaTable[columnName];
                     if (i < keyValues.Length && colAttr != null)
                     {
-                        object value = ParseValueType(keyValues[i], colAttr.ColumnType);
+                        string key = DecodeKeyCode(keyValues[i]);
+                        object value = ParseValueType(key, colAttr.ColumnType);
                         SetPropertyValue(columnName, value);
                     }
                 }
@@ -814,7 +850,7 @@ namespace ZyGames.Framework.Model
             }
             if (columnType == typeof(Guid))
             {
-                return (Guid)value;
+                return value is Guid ? (Guid)value : Guid.Parse(value.ToString());
             }
             if (columnType.IsEnum)
             {

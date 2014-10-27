@@ -27,6 +27,7 @@ using System.Data;
 using System.Data.SqlClient;
 using System.Text;
 using ZyGames.Framework.Common;
+using ZyGames.Framework.Common.Log;
 
 namespace ZyGames.Framework.Data.Sql
 {
@@ -42,6 +43,21 @@ namespace ZyGames.Framework.Data.Sql
         public SqlDataProvider(ConnectionSetting connectionSetting)
             : base(connectionSetting)
         {
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public override void ClearAllPools()
+        {
+            try
+            {
+                SqlConnection.ClearAllPools();
+            }
+            catch (Exception e)
+            {
+                TraceLog.WriteSqlError("ClearAllPools error:{0}", e);
+            }
         }
 
         /// <summary>
@@ -174,6 +190,8 @@ namespace ZyGames.Framework.Data.Sql
         {
             switch (toEnum)
             {
+                case SqlDbType.UniqueIdentifier:
+                    return typeof(Guid);
                 case SqlDbType.BigInt:
                     return typeof(Int64);
                 case SqlDbType.Binary:
@@ -216,8 +234,6 @@ namespace ZyGames.Framework.Data.Sql
                     return typeof(Byte);
                 case SqlDbType.Udt://自定义的数据类型
                     return typeof(Object);
-                case SqlDbType.UniqueIdentifier:
-                    return typeof(Guid);
                 case SqlDbType.VarBinary:
                     return typeof(Object);
                 case SqlDbType.VarChar:
@@ -237,6 +253,9 @@ namespace ZyGames.Framework.Data.Sql
 
             switch (sqlDbType)
             {
+                case "uniqueidentifier":
+                    dbType = SqlDbType.UniqueIdentifier;
+                    break;
                 case "int":
                     dbType = SqlDbType.Int;
                     break;
@@ -306,9 +325,6 @@ namespace ZyGames.Framework.Data.Sql
                 case "tinyint":
                     dbType = SqlDbType.TinyInt;
                     break;
-                case "uniqueidentifier":
-                    dbType = SqlDbType.UniqueIdentifier;
-                    break;
                 case "varbinary":
                     dbType = SqlDbType.VarBinary;
                     break;
@@ -321,6 +337,20 @@ namespace ZyGames.Framework.Data.Sql
 
         private string ConvertToDbType(Type type, string dbType, long length, int scale, bool isKey)
         {
+            if (string.Equals(dbType, "text", StringComparison.CurrentCultureIgnoreCase) ||
+                string.Equals(dbType, "longtext", StringComparison.CurrentCultureIgnoreCase))
+            {
+                return "text";
+            }
+            if (string.Equals(dbType, "blob", StringComparison.CurrentCultureIgnoreCase))
+            {
+                return "varbinary(max)";
+            }
+            if (string.Equals(dbType, "longblob", StringComparison.CurrentCultureIgnoreCase))
+            {
+                return "image";
+            }
+
             if (type.Equals(typeof(Int64)) || type.Equals(typeof(UInt64)))
             {
                 return "BigInt";
@@ -379,19 +409,6 @@ namespace ZyGames.Framework.Data.Sql
                     : "VarChar(255)";
             }
 
-            if (string.Equals(dbType, "text", StringComparison.CurrentCultureIgnoreCase) ||
-                string.Equals(dbType, "longtext", StringComparison.CurrentCultureIgnoreCase))
-            {
-                return "text";
-            }
-            if (string.Equals(dbType, "blob", StringComparison.CurrentCultureIgnoreCase))
-            {
-                return "varbinary(max)";
-            }
-            if (string.Equals(dbType, "longblob", StringComparison.CurrentCultureIgnoreCase))
-            {
-                return "image";
-            }
 
             return "sql_variant";
         }

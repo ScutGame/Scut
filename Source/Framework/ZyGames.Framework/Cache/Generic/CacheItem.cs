@@ -49,6 +49,8 @@ namespace ZyGames.Framework.Cache.Generic
             Item = item;
         }
 
+        public bool IsInCache { get; set; }
+
         /// <summary>
         /// 移除过期键
         /// </summary>

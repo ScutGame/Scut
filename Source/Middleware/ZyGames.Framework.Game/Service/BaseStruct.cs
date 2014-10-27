@@ -42,14 +42,6 @@ namespace ZyGames.Framework.Game.Service
         /// </summary>
         public static string PublishType = ConfigUtils.GetSetting("PublishType", "Release");
 
-        /// <summary>
-        /// 本次登录SessionID句柄
-        /// </summary>
-        protected string Sid;
-        /// <summary>
-        /// 提交Action用户唯一ID
-        /// </summary>
-        protected string Uid;
 
         private int _userId;
         /// <summary>
@@ -142,12 +134,8 @@ namespace ZyGames.Framework.Game.Service
             {
                 St = st;
             }
-            Sid = actionGetter.GetSessionId();
-            Current = GameSession.Get(Sid);
-            if (Current == null)
-            {
-                Current = GameSession.Get(_userId);
-            }
+            Sid = actionGetter.SessionId;
+            Current = actionGetter.Session;
             InitAction();
             InitChildAction();
         }
@@ -155,18 +143,14 @@ namespace ZyGames.Framework.Game.Service
         /// <summary>
         /// 
         /// </summary>
-        /// <returns></returns>
-        public ILocking RequestLock()
+        /// <param name="response"></param>
+        /// <param name="isWriteInfo"></param>
+        public void WriteLockTimeoutAction(BaseGameResponse response, bool isWriteInfo = true)
         {
-            ILocking strategy = null;
-            if (Current != null) strategy = Current.MonitorLock.Lock();
-            if (strategy != null && !strategy.TryEnterLock())
-            {
-                ErrorCode = Language.Instance.ErrorCode;
-                if (!IsRealse) ErrorInfo = Language.Instance.ServerBusy;
-                TraceLog.WriteError("Action-{0} Uid:{1} locked timeout.", actionId, UserId);
-            }
-            return strategy;
+            ErrorCode = Language.Instance.LockTimeoutCode;
+            if (isWriteInfo && !IsRealse) ErrorInfo = Language.Instance.ServerBusy;
+            TraceLog.WriteError("Action-{0} Uid:{1} locked timeout.", actionId, UserId);
+            WriteErrorAction(response);
         }
 
         /// <summary>

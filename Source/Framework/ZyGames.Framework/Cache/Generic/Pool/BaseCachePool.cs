@@ -200,7 +200,9 @@ namespace ZyGames.Framework.Cache.Generic.Pool
             //配置库不放到Redis，尝试从DB加载
             if (receiveParam.Schema.AccessLevel == AccessLevel.ReadOnly)
             {
-                return _dbTransponder.TryReceiveData(receiveParam, out dataList);
+                var result = _dbTransponder.TryReceiveData(receiveParam, out dataList);
+                TraceLog.ReleaseWriteDebug("The readonly-data:{0} has been loaded {1}", receiveParam.RedisKey, dataList.Count);
+                return result;
             }
 
             if (!string.IsNullOrEmpty(receiveParam.RedisKey) &&
@@ -208,21 +210,23 @@ namespace ZyGames.Framework.Cache.Generic.Pool
             {
                 if (dataList.Count > 0)
                 {
-                    TraceLog.ReleaseWrite("The data:{0} has been loaded {1}", receiveParam.RedisKey, dataList.Count);
+                    TraceLog.ReleaseWriteDebug("The data:{0} has been loaded {1}", receiveParam.RedisKey, dataList.Count);
                     return true;
                 }
                 //从Redis历史记录表中加载
-                if (TryLoadHistory(receiveParam.RedisKey, out dataList))
+                if (Setting != null && Setting.IsStorageToDb && TryLoadHistory(receiveParam.RedisKey, out dataList))
                 {
+                    //modify reason:数据不同步时改为在业务自己显示恢复
                     //Share类型的如果没有数据尝试从DB中取
-                    if (dataList.Count == 0 && receiveParam.Schema.CacheType == CacheType.Entity)
-                    {
-                        return TryLoadFromDb(receiveParam, out dataList);
-                    }
+                    //if (dataList.Count == 0 && receiveParam.Schema.CacheType == CacheType.Entity)
+                    //{
+                    //    return TryLoadFromDb(receiveParam, out dataList);
+                    //}
 
-                    TraceLog.ReleaseWrite("The data:{0} has been loaded {1} from history.", receiveParam.RedisKey, dataList.Count);
+                    TraceLog.ReleaseWriteDebug("The data:{0} has been loaded {1} from history.", receiveParam.RedisKey, dataList.Count);
                     return true;
                 }
+                return true;
             }
             return false;
         }
@@ -237,7 +241,7 @@ namespace ZyGames.Framework.Cache.Generic.Pool
             {
                 if (dataList.Count > 0)
                 {
-                    TraceLog.ReleaseWrite("The data:{0} has been loaded {1} from db.", receiveParam.RedisKey, dataList.Count);
+                    TraceLog.ReleaseWriteDebug("The data:{0} has been loaded {1} from db.", receiveParam.RedisKey, dataList.Count);
                     //恢复到Redis
                     return RedisConnectionPool.TryUpdateEntity(dataList);
                 }
@@ -415,7 +419,7 @@ namespace ZyGames.Framework.Cache.Generic.Pool
                 {
                     if (itemPair.Value.HasChanged || !itemPair.Value.IsPeriod)
                     {
-                        //check child object expired process.
+                        //clear sub item is expired.
                         itemPair.Value.RemoveExpired(itemPair.Key);
                         continue;
                     }
@@ -425,6 +429,7 @@ namespace ZyGames.Framework.Cache.Generic.Pool
                         TraceLog.ReleaseWrite("Cache item:{0} key:{1} expired has been removed.",
                             containerPair.Key,
                             itemPair.Key);
+                        itemSet.ProcessExpired(itemPair.Key);
                         itemSet.SetRemoveStatus();
                         itemSet.Dispose();
                     }

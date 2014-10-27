@@ -179,6 +179,27 @@ namespace ZyGames.Framework.Script
             return null;
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sources"></param>
+        /// <param name="refAssemblies"></param>
+        /// <param name="codeKind"></param>
+        /// <returns></returns>
+        public ScriptScope ExecutePythonSource(string sources, string[] refAssemblies, SourceCodeKind codeKind = SourceCodeKind.Statements)
+        {
+            if (refAssemblies != null)
+            {
+                foreach (var refAssembly in refAssemblies)
+                {
+                    _scriptEngine.Runtime.LoadAssembly(Assembly.LoadFrom(refAssembly));
+                }
+            }
+            var code = _scriptEngine.CreateScriptSourceFromString(sources, codeKind).Compile();
+            var scope = _scriptEngine.CreateScope();
+            code.Execute(scope);
+            return scope;
+        }
 
         private void Load()
         {

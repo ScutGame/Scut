@@ -83,6 +83,19 @@ namespace ZyGames.Framework.RPC.Sockets
         /// <value>The length of the queue.</value>
         public int QueueLength { get { return sendQueue.Count; } }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        public void Close()
+        {
+            try
+            {
+                WorkSocket.Shutdown(SocketShutdown.Both);
+            }
+            catch { }
+            WorkSocket.Close();
+        }
+
         internal void Enqueue(byte[] data)
         {
             sendQueue.Enqueue(data);

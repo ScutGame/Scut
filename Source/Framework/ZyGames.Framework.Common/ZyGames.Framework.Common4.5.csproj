@@ -58,6 +58,7 @@
     <Reference Include="System.configuration" />
     <Reference Include="System.Core" />
     <Reference Include="System.Runtime.Caching" />
+    <Reference Include="System.ServiceModel" />
     <Reference Include="System.Web" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
@@ -72,14 +73,21 @@
     <Compile Include="BaseDisposable.cs" />
     <Compile Include="Build\AssemblyBuilder.cs" />
     <Compile Include="Build\WeavingEntityTask.cs" />
+    <Compile Include="Configuration\ConfigManager.cs" />
+    <Compile Include="Configuration\IConfigger.cs" />
+    <Compile Include="Configuration\ConnetionSection.cs" />
     <Compile Include="Configuration\ConfigUtils.cs" />
+    <Compile Include="Configuration\ConfigSection.cs" />
+    <Compile Include="Configuration\ConfigNode.cs" />
+    <Compile Include="Configuration\DataConfigger.cs" />
     <Compile Include="Event\CustomEvent.cs" />
-    <Compile Include="Event\EventNotifier.cs" />
-    <Compile Include="Event\NotifyEventArgs.cs" />
     <Compile Include="Event\TimeoutNotifyEventArgs.cs" />
+    <Compile Include="Event\NotifyEventArgs.cs" />
+    <Compile Include="Event\EventNotifier.cs" />
     <Compile Include="HttpUtils.cs" />
     <Compile Include="Locking\ILocking.cs" />
     <Compile Include="Locking\IMonitorStrategy.cs" />
+    <Compile Include="Locking\LockCachePool.cs" />
     <Compile Include="Locking\MonitorLockStrategy.cs" />
     <Compile Include="Locking\MonitorSlim.cs" />
     <Compile Include="Locking\WriteLockSlim.cs" />
@@ -88,6 +96,7 @@
     <Compile Include="Log\TraceLog.cs" />
     <Compile Include="MathUtils.cs" />
     <Compile Include="ObjectExtend.cs" />
+    <Compile Include="ObjectPoolWithExpire.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RandomUtils.cs" />
     <Compile Include="Reflect\CallSiteCache.cs" />
@@ -111,6 +120,7 @@
     <Compile Include="Timing\CodeTimer.cs" />
     <Compile Include="Timing\PlanConfig.cs" />
     <Compile Include="Timing\RunTimeWatch.cs" />
+    <Compile Include="Timing\SyncTimer.cs" />
     <Compile Include="Timing\TaskDispatch.cs" />
     <Compile Include="Timing\TimeListener.cs" />
     <Compile Include="VersionConfig.cs" />

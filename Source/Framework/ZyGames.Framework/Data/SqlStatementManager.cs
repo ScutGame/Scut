@@ -306,13 +306,15 @@ namespace ZyGames.Framework.Data
         {
             try
             {
+                bool hasClear = false;
                 foreach (var buffer in bufferBytes)
                 {
+                    DbBaseProvider dbProvider = null;
                     SqlStatement statement = null;
                     try
                     {
                         statement = ProtoBufUtils.Deserialize<SqlStatement>(buffer);
-                        var dbProvider = DbConnectionProvider.CreateDbProvider("", statement.ProviderType, statement.ConnectionString);
+                        dbProvider = DbConnectionProvider.CreateDbProvider("", statement.ProviderType, statement.ConnectionString);
                         var paramList = ToSqlParameter(dbProvider, statement.Params);
                         dbProvider.ExecuteQuery(statement.CommandType, statement.CommandText, paramList);
                     }
@@ -320,6 +322,12 @@ namespace ZyGames.Framework.Data
                     {
                         TraceLog.WriteSqlError("Error:{0}\r\nSql>>\r\n{1}", e, statement != null ? statement.CommandText : "");
                         PutError(buffer);
+                        if (!hasClear && dbProvider != null)
+                        {
+                            //modify error: 40 - Could not open a connection to SQL Server
+                            hasClear = true;
+                            dbProvider.ClearAllPools();
+                        }
                     }
                 }
             }

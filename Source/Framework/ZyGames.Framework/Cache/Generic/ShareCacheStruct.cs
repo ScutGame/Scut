@@ -278,6 +278,7 @@ namespace ZyGames.Framework.Cache.Generic
         {
             foreach (var data in dataList)
             {
+                if (data == null) continue;
                 data.Reset();
                 string key = data.GetKeyCode();
                 bool result = AddOrUpdateEntity(key, data, periodTime);

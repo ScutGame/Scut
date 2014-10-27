@@ -297,7 +297,9 @@ namespace ZyGames.Framework.Game.Runtime
         /// Action repeater
         /// </summary>
         public IActionDispatcher ActionDispatcher { get; set; }
-
+        /// <summary>
+        /// 
+        /// </summary>
         public ICacheSerializer Serializer { get; set; }
         ///// <summary>
         ///// Before starting the script engine process.

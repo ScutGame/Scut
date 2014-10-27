@@ -36,12 +36,16 @@ namespace ZyGames.Framework.Cache.Generic
         private static readonly int CacheUpdateInterval;
         private static readonly int CacheExpiredInterval;
         private static readonly bool CacheEnableWritetoDb;
+        private static readonly bool DefaultEnableRedisQueue;
+        private static readonly bool DefalutIsStorageToDb;
 
         static CacheSetting()
         {
             CacheUpdateInterval = ConfigUtils.GetSetting("Cache.update.interval", 600); //10 Minute
             CacheExpiredInterval = ConfigUtils.GetSetting("Cache.expired.interval", 600);
             CacheEnableWritetoDb = ConfigUtils.GetSetting("Cache.enable.writetoDb", true);
+            DefaultEnableRedisQueue = ConfigUtils.GetSetting("Cache.enable.redisqueue", true);
+            DefalutIsStorageToDb = ConfigUtils.GetSetting("Cache.IsStorageToDb", false);
         }
         /// <summary>
         /// The cache setting init.
@@ -51,7 +55,9 @@ namespace ZyGames.Framework.Cache.Generic
             AutoRunEvent = true;
             UpdateInterval = CacheUpdateInterval;
             ExpiredInterval = CacheExpiredInterval;
+            EnableRedisQueue = DefaultEnableRedisQueue;
             EnableWriteToDb = CacheEnableWritetoDb;
+            IsStorageToDb = DefalutIsStorageToDb;
         }
 
         /// <summary>
@@ -70,9 +76,19 @@ namespace ZyGames.Framework.Cache.Generic
         public int UpdateInterval { get; set; }
 
         /// <summary>
+        /// Enable redis queue
+        /// </summary>
+        public bool EnableRedisQueue { get; set; }
+
+        /// <summary>
         /// Enable write to Db.
         /// </summary>
         public bool EnableWriteToDb { get; set; }
+
+        /// <summary>
+        /// IsStorage to Db.
+        /// </summary>
+        public bool IsStorageToDb { get; set; }
 
         /// <summary>
         /// The entity has be changed event notify.
@@ -81,7 +97,7 @@ namespace ZyGames.Framework.Cache.Generic
 
         internal void OnChangedNotify(AbstractEntity sender, CacheItemEventArgs e)
         {
-            if(ChangedHandle != null)
+            if (ChangedHandle != null)
             {
                 ChangedHandle(sender, e);
             }

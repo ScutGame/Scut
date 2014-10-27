@@ -99,7 +99,9 @@ namespace ZyGames.Framework.Game.Sns
             return false;
         }
 
-
+        /// <summary>
+        /// 
+        /// </summary>
         public class Datainfo
         {
             /// <summary>
@@ -158,7 +160,7 @@ namespace ZyGames.Framework.Game.Sns
                     return sBuilder.ToString();
                 }
             }
-            catch (Exception e)
+            catch (Exception)
             {
             }
             return null;

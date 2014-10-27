@@ -73,7 +73,7 @@ namespace ZyGames.Framework.Game.Sns
                 decryptedData = RSADeCrtypto(encryptedData, rsaParameters, true);
                 return ByteConverter.GetString(decryptedData);
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 return null;
             }

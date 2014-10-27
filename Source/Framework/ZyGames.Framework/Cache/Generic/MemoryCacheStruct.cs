@@ -24,9 +24,7 @@ THE SOFTWARE.
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using ZyGames.Framework.Cache.Generic.Pool;
 using ZyGames.Framework.Common;
-using ZyGames.Framework.Common.Serialization;
 using ZyGames.Framework.Model;
 
 namespace ZyGames.Framework.Cache.Generic
@@ -37,20 +35,11 @@ namespace ZyGames.Framework.Cache.Generic
     public class MemoryCacheStruct<T> : BaseDisposable
         where T : MemoryEntity, new()
     {
-        private static BaseCachePool _momoryPools;
 
         static MemoryCacheStruct()
         {
-            Reset();
         }
 
-        /// <summary>
-        /// Reset.
-        /// </summary>
-        public static void Reset()
-        {
-            _momoryPools = new CachePool(null, null, false, new ProtobufCacheSerializer());
-        }
 
         private CacheContainer _container;
         private string containerKey;
@@ -61,7 +50,7 @@ namespace ZyGames.Framework.Cache.Generic
         public MemoryCacheStruct()
         {
             containerKey = typeof(T).FullName;
-            _container = _momoryPools.InitContainer(containerKey);
+            _container = CacheFactory.MemoryCache.InitContainer(containerKey);
             Initialize();
         }
 

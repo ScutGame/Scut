@@ -46,36 +46,33 @@ namespace ZyGames.Framework.Game.Contract
         /// 构造函数
         /// </summary>
         public HttpGet(HttpRequest request)
-            : base(null)
+            : base(null, null)
         {
             _paramString = request["d"] ?? "";
             InitData(_paramString);
             //http
+            string sessionId = "";
             if (_param.ContainsKey("sid"))
             {
-                SessionId = _param["sid"];
+                sessionId = _param["sid"];
             }
-            if (string.IsNullOrEmpty(SessionId))
+            if (string.IsNullOrEmpty(sessionId))
             {
-                SessionId = request["sid"];
+                sessionId = request["sid"];
             }
-            _session = GameSession.Get(SessionId)
-                ?? GameSession.CreateNew(Guid.NewGuid(), request);
-            SessionId = _session != null ? _session.SessionId : "";
+            _session = GameSession.Get(sessionId) ?? GameSession.CreateNew(Guid.NewGuid(), request);
         }
 
         /// <summary>
         /// 
         /// </summary>
         /// <param name="package"></param>
-        public HttpGet(RequestPackage package)
-            : base(package)
+        /// <param name="session"></param>
+        public HttpGet(RequestPackage package, GameSession session)
+            : base(package, session)
         {
             _paramString = package.UrlParam ?? "";
-            _session = package.Session;
             InitData(_paramString);
-            SessionId = _session != null ? _session.SessionId : "";
-
         }
 
         /// <summary>
@@ -109,7 +106,7 @@ namespace ZyGames.Framework.Game.Contract
         /// </summary>
         public string RemoteAddress
         {
-            get { return _session != null ? _session.EndAddress : string.Empty; }
+            get { return _session != null ? _session.RemoteAddress : string.Empty; }
         }
 
         /// <summary>
@@ -117,20 +114,6 @@ namespace ZyGames.Framework.Game.Contract
         /// </summary>
         public int UserId { get; private set; }
 
-        /// <summary>
-        /// get current sessionid.
-        /// </summary>
-        public string SessionId { get; private set; }
-
-        private GameSession _session;
-
-        /// <summary>
-        /// Session
-        /// </summary>
-        public GameSession Session
-        {
-            get { return _session; }
-        }
 
         private string _paramString;
 
@@ -657,23 +640,6 @@ namespace ZyGames.Framework.Game.Contract
             return UserId;
         }
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <returns></returns>
-        public override string GetSessionId()
-        {
-            return SessionId;
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <returns></returns>
-        public override GameSession GetSession()
-        {
-            return _session;
-        }
         /// <summary>
         /// 
         /// </summary>

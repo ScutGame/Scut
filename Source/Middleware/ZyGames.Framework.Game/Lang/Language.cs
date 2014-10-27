@@ -157,6 +157,11 @@ namespace ZyGames.Framework.Game.Lang
         /// </summary>
         /// <value>The kicked out code.</value>
         public int MaintainCode = 10005;
+        /// <summary>
+        ///  lock time of error code
+        /// </summary>
+        /// <value>The kicked out code.</value>
+        public int LockTimeoutCode = 10006;
 
         /// <summary>
         /// 验签出错

@@ -117,7 +117,8 @@ namespace ZyGames.Framework.Game.Contract
         {
             try
             {
-                GameSession.CreateNew(e.Socket.HashCode, e.Socket, socketLintener.PostSend);
+                var session = GameSession.CreateNew(e.Socket.HashCode, e.Socket, socketLintener.PostSend);
+                session.HeartbeatTimeoutHandle += OnHeartbeatTimeout;
                 OnConnectCompleted(sender, e);
             }
             catch (Exception err)
@@ -160,7 +161,7 @@ namespace ZyGames.Framework.Game.Contract
                     return;
                 }
                 package.Bind(session);
-                ProcessPackage(package);
+                ProcessPackage(package, session);
             }
             catch (Exception ex)
             {
@@ -191,6 +192,7 @@ namespace ZyGames.Framework.Game.Contract
                     // 客户端tcp心跳包
                     session.Refresh();
                     OnHeartbeat(session);
+                    ResponseHearbeat(package, session);
                     session.ExitSession();
                 }
                 return true;
@@ -232,17 +234,16 @@ namespace ZyGames.Framework.Game.Contract
         {
         }
 
-        private void ProcessPackage(RequestPackage package)
+        private void ProcessPackage(RequestPackage package, GameSession session)
         {
             if (package == null) return;
 
-            var session = package.Session;
             try
             {
                 byte[] data = new byte[0];
                 if (!string.IsNullOrEmpty(package.RouteName))
                 {
-                    ActionGetter actionGetter = ActionDispatcher.GetActionGetter(package);
+                    ActionGetter actionGetter = ActionDispatcher.GetActionGetter(package, session);
                     if (CheckRemote(package.RouteName, actionGetter))
                     {
                         MessageStructure response = new MessageStructure();
@@ -254,7 +255,7 @@ namespace ZyGames.Framework.Game.Contract
                 {
                     SocketGameResponse response = new SocketGameResponse();
                     response.WriteErrorCallback += ActionDispatcher.ResponseError;
-                    ActionGetter actionGetter = ActionDispatcher.GetActionGetter(package);
+                    ActionGetter actionGetter = ActionDispatcher.GetActionGetter(package, session);
                     DoAction(actionGetter, response);
                     data = response.ReadByte();
                 }
@@ -267,13 +268,13 @@ namespace ZyGames.Framework.Game.Contract
                 }
                 catch (Exception ex)
                 {
-                    TraceLog.WriteError("PostSend异常{0}", ex);
+                    TraceLog.WriteError("PostSend error:{0}", ex);
                 }
 
             }
             catch (Exception ex)
             {
-                TraceLog.WriteError("Task异常{0}", ex);
+                TraceLog.WriteError("Task error:{0}", ex);
             }
             finally
             {
@@ -281,14 +282,39 @@ namespace ZyGames.Framework.Game.Contract
             }
         }
 
+        private void ResponseHearbeat(RequestPackage package, GameSession session)
+        {
+            try
+            {
+                MessageStructure response = new MessageStructure();
+                response.WriteBuffer(new MessageHead(package.MsgId, package.ActionId, 0));
+                var data = response.PopBuffer();
+                if (session != null && data.Length > 0)
+                {
+                    session.SendAsync(data, 0, data.Length);
+                }
+            }
+            catch (Exception ex)
+            {
+                TraceLog.WriteError("Post Heartbeat error:{0}", ex);
+            }
+        }
         /// <summary>
         /// 心跳包
         /// </summary>
         /// <param name="session"></param>
         protected virtual void OnHeartbeat(GameSession session)
         {
+
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="session"></param>
+        protected virtual void OnHeartbeatTimeout(GameSession session)
+        {
+        }
 
         /// <summary>
         /// Raises the connect completed event.
@@ -308,6 +334,7 @@ namespace ZyGames.Framework.Game.Contract
 
         }
 
+        #region http server
         private void OnHttpRequest(IAsyncResult result)
         {
             try
@@ -334,10 +361,10 @@ namespace ZyGames.Framework.Game.Contract
                 }
                 package.Bind(session);
 
-                ActionGetter httpGet = ActionDispatcher.GetActionGetter(package);
+                ActionGetter httpGet = ActionDispatcher.GetActionGetter(package, session);
                 if (package.IsUrlParam)
                 {
-                    httpGet["UserHostAddress"] = session.EndAddress;
+                    httpGet["UserHostAddress"] = session.RemoteAddress;
                     httpGet["ssid"] = session.KeyCode.ToString("N");
                     httpGet["http"] = "1";
                 }
@@ -417,6 +444,7 @@ namespace ZyGames.Framework.Game.Contract
 
             }
         }
+        #endregion
 
         /// <summary>
         /// 
@@ -439,6 +467,7 @@ namespace ZyGames.Framework.Game.Contract
                 return false;
             };
             OnStartAffer();
+            base.Start(args);
         }
 
         /// <summary>
@@ -461,7 +490,7 @@ namespace ZyGames.Framework.Game.Contract
             catch
             {
             }
-            GC.SuppressFinalize(this);
+            base.Stop();
         }
 
 

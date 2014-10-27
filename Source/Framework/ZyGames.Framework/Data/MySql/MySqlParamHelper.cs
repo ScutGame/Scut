@@ -144,6 +144,10 @@ namespace ZyGames.Framework.Data.MySql
             {
                 return MySqlDbType.Int32;
             }
+            //else if (value is Guid)
+            //{
+            //    return MySqlDbType.Guid;
+            //}
             return MySqlDbType.VarChar;
         }
 

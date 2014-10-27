@@ -69,12 +69,8 @@ namespace ZyGames.Framework.Common.Timing
         {
             if (String.IsNullOrEmpty(name)) return;
 
+            StringBuilder log = new StringBuilder();
             // 1.
-            ConsoleColor currentForeColor = Console.ForegroundColor;
-            Console.ForegroundColor = ConsoleColor.Yellow;
-            Console.WriteLine(name);
-
-            // 2.
             GC.Collect(GC.MaxGeneration, GCCollectionMode.Forced);
             int[] gcCounts = new int[GC.MaxGeneration + 1];
             for (int i = 0; i <= GC.MaxGeneration; i++)
@@ -82,7 +78,7 @@ namespace ZyGames.Framework.Common.Timing
                 gcCounts[i] = GC.CollectionCount(i);
             }
 
-            // 3.
+            // 2.
             Stopwatch watch = new Stopwatch();
             watch.Start();
             ulong cycleCount = GetCurrentThreadTimes();
@@ -90,19 +86,19 @@ namespace ZyGames.Framework.Common.Timing
             ulong cpuCycles = GetCurrentThreadTimes() - cycleCount;
             watch.Stop();
 
-            // 4.
-            Console.ForegroundColor = currentForeColor;
-            Console.WriteLine("\tTime Elapsed:\t" + watch.ElapsedMilliseconds.ToString("N0") + "ms");
-            Console.WriteLine("\tCPU Cycles:\t" + cpuCycles.ToString("N0"));
+            // 3.
+            log.AppendLine(name);
+            log.AppendLine("\tTime Elapsed:\t" + watch.ElapsedMilliseconds.ToString("N0") + "ms");
+            log.AppendLine("\tCPU Cycles:\t" + cpuCycles.ToString("N0"));
 
-            // 5.
+            // 4.
             for (int i = 0; i <= GC.MaxGeneration; i++)
             {
                 int count = GC.CollectionCount(i) - gcCounts[i];
-                Console.WriteLine("\tGen " + i + ": \t\t" + count);
+                log.AppendLine("\tGen " + i + ": \t\t" + count);
             }
-
-            Console.WriteLine();
+            log.AppendLine();
+            Console.WriteLine(log.ToString());
         }
 
         private static ulong GetCycleCount()

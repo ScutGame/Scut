@@ -321,7 +321,6 @@ namespace ZyGames.Framework.Cache.Generic
             if (DataContainer.TryReceiveData(receiveParam, out dataList))
             {
                 if (dataList.Count == 0) return true;
-                TraceLog.ReleaseWrite("The data:\"{0}\" has been loaded {1}.", DataContainer.RootKey, dataList.Count);
                 return InitCache(dataList, periodTime);
             }
             TraceLog.WriteError("Try load cache data:{0} error.", receiveParam.Schema.EntityType.FullName);
@@ -425,6 +424,7 @@ namespace ZyGames.Framework.Cache.Generic
         {
             foreach (var data in dataList)
             {
+                if (data == null) continue;
                 string personalId = data.PersonalId;
                 if (string.IsNullOrEmpty(personalId))
                 {

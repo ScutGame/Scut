@@ -48,6 +48,21 @@ namespace ZyGames.Framework.Common
             return Get(url, contentType, null, string.Empty, null).GetResponseStream();
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="url"></param>
+        /// <param name="contentType"></param>
+        /// <param name="timeout"></param>
+        /// <param name="userAgent"></param>
+        /// <param name="cookies"></param>
+        /// <returns></returns>
+        public static Task<WebResponse> GetAsync(string url, string contentType, int? timeout, string userAgent, CookieCollection cookies)
+        {
+            var request = DoGetRequest(url, contentType, timeout, userAgent, cookies);
+            return request.GetResponseAsync();
+        }
+
         /// <summary>  
         /// Get request  
         /// </summary>  
@@ -58,6 +73,12 @@ namespace ZyGames.Framework.Common
         /// <param name="cookies">随同HTTP请求发送的Cookie信息，如果不需要身份验证可以为空</param>  
         /// <returns></returns>  
         public static HttpWebResponse Get(string url, string contentType, int? timeout, string userAgent, CookieCollection cookies)
+        {
+            var request = DoGetRequest(url, contentType, timeout, userAgent, cookies);
+            return request.GetResponse() as HttpWebResponse;
+        }
+
+        private static HttpWebRequest DoGetRequest(string url, string contentType, int? timeout, string userAgent, CookieCollection cookies)
         {
             if (string.IsNullOrEmpty(url))
             {
@@ -82,7 +103,7 @@ namespace ZyGames.Framework.Common
                 request.CookieContainer = new CookieContainer();
                 request.CookieContainer.Add(cookies);
             }
-            return request.GetResponse() as HttpWebResponse;
+            return request;
         }
 
         /// <summary>
@@ -138,6 +159,23 @@ namespace ZyGames.Framework.Common
             return Post(url, parameters, null, string.Empty, encoding, contentType, null).GetResponseStream();
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="url"></param>
+        /// <param name="parameters"></param>
+        /// <param name="timeout"></param>
+        /// <param name="userAgent"></param>
+        /// <param name="encoding"></param>
+        /// <param name="contentType"></param>
+        /// <param name="cookies"></param>
+        /// <returns></returns>
+        public static Task<WebResponse> PostAsync(string url, string parameters, int? timeout, string userAgent, Encoding encoding, string contentType, CookieCollection cookies)
+        {
+            var request = DoPostRequest(url, parameters, timeout, userAgent, encoding, contentType, cookies);
+            return request.GetResponseAsync();
+        }
+
         /// <summary>  
         /// Post request 
         /// </summary>  
@@ -150,6 +188,12 @@ namespace ZyGames.Framework.Common
         /// <param name="cookies">随同HTTP请求发送的Cookie信息，如果不需要身份验证可以为空</param>  
         /// <returns></returns>  
         public static HttpWebResponse Post(string url, string parameters, int? timeout, string userAgent, Encoding encoding, string contentType, CookieCollection cookies)
+        {
+            var request = DoPostRequest(url, parameters, timeout, userAgent, encoding, contentType, cookies);
+            return request.GetResponse() as HttpWebResponse;
+        }
+
+        private static HttpWebRequest DoPostRequest(string url, string parameters, int? timeout, string userAgent, Encoding encoding, string contentType, CookieCollection cookies)
         {
             if (string.IsNullOrEmpty(url))
             {
@@ -208,7 +252,7 @@ namespace ZyGames.Framework.Common
                     stream.Write(data, 0, data.Length);
                 }
             }
-            return request.GetResponse() as HttpWebResponse;
+            return request;
         }
 
         private static bool CheckValidationResult(object sender, X509Certificate certificate, X509Chain chain,
