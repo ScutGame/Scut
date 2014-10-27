@@ -48,6 +48,8 @@ namespace ZyGames.Framework.RPC.Http
             }
 
             SetStatus(context);
+            //js call need
+            context.Response.AddHeader("Access-Control-Allow-Origin", "*");
             if (context.Request.QueryString["showjson"] == "1")
             {
                 context.Response.ContentType = "application/json";
