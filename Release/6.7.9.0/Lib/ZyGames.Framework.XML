@@ -308,257 +308,6 @@
             缓存块数据
             </summary>
         </member>
-        <member name="T:ZyGames.Framework.Event.EntityChangeEvent">
-            <summary>
-            实体变更事件,定义属性时不要使用get;set简写方式，在WebService调用时只读时会有异常
-            </summary>
-        </member>
-        <member name="T:ZyGames.Framework.Event.IItemChangeEvent">
-            <summary>
-            变更事件接口
-            </summary>
-        </member>
-        <member name="M:ZyGames.Framework.Event.IItemChangeEvent.DisableChildNotify">
-            <summary>
-            禁用子类事件通知
-            </summary>
-        </member>
-        <member name="M:ZyGames.Framework.Event.IItemChangeEvent.AddChildrenListener(System.Object)">
-            <summary>
-            增加子类监听
-            </summary>
-            <param name="changeEvent"></param>
-        </member>
-        <member name="M:ZyGames.Framework.Event.IItemChangeEvent.RemoveChildrenListener(System.Object)">
-            <summary>
-            移除子类监听
-            </summary>
-            <param name="changeEvent"></param>
-        </member>
-        <member name="M:ZyGames.Framework.Event.IItemChangeEvent.RemoveParentEvent">
-            <summary>
-            移除与父类事件绑定
-            </summary>
-        </member>
-        <member name="M:ZyGames.Framework.Event.IItemChangeEvent.UnChangeNotify(System.Object,ZyGames.Framework.Event.CacheItemEventArgs)">
-            <summary>
-            解除变更事件通知
-            </summary>
-            <param name="sender"></param>
-            <param name="eventArgs"></param>
-        </member>
-        <member name="M:ZyGames.Framework.Event.IItemChangeEvent.UpdateNotify(System.Func{ZyGames.Framework.Event.IItemChangeEvent,System.Boolean})">
-            <summary>
-            对象更新时通知事件
-            </summary>
-            <param name="updateHandle"></param>
-        </member>
-        <member name="M:ZyGames.Framework.Event.IItemChangeEvent.ExclusiveModify(System.Action)">
-            <summary>
-            Get exclusive modify entity property.
-            </summary>
-            <param name="modifyHandle"></param>
-        </member>
-        <member name="M:ZyGames.Framework.Event.IItemChangeEvent.ModifyLocked(System.Action)">
-            <summary>
-            locked modify value.
-            </summary>
-            <param name="modifyHandle"></param>
-        </member>
-        <member name="M:ZyGames.Framework.Event.IItemChangeEvent.ToJson">
-            <summary>
-            序列化Json
-            </summary>
-            <returns></returns>
-        </member>
-        <member name="M:ZyGames.Framework.Event.IItemChangeEvent.Dispose">
-            <summary>
-            
-            </summary>
-        </member>
-        <member name="M:ZyGames.Framework.Event.IItemChangeEvent.Dispose(System.Boolean)">
-            <summary>
-            
-            </summary>
-            <param name="disposing"></param>
-        </member>
-        <member name="P:ZyGames.Framework.Event.IItemChangeEvent.HasChanged">
-            <summary>
-            是否有变更
-            </summary>
-        </member>
-        <member name="P:ZyGames.Framework.Event.IItemChangeEvent.PropertyName">
-            <summary>
-            绑定实体类的属性名（表的列名）
-            </summary>
-        </member>
-        <member name="P:ZyGames.Framework.Event.IItemChangeEvent.ItemEvent">
-            <summary>
-            当前对象变更事件对象
-            </summary>
-        </member>
-        <member name="P:ZyGames.Framework.Event.IItemChangeEvent.ChildrenEvent">
-            <summary>
-            当前对象的子类变更事件对象
-            </summary>
-        </member>
-        <member name="M:ZyGames.Framework.Event.EntityChangeEvent.#ctor">
-            <summary>
-            
-            </summary>
-        </member>
-        <member name="M:ZyGames.Framework.Event.EntityChangeEvent.#ctor(System.Boolean)">
-            <summary>
-            
-            </summary>
-        </member>
-        <member name="M:ZyGames.Framework.Event.EntityChangeEvent.InitializeChangeEvent">
-            <summary>
-            重置子类绑定事件
-            </summary>
-        </member>
-        <member name="M:ZyGames.Framework.Event.EntityChangeEvent.SetDisableEvent">
-            <summary>
-            设置禁用事件绑定
-            </summary>
-        </member>
-        <member name="M:ZyGames.Framework.Event.EntityChangeEvent.ClearChildrenEvent">
-            <summary>
-            清除子类事件句柄
-            </summary>
-        </member>
-        <member name="F:ZyGames.Framework.Event.EntityChangeEvent._hasChanged">
-            <summary>
-            
-            </summary>
-        </member>
-        <member name="M:ZyGames.Framework.Event.EntityChangeEvent.DisableChildNotify">
-            <summary>
-            禁用子类事件通知
-            </summary>
-        </member>
-        <member name="M:ZyGames.Framework.Event.EntityChangeEvent.AddChildrenListener(System.Object)">
-            <summary>
-            添加子对象监听
-            </summary>
-        </member>
-        <member name="M:ZyGames.Framework.Event.EntityChangeEvent.RemoveChildrenListener(System.Object)">
-            <summary>
-            移除子对象监听
-            </summary>
-        </member>
-        <member name="M:ZyGames.Framework.Event.EntityChangeEvent.UnChangeNotify(System.Object,ZyGames.Framework.Event.CacheItemEventArgs)">
-            <summary>
-            触发UnChange事件通知
-            </summary>
-        </member>
-        <member name="M:ZyGames.Framework.Event.EntityChangeEvent.UpdateNotify(System.Func{ZyGames.Framework.Event.IItemChangeEvent,System.Boolean})">
-            <summary>
-            更新通知
-            </summary>
-            <param name="updateHandle"></param>
-        </member>
-        <member name="M:ZyGames.Framework.Event.EntityChangeEvent.ExclusiveModify(System.Action)">
-            <summary>
-            Get exclusive modify entity property.
-            </summary>
-            <param name="modifyHandle"></param>
-        </member>
-        <member name="M:ZyGames.Framework.Event.EntityChangeEvent.ModifyLocked(System.Action)">
-            <summary>
-            locked modify value.
-            </summary>
-            <param name="action"></param>
-        </member>
-        <member name="M:ZyGames.Framework.Event.EntityChangeEvent.DelayNotify">
-            <summary>
-            推迟数据改变通知
-            </summary>
-        </member>
-        <member name="M:ZyGames.Framework.Event.EntityChangeEvent.TriggerNotify">
-            <summary>
-            触发通知
-            </summary>
-        </member>
-        <member name="M:ZyGames.Framework.Event.EntityChangeEvent.NotifyByModify">
-            <summary>
-            触发修改通知事件
-            </summary>
-        </member>
-        <member name="M:ZyGames.Framework.Event.EntityChangeEvent.BindAndNotify(System.Object)">
-            <summary>
-            绑定事件且通知
-            </summary>
-            <param name="obj"></param>
-        </member>
-        <member name="M:ZyGames.Framework.Event.EntityChangeEvent.Notify(System.Object,ZyGames.Framework.Event.CacheItemChangeType,System.String)">
-            <summary>
-            
-            </summary>
-            <param name="sender"></param>
-            <param name="changeType"></param>
-            <param name="propertyName"></param>
-        </member>
-        <member name="M:ZyGames.Framework.Event.EntityChangeEvent.Notify(System.Object,ZyGames.Framework.Event.CacheItemEventArgs)">
-            <summary>
-            当前对象(包括继承)的属性触发通知事件
-            </summary>
-            <param name="sender">触发事件源</param>
-            <param name="eventArgs"></param>
-        </member>
-        <member name="M:ZyGames.Framework.Event.EntityChangeEvent.NotifyByChildren(System.Object,ZyGames.Framework.Event.CacheItemEventArgs)">
-            <summary>
-            当前对象中的属性包含的子类触发通知事件
-            </summary>
-            <param name="sender">触发事件源</param>
-            <param name="eventArgs"></param>
-        </member>
-        <member name="M:ZyGames.Framework.Event.EntityChangeEvent.Dispose(System.Boolean)">
-            <summary>
-            
-            </summary>
-        </member>
-        <member name="M:ZyGames.Framework.Event.EntityChangeEvent.EnterLock">
-            <summary>
-            Enter lock
-            </summary>
-        </member>
-        <member name="M:ZyGames.Framework.Event.EntityChangeEvent.ExitLock">
-            <summary>
-            Exit lock
-            </summary>
-        </member>
-        <member name="M:ZyGames.Framework.Event.EntityChangeEvent.ToJson">
-            <summary>
-            To json string.
-            </summary>
-            <returns></returns>
-        </member>
-        <member name="P:ZyGames.Framework.Event.EntityChangeEvent.PropertyName">
-            <summary>
-            实体映射的字段名
-            </summary>
-        </member>
-        <member name="P:ZyGames.Framework.Event.EntityChangeEvent.ItemEvent">
-            <summary>
-            当前对象绑定的Chang事件
-            </summary>
-        </member>
-        <member name="P:ZyGames.Framework.Event.EntityChangeEvent.ChildrenEvent">
-            <summary>
-            当前对象绑定的Chang事件
-            </summary>
-        </member>
-        <member name="P:ZyGames.Framework.Event.EntityChangeEvent.IsModifying">
-            <summary>
-            正在被修改中
-            </summary>
-        </member>
-        <member name="P:ZyGames.Framework.Event.EntityChangeEvent.HasChanged">
-            <summary>
-            是否有改变
-            </summary>
-        </member>
         <member name="T:ZyGames.Framework.Cache.Generic.IDataExpired">
             <summary>
             数据过期接口
@@ -753,6 +502,17 @@
             </summary>
             <param name="key"></param>
             <returns></returns>
+        </member>
+        <member name="M:ZyGames.Framework.Cache.Generic.BaseCollection.Dispose(System.Boolean)">
+            <summary>
+            
+            </summary>
+            <param name="disposing"></param>
+        </member>
+        <member name="M:ZyGames.Framework.Cache.Generic.BaseCollection.Dispose">
+            <summary>
+            
+            </summary>
         </member>
         <member name="P:ZyGames.Framework.Cache.Generic.BaseCollection.Item(System.String)">
             <summary>
@@ -956,13 +716,6 @@
             </summary>
             <returns></returns>
         </member>
-        <member name="M:ZyGames.Framework.Cache.Generic.CacheCollection.Notify(System.Object,ZyGames.Framework.Event.CacheItemEventArgs)">
-            <summary>
-            
-            </summary>
-            <param name="sender"></param>
-            <param name="eventArgs"></param>
-        </member>
         <member name="M:ZyGames.Framework.Cache.Generic.CacheCollection.Dispose(System.Boolean)">
             <summary>
             
@@ -1052,6 +805,267 @@
             </summary>
             <typeparam name="T"></typeparam>
             <typeparam name="V"></typeparam>
+        </member>
+        <member name="T:ZyGames.Framework.Event.EntityChangeEvent">
+            <summary>
+            实体变更事件,定义属性时不要使用get;set简写方式，在WebService调用时只读时会有异常
+            </summary>
+        </member>
+        <member name="T:ZyGames.Framework.Event.IItemChangeEvent">
+            <summary>
+            变更事件接口
+            </summary>
+        </member>
+        <member name="M:ZyGames.Framework.Event.IItemChangeEvent.TriggerNotify">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:ZyGames.Framework.Event.IItemChangeEvent.DisableChildNotify">
+            <summary>
+            禁用子类事件通知
+            </summary>
+        </member>
+        <member name="M:ZyGames.Framework.Event.IItemChangeEvent.AddChildrenListener(System.Object)">
+            <summary>
+            增加子类监听
+            </summary>
+            <param name="changeEvent"></param>
+        </member>
+        <member name="M:ZyGames.Framework.Event.IItemChangeEvent.RemoveChildrenListener(System.Object)">
+            <summary>
+            移除子类监听
+            </summary>
+            <param name="changeEvent"></param>
+        </member>
+        <member name="M:ZyGames.Framework.Event.IItemChangeEvent.RemoveParentEvent">
+            <summary>
+            移除与父类事件绑定
+            </summary>
+        </member>
+        <member name="M:ZyGames.Framework.Event.IItemChangeEvent.UnChangeNotify(System.Object,ZyGames.Framework.Event.CacheItemEventArgs)">
+            <summary>
+            解除变更事件通知
+            </summary>
+            <param name="sender"></param>
+            <param name="eventArgs"></param>
+        </member>
+        <member name="M:ZyGames.Framework.Event.IItemChangeEvent.UpdateNotify(System.Func{ZyGames.Framework.Event.IItemChangeEvent,System.Boolean})">
+            <summary>
+            对象更新时通知事件
+            </summary>
+            <param name="updateHandle"></param>
+        </member>
+        <member name="M:ZyGames.Framework.Event.IItemChangeEvent.ExclusiveModify(System.Action)">
+            <summary>
+            Get exclusive modify entity property.
+            </summary>
+            <param name="modifyHandle"></param>
+        </member>
+        <member name="M:ZyGames.Framework.Event.IItemChangeEvent.ModifyLocked(System.Action)">
+            <summary>
+            locked modify value.
+            </summary>
+            <param name="modifyHandle"></param>
+        </member>
+        <member name="M:ZyGames.Framework.Event.IItemChangeEvent.ToJson">
+            <summary>
+            序列化Json
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:ZyGames.Framework.Event.IItemChangeEvent.Dispose">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:ZyGames.Framework.Event.IItemChangeEvent.Dispose(System.Boolean)">
+            <summary>
+            
+            </summary>
+            <param name="disposing"></param>
+        </member>
+        <member name="P:ZyGames.Framework.Event.IItemChangeEvent.IsInCache">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:ZyGames.Framework.Event.IItemChangeEvent.HasChanged">
+            <summary>
+            是否有变更
+            </summary>
+        </member>
+        <member name="P:ZyGames.Framework.Event.IItemChangeEvent.PropertyName">
+            <summary>
+            绑定实体类的属性名（表的列名）
+            </summary>
+        </member>
+        <member name="P:ZyGames.Framework.Event.IItemChangeEvent.ItemEvent">
+            <summary>
+            当前对象变更事件对象
+            </summary>
+        </member>
+        <member name="P:ZyGames.Framework.Event.IItemChangeEvent.ChildrenEvent">
+            <summary>
+            当前对象的子类变更事件对象
+            </summary>
+        </member>
+        <member name="M:ZyGames.Framework.Event.EntityChangeEvent.#ctor">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:ZyGames.Framework.Event.EntityChangeEvent.#ctor(System.Boolean)">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:ZyGames.Framework.Event.EntityChangeEvent.InitializeChangeEvent">
+            <summary>
+            重置子类绑定事件
+            </summary>
+        </member>
+        <member name="M:ZyGames.Framework.Event.EntityChangeEvent.SetDisableEvent">
+            <summary>
+            设置禁用事件绑定
+            </summary>
+        </member>
+        <member name="M:ZyGames.Framework.Event.EntityChangeEvent.ClearChildrenEvent">
+            <summary>
+            清除子类事件句柄
+            </summary>
+        </member>
+        <member name="F:ZyGames.Framework.Event.EntityChangeEvent._hasChanged">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:ZyGames.Framework.Event.EntityChangeEvent.DisableChildNotify">
+            <summary>
+            禁用子类事件通知
+            </summary>
+        </member>
+        <member name="M:ZyGames.Framework.Event.EntityChangeEvent.AddChildrenListener(System.Object)">
+            <summary>
+            添加子对象监听
+            </summary>
+        </member>
+        <member name="M:ZyGames.Framework.Event.EntityChangeEvent.RemoveChildrenListener(System.Object)">
+            <summary>
+            移除子对象监听
+            </summary>
+        </member>
+        <member name="M:ZyGames.Framework.Event.EntityChangeEvent.UnChangeNotify(System.Object,ZyGames.Framework.Event.CacheItemEventArgs)">
+            <summary>
+            触发UnChange事件通知
+            </summary>
+        </member>
+        <member name="M:ZyGames.Framework.Event.EntityChangeEvent.UpdateNotify(System.Func{ZyGames.Framework.Event.IItemChangeEvent,System.Boolean})">
+            <summary>
+            更新通知
+            </summary>
+            <param name="updateHandle"></param>
+        </member>
+        <member name="M:ZyGames.Framework.Event.EntityChangeEvent.ExclusiveModify(System.Action)">
+            <summary>
+            Get exclusive modify entity property.
+            </summary>
+            <param name="modifyHandle"></param>
+        </member>
+        <member name="M:ZyGames.Framework.Event.EntityChangeEvent.ModifyLocked(System.Action)">
+            <summary>
+            locked modify value.
+            </summary>
+            <param name="action"></param>
+        </member>
+        <member name="M:ZyGames.Framework.Event.EntityChangeEvent.DelayNotify">
+            <summary>
+            推迟数据改变通知
+            </summary>
+        </member>
+        <member name="M:ZyGames.Framework.Event.EntityChangeEvent.TriggerNotify">
+            <summary>
+            触发通知
+            </summary>
+        </member>
+        <member name="M:ZyGames.Framework.Event.EntityChangeEvent.NotifyByModify">
+            <summary>
+            触发修改通知事件
+            </summary>
+        </member>
+        <member name="M:ZyGames.Framework.Event.EntityChangeEvent.BindAndNotify(System.Object)">
+            <summary>
+            绑定事件且通知
+            </summary>
+            <param name="obj"></param>
+        </member>
+        <member name="M:ZyGames.Framework.Event.EntityChangeEvent.Notify(System.Object,ZyGames.Framework.Event.CacheItemChangeType,System.String)">
+            <summary>
+            
+            </summary>
+            <param name="sender"></param>
+            <param name="changeType"></param>
+            <param name="propertyName"></param>
+        </member>
+        <member name="M:ZyGames.Framework.Event.EntityChangeEvent.Notify(System.Object,ZyGames.Framework.Event.CacheItemEventArgs)">
+            <summary>
+            当前对象(包括继承)的属性触发通知事件
+            </summary>
+            <param name="sender">触发事件源</param>
+            <param name="eventArgs"></param>
+        </member>
+        <member name="M:ZyGames.Framework.Event.EntityChangeEvent.NotifyByChildren(System.Object,ZyGames.Framework.Event.CacheItemEventArgs)">
+            <summary>
+            当前对象中的属性包含的子类触发通知事件
+            </summary>
+            <param name="sender">触发事件源</param>
+            <param name="eventArgs"></param>
+        </member>
+        <member name="M:ZyGames.Framework.Event.EntityChangeEvent.Dispose(System.Boolean)">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:ZyGames.Framework.Event.EntityChangeEvent.EnterLock">
+            <summary>
+            Enter lock
+            </summary>
+        </member>
+        <member name="M:ZyGames.Framework.Event.EntityChangeEvent.ExitLock">
+            <summary>
+            Exit lock
+            </summary>
+        </member>
+        <member name="M:ZyGames.Framework.Event.EntityChangeEvent.ToJson">
+            <summary>
+            To json string.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="P:ZyGames.Framework.Event.EntityChangeEvent.PropertyName">
+            <summary>
+            实体映射的字段名
+            </summary>
+        </member>
+        <member name="P:ZyGames.Framework.Event.EntityChangeEvent.ItemEvent">
+            <summary>
+            当前对象绑定的Chang事件
+            </summary>
+        </member>
+        <member name="P:ZyGames.Framework.Event.EntityChangeEvent.ChildrenEvent">
+            <summary>
+            当前对象绑定的Chang事件
+            </summary>
+        </member>
+        <member name="P:ZyGames.Framework.Event.EntityChangeEvent.IsModifying">
+            <summary>
+            正在被修改中
+            </summary>
+        </member>
+        <member name="P:ZyGames.Framework.Event.EntityChangeEvent.HasChanged">
+            <summary>
+            是否有改变
+            </summary>
         </member>
         <member name="M:ZyGames.Framework.Cache.Generic.CacheDictionary`2.#ctor">
             <summary>
@@ -1385,25 +1399,6 @@
             设置缓存项
             </summary>
         </member>
-        <member name="M:ZyGames.Framework.Cache.Generic.CacheItemSet.BindEvent(System.Object)">
-            <summary>
-            
-            </summary>
-        </member>
-        <member name="M:ZyGames.Framework.Cache.Generic.CacheItemSet.Notify(System.Object,ZyGames.Framework.Event.CacheItemEventArgs)">
-            <summary>
-            当前对象(包括继承)的属性触发通知事件
-            </summary>
-            <param name="sender">触发事件源</param>
-            <param name="eventArgs"></param>
-        </member>
-        <member name="M:ZyGames.Framework.Cache.Generic.CacheItemSet.NotifyByChildren(System.Object,ZyGames.Framework.Event.CacheItemEventArgs)">
-            <summary>
-            当前对象中的属性包含的子类触发通知事件,通知到此层为根
-            </summary>
-            <param name="sender"></param>
-            <param name="eventArgs"></param>
-        </member>
         <member name="M:ZyGames.Framework.Cache.Generic.CacheItemSet.GetItem">
             <summary>
             获取缓存项对象,会刷新缓存项生命时间
@@ -1442,6 +1437,11 @@
             
             </summary>
             <param name="disposing"></param>
+        </member>
+        <member name="M:ZyGames.Framework.Cache.Generic.CacheItemSet.Dispose">
+            <summary>
+            
+            </summary>
         </member>
         <member name="P:ZyGames.Framework.Cache.Generic.CacheItemSet.HasLoadSuccess">
             <summary>
@@ -1486,6 +1486,11 @@
         <member name="P:ZyGames.Framework.Cache.Generic.CacheItemSet.IsPeriod">
             <summary>
             过期对象
+            </summary>
+        </member>
+        <member name="P:ZyGames.Framework.Cache.Generic.CacheItemSet.HasChanged">
+            <summary>
+            
             </summary>
         </member>
         <member name="T:ZyGames.Framework.Cache.Generic.CacheList`1">
@@ -1930,9 +1935,19 @@
             The cache update interval.
             </summary>
         </member>
+        <member name="P:ZyGames.Framework.Cache.Generic.CacheSetting.EnableRedisQueue">
+            <summary>
+            Enable redis queue
+            </summary>
+        </member>
         <member name="P:ZyGames.Framework.Cache.Generic.CacheSetting.EnableWriteToDb">
             <summary>
             Enable write to Db.
+            </summary>
+        </member>
+        <member name="P:ZyGames.Framework.Cache.Generic.CacheSetting.IsStorageToDb">
+            <summary>
+            IsStorage to Db.
             </summary>
         </member>
         <member name="E:ZyGames.Framework.Cache.Generic.CacheSetting.ChangedHandle">
@@ -1963,6 +1978,31 @@
         <member name="F:ZyGames.Framework.Cache.Generic.DataSyncQueueManager.SqlSyncWaitErrirQueueKey">
             <summary>
             
+            </summary>
+        </member>
+        <member name="F:ZyGames.Framework.Cache.Generic.DataSyncQueueManager._enableRedisQueue">
+            <summary>
+            是否启用Redis队列
+            </summary>
+        </member>
+        <member name="F:ZyGames.Framework.Cache.Generic.DataSyncQueueManager.ExecuteCount">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="F:ZyGames.Framework.Cache.Generic.DataSyncQueueManager.MinCheckCount">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="F:ZyGames.Framework.Cache.Generic.DataSyncQueueManager.MaxCheckCount">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:ZyGames.Framework.Cache.Generic.DataSyncQueueManager.ClearTrace">
+            <summary>
+            test
             </summary>
         </member>
         <member name="M:ZyGames.Framework.Cache.Generic.DataSyncQueueManager.Start(ZyGames.Framework.Cache.Generic.CacheSetting,ZyGames.Framework.Common.Serialization.ICacheSerializer)">
@@ -2508,11 +2548,6 @@
         <member name="T:ZyGames.Framework.Cache.Generic.MemoryCacheStruct`1">
             <summary>
             内存中一定时间存在的实体，不存储数据库
-            </summary>
-        </member>
-        <member name="M:ZyGames.Framework.Cache.Generic.MemoryCacheStruct`1.Reset">
-            <summary>
-            Reset.
             </summary>
         </member>
         <member name="M:ZyGames.Framework.Cache.Generic.MemoryCacheStruct`1.#ctor">
@@ -4140,6 +4175,11 @@
             </summary>
             <param name="connectionSetting"></param>
         </member>
+        <member name="M:ZyGames.Framework.Data.DbBaseProvider.ClearAllPools">
+            <summary>
+            clear connection pools
+            </summary>
+        </member>
         <member name="M:ZyGames.Framework.Data.DbBaseProvider.CheckConnect">
             <summary>
             Check connect
@@ -4576,6 +4616,11 @@
             </summary>
             <param name="connectionSetting">connection setting.</param>
         </member>
+        <member name="M:ZyGames.Framework.Data.MySql.MySqlDataProvider.ClearAllPools">
+            <summary>
+            
+            </summary>
+        </member>
         <member name="M:ZyGames.Framework.Data.MySql.MySqlDataProvider.CheckConnect">
             <summary>
             
@@ -4962,6 +5007,11 @@
             
             </summary>
             <param name="connectionSetting">connection setting</param>
+        </member>
+        <member name="M:ZyGames.Framework.Data.Sql.SqlDataProvider.ClearAllPools">
+            <summary>
+            
+            </summary>
         </member>
         <member name="M:ZyGames.Framework.Data.Sql.SqlDataProvider.CheckConnect">
             <summary>
@@ -6189,6 +6239,16 @@
         <member name="P:ZyGames.Framework.Model.AbstractEntity.PersonalId">
             <summary>
             分组Key
+            </summary>
+        </member>
+        <member name="P:ZyGames.Framework.Model.AbstractEntity.TempTimeModify">
+            <summary>
+            entity modify time.
+            </summary>
+        </member>
+        <member name="P:ZyGames.Framework.Model.AbstractEntity.IsExpired">
+            <summary>
+            
             </summary>
         </member>
         <member name="P:ZyGames.Framework.Model.AbstractEntity.Item(System.String)">
@@ -8030,6 +8090,12 @@
             </summary>
             <returns></returns>
         </member>
+        <member name="M:ZyGames.Framework.Redis.RedisConnectionPool.PuttPool(ServiceStack.Redis.RedisClient)">
+            <summary>
+            
+            </summary>
+            <param name="client"></param>
+        </member>
         <member name="M:ZyGames.Framework.Redis.RedisConnectionPool.TryGetEntity``1(System.String,ZyGames.Framework.Model.SchemaTable,System.Collections.Generic.List{``0}@)">
             <summary>
             Try get entity
@@ -8078,6 +8144,11 @@
             <param name="key"></param>
             <returns></returns>
         </member>
+        <member name="P:ZyGames.Framework.Redis.RedisConnectionPool.PoolCount">
+            <summary>
+            Pool Count
+            </summary>
+        </member>
         <member name="T:ZyGames.Framework.Redis.RedisPoolSetting">
             <summary>
             Redis Pool Setting
@@ -8116,6 +8187,56 @@
         <member name="P:ZyGames.Framework.Redis.RedisPoolSetting.DbIndex">
             <summary>
             DbIndex
+            </summary>
+        </member>
+        <member name="T:ZyGames.Framework.RPC.Http.IHttpResponseAction">
+            <summary>
+            Represents any HTTP response action to respond to a client with.
+            </summary>
+        </member>
+        <member name="M:ZyGames.Framework.RPC.Http.IHttpResponseAction.Execute(ZyGames.Framework.RPC.Http.IHttpRequestResponseContext)">
+            <summary>
+            Execute the intended response action against the Response.
+            </summary>
+            <param name="context">The current connection's request/response context.</param>
+            <returns>A task which represents an asynchronous operation to await or null if a synchronous operation already completed.</returns>
+        </member>
+        <member name="M:ZyGames.Framework.RPC.Http.IHttpAsyncHandler.Execute(ZyGames.Framework.RPC.Http.IHttpRequestContext)">
+            <summary>
+            Main execution method of the handler which returns an HTTP response intent.
+            </summary>
+            <param name="state"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ZyGames.Framework.RPC.Http.IHttpAsyncHost.Run(System.String[])">
+            <summary>
+            Run the server host and block the current thread.
+            </summary>
+            <param name="uriPrefixes"></param>
+        </member>
+        <member name="P:ZyGames.Framework.RPC.Http.IHttpAsyncHost.Prefixes">
+            <summary>
+            Gets the set of server bindings.
+            </summary>
+        </member>
+        <member name="M:ZyGames.Framework.RPC.Http.HttpAsyncHost.#ctor(ZyGames.Framework.RPC.Http.IHttpAsyncHandler,System.Int32)">
+            <summary>
+            Creates an asynchronous HTTP host.
+            </summary>
+            <param name="handler">Handler to serve requests with</param>
+            <param name="accepts">
+            Higher values mean more connections can be maintained yet at a much slower average response time; fewer connections will be rejected.
+            Lower values mean less connections can be maintained yet at a much faster average response time; more connections will be rejected.
+            </param>
+        </member>
+        <member name="T:ZyGames.Framework.RPC.Http.JsonResultException">
+            <summary>
+            An exception to be converted to a JSON error result.
+            </summary>
+        </member>
+        <member name="T:ZyGames.Framework.RPC.Http.RedirectResponse">
+            <summary>
+            Provides a 302 redirect response to the given url.
             </summary>
         </member>
         <member name="T:ZyGames.Framework.RPC.IO.BufferReader">
@@ -9255,9 +9376,9 @@
             <param name="key"></param>
             <returns></returns>
         </member>
-        <member name="T:ZyGames.Framework.RPC.Service.HttpRemoteClient">
+        <member name="T:ZyGames.Framework.RPC.Service.SocketRemoteClient">
             <summary>
-            Remote client for http
+            Remote client for socket
             </summary>
         </member>
         <member name="T:ZyGames.Framework.RPC.Service.RemoteClient">
@@ -9304,6 +9425,56 @@
         <member name="P:ZyGames.Framework.RPC.Service.RemoteClient.IsSocket">
             <summary>
             Is socket client
+            </summary>
+        </member>
+        <member name="M:ZyGames.Framework.RPC.Service.SocketRemoteClient.#ctor(System.String,System.Int32,System.Int32)">
+            <summary>
+            init
+            </summary>
+            <param name="host"></param>
+            <param name="port"></param>
+            <param name="heartInterval">ms</param>
+        </member>
+        <member name="M:ZyGames.Framework.RPC.Service.SocketRemoteClient.Connect">
+            <summary>
+            Connect
+            </summary>
+        </member>
+        <member name="M:ZyGames.Framework.RPC.Service.SocketRemoteClient.Close">
+            <summary>
+            Close
+            </summary>
+        </member>
+        <member name="M:ZyGames.Framework.RPC.Service.SocketRemoteClient.Send(System.String)">
+            <summary>
+            
+            </summary>
+            <param name="data"></param>
+        </member>
+        <member name="M:ZyGames.Framework.RPC.Service.SocketRemoteClient.Send(System.Byte[])">
+            <summary>
+            
+            </summary>
+            <param name="data"></param>
+        </member>
+        <member name="P:ZyGames.Framework.RPC.Service.SocketRemoteClient.Encoding">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:ZyGames.Framework.RPC.Service.SocketRemoteClient.HeartPacket">
+            <summary>
+            Heartbeat packet data.
+            </summary>
+        </member>
+        <member name="P:ZyGames.Framework.RPC.Service.SocketRemoteClient.Connected">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="T:ZyGames.Framework.RPC.Service.HttpRemoteClient">
+            <summary>
+            Remote client for http
             </summary>
         </member>
         <member name="M:ZyGames.Framework.RPC.Service.HttpRemoteClient.#ctor(System.String)">
@@ -9384,56 +9555,6 @@
             RemoteCallback delegate
             </summary>
             <param name="e"></param>
-        </member>
-        <member name="T:ZyGames.Framework.RPC.Service.SocketRemoteClient">
-            <summary>
-            Remote client for socket
-            </summary>
-        </member>
-        <member name="M:ZyGames.Framework.RPC.Service.SocketRemoteClient.#ctor(System.String,System.Int32,System.Int32)">
-            <summary>
-            init
-            </summary>
-            <param name="host"></param>
-            <param name="port"></param>
-            <param name="heartInterval">ms</param>
-        </member>
-        <member name="M:ZyGames.Framework.RPC.Service.SocketRemoteClient.Connect">
-            <summary>
-            Connect
-            </summary>
-        </member>
-        <member name="M:ZyGames.Framework.RPC.Service.SocketRemoteClient.Close">
-            <summary>
-            Close
-            </summary>
-        </member>
-        <member name="M:ZyGames.Framework.RPC.Service.SocketRemoteClient.Send(System.String)">
-            <summary>
-            
-            </summary>
-            <param name="data"></param>
-        </member>
-        <member name="M:ZyGames.Framework.RPC.Service.SocketRemoteClient.Send(System.Byte[])">
-            <summary>
-            
-            </summary>
-            <param name="data"></param>
-        </member>
-        <member name="P:ZyGames.Framework.RPC.Service.SocketRemoteClient.Encoding">
-            <summary>
-            
-            </summary>
-        </member>
-        <member name="P:ZyGames.Framework.RPC.Service.SocketRemoteClient.HeartPacket">
-            <summary>
-            Heartbeat packet data.
-            </summary>
-        </member>
-        <member name="P:ZyGames.Framework.RPC.Service.SocketRemoteClient.Connected">
-            <summary>
-            
-            </summary>
         </member>
         <member name="T:ZyGames.Framework.RPC.Sockets.SocketEventArgs">
             <summary>
@@ -9563,6 +9684,11 @@
             </summary>
             <param name="socket">Socket.</param>
         </member>
+        <member name="M:ZyGames.Framework.RPC.Sockets.ExSocket.Close">
+            <summary>
+            
+            </summary>
+        </member>
         <member name="P:ZyGames.Framework.RPC.Sockets.ExSocket.HashCode">
             <summary>
             HashCode
@@ -9658,12 +9784,6 @@
             <summary>
             接收到数据包事件
             </summary>
-        </member>
-        <member name="P:ZyGames.Framework.RPC.Sockets.SocketListener.Connections">
-            <summary>
-            Gets the connections.
-            </summary>
-            <value>The connections.</value>
         </member>
         <member name="T:ZyGames.Framework.RPC.Sockets.SocketSettings">
             <summary>
@@ -12845,6 +12965,15 @@
             <param name="scriptCode"></param>
             <returns></returns>
         </member>
+        <member name="M:ZyGames.Framework.Script.PythonRuntimeScope.ExecutePythonSource(System.String,System.String[],Microsoft.Scripting.SourceCodeKind)">
+            <summary>
+            
+            </summary>
+            <param name="sources"></param>
+            <param name="refAssemblies"></param>
+            <param name="codeKind"></param>
+            <returns></returns>
+        </member>
         <member name="M:ZyGames.Framework.Script.PythonRuntimeScope.InitPython(System.String[])">
             <summary>
             
@@ -13014,6 +13143,11 @@
             Main
             </summary>
         </member>
+        <member name="M:ZyGames.Framework.Script.IMainScript.ProcessRequest(System.Object,System.Object)">
+            <summary>
+            
+            </summary>
+        </member>
         <member name="M:ZyGames.Framework.Script.IMainScript.Stop">
             <summary>
             Stop
@@ -13165,6 +13299,22 @@
             Run main class.
             </summary>
         </member>
+        <member name="M:ZyGames.Framework.Script.ScriptEngines.CancelRunMain">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:ZyGames.Framework.Script.ScriptEngines.RunMainWait">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:ZyGames.Framework.Script.ScriptEngines.GetCurrentMainScript">
+            <summary>
+            
+            </summary>
+            <returns></returns>
+        </member>
         <member name="M:ZyGames.Framework.Script.ScriptEngines.RequestMainProgram(System.Web.HttpContext)">
             <summary>
             Request of main class.
@@ -13251,6 +13401,15 @@
             <param name="args"></param>
             <returns></returns>
         </member>
+        <member name="M:ZyGames.Framework.Script.ScriptEngines.ExecutePythonSource(System.String,System.String[],Microsoft.Scripting.SourceCodeKind)">
+            <summary>
+            
+            </summary>
+            <param name="sources"></param>
+            <param name="refAssemblies"></param>
+            <param name="codeKind"></param>
+            <returns></returns>
+        </member>
         <member name="M:ZyGames.Framework.Script.ScriptEngines.Dispose">
             <summary>
             Dispose
@@ -13269,6 +13428,11 @@
         <member name="P:ZyGames.Framework.Script.ScriptEngines.SettupInfo">
             <summary>
             Settup info
+            </summary>
+        </member>
+        <member name="P:ZyGames.Framework.Script.ScriptEngines.RuntimeScope">
+            <summary>
+            
             </summary>
         </member>
         <member name="T:ZyGames.Framework.Script.ScriptRuntimeDomain">
@@ -13366,6 +13530,11 @@
         <member name="M:ZyGames.Framework.Script.ScriptSettupInfo.#ctor">
             <summary>
             init
+            </summary>
+        </member>
+        <member name="P:ZyGames.Framework.Script.ScriptSettupInfo.IsCancelRunning">
+            <summary>
+            是否取消执行脚本
             </summary>
         </member>
         <member name="P:ZyGames.Framework.Script.ScriptSettupInfo.ScriptChangedDelay">

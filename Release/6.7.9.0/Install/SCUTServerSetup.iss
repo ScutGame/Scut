@@ -2,7 +2,7 @@
 ; SEE THE DOCUMENTATION FOR DETAILS ON CREATING INNO SETUP SCRIPT FILES!
 
 #define MyAppName "SCUT Server"
-#define MyAppVersion "6.7.8.846"
+#define MyAppVersion "6.7.9.0"
 #define MyAppPublisher "ScutGame, Inc."
 #define MyAppCopyright "Copyright (c) 2013-2015 scutgame.com Inc."
 #define MyAppURL "http://www.scutgame.com/"
