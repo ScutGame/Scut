@@ -4275,11 +4275,25 @@
             
             </summary>
         </member>
+        <member name="M:ZyGames.Framework.Game.Contract.GameSocketHost.BuildHearbeatPackage(ZyGames.Framework.Game.Contract.RequestPackage,ZyGames.Framework.Game.Contract.GameSession)">
+            <summary>
+            
+            </summary>
+            <param name="package"></param>
+            <param name="session"></param>
+        </member>
         <member name="M:ZyGames.Framework.Game.Contract.GameSocketHost.OnReceivedBefore(ZyGames.Framework.RPC.Sockets.ConnectionEventArgs)">
             <summary>
             Raises the received before event.
             </summary>
             <param name="e">E.</param>
+        </member>
+        <member name="M:ZyGames.Framework.Game.Contract.GameSocketHost.ResponseHearbeat(ZyGames.Framework.Game.Contract.RequestPackage,ZyGames.Framework.Game.Contract.GameSession)">
+            <summary>
+            Response hearbeat stream.
+            </summary>
+            <param name="package"></param>
+            <param name="session"></param>
         </member>
         <member name="M:ZyGames.Framework.Game.Contract.GameSocketHost.OnHeartbeat(ZyGames.Framework.Game.Contract.GameSession)">
             <summary>
