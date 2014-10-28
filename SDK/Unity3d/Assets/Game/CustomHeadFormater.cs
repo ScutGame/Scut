@@ -45,6 +45,24 @@ public class CustomHeadFormater : IHeadFormater
         return true;
     }
 
+    public byte[] BuildHearbeatPackage()
+    {
+        var writer = NetWriter.Instance;
+        MessagePack headPack = new MessagePack()
+        {
+            MsgId = NetWriter.MsgId,
+            ActionId = 1,
+            SessionId = NetWriter.SessionID,
+            UserId = (int)NetWriter.UserID
+        };
+        byte[] headBytes = ProtoBufUtils.Serialize(headPack);
+        writer.SetHeadBuffer(headBytes);
+        writer.SetBodyData(new byte[0]);
+        var data = writer.PostData();
+        NetWriter.resetData();
+        return data;
+    }
+
     private int GetInt(byte[] data, ref int pos)
     {
         int val = BitConverter.ToInt32(data, pos);

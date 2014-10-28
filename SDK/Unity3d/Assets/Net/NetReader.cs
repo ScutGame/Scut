@@ -34,7 +34,12 @@ public class NetReader
     {
         _formater = formater;
     }
-
+	
+	public bool Success
+	{ 
+		get{ return StatusCode == 0; }
+	}
+	
     public int StatusCode
     {
         get { return _head == null ? 10000 : _head.StatusCode; }

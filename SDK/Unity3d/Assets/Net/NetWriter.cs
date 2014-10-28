@@ -28,6 +28,22 @@ public class NetWriter
     {
         get { return s_Counter; }
     }
+
+    public static ulong UserID
+    {
+        get { return s_userID; }
+    }
+
+    public static string SessionID
+    {
+        get { return s_strSessionID; }
+    }
+
+    public static string St
+    {
+        get { return s_strSt; }
+    }
+
     public static void SetMd5Key(string value)
     {
         s_md5Key = value;

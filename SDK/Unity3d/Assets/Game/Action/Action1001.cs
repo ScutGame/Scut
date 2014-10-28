@@ -37,7 +37,7 @@ public class Action1001 : BaseAction//GameAction
 
     protected override void DecodePackage(NetReader reader)
     {
-        if (reader.StatusCode == 0)
+        if (reader != null && reader.StatusCode == 0)
         {
             if (isCustom)
             {

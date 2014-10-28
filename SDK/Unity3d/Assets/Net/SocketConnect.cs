@@ -38,6 +38,7 @@ public class SocketConnect
     private Thread _thread = null;
     private const int HearInterval = 10000;
     private Timer _heartbeatThread = null;
+    private byte[] _hearbeatPackage;
 
 
     public SocketConnect(string host, int port, IHeadFormater formater)
@@ -275,6 +276,7 @@ public class SocketConnect
             if (_heartbeatThread == null)
             {
                 _heartbeatThread = new Timer(SendHeartbeatPackage, null, HearInterval, HearInterval);
+                ReBuildHearbeat();
             }
             _thread = new Thread(new ThreadStart(CheckReceive));
             _thread.Start();
@@ -282,15 +284,19 @@ public class SocketConnect
 
     }
 
+    /// <summary>
+    /// rebuild socket send hearbeat package 
+    /// </summary>
+    public void ReBuildHearbeat()
+    {
+        _hearbeatPackage = _formater.BuildHearbeatPackage();
+    }
+
     private void SendHeartbeatPackage(object state)
     {
         try
         {
-            NetWriter writer = NetWriter.Instance;
-            writer.writeInt32("actionId", 1);
-            byte[] data = writer.PostData();
-            NetWriter.resetData();
-            if (!PostSend(data))
+            if (_hearbeatPackage != null && !PostSend(_hearbeatPackage))
             {
                 Debug.Log("send heartbeat paketage fail");
             }

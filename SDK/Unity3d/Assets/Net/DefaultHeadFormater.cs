@@ -40,6 +40,15 @@ class DefaultHeadFormater : IHeadFormater
         return true;
     }
 
+    public byte[] BuildHearbeatPackage()
+    {
+        NetWriter writer = NetWriter.Instance;
+        writer.writeInt32("actionId", 1);
+        byte[] data = writer.PostData();
+        NetWriter.resetData();
+        return data;
+    }
+
     private string GetString(byte[] data, ref int pos)
     {
         string val = string.Empty;

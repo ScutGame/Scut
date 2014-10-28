@@ -14,6 +14,7 @@ public abstract class BaseAction : GameAction
 
     protected override void SetActionHead(NetWriter writer)
     {
+        //todo 启用自定的结构
         MessagePack headPack = new MessagePack()
         {
             MsgId = Head.MsgId,
@@ -24,5 +25,7 @@ public abstract class BaseAction : GameAction
         byte[] data = ProtoBufUtils.Serialize(headPack);
         writer.SetHeadBuffer(data);
         writer.SetBodyData(null);
+
+        //base.SetActionHead(writer);
     }
 }

@@ -68,6 +68,8 @@ public class Net : MonoBehaviour, IHttpCallback
         try
         {
             if(package == null) return;
+            //hearbeat package action
+            if(package.ActionId == 1) return;
 
             GameAction gameAction = ActionFactory.Create(package.ActionId);
             if (gameAction == null)
@@ -88,7 +90,7 @@ public class Net : MonoBehaviour, IHttpCallback
             }
             else
             {
-                Debug.Log("Decode package fail.");
+                Debug.Log("Push Decode package fail.");
             }
         }
         catch (Exception ex)
