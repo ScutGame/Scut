@@ -324,19 +324,15 @@ public class SocketConnect
         if (_socket == null) return;
         try
         {
-            lock (this)
-            {
-                _socket.Shutdown(SocketShutdown.Both);
-                _socket.Close();
-                _socket = null;
+            _socket.Shutdown(SocketShutdown.Both);
+            _socket.Close();
+            _socket = null;
 
-                _heartbeatThread.Dispose();
-                _heartbeatThread = null;
+            _heartbeatThread.Dispose();
+            _heartbeatThread = null;
 
-                _thread.Abort();
-                _thread = null;
-            }
-
+            _thread.Abort();
+            _thread = null;
         }
         catch (Exception)
         {
@@ -416,7 +412,7 @@ public class SocketConnect
             {
                 if (isDisposing)
                 {
-                    //if (socket != null) socket.Dispose(true);
+                    Close();
                 }
             }
         }
