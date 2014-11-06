@@ -48,6 +48,7 @@ namespace ZyGames.Framework.Common.Timing
         private DateTime _beginDate;
         private DateTime _endDate;
         private int _currentTimes;
+        private int _offsetSecond;
 
         private readonly DayOfWeek _week;
         private readonly string _beginTime;
@@ -190,13 +191,22 @@ namespace ZyGames.Framework.Common.Timing
             if ((SecondInterval == 0 && _currentTimes == 0 && currDate > _beginDate) ||
                 (currDate >= _beginDate.AddSeconds(SecondInterval * _currentTimes) && currDate < _endDate))
             {
-                //修正时间
-                if (_currentTimes == 0 && _beginDate < currDate)
+                //if more lan beginDate then update beginDate, and not process it
+                if ((_currentTimes == 0 && _beginDate < currDate) ||
+                    _beginDate.AddSeconds(SecondInterval * (_currentTimes + 1)) < currDate)
                 {
-                    _beginDate = currDate;
+                    var num = SecondInterval * TimeSpan.TicksPerSecond;
+                    var ts = currDate.Ticks % num;
+                    var tempTime = currDate.AddTicks(-ts);
+                    _currentTimes = (int)((tempTime - _beginDate).TotalSeconds + SecondInterval) / SecondInterval;
+                    //在误差范围内则执行
+                    isStart = _offsetSecond * TimeSpan.TicksPerSecond > ts;
                 }
-                _currentTimes++;
-                isStart = true;
+                else
+                {
+                    _currentTimes++;
+                    isStart = true;
+                }
             }
             else if (currDate > _endDate)
             {
@@ -224,6 +234,7 @@ namespace ZyGames.Framework.Common.Timing
         /// </summary>
         public void SetDiffInterval(int secondInterval)
         {
+            _offsetSecond = secondInterval;
             _endDate = _endDate.AddSeconds(secondInterval);
         }
     }

@@ -24,9 +24,11 @@ THE SOFTWARE.
 using System;
 using System.Net.Sockets;
 using System.Collections.Generic;
+using System.Text;
 using System.Threading;
 using ZyGames.Framework.Common.Log;
 using NLog;
+using ZyGames.Framework.RPC.IO;
 
 namespace ZyGames.Framework.RPC.Sockets
 {
@@ -230,9 +232,9 @@ namespace ZyGames.Framework.RPC.Sockets
 
         private void IO_Completed(object sender, SocketAsyncEventArgs ioEventArgs)
         {
+            DataToken ioDataToken = (DataToken)ioEventArgs.UserToken;
             try
             {
-                DataToken ioDataToken = (DataToken)ioEventArgs.UserToken;
                 ioDataToken.Socket.LastAccessTime = DateTime.Now;
                 switch (ioEventArgs.LastOperation)
                 {
@@ -255,7 +257,7 @@ namespace ZyGames.Framework.RPC.Sockets
             }
             catch (Exception ex)
             {
-                logger.Error(string.Format("IO_Completed unkown error:{0}", ex));
+                logger.Error(string.Format("IP {0} IO_Completed unkown error:{1}", (ioDataToken != null ? ioDataToken.Socket.RemoteEndPoint.ToString() : ""), ex));
             }
         }
 
@@ -330,7 +332,7 @@ namespace ZyGames.Framework.RPC.Sockets
             if (ioEventArgs.SocketError != SocketError.Success)
             {
                 //Socket错误
-                //if (logger.IsDebugEnabled) logger.Debug("ProcessReceive:{0}", ioEventArgs.SocketError);
+                logger.Error("IP {0} ProcessReceive:{1}", (dataToken != null ? dataToken.Socket.RemoteEndPoint.ToString() : ""), ioEventArgs.SocketError);
                 HandleCloseSocket(ioEventArgs);
                 return;
             }
@@ -356,8 +358,10 @@ namespace ZyGames.Framework.RPC.Sockets
                     remainingBytesToProcess = prefixHandler.HandlePrefix(ioEventArgs, dataToken, remainingBytesToProcess);
                     if (dataToken.prefixBytesDone == 4 && (dataToken.messageLength > 10 * 1024 * 1024 || dataToken.messageLength <= 0))
                     {
+                        byte[] bufferBytes = BufferUtils.MergeBytes(dataToken.byteArrayForPrefix, dataToken.byteArrayForMessage);
+                        string data = Encoding.UTF8.GetString(bufferBytes);
                         //消息头已接收完毕，并且接收到的消息长度大于10M，socket传输的数据已紊乱，关闭掉
-                        logger.Warn("{0} Receive Ip {2} message length error:{1}",DateTime.Now.ToString("HH:mm:ss"), dataToken.messageLength, ioEventArgs.RemoteEndPoint);
+                        logger.Warn("Receive Ip {1} message length error:{0}\r\nData:{2}", dataToken.messageLength, (dataToken != null ? dataToken.Socket.RemoteEndPoint.ToString() : ""), data);
                         needPostAnother = false;
                         HandleCloseSocket(ioEventArgs);
                         break;

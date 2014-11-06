@@ -41,7 +41,7 @@ namespace ZyGames.Framework.RPC.IO
             Int32 length = 0;
             foreach (byte[] tempbyte in args)
             {
-                length += tempbyte.Length;  //计算数据包总长度
+                length += tempbyte != null ? tempbyte.Length : 0;  //计算数据包总长度
             }
 
             Byte[] bytes = new Byte[length]; //建立新的数据包
@@ -50,6 +50,7 @@ namespace ZyGames.Framework.RPC.IO
 
             foreach (byte[] tempByte in args)
             {
+                if (tempByte == null) continue;
                 tempByte.CopyTo(bytes, tempLength);
                 tempLength += tempByte.Length;  //复制数据包到新数据包
             }

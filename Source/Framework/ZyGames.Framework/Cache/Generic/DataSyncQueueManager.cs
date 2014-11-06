@@ -92,6 +92,15 @@ namespace ZyGames.Framework.Cache.Generic
         public static long SendWaitCount;
         public static long ExecuteSuccessCount;
         public static long ExecuteFailCount;
+
+        /// <summary>
+        /// Is run completed.
+        /// </summary>
+        public static bool IsRunCompleted
+        {
+            get { return _entityQueueRunning == 0 && _entitySet.Count == 0; }
+        }
+
         /// <summary>
         /// 
         /// </summary>

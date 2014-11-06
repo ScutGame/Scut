@@ -326,6 +326,22 @@ namespace ZyGames.Framework.Cache.Generic
             int periodTime = 0;
             return TryAddGroup(t.PersonalId, key, t, periodTime);
         }
+        /// <summary>
+        /// add or update
+        /// </summary>
+        /// <param name="t"></param>
+        /// <param name="period"></param>
+        /// <returns></returns>
+        public bool AddOrUpdate(T t, int period = 0)
+        {
+            if (string.IsNullOrEmpty(t.PersonalId))
+            {
+                throw new ArgumentNullException("t", "t.PersonalId is null");
+            }
+            string key = t.GetKeyCode();
+            int periodTime = 0;
+            return AddOrUpdateGroup(t.PersonalId, key, t, periodTime);
+        }
 
         /// <summary>
         /// 更新自已的数据

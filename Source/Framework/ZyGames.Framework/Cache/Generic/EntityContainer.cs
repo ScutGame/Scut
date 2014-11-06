@@ -600,7 +600,7 @@ namespace ZyGames.Framework.Cache.Generic
         }
 
         /// <summary>
-        /// 
+        /// Remove entity from the cache, if use loaded from Redis
         /// </summary>
         /// <param name="groupKey"></param>
         /// <param name="callback"></param>
@@ -625,8 +625,9 @@ namespace ZyGames.Framework.Cache.Generic
             }
             return false;
         }
+
         /// <summary>
-        /// 
+        /// Remove entity from the cache, if use loaded from Redis
         /// </summary>
         /// <param name="groupKey"></param>
         /// <param name="key"></param>
@@ -639,7 +640,8 @@ namespace ZyGames.Framework.Cache.Generic
             if (Container.TryGetValue(groupKey, out itemSet))
             {
                 T entityData;
-                if (((BaseCollection)itemSet.GetItem()).TryRemove(key, out entityData))
+                var items = (BaseCollection) itemSet.GetItem();
+                if (items.TryRemove(key, out entityData))
                 {
                     bool result = true;
                     if (callback != null)
@@ -648,9 +650,16 @@ namespace ZyGames.Framework.Cache.Generic
                     }
                     if (result)
                     {
+                        //Not trigger event notify
+                        entityData.IsInCache = false;
                         entityData.Dispose();
                     }
                     return result;
+                }
+                if (items.Count == 0 && Container.TryRemove(groupKey, out itemSet))
+                {
+                    itemSet.SetRemoveStatus();
+                    itemSet.Dispose();
                 }
             }
             return false;

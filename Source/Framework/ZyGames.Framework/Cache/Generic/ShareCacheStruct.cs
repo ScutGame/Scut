@@ -201,6 +201,21 @@ namespace ZyGames.Framework.Cache.Generic
             int periodTime = schemaTable == null ? 0 : schemaTable.PeriodTime;
             return TryAddEntity(key, t, periodTime);
         }
+
+        /// <summary>
+        /// add or update
+        /// </summary>
+        /// <param name="t"></param>
+        /// <param name="period"></param>
+        /// <returns></returns>
+        public bool AddOrUpdate(T t, int period = 0)
+        {
+            string key = t.GetKeyCode();
+            SchemaTable schemaTable = SchemaTable();
+            int periodTime = schemaTable == null ? 0 : schemaTable.PeriodTime;
+            return AddOrUpdateEntity(key, t, periodTime);
+        }
+
         /// <summary>
         /// The value has be removed from the cache
         /// </summary>

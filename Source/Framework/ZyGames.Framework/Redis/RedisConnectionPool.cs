@@ -149,7 +149,33 @@ namespace ZyGames.Framework.Redis
             });
             return result;
         }
-
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="func"></param>
+        /// <exception cref="Exception"></exception>
+        public static void ProcessTrans(Action<IRedisTransaction> func)
+        {
+            var client = GetClient();
+            try
+            {
+                var trans = client.CreateTransaction();
+                try
+                {
+                    func(trans);
+                    trans.Commit();
+                }
+                catch (Exception)
+                {
+                    trans.Rollback();
+                    throw;
+                }
+            }
+            finally
+            {
+                PuttPool(client);
+            }
+        }
         /// <summary>
         /// Process delegate
         /// </summary>
@@ -267,27 +293,45 @@ namespace ZyGames.Framework.Redis
         /// <param name="client"></param>
         public static void PuttPool(RedisClient client)
         {
-            var key = client.Host + client.Port;
+            var key = string.Format("{0}:{1}", client.Host, client.Port);
             ObjectPoolWithExpire<RedisClient> pool;
             if (_poolCache.TryGetValue(key, out pool))
             {
+                if (client.HadExceptions)
+                {
+                    client.Dispose();
+                    client = CreateRedisClient(_setting);//create new client modify by Seamoon
+                }
                 pool.Put(client);
+            }
+            else
+            {
+                client.Dispose();
             }
         }
 
         private static RedisClient GetPool()
         {
             string[] arrs = _setting.Host.Split('@', ':');
-            var key = arrs.Length == 3 ? arrs[1] + arrs[2]
-                : arrs.Length == 2 ? arrs[0] + arrs[1]
-                : arrs[0];
+            var key = arrs.Length == 3 ? string.Format("{0}:{1}", arrs[1], arrs[2])
+                : arrs.Length == 2 ? string.Format("{0}:{1}", arrs[0], arrs[1])
+                : string.Format("{0}:{1}", arrs[0], 6379);
+
             ObjectPoolWithExpire<RedisClient> pool;
             do
             {
                 if (!_poolCache.TryGetValue(key, out pool))
                 {
-                    pool = new ObjectPoolWithExpire<RedisClient>(() => CreateRedisClient(_setting), true, 300);
-                    if (_poolCache.TryAdd(key, pool)) break;
+                    pool = new ObjectPoolWithExpire<RedisClient>(() => CreateRedisClient(_setting), true);
+                    if (_poolCache.TryAdd(key, pool))
+                    {
+                        //init pool
+                        for (int i = 0; i < pool.MinPoolSize; i++)
+                        {
+                            pool.Put(CreateRedisClient(_setting));
+                        }
+                        break;
+                    }
                 }
                 else break;
             } while (true);

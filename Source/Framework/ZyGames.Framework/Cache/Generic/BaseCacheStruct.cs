@@ -317,13 +317,21 @@ namespace ZyGames.Framework.Cache.Generic
         /// <returns></returns>
         protected bool TryLoadCache(TransReceiveParam receiveParam, int periodTime)
         {
-            List<T> dataList;
-            if (DataContainer.TryReceiveData(receiveParam, out dataList))
+            try
             {
-                if (dataList.Count == 0) return true;
-                return InitCache(dataList, periodTime);
+                List<T> dataList;
+                if (DataContainer.TryReceiveData(receiveParam, out dataList))
+                {
+                    if (dataList.Count == 0) return true;
+                    return InitCache(dataList, periodTime);
+                }
+                TraceLog.WriteError("Try load cache data:{0} error.", receiveParam.Schema.EntityType.FullName);
             }
-            TraceLog.WriteError("Try load cache data:{0} error.", receiveParam.Schema.EntityType.FullName);
+            catch (Exception ex)
+            {
+                string name = receiveParam.Schema != null ? receiveParam.Schema.EntityName : "";
+                TraceLog.WriteError("Try load cache \"{0}\" data error:{1}", name, ex);
+            }
             return false;
         }
 

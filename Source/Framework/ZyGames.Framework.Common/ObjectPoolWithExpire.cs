@@ -72,6 +72,15 @@ namespace ZyGames.Framework.Common
         private static Logger Logger = LogManager.GetLogger("ObjectPool");
 
         /// <summary>
+        /// pool min size
+        /// </summary>
+        public int MinPoolSize
+        {
+            get { return minPoolSize; }
+            set { minPoolSize = value; }
+        }
+
+        /// <summary>
         /// init
         /// </summary>
         /// <param name="factory">factory</param>
