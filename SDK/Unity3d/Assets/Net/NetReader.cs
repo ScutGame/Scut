@@ -34,12 +34,12 @@ public class NetReader
     {
         _formater = formater;
     }
-	
-	public bool Success
-	{ 
-		get{ return StatusCode == 0; }
-	}
-	
+
+    public bool Success
+    {
+        get { return StatusCode == 0; }
+    }
+
     public int StatusCode
     {
         get { return _head == null ? 10000 : _head.StatusCode; }
@@ -469,5 +469,30 @@ public class NetReader
     {
         int nLen = this.getInt();
         return this.getString(nLen);
+    }
+
+    public byte[] readBytes()
+    {
+        int nLen = this.getInt();
+        return this.getString(nLen);
+    }
+
+    public byte[] readBytes(int nLen)
+    {
+        if (this.streamPos + nLen > this._bytes.Length)
+        {
+            Debug.Log(" Failed: 长度越界 NetReader: getString");
+            return null;
+        }
+        bytep[] buffer = new[nLen];
+        Array.Copy(this._bytes, this.streamPos, buffer, 0, buffer.Length);
+        this.streamPos += nLen;
+
+        if (CheckRecordSize(nLen))
+        {
+            Debug.Log(" Failed: 记录长度越界 NetReader: readBytes");
+            return new Byte[0];
+        }
+        return buffer;
     }
 }
