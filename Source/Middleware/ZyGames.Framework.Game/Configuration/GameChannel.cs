@@ -1,4 +1,4 @@
-/****************************************************************************
+﻿/****************************************************************************
 Copyright (c) 2013-2015 scutgame.com
 
 http://www.scutgame.com
@@ -44,7 +44,7 @@ namespace ZyGames.Framework.Game.Configuration
         channelND
     }
     /// <summary>
-    /// 游戏渠道对象
+    /// 娓告垙娓犻亾瀵硅薄
     /// </summary>
     internal class GameChannel
     {
@@ -95,7 +95,7 @@ namespace ZyGames.Framework.Game.Configuration
         }
 
         /// <summary>
-        /// 渠道
+        /// 娓犻亾
         /// </summary>
         public ChannelType ChannelType { get; private set; }
         /// <summary>
@@ -133,7 +133,7 @@ namespace ZyGames.Framework.Game.Configuration
             _sdkSettingList.Add(setting);
         }
         /// <summary>
-        /// 获得配置
+        /// 鑾峰緱閰嶇疆
         /// </summary>
         /// <param name="name"></param>
         /// <returns></returns>

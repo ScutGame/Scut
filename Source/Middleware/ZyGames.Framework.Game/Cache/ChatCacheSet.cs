@@ -21,18 +21,14 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ****************************************************************************/
-using System;
+
 using System.Collections.Generic;
-using System.Web.Caching;
-using ZyGames.Framework.Cache;
 using ZyGames.Framework.Cache.Generic;
-using ZyGames.Framework.Collection;
 using ZyGames.Framework.Common;
 using ZyGames.Framework.Common.Configuration;
 using ZyGames.Framework.Common.Log;
-using ZyGames.Framework.Common.Timing;
+using ZyGames.Framework.Game.Config;
 using ZyGames.Framework.Game.Model;
-using ZyGames.Framework.Model;
 
 namespace ZyGames.Framework.Game.Cache
 {
@@ -42,14 +38,7 @@ namespace ZyGames.Framework.Game.Cache
     public class ChatCacheSet : ShareCacheStruct<ChatMessage>
     {
         private const string GroupKey = "10000";
-        private readonly static int MessageMaxCount;
-        private readonly static int Timeout;
 
-        static ChatCacheSet()
-        {
-            MessageMaxCount = ConfigUtils.GetSetting("chatcache_maxcount", 3000);
-            Timeout = ConfigUtils.GetSetting("chatcache_timeout", 1800); //30分钟
-        }
         /// <summary>
         /// 加载数据工厂
         /// </summary>
@@ -113,6 +102,7 @@ namespace ZyGames.Framework.Game.Cache
 
         private static bool OnExpired(string groupKey, CacheQueue<ChatMessage> cache)
         {
+            var section = ConfigManager.Configger.GetFirstOrAddConfig<MiddlewareSection>();
             CacheQueue<ChatMessage> messageQueue;
             if (new ChatCacheSet().DataContainer.TryGetQueue(GroupKey, out messageQueue))
             {
@@ -121,7 +111,7 @@ namespace ZyGames.Framework.Game.Cache
                     ChatMessage msg;
                     if (messageQueue.TryPeek(out msg))
                     {
-                        if (msg != null && MathUtils.DiffDate(msg.SendDate).TotalSeconds > Timeout)
+                        if (msg != null && MathUtils.DiffDate(msg.SendDate).TotalSeconds > section.ChatTimeout)
                         {
                             ChatMessage temp;
                             if (messageQueue.TryDequeue(out temp))

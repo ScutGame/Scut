@@ -26,6 +26,7 @@ using System.Diagnostics;
 using System.Web;
 using ZyGames.Framework.Common.Configuration;
 using ZyGames.Framework.Common.Log;
+using ZyGames.Framework.Game.Config;
 
 namespace ZyGames.Framework.Game.Service
 {
@@ -35,16 +36,6 @@ namespace ZyGames.Framework.Game.Service
     /// </summary>
     public abstract class GameStruct
     {
-        /// <summary>
-        /// The action time out.
-        /// </summary>
-        public static int ActionTimeOut = 500;
-
-        static GameStruct()
-        {
-            int timeOut = ConfigUtils.GetSetting("ActionTimeOut", 0);
-            if (timeOut > 0) ActionTimeOut = timeOut;
-        }
 
         /// <summary>
         /// 默认的返回错误信息
@@ -329,10 +320,11 @@ namespace ZyGames.Framework.Game.Service
 
         private void WatchAction()
         {
+            int actionTimeOut = ConfigManager.Configger.GetFirstOrAddConfig<AppServerSection>().ActionTimeOut;
             var time = (iVisitEndTime - iVisitBeginTime).TotalMilliseconds;
-            if (time > ActionTimeOut)
+            if (actionTimeOut > 0 && time > actionTimeOut)
             {
-                TraceLog.WriteError("Action-{2} Uid:{3} access timeout {0}/{1}ms.", time, ActionTimeOut, actionId, Uid);
+                TraceLog.WriteWarn("Action-{2} Uid:{3} access timeout {0}/{1}ms.", time, actionTimeOut, actionId, Uid);
             }
         }
 

@@ -22,66 +22,47 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ****************************************************************************/
 using System;
-using Newtonsoft.Json;
-using ProtoBuf;
-using ZyGames.Framework.Common.Log;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
-namespace ZyGames.Framework.Game.Contract
+namespace ZyGames.Framework.Game.Service
 {
     /// <summary>
     /// 
     /// </summary>
-    public class RemotePackage
+    public abstract class JsonAction : BaseStruct
     {
         /// <summary>
-        /// init
+        /// 
         /// </summary>
-        public RemotePackage()
-        {
-            SendTime = DateTime.Now;
-        }
-        /// <summary>
-        /// message id of client request
-        /// </summary>
-        public int MsgId { get; set; }
-
-        /// <summary>
-        /// 服务器间内部通讯通道
-        /// </summary>
-        public string RouteName { get; set; }
-
-        /// <summary>
-        /// Message of custom
-        /// </summary>
-        public object Message { get; set; }
+        protected Encoding encoding = Encoding.UTF8;
 
         /// <summary>
         /// 
         /// </summary>
-        public DateTime SendTime { get; set; }
-
-        /// <summary>
-        /// is pushed package
-        /// </summary>
-        [JsonIgnore]
-        public bool IsPushed { get { return MsgId == 0; } }
-
-        /// <summary>
-        /// callback
-        /// </summary>
-        public event Action<RemotePackage> Callback;
-
-        internal virtual void OnCallback()
+        /// <param name="aActionId"></param>
+        /// <param name="actionGetter"></param>
+        protected JsonAction(int aActionId, ActionGetter actionGetter)
+            : base(aActionId, actionGetter)
         {
-            try
-            {
-                Action<RemotePackage> handler = Callback;
-                if (handler != null) handler(this);
-            }
-            catch (Exception ex)
-            {
-                TraceLog.WriteError("RemotePackage OnCallback error:{0}", ex);
-            }
         }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="response"></param>
+        public override void WriteResponse(BaseGameResponse response)
+        {
+            var message = BuildResponsePack();
+            response.Write(encoding.GetBytes(message));
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        protected abstract string BuildResponsePack();
     }
 }

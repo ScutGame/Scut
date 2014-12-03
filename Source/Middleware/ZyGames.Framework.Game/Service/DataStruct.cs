@@ -24,6 +24,7 @@ THE SOFTWARE.
 using System;
 using System.Collections;
 using System.Text;
+using ZyGames.Framework.Common;
 using ZyGames.Framework.Common.Log;
 using ZyGames.Framework.Common.Serialization;
 
@@ -335,7 +336,7 @@ namespace ZyGames.Framework.Game.Service
             else if (type == typeof(byte[]))
             {
                 var bytes = (byte[])(obj);
-                return bytes.Length;
+                return bytes.Length + 4;
             }
             else
             {
@@ -572,7 +573,8 @@ namespace ZyGames.Framework.Game.Service
         /// <param name="value"></param>
         protected static void WriteDateTime(BaseGameResponse response, DateTime value)
         {
-            byte[] outputStream = BitConverter.GetBytes(value.Ticks);
+            long ts = (value.ToDateTime() - MathUtils.UnixEpochDateTime).TotalSeconds.ToLong();
+            byte[] outputStream = BitConverter.GetBytes(ts);
             response.Write(outputStream);
         }
 

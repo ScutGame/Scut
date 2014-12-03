@@ -42,6 +42,32 @@ using ZyGames.Framework.RPC.Sockets;
 namespace ZyGames.Framework.Game.Contract
 {
     /// <summary>
+    /// 
+    /// </summary>
+    public class SessionPushEventArgs : EventArgs
+    {
+        /// <summary>
+        /// 
+        /// </summary>
+        public ExSocket Socket { get; set; }
+        /// <summary>
+        /// 
+        /// </summary>
+        public int OpCode { get; set; }
+        /// <summary>
+        /// 
+        /// </summary>
+        public byte[] Data { get; set; }
+        /// <summary>
+        /// 
+        /// </summary>
+        public int Offset { get; set; }
+        /// <summary>
+        /// 
+        /// </summary>
+        public int Count { get; set; }
+    }
+    /// <summary>
     /// 用户会话
     /// </summary>
     [ProtoContract]
@@ -134,6 +160,22 @@ namespace ZyGames.Framework.Game.Contract
             return string.Format("s_{0}|{1}|{2}", guid.ToString("N"), GameEnvironment.ProductCode, GameEnvironment.ProductServerId);
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        public static void ClearSession(Predicate<GameSession> match)
+        {
+            foreach (var pair in _globalSession)
+            {
+                var session = pair.Value;
+                if (session == null) continue;
+                if (match(session))
+                {
+                    session.Reset();
+                }
+            }
+        }
+
         private static void OnClearSession(object state)
         {
             try
@@ -145,14 +187,14 @@ namespace ZyGames.Framework.Game.Contract
 
                     if (session.CheckExpired())
                     {
-                        session.DoHeartbeatTimeout();
-                        session.Reset();
                         //todo session
                         TraceLog.ReleaseWriteDebug("User {0} sessionId{1} is expire {2}({3}sec)",
                             session.UserId,
                             session.SessionId,
                             session.LastActivityTime,
                             Timeout);
+                        session.DoHeartbeatTimeout();
+                        session.Reset();
 
                     }
                     else if (!session.IsHeartbeatTimeout &&
@@ -199,10 +241,10 @@ namespace ZyGames.Framework.Game.Contract
         /// </summary>
         /// <param name="keyCode"></param>
         /// <param name="socket"></param>
-        /// <param name="sendCallback"></param>
-        public static GameSession CreateNew(Guid keyCode, ExSocket socket, Action<ExSocket, byte[], int, int> sendCallback)
+        /// <param name="appServer"></param>
+        public static GameSession CreateNew(Guid keyCode, ExSocket socket, ISocket appServer)
         {
-            return OnCreate(keyCode, socket, sendCallback);
+            return OnCreate(keyCode, socket, appServer);
         }
 
         private static GameSession OnCreate(Guid keyCode, params object[] args)
@@ -215,8 +257,8 @@ namespace ZyGames.Framework.Game.Contract
             else if (args.Length == 2 && args[0] is ExSocket)
             {
                 ExSocket socket = args[0] as ExSocket;
-                var sendCallback = args[1] as Action<ExSocket, byte[], int, int>;
-                session = new GameSession(keyCode, socket, sendCallback);
+                var appServer = args[1] as ISocket;
+                session = new GameSession(keyCode, socket, appServer);
             }
             else
             {
@@ -233,17 +275,24 @@ namespace ZyGames.Framework.Game.Contract
         /// <param name="session"></param>
         /// <param name="newSessionKey"></param>
         /// <param name="socket"></param>
-        /// <param name="sendCallback"></param>
+        /// <param name="appServer"></param>
         /// <returns></returns>
-        public static void Recover(GameSession session, Guid newSessionKey, ExSocket socket, Action<ExSocket, byte[], int, int> sendCallback)
+        public static void Recover(GameSession session, Guid newSessionKey, ExSocket socket, ISocket appServer)
         {
             var newSession = Get(newSessionKey);
             if (session != null &&
                 newSession != null &&
                 session != newSession)
             {
+                try
+                {
+                    session._exSocket.Close();
+                }
+                catch
+                {
+                }
                 session._exSocket = socket;
-                session._sendCallback = sendCallback;
+                session.AppServer = appServer;
                 GameSession temp;
                 if (_globalSession.TryRemove(newSessionKey, out temp))
                 {
@@ -350,7 +399,7 @@ namespace ZyGames.Framework.Game.Contract
             foreach (var pair in _globalSession)
             {
                 var session = pair.Value;
-                if (!session.IsRemote && 
+                if (!session.IsRemote &&
                     session.Connected &&
                     session.LastActivityTime > MathUtils.Now.AddSeconds(-delayTime))
                 {
@@ -363,7 +412,10 @@ namespace ZyGames.Framework.Game.Contract
         private string _remoteAddress;
         private int _isInSession;
         private ExSocket _exSocket;
-        private Action<ExSocket, byte[], int, int> _sendCallback;
+        /// <summary>
+        /// 
+        /// </summary>
+        public ISocket AppServer { get; private set; }
 
         /// <summary>
         /// Heartbeat Timeout event
@@ -435,17 +487,17 @@ namespace ZyGames.Framework.Game.Contract
             }
         }
 
-        private GameSession(Guid sid, ExSocket exSocket, Action<ExSocket, byte[], int, int> sendCallback)
+        private GameSession(Guid sid, ExSocket exSocket, ISocket appServer)
             : this(sid, null)
         {
-            InitSocket(exSocket, sendCallback);
+            InitSocket(exSocket, appServer);
         }
 
-        private void InitSocket(ExSocket exSocket, Action<ExSocket, byte[], int, int> sendCallback)
+        private void InitSocket(ExSocket exSocket, ISocket appServer)
         {
             _exSocket = exSocket;
             _remoteAddress = _exSocket.RemoteEndPoint.ToString();
-            _sendCallback = sendCallback;
+            AppServer = appServer;
         }
 
         internal void Refresh()
@@ -492,6 +544,7 @@ namespace ZyGames.Framework.Game.Contract
             User = null;
             UserId = 0;
             OldSessionId = SessionId;
+            LastActivityTime = DateTime.MinValue;
         }
 
         /// <summary>
@@ -711,10 +764,11 @@ namespace ZyGames.Framework.Game.Contract
         /// <summary>
         /// Post send to client
         /// </summary>
+        /// <param name="opCode"></param>
         /// <param name="data"></param>
         /// <param name="offset"></param>
         /// <param name="count"></param>
-        private void PostSend(byte[] data, int offset, int count)
+        private void PostSend(sbyte opCode, byte[] data, int offset, int count)
         {
             if (!IsSocket)
             {
@@ -724,25 +778,39 @@ namespace ZyGames.Framework.Game.Contract
             {
                 return;
             }
-            _sendCallback(_exSocket, data, offset, count);
+            AppServer.PostSend(_exSocket, opCode, data, offset, count);
         }
 
         /// <summary>
-        /// Send async, add 16 len head
+        /// 
         /// </summary>
         /// <param name="data"></param>
         /// <param name="offset"></param>
         /// <param name="count"></param>
         /// <returns></returns>
+        [Obsolete("", true)]
         public bool SendAsync(byte[] data, int offset, int count)
+        {
+            if (!IsRemote)
+            {
+                data = CheckAdditionalHead(data, ProxySid);
+            }
+            return SendAsync(OpCode.Binary, data, offset, count);
+        }
+
+        /// <summary>
+        /// Send async, add 16 len head
+        /// </summary>
+        /// <param name="opCode"></param>
+        /// <param name="data"></param>
+        /// <param name="offset"></param>
+        /// <param name="count"></param>
+        /// <returns></returns>
+        public bool SendAsync(sbyte opCode, byte[] data, int offset, int count)
         {
             if (Connected)
             {
-                if (!IsRemote)
-                {
-                    data = CheckAdditionalHead(data, ProxySid);
-                }
-                PostSend(data, 0, data.Length);
+                PostSend(opCode, data, 0, data.Length);
                 return true;
             }
             return false;

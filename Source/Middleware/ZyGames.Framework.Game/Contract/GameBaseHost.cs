@@ -49,7 +49,12 @@ namespace ZyGames.Framework.Game.Contract
         {
             GameEnvironment.IsRunning = true;
         }
-
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="package"></param>
+        /// <param name="param"></param>
+        /// <returns></returns>
         public byte[] ProcessRequest(object package, object param)
         {
             var httpresponse = new SocketGameResponse();

@@ -62,8 +62,18 @@ namespace ZyGames.Framework.Game.Message
 		/// <param name="isCycle">If set to <c>true</c> is cycle.</param>
 		/// <param name="secondInterval">Second interval.</param>
         public void Add(NoticeMessage message, string beginTime, string endTime, bool isCycle, int secondInterval)
-        {
-            TimeListener.Append(new PlanConfig(DoBroadcast, beginTime, endTime, isCycle, secondInterval) { Name = "BroadcastTimer", Target = message });
+		{
+		    PlanConfig planConfig = null;
+		    if (isCycle)
+		    {
+		        planConfig = PlanConfig.EveryMinutePlan(DoBroadcast, "BroadcastTimer", beginTime, endTime, secondInterval);
+		    }
+		    else
+            {
+                planConfig = PlanConfig.OncePlan(DoBroadcast, "BroadcastTimer", beginTime);
+		    }
+		    planConfig.Target = message;
+            TimeListener.Append(planConfig);
         }
 		/// <summary>
 		/// Add the specified message, week, beginTime, endTime, isCycle and secondInterval.
@@ -71,12 +81,14 @@ namespace ZyGames.Framework.Game.Message
 		/// <param name="message">Message.</param>
 		/// <param name="week">Week.</param>
 		/// <param name="beginTime">Begin time.</param>
-		/// <param name="endTime">End time.</param>
-		/// <param name="isCycle">If set to <c>true</c> is cycle.</param>
-		/// <param name="secondInterval">Second interval.</param>
+		/// <param name="endTime">End time. void</param>
+        /// <param name="isCycle">If set to <c>true</c> is cycle. void</param>
+        /// <param name="secondInterval">Second interval. void</param>
         public void Add(NoticeMessage message, DayOfWeek week, string beginTime, string endTime, bool isCycle, int secondInterval)
         {
-            TimeListener.Append(new PlanConfig(DoBroadcast, week, beginTime, endTime, isCycle, secondInterval) { Name = "BroadcastTimer", Target = message });
+            var planConfig = PlanConfig.EveryWeekPlan(DoBroadcast, "BroadcastTimer", week, beginTime);
+            planConfig.Target = message;
+            TimeListener.Append(planConfig);
         }
 
         /// <summary>

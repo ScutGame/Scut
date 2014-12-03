@@ -597,7 +597,11 @@ namespace ZyGames.Framework.Game.Sns
                 return 0;
             }
         }
-
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="device"></param>
+        /// <returns></returns>
         public static bool CheckDevice(string device)
         {
             if (device == string.Empty)
@@ -613,7 +617,11 @@ namespace ZyGames.Framework.Game.Sns
             int count = Convert.ToInt32(ConnectManager.Provider.ExecuteScalar(CommandType.Text, command.Sql, command.Parameters));
             return count <= 0;
         }
-
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="passportId"></param>
+        /// <returns></returns>
         public SnsUser GetUserInfo(string passportId)
         {
             SnsUser snsUser = new SnsUser();

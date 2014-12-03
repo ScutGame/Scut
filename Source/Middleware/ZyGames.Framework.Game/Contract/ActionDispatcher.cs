@@ -51,7 +51,7 @@ namespace ZyGames.Framework.Game.Contract
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="context"></param>
+        /// <param name="request"></param>
         /// <param name="package"></param>
         /// <param name="statusCode"></param>
         /// <returns></returns>
@@ -106,6 +106,7 @@ namespace ZyGames.Framework.Game.Contract
         public virtual bool TryDecodePackage(ConnectionEventArgs e, out RequestPackage package)
         {
             package = null;
+            var param = new Dictionary<string, string>(StringComparer.InvariantCultureIgnoreCase);
             string paramStr = Encoding.ASCII.GetString(e.Data);
             int index = paramStr.IndexOf("?d=", StringComparison.CurrentCultureIgnoreCase);
             string routeName = string.Empty;
@@ -119,14 +120,8 @@ namespace ZyGames.Framework.Game.Contract
                 paramStr = HttpUtility.ParseQueryString(paramStr)["d"];
             }
 
-            var nvc = HttpUtility.ParseQueryString(paramStr);
-            var param = new Dictionary<string, string>(StringComparer.InvariantCultureIgnoreCase);
+            LoadParamString(param, paramStr);
 
-            foreach (var key in nvc.AllKeys)
-            {
-                if (string.IsNullOrEmpty(key)) continue;
-                param[key] = nvc[key];
-            }
             if (param.ContainsKey("route"))
             {
                 routeName = param["route"];
@@ -157,12 +152,31 @@ namespace ZyGames.Framework.Game.Contract
                 IsProxyRequest = param.ContainsKey("isproxy"),
                 RouteName = routeName,
                 IsUrlParam = true,
-                UrlParam = paramStr
+                UrlParam = paramStr,
+                OpCode = e.Meaage.OpCode,
+                CommandMessage = e.Socket.IsWebSocket && e.Meaage.OpCode == OpCode.Text ? e.Meaage.Message : null
             };
-
+            
             return true;
         }
 
+        private static void LoadParamString(Dictionary<string, string> param, string paramStr)
+        {
+            var nvc = HttpUtility.ParseQueryString(paramStr);
+            foreach (var key in nvc.AllKeys)
+            {
+                if (string.IsNullOrEmpty(key)) continue;
+                param[key] = nvc[key];
+            }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="request"></param>
+        /// <param name="package"></param>
+        /// <param name="statusCode"></param>
+        /// <returns></returns>
         public bool TryDecodePackage(HttpListenerRequest request, out RequestPackage package, out int statusCode)
         {
             statusCode = 200;
@@ -189,6 +203,12 @@ namespace ZyGames.Framework.Game.Contract
                     data = reader.ReadToEnd();
                     data = HttpUtility.ParseQueryString(data)["d"];
                 }
+            }
+            //if data is null  ping command
+            if (string.IsNullOrEmpty(data))
+            {
+                statusCode = (int)HttpStatusCode.OK;
+                return false;
             }
 
             int statuscode = 0;

@@ -147,6 +147,7 @@ namespace ZyGames.Framework.Game.Contract
 
             foreach (var key in temp.AllKeys)
             {
+                if (string.IsNullOrEmpty(key)) continue;
                 _param[key] = temp[key];
             }
             MsgId = (_param.ContainsKey("MsgId") ? _param["MsgId"] : "0").ToInt();
@@ -613,10 +614,7 @@ namespace ZyGames.Framework.Game.Contract
         {
             return MsgId;
         }
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <returns></returns>
+
         //public override string GetSt()
         //{
         //    return GetStringValue("St");

@@ -22,66 +22,65 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ****************************************************************************/
 using System;
-using Newtonsoft.Json;
-using ProtoBuf;
-using ZyGames.Framework.Common.Log;
+using System.Collections.Generic;
+using System.Configuration;
+using System.IO;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using ZyGames.Framework.Common;
+using ZyGames.Framework.Common.Configuration;
+using ZyGames.Framework.Data;
 
-namespace ZyGames.Framework.Game.Contract
+namespace ZyGames.Framework.Game.Runtime
 {
     /// <summary>
     /// 
     /// </summary>
-    public class RemotePackage
+    public class DefaultAppConfigger : DefaultDataConfigger
     {
         /// <summary>
         /// init
         /// </summary>
-        public RemotePackage()
+        public DefaultAppConfigger()
         {
-            SendTime = DateTime.Now;
+            ConfigFile = Path.Combine(MathUtils.RuntimePath, "GameServer.exe.config");
         }
-        /// <summary>
-        /// message id of client request
-        /// </summary>
-        public int MsgId { get; set; }
-
-        /// <summary>
-        /// 服务器间内部通讯通道
-        /// </summary>
-        public string RouteName { get; set; }
-
-        /// <summary>
-        /// Message of custom
-        /// </summary>
-        public object Message { get; set; }
-
         /// <summary>
         /// 
         /// </summary>
-        public DateTime SendTime { get; set; }
-
-        /// <summary>
-        /// is pushed package
-        /// </summary>
-        [JsonIgnore]
-        public bool IsPushed { get { return MsgId == 0; } }
-
-        /// <summary>
-        /// callback
-        /// </summary>
-        public event Action<RemotePackage> Callback;
-
-        internal virtual void OnCallback()
+        protected override void LoadConfigData()
         {
-            try
+            ConfigurationManager.RefreshSection("appSettings");
+            ConfigurationManager.RefreshSection("connectionStrings");
+            var er = ConfigurationManager.ConnectionStrings.GetEnumerator();
+            while (er.MoveNext())
             {
-                Action<RemotePackage> handler = Callback;
-                if (handler != null) handler(this);
+                var connSetting = er.Current as ConnectionStringSettings;
+                if (connSetting == null) continue;
+                AddNodeData(new ConnectionSection(connSetting.Name, connSetting.ProviderName, connSetting.ConnectionString));
             }
-            catch (Exception ex)
-            {
-                TraceLog.WriteError("RemotePackage OnCallback error:{0}", ex);
-            }
+            base.LoadConfigData();
+        }
+    }
+    /// <summary>
+    /// 
+    /// </summary>
+    public class AppServerConfigger : DataConfigger
+    {
+        /// <summary>
+        /// init
+        /// </summary>
+        public AppServerConfigger()
+        {
+            ConfigFile = Path.Combine(MathUtils.RuntimePath, "AppServer.config");
+        }
+        /// <summary>
+        /// 
+        /// </summary>
+        protected override void LoadConfigData()
+        {
+
         }
     }
 }

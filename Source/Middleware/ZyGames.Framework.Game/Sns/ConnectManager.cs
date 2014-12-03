@@ -32,9 +32,9 @@ using ZyGames.Framework.Game.Runtime;
 
 namespace ZyGames.Framework.Game.Sns
 {
-	/// <summary>
-	/// Config.
-	/// </summary>
+    /// <summary>
+    /// Config.
+    /// </summary>
     internal class ConnectManager
     {
         private static readonly DbBaseProvider _dbBaseProvider;
@@ -45,6 +45,8 @@ namespace ZyGames.Framework.Game.Sns
             _dbBaseProvider = DbConnectionProvider.CreateDbProvider(ConnectKey);
             if (_dbBaseProvider == null)
             {
+                //todo is expired format
+                /*
                 string providerType = ConfigUtils.GetSetting("Snscenter_ProviderType");
                 string connectionFormat = ConfigUtils.GetSetting("Snscenter_ConnectionString");
                 string dataSource = string.Empty;
@@ -67,6 +69,7 @@ namespace ZyGames.Framework.Game.Sns
                     connectionString = string.Format(connectionFormat, dataSource, userInfo);
                 }
                 _dbBaseProvider = DbConnectionProvider.CreateDbProvider(ConnectKey, providerType, connectionString);
+                */
             }
         }
 

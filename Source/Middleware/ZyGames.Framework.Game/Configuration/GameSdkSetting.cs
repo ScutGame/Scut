@@ -1,4 +1,4 @@
-/****************************************************************************
+﻿/****************************************************************************
 Copyright (c) 2013-2015 scutgame.com
 
 http://www.scutgame.com
@@ -30,22 +30,22 @@ using System.Text;
 namespace ZyGames.Framework.Game.Configuration
 {
     /// <summary>
-    /// 渠道商提供的Sdk配置
+    /// 娓犻亾鍟嗘彁渚涚殑Sdk閰嶇疆
     /// </summary>
     internal class GameSdkSetting
     {
         /// <summary>
-        /// 渠道号
+        /// 娓犻亾鍙?
         /// </summary>
         public string RetailId { get; set; }
 
         /// <summary>
-        /// UC配对是cpId
+        /// UC閰嶅鏄痗pId
         /// </summary>
         public string AppId { get; set; }
 
         /// <summary>
-        /// UC配对是apiKey
+        /// UC閰嶅鏄痑piKey
         /// </summary>
         public string AppKey { get; set; }
 

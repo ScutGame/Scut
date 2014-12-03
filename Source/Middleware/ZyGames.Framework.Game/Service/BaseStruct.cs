@@ -22,11 +22,9 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ****************************************************************************/
 using System;
-using ZyGames.Framework.Common;
 using ZyGames.Framework.Common.Configuration;
-using ZyGames.Framework.Common.Locking;
 using ZyGames.Framework.Common.Log;
-using ZyGames.Framework.Game.Context;
+using ZyGames.Framework.Game.Config;
 using ZyGames.Framework.Game.Contract;
 using ZyGames.Framework.Game.Lang;
 
@@ -40,7 +38,7 @@ namespace ZyGames.Framework.Game.Service
         /// <summary>
         /// 
         /// </summary>
-        public static string PublishType = ConfigUtils.GetSetting("PublishType", "Release");
+        //public static string PublishType = ConfigUtils.GetSetting("PublishType", "Release");
 
 
         private int _userId;
@@ -85,7 +83,8 @@ namespace ZyGames.Framework.Game.Service
         {
             get
             {
-                return PublishType.Equals("Release", StringComparison.CurrentCultureIgnoreCase);
+                var section = ConfigManager.Configger.GetFirstOrAddConfig<AppServerSection>();
+                return section.PublishType.Equals("Release", StringComparison.CurrentCultureIgnoreCase);
             }
         }
         /// <summary>

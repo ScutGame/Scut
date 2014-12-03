@@ -1,4 +1,4 @@
-/****************************************************************************
+﻿/****************************************************************************
 Copyright (c) 2013-2015 scutgame.com
 
 http://www.scutgame.com
@@ -29,14 +29,14 @@ using ZyGames.Framework.Script;
 namespace ZyGames.Framework.Game.Command
 {
     /// <summary>
-    /// 脚本执行命令
+    /// 鑴氭湰鎵ц鍛戒护
     /// </summary>
     /// <example>
     /// <code>
     /// # py demo:
     /// ############
     /// def processCmd(userId, args):
-    ///     #在这里处理命令
+    ///     #鍦ㄨ繖閲屽鐞嗗懡浠?
     ///     pass 
     /// </code>
     /// </example>

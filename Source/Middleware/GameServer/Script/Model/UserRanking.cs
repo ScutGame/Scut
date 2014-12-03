@@ -1,4 +1,4 @@
-/****************************************************************************
+﻿/****************************************************************************
 Copyright (c) 2013-2015 scutgame.com
 
 http://www.scutgame.com
@@ -30,7 +30,7 @@ using ZyGames.Framework.Cache.Generic;
 namespace GameServer.Model
 {
     /// <summary>
-    /// 玩家排行榜实体类
+    /// 鐜╁鎺掕姒滃疄浣撶被
     /// </summary>
     [Serializable, ProtoContract]
     [EntityTable(CacheType.Entity, "ConnData")]
@@ -94,7 +94,7 @@ namespace GameServer.Model
         }
 
         /// <summary>
-        /// 属性
+        /// 灞炴€?
         /// </summary>
         [ProtoMember(1)]
         public int AttrType

@@ -22,10 +22,12 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ****************************************************************************/
 using System;
+using System.Configuration;
+using System.IO;
 using System.Reflection;
-using System.ServiceModel.PeerResolvers;
 using System.Threading;
 using ZyGames.Framework.Cache.Generic;
+using ZyGames.Framework.Common;
 using ZyGames.Framework.Common.Configuration;
 using ZyGames.Framework.Common.Log;
 using ZyGames.Framework.Common.Reflect;
@@ -36,7 +38,6 @@ using ZyGames.Framework.Game.Configuration;
 using ZyGames.Framework.Game.Contract;
 using ZyGames.Framework.Game.Lang;
 using ZyGames.Framework.Game.Message;
-using ZyGames.Framework.Game.Pay;
 using ZyGames.Framework.Model;
 using ZyGames.Framework.Redis;
 using ZyGames.Framework.Script;
@@ -53,6 +54,23 @@ namespace ZyGames.Framework.Game.Runtime
     /// </summary>
     public static class GameEnvironment
     {
+        static GameEnvironment()
+        {
+            ConfigManager.ConfigReloaded += OnConfigReloaded;
+        }
+
+        private static void OnConfigReloaded(object sender, ConfigReloadedEventArgs e)
+        {
+            try
+            {
+                _setting.Reset();
+            }
+            catch (Exception ex)
+            {
+                TraceLog.WriteError("GameEnvironment reload error:{0}", ex);
+            }
+        }
+
         /// <summary>
         /// The python script task cache key.
         /// </summary>
@@ -94,6 +112,11 @@ namespace ZyGames.Framework.Game.Runtime
         /// 游戏服代码
         /// </summary>
         public static int ProductServerId { get { return _setting != null ? _setting.ProductServerId : 0; } }
+
+        /// <summary>
+        /// is close server
+        /// </summary>
+        public static bool IsCanceled { get; set; }
 
         /// <summary>
         /// 
@@ -251,9 +274,20 @@ namespace ZyGames.Framework.Game.Runtime
         /// </summary>
         public static void Stop()
         {
-            CacheFactory.UpdateNotify(true);
-            CacheFactory.Dispose();
             IsRunning = false;
+            CacheFactory.UpdateNotify(true);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        public static async System.Threading.Tasks.Task WaitStop()
+        {
+            while (!DataSyncQueueManager.IsRunCompleted)
+            {
+                await System.Threading.Tasks.Task.Delay(1000);
+            }
         }
 
     }

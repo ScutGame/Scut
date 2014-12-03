@@ -21,18 +21,14 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ****************************************************************************/
-using System;
+
 using System.Collections.Generic;
-using System.Web.Caching;
-using ZyGames.Framework.Cache;
 using ZyGames.Framework.Cache.Generic;
-using ZyGames.Framework.Collection;
 using ZyGames.Framework.Common;
 using ZyGames.Framework.Common.Configuration;
 using ZyGames.Framework.Common.Log;
-using ZyGames.Framework.Common.Timing;
+using ZyGames.Framework.Game.Config;
 using ZyGames.Framework.Game.Message;
-using ZyGames.Framework.Model;
 
 namespace ZyGames.Framework.Game.Cache
 {
@@ -42,14 +38,7 @@ namespace ZyGames.Framework.Game.Cache
     public class BroadcastCacheSet : ShareCacheStruct<NoticeMessage>
     {
         private readonly string _groupKey;
-        private readonly static int MessageMaxCount;
-        private readonly static int Timeout;
 
-        static BroadcastCacheSet()
-        {
-            MessageMaxCount = ConfigUtils.GetSetting("broadcastcache_maxcount", 1000);
-            Timeout = ConfigUtils.GetSetting("broadcastcache_timeout", 1800);
-        }
 		/// <summary>
 		/// Initializes a new instance of the <see cref="ZyGames.Framework.Game.Cache.BroadcastCacheSet"/> class.
 		/// </summary>
@@ -112,12 +101,13 @@ namespace ZyGames.Framework.Game.Cache
 
         private static bool OnExpired(string groupKey, CacheQueue<NoticeMessage> messageQueue)
         {
+            var section = ConfigManager.Configger.GetFirstOrAddConfig<MiddlewareSection>();
             while (messageQueue != null && messageQueue.Count > 0)
             {
                 NoticeMessage msg;
                 if (messageQueue.TryPeek(out msg))
                 {
-                    if (msg != null && MathUtils.DiffDate(msg.SendDate).TotalSeconds > Timeout)
+                    if (msg != null && MathUtils.DiffDate(msg.SendDate).TotalSeconds > section.BroadcastTimeout)
                     {
                         NoticeMessage temp;
                         messageQueue.TryDequeue(out temp);

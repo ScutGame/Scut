@@ -40,6 +40,8 @@ namespace ZyGames.Framework.Game.Pay
             _dbBaseProvider = DbConnectionProvider.CreateDbProvider(ConnectKey);
             if (_dbBaseProvider == null)
             {
+                //todo is expired format
+                /*
                 string providerType = ConfigUtils.GetSetting("PayDB_ProviderType");
                 string connectionFormat = ConfigUtils.GetSetting("PayDB_ConnectionString");
                 string dataSource = string.Empty;
@@ -60,6 +62,7 @@ namespace ZyGames.Framework.Game.Pay
                     connectionString = string.Format(connectionFormat, dataSource, userInfo);
                 }
                 _dbBaseProvider = DbConnectionProvider.CreateDbProvider(ConnectKey, providerType, connectionString);
+                */
             }
         }
 

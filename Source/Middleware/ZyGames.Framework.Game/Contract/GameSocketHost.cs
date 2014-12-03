@@ -25,9 +25,9 @@ using System;
 using System.IO;
 using System.Net;
 using System.Threading;
-using ZyGames.Framework.Common;
 using ZyGames.Framework.Common.Configuration;
 using ZyGames.Framework.Common.Log;
+using ZyGames.Framework.Game.Config;
 using ZyGames.Framework.Game.Lang;
 using ZyGames.Framework.Game.Runtime;
 using ZyGames.Framework.Game.Service;
@@ -41,10 +41,17 @@ namespace ZyGames.Framework.Game.Contract
     /// </summary>
     public abstract class GameSocketHost : GameBaseHost
     {
-        private static int httpRequestTimeout = ConfigUtils.GetSetting("Game.Http.Timeout", "120000").ToInt();
         //private SmartThreadPool threadPool;
-        private SocketListener socketLintener;
+        private SocketListener socketListener;
         private HttpListener httpListener;
+
+        /// <summary>
+        /// Protocol Section
+        /// </summary>
+        public ProtocolSection GetSection()
+        {
+            return ConfigManager.Configger.GetFirstOrAddConfig<ProtocolSection>();
+        }
 
         /// <summary>
         /// The enable http.
@@ -77,27 +84,28 @@ namespace ZyGames.Framework.Game.Contract
             int port = _setting != null ? _setting.GamePort : 0;
             IPEndPoint localEndPoint = new IPEndPoint(IPAddress.Any, port);
 
-            int maxConnections = ConfigUtils.GetSetting("MaxConnections", 10000);
-            int backlog = ConfigUtils.GetSetting("Backlog", 1000);
-            int maxAcceptOps = ConfigUtils.GetSetting("MaxAcceptOps", 1000);
-            int bufferSize = ConfigUtils.GetSetting("BufferSize", 8192);
-            int expireInterval = ConfigUtils.GetSetting("ExpireInterval", 600) * 1000;
-            int expireTime = ConfigUtils.GetSetting("ExpireTime", 3600) * 1000;
+            var section = GetSection();
+            int maxConnections = section.SocketMaxConnection;
+            int backlog = section.SocketBacklog;
+            int maxAcceptOps = section.SocketMaxAcceptOps;
+            int bufferSize = section.SocketBufferSize;
+            int expireInterval = section.SocketExpireInterval;
+            int expireTime = section.SocketExpireTime;
 
             //threadPool = new SmartThreadPool(180 * 1000, 100, 5);
             //threadPool.Start();
 
             var socketSettings = new SocketSettings(maxConnections, backlog, maxAcceptOps, bufferSize, localEndPoint, expireInterval, expireTime);
-            socketLintener = new SocketListener(socketSettings);
-            socketLintener.DataReceived += new ConnectionEventHandler(socketLintener_DataReceived);
-            socketLintener.Connected += new ConnectionEventHandler(socketLintener_OnConnectCompleted);
-            socketLintener.Disconnected += new ConnectionEventHandler(socketLintener_Disconnected);
+            socketListener = new SocketListener(socketSettings);
+            socketListener.DataReceived += new ConnectionEventHandler(socketLintener_DataReceived);
+            socketListener.Connected += new ConnectionEventHandler(socketLintener_OnConnectCompleted);
+            socketListener.Disconnected += new ConnectionEventHandler(socketLintener_Disconnected);
 
 
             httpListener = new HttpListener();
-            var httpHost = ConfigUtils.GetSetting("Game.Http.Host");
-            var httpPort = ConfigUtils.GetSetting("Game.Http.Port", 80);
-            var httpName = ConfigUtils.GetSetting("Game.Http.Name", "Service.aspx");
+            var httpHost = section.HttpHost;
+            var httpPort = section.HttpPort;
+            var httpName = section.HttpName;
 
             if (!string.IsNullOrEmpty(httpHost))
             {
@@ -117,7 +125,7 @@ namespace ZyGames.Framework.Game.Contract
         {
             try
             {
-                var session = GameSession.CreateNew(e.Socket.HashCode, e.Socket, socketLintener.PostSend);
+                var session = GameSession.CreateNew(e.Socket.HashCode, e.Socket, socketListener);
                 session.HeartbeatTimeoutHandle += OnHeartbeatTimeout;
                 OnConnectCompleted(sender, e);
             }
@@ -219,7 +227,7 @@ namespace ZyGames.Framework.Game.Contract
                 session = GameSession.Get(package.ProxySid) ??
                           (package.IsProxyRequest
                               ? GameSession.Get(e.Socket.HashCode)
-                              : GameSession.CreateNew(package.ProxySid, e.Socket, socketLintener.PostSend));
+                              : GameSession.CreateNew(package.ProxySid, e.Socket, socketListener));
                 if (session != null)
                 {
                     session.ProxySid = package.ProxySid;
@@ -229,9 +237,13 @@ namespace ZyGames.Framework.Game.Contract
             {
                 session = GameSession.Get(package.SessionId) ?? GameSession.Get(e.Socket.HashCode);
             }
-            if (session != null && (!session.Connected || !Equals(session.RemoteAddress, e.Socket.RemoteEndPoint.ToString())))
+            if (session == null)
             {
-                GameSession.Recover(session, e.Socket.HashCode, e.Socket, socketLintener.PostSend);
+                session = GameSession.CreateNew(package.ProxySid, e.Socket, socketListener);
+            }
+            if ((!session.Connected || !Equals(session.RemoteAddress, e.Socket.RemoteEndPoint.ToString())))
+            {
+                GameSession.Recover(session, e.Socket.HashCode, e.Socket, socketListener);
             }
             return session;
         }
@@ -250,22 +262,27 @@ namespace ZyGames.Framework.Game.Contract
 
             try
             {
+                ActionGetter actionGetter;
                 byte[] data = new byte[0];
                 if (!string.IsNullOrEmpty(package.RouteName))
                 {
-                    ActionGetter actionGetter = ActionDispatcher.GetActionGetter(package, session);
+                    actionGetter = ActionDispatcher.GetActionGetter(package, session);
                     if (CheckRemote(package.RouteName, actionGetter))
                     {
                         MessageStructure response = new MessageStructure();
                         OnCallRemote(package.RouteName, actionGetter, response);
                         data = response.PopBuffer();
                     }
+                    else
+                    {
+                        return;
+                    }
                 }
                 else
                 {
                     SocketGameResponse response = new SocketGameResponse();
                     response.WriteErrorCallback += ActionDispatcher.ResponseError;
-                    ActionGetter actionGetter = ActionDispatcher.GetActionGetter(package, session);
+                    actionGetter = ActionDispatcher.GetActionGetter(package, session);
                     DoAction(actionGetter, response);
                     data = response.ReadByte();
                 }
@@ -273,7 +290,7 @@ namespace ZyGames.Framework.Game.Contract
                 {
                     if (session != null && data.Length > 0)
                     {
-                        session.SendAsync(data, 0, data.Length);
+                        session.SendAsync(actionGetter.OpCode, data, 0, data.Length);
                     }
                 }
                 catch (Exception ex)
@@ -306,7 +323,7 @@ namespace ZyGames.Framework.Game.Contract
                 var data = response.PopBuffer();
                 if (session != null && data.Length > 0)
                 {
-                    session.SendAsync(data, 0, data.Length);
+                    session.SendAsync(OpCode.Binary, data, 0, data.Length);
                 }
             }
             catch (Exception ex)
@@ -395,7 +412,8 @@ namespace ZyGames.Framework.Game.Contract
                     ActionGetter = httpGet,
                     GameResponse = httpresponse
                 };
-                clientConnection.TimeoutTimer = new Timer(OnHttpRequestTimeout, clientConnection, httpRequestTimeout, Timeout.Infinite);
+                var section = GetSection();
+                clientConnection.TimeoutTimer = new Timer(OnHttpRequestTimeout, clientConnection, section.HttpRequestTimeout, Timeout.Infinite);
                 byte[] respData = new byte[0];
                 if (!string.IsNullOrEmpty(package.RouteName))
                 {
@@ -467,7 +485,7 @@ namespace ZyGames.Framework.Game.Contract
         /// </summary>
         public override void Start(string[] args)
         {
-            socketLintener.StartListen();
+            socketListener.StartListen();
             if (EnableHttp)
             {
                 httpListener.Start();
@@ -478,7 +496,7 @@ namespace ZyGames.Framework.Game.Contract
                 GameSession session = GameSession.Get(userId);
                 if (session != null)
                 {
-                    return session.SendAsync(data, 0, data.Length);
+                    return session.SendAsync(OpCode.Binary, data, 0, data.Length);
                 }
                 return false;
             };
@@ -495,7 +513,7 @@ namespace ZyGames.Framework.Game.Contract
             {
                 httpListener.Stop();
             }
-            socketLintener.Close();
+            socketListener.Dispose();
             OnServiceStop();
             try
             {

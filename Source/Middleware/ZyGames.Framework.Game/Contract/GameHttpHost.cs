@@ -25,6 +25,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using ZyGames.Framework.Common.Configuration;
+using ZyGames.Framework.Game.Config;
 using ZyGames.Framework.Game.Runtime;
 using ZyGames.Framework.Game.Service;
 using ZyGames.Framework.RPC.Http;
@@ -40,6 +41,13 @@ namespace ZyGames.Framework.Game.Contract
     {
 
         private HttpAsyncHost httpListener;
+        /// <summary>
+        /// Protocol Section
+        /// </summary>
+        public ProtocolSection GetSection()
+        {
+            return ConfigManager.Configger.GetFirstOrAddConfig<ProtocolSection>();
+        }
 
         /// <summary>
         /// 
@@ -63,9 +71,11 @@ namespace ZyGames.Framework.Game.Contract
         /// </summary>
         protected virtual void InitLoad()
         {
-            var httpHost = ConfigUtils.GetSetting("Game.Http.Host");
-            var httpPort = ConfigUtils.GetSetting("Game.Http.Port", 80);
-            var httpName = ConfigUtils.GetSetting("Game.Http.Name", "Service.aspx");
+            var section = GetSection();
+            var httpHost = section.HttpHost;
+            var httpPort = section.HttpPort;
+            var httpName = section.HttpName;
+
             if (!string.IsNullOrEmpty(httpHost))
             {
                 var hosts = httpHost.Split(',');
@@ -148,7 +158,7 @@ namespace ZyGames.Framework.Game.Contract
             var actionDispatcher = GameEnvironment.Setting.ActionDispatcher;
             if (!actionDispatcher.TryDecodePackage(context.Request, out package, out statusCode))
             {
-                return new ByteResponse(statusCode, "FAIL", new byte[0]);
+                return new ByteResponse(statusCode, statusCode == 200 ? "OK" : "FAIL", new byte[0]);
             }
 
             GameSession session;

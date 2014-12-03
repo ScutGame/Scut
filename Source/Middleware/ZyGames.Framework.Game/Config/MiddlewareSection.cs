@@ -22,66 +22,60 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ****************************************************************************/
 using System;
-using Newtonsoft.Json;
-using ProtoBuf;
-using ZyGames.Framework.Common.Log;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using ZyGames.Framework.Common.Configuration;
 
-namespace ZyGames.Framework.Game.Contract
+namespace ZyGames.Framework.Game.Config
 {
     /// <summary>
     /// 
     /// </summary>
-    public class RemotePackage
+    public class MiddlewareSection : ConfigSection
     {
         /// <summary>
         /// init
         /// </summary>
-        public RemotePackage()
+        public MiddlewareSection()
         {
-            SendTime = DateTime.Now;
+            EnableGM = ConfigUtils.GetSetting("EnableGM", false);
+            BroadcastMaxCount = ConfigUtils.GetSetting("broadcastcache_maxcount", 1000);
+            BroadcastTimeout = ConfigUtils.GetSetting("broadcastcache_timeout", 1800);
+
+            ChatMaxCount = ConfigUtils.GetSetting("chatcache_maxcount", 3000);
+            ChatTimeout = ConfigUtils.GetSetting("chatcache_timeout", 1800); //30分钟
+
+            PreAccount = string.Format("{0}", ConfigUtils.GetSetting("Sns.PreAccount", "Z"));
         }
-        /// <summary>
-        /// message id of client request
-        /// </summary>
-        public int MsgId { get; set; }
-
-        /// <summary>
-        /// 服务器间内部通讯通道
-        /// </summary>
-        public string RouteName { get; set; }
-
-        /// <summary>
-        /// Message of custom
-        /// </summary>
-        public object Message { get; set; }
 
         /// <summary>
         /// 
         /// </summary>
-        public DateTime SendTime { get; set; }
+        public string PreAccount { get; set; }
 
         /// <summary>
-        /// is pushed package
+        /// 
         /// </summary>
-        [JsonIgnore]
-        public bool IsPushed { get { return MsgId == 0; } }
+        public bool EnableGM { get; set; }
 
         /// <summary>
-        /// callback
+        /// 
         /// </summary>
-        public event Action<RemotePackage> Callback;
+        public int BroadcastMaxCount { get; set; }
+        /// <summary>
+        /// 
+        /// </summary>
+        public int BroadcastTimeout { get; set; }
 
-        internal virtual void OnCallback()
-        {
-            try
-            {
-                Action<RemotePackage> handler = Callback;
-                if (handler != null) handler(this);
-            }
-            catch (Exception ex)
-            {
-                TraceLog.WriteError("RemotePackage OnCallback error:{0}", ex);
-            }
-        }
+        /// <summary>
+        /// 
+        /// </summary>
+        public int ChatMaxCount { get; set; }
+        /// <summary>
+        /// 
+        /// </summary>
+        public int ChatTimeout { get; set; }
     }
 }

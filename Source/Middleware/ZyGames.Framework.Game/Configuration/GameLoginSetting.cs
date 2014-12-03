@@ -1,4 +1,4 @@
-/****************************************************************************
+﻿/****************************************************************************
 Copyright (c) 2013-2015 scutgame.com
 
 http://www.scutgame.com
@@ -30,22 +30,22 @@ using System.Text;
 namespace ZyGames.Framework.Game.Configuration
 {
     /// <summary>
-    /// 渠道登录处理提供类配置
+    /// 娓犻亾鐧诲綍澶勭悊鎻愪緵绫婚厤缃?
     /// </summary>
     internal class GameLoginSetting
     {
         /// <summary>
-        /// 渠道号
+        /// 娓犻亾鍙?
         /// </summary>
         public string RetailId { get; set; }
 
         /// <summary>
-        /// 类型名
+        /// 绫诲瀷鍚?
         /// </summary>
         public string TypeName { get; set; }
 
         /// <summary>
-        /// 类型参数
+        /// 绫诲瀷鍙傛暟
         /// </summary>
         public string TypeArgs { get; set; }
     }

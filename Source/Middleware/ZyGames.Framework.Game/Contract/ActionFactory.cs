@@ -300,7 +300,8 @@ namespace ZyGames.Framework.Game.Contract
         /// <param name="userList">指定范围的玩家</param>
         /// <param name="parameters">请求参数</param>
         /// <param name="successHandle">成功回调</param>
-        public static void BroadcastAction<T>(int actionId, List<T> userList, Parameters parameters, Action<T> successHandle) where T : IUser
+        /// <param name="onlineInterval">online interval second</param>
+        public static void BroadcastAction<T>(int actionId, List<T> userList, Parameters parameters, Action<T> successHandle, int onlineInterval = 0) where T : IUser
         {
             try
             {
@@ -327,7 +328,8 @@ namespace ZyGames.Framework.Game.Contract
                         GameSession session = GameSession.Get(user.GetUserId());
                         if (session != null)
                         {
-                            if (session.SendAsync(sendData, 0, sendData.Length))
+                            if ((onlineInterval <= 0 || session.LastActivityTime > MathUtils.Now.AddSeconds(-onlineInterval)) &&
+                                session.SendAsync(actionParam.OpCode, sendData, 0, sendData.Length))
                             {
                                 if (successHandle != null) successHandle(user);
                             }
@@ -353,7 +355,8 @@ namespace ZyGames.Framework.Game.Contract
         /// <param name="actionId">指定的Action</param>
         /// <param name="parameters">请求参数</param>
         /// <param name="successHandle">成功回调</param>
-        public static void SendAsyncAction<T>(List<T> userList, int actionId, Parameters parameters, Action<ActionGetter> successHandle) where T : IUser
+        /// <param name="onlineInterval">online interval second</param>
+        public static void SendAsyncAction<T>(List<T> userList, int actionId, Parameters parameters, Action<ActionGetter> successHandle, int onlineInterval = 0) where T : IUser
         {
             try
             {
@@ -379,7 +382,8 @@ namespace ZyGames.Framework.Game.Contract
                         ActionGetter actionParam;
                         byte[] sendData = GetActionResponse(actionDispatcher, actionId, user, shareParam.ToString(), out actionParam);
                         if (session != null &&
-                            session.SendAsync(sendData, 0, sendData.Length) &&
+                            (onlineInterval <= 0 || session.LastActivityTime > MathUtils.Now.AddSeconds(-onlineInterval)) &&
+                            session.SendAsync(actionParam.OpCode, sendData, 0, sendData.Length) &&
                             actionParam != null)
                         {
                             successHandle(actionParam);

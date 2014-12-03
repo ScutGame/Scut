@@ -134,6 +134,9 @@
     <Compile Include="Configuration\RetailElement.cs" />
     <Compile Include="Configuration\ZyGameBaseBllSection.cs" />
     <Compile Include="Configuration\ZyGameBaseConfigManager.cs" />
+    <Compile Include="Config\AppServerSection.cs" />
+    <Compile Include="Config\MiddlewareSection.cs" />
+    <Compile Include="Config\ProtocolSection.cs" />
     <Compile Include="Context\BaseUser.cs" />
     <Compile Include="Context\EncryptionManager.cs" />
     <Compile Include="Context\HttpRequestManager.cs" />
@@ -143,8 +146,10 @@
     <Compile Include="Contract\Action\LuaAction.cs" />
     <Compile Include="Contract\GameBaseHost.cs" />
     <Compile Include="Contract\GameHttpHost.cs" />
+    <Compile Include="Contract\GameWebSocketHost.cs" />
     <Compile Include="Contract\RemotePackage.cs" />
     <Compile Include="Contract\RemoteService.cs" />
+    <Compile Include="Runtime\AppServerConfigger.cs" />
     <Compile Include="Service\ActionGetter.cs" />
     <Compile Include="Contract\Action\AndroidPayAction.cs" />
     <Compile Include="Contract\Action\AppStoreDetailAction.cs" />
@@ -189,7 +194,9 @@
     <Compile Include="Pay\Section\AppStorePayElement.cs" />
     <Compile Include="Pay\Section\AppStorePaySection.cs" />
     <Compile Include="Runtime\EnvironmentSetting.cs" />
+    <Compile Include="Service\BinaryAction.cs" />
     <Compile Include="Service\HttpGameResponse.cs" />
+    <Compile Include="Service\JsonAction.cs" />
     <Compile Include="Service\LoginStatus.cs" />
     <Compile Include="Service\RemoteStruct.cs" />
     <Compile Include="Service\SocketGameResponse.cs" />

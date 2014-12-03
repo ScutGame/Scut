@@ -52,6 +52,7 @@ namespace ZyGames.Framework.Game.Contract
             UserId = userId;
         }
 
+        
         /// <summary>
         /// message id of client request
         /// </summary>
@@ -110,6 +111,16 @@ namespace ZyGames.Framework.Game.Contract
         [ProtoMember(10)]
         public string ProxyId { get; set; }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        [ProtoMember(11)]
+        public sbyte OpCode { get; set; }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public string CommandMessage { get; set; }
 
         /// <summary>
         /// Message of custom
@@ -137,6 +148,8 @@ namespace ZyGames.Framework.Game.Contract
             {
                 SessionId = session.SessionId;
                 session.ProxyId = ProxyId;
+                //push not refresh
+                if (MsgId > 0) session.Refresh();
             }
             //Session = session;
             ReceiveTime = DateTime.Now;

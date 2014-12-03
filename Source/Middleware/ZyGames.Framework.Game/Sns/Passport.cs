@@ -28,6 +28,7 @@ using ZyGames.Framework.Common;
 using ZyGames.Framework.Common.Configuration;
 using ZyGames.Framework.Data;
 using ZyGames.Framework.Data.Sql;
+using ZyGames.Framework.Game.Config;
 
 namespace ZyGames.Framework.Game.Sns
 {
@@ -36,7 +37,15 @@ namespace ZyGames.Framework.Game.Sns
     /// </summary>
     public class SnsPassport : IDisposable
     {
-        private static readonly string PreAccount = ConfigUtils.GetSetting("Sns.PreAccount", "Z");
+        private MiddlewareSection section;
+        /// <summary>
+        /// 
+        /// </summary>
+        public SnsPassport()
+        {
+           section = ConfigManager.Configger.GetFirstOrAddConfig<MiddlewareSection>();
+        }
+
         /// <summary>
         /// ID的状态
         /// </summary>
@@ -112,7 +121,7 @@ namespace ZyGames.Framework.Game.Sns
                     if (aReader.Read())
                     {
                         iPassportId = aReader[0].ToString();
-                        return PreAccount + iPassportId.ToString();
+                        return section.PreAccount + iPassportId.ToString();
                     }
                     else
                     {
@@ -132,13 +141,13 @@ namespace ZyGames.Framework.Game.Sns
         {
             try
             {
-                string sPidPre = aPid.Substring(0, PreAccount.Length).ToUpper();
-                if (sPidPre != PreAccount)
+                string sPidPre = aPid.Substring(0, section.PreAccount.Length).ToUpper();
+                if (sPidPre != section.PreAccount)
                 {
                     return false;
                 }
 
-                string sTmp = aPid.Substring(PreAccount.Length);
+                string sTmp = aPid.Substring(section.PreAccount.Length);
                 var command = ConnectManager.Provider.CreateCommandStruct("SnsPassportLog", CommandMode.Inquiry, "passportid");
                 command.Top = 1;
                 command.OrderBy = "PASSPORTID ASC";
@@ -167,7 +176,7 @@ namespace ZyGames.Framework.Game.Sns
         {
             try
             {
-                string sTmp = aPid.Substring(PreAccount.Length);
+                string sTmp = aPid.Substring(section.PreAccount.Length);
                 var command = ConnectManager.Provider.CreateCommandStruct("SnsPassportLog", CommandMode.Modify);
                 command.AddParameter("mark", Convert.ToInt32(aMark));
                 if (aMark == PassMark.IsPushToNewUser)
