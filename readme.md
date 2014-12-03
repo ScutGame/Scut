@@ -31,6 +31,12 @@ else using [github](https://github.com/ScutGame/Scut-samples)
     $ git clone git://git.oschina.net/scutgame/Scut-samples.git
 
 
+## Git for Cocos2d-x SDK Source
+
+    $ git clone git://github.com/ScutGame/Client-source.git
+    or
+    $ git clone git://git.oschina.net/scutgame/Client-source.git
+
 ## Requirements
 
 Scut is only supported on .Net Framework 4.5.1 and up, you need a Redis of NoSQL as well.
@@ -51,7 +57,7 @@ Scut is only supported on .Net Framework 4.5.1 and up, you need a Redis of NoSQL
 * NoSQL: Redis
 
 
-### Protocols: Http/Socket
+### Protocols: Http/ WebSocket / Socket
 
 * Transfer protocol is very lean and slim
 * Scut wraps up the networking layer of each client platform
@@ -117,6 +123,11 @@ Language:
 
 
 old version [more](http://scutgame.com/log).
+
+## Documentations
+
+* Wiki: [https://github.com/ScutGame/Scut/wiki](https://github.com/ScutGame/Scut/wiki)
+* Online API: [http://scutgame.com/doc/](http://scutgame.com/doc/)
 
 
 ## Resource
