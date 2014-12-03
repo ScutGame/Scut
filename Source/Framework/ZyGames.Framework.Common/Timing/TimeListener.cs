@@ -76,6 +76,14 @@ namespace ZyGames.Framework.Common.Timing
         }
 
         /// <summary>
+        /// 
+        /// </summary>
+        public IList<PlanConfig> PlanList
+        {
+            get { return _listenerQueue; }
+        }
+
+        /// <summary>
         /// 显示释放
         /// </summary>
         public static void Dispose()
@@ -157,6 +165,7 @@ namespace ZyGames.Framework.Common.Timing
                     tempList = new PlanConfig[_listenerQueue.Count];
                     _listenerQueue.CopyTo(tempList, 0);
                 });
+                DateTime currDate = MathUtils.Now;
                 var expiredList = new Queue<PlanConfig>();
                 foreach (var planConfig in tempList)
                 {
@@ -168,7 +177,7 @@ namespace ZyGames.Framework.Common.Timing
                         }
                         continue;
                     }
-                    if (planConfig.AutoStart())
+                    if (planConfig.AutoStart(currDate))
                     {
                         DoNotify(planConfig);
                     }

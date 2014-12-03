@@ -48,6 +48,7 @@ namespace ZyGames.Framework.RPC.Service
     /// <summary>
     /// RemoteCallback delegate
     /// </summary>
+    /// <param name="sender"></param>
     /// <param name="e"></param>
     public delegate void RemoteCallback(object sender, RemoteEventArgs e);
 

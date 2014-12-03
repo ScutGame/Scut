@@ -152,8 +152,9 @@ namespace ZyGames.Framework.Data.MySql
         public override bool CheckTable(string tableName, out DbColumn[] columns)
         {
             columns = null;
-            string commandText = string.Format("SELECT count(1) FROM `INFORMATION_SCHEMA`.`TABLES` WHERE `TABLE_SCHEMA`='{0}' AND `TABLE_NAME`='{1}'", ConnectionSetting.DatabaseName, tableName);
-            if (MySqlHelper.ExecuteScalar(ConnectionString, commandText).ToInt() > 0)
+            string commandText = string.Format("SELECT TABLE_NAME FROM `INFORMATION_SCHEMA`.`TABLES` WHERE `TABLE_SCHEMA`='{0}' AND `TABLE_NAME`='{1}'", ConnectionSetting.DatabaseName, tableName);
+            var dr = MySqlHelper.ExecuteDataRow(ConnectionString, commandText);
+            if (dr != null && !dr[0].Equals(DBNull.Value))
             {
                 var list = new List<DbColumn>();
                 commandText = string.Format("SELECT Column_Name AS ColumnName,Data_Type AS ColumnType, NUMERIC_SCALE AS scale, CHARACTER_MAXIMUM_LENGTH AS Length FROM information_schema.`columns` WHERE `TABLE_SCHEMA`='{0}' AND `TABLE_NAME`='{1}'", ConnectionSetting.DatabaseName, tableName);

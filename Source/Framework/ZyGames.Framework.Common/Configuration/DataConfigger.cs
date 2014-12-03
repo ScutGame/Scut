@@ -23,6 +23,7 @@ THE SOFTWARE.
 ****************************************************************************/
 using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.IO;
 using System.Linq;
 using System.Threading;
@@ -33,23 +34,23 @@ namespace ZyGames.Framework.Common.Configuration
     /// <summary>
     /// 
     /// </summary>
-    public abstract class DataConfigger : IConfigger
+    public abstract class DataConfigger : ConfigurationSection, IConfigger
     {
-        //static DataConfigger()
-        //{
-        //    ConfigFile = Path.Combine(AppDomain.CurrentDomain.SetupInformation.ApplicationBase, "AppServer.config");
-        //}
-
         /// <summary>
         /// 
         /// </summary>
         public string ConfigFile { get; set; }
-
+        /// <summary>
+        /// 
+        /// </summary>
         protected bool IsDependenced;
         private FileSystemWatcher _watcher;
         private HashSet<string> _changedFiles = new HashSet<string>();
         private Timer _excuteTimer;
-        private List<ConfigSection> _dataList = new List<ConfigSection>();
+        private readonly List<ConfigSection> _dataList = new List<ConfigSection>();
+        /// <summary>
+        /// 
+        /// </summary>
         protected int _dueChangeTime = 500;
 
         /// <summary>
@@ -59,7 +60,6 @@ namespace ZyGames.Framework.Common.Configuration
         {
             if (!string.IsNullOrEmpty(ConfigFile) && File.Exists(ConfigFile))
             {
-                IsDependenced = true;
                 InitDependenceFile();
             }
             LoadConfigData();
@@ -72,6 +72,10 @@ namespace ZyGames.Framework.Common.Configuration
         {
             _excuteTimer = new Timer(OnExcute, null, Timeout.Infinite, Timeout.Infinite);
             string path = Path.GetDirectoryName(ConfigFile) ?? "";
+            if (!Directory.Exists(path))
+            {
+                return;
+            }
             string file = Path.GetFileName(ConfigFile) ?? "*.config";
             _watcher = new FileSystemWatcher(path, file);
             _watcher.Changed += new FileSystemEventHandler(OnWatcherChanged);
@@ -80,6 +84,7 @@ namespace ZyGames.Framework.Common.Configuration
             _watcher.NotifyFilter = NotifyFilters.LastWrite;
             _watcher.IncludeSubdirectories = false;
             _watcher.EnableRaisingEvents = true;
+            IsDependenced = true;
         }
 
         /// <summary>
@@ -87,9 +92,13 @@ namespace ZyGames.Framework.Common.Configuration
         /// </summary>
         public void Reload()
         {
+            lock (_dataList)
+            {
+                DoClearData();
+                LoadConfigData();
+            }
+            TraceLog.WriteLine("{0} The configger has reloaded.", DateTime.Now.ToString("HH:mm:ss"));
             var e = new ConfigReloadedEventArgs();
-            DoClearData();
-            LoadConfigData();
             ConfigManager.OnConfigReloaded(this, e);
         }
 
@@ -106,9 +115,53 @@ namespace ZyGames.Framework.Common.Configuration
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <returns></returns>
+        public T GetFirstConfig<T>() where T : ConfigSection
+        {
+            return GetConfig<T>().FirstOrDefault();
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <returns></returns>
+        public T GetFirstOrAddConfig<T>() where T : ConfigSection, new()
+        {
+            var lazy = new Lazy<T>(() => new T());
+            return GetFirstOrAddConfig<T>(lazy);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="createFactory"></param>
+        /// <returns></returns>
+        public T GetFirstOrAddConfig<T>(Lazy<T> createFactory) where T : ConfigSection, new()
+        {
+            lock (_dataList)
+            {
+                T result = _dataList.OfType<T>().FirstOrDefault();
+                if (result == null)
+                {
+                    result = createFactory.Value;
+                    AddNodeData(result);
+                }
+                return result;
+            }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <returns></returns>
         public IList<T> GetConfig<T>() where T : ConfigSection
         {
-            return _dataList.OfType<T>().ToList();
+            lock (_dataList)
+            {
+                return _dataList.OfType<T>().ToList();
+            }
         }
 
         /// <summary>
@@ -117,7 +170,10 @@ namespace ZyGames.Framework.Common.Configuration
         /// <returns></returns>
         public IList<ConfigSection> GetAllConfig()
         {
-            return _dataList.ToList();
+            lock (_dataList)
+            {
+                return _dataList.ToList();
+            }
         }
 
         /// <summary>
@@ -125,9 +181,12 @@ namespace ZyGames.Framework.Common.Configuration
         /// </summary>
         /// <param name="name"></param>
         /// <returns></returns>
-        public IList<T> GetConnetion<T>(string name) where T : ConnetionSection
+        public T GetConnetion<T>(string name) where T : ConnectionSection
         {
-            return _dataList.Where(data => data is T && ((T) data).Name == name).Cast<T>().ToList();
+            lock (_dataList)
+            {
+                return _dataList.Where(data => data is T && ((T)data).Name == name).Cast<T>().FirstOrDefault();
+            }
         }
 
         /// <summary>
@@ -163,13 +222,14 @@ namespace ZyGames.Framework.Common.Configuration
             {
                 //Repetitive loading process
                 var tempFile = Interlocked.Exchange(ref _changedFiles, new HashSet<string>());
+
                 foreach (var fileName in tempFile)
                 {
                     var e = new ConfigChangedEventArgs() { FileName = fileName };
-                    DoClearData();
-                    LoadConfigData();
                     ConfigManager.OnConfigChanged(this, e);
+                    Reload();
                     break;
+
                 }
                 //stop timer
                 _excuteTimer.Change(Timeout.Infinite, Timeout.Infinite);

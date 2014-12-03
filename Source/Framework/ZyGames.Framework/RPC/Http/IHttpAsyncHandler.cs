@@ -25,6 +25,9 @@ using System.Threading.Tasks;
 
 namespace ZyGames.Framework.RPC.Http
 {
+    /// <summary>
+    /// 
+    /// </summary>
     public interface IHttpAsyncHandler
     {
         /// <summary>

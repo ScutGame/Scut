@@ -29,16 +29,28 @@ using System.Threading.Tasks;
 
 namespace ZyGames.Framework.RPC.Http
 {
+    /// <summary>
+    /// 
+    /// </summary>
     public sealed class ByteResponse : StatusResponse, IHttpResponseAction
     {
         readonly byte[] data;
-
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="statusCode"></param>
+        /// <param name="statusDescription"></param>
+        /// <param name="value"></param>
         public ByteResponse(int statusCode, string statusDescription, byte[] value)
             : base(statusCode, statusDescription)
         {
             data = value;
         }
-
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="context"></param>
+        /// <returns></returns>
         public override async Task Execute(IHttpRequestResponseContext context)
         {
             if (data == null)

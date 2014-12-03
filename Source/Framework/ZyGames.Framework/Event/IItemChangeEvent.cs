@@ -34,6 +34,12 @@ namespace ZyGames.Framework.Event
         /// <summary>
         /// 
         /// </summary>
+
+        [JsonIgnore]
+        public bool IsExpired { get; set; }
+        /// <summary>
+        /// 
+        /// </summary>
         [JsonIgnore]
         public bool IsInCache { get; set; }
 

@@ -51,7 +51,7 @@ namespace ZyGames.Framework.Redis
         /// </summary>
         internal const string EntityKeySplitChar = "_";
         //private static PooledRedisClientManager _pooledRedis;
-        private static RedisPoolSetting _defaultSetting;
+        //private static RedisPoolSetting _defaultSetting;
         private static ICacheSerializer _serializer;
         private static RedisPoolSetting _setting;
         private static ConcurrentDictionary<string, ObjectPoolWithExpire<RedisClient>> _poolCache = new ConcurrentDictionary<string, ObjectPoolWithExpire<RedisClient>>();
@@ -59,16 +59,6 @@ namespace ZyGames.Framework.Redis
         static RedisConnectionPool()
         {
             _serializer = new ProtobufCacheSerializer();
-            _defaultSetting = new RedisPoolSetting
-            {
-                Host = ConfigUtils.GetSetting("Redis.Host", "localhost"),
-                MaxWritePoolSize = ConfigUtils.GetSetting("Redis.MaxWritePoolSize", 100),
-                MaxReadPoolSize = ConfigUtils.GetSetting("Redis.MaxReadPoolSize", 100),
-                ConnectTimeout = ConfigUtils.GetSetting("Redis.ConnectTimeout", 0),
-                PoolTimeOut = ConfigUtils.GetSetting("Redis.PoolTimeOut", 0),
-                DbIndex = ConfigUtils.GetSetting("Redis.Db", 0)
-            };
-            _defaultSetting.ReadOnlyHost = ConfigUtils.GetSetting("Redis.ReadHost", _defaultSetting.Host);
         }
 
         /// <summary>
@@ -77,7 +67,7 @@ namespace ZyGames.Framework.Redis
         /// <param name="serializer"></param>
         public static void Initialize(ICacheSerializer serializer)
         {
-            Initialize(_defaultSetting, serializer);
+            Initialize(new RedisPoolSetting(), serializer);
         }
 
         /// <summary>

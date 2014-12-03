@@ -64,6 +64,16 @@ namespace ZyGames.Framework.Cache.Generic
         }
 
         internal event EntityChangedNotifyEvent OnChangedNotify;
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="eventargs"></param>
+        protected virtual void DoChangedNotify(AbstractEntity sender, CacheItemEventArgs eventargs)
+        {
+            EntityChangedNotifyEvent handler = OnChangedNotify;
+            if (handler != null) handler(sender, eventargs);
+        }
 
         /// <summary>
         /// 是否数据已加载成功

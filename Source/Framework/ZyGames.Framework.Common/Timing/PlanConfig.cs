@@ -26,6 +26,30 @@ using System;
 namespace ZyGames.Framework.Common.Timing
 {
     /// <summary>
+    /// 计划周期
+    /// </summary>
+    public enum PlanCycle
+    {
+        /// <summary>
+        /// 
+        /// </summary>
+        Once,
+        /// <summary>
+        /// 
+        /// </summary>
+        Day,
+        /// <summary>
+        /// 
+        /// </summary>
+        Week
+    }
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="planConfig"></param>
+    public delegate void PlanCallback(PlanConfig planConfig);
+
+    /// <summary>
     /// 计划配置信息
     /// </summary>
     public class PlanConfig
@@ -33,200 +57,287 @@ namespace ZyGames.Framework.Common.Timing
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="planConfig"></param>
-        public delegate void PlanCallback(PlanConfig planConfig);
-
-        /// <summary>
-        /// 计划周期
-        /// </summary>
-        private enum PlanCycle
+        /// <returns></returns>
+        public static PlanConfig OncePlan(PlanCallback callback, string name, string beginTime)
         {
-            Day,
-            Week
+            return CreatePlan(callback, name, PlanCycle.Once, beginTime);
         }
 
-        private DateTime _beginDate;
-        private DateTime _endDate;
-        private int _currentTimes;
-        private int _offsetSecond;
-
-        private readonly DayOfWeek _week;
-        private readonly string _beginTime;
-        private readonly string _endTime;
-        private readonly PlanCycle _planCycle;
-
-        /// <summary>
-        /// 第几周
-        /// </summary>
-        /// <param name="callback"></param>
-        /// <param name="week"></param>
-        /// <param name="beginTime"></param>
-        /// <param name="endTime"></param>
-        /// <param name="secondInterval"></param>
-        /// <param name="isCycle"></param>
-        /// <param name="name"></param>
-        public PlanConfig(PlanCallback callback, DayOfWeek week, string beginTime, string endTime, bool isCycle = true, int secondInterval = 0, string name = "")
-            : this(callback, PlanCycle.Week, beginTime, endTime, isCycle, secondInterval, name)
-        {
-            _week = week;
-        }
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="callback"></param>
-        /// <param name="isCycle"></param>
-        /// <param name="secondInterval"></param>
-        /// <param name="name"></param>
-        public PlanConfig(PlanCallback callback, bool isCycle, int secondInterval, string name = "")
-            : this(callback, PlanCycle.Day, "00:00", null, isCycle, secondInterval, name)
+        /// <returns></returns>
+        public static PlanConfig EveryMinutePlan(PlanCallback callback, string name, string beginTime, string endTime, int secondInterval = 60)
         {
+            return CreatePlan(callback, name, PlanCycle.Day, beginTime, endTime, true, secondInterval);
         }
+
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="callback"></param>
-        /// <param name="beginTime"></param>
-        /// <param name="endTime"></param>
-        /// <param name="isCycle"></param>
-        /// <param name="secondInterval"></param>
-        /// <param name="name"></param>
-        public PlanConfig(PlanCallback callback, string beginTime, string endTime, bool isCycle = false, int secondInterval = 0, string name = "")
-            : this(callback, PlanCycle.Day, beginTime, endTime, isCycle, secondInterval, name)
+        /// <returns></returns>
+        public static PlanConfig EveryDayPlan(PlanCallback callback, string name, string beginTime)
         {
+            return CreatePlan(callback, name, PlanCycle.Day, beginTime, "23:59:59", true, (int)new TimeSpan(1, 0, 0, 0).TotalSeconds);
         }
 
-        private PlanConfig(PlanCallback callback, PlanCycle planCycle, string beginTime, string endTime, bool isCycle, int secondInterval, string name)
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        public static PlanConfig EveryWeekPlan(PlanCallback callback, string name, DayOfWeek week, string beginTime)
         {
-            Callback = callback;
-            _planCycle = planCycle;
-            _beginTime = beginTime;
-            Name = name;
-            _endTime = string.IsNullOrEmpty(endTime) ? "23:59:59" : endTime;
-            IsCycle = isCycle;
-            SecondInterval = secondInterval > 0 ? secondInterval : 0;
-
-            _beginDate = _beginTime.ToDateTime();
-            _endDate = _endTime.ToDateTime();
+            var plan = CreatePlan(callback, name, PlanCycle.Week, beginTime);
+            plan.PlanWeek = week;
+            return plan;
         }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        public static PlanConfig EveryWeekPlan(PlanCallback callback, string name, DayOfWeek week, string beginTime, string endTime, int secondInterval = 60)
+        {
+            var plan = CreatePlan(callback, name, PlanCycle.Week, beginTime, endTime, true, secondInterval);
+            plan.PlanWeek = week;
+            return plan;
+        }
+
+        private static PlanConfig CreatePlan(PlanCallback callback, string name, PlanCycle planCycle, string beginTime, string endTime = "", bool isCycle = false, int secondInterval = 0)
+        {
+            return new PlanConfig()
+            {
+                Callback = callback,
+                Name = name,
+                PlanCycle = planCycle,
+                BeginTime = beginTime,
+                EndTime = endTime,
+                IsCycle = isCycle,
+                SecondInterval = secondInterval
+            };
+        }
+
+        class PlanState
+        {
+            public int OffsetSecond { get; set; }
+            public DateTime StartDate { get; set; }
+            public DateTime StopDate { get; set; }
+            public DateTime PreDate { get; private set; }
+
+            /// <summary>
+            /// 是否过期,过期的计划将被移除定时执行任务
+            /// </summary>
+            public bool IsExpired { get; set; }
+            /// <summary>
+            /// 是否当天结束
+            /// </summary>
+            public bool IsEnd { get; private set; }
+
+            public void Reset(PlanConfig config)
+            {
+                StartDate = config.BeginTime.ToDateTime();
+                StopDate = config.EndTime.ToDateTime(DateTime.MinValue);
+                IsEnd = false;
+            }
+
+            public bool IsTriggerStop(DateTime currDate)
+            {
+                if (StopDate > DateTime.MinValue && currDate >= StopDate)
+                {
+                    IsEnd = true;
+                }
+                return false;
+            }
+
+            public bool IsTriggerStart(DateTime currDate)
+            {
+                if (currDate >= StartDate && currDate < StartDate.AddSeconds(OffsetSecond))
+                {
+                    PreDate = currDate;
+                    IsEnd = true;
+                    return true;
+                }
+                return false;
+            }
+
+            public bool IsTrigger(DateTime currDate, int secondInterval)
+            {
+                if (currDate < StartDate || currDate >= StopDate || secondInterval <= 0)
+                {
+                    return false;
+                }
+
+                bool result = false;
+                var excuteDate = PreDate == DateTime.MinValue ? StartDate : PreDate.AddSeconds(secondInterval);
+                var nextExcuteDate = excuteDate.AddSeconds(secondInterval);
+                if (currDate < PreDate || currDate >= nextExcuteDate)
+                {
+                    //修正当前时间位置
+                    var ts = StopDate - StartDate;
+                    var numberTimes = (int)ts.TotalSeconds / secondInterval;
+                    int times = FindIntervalTimes(currDate, 0, numberTimes, secondInterval);
+                    PreDate = StartDate.AddSeconds(secondInterval * (times - 1));
+
+                    excuteDate = PreDate.AddSeconds(secondInterval);
+                    nextExcuteDate = excuteDate.AddSeconds(secondInterval);
+                }
+
+                if (PreDate <= currDate && currDate < excuteDate)
+                {
+                    //时间还没有到
+                }
+                else if (excuteDate <= currDate && currDate < nextExcuteDate)
+                {
+                    PreDate = excuteDate;
+                    result = currDate < excuteDate.AddSeconds(OffsetSecond);//整点处理
+                }
+                else
+                {
+                }
+                return result;
+            }
+
+            private int FindIntervalTimes(DateTime currDate, int startIndex, int endIndex, int secondInterval)
+            {
+                int index = -1;
+
+                while (endIndex >= startIndex)
+                {
+                    int middle = (startIndex + endIndex) / 2;
+                    int nextMiddle = middle + 1;
+                    var value = StartDate.AddSeconds(middle * secondInterval);
+                    var nextValue = StartDate.AddSeconds(nextMiddle * secondInterval);
+
+                    int result = value.CompareTo(currDate);
+                    if (result <= 0 && (nextValue.CompareTo(currDate) > 0))
+                    {
+                        index = result == 0 ? middle : middle + 1;
+                        break;
+                    }
+                    else if (result > 0)
+                    {
+                        endIndex = middle - 1;
+                    }
+                    else
+                    {
+                        startIndex = middle + 1;
+                    }
+                }
+                return index;
+            }
+        }
+
+        private PlanState _planState = new PlanState();
+
+        private PlanConfig()
+        {
+
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public DayOfWeek PlanWeek { get; set; }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public string BeginTime { get; set; }
+        /// <summary>
+        /// 
+        /// </summary>
+        public string EndTime { get; set; }
+        /// <summary>
+        /// 
+        /// </summary>
+        public PlanCycle PlanCycle { get; set; }
+
         /// <summary>
         /// 名称
         /// </summary>
-        public string Name
-        {
-            get;
-            set;
-        }
+        public string Name { get; set; }
         /// <summary>
         /// 回调委托
         /// </summary>
-        public PlanCallback Callback
-        {
-            get;
-            set;
-        }
-        /// <summary>
-        /// 目标对象
-        /// </summary>
-        public object Target
-        {
-            get;
-            set;
-        }
+        public PlanCallback Callback { get; set; }
 
         /// <summary>
-        /// 是否循环
+        /// 
         /// </summary>
-        public bool IsCycle
-        {
-            get;
-            private set;
-        }
+        public object Target { get; set; }
+
         /// <summary>
-        /// 是否过期,过期的计划将被移除定时执行任务
+        /// 是否循环（每天）
         /// </summary>
-        public bool IsExpired
-        {
-            get;
-            private set;
-        }
-        /// <summary>
-        /// 是否结束
-        /// </summary>
-        public bool IsEnd
-        {
-            get;
-            private set;
-        }
+        public bool IsCycle { get; set; }
         /// <summary>
         /// 间隔秒，0:为单次
         /// </summary>
-        public int SecondInterval
-        {
-            get;
-            private set;
-        }
+        public int SecondInterval { get; set; }
+
+        /// <summary>
+        /// Expired time
+        /// </summary>
+        public DateTime ExpiredTime { get; set; }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public bool IsExpired { get { return _planState.IsExpired; } }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public bool IsEnd { get { return _planState.IsEnd; } }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public DateTime PreviousExecuteTime { get { return _planState.PreDate; } }
+
         /// <summary>
         /// 自动开始
         /// </summary>
         /// <returns></returns>
-        public bool AutoStart()
+        public bool AutoStart(DateTime currDate)
         {
-            ResetDate();
-            if (IsExpired || (IsCycle && IsEnd))
+            if (!DateTime.Now.Date.Equals(_planState.StartDate.Date))
+            {
+                _planState.Reset(this);
+            }
+            if (_planState.IsExpired || _planState.IsEnd)
             {
                 return false;
             }
-            DateTime currDate = DateTime.Now;
-            if (_planCycle == PlanCycle.Week && currDate.DayOfWeek != _week)
-            {
-                return false;
-            }
-            if ((!IsCycle && SecondInterval == 0 && _currentTimes > 0) ||
-                !IsCycle && IsEnd)
-            {
-                IsExpired = true;
-                return false;
-            }
-            bool isStart = false;
-            if ((SecondInterval == 0 && _currentTimes == 0 && currDate > _beginDate) ||
-                (currDate >= _beginDate.AddSeconds(SecondInterval * _currentTimes) && currDate < _endDate))
-            {
-                //if more lan beginDate then update beginDate, and not process it
-                if ((_currentTimes == 0 && _beginDate < currDate) ||
-                    _beginDate.AddSeconds(SecondInterval * (_currentTimes + 1)) < currDate)
-                {
-                    var num = SecondInterval * TimeSpan.TicksPerSecond;
-                    var ts = currDate.Ticks % num;
-                    var tempTime = currDate.AddTicks(-ts);
-                    _currentTimes = (int)((tempTime - _beginDate).TotalSeconds + SecondInterval) / SecondInterval;
-                    //在误差范围内则执行
-                    isStart = _offsetSecond * TimeSpan.TicksPerSecond > ts;
-                }
-                else
-                {
-                    _currentTimes++;
-                    isStart = true;
-                }
-            }
-            else if (currDate > _endDate)
-            {
-                IsEnd = true;
-            }
-            return isStart;
-        }
 
-        /// <summary>
-        /// 重置日期
-        /// </summary>
-        public void ResetDate()
-        {
-            if (!IsExpired && IsCycle && !DateTime.Now.Date.Equals(_beginDate.Date))
+            bool isStart = false;
+
+            switch (PlanCycle)
             {
-                _beginDate = _beginTime.ToDateTime();
-                _endDate = _endTime.ToDateTime();
-                _currentTimes = 0;
-                IsEnd = false;
+                case PlanCycle.Once:
+                    isStart = _planState.IsTriggerStart(currDate);
+                    break;
+                case PlanCycle.Day:
+                    isStart = !IsCycle ? _planState.IsTriggerStart(currDate) : _planState.IsTrigger(currDate, SecondInterval);
+                    break;
+                case PlanCycle.Week:
+                    if (PlanWeek == currDate.DayOfWeek)
+                    {
+                        isStart = !IsCycle ? _planState.IsTriggerStart(currDate) : _planState.IsTrigger(currDate, SecondInterval);
+                    }
+                    break;
+                default:
+                    break;
             }
+            _planState.IsTriggerStop(currDate);
+            if ((PlanCycle == PlanCycle.Once && _planState.IsEnd) ||
+                (ExpiredTime > DateTime.MinValue && currDate >= ExpiredTime))
+            {
+                _planState.IsExpired = true;
+            }
+
+            return isStart;
+
         }
 
         /// <summary>
@@ -234,8 +345,7 @@ namespace ZyGames.Framework.Common.Timing
         /// </summary>
         public void SetDiffInterval(int secondInterval)
         {
-            _offsetSecond = secondInterval;
-            _endDate = _endDate.AddSeconds(secondInterval);
+            _planState.OffsetSecond = secondInterval;
         }
     }
 }

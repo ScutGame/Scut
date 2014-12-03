@@ -22,47 +22,24 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ****************************************************************************/
 using System;
+using System.Collections.Generic;
+using System.Configuration;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace ZyGames.Framework.Common.Configuration
 {
     /// <summary>
-    /// Sql connection config
+    /// 
     /// </summary>
-    public class ConnetionSection : ConfigSection
+    public class DefaultDataConfigger : DataConfigger
     {
-
         /// <summary>
         /// 
         /// </summary>
-        public ConnetionSection(string name, string providerName, string connectionString)
+        protected override void LoadConfigData()
         {
-            Load(name, providerName, connectionString);
         }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        public void Load(string name, string providerName, string connectionString)
-        {
-            Name = name;
-            ProviderName = providerName;
-            ConnectionString = connectionString;
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        public string Name { get; set; }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        public string ProviderName { get; set; }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        public string ConnectionString { get; set; }
-
     }
 }

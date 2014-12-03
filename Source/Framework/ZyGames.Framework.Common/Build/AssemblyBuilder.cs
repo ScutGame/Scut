@@ -1,4 +1,4 @@
-/****************************************************************************
+ï»¿/****************************************************************************
 Copyright (c) 2013-2015 scutgame.com
 
 http://www.scutgame.com
@@ -182,7 +182,7 @@ namespace ZyGames.Framework.Common.Build
             baseType = FindBaseTypeDefinition(type.BaseType, "EntityChangeEvent", currentPath);
             if (baseType != null)
             {
-                //×ÓÀà¶¨ÒåÄ£Ê½
+                //å­ç±»å®šä¹‰æ¨¡å¼
                 foreach (PropertyDefinition prop in type.Properties)
                 {
                     setSuccess = SetChildNotifyMethod(type, baseType, prop, setSuccess);
@@ -326,7 +326,7 @@ namespace ZyGames.Framework.Common.Build
             {
                 try
                 {
-                    //Ö§³Ö×ÓÀàEntity¼Ì³Ğ·½Ê½
+                    //æ”¯æŒå­ç±»Entityç»§æ‰¿æ–¹å¼
                     typeDefinition = type.Module.GetType(type.Namespace, type.Name);
                 }
                 catch

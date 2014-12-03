@@ -46,6 +46,27 @@ namespace ZyGames.Framework.Common.Configuration
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <returns></returns>
+        T GetFirstConfig<T>() where T : ConfigSection;
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <returns></returns>
+        T GetFirstOrAddConfig<T>() where T : ConfigSection, new();
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="createFactory"></param>
+        /// <returns></returns>
+        T GetFirstOrAddConfig<T>(Lazy<T> createFactory) where T : ConfigSection, new();
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <returns></returns>
         IList<T> GetConfig<T>() where T : ConfigSection;
 
         /// <summary>
@@ -60,7 +81,7 @@ namespace ZyGames.Framework.Common.Configuration
         /// <typeparam name="T"></typeparam>
         /// <param name="name"></param>
         /// <returns></returns>
-        IList<T> GetConnetion<T>(string name) where T : ConnetionSection;
+        T GetConnetion<T>(string name) where T : ConnectionSection;
 
     }
 }

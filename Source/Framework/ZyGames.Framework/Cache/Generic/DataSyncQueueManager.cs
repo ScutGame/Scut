@@ -32,6 +32,7 @@ using ZyGames.Framework.Common;
 using ZyGames.Framework.Common.Configuration;
 using ZyGames.Framework.Common.Log;
 using ZyGames.Framework.Common.Serialization;
+using ZyGames.Framework.Config;
 using ZyGames.Framework.Data;
 using ZyGames.Framework.Event;
 using ZyGames.Framework.Model;
@@ -67,10 +68,22 @@ namespace ZyGames.Framework.Cache.Generic
         public static readonly string SqlSyncWaitErrirQueueKey = "__QUEUE_SQL_SYNC_WAIT_ERROR";
 
         private static int _entityQueueRunning;
+        /// <summary>
+        /// 
+        /// </summary>
         public static Timer _entityQueueWacher;
+        /// <summary>
+        /// 
+        /// </summary>
         public static Timer _entityQueueTimer;
         private static readonly object entitySyncRoot = new object();
+        /// <summary>
+        /// 
+        /// </summary>
         public static HashSet<string> _entitySet = new HashSet<string>();
+        /// <summary>
+        /// 
+        /// </summary>
         public static HashSet<string> _entityRemoteSet = new HashSet<string>();
 
         private static SmartThreadPool _threadPools;
@@ -83,14 +96,20 @@ namespace ZyGames.Framework.Cache.Generic
         private static Timer[] _sqlWaitTimers;
         private static int[] _isRedisSyncWorking;
         private static int[] _isSqlWaitSyncWorking;
-        private const int DefSqlSyncWaitQueueNum = 2;
-        private const int DefDataSyncQueueNum = 2;
         private static System.Action<string, byte[][], byte[][]> _asyncSendHandle;
         //todo test
         private static ConcurrentDictionary<string, KeyValuePair<int, string>> _checkVersions = new ConcurrentDictionary<string, KeyValuePair<int, string>>();
-
+        /// <summary>
+        /// 
+        /// </summary>
         public static long SendWaitCount;
+        /// <summary>
+        /// 
+        /// </summary>
         public static long ExecuteSuccessCount;
+        /// <summary>
+        /// 
+        /// </summary>
         public static long ExecuteFailCount;
 
         /// <summary>
@@ -125,34 +144,35 @@ namespace ZyGames.Framework.Cache.Generic
 
         private static ICacheSerializer _serializer { get; set; }
 
-        /// <summary>
-        /// Data sync queue num
-        /// </summary>
-        public static int DataSyncQueueNum
+
+
+        private static MessageQueueSection GetSection()
         {
-            get;
-            set;
+            return ConfigManager.Configger.GetFirstOrAddConfig<MessageQueueSection>();
         }
-        /// <summary>
-        /// Sql wait sync queue num
-        /// </summary>
-        public static int SqlWaitSyncQueueNum
-        {
-            get;
-            set;
-        }
+
 
         static DataSyncQueueManager()
         {
             _asyncSendHandle += OnAsyncSend;
             _serializer = new ProtobufCacheSerializer();
-            DataSyncQueueNum = ConfigUtils.GetSetting("DataSyncQueueNum", DefDataSyncQueueNum);
-            if (DataSyncQueueNum < 1) DataSyncQueueNum = DefDataSyncQueueNum;
-            SqlWaitSyncQueueNum = ConfigUtils.GetSetting("SqlWaitSyncQueueNum", DefSqlSyncWaitQueueNum);
-            if (SqlWaitSyncQueueNum < 1) SqlWaitSyncQueueNum = DefSqlSyncWaitQueueNum;
+            ConfigManager.ConfigReloaded += OnConfigReload;
+        }
 
-            _isRedisSyncWorking = new int[DataSyncQueueNum];
-            _isSqlWaitSyncWorking = new int[SqlWaitSyncQueueNum];
+        private static void OnConfigReload(object sender, ConfigReloadedEventArgs e)
+        {
+            try
+            {
+                MessageQueueSection section = GetSection();
+                InitRedisQueue(section);
+                InitSqlQueue(section);
+
+                DbConnectionProvider.Initialize();
+            }
+            catch (Exception ex)
+            {
+                TraceLog.WriteError("ConfigReload error:{0}", ex);
+            }
         }
 
         private static void OnAsyncSend(string queueKey, byte[][] keyBytes, byte[][] valueBytes)
@@ -178,26 +198,77 @@ namespace ZyGames.Framework.Cache.Generic
             _serializer = serializer;
             _entityQueueTimer = new Timer(OnEntitySyncQueue, null, 60, 500);
             _entityQueueWacher = new Timer(CheckEntityQueue, null, 60, 60000);
+            MessageQueueSection section = GetSection();
+            InitRedisQueue(section);
+            InitSqlQueue(section);
+            _threadPools = new SmartThreadPool(180 * 1000, 100, 5);
+            _threadPools.Start();
+        }
 
-            _enableRedisQueue = setting.EnableRedisQueue;
-            if (_enableRedisQueue)
+        private static void InitRedisQueue(MessageQueueSection section)
+        {
+            TraceLog.ReleaseWriteDebug("Redis write queue start init...");
+            if (_queueWatchTimers != null && (!section.EnableRedisQueue || _queueWatchTimers.Length != section.DataSyncQueueNum))
             {
-                _queueWatchTimers = new Timer[DataSyncQueueNum];
-                for (int i = 0; i < DataSyncQueueNum; i++)
+                foreach (var timer in _queueWatchTimers)
+                {
+                    try
+                    {
+                        timer.Dispose();
+                    }
+                    catch (Exception ex)
+                    {
+                        TraceLog.WriteError("Redis write queue stop error:{0}", ex);
+                    }
+                }
+                _queueWatchTimers = null;
+            }
+            _enableRedisQueue = section.EnableRedisQueue;
+            if (_enableRedisQueue && _queueWatchTimers == null)
+            {
+                _isRedisSyncWorking = new int[section.DataSyncQueueNum];
+                _queueWatchTimers = new Timer[_isRedisSyncWorking.Length];
+                for (int i = 0; i < _queueWatchTimers.Length; i++)
                 {
                     _queueWatchTimers[i] = new Timer(OnCheckRedisSyncQueue, i, 100, 100);
                 }
             }
-            _threadPools = new SmartThreadPool(180 * 1000, 100, 5);
-            _threadPools.Start();
-            _enableWriteToDb = setting.EnableWriteToDb;
-            if (_enableWriteToDb)
+        }
+
+        private static void InitSqlQueue(MessageQueueSection section)
+        {
+            TraceLog.ReleaseWriteDebug("Sql wait write queue start init...");
+            if (_sqlWaitTimers != null && (!section.EnableWriteToDb || _sqlWaitTimers.Length != section.SqlWaitSyncQueueNum))
             {
-                int sqlSyncInterval = ConfigUtils.GetSetting("Game.Cache.UpdateDbInterval", 300 * 1000);
-                _sqlWaitTimers = new Timer[SqlWaitSyncQueueNum];
-                for (int i = 0; i < SqlWaitSyncQueueNum; i++)
+                foreach (var timer in _sqlWaitTimers)
                 {
-                    _sqlWaitTimers[i] = new Timer(OnCheckSqlWaitSyncQueue, i, 100, sqlSyncInterval);
+                    try
+                    {
+                        timer.Dispose();
+                    }
+                    catch (Exception ex)
+                    {
+                        TraceLog.WriteError("Sql wait write queue stop error:{0}", ex);
+                    }
+                }
+                _sqlWaitTimers = null;
+            }
+            else if (_sqlWaitTimers != null && section.EnableWriteToDb)
+            {
+                foreach (var timer in _sqlWaitTimers)
+                {
+                    timer.Change(100, section.SqlSyncInterval);
+                }
+                SqlStatementManager.Start();
+            }
+            _enableWriteToDb = section.EnableWriteToDb;
+            if (_enableWriteToDb && _sqlWaitTimers == null)
+            {
+                _isSqlWaitSyncWorking = new int[section.SqlWaitSyncQueueNum];
+                _sqlWaitTimers = new Timer[_isSqlWaitSyncWorking.Length];
+                for (int i = 0; i < _sqlWaitTimers.Length; i++)
+                {
+                    _sqlWaitTimers[i] = new Timer(OnCheckSqlWaitSyncQueue, i, 100, section.SqlSyncInterval);
                 }
                 SqlStatementManager.Start();
             }
@@ -286,7 +357,7 @@ namespace ZyGames.Framework.Cache.Generic
                 {
                     var tempRemove = Interlocked.Exchange(ref _entityRemoteSet, new HashSet<string>());
                     var temp = Interlocked.Exchange(ref _entitySet, new HashSet<string>());
-                    if (temp.Count == 0) return;
+                    if (temp.Count == 0 || _queueWatchTimers == null) return;
                     TraceLog.WriteWarn("OnEntitySyncQueue execute count:{0}, success:{1}/total {2}, fail:{3} start...", temp.Count, ExecuteSuccessCount, SendWaitCount, ExecuteFailCount);
 
                     RedisConnectionPool.Process(client =>
@@ -392,7 +463,7 @@ namespace ZyGames.Framework.Cache.Generic
                     foreach (var entity in entityList)
                     {
                         if (entity == null) continue;//cacheCollection has changed
-
+                        entity.TempTimeModify = MathUtils.Now;
                         key = string.Format("{0}_{1}|{2}",
                             RedisConnectionPool.EncodeTypeName(entity.GetType().FullName),
                             entity.GetIdentityId(),
@@ -422,19 +493,19 @@ namespace ZyGames.Framework.Cache.Generic
         /// <returns></returns>
         private static string GetRedisSyncQueueKey(int identityId)
         {
-            int queueIndex = identityId % DataSyncQueueNum;
+            int queueIndex = identityId % _queueWatchTimers.Length;
             string queueKey = string.Format("{0}{1}",
                 RedisSyncQueueKey,
-                DataSyncQueueNum > 1 ? ":" + queueIndex : "");
+                _queueWatchTimers.Length > 1 ? ":" + queueIndex : "");
             return queueKey;
         }
 
         private static string GetSqlWaitSyncQueueKey(int identityId)
         {
-            int queueIndex = identityId % SqlWaitSyncQueueNum;
+            int queueIndex = identityId % _sqlWaitTimers.Length;
             string queueKey = string.Format("{0}{1}",
                 SqlSyncWaitQueueKey,
-                SqlWaitSyncQueueNum > 1 ? ":" + queueIndex : "");
+                _sqlWaitTimers.Length > 1 ? ":" + queueIndex : "");
             return queueKey;
         }
 

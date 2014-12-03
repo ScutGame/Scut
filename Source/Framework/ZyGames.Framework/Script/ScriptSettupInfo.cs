@@ -25,8 +25,8 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
-using ZyGames.Framework.Common;
 using ZyGames.Framework.Common.Configuration;
+using ZyGames.Framework.Config;
 
 namespace ZyGames.Framework.Script
 {
@@ -47,39 +47,29 @@ namespace ZyGames.Framework.Script
         /// </summary>
         public ScriptSettupInfo()
         {
+            ScriptSection section = ConfigManager.Configger.GetFirstOrAddConfig<ScriptSection>();
 
             //init runtime path.
-            ScriptChangedDelay = ConfigUtils.GetSetting("ScriptChangedDelay", 1000);
-            RuntimePath = MathUtils.RuntimePath;
-            RuntimePrivateBinPath = MathUtils.RuntimeBinPath;
-            if (string.IsNullOrEmpty(RuntimePath))
-            {
-                RuntimePrivateBinPath = RuntimePath;
-            }
-            ScriptRelativePath = ConfigUtils.GetSetting("ScriptRelativePath");
-            ScriptIsDebug = ConfigUtils.GetSetting("Script_IsDebug", false);
+            ScriptChangedDelay = section.ScriptChangedDelay;
+            RuntimePath = section.RuntimePath;
+            RuntimePrivateBinPath = section.RuntimePrivateBinPath;
+            ScriptRelativePath = section.ScriptRelativePath;
+            ScriptIsDebug = section.ScriptIsDebug;
 
-            ModelScriptPath = ConfigUtils.GetSetting("ModelRootPath", "Model");
-            CSharpScriptPath = ConfigUtils.GetSetting("CSharpRootPath", "Script");//兼容旧版本在"Script"目录下，新版本使用"CsScript"
-            ScriptMainProgram = ConfigUtils.GetSetting("ScriptMainProgram");//调整入口程序命名
-            if (string.IsNullOrEmpty(ScriptMainProgram))
-            {
-                ScriptMainProgram = ConfigUtils.GetSetting("ScriptMainClass", "MainClass.cs");
-            }
-            ScriptMainTypeName = ConfigUtils.GetSetting("ScriptMainTypeName", "Game.Script.MainClass");
+            ModelScriptPath = section.ModelScriptPath;
+            CSharpScriptPath = section.CSharpScriptPath;
+            ScriptMainProgram = section.ScriptMainProgram;
+            ScriptMainTypeName = section.ScriptMainTypeName;
 
             //Py setting
-            DisablePython = ConfigUtils.GetSetting("Python_Disable", true);
-            PythonIsDebug = ConfigUtils.GetSetting("Python_IsDebug", ScriptIsDebug);
-            PythonScriptPath = ConfigUtils.GetSetting("PythonRootPath", "PyScript");
-            PythonReferenceLibFile = Path.Combine(RuntimePath,
-                ScriptRelativePath,
-                PythonScriptPath,
-                ConfigUtils.GetSetting("ReferenceLibFile", "Lib/ReferenceLib.py"));
+            DisablePython = section.DisablePython;
+            PythonIsDebug = section.PythonIsDebug;
+            PythonScriptPath = section.PythonScriptPath;
+            PythonReferenceLibFile = section.PythonReferenceLibFile;
 
             //Lua setting
-            DisableLua = ConfigUtils.GetSetting("Lua_Disable", true);
-            LuaScriptPath = ConfigUtils.GetSetting("LuaRootPath", "LuaScript");
+            DisableLua = section.DisableLua;
+            LuaScriptPath = section.LuaScriptPath;
 
             ReferencedAssemblyNames = new List<string>{
                 Path.Combine(RuntimePrivateBinPath, "NLog.dll"),

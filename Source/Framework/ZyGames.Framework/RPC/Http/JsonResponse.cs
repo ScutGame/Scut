@@ -28,16 +28,28 @@ using System.Threading.Tasks;
 
 namespace ZyGames.Framework.RPC.Http
 {
+    /// <summary>
+    /// 
+    /// </summary>
     public sealed class JsonResponse : StatusResponse, IHttpResponseAction
     {
         readonly object _value;
-
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="statusCode"></param>
+        /// <param name="statusDescription"></param>
+        /// <param name="value"></param>
         public JsonResponse(int statusCode, string statusDescription, object value)
             : base(statusCode, statusDescription)
         {
             _value = value;
         }
-
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="context"></param>
+        /// <returns></returns>
         public override async Task Execute(IHttpRequestResponseContext context)
         {
             SetStatus(context);

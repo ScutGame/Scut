@@ -44,6 +44,12 @@ namespace ZyGames.Framework.Common
         /// </summary>
         public static DateTime SqlMinDate = new DateTime(1753, 1, 1);
 
+        private const long UnixEpoch = 621355968000000000L;
+        /// <summary>
+        /// Unix timestamp, val:1970-01-01 00:00:00 UTC
+        /// </summary>
+        public static readonly DateTime UnixEpochDateTime = new DateTime(UnixEpoch);
+
         /// <summary>
         /// 
         /// </summary>
@@ -155,24 +161,42 @@ namespace ZyGames.Framework.Common
             }
             return bytes;
         }
+
         /// <summary>
-        /// 查找数组中包含另一数组的启始索引
+        /// 
         /// </summary>
         /// <param name="bytes"></param>
         /// <param name="pattern"></param>
         /// <returns></returns>
         public static int IndexOf(byte[] bytes, byte[] pattern)
         {
+            return IndexOf(bytes, 0, bytes.Length, pattern);
+        }
+
+        /// <summary>
+        /// 查找数组中包含另一数组的启始索引
+        /// </summary>
+        /// <param name="bytes"></param>
+        /// <param name="length"></param>
+        /// <param name="pattern"></param>
+        /// <param name="offset"></param>
+        /// <returns></returns>
+        public static int IndexOf(byte[] bytes, int offset, int length, byte[] pattern)
+        {
             int index = -1;
-            int pos = 0;
-            while (pos < bytes.Length)
+            int pos = offset;
+            if (length > bytes.Length)
+            {
+                length = bytes.Length;
+            }
+            while (pos < length)
             {
                 if (bytes[pos] == pattern[0])
                 {
                     index = pos;
                     for (int i = 1; i < pattern.Length; i++)
                     {
-                        if (pos + i >= bytes.Length || pattern[i] != bytes[pos + i])
+                        if (pos + i >= length || pattern[i] != bytes[pos + i])
                         {
                             index = -1;
                             break;

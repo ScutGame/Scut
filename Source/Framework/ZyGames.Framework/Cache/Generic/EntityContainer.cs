@@ -618,6 +618,12 @@ namespace ZyGames.Framework.Cache.Generic
                 }
                 if (result)
                 {
+                    var entity = itemSet.ItemData as IItemChangeEvent;
+                    if (entity != null)
+                    {
+                        entity.IsInCache = false;
+                        entity.IsExpired = true;
+                    }
                     itemSet.SetRemoveStatus();
                     itemSet.Dispose();
                 }
@@ -652,6 +658,7 @@ namespace ZyGames.Framework.Cache.Generic
                     {
                         //Not trigger event notify
                         entityData.IsInCache = false;
+                        entityData.IsExpired = true;
                         entityData.Dispose();
                     }
                     return result;

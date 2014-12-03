@@ -32,7 +32,7 @@ namespace ZyGames.Framework.Common.Configuration
     /// </summary>
     public class ConfigSection
     {
-        private readonly List<ConfigNode> _nodes = new List<ConfigNode>();
+        private List<ConfigNode> _configNodes;
 
         /// <summary>
         /// 
@@ -57,10 +57,15 @@ namespace ZyGames.Framework.Common.Configuration
             Load(nodes);
         }
 
+        private List<ConfigNode> Nodes
+        {
+            get { return _configNodes ?? (_configNodes = new List<ConfigNode>()); }
+        }
+
         /// <summary>
         /// 
         /// </summary>
-        public int Count { get { return _nodes.Count; } }
+        public int NodeCount { get { return _configNodes == null ? 0 : _configNodes.Count; } }
 
         /// <summary>
         /// 
@@ -73,18 +78,18 @@ namespace ZyGames.Framework.Common.Configuration
                 string[] items = str.Split('=');
                 if (items.Length == 2)
                 {
-                    _nodes.Add(new ConfigNode(items[0], items[1]));
+                    Nodes.Add(new ConfigNode(items[0], items[1]));
                 }
             }
         }
 
-        
+
         /// <summary>
         /// 
         /// </summary>
         public void Load(IEnumerable<ConfigNode> nodes)
         {
-            _nodes.AddRange(nodes);
+            Nodes.AddRange(nodes);
         }
 
         /// <summary>
@@ -92,7 +97,7 @@ namespace ZyGames.Framework.Common.Configuration
         /// </summary>
         public IList<ConfigNode> GetNodes()
         {
-            return _nodes.ToList();
+            return Nodes.ToList();
         }
 
         /// <summary>
@@ -100,7 +105,7 @@ namespace ZyGames.Framework.Common.Configuration
         /// </summary>
         public string[] GetKeys()
         {
-            return _nodes.Select(t => t.Key).ToArray();
+            return Nodes.Select(t => t.Key).ToArray();
         }
 
         /// <summary>
@@ -130,7 +135,7 @@ namespace ZyGames.Framework.Common.Configuration
         /// </summary>
         public string GetValue(string key, string defaultValue)
         {
-            var node = _nodes.Find(t => t.Key == key);
+            var node = Nodes.Find(t => t.Key == key);
             if (node != null)
             {
                 return node.Value;
@@ -143,7 +148,7 @@ namespace ZyGames.Framework.Common.Configuration
         /// </summary>
         public string[] GetValues()
         {
-            return _nodes.Select(t => t.Value).ToArray();
+            return Nodes.Select(t => t.Value).ToArray();
         }
 
         /// <summary>
@@ -151,7 +156,7 @@ namespace ZyGames.Framework.Common.Configuration
         /// </summary>
         public ConfigNode GetNode(string key)
         {
-            return _nodes.Find(t => t.Key == key);
+            return Nodes.Find(t => t.Key == key);
         }
 
         /// <summary>
@@ -159,7 +164,7 @@ namespace ZyGames.Framework.Common.Configuration
         /// </summary>
         public void AddNode(ConfigNode node)
         {
-            _nodes.Add(node);
+            Nodes.Add(node);
         }
         /// <summary>
         /// 
@@ -187,7 +192,7 @@ namespace ZyGames.Framework.Common.Configuration
         /// </summary>
         public bool SetValue(string key, string value)
         {
-            var settingNode = _nodes.Find(t => t.Key == key);
+            var settingNode = Nodes.Find(t => t.Key == key);
             if (settingNode != null)
             {
                 settingNode.Value = value;
@@ -210,7 +215,7 @@ namespace ZyGames.Framework.Common.Configuration
         /// </summary>
         public bool RemoveKey(string key)
         {
-            var settingNode = _nodes.Find(t => t.Key == key); 
+            var settingNode = Nodes.Find(t => t.Key == key);
             if (settingNode != null)
             {
                 return RemoveNode(settingNode);
@@ -224,7 +229,7 @@ namespace ZyGames.Framework.Common.Configuration
         /// <returns></returns>
         public bool RemoveNode(ConfigNode node)
         {
-            return _nodes.Remove(node);
+            return Nodes.Remove(node);
         }
 
         /// <summary>
@@ -232,7 +237,7 @@ namespace ZyGames.Framework.Common.Configuration
         /// </summary>
         public void Clear()
         {
-            _nodes.Clear();
+            Nodes.Clear();
         }
     }
 }

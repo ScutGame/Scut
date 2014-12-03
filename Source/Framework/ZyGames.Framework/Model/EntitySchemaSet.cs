@@ -33,6 +33,7 @@ using ZyGames.Framework.Collection.Generic;
 using ZyGames.Framework.Common.Configuration;
 using ZyGames.Framework.Common.Log;
 using ZyGames.Framework.Common.Timing;
+using ZyGames.Framework.Config;
 using ZyGames.Framework.Data;
 using ZyGames.Framework.Event;
 using ZyGames.Framework.Redis;
@@ -44,15 +45,10 @@ namespace ZyGames.Framework.Model
     /// </summary>
     public static class EntitySchemaSet
     {
-        /// <summary>
-        /// Log表名的格式
-        /// </summary>
-        internal static string LogTableNameFormat = ConfigUtils.GetSetting("Log.TableName.Format", "log_$date{0}");
-        /// <summary>
-        /// 预先建立的月份数
-        /// </summary>
-        private static int LogPriorBuildMonth = ConfigUtils.GetSetting("Log.PriorBuild.Month", 3);
-        private static bool EnableModifyTimeField = ConfigUtils.GetSetting("Schema.EnableModifyTimeField", false);
+        private static EntitySection GetEntitySection()
+        {
+            return ConfigManager.Configger.GetFirstOrAddConfig<EntitySection>();
+        }
 
         private static DictionaryExtend<string, SchemaTable> SchemaSet = new DictionaryExtend<string, SchemaTable>();
         private static ConcurrentQueue<SchemaTable> _dynamicTables = new ConcurrentQueue<SchemaTable>();
@@ -87,6 +83,7 @@ namespace ZyGames.Framework.Model
         {
             try
             {
+                int logPriorBuildMonth = GetEntitySection().LogPriorBuildMonth;
                 var tableTypes = _dynamicTables.ToList();
                 foreach (var schema in tableTypes)
                 {
@@ -96,7 +93,7 @@ namespace ZyGames.Framework.Model
                         continue;
                     }
                     string tableName = "";
-                    int count = LogPriorBuildMonth > 1 ? LogPriorBuildMonth : 2;
+                    int count = logPriorBuildMonth > 1 ? logPriorBuildMonth : 2;
                     for (int i = 0; i < count; i++)
                     {
                         tableName = schema.GetTableName(i);
@@ -454,13 +451,14 @@ namespace ZyGames.Framework.Model
         /// <param name="schema"></param>
         public static void InitSchema(Type type, SchemaTable schema)
         {
+            var section = GetEntitySection();
             if (type == null)
             {
                 throw new ArgumentNullException("type");
             }
             if (type.IsSubclassOf(typeof(LogEntity)) && string.IsNullOrEmpty(schema.NameFormat))
             {
-                schema.NameFormat = LogTableNameFormat;
+                schema.NameFormat = section.LogTableNameFormat;
             }
             if (!string.IsNullOrEmpty(schema.NameFormat) && !Exits(type))
             {
@@ -523,7 +521,7 @@ namespace ZyGames.Framework.Model
                 }
             }
             //add modify time field
-            if (EnableModifyTimeField && schema.AccessLevel == AccessLevel.ReadWrite)
+            if (section.EnableModifyTimeField && schema.AccessLevel == AccessLevel.ReadWrite)
             {
                 column = new SchemaColumn();
                 column.Id = number;

@@ -197,7 +197,9 @@ namespace ZyGames.Framework.Common
                 pool.Add(new PoolItem { Item = item, AccessTime = MathUtils.Now });
             }
         }
-
+        /// <summary>
+        /// 
+        /// </summary>
         public void Dispose()
         {
             if (expireTimer != null) expireTimer.Dispose();

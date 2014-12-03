@@ -32,18 +32,30 @@ using ZyGames.Framework.Common.Log;
 
 namespace ZyGames.Framework.RPC.Http
 {
+    /// <summary>
+    /// 
+    /// </summary>
     public sealed class NullHttpAsyncHandler : IHttpAsyncHandler
     {
+        /// <summary>
+        /// 
+        /// </summary>
         public static readonly NullHttpAsyncHandler Default = new NullHttpAsyncHandler();
 
         private static readonly Task<IHttpResponseAction> NullTask = Task.FromResult<IHttpResponseAction>(null);
-
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="state"></param>
+        /// <returns></returns>
         public Task<IHttpResponseAction> Execute(IHttpRequestContext state)
         {
             return NullTask;
         }
     }
-
+    /// <summary>
+    /// 
+    /// </summary>
     public sealed class HttpAsyncHost : IHttpAsyncHost
     {
         HttpListener _listener;
@@ -81,17 +93,26 @@ namespace ZyGames.Framework.RPC.Http
                 Handler = handler;
             }
         }
-
+        /// <summary>
+        /// 
+        /// </summary>
         public List<string> Prefixes
         {
             get { return _listener.Prefixes.ToList(); }
         }
-
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="values"></param>
         public void SetConfiguration(ConfigurationDictionary values)
         {
             _configValues = values;
         }
-
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="uriPrefixes"></param>
+        /// <returns></returns>
         public Task Run(params string[] uriPrefixes)
         {
             // Establish a host-handler context:

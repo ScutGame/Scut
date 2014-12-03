@@ -105,6 +105,14 @@ namespace ZyGames.Framework.Data
         }
 
         /// <summary>
+        /// clear setting
+        /// </summary>
+        public static void ClearSetting()
+        {
+            _settings.Clear();
+        }
+
+        /// <summary>
         /// Initializes a new instance of the <see cref="ConnectionSetting"/> class.
         /// </summary>
         /// <param name="providerName"></param>

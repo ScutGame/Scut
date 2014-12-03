@@ -27,6 +27,9 @@ using System.Text;
 
 namespace ZyGames.Framework.RPC.Http
 {
+    /// <summary>
+    /// 
+    /// </summary>
     public sealed class SHA1TextReader : TextReader
     {
         readonly SHA1 sha1;
@@ -40,7 +43,11 @@ namespace ZyGames.Framework.RPC.Http
         readonly byte[] obuf;
         int ibufIndex;
         const int bufferSize = 8192;
-
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="input"></param>
+        /// <param name="encoding"></param>
         public SHA1TextReader(TextReader input, Encoding encoding)
             : base()
         {
@@ -53,12 +60,18 @@ namespace ZyGames.Framework.RPC.Http
             this.obuf = new byte[bufferSize];
             this.ibufIndex = 0;
         }
-
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
         public override int Peek()
         {
             return input.Peek();
         }
-
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
         public override int Read()
         {
             int c = input.Read();
@@ -86,7 +99,10 @@ namespace ZyGames.Framework.RPC.Http
 
             ibufIndex = 0;
         }
-
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
         public byte[] GetHash()
         {
             if (!isFinal)

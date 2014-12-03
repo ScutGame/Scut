@@ -22,48 +22,136 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ****************************************************************************/
 
+using System;
+using System.Collections.Generic;
+using ZyGames.Framework.RPC.Sockets.WebSocket;
+
 namespace ZyGames.Framework.RPC.Sockets
 {
-    class DataToken
+    /// <summary>
+    /// 
+    /// </summary>
+    public class DataToken
     {
-        internal byte[] byteArrayForMessage;
-        internal byte[] byteArrayForPrefix;
-        internal int messageBytesDone;
-        internal int prefixBytesDone;
-        internal int messageLength;
-        internal int bufferOffset;
-        internal int bufferSkip;
-        internal ExSocket Socket;
+        /// <summary>
+        /// Receive meeage data
+        /// </summary>
+        public byte[] byteArrayForMessage;
+        /// <summary>
+        /// Receive message head data
+        /// </summary>
+        public byte[] byteArrayForPrefix;
+        /// <summary>
+        /// received message length
+        /// </summary>
+        public int messageBytesDone;
+        /// <summary>
+        /// received message head length
+        /// </summary>
+        public int prefixBytesDone;
+        /// <summary>
+        /// Wait has be received message length
+        /// </summary>
+        public int messageLength;
+        /// <summary>
+        /// in buffer pool offset
+        /// </summary>
+        public int bufferOffset;
+        /// <summary>
+        /// in buffer pool read offset
+        /// </summary>
+        public int bufferSkip;
+        /// <summary>
+        /// socket
+        /// </summary>
+        public ExSocket Socket;
 
-        internal int DataOffset
+        /// <summary>
+        /// websocket handshake data.
+        /// </summary>
+        public List<byte> byteArrayForHandshake;
+        /// <summary>
+        /// Receive message head2 data
+        /// </summary>
+        public byte[] byteArrayForPrefix2;
+        /// <summary>
+        /// received message head2 length
+        /// </summary>
+        public int prefixBytesDone2;
+
+        /// <summary>
+        /// received mask
+        /// </summary>
+        public byte[] byteArrayMask;
+
+        /// <summary>
+        /// received mask length
+        /// </summary>
+        public int maskBytesDone;
+        /// <summary>
+        /// Web socket head
+        /// </summary>
+        public MessageHeadFrame HeadFrame { get; set; }
+
+        /// <summary>
+        /// Web socket data
+        /// </summary>
+        public List<DataSegmentFrame> DataFrames { get; set; }
+
+
+        /// <summary>
+        /// offset
+        /// </summary>
+        public int DataOffset
         {
             get { return bufferOffset + bufferSkip; }
         }
-        internal int RemainByte
+
+        /// <summary>
+        /// Remain byte length
+        /// </summary>
+        public int RemainByte
         {
             get { return messageLength - messageBytesDone; }
         }
-        internal bool IsMessageReady
+
+        /// <summary>
+        /// message data is receive complated
+        /// </summary>
+        public bool IsMessageReady
         {
             get { return messageBytesDone == messageLength; }
         }
-        internal DataToken()
+
+        /// <summary>
+        /// init
+        /// </summary>
+        public DataToken()
         {
             byteArrayForPrefix = new byte[4];
+            DataFrames = new List<DataSegmentFrame>();
         }
 
-        internal void Reset(bool skip)
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="skip"></param>
+        public virtual void Reset(bool skip)
         {
-            this.byteArrayForMessage = null;
-            byteArrayForPrefix[0] = 0;
-            byteArrayForPrefix[1] = 0;
-            byteArrayForPrefix[2] = 0;
-            byteArrayForPrefix[3] = 0;
-            this.messageBytesDone = 0;
-            this.prefixBytesDone = 0;
-            this.messageLength = 0;
+            byteArrayForMessage = null;
+            Array.Clear(byteArrayForPrefix, 0, byteArrayForPrefix.Length);
+            messageBytesDone = 0;
+            prefixBytesDone = 0;
+            messageLength = 0;
+            byteArrayForPrefix2 = null;
+            prefixBytesDone2 = 0;
+            byteArrayMask = null;
+            maskBytesDone = 0;
+            HeadFrame = null;
             if (skip)
-                this.bufferSkip = 0;
+            {
+                bufferSkip = 0;
+            }
         }
     }
 }

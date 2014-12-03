@@ -74,8 +74,9 @@
     <Compile Include="Build\AssemblyBuilder.cs" />
     <Compile Include="Build\WeavingEntityTask.cs" />
     <Compile Include="Configuration\ConfigManager.cs" />
+    <Compile Include="Configuration\DefaultDataConfigger.cs" />
     <Compile Include="Configuration\IConfigger.cs" />
-    <Compile Include="Configuration\ConnetionSection.cs" />
+    <Compile Include="Configuration\ConnectionSection.cs" />
     <Compile Include="Configuration\ConfigUtils.cs" />
     <Compile Include="Configuration\ConfigSection.cs" />
     <Compile Include="Configuration\ConfigNode.cs" />

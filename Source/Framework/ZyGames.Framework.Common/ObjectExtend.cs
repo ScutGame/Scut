@@ -166,6 +166,53 @@ namespace ZyGames.Framework.Common
             return JsonUtils.SerializeCustom(list);
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="bytes"></param>
+        /// <param name="pattern"></param>
+        /// <returns></returns>
+        public static int IndexOf(this byte[] bytes, byte[] pattern)
+        {
+            return MathUtils.IndexOf(bytes, pattern);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="bytes"></param>
+        /// <param name="offset"></param>
+        /// <param name="length"></param>
+        /// <param name="pattern"></param>
+        /// <returns></returns>
+        public static int IndexOf(this byte[] bytes, int offset, int length, byte[] pattern)
+        {
+            return MathUtils.IndexOf(bytes, offset, length, pattern);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="array"></param>
+        /// <returns></returns>
+        public static T[] RandomSort<T>(this T[] array)
+        {
+            return RandomUtils.RandomSort(array);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="list"></param>
+        /// <returns></returns>
+        public static List<T> RandomSort<T>(this List<T> list)
+        {
+            return RandomUtils.RandomSort(list);
+        }
+
+
         #region 转换值
 
         /// <summary>

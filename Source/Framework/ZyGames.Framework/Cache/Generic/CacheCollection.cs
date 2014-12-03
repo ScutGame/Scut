@@ -97,10 +97,10 @@ namespace ZyGames.Framework.Cache.Generic
         public override T AddOrUpdate<T>(string key, T data, Func<string, T, T> updateValueFactory)
         {
 
-            CacheItemChangeType changeType = CacheItemChangeType.Add;
+            //CacheItemChangeType changeType = CacheItemChangeType.Add;
             Func<string, object, object> func = (updateKey, updateValue) =>
             {
-                changeType = CacheItemChangeType.Modify;
+                //changeType = CacheItemChangeType.Modify;
                 return updateValueFactory(updateKey, (T)updateValue);
             };
             T temp = (T)_cacheStruct.AddOrUpdate(key, data, func);

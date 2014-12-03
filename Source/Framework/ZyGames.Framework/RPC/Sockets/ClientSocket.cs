@@ -24,6 +24,7 @@ THE SOFTWARE.
 using System;
 using System.Net.Sockets;
 using System.Collections.Generic;
+using System.Text;
 using System.Threading;
 using System.Collections.Concurrent;
 using NLog;
@@ -31,15 +32,61 @@ using NLog;
 namespace ZyGames.Framework.RPC.Sockets
 {
     /// <summary>
+    /// 
+    /// </summary>
+    public enum ConnectState
+    {
+        /// <summary>
+        /// 
+        /// </summary>
+        None = 0,
+        /// <summary>
+        /// 
+        /// </summary>
+        Success,
+        /// <summary>
+        /// 
+        /// </summary>
+        Closed,
+        /// <summary>
+        /// 
+        /// </summary>
+        Error
+    }
+    /// <summary>
     /// Socket event arguments.
     /// </summary>
     public class SocketEventArgs : EventArgs
     {
         /// <summary>
+        /// 
+        /// </summary>
+        public DataMeaage Source { get; set; }
+
+        /// <summary>
         /// Gets or sets the data.
         /// </summary>
         /// <value>The data.</value>
-        public byte[] Data { get; set; }
+        public byte[] Data
+        {
+            get { return Source.Data; }
+            set
+            {
+                if (Source == null)
+                {
+                    Source = new DataMeaage() { Data = value };
+                }
+                else
+                {
+                    Source.Data = value;
+                }
+            }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public ExSocket Socket { get; set; }
 
         /// <summary>
         /// The empty.
@@ -49,14 +96,15 @@ namespace ZyGames.Framework.RPC.Sockets
     /// <summary>
     /// Socket event handler.
     /// </summary>
-    public delegate void SocketEventHandler(object sender, SocketEventArgs e);
+    public delegate void SocketEventHandler(ClientSocket sender, SocketEventArgs e);
 
     /// <summary>
     /// Client socket.
     /// </summary>
-    public class ClientSocket
+    public class ClientSocket : ISocket
     {
         #region 事件
+
         /// <summary>
         /// 接收到数据事件
         /// </summary>
@@ -68,6 +116,8 @@ namespace ZyGames.Framework.RPC.Sockets
                 DataReceived(this, e);
             }
         }
+
+
         /// <summary>
         /// 连接断开事件
         /// </summary>
@@ -82,183 +132,264 @@ namespace ZyGames.Framework.RPC.Sockets
         #endregion
 
         Logger logger = LogManager.GetLogger("ClientSocket");
-        Socket socket;
-        ClientSocketSettings clientSettings;
-        PrefixHandler prefixHandler;
-        MessageHandler messageHandler;
-        SocketAsyncEventArgs sendEventArg;
-        DataToken sendDataToken;
-        SocketAsyncEventArgs receiveEventArg;
-        DataToken receiveDataToken;
-        ConcurrentQueue<byte[]> sendQueue = new ConcurrentQueue<byte[]>();
-        int isInSending;
-        bool connected;
+        private Socket socketClient;
+        private ClientSocketSettings clientSettings;
+        private SocketAsyncEventArgs sendEventArg;
+        private SocketAsyncEventArgs receiveEventArg;
         /// <summary>
-        /// Gets a value indicating whether this <see cref="ZyGames.Framework.RPC.Sockets.ClientSocket"/> is connected.
+        /// 
         /// </summary>
-        /// <value><c>true</c> if connected; otherwise, <c>false</c>.</value>
-        public bool Connected { get { return connected; } }
+        protected RequestHandler requestHandler;
+        private int isInSending;
+
         /// <summary>
-        /// Initializes a new instance of the <see cref="ZyGames.Framework.RPC.Sockets.ClientSocket"/> class.
+        /// 0: no connect, 1: connected, 2: closed
+        /// </summary>
+        protected ConnectState connectState;
+
+        /// <summary>
+        /// Initializes a new instance of the class.
         /// </summary>
         /// <param name="clientSettings">Client settings.</param>
         public ClientSocket(ClientSocketSettings clientSettings)
+            : this(clientSettings, new RequestHandler(new MessageHandler()))
+        {
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="clientSettings"></param>
+        /// <param name="requestHandler"></param>
+        public ClientSocket(ClientSocketSettings clientSettings, RequestHandler requestHandler)
         {
             this.clientSettings = clientSettings;
-            this.prefixHandler = new PrefixHandler();
-            this.messageHandler = new MessageHandler();
+            this.requestHandler = requestHandler;
+            socketClient = new Socket(this.clientSettings.RemoteEndPoint.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
         }
+
+        /// <summary>
+        /// 0: no connect, 1: connected, 2: closed
+        /// </summary>
+        public ConnectState ReadyState { get { return connectState; } }
+
+        /// <summary>
+        /// connected.
+        /// </summary>
+        public bool Connected { get; set; }
+
         /// <summary>
         /// 
         /// </summary>
         public object UserData { get; set; }
 
         /// <summary>
+        /// 
+        /// </summary>
+        public ClientSocketSettings Settings { get { return clientSettings; } }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public ExSocket Socket
+        {
+            get
+            {
+                var dataToken = sendEventArg.UserToken as DataToken;
+                return dataToken != null ? dataToken.Socket : null;
+            }
+        }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        public bool ConnectAsync()
+        {
+            Connected = false;
+            connectState = ConnectState.None;
+            var e = new SocketAsyncEventArgs();
+            e.AcceptSocket = socketClient;
+            e.Completed += OnConnectComplated;
+            return socketClient.ConnectAsync(e);
+        }
+
+        private void OnConnectComplated(object sender, SocketAsyncEventArgs e)
+        {
+            ConnectComplated(e.AcceptSocket);
+        }
+
+        /// <summary>
         /// Connect this instance.
         /// </summary>
         public void Connect()
         {
-            socket = new Socket(this.clientSettings.RemoteEndPoint.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
-            socket.Connect(this.clientSettings.RemoteEndPoint);
-            connected = true;
+            Connected = false;
+            connectState = ConnectState.None;
+            socketClient.Connect(this.clientSettings.RemoteEndPoint);
+            ConnectComplated(socketClient);
+        }
 
+        private void ConnectComplated(Socket acceSocket)
+        {
+            Connected = true;
+            Bind(acceSocket);
+            if (!SendHandshake(sendEventArg))
+            {
+                return;
+            }
+            PostReceive(receiveEventArg);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="e"></param>
+        protected virtual void DoOpened(SocketEventArgs e)
+        {
+            connectState = ConnectState.Success;
+        }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="e"></param>
+        protected virtual void DoClosed(SocketEventArgs e)
+        {
+        }
+
+        private void Bind(Socket acceptSocket)
+        {
+            var exSocket = new ExSocket(acceptSocket);
+            exSocket.LastAccessTime = DateTime.Now;
             var buffer = new byte[this.clientSettings.BufferSize * 2];
             this.sendEventArg = new SocketAsyncEventArgs();
             this.sendEventArg.SetBuffer(buffer, 0, this.clientSettings.BufferSize);
-            this.sendDataToken = new DataToken();
-            this.sendDataToken.bufferOffset = this.sendEventArg.Offset;
-            this.sendEventArg.UserToken = this.sendDataToken;
-            this.sendEventArg.AcceptSocket = socket;
+            var sendDataToken = new DataToken() { Socket = exSocket };
+            sendDataToken.bufferOffset = this.sendEventArg.Offset;
+            this.sendEventArg.UserToken = sendDataToken;
+            this.sendEventArg.AcceptSocket = acceptSocket;
             this.sendEventArg.Completed += new EventHandler<SocketAsyncEventArgs>(IO_Completed);
 
             this.receiveEventArg = new SocketAsyncEventArgs();
             this.receiveEventArg.SetBuffer(buffer, this.clientSettings.BufferSize, this.clientSettings.BufferSize);
-            this.receiveDataToken = new DataToken();
-            this.receiveDataToken.bufferOffset = this.receiveEventArg.Offset;
-            this.receiveEventArg.UserToken = this.receiveDataToken;
-            this.receiveEventArg.AcceptSocket = socket;
+            var receiveDataToken = new DataToken { Socket = exSocket };
+            receiveDataToken.bufferOffset = this.receiveEventArg.Offset;
+            this.receiveEventArg.UserToken = receiveDataToken;
+            this.receiveEventArg.AcceptSocket = acceptSocket;
             this.receiveEventArg.Completed += new EventHandler<SocketAsyncEventArgs>(IO_Completed);
-
-            PostReceive();
+            requestHandler.Bind(this);
         }
 
-        private void PostReceive()
+        private bool SendHandshake(SocketAsyncEventArgs ioEventArgs)
         {
-            bool willRaiseEvent = socket.ReceiveAsync(receiveEventArg);
+            return requestHandler.SendHandshake(ioEventArgs);
+        }
+
+
+        private void PostReceive(SocketAsyncEventArgs ioEventArgs)
+        {
+            bool willRaiseEvent = socketClient.ReceiveAsync(ioEventArgs);
 
             if (!willRaiseEvent)
             {
-                ProcessReceive();
+                ProcessReceive(ioEventArgs);
             }
         }
 
-        private void IO_Completed(object sender, SocketAsyncEventArgs e)
+        private void IO_Completed(object sender, SocketAsyncEventArgs ioEventArgs)
         {
             try
             {
-                DataToken ioDataToken = (DataToken)e.UserToken;
+                DataToken ioDataToken = (DataToken)ioEventArgs.UserToken;
 
-                switch (e.LastOperation)
+                switch (ioEventArgs.LastOperation)
                 {
                     case SocketAsyncOperation.Receive:
-                        ProcessReceive();
+                        ProcessReceive(ioEventArgs);
                         break;
                     case SocketAsyncOperation.Send:
-                        ProcessSend();
+                        ProcessSend(ioEventArgs);
                         break;
 
                     default:
                         throw new ArgumentException("The last operation completed on the socket was not a receive or send");
                 }
             }
-            catch (ObjectDisposedException) { }
+            catch (ObjectDisposedException)
+            {
+                ReleaseIOEventArgs(ioEventArgs);
+            }
             catch (Exception ex)
             {
                 logger.Error("IO_Completed", ex);
             }
         }
 
-        private void ProcessReceive()
+        private void ReleaseIOEventArgs(SocketAsyncEventArgs ioEventArgs)
         {
-            var dataToken = this.receiveDataToken;
-            var ioEventArg = this.receiveEventArg;
-            if (ioEventArg.SocketError != SocketError.Success)
+            if (ioEventArgs == null) return;
+
+            var dataToken = (DataToken)ioEventArgs.UserToken;
+            if (dataToken != null)
+            {
+                dataToken.Reset(true);
+                dataToken.Socket = null;
+            }
+            ioEventArgs.AcceptSocket = null;
+        }
+
+        private void ProcessReceive(SocketAsyncEventArgs ioEventArgs)
+        {
+            DataToken dataToken = (DataToken)ioEventArgs.UserToken;
+            if (ioEventArgs.SocketError != SocketError.Success)
             {
                 //Socket错误
                 //if (logger.IsDebugEnabled) logger.Debug("Socket接收错误:{0}", ioEventArg.SocketError);
-                HandleCloseSocket();
+                Closing(ioEventArgs);
                 return;
             }
 
-            if (ioEventArg.BytesTransferred == 0)
+            if (ioEventArgs.BytesTransferred == 0)
             {
                 //对方主动关闭socket
                 //if (logger.IsDebugEnabled) logger.Debug("对方关闭Socket");
-                HandleCloseSocket();
+                Closing(ioEventArgs);
                 return;
             }
 
-            #region 数据解析
-            List<byte[]> msgs = new List<byte[]>();
-            int remainingBytesToProcess = ioEventArg.BytesTransferred;
-            bool needPostAnother = true;
-            do
+            List<DataMeaage> messages;
+            bool hasHandshaked;
+            bool needPostAnother = requestHandler.TryReceiveMessage(ioEventArgs, out messages, out hasHandshaked);
+            if (hasHandshaked)
             {
-                if (dataToken.prefixBytesDone < 4)
-                {
-                    remainingBytesToProcess = prefixHandler.HandlePrefix(ioEventArg, dataToken, remainingBytesToProcess);
-                    if (dataToken.prefixBytesDone == 4 && (dataToken.messageLength > 10 * 1024 * 1024 || dataToken.messageLength <= 0))
-                    {
-                        //消息头已接收完毕，并且接收到的消息长度大于10M，socket传输的数据已紊乱，关闭掉
-                        logger.Warn("接收到的消息长度错误:{0}", dataToken.messageLength);
-                        needPostAnother = false;
-                        HandleCloseSocket();
-                        break;
-                    }
-                    //if (logger.IsDebugEnabled) logger.Debug("处理消息头，消息长度[{0}]，剩余字节[{1}]", dataToken.messageLength, remainingBytesToProcess);
-                    if (remainingBytesToProcess == 0) break;
-                }
-
-                remainingBytesToProcess = messageHandler.HandleMessage(ioEventArg, dataToken, remainingBytesToProcess);
-
-                if (dataToken.IsMessageReady)
-                {
-                    //if (logger.IsDebugEnabled) logger.Debug("完整封包 长度[{0}],总传输[{1}],剩余[{2}]", dataToken.messageLength, ioEventArg.BytesTransferred, remainingBytesToProcess);
-                    msgs.Add(dataToken.byteArrayForMessage);
-                    if (remainingBytesToProcess != 0)
-                    {
-                        //if (logger.IsDebugEnabled) logger.Debug("重置缓冲区,buffskip指针[{0}]。", dataToken.bufferSkip);
-                        dataToken.Reset(false);
-                    }
-                }
-                else
-                {
-                    //if (logger.IsDebugEnabled) logger.Debug("不完整封包 长度[{0}],总传输[{1}],已接收[{2}]", dataToken.messageLength, ioEventArg.BytesTransferred, dataToken.messageBytesDone);
-                }
-            } while (remainingBytesToProcess != 0);
-            #endregion
-
-            //modify reason:数据包接收事件触发乱序
+                DoOpened(new SocketEventArgs() { Socket = dataToken.Socket });
+            }
             // 触发收到消息事件
-            foreach (var m in msgs)
+            if (messages != null)
             {
-                try
+                foreach (var message in messages)
                 {
-                    OnDataReceived(new SocketEventArgs { Data = m });
-                }
-                catch (Exception ex)
-                {
-                    logger.Error("OnDataReceived", ex);
+                    try
+                    {
+                        if (message.OpCode == OpCode.Close)
+                        {
+                            var statusCode = requestHandler.MessageProcessor != null
+                                      ? requestHandler.MessageProcessor.GetCloseStatus(message.Data)
+                                      : OpCode.Empty;
+                            Closing(ioEventArgs, statusCode);
+                            needPostAnother = false;
+                            break;
+                        }
+                        OnDataReceived(new SocketEventArgs { Source = message });
+                    }
+                    catch (Exception ex)
+                    {
+                        logger.Error("OnDataReceived", ex);
+                    }
                 }
             }
             if (needPostAnother)
             {
-                if (dataToken.prefixBytesDone == 4 && dataToken.IsMessageReady)
-                {
-                    dataToken.Reset(true);
-                }
-                dataToken.bufferSkip = 0;
-                PostReceive();
+                PostReceive(ioEventArgs);
             }
         }
 
@@ -271,39 +402,116 @@ namespace ZyGames.Framework.RPC.Sockets
             Interlocked.Exchange(ref isInSending, 0);
         }
 
-        private void TryDequeueAndPostSend()
+        private void TryDequeueAndPostSend(ExSocket socket, SocketAsyncEventArgs ioEventArgs)
         {
             byte[] data;
-            if (sendQueue.TryDequeue(out data))
+            if (socket.TryDequeue(out data))
             {
-                DataToken dataToken = sendDataToken;
+                DataToken dataToken = (DataToken)ioEventArgs.UserToken;
+                dataToken.Socket = socket;
                 dataToken.byteArrayForMessage = data;
                 dataToken.messageLength = data.Length;
-                PostSend();
+
+                PostSend(ioEventArgs);
             }
             else
             {
                 ResetSendFlag();
             }
         }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="data"></param>
+        /// <param name="offset"></param>
+        /// <param name="count"></param>
+        public void PostSend(byte[] data, int offset, int count)
+        {
+            PostSend(Socket, data, offset, count);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="opCode"></param>
+        /// <param name="data"></param>
+        /// <param name="offset"></param>
+        /// <param name="count"></param>
+        public void PostSend(sbyte opCode, byte[] data, int offset, int count)
+        {
+            PostSend(Socket, opCode, data, offset, count);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="socket"></param>
+        /// <param name="data"></param>
+        /// <param name="offset"></param>
+        /// <param name="count"></param>
+        public override void PostSend(ExSocket socket, byte[] data, int offset, int count)
+        {
+            PostSend(socket, OpCode.Binary, data, offset, count);
+        }
+
         /// <summary>
         /// Posts the send.
         /// </summary>
+        /// <param name="socket"></param>
+        /// <param name="opCode"></param>
         /// <param name="data">Data.</param>
         /// <param name="offset">Offset.</param>
         /// <param name="count">Count.</param>
-        public void PostSend(byte[] data, int offset, int count)
+        public override void PostSend(ExSocket socket, sbyte opCode, byte[] data, int offset, int count)
         {
-            if (!connected) throw new ObjectDisposedException("socket");
-            byte[] buffer = new byte[count + 4];
-            Buffer.BlockCopy(BitConverter.GetBytes(count), 0, buffer, 0, 4);
-            Buffer.BlockCopy(data, offset, buffer, 4, count);
-            sendQueue.Enqueue(buffer);
+            byte[] buffer = requestHandler.MessageProcessor.BuildMessagePack(socket, opCode, data, offset, count);
+            SendAsync(socket, buffer);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="socket"></param>
+        public override void Ping(ExSocket socket)
+        {
+            byte[] data = Encoding.UTF8.GetBytes("ping");
+            PostSend(socket, OpCode.Ping, data, 0, data.Length);
+        }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="socket"></param>
+        public override void Pong(ExSocket socket)
+        {
+            byte[] data = Encoding.UTF8.GetBytes("pong");
+            PostSend(socket, OpCode.Pong, data, 0, data.Length);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="socket"></param>
+        /// <param name="reason"></param>
+        public override void CloseHandshake(ExSocket socket, string reason)
+        {
+            Dispose(socket, OpCode.Close, reason);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="socket"></param>
+        /// <param name="buffer"></param>
+        internal protected override bool SendAsync(ExSocket socket, byte[] buffer)
+        {
+            socket.Enqueue(buffer);
             if (TrySetSendFlag())
             {
                 try
                 {
-                    TryDequeueAndPostSend();
+                    TryDequeueAndPostSend(socket, sendEventArg);
+                    return true;
                 }
                 catch
                 {
@@ -311,49 +519,48 @@ namespace ZyGames.Framework.RPC.Sockets
                     throw;
                 }
             }
+            return false;
         }
 
-        private void PostSend()
+        private void PostSend(SocketAsyncEventArgs ioEventArgs)
         {
-            var dataToken = this.sendDataToken;
-            var ioEventArg = this.sendEventArg;
+            DataToken dataToken = (DataToken)ioEventArgs.UserToken;
 
             if (dataToken.messageLength - dataToken.messageBytesDone <= this.clientSettings.BufferSize)
             {
-                ioEventArg.SetBuffer(dataToken.bufferOffset, dataToken.messageLength - dataToken.messageBytesDone);
-                Buffer.BlockCopy(dataToken.byteArrayForMessage, dataToken.messageBytesDone, ioEventArg.Buffer, dataToken.bufferOffset, dataToken.messageLength - dataToken.messageBytesDone);
+                ioEventArgs.SetBuffer(dataToken.bufferOffset, dataToken.messageLength - dataToken.messageBytesDone);
+                Buffer.BlockCopy(dataToken.byteArrayForMessage, dataToken.messageBytesDone, ioEventArgs.Buffer, dataToken.bufferOffset, dataToken.messageLength - dataToken.messageBytesDone);
             }
             else
             {
                 this.sendEventArg.SetBuffer(dataToken.bufferOffset, this.clientSettings.BufferSize);
-                Buffer.BlockCopy(dataToken.byteArrayForMessage, dataToken.messageBytesDone, ioEventArg.Buffer, dataToken.bufferOffset, this.clientSettings.BufferSize);
+                Buffer.BlockCopy(dataToken.byteArrayForMessage, dataToken.messageBytesDone, ioEventArgs.Buffer, dataToken.bufferOffset, this.clientSettings.BufferSize);
             }
 
-            bool willRaiseEvent = this.socket.SendAsync(this.sendEventArg);
+            bool willRaiseEvent = this.socketClient.SendAsync(this.sendEventArg);
             if (!willRaiseEvent)
             {
-                ProcessSend();
+                ProcessSend(ioEventArgs);
             }
         }
 
-        private void ProcessSend()
+        private void ProcessSend(SocketAsyncEventArgs ioEventArgs)
         {
-            var dataToken = this.sendDataToken;
-            var ioEventArg = this.sendEventArg;
+            DataToken dataToken = (DataToken)ioEventArgs.UserToken;
 
-            if (ioEventArg.SocketError == SocketError.Success)
+            if (ioEventArgs.SocketError == SocketError.Success)
             {
-                dataToken.messageBytesDone += ioEventArg.BytesTransferred;
+                dataToken.messageBytesDone += ioEventArgs.BytesTransferred;
                 if (dataToken.messageBytesDone != dataToken.messageLength)
                 {
-                    PostSend();
+                    PostSend(ioEventArgs);
                 }
                 else
                 {
                     dataToken.Reset(true);
                     try
                     {
-                        TryDequeueAndPostSend();
+                        TryDequeueAndPostSend(dataToken.Socket, ioEventArgs);
                     }
                     catch
                     {
@@ -365,46 +572,87 @@ namespace ZyGames.Framework.RPC.Sockets
             else
             {
                 ResetSendFlag();
-                HandleCloseSocket();
+                Closing(ioEventArgs);
             }
         }
 
-        private object syncRoot = new object();
-
-        private void HandleCloseSocket()
-        {
-            if (connected)
-            {
-                lock (syncRoot)
-                {
-                    if (connected)
-                    {
-                        connected = false;
-                        try
-                        {
-                            socket.Shutdown(SocketShutdown.Both);
-                            try
-                            {
-                                OnDisconnected(SocketEventArgs.Empty);
-                            }
-                            catch (Exception ex)
-                            {
-                                logger.Error("OnDisconnected", ex);
-                            }
-                        }
-                        catch { }
-
-                        socket.Close();
-                    }
-                }
-            }
-        }
         /// <summary>
-        /// Close this instance.
+        /// 
         /// </summary>
-        public void Close()
+        /// <param name="ioEventArgs"></param>
+        /// <param name="opCode"></param>
+        /// <param name="reason"></param>
+        internal protected override void Closing(SocketAsyncEventArgs ioEventArgs, sbyte opCode = OpCode.Close, string reason = "")
         {
-            HandleCloseSocket();
+            var dataToken = (DataToken)ioEventArgs.UserToken;
+            try
+            {
+                if (connectState != ConnectState.Closed && opCode != OpCode.Empty)
+                {
+                    CloseHandshake(dataToken.Socket, reason);
+                }
+
+                DoCloseState();
+                Dispose(ioEventArgs, opCode, reason, dataToken);
+            }
+            catch { }
+
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="ioEventArgs"></param>
+        /// <param name="opCode"></param>
+        /// <param name="reason"></param>
+        /// <param name="dataToken"></param>
+        protected void Dispose(SocketAsyncEventArgs ioEventArgs, sbyte opCode, string reason, DataToken dataToken)
+        {
+            ReleaseIOEventArgs(ioEventArgs);
+            Dispose(dataToken.Socket, opCode, reason);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="exSocket"></param>
+        /// <param name="opCode"></param>
+        /// <param name="reason"></param>
+        protected void Dispose(ExSocket exSocket, sbyte opCode, string reason)
+        {
+            try
+            {
+                var e = new SocketEventArgs()
+                {
+                    Socket = exSocket,
+                    Source = new DataMeaage() { OpCode = opCode, Message = reason }
+                };
+                DoClosed(e);
+                OnDisconnected(e);
+                exSocket.Close();
+            }
+            catch (Exception ex)
+            {
+                logger.Error("OnDisconnected", ex);
+            }
+
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="reason"></param>
+        public void Close(string reason = "")
+        {
+            //After receiving data processing close
+            DoCloseState();
+            CloseHandshake(Socket, reason);
+        }
+
+        private void DoCloseState()
+        {
+            Connected = false;
+            connectState = ConnectState.Closed;
         }
     }
 }

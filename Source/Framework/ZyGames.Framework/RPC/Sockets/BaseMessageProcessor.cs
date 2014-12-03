@@ -21,86 +21,87 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ****************************************************************************/
-using System;
 using System.Collections.Generic;
+using ZyGames.Framework.RPC.Sockets.WebSocket;
 
-namespace ZyGames.Framework.Common.Configuration
+namespace ZyGames.Framework.RPC.Sockets
 {
     /// <summary>
-    /// 
+    /// stream reader
     /// </summary>
-    public abstract class IConfigData
+    public abstract class BaseMessageProcessor
     {
+        /// <summary>
+        /// Response is encode mask data
+        /// </summary>
+        public bool IsMask { get; set; }
 
         /// <summary>
         /// 
         /// </summary>
-        public abstract IList<ConfigNode> GetNodes();
+        public CloseStatusCode CloseStatusCode { get; set; }
 
         /// <summary>
         /// 
         /// </summary>
-        public abstract string[] GetKeys();
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="key"></param>
-        /// <param name="defaultValue"></param>
-        /// <returns></returns>
-        public int GetValue(string key, int defaultValue = 0)
+        protected BaseMessageProcessor()
         {
-            return GetValue(key, defaultValue.ToString()).ToInt();
         }
 
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="key"></param>
-        /// <param name="defaultValue"></param>
+        /// <param name="dataToken"></param>
+        /// <param name="buffer"></param>
+        /// <param name="messageList"></param>
         /// <returns></returns>
-        public decimal GetValue(string key, decimal defaultValue = 0)
+        public abstract bool TryReadMeaage(DataToken dataToken, byte[] buffer, out List<DataMeaage> messageList);
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="exSocket"></param>
+        /// <param name="opCode"></param>
+        /// <param name="data"></param>
+        /// <param name="offset"></param>
+        /// <param name="count"></param>
+        /// <returns></returns>
+        public abstract byte[] BuildMessagePack(ExSocket exSocket, sbyte opCode, byte[] data, int offset, int count);
+
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="exSocket"></param>
+        /// <param name="opCode"></param>
+        /// <param name="reason"></param>
+        public abstract byte[] CloseMessage(ExSocket exSocket, sbyte opCode, string reason);
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="data"></param>
+        /// <returns></returns>
+        public sbyte GetCloseStatus(byte[] data)
         {
-            return GetValue(key, defaultValue.ToString()).ToDecimal();
+            if (data == null || data.Length <= 1)
+            {
+                return OpCode.Empty;
+            }
+            var code = data[0] * 256 + data[1];
+
+            if (!IsValidCloseCode(code))
+            {
+                return OpCode.Empty;
+            }
+            return (sbyte)code;
         }
-        /// <summary>
-        /// 
-        /// </summary>
-        public abstract string GetValue(string key, string defaultValue);
 
         /// <summary>
         /// 
         /// </summary>
-        public abstract string[] GetValues(string key);
-
-        /// <summary>
-        /// 
-        /// </summary>
-        public abstract ConfigNode GetNode(string key);
-
-        /// <summary>
-        /// 
-        /// </summary>
-        public abstract void AddNode(ConfigNode node);
-
-        /// <summary>
-        /// 
-        /// </summary>
-        public abstract bool SetValue(string key, string value);
-
-        /// <summary>
-        /// 
-        /// </summary>
-        public abstract bool SetNode(ConfigNode node);
-
-        /// <summary>
-        /// 
-        /// </summary>
-        public abstract bool RemoveNode(ConfigNode node);
-
-        /// <summary>
-        /// 
-        /// </summary>
-        public abstract void Clear();
+        /// <param name="code"></param>
+        /// <returns></returns>
+        protected abstract bool IsValidCloseCode(int code);
     }
 }

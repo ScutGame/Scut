@@ -27,6 +27,7 @@ using System.Linq;
 using System.Collections.Concurrent;
 using System.Configuration;
 using ZyGames.Framework.Common;
+using ZyGames.Framework.Common.Configuration;
 using ZyGames.Framework.Common.Log;
 using ZyGames.Framework.Data.Sql;
 using ZyGames.Framework.Model;
@@ -44,20 +45,18 @@ namespace ZyGames.Framework.Data
         /// <summary>
         /// 初始化DB连接
         /// </summary>
+        /// <exception cref="Exception"></exception>
         public static void Initialize()
         {
-            DbBaseProvider dbBaseProvider = null;
-            var er = ConfigurationManager.ConnectionStrings.GetEnumerator();
-            while (er.MoveNext())
+            var connectionList = ConfigManager.Configger.GetConfig<ConnectionSection>();
+            foreach (var section in connectionList)
             {
-                ConnectionStringSettings connSetting = er.Current as ConnectionStringSettings;
-                if (connSetting == null) continue;
-                var setting = ConnectionSetting.Create(connSetting.Name, connSetting.ProviderName, connSetting.ConnectionString.Trim());
+                var setting = ConnectionSetting.Create(section.Name, section.ProviderName, section.ConnectionString.Trim());
                 if (setting.ProviderType == DbProviderType.Unkown)
                 {
                     continue;
                 }
-                dbBaseProvider = CreateDbProvider(setting);
+                var dbBaseProvider = CreateDbProvider(setting);
                 try
                 {
                     dbBaseProvider.CheckConnect();
@@ -66,7 +65,7 @@ namespace ZyGames.Framework.Data
                 {
                     throw new Exception(string.Format("Not connect to the database server \"{0}\" database \"{1}\".", dbBaseProvider.ConnectionSetting.DataSource, dbBaseProvider.ConnectionSetting.DatabaseName), ex);
                 }
-                dbProviders.TryAdd(connSetting.Name, dbBaseProvider);
+                dbProviders.AddOrUpdate(section.Name, dbBaseProvider, (k, oldValue) => dbBaseProvider);
             }
 
         }
@@ -109,19 +108,18 @@ namespace ZyGames.Framework.Data
             {
                 return dbBaseProvider;
             }
-
-            ConnectionStringSettings connSetting = ConfigurationManager.ConnectionStrings[connectKey];
-            if (connSetting != null)
+            var connSection = ConfigManager.Configger.GetConnetion<ConnectionSection>(connectKey);
+            if (connSection != null)
             {
-                string connectionString = connSetting.ConnectionString;
+                string connectionString = connSection.ConnectionString;
                 try
                 {
-                    dbBaseProvider = CreateDbProvider(connSetting.Name, connSetting.ProviderName, connectionString);
+                    dbBaseProvider = CreateDbProvider(connSection.Name, connSection.ProviderName, connectionString);
                     dbProviders.TryAdd(connectKey, dbBaseProvider);
                 }
                 catch
                 {
-                    TraceLog.WriteError("ProviderName:{0} instance failed.", connSetting.ProviderName);
+                    TraceLog.WriteError("ProviderName:{0} instance failed.", connSection.ProviderName);
                 }
             }
 

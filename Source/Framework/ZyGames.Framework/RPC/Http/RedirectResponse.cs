@@ -30,13 +30,23 @@ namespace ZyGames.Framework.RPC.Http
     /// </summary>
     public sealed class RedirectResponse : IHttpResponseAction
     {
+        /// <summary>
+        /// 
+        /// </summary>
         public string Url { get; private set; }
-
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="url"></param>
         public RedirectResponse(string url)
         {
             this.Url = url;
         }
-
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="context"></param>
+        /// <returns></returns>
         public Task Execute(IHttpRequestResponseContext context)
         {
             context.Response.Redirect(Url);

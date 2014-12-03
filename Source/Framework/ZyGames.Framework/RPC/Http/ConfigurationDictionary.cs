@@ -26,15 +26,25 @@ using System.Collections.Generic;
 
 namespace ZyGames.Framework.RPC.Http
 {
+    /// <summary>
+    /// 
+    /// </summary>
     public sealed class ConfigurationDictionary
     {
         readonly Dictionary<string, List<string>> _values;
-
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="values"></param>
         public ConfigurationDictionary(Dictionary<string, List<string>> values)
         {
             _values = values;
         }
-
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="args"></param>
+        /// <returns></returns>
         public static ConfigurationDictionary Parse(IEnumerable<string> args)
         {
             var values = new Dictionary<string, List<string>>(StringComparer.OrdinalIgnoreCase);
@@ -63,7 +73,11 @@ namespace ZyGames.Framework.RPC.Http
 
             return new ConfigurationDictionary(values);
         }
-
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="key"></param>
+        /// <returns></returns>
         public string SingleValue(string key)
         {
             List<string> list;
@@ -73,7 +87,12 @@ namespace ZyGames.Framework.RPC.Http
                 throw new Exception(String.Format("Configuration key '{0}' has more than one value", key));
             return list[0];
         }
-
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="key"></param>
+        /// <param name="defaultValue"></param>
+        /// <returns></returns>
         public string SingleValueOrDefault(string key, string defaultValue)
         {
             List<string> list;
@@ -83,7 +102,11 @@ namespace ZyGames.Framework.RPC.Http
                 throw new Exception(String.Format("Configuration key '{0}' has more than one value", key));
             return list[0];
         }
-
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="key"></param>
+        /// <returns></returns>
         public List<string> Values(string key)
         {
             List<string> list;
@@ -91,12 +114,22 @@ namespace ZyGames.Framework.RPC.Http
                 throw new Exception(String.Format("Configuration key '{0}' is required", key));
             return list;
         }
-
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="key"></param>
+        /// <param name="values"></param>
+        /// <returns></returns>
         public bool TryGetValue(string key, out List<string> values)
         {
             return _values.TryGetValue(key, out values);
         }
-
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="key"></param>
+        /// <param name="value"></param>
+        /// <returns></returns>
         public bool TryGetSingleValue(string key, out string value)
         {
             value = null;

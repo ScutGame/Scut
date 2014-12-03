@@ -30,34 +30,64 @@ using Newtonsoft.Json;
 
 namespace ZyGames.Framework.RPC.Http
 {
+    /// <summary>
+    /// 
+    /// </summary>
     public class JsonRootResponse : IHttpResponseAction
     {
         // NOTE(jsd): Fields are serialized to JSON in lexical definition order.
 
         // NOTE(jsd): This is here primarily for JSONP compatibility.
+        /// <summary>
+        /// 
+        /// </summary>
         public readonly int statusCode;
-
+        /// <summary>
+        /// 
+        /// </summary>
         public readonly bool success;
-
+        /// <summary>
+        /// 
+        /// </summary>
         [JsonIgnore]
         public readonly string statusDescription;
-
+        /// <summary>
+        /// 
+        /// </summary>
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
         public readonly string message;
-
+        /// <summary>
+        /// 
+        /// </summary>
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
         public readonly RestfulLink[] links;
-
+        /// <summary>
+        /// 
+        /// </summary>
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
         public readonly object meta;
-
+        /// <summary>
+        /// 
+        /// </summary>
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
         public readonly object[] errors;
 
         // NOTE(jsd): `results` must be last.
+        /// <summary>
+        /// 
+        /// </summary>
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
         public readonly object results;
-
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="statusCode"></param>
+        /// <param name="statusDescription"></param>
+        /// <param name="message"></param>
+        /// <param name="links"></param>
+        /// <param name="meta"></param>
+        /// <param name="errors"></param>
+        /// <param name="results"></param>
         public JsonRootResponse(int statusCode = 200, string statusDescription = null, string message = null, RestfulLink[] links = null, object meta = null, object[] errors = null, object results = null)
         {
             this.statusCode = statusCode;
@@ -69,7 +99,11 @@ namespace ZyGames.Framework.RPC.Http
             this.errors = errors;
             this.results = results;
         }
-
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="context"></param>
+        /// <returns></returns>
         public async Task Execute(IHttpRequestResponseContext context)
         {
             context.Response.StatusCode = statusCode;

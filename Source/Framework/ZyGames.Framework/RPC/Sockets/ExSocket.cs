@@ -23,9 +23,11 @@ THE SOFTWARE.
 ****************************************************************************/
 using System;
 using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.Net;
 using System.Net.Sockets;
 using System.Threading;
+using ZyGames.Framework.RPC.Sockets.WebSocket;
 
 namespace ZyGames.Framework.RPC.Sockets
 {
@@ -82,6 +84,16 @@ namespace ZyGames.Framework.RPC.Sockets
         /// </summary>
         /// <value>The length of the queue.</value>
         public int QueueLength { get { return sendQueue.Count; } }
+
+        /// <summary>
+        /// Web socket handshake data
+        /// </summary>
+        public HandshakeData Handshake { get; set; }
+        
+        /// <summary>
+        /// 
+        /// </summary>
+        public bool IsWebSocket { get { return Handshake != null; } }
 
         /// <summary>
         /// 

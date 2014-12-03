@@ -23,6 +23,7 @@ THE SOFTWARE.
 ****************************************************************************/
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Security.Cryptography;
 
 namespace ZyGames.Framework.Common
@@ -36,6 +37,7 @@ namespace ZyGames.Framework.Common
         private static int MinPercent = 1;
         private static int MaxPercent = 100;
         private static Random random = new Random(GetRandomSeed());
+        private static int[] sortBytes = new[] { -1, 0, 1 };
 
         private static int GetRandomSeed()
         {
@@ -122,6 +124,29 @@ namespace ZyGames.Framework.Common
         public static bool IsHitNew(double value)
         {
             return NextBool(value);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="value"></param>
+        /// <param name="increase"></param>
+        /// <returns></returns>
+        public static bool IsHitNew(double value, double increase)
+        {
+            return NextBool(value * (1 + increase));
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="value"></param>
+        /// <param name="increase"></param>
+        /// <param name="radix"></param>
+        /// <returns></returns>
+        public static bool IsHitNew(int value, int increase, int radix = 100)
+        {
+            return NextBool((value / radix) * (1 + increase / radix));
         }
 
         /// <summary>
@@ -390,5 +415,50 @@ namespace ZyGames.Framework.Common
             values[count - 1] = total - currentTotal;
             return values;
         }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <returns></returns>
+        public static T[] RandomSort<T>(T[] source)
+        {
+            int num = source.Length / 2;
+            for (int i = 0; i < num; i++)
+            {
+                int num2 = GetRandom(0, source.Length);
+                int num3 = GetRandom(0, source.Length);
+                if (num2 != num3)
+                {
+                    T t = source[num3];
+                    source[num3] = source[num2];
+                    source[num2] = t;
+                }
+            }
+            return source;
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <returns></returns>
+        public static List<T> RandomSort<T>(List<T> source)
+        {
+            int num = source.Count / 2;
+            for (int i = 0; i < num; i++)
+            {
+                int num2 = GetRandom(0, source.Count);
+                int num3 = GetRandom(0, source.Count);
+                if (num2 != num3)
+                {
+                    T t = source[num3];
+                    source[num3] = source[num2];
+                    source[num2] = t;
+                }
+            }
+            return source;
+        }
+
     }
 }

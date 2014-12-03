@@ -23,6 +23,7 @@ THE SOFTWARE.
 ****************************************************************************/
 using System;
 using System.Collections.Generic;
+using System.Configuration;
 using ZyGames.Framework.Common.Log;
 
 namespace ZyGames.Framework.Common.Configuration
@@ -78,7 +79,37 @@ namespace ZyGames.Framework.Common.Configuration
         {
             get
             {
+                if (_configger == null)
+                {
+                    return GetConfigger<DefaultDataConfigger>();
+                }
                 return _configger;
+            }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sectionName"></param>
+        /// <exception cref="ArgumentException"></exception>
+        /// <exception cref="Exception"></exception>
+        /// <returns></returns>
+        public static void Intialize(string sectionName)
+        {
+            lock (syncRoot)
+            {
+                var section = ConfigurationManager.GetSection(sectionName);
+                if (section is IConfigger)
+                {
+                    var instance = section as IConfigger;
+                    instance.Install();
+                    _configgerSet.Add(instance);
+                    _configger = instance;
+                }
+                else
+                {
+                    throw new ArgumentException("Not found section node.", "sectionName");
+                }
             }
         }
 

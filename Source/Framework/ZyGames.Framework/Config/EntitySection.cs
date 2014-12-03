@@ -22,36 +22,41 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ****************************************************************************/
 using System;
-using System.Net.Sockets;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using ZyGames.Framework.Common.Configuration;
 
-namespace ZyGames.Framework.RPC.Sockets
+namespace ZyGames.Framework.Config
 {
-    class PrefixHandler
+    /// <summary>
+    /// 
+    /// </summary>
+    public class EntitySection : ConfigSection
     {
-        public int HandlePrefix(SocketAsyncEventArgs saea, DataToken dataToken, int remainingBytesToProcess)
+        /// <summary>
+        /// 
+        /// </summary>
+        public EntitySection()
         {
-            if (remainingBytesToProcess >= 4 - dataToken.prefixBytesDone)
-            {
-                for (int i = 0; i < 4 - dataToken.prefixBytesDone; i++)
-                {
-                    dataToken.byteArrayForPrefix[dataToken.prefixBytesDone + i] = saea.Buffer[dataToken.DataOffset + i];
-                }
-                remainingBytesToProcess = remainingBytesToProcess - 4 + dataToken.prefixBytesDone;
-                dataToken.bufferSkip += 4 - dataToken.prefixBytesDone;
-                dataToken.prefixBytesDone = 4;
-                dataToken.messageLength = BitConverter.ToInt32(dataToken.byteArrayForPrefix, 0);
-            }
-            else
-            {
-                for (int i = 0; i < remainingBytesToProcess; i++)
-                {
-                    dataToken.byteArrayForPrefix[dataToken.prefixBytesDone + i] = saea.Buffer[dataToken.DataOffset + i];
-                }
-                dataToken.prefixBytesDone += remainingBytesToProcess;
-                remainingBytesToProcess = 0;
-            }
-
-            return remainingBytesToProcess;
+            LogTableNameFormat = ConfigUtils.GetSetting("Log.TableName.Format", "log_$date{0}");
+            LogPriorBuildMonth = ConfigUtils.GetSetting("Log.PriorBuild.Month", 3);
+            EnableModifyTimeField = ConfigUtils.GetSetting("Schema.EnableModifyTimeField", false);
         }
+
+        /// <summary>
+        /// Log table name format string.
+        /// </summary>
+        public string LogTableNameFormat { get; set; }
+
+        /// <summary>
+        /// prior build month table, default:3
+        /// </summary>
+        public int LogPriorBuildMonth { get; set; }
+
+        /// <summary>
+        /// enable field of ModifyTime
+        /// </summary>
+        public bool EnableModifyTimeField { get; set; }
     }
 }

@@ -288,12 +288,6 @@ namespace ZyGames.Framework.Model
         [ProtoMember(100025)]
         public DateTime TempTimeModify { get; set; }
 
-        /// <summary>
-        /// 
-        /// </summary>
-
-        [JsonIgnore]
-        public bool IsExpired { get; set; }
 
         #endregion
 
@@ -309,7 +303,7 @@ namespace ZyGames.Framework.Model
         /// <param name="eventArgs"></param>
         protected override void Notify(object sender, CacheItemEventArgs eventArgs)
         {
-            if (!IsInCache || _isReadOnly || CheckExpired()) return;
+            if (_isReadOnly || CheckChnage()) return;
             //modify resean: not notify to ItemSet object.
             //eventArgs.Source = sender;
             AddChangePropertys(eventArgs.PropertyName);
@@ -324,7 +318,7 @@ namespace ZyGames.Framework.Model
         /// <param name="eventArgs"></param>
         protected override void NotifyByChildren(object sender, CacheItemEventArgs eventArgs)
         {
-            if (!IsInCache || _isReadOnly || CheckExpired()) return;
+            if (_isReadOnly || CheckChnage()) return;
             //eventArgs.Source = sender;
             AddChangePropertys(eventArgs.PropertyName);
             //更改子类事件触发者
@@ -332,8 +326,12 @@ namespace ZyGames.Framework.Model
             PutToChangeKeys(this);
         }
 
-        private bool CheckExpired()
+        private bool CheckChnage()
         {
+            if (!IsInCache)
+            {
+                return true;
+            }
             if (IsExpired)
             {
                 TraceLog.WriteError("Not found entity {0} key {1}, it is disposed.\r\n{2}", GetSchema().EntityName, GetKeyCode(), TraceLog.GetStackTrace());

@@ -111,6 +111,76 @@ namespace ZyGames.Framework.Script
         }
 
         /// <summary>
+        /// 
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="scriptCode"></param>
+        /// <param name="method"></param>
+        /// <returns></returns>
+        public bool InvokeStaticMenthod<T>(string method, string scriptCode = "")
+        {
+            object methodResult;
+            return InvokeStaticMenthod<T, object>(method, out methodResult, scriptCode);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <typeparam name="TR"></typeparam>
+        /// <param name="method"></param>
+        /// <param name="methodResult"></param>
+        /// <param name="scriptCode"></param>
+        /// <returns></returns>
+        public bool InvokeStaticMenthod<T, TR>(string method, out TR methodResult, string scriptCode = "")
+        {
+            return InvokeStaticMenthod<T, TR>(method, new Object[0], out  methodResult, scriptCode);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <typeparam name="TR"></typeparam>
+        /// <param name="scriptCode"></param>
+        /// <param name="method"></param>
+        /// <param name="methodArgs"></param>
+        /// <param name="methodResult"></param>
+        /// <returns></returns>
+        public bool InvokeStaticMenthod<T, TR>(string method, Object[] methodArgs, out TR methodResult, string scriptCode = "")
+        {
+            methodResult = default(TR);
+            object result;
+            if (InvokeStaticMenthod(scriptCode, typeof(T).FullName, method, methodArgs, out result))
+            {
+                if (result != null) methodResult = (TR)result;
+                return true;
+            }
+            return false;
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="scriptCode"></param>
+        /// <param name="typeName"></param>
+        /// <param name="method"></param>
+        /// <param name="methodArgs"></param>
+        /// <param name="methodResult"></param>
+        /// <returns></returns>
+        public bool InvokeStaticMenthod(string scriptCode, string typeName, string method, Object[] methodArgs, out object methodResult)
+        {
+            methodResult = null;
+            Type type;
+            if (TryParseType(scriptCode, typeName, out type))
+            {
+                methodResult = type.InvokeMember(method, BindingFlags.InvokeMethod | BindingFlags.Public | BindingFlags.Static, null, null, methodArgs);
+                return true;
+            }
+            return false;
+        }
+
+        /// <summary>
         /// 调用方法
         /// </summary>
         /// <param name="scriptCode"></param>
@@ -222,7 +292,10 @@ namespace ZyGames.Framework.Script
             if (sources.Length == 0) return;
             //加载实体程序集
             _modelAssembly = ScriptCompiler.InjectionCompile(SettupInfo.RuntimePrivateBinPath, sources, refAssemblyNames, assemblyName, SettupInfo.ScriptIsDebug, false, out _modelAssemblyPath);
-
+            if (_modelAssembly == null)
+            {
+                throw new Exception("The model script compile error");
+            }
         }
 
         private void CompileCsharp()
@@ -246,6 +319,10 @@ namespace ZyGames.Framework.Script
             {
                 _csharpAssemblyPath = result.PathToAssembly;
                 _csharpAssembly = result.CompiledAssembly;
+            }
+            else
+            {
+                throw new Exception("The csharp script compile error");
             }
         }
 
@@ -311,19 +388,22 @@ namespace ZyGames.Framework.Script
         private bool CreateInstance(string scriptCode, string typeName, object[] args, out object result)
         {
             result = null;
+            Type type;
+            if (TryParseType(scriptCode, typeName, out type))
+            {
+                result = type.CreateInstance(args);
+                return true;
+            }
+            return false;
+        }
+
+        private bool TryParseType(string scriptCode, string typeName, out Type type)
+        {
+            type = null;
             if (string.IsNullOrEmpty(scriptCode))
             {
                 typeName = typeName ?? "";
-                int index = typeName.IndexOf(SettupInfo.CSharpScriptPath + ".", StringComparison.CurrentCultureIgnoreCase);
-                if (index > -1)
-                {
-                    scriptCode = typeName.Substring(index) + ".cs";
-                }
-                else
-                {
-                    var arr = typeName.Split(',')[0].Split('.');
-                    scriptCode = arr[arr.Length - 1] + ".cs";
-                }
+                scriptCode = ParseScriptCode(typeName);
             }
             scriptCode = GetScriptCode(scriptCode);
             Assembly assembly = _csharpAssembly;
@@ -336,18 +416,29 @@ namespace ZyGames.Framework.Script
 
             if (scriptInfo != null)
             {
-                Type objType = null;
                 if (assembly != null)
                 {
-                    objType = assembly.GetType(typeName, false, true);
+                    type = assembly.GetType(typeName, false, true);
                 }
-                if (objType != null)
-                {
-                    result = objType.CreateInstance(args);
-                }
-                return true;
+                return type != null;
             }
             return false;
+        }
+
+        private string ParseScriptCode(string typeName)
+        {
+            string scriptCode;
+            int index = typeName.IndexOf(SettupInfo.CSharpScriptPath + ".", StringComparison.CurrentCultureIgnoreCase);
+            if (index > -1)
+            {
+                scriptCode = typeName.Substring(index) + ".cs";
+            }
+            else
+            {
+                var arr = typeName.Split(',')[0].Split('.');
+                scriptCode = arr[arr.Length - 1] + ".cs";
+            }
+            return scriptCode;
         }
 
         /// <summary>

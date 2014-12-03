@@ -33,6 +33,7 @@ using System.Web;
 using Microsoft.Scripting;
 using Microsoft.Scripting.Hosting;
 using ZyGames.Framework.Common;
+using ZyGames.Framework.Common.Configuration;
 using ZyGames.Framework.Common.Log;
 using ZyGames.Framework.Common.Serialization;
 using ZyGames.Framework.Model;
@@ -80,8 +81,8 @@ namespace ZyGames.Framework.Script
 
         static ScriptEngines()
         {
-            _settupInfo = new ScriptSettupInfo();
             _changedFiles = new HashSet<string>();
+            _settupInfo = new ScriptSettupInfo();
         }
 
         /// <summary>
@@ -91,6 +92,7 @@ namespace ZyGames.Framework.Script
         {
             try
             {
+                ConfigManager.ConfigReloaded += OnScriptSettingReLoad;
                 var scope = InitScriptRuntimeScope();
                 if (scope != null)
                 {
@@ -101,6 +103,17 @@ namespace ZyGames.Framework.Script
             {
                 IsError = true;
                 throw er;
+            }
+        }
+
+        private static void OnScriptSettingReLoad(object sender, ConfigReloadedEventArgs e)
+        {
+            try
+            {
+            }
+            catch (Exception)
+            {
+
             }
         }
 
@@ -203,7 +216,6 @@ namespace ZyGames.Framework.Script
                         case ".cs":
                             if (hasModelFile)
                             {
-                                //todo not testcase
                                 InitScriptRuntimeScope();
                                 PrintCompiledMessage("model script");
                                 isLoop = false;
@@ -406,6 +418,16 @@ namespace ZyGames.Framework.Script
         public static dynamic Execute(string scriptCode, string typeName, params object[] args)
         {
             return _runtimeDomain.Scope.Execute(scriptCode, typeName, args);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <returns></returns>
+        public static dynamic ExecuteCSharp<T>()
+        {
+            return _runtimeDomain.Scope.ExecuteCSharp(typeof(T).FullName);
         }
 
         /// <summary>
