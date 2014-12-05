@@ -44,7 +44,7 @@ namespace ContractTools.WebApp.Model
         Bool,
         Float,
         Double,
-        Date,
+        DateTime,
         UInt,
         UShort,
         ULong

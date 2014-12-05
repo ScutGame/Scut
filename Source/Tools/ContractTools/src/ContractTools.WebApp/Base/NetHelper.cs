@@ -118,7 +118,7 @@ namespace ContractTools.WebApp.Base
                     val = ms.ReadDouble().ToString();
                     result = true;
                     break;
-                case FieldType.Date:
+                case FieldType.DateTime:
                     val = ms.ReadDateTime().ToString();
                     result = true;
                     break;

@@ -165,7 +165,7 @@ namespace ContractTools.WebApp.Base
                                 case FieldType.Short:
                                     fieldBuilder.Append("ZyWriter:writeWord(\"");
                                     break;
-                                case FieldType.Date:
+                                case FieldType.DateTime:
                                 case FieldType.ULong:
                                 case FieldType.Long:
                                     fieldBuilder.Append("ZyWriter:writeInt64(\"");
@@ -241,10 +241,14 @@ namespace ContractTools.WebApp.Base
                                 case FieldType.Short:
                                     fieldBuilder.Append("writer.writeWord(\"");
                                     break;
-                                case FieldType.Date:
+                                case FieldType.DateTime:
                                 case FieldType.ULong:
                                 case FieldType.Long:
                                     fieldBuilder.Append("writer.writeInt64(\"");
+                                    break;
+                                case FieldType.Bool:
+                                case FieldType.Byte:
+                                    fieldBuilder.Append("writer.getByte(\"");
                                     break;
                                 case FieldType.Float:
                                     fieldBuilder.Append("writer.writeFloat(\"");
@@ -378,7 +382,7 @@ namespace ContractTools.WebApp.Base
 
                     switch (fieldType)
                     {
-                        case FieldType.Date:
+                        case FieldType.DateTime:
                         case FieldType.Long:
                         case FieldType.ULong:
                             strTemp.Append(" = ZyReader:getInt64()");
@@ -521,10 +525,12 @@ namespace ContractTools.WebApp.Base
                         case FieldType.String:
                             strTemp.Append(" = reader.readString();");
                             break;
+                        case FieldType.Bool:
                         case FieldType.Byte:
                             strTemp.Append(" = reader.getByte();");
                             break;
                         default:
+                            strTemp.Append(" = reader.get" + fieldType + "();");
                             break;
                     }
                     strTemp.AppendLine();
