@@ -474,7 +474,7 @@ public class NetReader
     public byte[] readBytes()
     {
         int nLen = this.getInt();
-        return this.getString(nLen);
+        return this.readBytes(nLen);
     }
 
     public byte[] readBytes(int nLen)
@@ -484,7 +484,7 @@ public class NetReader
             Debug.Log(" Failed: 长度越界 NetReader: getString");
             return null;
         }
-        bytep[] buffer = new[nLen];
+        byte[] buffer = new byte[nLen];
         Array.Copy(this._bytes, this.streamPos, buffer, 0, buffer.Length);
         this.streamPos += nLen;
 
