@@ -16,9 +16,7 @@ Date: 2014-08-19 15:17:17
 DROP database IF EXISTS `ContractDB`;
 create database `ContractDB` DEFAULT CHARACTER SET gbk COLLATE gbk_chinese_ci;
 
-use ContractDB
-GO
-
+use ContractDB;
 
 SET FOREIGN_KEY_CHECKS=0;
 
