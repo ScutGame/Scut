@@ -27,6 +27,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using ZyGames.Framework.RPC.IO;
+using ZyGames.Framework.RPC.Sockets;
 
 namespace ZyGames.Framework.Game.Service
 {
@@ -43,6 +44,7 @@ namespace ZyGames.Framework.Game.Service
         protected BinaryAction(int aActionId, ActionGetter actionGetter)
             : base(aActionId, actionGetter)
         {
+            actionGetter.OpCode = OpCode.Binary;
         }
 
         /// <summary>

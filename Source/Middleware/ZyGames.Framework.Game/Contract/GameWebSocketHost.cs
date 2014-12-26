@@ -112,7 +112,21 @@ namespace ZyGames.Framework.Game.Contract
             socketListener.Disconnected += new ConnectionEventHandler(OnDisconnected);
             socketListener.OnPing += new ConnectionEventHandler(socketLintener_OnPing);
             socketListener.OnPong += new ConnectionEventHandler(socketLintener_OnPong);
+            socketListener.OnClosedStatus += socketLintener_OnClosedStatus;
         }
+
+        private void socketLintener_OnClosedStatus(ExSocket socket, int closeStatusCode)
+        {
+            try
+            {
+                OnClosedStatus(socket, closeStatusCode);
+            }
+            catch (Exception err)
+            {
+                TraceLog.WriteError("OnPong error:{0}", err);
+            }
+        }
+
 
         private void socketLintener_OnConnectCompleted(ISocket sender, ConnectionEventArgs e)
         {
@@ -151,7 +165,7 @@ namespace ZyGames.Framework.Game.Contract
                 }
                 var session = GetSession(e, package);
                 package.Bind(session);
-                ProcessPackage(package, session);
+                ProcessPackage(package, session).Wait();
             }
             catch (Exception ex)
             {
@@ -289,6 +303,15 @@ namespace ZyGames.Framework.Game.Contract
         /// <summary>
         /// 
         /// </summary>
+        /// <param name="socket"></param>
+        /// <param name="closeStatusCode"></param>
+        protected virtual void OnClosedStatus(ExSocket socket, int closeStatusCode)
+        {
+
+        }
+        /// <summary>
+        /// 
+        /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
         protected virtual void OnError(ISocket sender, ConnectionEventArgs e)
@@ -296,6 +319,13 @@ namespace ZyGames.Framework.Game.Contract
             sender.CloseHandshake(e.Socket, "param error");
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="result"></param>
+        protected virtual void OnSendCompleted(SocketAsyncResult result)
+        {
+        }
 
         /// <summary>
         /// Raises the start affer event.
@@ -331,7 +361,7 @@ namespace ZyGames.Framework.Game.Contract
             base.Stop();
         }
 
-        private void ProcessPackage(RequestPackage package, GameSession session)
+        private async System.Threading.Tasks.Task ProcessPackage(RequestPackage package, GameSession session)
         {
             if (package == null) return;
 
@@ -365,7 +395,7 @@ namespace ZyGames.Framework.Game.Contract
                 {
                     if (session != null && data.Length > 0)
                     {
-                        session.SendAsync(actionGetter.OpCode, data, 0, data.Length);
+                        await session.SendAsync(actionGetter.OpCode, data, 0, data.Length, OnSendCompleted);
                     }
                 }
                 catch (Exception ex)
@@ -383,5 +413,6 @@ namespace ZyGames.Framework.Game.Contract
                 if (session != null) session.ExitSession();
             }
         }
+
     }
 }

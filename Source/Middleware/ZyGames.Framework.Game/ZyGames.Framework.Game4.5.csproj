@@ -150,6 +150,8 @@
     <Compile Include="Contract\RemotePackage.cs" />
     <Compile Include="Contract\RemoteService.cs" />
     <Compile Include="Runtime\AppServerConfigger.cs" />
+    <Compile Include="Runtime\ConsoleRuntimeHost.cs" />
+    <Compile Include="Runtime\RuntimeHost.cs" />
     <Compile Include="Service\ActionGetter.cs" />
     <Compile Include="Contract\Action\AndroidPayAction.cs" />
     <Compile Include="Contract\Action\AppStoreDetailAction.cs" />

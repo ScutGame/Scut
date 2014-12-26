@@ -24,8 +24,10 @@ THE SOFTWARE.
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection.Emit;
 using System.Text;
 using System.Threading.Tasks;
+using OpCode = ZyGames.Framework.RPC.Sockets.OpCode;
 
 namespace ZyGames.Framework.Game.Service
 {
@@ -47,6 +49,7 @@ namespace ZyGames.Framework.Game.Service
         protected JsonAction(int aActionId, ActionGetter actionGetter)
             : base(aActionId, actionGetter)
         {
+            actionGetter.OpCode = OpCode.Text;
         }
 
         /// <summary>

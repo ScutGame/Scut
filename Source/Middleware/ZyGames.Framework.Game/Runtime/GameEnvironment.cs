@@ -113,10 +113,26 @@ namespace ZyGames.Framework.Game.Runtime
         /// </summary>
         public static int ProductServerId { get { return _setting != null ? _setting.ProductServerId : 0; } }
 
+
+        private static readonly CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
+
         /// <summary>
         /// is close server
         /// </summary>
-        public static bool IsCanceled { get; set; }
+        public static bool IsCanceled
+        {
+            get
+            {
+                return cancellationTokenSource.Token.IsCancellationRequested;
+            }
+            set
+            {
+                if (value)
+                {
+                    cancellationTokenSource.Cancel();
+                }
+            }
+        }
 
         /// <summary>
         /// 

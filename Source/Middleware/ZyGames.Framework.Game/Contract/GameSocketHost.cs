@@ -169,7 +169,7 @@ namespace ZyGames.Framework.Game.Contract
                     return;
                 }
                 package.Bind(session);
-                ProcessPackage(package, session);
+                ProcessPackage(package, session).Wait();
             }
             catch (Exception ex)
             {
@@ -256,7 +256,7 @@ namespace ZyGames.Framework.Game.Contract
         {
         }
 
-        private void ProcessPackage(RequestPackage package, GameSession session)
+        private async System.Threading.Tasks.Task ProcessPackage(RequestPackage package, GameSession session)
         {
             if (package == null) return;
 
@@ -290,7 +290,7 @@ namespace ZyGames.Framework.Game.Contract
                 {
                     if (session != null && data.Length > 0)
                     {
-                        session.SendAsync(actionGetter.OpCode, data, 0, data.Length);
+                       await session.SendAsync(actionGetter.OpCode, data, 0, data.Length, OnSendCompleted);
                     }
                 }
                 catch (Exception ex)
@@ -323,7 +323,7 @@ namespace ZyGames.Framework.Game.Contract
                 var data = response.PopBuffer();
                 if (session != null && data.Length > 0)
                 {
-                    session.SendAsync(OpCode.Binary, data, 0, data.Length);
+                    session.SendAsync(OpCode.Binary, data, 0, data.Length, OnSendCompleted).Wait();
                 }
             }
             catch (Exception ex)
@@ -358,6 +358,15 @@ namespace ZyGames.Framework.Game.Contract
         {
 
         }
+        /// <summary>
+        /// Send data success
+        /// </summary>
+        /// <param name="result"></param>
+        protected virtual void OnSendCompleted(SocketAsyncResult result)
+        {
+
+        }
+
         /// <summary>
         /// Raises the disconnected event.
         /// </summary>
@@ -496,7 +505,9 @@ namespace ZyGames.Framework.Game.Contract
                 GameSession session = GameSession.Get(userId);
                 if (session != null)
                 {
-                    return session.SendAsync(OpCode.Binary, data, 0, data.Length);
+                    var task = session.SendAsync(OpCode.Binary, data, 0, data.Length, result => { });
+                    task.Wait();
+                    return task.Result;
                 }
                 return false;
             };

@@ -768,17 +768,20 @@ namespace ZyGames.Framework.Game.Contract
         /// <param name="data"></param>
         /// <param name="offset"></param>
         /// <param name="count"></param>
-        private void PostSend(sbyte opCode, byte[] data, int offset, int count)
+        /// <param name="callback"></param>
+        private async System.Threading.Tasks.Task<bool> PostSend(sbyte opCode, byte[] data, int offset, int count, Action<SocketAsyncResult> callback)
         {
             if (!IsSocket)
             {
-                throw new Exception("Session does not support the push message");
+                TraceLog.WriteError("Session does not support the push message");
+                return false;
             }
             if (data == null || data.Length == 0)
             {
-                return;
+                return false;
             }
-            AppServer.PostSend(_exSocket, opCode, data, offset, count);
+            await AppServer.PostSend(_exSocket, opCode, data, offset, count, callback);
+            return true;
         }
 
         /// <summary>
@@ -788,14 +791,13 @@ namespace ZyGames.Framework.Game.Contract
         /// <param name="offset"></param>
         /// <param name="count"></param>
         /// <returns></returns>
-        [Obsolete("", true)]
-        public bool SendAsync(byte[] data, int offset, int count)
+        public async System.Threading.Tasks.Task<bool> SendAsync(byte[] data, int offset, int count)
         {
             if (!IsRemote)
             {
                 data = CheckAdditionalHead(data, ProxySid);
             }
-            return SendAsync(OpCode.Binary, data, offset, count);
+            return await SendAsync(OpCode.Binary, data, offset, count, result => { });
         }
 
         /// <summary>
@@ -805,15 +807,11 @@ namespace ZyGames.Framework.Game.Contract
         /// <param name="data"></param>
         /// <param name="offset"></param>
         /// <param name="count"></param>
+        /// <param name="callback"></param>
         /// <returns></returns>
-        public bool SendAsync(sbyte opCode, byte[] data, int offset, int count)
+        public async System.Threading.Tasks.Task<bool> SendAsync(sbyte opCode, byte[] data, int offset, int count, Action<SocketAsyncResult> callback)
         {
-            if (Connected)
-            {
-                PostSend(opCode, data, 0, data.Length);
-                return true;
-            }
-            return false;
+            return await PostSend(opCode, data, 0, data.Length, callback);
         }
         /// <summary>
         /// 检查加头16位ssid
