@@ -187,10 +187,10 @@ namespace ZyGames.Framework.Cache.Generic.Pool
         public bool TryReceiveData<T>(TransReceiveParam receiveParam, out List<T> dataList) where T : AbstractEntity, new()
         {
             dataList = null;
+            bool hasDbConnect = DbConnectionProvider.CreateDbProvider(receiveParam.Schema) != null;
             //表为空时，不加载数据
             if (receiveParam.Schema == null ||
-                string.IsNullOrEmpty(receiveParam.Schema.EntityName) ||
-                DbConnectionProvider.CreateDbProvider(receiveParam.Schema) == null)
+                string.IsNullOrEmpty(receiveParam.Schema.EntityName))
             {
                 //DB is optional and can no DB configuration
                 dataList = new List<T>();
@@ -200,6 +200,11 @@ namespace ZyGames.Framework.Cache.Generic.Pool
             //配置库不放到Redis，尝试从DB加载
             if (receiveParam.Schema.AccessLevel == AccessLevel.ReadOnly)
             {
+                if (!hasDbConnect)
+                {
+                    dataList = new List<T>();
+                    return true;
+                }
                 var result = _dbTransponder.TryReceiveData(receiveParam, out dataList);
                 TraceLog.ReleaseWriteDebug("The readonly-data:{0} has been loaded {1}", receiveParam.RedisKey, dataList.Count);
                 return result;
@@ -211,6 +216,12 @@ namespace ZyGames.Framework.Cache.Generic.Pool
                 if (dataList.Count > 0)
                 {
                     TraceLog.ReleaseWriteDebug("The data:{0} has been loaded {1}", receiveParam.RedisKey, dataList.Count);
+                    return true;
+                }
+
+                if (!hasDbConnect)
+                {
+                    dataList = new List<T>();
                     return true;
                 }
                 //从Redis历史记录表中加载

@@ -46,6 +46,7 @@ namespace ZyGames.Framework.Config
             PoolTimeOut = ConfigUtils.GetSetting("Redis.PoolTimeOut", 0);
             DbIndex = ConfigUtils.GetSetting("Redis.Db", 0);
             ReadOnlyHost = ConfigUtils.GetSetting("Redis.ReadHost", Host);
+            ClientVersion = ConfigUtils.GetSetting("Redis.ClientVersion", 5);
         }
 
         /// <summary>
@@ -76,5 +77,10 @@ namespace ZyGames.Framework.Config
         /// DbIndex
         /// </summary>
         public int DbIndex { get; set; }
+
+        /// <summary>
+        /// ver: 0 is old versin
+        /// </summary>
+        public int ClientVersion { get; set; }
     }
 }

@@ -26,9 +26,9 @@ using System.Net.Sockets;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading;
+using System.Threading.Tasks;
 using ZyGames.Framework.Common.Log;
 using NLog;
-using ZyGames.Framework.RPC.IO;
 
 namespace ZyGames.Framework.RPC.Sockets
 {
@@ -102,6 +102,17 @@ namespace ZyGames.Framework.RPC.Sockets
         {
             ConnectionEventHandler handler = OnPong;
             if (handler != null) handler(this, e);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public event Action<ExSocket, int> OnClosedStatus;
+
+        private void DoClosedStatus(ExSocket socket, int statusCode)
+        {
+            Action<ExSocket, int> handler = OnClosedStatus;
+            if (handler != null) handler(socket, statusCode);
         }
 
         #endregion
@@ -348,18 +359,18 @@ namespace ZyGames.Framework.RPC.Sockets
         private void ProcessReceive(SocketAsyncEventArgs ioEventArgs)
         {
             DataToken dataToken = (DataToken)ioEventArgs.UserToken;
-            if (ioEventArgs.SocketError != SocketError.Success)
-            {
-                //Socket错误
-                logger.Error("IP {0} ProcessReceive:{1}", (dataToken != null ? dataToken.Socket.RemoteEndPoint.ToString() : ""), ioEventArgs.SocketError);
-                Closing(ioEventArgs);
-                return;
-            }
-
             if (ioEventArgs.BytesTransferred == 0)
             {
                 //对方主动关闭socket
                 //if (logger.IsDebugEnabled) logger.Debug("对方关闭Socket");
+                Closing(ioEventArgs, OpCode.Empty);
+                return;
+            }
+
+            if (ioEventArgs.SocketError != SocketError.Success)
+            {
+                //Socket错误
+                logger.Debug("IP {0} ProcessReceive:{1}", (dataToken != null ? dataToken.Socket.RemoteEndPoint.ToString() : ""), ioEventArgs.SocketError);
                 Closing(ioEventArgs);
                 return;
             }
@@ -386,7 +397,11 @@ namespace ZyGames.Framework.RPC.Sockets
                                 var statusCode = requestHandler.MessageProcessor != null
                                     ? requestHandler.MessageProcessor.GetCloseStatus(message.Data)
                                     : OpCode.Empty;
-                                Closing(ioEventArgs, statusCode);
+                                if (statusCode != OpCode.Empty)
+                                {
+                                    DoClosedStatus(exSocket, statusCode);
+                                }
+                                Closing(ioEventArgs, OpCode.Empty);
                                 needPostAnother = false;
                                 break;
                             case OpCode.Ping:
@@ -420,8 +435,8 @@ namespace ZyGames.Framework.RPC.Sockets
         private void TryDequeueAndPostSend(ExSocket socket, SocketAsyncEventArgs ioEventArgs)
         {
             bool isOwner = ioEventArgs == null;
-            byte[] data;
-            if (socket.TryDequeue(out data))
+            SocketAsyncResult result;
+            if (socket.TryDequeue(out result))
             {
                 if (ioEventArgs == null)
                 {
@@ -430,17 +445,19 @@ namespace ZyGames.Framework.RPC.Sockets
                 }
                 DataToken dataToken = (DataToken)ioEventArgs.UserToken;
                 dataToken.Socket = socket;
-                dataToken.byteArrayForMessage = data;
-                dataToken.messageLength = data.Length;
+                dataToken.AsyncResult = result;
+                dataToken.byteArrayForMessage = result.Data;
+                dataToken.messageLength = result.Data.Length;
                 try
                 {
                     PostSend(ioEventArgs);
                 }
-                catch
+                catch (Exception ex)
                 {
+                    dataToken.ResultCallback(ResultCode.Error, ex);
                     if (isOwner)
                         ReleaseIOEventArgs(ioEventArgs);
-                    throw;
+                    socket.ResetSendFlag();
                 }
             }
             else
@@ -457,9 +474,22 @@ namespace ZyGames.Framework.RPC.Sockets
         /// <param name="data"></param>
         /// <param name="offset"></param>
         /// <param name="count"></param>
-        public override void PostSend(ExSocket socket, byte[] data, int offset, int count)
+        public override async Task PostSend(ExSocket socket, byte[] data, int offset, int count)
         {
-            PostSend(socket, OpCode.Binary, data, offset, count);
+            await PostSend(socket, OpCode.Binary, data, offset, count);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="socket"></param>
+        /// <param name="opCode"></param>
+        /// <param name="data"></param>
+        /// <param name="offset"></param>
+        /// <param name="count"></param>
+        public override async Task PostSend(ExSocket socket, sbyte opCode, byte[] data, int offset, int count)
+        {
+            await PostSend(socket, opCode, data, offset, count, result => { });
         }
 
         /// <summary>
@@ -470,10 +500,11 @@ namespace ZyGames.Framework.RPC.Sockets
         /// <param name="data">Data.</param>
         /// <param name="offset">Offset.</param>
         /// <param name="count">Count.</param>
-        public override void PostSend(ExSocket socket, sbyte opCode, byte[] data, int offset, int count)
+        /// <param name="callback"></param>
+        public override async Task PostSend(ExSocket socket, sbyte opCode, byte[] data, int offset, int count, Action<SocketAsyncResult> callback)
         {
             byte[] buffer = requestHandler.MessageProcessor.BuildMessagePack(socket, opCode, data, offset, count);
-            SendAsync(socket, buffer);
+            await SendAsync(socket, buffer, callback);
         }
 
         /// <summary>
@@ -483,7 +514,7 @@ namespace ZyGames.Framework.RPC.Sockets
         public override void Ping(ExSocket socket)
         {
             byte[] data = Encoding.UTF8.GetBytes("ping");
-            PostSend(socket, OpCode.Ping, data, 0, data.Length);
+            PostSend(socket, OpCode.Ping, data, 0, data.Length).Wait();
         }
         /// <summary>
         /// 
@@ -492,7 +523,7 @@ namespace ZyGames.Framework.RPC.Sockets
         public override void Pong(ExSocket socket)
         {
             byte[] data = Encoding.UTF8.GetBytes("pong");
-            PostSend(socket, OpCode.Pong, data, 0, data.Length);
+            PostSend(socket, OpCode.Pong, data, 0, data.Length).Wait();
         }
 
         /// <summary>
@@ -510,23 +541,27 @@ namespace ZyGames.Framework.RPC.Sockets
         /// </summary>
         /// <param name="socket"></param>
         /// <param name="buffer"></param>
-        internal protected override bool SendAsync(ExSocket socket, byte[] buffer)
+        /// <param name="callback"></param>
+        internal protected override async Task<bool> SendAsync(ExSocket socket, byte[] buffer, Action<SocketAsyncResult> callback)
         {
-            socket.Enqueue(buffer);
-            if (socket.TrySetSendFlag())
+            socket.Enqueue(buffer, callback);
+            return await Task.Run(() =>
             {
-                try
+                if (socket.TrySetSendFlag())
                 {
-                    TryDequeueAndPostSend(socket, null);
-                    return true;
+                    try
+                    {
+                        TryDequeueAndPostSend(socket, null);
+                        return true;
+                    }
+                    catch (Exception ex)
+                    {
+                        socket.ResetSendFlag();
+                        TraceLog.WriteError("SendAsync {0} error:{1}", socket.RemoteEndPoint, ex);
+                    }
                 }
-                catch (Exception ex)
-                {
-                    socket.ResetSendFlag();
-                    TraceLog.WriteError("SendAsync {0} error:{1}", socket.RemoteEndPoint, ex);
-                }
-            }
-            return false;
+                return false;
+            });
         }
 
         private void PostSend(SocketAsyncEventArgs ioEventArgs)
@@ -562,6 +597,7 @@ namespace ZyGames.Framework.RPC.Sockets
                 }
                 else
                 {
+                    dataToken.ResultCallback(ResultCode.Success);
                     dataToken.Reset(true);
                     try
                     {
@@ -576,6 +612,7 @@ namespace ZyGames.Framework.RPC.Sockets
             }
             else
             {
+                dataToken.ResultCallback(ResultCode.Close);
                 dataToken.Socket.ResetSendFlag();
                 Closing(ioEventArgs);
             }

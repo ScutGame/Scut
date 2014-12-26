@@ -39,6 +39,7 @@ namespace ZyGames.Framework.Config
         /// </summary>
         public MessageQueueSection()
         {
+            SlaveMessageQueue = ConfigUtils.GetSetting("Slave.MessageQueue", "");
             EnableRedisQueue = ConfigUtils.GetSetting("Cache.enable.redisqueue", true);
             EnableWriteToDb = ConfigUtils.GetSetting("Cache.enable.writetoDb", true);
             DataSyncQueueNum = ConfigUtils.GetSetting("DataSyncQueueNum", 2);
@@ -46,6 +47,11 @@ namespace ZyGames.Framework.Config
             SqlSyncInterval = ConfigUtils.GetSetting("Game.Cache.UpdateDbInterval", 300 * 1000);
             SqlSyncQueueNum = ConfigUtils.GetSetting("SqlSyncQueueNum", 2);
         }
+
+        /// <summary>
+        /// Slave message queue name
+        /// </summary>
+        public string SlaveMessageQueue { get; set; }
 
         /// <summary>
         /// Enable redis queue

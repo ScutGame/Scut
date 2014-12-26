@@ -25,6 +25,7 @@ using System;
 using System.Net;
 using System.Text;
 using System.Threading;
+using System.Threading.Tasks;
 using ZyGames.Framework.Common.Log;
 using ZyGames.Framework.RPC.Sockets;
 
@@ -97,23 +98,23 @@ namespace ZyGames.Framework.RPC.Service
         /// 
         /// </summary>
         /// <param name="data"></param>
-        public override void Send(string data)
+        public override async Task Send(string data)
         {
             byte[] buffer = (_encoding ?? Encoding.ASCII).GetBytes(data);
-            Send(buffer);
+            await Send(buffer);
         }
 
         /// <summary>
         /// 
         /// </summary>
         /// <param name="data"></param>
-        public override void Send(byte[] data)
+        public override async Task Send(byte[] data)
         {
             if (!Connected)
             {
                 Connect();
             }
-            _client.PostSend(data, 0, data.Length);
+            await _client.PostSend(data, 0, data.Length);
         }
 
 

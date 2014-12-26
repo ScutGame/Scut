@@ -24,6 +24,7 @@ THE SOFTWARE.
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 using Microsoft.Scripting;
@@ -48,24 +49,42 @@ namespace ZyGames.Framework.Cache.Generic
     /// </summary>
     public abstract class DataSyncQueueManager
     {
+
+        private static string SlaveMessageQueue;
+
         private static int sqlWaitPackSize = 1000;
+
         /// <summary>
         /// 同步缓存数据到Redis的队列名,存储格式:key值:typename_keycode, value值:len(4)+head[id(4)+state(4)] + value,state:1 移除操作
         /// </summary>
-        public static readonly string RedisSyncQueueKey = "__QUEUE_REDIS_SYNC";
+        public static string RedisSyncQueueKey
+        {
+            get { return SlaveMessageQueue + "__QUEUE_REDIS_SYNC"; }
+        }
+
         /// <summary>
         /// 同步缓存出错队列，格式同RedisSyncQueueKey
         /// </summary>
-        public static readonly string RedisSyncErrorQueueKey = "__QUEUE_REDIS_SYNC_ERROR";
+        public static string RedisSyncErrorQueueKey
+        {
+            get { return SlaveMessageQueue + "__QUEUE_REDIS_SYNC_ERROR"; }
+        }
+
         /// <summary>
         /// 同步到数据库的Sql等待队列, 存储格式:key值:typename_keycode, value值:head[id(4)+state(4)]
         /// </summary>
-        public static readonly string SqlSyncWaitQueueKey = "__QUEUE_SQL_SYNC_WAIT";
+        public static string SqlSyncWaitQueueKey
+        {
+            get { return SlaveMessageQueue + "__QUEUE_SQL_SYNC_WAIT"; }
+        }
 
         /// <summary>
         /// 
         /// </summary>
-        public static readonly string SqlSyncWaitErrirQueueKey = "__QUEUE_SQL_SYNC_WAIT_ERROR";
+        public static string SqlSyncWaitErrirQueueKey
+        {
+            get { return SlaveMessageQueue + "__QUEUE_SQL_SYNC_WAIT_ERROR"; }
+        }
 
         private static int _entityQueueRunning;
         /// <summary>
@@ -96,7 +115,7 @@ namespace ZyGames.Framework.Cache.Generic
         private static Timer[] _sqlWaitTimers;
         private static int[] _isRedisSyncWorking;
         private static int[] _isSqlWaitSyncWorking;
-        private static System.Action<string, byte[][], byte[][]> _asyncSendHandle;
+        //private static System.Action<string, byte[][], byte[][]> _asyncSendHandle;
         //todo test
         private static ConcurrentDictionary<string, KeyValuePair<int, string>> _checkVersions = new ConcurrentDictionary<string, KeyValuePair<int, string>>();
         /// <summary>
@@ -154,7 +173,7 @@ namespace ZyGames.Framework.Cache.Generic
 
         static DataSyncQueueManager()
         {
-            _asyncSendHandle += OnAsyncSend;
+            //_asyncSendHandle += OnAsyncSend;
             _serializer = new ProtobufCacheSerializer();
             ConfigManager.ConfigReloaded += OnConfigReload;
         }
@@ -175,6 +194,7 @@ namespace ZyGames.Framework.Cache.Generic
             }
         }
 
+        [Obsolete]
         private static void OnAsyncSend(string queueKey, byte[][] keyBytes, byte[][] valueBytes)
         {
             try
@@ -207,6 +227,7 @@ namespace ZyGames.Framework.Cache.Generic
 
         private static void InitRedisQueue(MessageQueueSection section)
         {
+            SlaveMessageQueue = section.SlaveMessageQueue;
             TraceLog.ReleaseWriteDebug("Redis write queue start init...");
             if (_queueWatchTimers != null && (!section.EnableRedisQueue || _queueWatchTimers.Length != section.DataSyncQueueNum))
             {
@@ -410,7 +431,10 @@ namespace ZyGames.Framework.Cache.Generic
                                     byte[] values =
                                         BufferUtils.MergeBytes(BufferUtils.GetBytes(idBytes.Length + stateBytes.Length),
                                             idBytes, stateBytes, entityBytes);
-                                    pipeline.QueueCommand(c => ((RedisClient)c).HSet(hashId, keyBytes, values));
+                                    pipeline.QueueCommand(c =>
+                                    {
+                                        ((RedisClient)c).HSet(hashId, keyBytes, values);
+                                    });
                                     hasPost = true;
                                     ExecuteSuccessCount++;
                                 }
@@ -454,7 +478,7 @@ namespace ZyGames.Framework.Cache.Generic
         /// <param name="entityList"></param>
         public static void Send(params AbstractEntity[] entityList)
         {
-            string key = "";
+            AbstractEntity temp = null;
             try
             {
                 //modify season:异步调用时不能保证提交的顺序，造成更新到Redis中不是最后一次的
@@ -463,27 +487,45 @@ namespace ZyGames.Framework.Cache.Generic
                     foreach (var entity in entityList)
                     {
                         if (entity == null) continue;//cacheCollection has changed
-                        entity.TempTimeModify = MathUtils.Now;
-                        key = string.Format("{0}_{1}|{2}",
-                            RedisConnectionPool.EncodeTypeName(entity.GetType().FullName),
-                            entity.GetIdentityId(),
-                          entity.GetKeyCode());
-                        if (_entitySet.Add(key))
-                        {
-                            SendWaitCount++;
-                        }
-                        if (entity.IsDelete)
-                        {
-                            _entityRemoteSet.Add(key);
-                        }
+                        temp = entity;
+                        TransSend(entity);
                     }
                 }
 
             }
             catch (Exception ex)
             {
-                TraceLog.WriteError("Post changed key:{0} error:{1}", key, ex);
+                TraceLog.WriteError("Post changed key:{0} error:{1}", GetQueueFormatKey(temp), ex);
             }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="entity"></param>
+        /// <returns></returns>
+        public static void TransSend(AbstractEntity entity)
+        {
+            entity.TempTimeModify = MathUtils.Now;
+            string key = GetQueueFormatKey(entity);
+            if (_entitySet.Add(key))
+            {
+                SendWaitCount++;
+            }
+            if (entity.IsDelete)
+            {
+                _entityRemoteSet.Add(key);
+            }
+        }
+
+        private static string GetQueueFormatKey(AbstractEntity entity)
+        {
+            if (entity == null) return string.Empty;
+
+            return string.Format("{0}_{1}|{2}",
+                RedisConnectionPool.EncodeTypeName(entity.GetType().FullName),
+                entity.GetIdentityId(),
+                entity.GetKeyCode());
         }
 
         /// <summary>

@@ -25,12 +25,15 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Net.NetworkInformation;
+using System.Net.Sockets;
 using System.Text;
 using ServiceStack.Redis;
 using ZyGames.Framework.Common.Configuration;
 using ZyGames.Framework.Common.Log;
 using ZyGames.Framework.Common.Serialization;
+using ZyGames.Framework.Config;
 using ZyGames.Framework.Model;
 using ZyGames.Framework.Common;
 
@@ -42,6 +45,7 @@ namespace ZyGames.Framework.Redis
     /// </summary>
     public static class RedisConnectionPool
     {
+        internal const int EntityMinVersion = 5;
         /// <summary>
         /// 
         /// </summary>
@@ -50,14 +54,15 @@ namespace ZyGames.Framework.Redis
         /// 
         /// </summary>
         internal const string EntityKeySplitChar = "_";
-        //private static PooledRedisClientManager _pooledRedis;
-        //private static RedisPoolSetting _defaultSetting;
+
+        private static string RedisInfoKey = "__RedisInfo";
         private static ICacheSerializer _serializer;
         private static RedisPoolSetting _setting;
-        private static ConcurrentDictionary<string, ObjectPoolWithExpire<RedisClient>> _poolCache = new ConcurrentDictionary<string, ObjectPoolWithExpire<RedisClient>>();
+        private static ConcurrentDictionary<string, ObjectPoolWithExpire<RedisClient>> _poolCache;
 
         static RedisConnectionPool()
         {
+            _poolCache = new ConcurrentDictionary<string, ObjectPoolWithExpire<RedisClient>>();
             _serializer = new ProtobufCacheSerializer();
         }
 
@@ -79,26 +84,77 @@ namespace ZyGames.Framework.Redis
         {
             _setting = setting;
             _serializer = serializer;
-            //string[] readWriteHosts = setting.Host.Split(',');
-            //string[] readOnlyHosts = setting.ReadOnlyHost.Split(',');
-            //var redisConfig = new RedisClientManagerConfig
-            //{
-            //    MaxWritePoolSize = setting.MaxWritePoolSize,
-            //    MaxReadPoolSize = setting.MaxReadPoolSize,
-            //    DefaultDb = setting.DbIndex,
-            //    AutoStart = false
-            //};
-            //_pooledRedis = new PooledRedisClientManager(readWriteHosts, readOnlyHosts, redisConfig);
-            //if (setting.ConnectTimeout > 0)
-            //{
-            //    _pooledRedis.ConnectTimeout = setting.ConnectTimeout;
-            //}
-            //if (setting.PoolTimeOut > 0)
-            //{
-            //    _pooledRedis.PoolTimeout = setting.PoolTimeOut;
-            //}
-            //_pooledRedis.Start();
+            InitRedisInfo();
         }
+
+        private static void InitRedisInfo()
+        {
+            ProcessTrans(RedisInfoKey, cli =>
+            {
+                RedisInfo = cli.GetValue(RedisInfoKey).ParseJson<RedisInfo>() ?? new RedisInfo();
+                var ips = Dns.GetHostAddresses(Dns.GetHostName());
+                string host = (ips.FirstOrDefault(t => t.AddressFamily == AddressFamily.InterNetwork) ?? ips[0]).ToString();
+                string serverPath = MathUtils.RuntimePath;
+                string hashCode = MathUtils.ToHexMd5Hash(host + serverPath);
+
+                var slaveName = ConfigManager.Configger.GetFirstOrAddConfig<MessageQueueSection>().SlaveMessageQueue;
+                var serializerType = _serializer is ProtobufCacheSerializer ? "Protobuf" : _serializer is JsonCacheSerializer ? "Json" : "";
+
+                if (string.IsNullOrEmpty(slaveName) && string.IsNullOrEmpty(RedisInfo.HashCode))
+                {
+                    RedisInfo.HashCode = hashCode;
+                    RedisInfo.ServerHost = host;
+                    RedisInfo.ServerPath = serverPath;
+                    RedisInfo.SerializerType = serializerType;
+                    RedisInfo.ClientVersion = _setting.ClientVersion;
+                    RedisInfo.StarTime = MathUtils.Now;
+                }
+                else if (string.IsNullOrEmpty(slaveName) && string.Equals(hashCode, RedisInfo.HashCode))
+                {
+                    RedisInfo.ClientVersion = _setting.ClientVersion;
+                    RedisInfo.SerializerType = serializerType;
+                    RedisInfo.StarTime = MathUtils.Now;
+                }
+                else if (!string.IsNullOrEmpty(slaveName))
+                {
+                    RedisInfo slaveInfo;
+                    //allow a slave server connect.
+                    if (!RedisInfo.SlaveSet.ContainsKey(slaveName))
+                    {
+                        slaveInfo = new RedisInfo();
+                        slaveInfo.HashCode = hashCode;
+                        slaveInfo.ServerHost = host;
+                        slaveInfo.ServerPath = serverPath;
+                        slaveInfo.SerializerType = serializerType;
+                        slaveInfo.ClientVersion = _setting.ClientVersion;
+                        slaveInfo.StarTime = MathUtils.Now;
+                        RedisInfo.SlaveSet[slaveName] = slaveInfo;
+                    }
+                    else if (string.Equals(hashCode, RedisInfo.SlaveSet[slaveName].HashCode))
+                    {
+                        slaveInfo = RedisInfo.SlaveSet[slaveName];
+                        slaveInfo.SerializerType = serializerType;
+                        slaveInfo.ClientVersion = _setting.ClientVersion;
+                        slaveInfo.StarTime = MathUtils.Now;
+                    }
+                    else
+                    {
+                        throw new Exception(string.Format("Redis server is using {0} slave \"{1}\" game server, it's path:{2}",
+                           slaveName, RedisInfo.ServerHost, RedisInfo.ServerPath));
+                    }
+                }
+                else
+                {
+                    throw new Exception(string.Format("Redis server is using \"{0}\" game server, it's path:{1}", RedisInfo.ServerHost, RedisInfo.ServerPath));
+                }
+                return true;
+            }, trans => trans.QueueCommand(c => c.SetEntry(RedisInfoKey, MathUtils.ToJson(RedisInfo))));
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public static RedisInfo RedisInfo { get; set; }
 
         /// <summary>
         /// SetNo
@@ -139,33 +195,67 @@ namespace ZyGames.Framework.Redis
             });
             return result;
         }
+
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="func"></param>
-        /// <exception cref="Exception"></exception>
-        public static void ProcessTrans(Action<IRedisTransaction> func)
+        /// <param name="watchKeys"></param>
+        /// <param name="processFunc"></param>
+        /// <param name="transFunc"></param>
+        /// <returns></returns>
+        public static bool ProcessTrans(string watchKeys, Func<RedisClient, bool> processFunc, Action<IRedisTransaction> transFunc)
         {
-            var client = GetClient();
+            return ProcessTrans(new[] { watchKeys }, processFunc, transFunc, null);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="watchKeys"></param>
+        /// <param name="processFunc"></param>
+        /// <param name="transFunc"></param>
+        /// <param name="errorFunc"></param>
+        public static bool ProcessTrans(string[] watchKeys, Func<RedisClient, bool> processFunc, Action<IRedisTransaction> transFunc, Action<IRedisTransaction, Exception> errorFunc)
+        {
+            bool result = false;
+            Process(client =>
+            {
+                result = ProcessTrans(client, watchKeys, () => processFunc(client), transFunc, errorFunc);
+            });
+            return result;
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="client"></param>
+        /// <param name="watchKeys"></param>
+        /// <param name="processFunc"></param>
+        /// <param name="transFunc"></param>
+        /// <param name="errorFunc"></param>
+        /// <returns></returns>
+        public static bool ProcessTrans(RedisClient client, string[] watchKeys, Func<bool> processFunc, Action<IRedisTransaction> transFunc, Action<IRedisTransaction, Exception> errorFunc)
+        {
+            client.Watch(watchKeys);
+            if (!processFunc())
+            {
+                client.UnWatch();
+                return false;
+            }
+            var trans = client.CreateTransaction();
             try
             {
-                var trans = client.CreateTransaction();
-                try
-                {
-                    func(trans);
-                    trans.Commit();
-                }
-                catch (Exception)
-                {
-                    trans.Rollback();
-                    throw;
-                }
+                transFunc(trans);
+                return trans.Commit();
             }
-            finally
+            catch (Exception ex)
             {
-                PuttPool(client);
+                trans.Rollback();
+                if (errorFunc != null) errorFunc(trans, ex);
             }
+            return false;
         }
+
         /// <summary>
         /// Process delegate
         /// </summary>
@@ -349,7 +439,6 @@ namespace ZyGames.Framework.Redis
         /// <returns></returns>
         public static bool TryGetEntity<T>(string redisKey, SchemaTable table, out List<T> list) where T : AbstractEntity
         {
-            list = new List<T>();
             bool result = false;
             try
             {
@@ -419,97 +508,122 @@ namespace ZyGames.Framework.Redis
                 }
                 catch (Exception er)
                 {
-                    list = null;
                     TraceLog.WriteError("Get redis \"{0}\" key:\"{1}\" cache error:{2}", typeof(T).FullName, redisKey, er);
                 }
 
-                try
-                {
-
-                    //从旧版本存储格式中查找
-                    if (typeof(T).IsSubclassOf(typeof(ShareEntity)))
-                    {
-                        byte[][] buffers = new byte[0][];
-                        List<string> keyList = new List<string>();
-                        ProcessReadOnly(client =>
-                        {
-                            keyList = client.SearchKeys(string.Format("{0}_*", redisKey));
-                            if (keyList != null && keyList.Count > 0)
-                            {
-                                buffers = client.MGet(keyList.ToArray());
-                            }
-                        });
-                        list = new List<T>();
-                        byte[][] keyCodes = new byte[buffers.Length][];
-                        for (int i = 0; i < buffers.Length; i++)
-                        {
-                            T entity = (T)_serializer.Deserialize(buffers[i], typeof(T));
-                            keyCodes[i] = ToByteKey(entity.GetKeyCode());
-                            list.Add(entity);
-                        }
-                        if (keyCodes.Length > 0)
-                        {
-                            //转移到新格式
-                            UpdateEntity(typeof(T).FullName, keyCodes, buffers);
-                            if (keyList.Count > 0)
-                            {
-                                Process(client => client.RemoveAll(keyList));
-                            }
-                        }
-                    }
-                    else
-                    {
-                        byte[] buffers = new byte[0];
-                        ProcessReadOnly(client =>
-                        {
-                            buffers = client.Get<byte[]>(redisKey) ?? new byte[0];
-                        });
-
-                        try
-                        {
-                            var dataSet = (Dictionary<string, T>)_serializer.Deserialize(buffers, typeof(Dictionary<string, T>));
-                            if (dataSet != null)
-                            {
-                                list = dataSet.Values.ToList();
-                            }
-                        }
-                        catch
-                        {
-                            //try get entity type data
-                            list = new List<T>();
-                            T temp = (T)_serializer.Deserialize(buffers, typeof(T));
-                            list.Add(temp);
-                        }
-                        //转移到新格式
-                        if (list != null)
-                        {
-                            byte[][] keyCodes = new byte[list.Count][];
-                            byte[][] values = new byte[list.Count][];
-                            for (int i = 0; i < list.Count; i++)
-                            {
-                                T entity = list[i];
-                                keyCodes[i] = ToByteKey(entity.GetKeyCode());
-                                values[i] = _serializer.Serialize(entity);
-                            }
-                            if (keyCodes.Length > 0)
-                            {
-                                UpdateEntity(typeof(T).FullName, keyCodes, values);
-                                Process(client => client.Remove(redisKey));
-                            }
-                        }
-                    }
-                    result = true;
-                }
-                catch (Exception er)
-                {
-                    list = null;
-                    TraceLog.WriteError("Get redis \"{0}\" key(old):\"{1}\" cache error:{2}", typeof(T).FullName, redisKey, er);
-                }
+                result = TryGetOlbValue(redisKey, out list);
             }
             catch (Exception ex)
             {
                 list = null;
                 TraceLog.WriteError("Get redis \"{0}\" key:\"{1}\" cache error:{2}", typeof(T).FullName, redisKey, ex);
+            }
+            return result;
+        }
+
+        private static bool TryGetOlbValue<T>(string redisKey, out List<T> list) where T : AbstractEntity
+        {
+            bool result = false;
+            try
+            {
+                if (RedisInfo.ClientVersion >= EntityMinVersion)
+                {
+                    list = new List<T>();
+                    return true;
+                }
+                //从旧版本存储格式中查找
+                if (typeof(T).IsSubclassOf(typeof(ShareEntity)))
+                {
+                    var tempList = new List<T>();
+                    Process(client =>
+                    {
+                        byte[][] buffers;
+                        List<string> keyList = client.SearchKeys(string.Format("{0}_*", redisKey));
+                        if (keyList == null || keyList.Count <= 0)
+                        {
+                            return;
+                        }
+                        ProcessTrans(client, keyList.ToArray(), () =>
+                        {
+                            buffers = client.MGet(keyList.ToArray());
+                            byte[][] keyCodes = new byte[buffers.Length][];
+                            for (int i = 0; i < buffers.Length; i++)
+                            {
+                                T entity = (T)_serializer.Deserialize(buffers[i], typeof(T));
+                                keyCodes[i] = ToByteKey(entity.GetKeyCode());
+                                tempList.Add(entity);
+                            }
+                            if (keyCodes.Length > 0)
+                            {
+                                //转移到新格式
+                                if (!UpdateEntity(typeof(T).FullName, keyCodes, buffers))
+                                {
+                                    //转移失败
+                                    return false;
+                                }
+                                if (keyList.Count > 0)
+                                {
+                                    return true;
+                                }
+                            }
+                            return false;
+                        }, trans => trans.QueueCommand(c => c.RemoveAll(keyList)), null);
+                    });
+                    list = tempList;
+                }
+                else
+                {
+                    var tempList = new List<T>();
+                    byte[] buffers = new byte[0];
+                    ProcessTrans(redisKey, client =>
+                    {
+                        try
+                        {
+                            buffers = client.Get<byte[]>(redisKey) ?? new byte[0];
+                            var dataSet = (Dictionary<string, T>)_serializer.Deserialize(buffers, typeof(Dictionary<string, T>));
+                            if (dataSet != null)
+                            {
+                                tempList = dataSet.Values.ToList();
+                            }
+                        }
+                        catch
+                        {
+                            //try get entity type data
+                            tempList = new List<T>();
+                            T temp = (T)_serializer.Deserialize(buffers, typeof(T));
+                            tempList.Add(temp);
+                        }
+                        //转移到新格式
+                        if (tempList != null)
+                        {
+                            byte[][] keyCodes = new byte[tempList.Count][];
+                            byte[][] values = new byte[tempList.Count][];
+                            for (int i = 0; i < tempList.Count; i++)
+                            {
+                                T entity = tempList[i];
+                                keyCodes[i] = ToByteKey(entity.GetKeyCode());
+                                values[i] = _serializer.Serialize(entity);
+                            }
+                            if (keyCodes.Length > 0)
+                            {
+                                if (!UpdateEntity(typeof(T).FullName, keyCodes, values))
+                                {
+                                    return false;
+                                }
+                                return true;
+                            }
+                        }
+                        return false;
+                    }, trans => trans.QueueCommand(c => c.Remove(redisKey)));
+
+                    list = tempList;
+                }
+                result = true;
+            }
+            catch (Exception er)
+            {
+                list = null;
+                TraceLog.WriteError("Get redis \"{0}\" key(old):\"{1}\" cache error:{2}", typeof(T).FullName, redisKey, er);
             }
             return result;
         }
@@ -575,20 +689,79 @@ namespace ZyGames.Framework.Redis
         /// <param name="values"></param>
         /// <param name="removeKeys"></param>
         /// <returns></returns>
-        internal static void UpdateEntity(string typeName, byte[][] keys, byte[][] values, params byte[][] removeKeys)
+        private static bool UpdateEntity(string typeName, byte[][] keys, byte[][] values, params byte[][] removeKeys)
         {
+            if (keys.Length == 0 && removeKeys.Length > 0)
+            {
+                return false;
+            }
             var hashId = GetRedisEntityKeyName(typeName);
-            Process(client =>
+            Process(cli =>
             {
                 if (keys.Length > 0)
                 {
-                    client.HMSet(hashId, keys, values);
+                    cli.HMSet(hashId, keys, values);
                 }
                 if (removeKeys.Length > 0)
                 {
-                    client.HDel(hashId, removeKeys);
+                    cli.HDel(hashId, removeKeys);
                 }
             });
+            return true;
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="trans"></param>
+        /// <param name="dataList"></param>
+        /// <returns></returns>
+        public static void TransUpdateEntity(IRedisTransaction trans, IEnumerable<AbstractEntity> dataList)
+        {
+            var groupList = dataList.GroupBy(t => t.GetType().FullName);
+            foreach (var g in groupList)
+            {
+                string typeName = g.Key;
+                var keys = new List<byte[]>();
+                var values = new List<byte[]>();
+                var removeKeys = new List<byte[]>();
+                var enm = g.GetEnumerator();
+                while (enm.MoveNext())
+                {
+                    AbstractEntity entity = enm.Current;
+                    string keyCode = entity.GetKeyCode();
+                    var keybytes = ToByteKey(keyCode);
+                    if (entity.IsDelete)
+                    {
+                        removeKeys.Add(keybytes);
+                        continue;
+                    }
+                    entity.Reset();
+                    keys.Add(keybytes);
+                    values.Add(_serializer.Serialize(entity));
+                }
+                TransUpdateEntity(trans, typeName, keys.ToArray(), values.ToArray(), removeKeys.ToArray());
+            }
+        }
+
+        private static void TransUpdateEntity(IRedisTransaction trans, string hashId, byte[][] keys, byte[][] values, byte[][] removeKeys)
+        {
+            if (keys.Length > 0)
+            {
+                trans.QueueCommand(c =>
+                {
+                    var cli = (RedisClient)c;
+                    cli.HMSet(hashId, keys, values);
+                });
+            }
+            if (removeKeys.Length > 0)
+            {
+                trans.QueueCommand(c =>
+                {
+                    var cli = (RedisClient)c;
+                    cli.HDel(hashId, removeKeys);
+                });
+            }
         }
 
         /// <summary>

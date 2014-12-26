@@ -164,7 +164,7 @@ namespace ZyGames.Framework.RPC.Sockets.WebSocket
                 response.AppendLine(string.Format(HandshakeHeadKeys.RespProtocol, handshakeData.Protocol));
             }
             response.AppendLine();
-            Handler.SendMessage(socket, response.ToString(), Encoding);
+            Handler.SendMessage(socket, response.ToString(), Encoding, result => { });
             return true;
         }
 

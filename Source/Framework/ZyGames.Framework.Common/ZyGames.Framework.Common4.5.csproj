@@ -96,6 +96,7 @@
     <Compile Include="Log\LogHelper.cs" />
     <Compile Include="Log\TraceLog.cs" />
     <Compile Include="MathUtils.cs" />
+    <Compile Include="ObjectCloner.cs" />
     <Compile Include="ObjectExtend.cs" />
     <Compile Include="ObjectPoolWithExpire.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

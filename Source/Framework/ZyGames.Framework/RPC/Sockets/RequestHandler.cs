@@ -75,19 +75,22 @@ namespace ZyGames.Framework.RPC.Sockets
         /// <param name="socket"></param>
         /// <param name="message"></param>
         /// <param name="encoding"></param>
-        public void SendMessage(ExSocket socket, string message, Encoding encoding)
+        /// <param name="callback"></param>
+        public void SendMessage(ExSocket socket, string message, Encoding encoding, Action<SocketAsyncResult> callback)
         {
             byte[] buffer = encoding.GetBytes(message);
-            SendMessage(socket, buffer);
+            SendMessage(socket, buffer, callback);
         }
+
         /// <summary>
         /// 
         /// </summary>
         /// <param name="socket"></param>
         /// <param name="buffer"></param>
-        public void SendMessage(ExSocket socket, byte[] buffer)
+        /// <param name="callback"></param>
+        public void SendMessage(ExSocket socket, byte[] buffer, Action<SocketAsyncResult> callback)
         {
-            AppServer.SendAsync(socket, buffer);
+            AppServer.SendAsync(socket, buffer, callback);
         }
 
         /// <summary>
@@ -145,7 +148,7 @@ namespace ZyGames.Framework.RPC.Sockets
             if (MessageProcessor != null)
             {
                 byte[] data = MessageProcessor.CloseMessage(socket, opCode, reason);
-                if (data != null) AppServer.SendAsync(socket, data);
+                if (data != null) AppServer.SendAsync(socket, data, result => { });
             }
         }
     }

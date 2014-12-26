@@ -40,7 +40,8 @@ namespace ZyGames.Framework.RPC.Sockets
         /// </summary>
         /// <param name="socket"></param>
         /// <param name="buffer"></param>
-        protected internal abstract bool SendAsync(ExSocket socket, byte[] buffer);
+        /// <param name="callback"></param>
+        protected internal abstract Task<bool> SendAsync(ExSocket socket, byte[] buffer, Action<SocketAsyncResult> callback);
 
         /// <summary>
         /// has trigger CloseHandshake method
@@ -57,7 +58,7 @@ namespace ZyGames.Framework.RPC.Sockets
         /// <param name="data"></param>
         /// <param name="offset"></param>
         /// <param name="count"></param>
-        public abstract void PostSend(ExSocket socket, byte[] data, int offset, int count);
+        public abstract Task PostSend(ExSocket socket, byte[] data, int offset, int count);
 
         /// <summary>
         /// 
@@ -67,7 +68,18 @@ namespace ZyGames.Framework.RPC.Sockets
         /// <param name="data"></param>
         /// <param name="offset"></param>
         /// <param name="count"></param>
-        public abstract void PostSend(ExSocket socket, sbyte opCode, byte[] data, int offset, int count);
+        public abstract Task PostSend(ExSocket socket, sbyte opCode, byte[] data, int offset, int count);
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="socket"></param>
+        /// <param name="opCode"></param>
+        /// <param name="data"></param>
+        /// <param name="offset"></param>
+        /// <param name="count"></param>
+        /// <param name="callback"></param>
+        public abstract Task PostSend(ExSocket socket, sbyte opCode, byte[] data, int offset, int count, Action<SocketAsyncResult> callback);
 
         /// <summary>
         /// 

@@ -186,6 +186,7 @@
     <Compile Include="Plugin\Test\CaseManager.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Redis\RedisConnectionPool.cs" />
+    <Compile Include="Redis\RedisInfo.cs" />
     <Compile Include="Redis\RedisPoolSetting.cs" />
     <Compile Include="RPC\Http\ByteResponse.cs" />
     <Compile Include="RPC\Http\ConfigurationDictionary.cs" />
@@ -242,6 +243,7 @@
     <Compile Include="RPC\Sockets\MessageHandler.cs" />
     <Compile Include="RPC\Sockets\OpCode.cs" />
     <Compile Include="RPC\Sockets\RequestHandler.cs" />
+    <Compile Include="RPC\Sockets\SocketAsyncResult.cs" />
     <Compile Include="RPC\Sockets\SocketListener.cs" />
     <Compile Include="RPC\Sockets\SocketSettings.cs" />
     <Compile Include="RPC\Sockets\Threading\CallerThreadContext.cs" />

@@ -119,6 +119,7 @@ namespace ZyGames.Framework.Cache.Generic
         {
             get
             {
+                
                 if (_container != null)
                 {
                     return _container.Collection;

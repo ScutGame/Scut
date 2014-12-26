@@ -124,12 +124,30 @@ namespace ZyGames.Framework.RPC.Sockets
         }
 
         /// <summary>
+        /// 
+        /// </summary>
+        public SocketAsyncResult AsyncResult { get; set; }
+
+        /// <summary>
         /// init
         /// </summary>
         public DataToken()
         {
             byteArrayForPrefix = new byte[4];
             DataFrames = new List<DataSegmentFrame>();
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public void ResultCallback(ResultCode result, Exception error = null)
+        {
+            if (AsyncResult != null)
+            {
+                AsyncResult.Result = result;
+                AsyncResult.Error = error;
+                AsyncResult.Callback();
+            }
         }
 
         /// <summary>
@@ -148,6 +166,7 @@ namespace ZyGames.Framework.RPC.Sockets
             byteArrayMask = null;
             maskBytesDone = 0;
             HeadFrame = null;
+            AsyncResult = null;
             if (skip)
             {
                 bufferSkip = 0;

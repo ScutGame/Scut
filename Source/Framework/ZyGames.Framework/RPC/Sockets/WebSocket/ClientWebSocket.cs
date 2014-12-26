@@ -135,6 +135,18 @@ namespace ZyGames.Framework.RPC.Sockets.WebSocket
             SocketEventHandler handler = OnOpened;
             if (handler != null) handler(this, e);
         }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public event Action<int> OnCloseStatus;
+
+        protected void TriggerCloseStatus(int closeStatus)
+        {
+            Action<int> handler = OnCloseStatus;
+            if (handler != null) handler(closeStatus);
+        }
+
         /// <summary>
         /// 
         /// </summary>
@@ -218,6 +230,17 @@ namespace ZyGames.Framework.RPC.Sockets.WebSocket
             TriggerClosed(e);
             base.DoClosed(e);
         }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="statusCode"></param>
+        protected override void OnClosedStatus(int statusCode)
+        {
+            TriggerCloseStatus(statusCode);
+            base.OnClosedStatus(statusCode);
+        }
+
         /// <summary>
         /// 
         /// </summary>
@@ -232,24 +255,24 @@ namespace ZyGames.Framework.RPC.Sockets.WebSocket
         /// 
         /// </summary>
         /// <param name="message"></param>
-        public void Send(string message)
+        public async Task Send(string message)
         {
             var data = Encoding.UTF8.GetBytes(message);
-            Send(data);
+            await Send(data);
         }
 
         /// <summary>
         /// 
         /// </summary>
         /// <param name="data"></param>
-        public void Send(byte[] data)
+        public async Task Send(byte[] data)
         {
             if (connectState != ConnectState.Success)
             {
                 TriggerError(new SocketEventArgs() { Socket = Socket, Source = new DataMeaage() { Message = "send fail, connect:" + connectState } });
                 return;
             }
-            PostSend(data, 0, data.Length);
+            await PostSend(data, 0, data.Length);
         }
 
         /// <summary>

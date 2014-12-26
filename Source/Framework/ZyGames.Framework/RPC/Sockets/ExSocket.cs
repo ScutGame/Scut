@@ -38,7 +38,7 @@ namespace ZyGames.Framework.RPC.Sockets
     {
         private Socket socket;
         private IPEndPoint remoteEndPoint;
-        private ConcurrentQueue<byte[]> sendQueue;
+        private ConcurrentQueue<SocketAsyncResult> sendQueue;
         private int isInSending;
         internal DateTime LastAccessTime;
 
@@ -51,7 +51,7 @@ namespace ZyGames.Framework.RPC.Sockets
             HashCode = Guid.NewGuid();
             this.socket = socket;
             this.remoteEndPoint = (IPEndPoint)socket.RemoteEndPoint;
-            sendQueue = new ConcurrentQueue<byte[]>();
+            sendQueue = new ConcurrentQueue<SocketAsyncResult>();
         }
 
         /// <summary>
@@ -89,7 +89,7 @@ namespace ZyGames.Framework.RPC.Sockets
         /// Web socket handshake data
         /// </summary>
         public HandshakeData Handshake { get; set; }
-        
+
         /// <summary>
         /// 
         /// </summary>
@@ -108,11 +108,12 @@ namespace ZyGames.Framework.RPC.Sockets
             WorkSocket.Close();
         }
 
-        internal void Enqueue(byte[] data)
+        internal void Enqueue(byte[] data, Action<SocketAsyncResult> callback)
         {
-            sendQueue.Enqueue(data);
+            sendQueue.Enqueue(new SocketAsyncResult(data) { Socket = this, ResultCallback = callback });
         }
-        internal bool TryDequeue(out byte[] result)
+        
+        internal bool TryDequeue(out SocketAsyncResult result)
         {
             return sendQueue.TryDequeue(out result);
         }

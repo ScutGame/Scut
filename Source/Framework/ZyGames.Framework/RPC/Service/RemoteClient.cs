@@ -25,6 +25,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace ZyGames.Framework.RPC.Service
 {
@@ -76,13 +77,13 @@ namespace ZyGames.Framework.RPC.Service
         /// Send
         /// </summary>
         /// <param name="data"></param>
-        public abstract void Send(string data);
+        public abstract Task Send(string data);
 
         /// <summary>
         /// Send
         /// </summary>
         /// <param name="data"></param>
-        public abstract void Send(byte[] data);
+        public abstract Task Send(byte[] data);
 
         /// <summary>
         /// 

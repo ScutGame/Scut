@@ -330,7 +330,7 @@ namespace ZyGames.Framework.Cache.Generic
             {
                 _list.Insert(index, item);
             }
-            Notify(item, CacheItemChangeType.Remove, PropertyName);
+            Notify(item, CacheItemChangeType.Add, PropertyName);
         }
 
         /// <summary>

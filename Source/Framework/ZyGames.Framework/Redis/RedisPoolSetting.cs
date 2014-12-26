@@ -97,5 +97,14 @@ namespace ZyGames.Framework.Redis
             get { return _redisSection.DbIndex; }
             set { _redisSection.DbIndex = value; }
         }
+
+        /// <summary>
+        /// ClientVersion
+        /// </summary>
+        public int ClientVersion
+        {
+            get { return _redisSection.ClientVersion; }
+            set { _redisSection.ClientVersion = value; }
+        }
     }
 }

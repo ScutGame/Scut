@@ -195,10 +195,10 @@ namespace ZyGames.Framework.RPC.Sockets.WebSocket
                     response.AppendLine(string.Format(HandshakeHeadKeys.RespProtocol, handshakeData.Protocol));
                 }
                 response.AppendLine();
-                Handler.SendMessage(socket, response.ToString(), Encoding);
+                Handler.SendMessage(socket, response.ToString(), Encoding, result => { });
                 //Encrypt message
                 byte[] securityKey = GetResponseSecurityKey(secKey1, secKey2, secKey3);
-                Handler.SendMessage(socket, securityKey);
+                Handler.SendMessage(socket, securityKey,  result => { });
 
                 return true;
             }

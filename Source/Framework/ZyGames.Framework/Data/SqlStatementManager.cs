@@ -40,6 +40,7 @@ namespace ZyGames.Framework.Data
     /// </summary>
     public abstract class SqlStatementManager
     {
+        private static string SlaveMessageQueue;
         /// <summary>
         /// 同步到数据库的Sql队列, 存储格式List:SqlStatement对象
         /// </summary>
@@ -79,7 +80,7 @@ namespace ZyGames.Framework.Data
         {
             TraceLog.ReleaseWriteDebug("Sql write queue start init...");
             MessageQueueSection section = GetSection();
-
+            SlaveMessageQueue = section.SlaveMessageQueue;
             if (_queueWatchTimers != null && _queueWatchTimers.Length != section.SqlSyncQueueNum)
             {
                 foreach (var timer in _queueWatchTimers)
@@ -189,7 +190,7 @@ namespace ZyGames.Framework.Data
             bool result = false;
             try
             {
-                RedisConnectionPool.Process(client => client.ZAdd(SqlSyncErrorQueueKey, DateTime.Now.Ticks, value));
+                RedisConnectionPool.Process(client => client.ZAdd(SlaveMessageQueue + SqlSyncErrorQueueKey, DateTime.Now.Ticks, value));
                 result = true;
             }
             catch (Exception ex)
@@ -207,7 +208,8 @@ namespace ZyGames.Framework.Data
         internal static string GetSqlQueueKey(int identityId)
         {
             int index = identityId % _queueWatchTimers.Length;
-            string queueKey = string.Format("{0}{1}",
+            string queueKey = string.Format("{0}{1}{2}",
+                SlaveMessageQueue,
                 SqlSyncQueueKey,
                 _queueWatchTimers.Length > 1 ? ":" + index : "");
             return queueKey;

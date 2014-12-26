@@ -89,7 +89,7 @@ namespace ZyGames.Framework.RPC.Sockets.WebSocket
             string handshakeData = CreateHandshakeData(dataToken);
             try
             {
-                Handler.SendMessage(dataToken.Socket, handshakeData, Encoding);
+                Handler.SendMessage(dataToken.Socket, handshakeData, Encoding, result => { });
                 return HandshakeResult.Success;
             }
             catch (Exception)

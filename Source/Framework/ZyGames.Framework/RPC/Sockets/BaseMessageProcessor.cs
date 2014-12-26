@@ -82,7 +82,7 @@ namespace ZyGames.Framework.RPC.Sockets
         /// </summary>
         /// <param name="data"></param>
         /// <returns></returns>
-        public sbyte GetCloseStatus(byte[] data)
+        public int GetCloseStatus(byte[] data)
         {
             if (data == null || data.Length <= 1)
             {
@@ -94,7 +94,7 @@ namespace ZyGames.Framework.RPC.Sockets
             {
                 return OpCode.Empty;
             }
-            return (sbyte)code;
+            return code;
         }
 
         /// <summary>

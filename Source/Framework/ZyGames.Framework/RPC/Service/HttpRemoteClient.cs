@@ -27,6 +27,7 @@ using System.Net;
 using System.Net.Security;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace ZyGames.Framework.RPC.Service
 {
@@ -86,19 +87,19 @@ namespace ZyGames.Framework.RPC.Service
         /// Send
         /// </summary>
         /// <param name="data"></param>
-        public override void Send(string data)
+        public override async Task Send(string data)
         {
             var param = _encoding.GetBytes(data);
-            Send(param);
+            await Send(param);
         }
 
         /// <summary>
         /// Send
         /// </summary>
         /// <param name="data"></param>
-        public override void Send(byte[] data)
+        public override async Task Send(byte[] data)
         {
-            HttpWebResponse response = GetResponse(data);
+            var response = await GetResponse(data);
             Stream stream = response.GetResponseStream();
             RemoteEventArgs e = new RemoteEventArgs();
             if (stream == null)
@@ -114,7 +115,7 @@ namespace ZyGames.Framework.RPC.Service
         /// 
         /// </summary>
         /// <returns></returns>
-        protected HttpWebResponse GetResponse(byte[] data)
+        protected async Task<WebResponse> GetResponse(byte[] data)
         {
             string url = _url;
 
@@ -156,7 +157,7 @@ namespace ZyGames.Framework.RPC.Service
             if (IsPostMethod)
             {
                 client.Method = "POST";
-                using (Stream stream = client.GetRequestStream())
+                using (Stream stream = await client.GetRequestStreamAsync())
                 {
                     stream.Write(data, 0, data.Length);
                 }
@@ -165,7 +166,7 @@ namespace ZyGames.Framework.RPC.Service
             {
                 client.Method = "GET";
             }
-            return client.GetResponse() as HttpWebResponse;
+            return await client.GetResponseAsync();
         }
 
         /// <summary>

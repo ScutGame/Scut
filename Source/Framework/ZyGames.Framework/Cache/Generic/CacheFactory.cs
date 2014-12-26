@@ -33,6 +33,7 @@ using ZyGames.Framework.Model;
 using ZyGames.Framework.Net;
 using ZyGames.Framework.Redis;
 using ZyGames.Framework.Script;
+using ServiceStack.Redis;
 
 namespace ZyGames.Framework.Cache.Generic
 {
@@ -161,21 +162,31 @@ namespace ZyGames.Framework.Cache.Generic
                 {
                     //临时队列删除Entity
                     string setId = (isEntityType ? RedisConnectionPool.EncodeTypeName(typeName) : redisKey) + ":remove";
-                    var data = client.Get<byte[]>(setId);
-                    if (data != null)
+                    IDictionary dict = null;
+                    RedisConnectionPool.ProcessTrans(client, new string[] { setId }, () =>
                     {
-                        var dict = (IDictionary)serializer.Deserialize(data, type);
+                        var data = client.Get<byte[]>(setId);
+                        if (data == null)
+                        {
+                            return false;
+                        }
+                        dict = (IDictionary)serializer.Deserialize(data, type);
                         entity = dict[entityKey];
                         dict.Remove(entityKey);
-                        if (dict.Count > 0)
+
+                        return true;
+                    }, trans =>
+                    {
+                        if (dict != null && dict.Count > 0)
                         {
-                            client.Set(setId, serializer.Serialize(dict));
+                            trans.QueueCommand(c => c.Set(setId, serializer.Serialize(dict)));
                         }
                         else
                         {
-                            client.Remove(setId);
+                            trans.QueueCommand(c => c.Remove(setId));
                         }
-                    }
+                    }, null);
+
                 }
 
             });
@@ -290,8 +301,8 @@ namespace ZyGames.Framework.Cache.Generic
                     string personalKey = childKeys[0];
                     string entityKey = childKeys.Length > 1 ? childKeys[1] : "";
                     if (!string.IsNullOrEmpty(personalKey) &&
-                        (container.Collection.TryGetValue(personalKey, out itemSet) ||
-                        container.Collection.TryGetValue(entityKey, out itemSet)))
+                        (container.Collection.TryGetValue(entityKey, out itemSet) ||
+                        container.Collection.TryGetValue(personalKey, out itemSet)))
                     {
                         switch (itemSet.ItemType)
                         {
