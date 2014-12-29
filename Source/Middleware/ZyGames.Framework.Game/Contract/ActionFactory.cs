@@ -192,10 +192,11 @@ namespace ZyGames.Framework.Game.Contract
         /// <param name="actionId"></param>
         /// <param name="session"></param>
         /// <param name="parameters"></param>
+        /// <param name="opCode"></param>
         /// <returns></returns>
-        public static byte[] GetActionResponse(IActionDispatcher actionDispatcher, int actionId, GameSession session, Parameters parameters)
+        public static byte[] GetActionResponse(IActionDispatcher actionDispatcher, int actionId, GameSession session, Parameters parameters, sbyte opCode)
         {
-            var requestPackage = GetResponsePackage(actionId, session, parameters);
+            var requestPackage = GetResponsePackage(actionId, session, parameters, opCode);
             return GetActionResponse(actionDispatcher, actionId, session, requestPackage);
         }
 
@@ -205,8 +206,9 @@ namespace ZyGames.Framework.Game.Contract
         /// <param name="actionId"></param>
         /// <param name="session"></param>
         /// <param name="parameters"></param>
+        /// <param name="opCode"></param>
         /// <returns></returns>
-        public static RequestPackage GetResponsePackage(int actionId, GameSession session, Parameters parameters)
+        public static RequestPackage GetResponsePackage(int actionId, GameSession session, Parameters parameters, sbyte opCode)
         {
             int userId = session != null ? session.UserId : 0;
             string sessionId = session != null ? session.SessionId : "";
@@ -234,6 +236,7 @@ namespace ZyGames.Framework.Game.Contract
             RequestPackage requestPackage = new RequestPackage(0, sessionId, actionId, userId);
             requestPackage.UrlParam = shareParam.ToString().TrimStart('&');
             requestPackage.IsUrlParam = true;
+            requestPackage.OpCode = opCode;
             requestPackage.Bind(session);
             return requestPackage;
         }
@@ -337,15 +340,16 @@ namespace ZyGames.Framework.Game.Contract
         /// <param name="userList"></param>
         /// <param name="parameters"></param>
         /// <param name="complateHandle"></param>
+        /// <param name="opCode"></param>
         /// <param name="onlineInterval"></param>
         /// <returns></returns>
-        public static async System.Threading.Tasks.Task BroadcastAction<T>(int actionId, List<T> userList, Parameters parameters, Action<SocketAsyncResult> complateHandle, int onlineInterval = 0)
+        public static async System.Threading.Tasks.Task BroadcastAction<T>(int actionId, List<T> userList, Parameters parameters, Action<SocketAsyncResult> complateHandle, sbyte opCode = OpCode.Binary, int onlineInterval = 0)
             where T : IUser
         {
             await BroadcastAction(actionId, userList, parameters, (u, s, result) =>
             {
                 if (complateHandle != null) complateHandle(result);
-            }, onlineInterval);
+            }, opCode, onlineInterval);
         }
 
         /// <summary>
@@ -357,7 +361,8 @@ namespace ZyGames.Framework.Game.Contract
         /// <param name="parameters"></param>
         /// <param name="complateHandle"></param>
         /// <param name="onlineInterval"></param>
-        public static async System.Threading.Tasks.Task BroadcastAction<T>(int actionId, List<T> userList, Parameters parameters, Action<T, GameSession, SocketAsyncResult> complateHandle, int onlineInterval = 0) where T : IUser
+        /// <param name="opCode"></param>
+        public static async System.Threading.Tasks.Task BroadcastAction<T>(int actionId, List<T> userList, Parameters parameters, Action<T, GameSession, SocketAsyncResult> complateHandle, sbyte opCode, int onlineInterval) where T : IUser
         {
             List<GameSession> sessionList = new List<GameSession>();
             GameSession session;
@@ -372,7 +377,7 @@ namespace ZyGames.Framework.Game.Contract
             }
             if (sessionList.Count == 0) return;
 
-            RequestPackage package = GetResponsePackage(actionId, sessionList[0], parameters);
+            RequestPackage package = GetResponsePackage(actionId, sessionList[0], parameters, opCode);
             await BroadcastAction(actionId, sessionList, package, (s, result) =>
             {
                 if (complateHandle != null)
@@ -390,7 +395,7 @@ namespace ZyGames.Framework.Game.Contract
         /// <param name="package">请求参数</param>
         /// <param name="complateHandle">成功回调</param>
         /// <param name="onlineInterval">online interval second</param>
-        public static async System.Threading.Tasks.Task BroadcastAction(int actionId, List<GameSession> sessionList, RequestPackage package, Action<GameSession, SocketAsyncResult> complateHandle, int onlineInterval = 0)
+        public static async System.Threading.Tasks.Task BroadcastAction(int actionId, List<GameSession> sessionList, RequestPackage package, Action<GameSession, SocketAsyncResult> complateHandle, int onlineInterval)
         {
 
             if (sessionList.Count == 0) return;
@@ -454,15 +459,16 @@ namespace ZyGames.Framework.Game.Contract
         /// <param name="actionId"></param>
         /// <param name="parameters"></param>
         /// <param name="complateHandle"></param>
+        /// <param name="opCode"></param>
         /// <param name="onlineInterval"></param>
         /// <returns></returns>
-        public static async System.Threading.Tasks.Task SendAsyncAction<T>(List<T> userList, int actionId, Parameters parameters, Action<SocketAsyncResult> complateHandle, int onlineInterval = 0)
+        public static async System.Threading.Tasks.Task SendAsyncAction<T>(List<T> userList, int actionId, Parameters parameters, Action<SocketAsyncResult> complateHandle, sbyte opCode = OpCode.Binary, int onlineInterval = 0)
             where T : IUser
         {
             await SendAsyncAction(userList, actionId, parameters, (u, s, result) =>
             {
                 if (complateHandle != null) complateHandle(result);
-            }, onlineInterval);
+            }, opCode, onlineInterval);
         }
 
         /// <summary>
@@ -473,8 +479,9 @@ namespace ZyGames.Framework.Game.Contract
         /// <param name="actionId"></param>
         /// <param name="parameters"></param>
         /// <param name="complateHandle"></param>
+        /// <param name="opCode"></param>
         /// <param name="onlineInterval"></param>
-        public static async System.Threading.Tasks.Task SendAsyncAction<T>(List<T> userList, int actionId, Parameters parameters, Action<T, GameSession, SocketAsyncResult> complateHandle, int onlineInterval = 0) where T : IUser
+        public static async System.Threading.Tasks.Task SendAsyncAction<T>(List<T> userList, int actionId, Parameters parameters, Action<T, GameSession, SocketAsyncResult> complateHandle, sbyte opCode, int onlineInterval) where T : IUser
         {
             foreach (var user in userList)
             {
@@ -482,7 +489,7 @@ namespace ZyGames.Framework.Game.Contract
                 GameSession session = GameSession.Get(user.GetUserId());
                 if (session != null)
                 {
-                    RequestPackage package = GetResponsePackage(actionId, session, parameters);
+                    RequestPackage package = GetResponsePackage(actionId, session, parameters, opCode);
                     await SendAsyncAction(session, actionId, package, (s, result) =>
                       {
                           if (complateHandle != null)
@@ -508,15 +515,16 @@ namespace ZyGames.Framework.Game.Contract
         /// <param name="actionId"></param>
         /// <param name="parameters"></param>
         /// <param name="complateHandle"></param>
+        /// <param name="opCode"></param>
         /// <param name="onlineInterval"></param>
-        public static async System.Threading.Tasks.Task SendAsyncAction(List<GameSession> sessionList, int actionId, Parameters parameters, Action<GameSession, SocketAsyncResult> complateHandle, int onlineInterval = 0)
+        public static async System.Threading.Tasks.Task SendAsyncAction(List<GameSession> sessionList, int actionId, Parameters parameters, Action<GameSession, SocketAsyncResult> complateHandle, sbyte opCode, int onlineInterval)
         {
             foreach (var session in sessionList)
             {
                 GameSession temp = session;
                 if (session != null)
                 {
-                    RequestPackage package = GetResponsePackage(actionId, session, parameters);
+                    RequestPackage package = GetResponsePackage(actionId, session, parameters, opCode);
                     await SendAsyncAction(session, actionId, package, (s, result) =>
                     {
                         if (complateHandle != null)
@@ -543,7 +551,7 @@ namespace ZyGames.Framework.Game.Contract
         /// <param name="package">请求参数</param>
         /// <param name="complateHandle">成功回调</param>
         /// <param name="onlineInterval">online interval second</param>
-        public static async System.Threading.Tasks.Task SendAsyncAction(GameSession session, int actionId, RequestPackage package, Action<GameSession, SocketAsyncResult> complateHandle, int onlineInterval = 0)
+        public static async System.Threading.Tasks.Task SendAsyncAction(GameSession session, int actionId, RequestPackage package, Action<GameSession, SocketAsyncResult> complateHandle, int onlineInterval)
         {
             await System.Threading.Tasks.Task.Run(async () =>
             {
