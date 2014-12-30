@@ -1,6 +1,6 @@
-/*
-²ÎÊı:
-$dbpath Êı¾İ¿â´æ´¢Â·¾¶
+ï»¿/*
+å‚æ•°:
+$dbpath æ•°æ®åº“å­˜å‚¨è·¯å¾„
 */
 
 /*=========================================================================================*/
@@ -17,7 +17,7 @@ go
 
 use snscenter
 GO
---È¨ÏŞ
+--æƒé™
 IF NOT EXISTS (SELECT * FROM sys.database_principals WHERE name = N'$(gameuser)')
 	CREATE USER $(gameuser) FOR LOGIN $(gameuser) WITH DEFAULT_SCHEMA=[dbo]
 GO
@@ -28,7 +28,7 @@ GO
 
 
 
---´´½¨±í
+--åˆ›å»ºè¡¨
 /*=========================================================================================*/
 SET ANSI_NULLS ON
 GO

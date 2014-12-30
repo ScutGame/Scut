@@ -1,4 +1,4 @@
-@echo off
+ï»¿@echo off
 
 cd %cd%
 
@@ -10,31 +10,31 @@ set gamepass=123
 set dbpath=%cd%\Data
 
 
-@echo ÅäÖÃ²ÎÊıÈçÏÂ£º
-@echo     [dbServer] Êı¾İ¿â·şÎñÆ÷:%dbServer%
-@echo     [dbAcount] ¿É´´½¨Êı¾İ¿âµÄÕÊºÅ(sa):%dbAcount%
-@echo     [dbPass]   ¿É´´½¨Êı¾İ¿âµÄÃÜÂë(sa):%dbPass%
-@echo     [gameuser] ÓÎÏ·µÇÂ¼ÕÊºÅ:%gameuser%
-@echo     [gamepass] ÓÎÏ·µÇÂ¼ÃÜÂë:%gamepass%
-@echo     [dbpath] Êı¾İ¿â´æ´¢Â·¾¶:%dbpath%
+@echo é…ç½®å‚æ•°å¦‚ä¸‹ï¼š
+@echo     [dbServer] æ•°æ®åº“æœåŠ¡å™¨:%dbServer%
+@echo     [dbAcount] å¯åˆ›å»ºæ•°æ®åº“çš„å¸å·(sa):%dbAcount%
+@echo     [dbPass]   å¯åˆ›å»ºæ•°æ®åº“çš„å¯†ç (sa):%dbPass%
+@echo     [gameuser] æ¸¸æˆç™»å½•å¸å·:%gameuser%
+@echo     [gamepass] æ¸¸æˆç™»å½•å¯†ç :%gamepass%
+@echo     [dbpath] æ•°æ®åº“å­˜å‚¨è·¯å¾„:%dbpath%
 @echo ================================================================
 
 MD %dbpath%
 
 Sqlcmd -? 2>nul 1>nul
 if errorlevel 1 (
-echo Çë°²×°sqlcmdÖ§³Ö¡£&pause>nul
+echo è¯·å®‰è£…sqlcmdæ”¯æŒã€‚&pause>nul
 exit
 )
 
-Sqlcmd -S %dbServer% -U %dbAcount% -P %dbPass% -d master -i ´´½¨ÓÎÏ·ÕÊºÅ.sql -v gameuser="%gameuser%" loginPass="%gamepass%"
-@echo ´´½¨Êı¾İ¿âµÇÂ¼ÕÊºÅ³É¹¦!
+Sqlcmd -S %dbServer% -U %dbAcount% -P %dbPass% -d master -i åˆ›å»ºæ¸¸æˆå¸å·.sql -v gameuser="%gameuser%" loginPass="%gamepass%"
+@echo åˆ›å»ºæ•°æ®åº“ç™»å½•å¸å·æˆåŠŸ!
 
-Sqlcmd -S %dbServer% -U %dbAcount% -P %dbPass% -d master -i ÓÃ»§ÖĞĞÄ±í½á¹¹.sql -v gameuser="%gameuser%" dbpath="%dbpath%" 
-@echo ÕıÔÚ´´½¨ÓÃ»§ÖĞĞÄÊı¾İ¿â³É¹¦!
+Sqlcmd -S %dbServer% -U %dbAcount% -P %dbPass% -d master -i ç”¨æˆ·ä¸­å¿ƒè¡¨ç»“æ„.sql -v gameuser="%gameuser%" dbpath="%dbpath%" 
+@echo æ­£åœ¨åˆ›å»ºç”¨æˆ·ä¸­å¿ƒæ•°æ®åº“æˆåŠŸ!
 
-Sqlcmd -S %dbServer% -U %dbAcount% -P %dbPass% -d master -i ·Ö·şÓë³äÖµÖĞĞÄ±í½á¹¹.sql -v gameuser="%gameuser%" dbpath="%dbpath%" 
-@echo ´´½¨·Ö·şÓë³äÖµÖĞĞÄÊı¾İ¿â³É¹¦!
+Sqlcmd -S %dbServer% -U %dbAcount% -P %dbPass% -d master -i åˆ†æœä¸å……å€¼ä¸­å¿ƒè¡¨ç»“æ„.sql -v gameuser="%gameuser%" dbpath="%dbpath%" 
+@echo åˆ›å»ºåˆ†æœä¸å……å€¼ä¸­å¿ƒæ•°æ®åº“æˆåŠŸ!
 
-@echo Ö´ĞĞ³É¹¦
-ECHO ÔËĞĞ½áÊø£¡& PAUSE
+@echo æ‰§è¡ŒæˆåŠŸ
+ECHO è¿è¡Œç»“æŸï¼& PAUSE

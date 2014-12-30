@@ -1,4 +1,4 @@
-
+﻿
 /*create databases*/
 DROP database IF EXISTS `snscenter`;
 create database `snscenter` DEFAULT CHARACTER SET gbk COLLATE gbk_chinese_ci;

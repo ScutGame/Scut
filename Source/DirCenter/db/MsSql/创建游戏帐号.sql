@@ -1,6 +1,6 @@
-/*
-²ÎÊı:
-$loginPass ÓÎÏ·ÖĞÊ¹ÓÃÊı¾İ¿âµÇÂ¼ÕËºÅ(game_user)µÄÃÜÂë
+ï»¿/*
+å‚æ•°:
+$loginPass æ¸¸æˆä¸­ä½¿ç”¨æ•°æ®åº“ç™»å½•è´¦å·(game_user)çš„å¯†ç 
 */
 
 IF NOT EXISTS (SELECT * FROM sys.sql_logins WHERE name = N'$(gameuser)')
