@@ -1,6 +1,6 @@
 # README
 
-[![Build Status](http://scutgame.com/images/passing.png?branch=6.7.8.7)](http://scutgame.com/download/)
+[![Build Status](http://scutgame.com/images/passing.png?branch=6.7.9.6)](http://scutgame.com/download/)
 
 
 ## What's Scut?
@@ -94,32 +94,14 @@ Language:
 
 ## Update Log
 
-### Version: 6.7.9.5 (2014-12-3) Beta
+### Version: 6.7.9.6 (2015-1-9) RC
 
-* 修改对定时器任务计划简化配置
-* 修改支持日期类型的协议参数问题
+* Modify WebSocket Bug
+* Modify the entity has only one field update Bug
 
-* 增加Console安全退出方式
-* 增加WebSocket通讯支持
-* 增加Config配置文件修改生效机制
-
-### Version: 6.7.9.0 (2014-10-24) Stable
-
-* 优化数据加载，是否从Redis的垃圾表加载数据是可配置的，默认不加载
-* 优化玩家的请求锁，多个Action可以并发
-* 修改聊天中间件显示出错
-* 修改Session默认过期时间为2小时
-* 修改优化Redis连接池管理
-* 修改优化Redis实体数据同步队列
-* 修改实体的Change事件通知为同步方式
-* 修改实体中Guid类型字段在DB中不能删除
-* 修改DB连接会间断连接失败问题
-* 修改Linux平台Console更改字体颜色问题
-
-* 增加心跳过期事件
-* 增加获取在线玩家方法
-* 增加实体在Redis或DB的修改时间字段，可配置DB是是否增加此字段，默认不增加
-* 增加动态执行源码字串的功能
+* Add the entity's field support inherited from the parent class
+* Add the entity read and write DB data to support configuration
+* Add game server's info of Redis, prevent has be used of multiple game service
 
 
 old version [more](http://scutgame.com/log).

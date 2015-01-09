@@ -32,6 +32,8 @@ namespace ZyGames.Framework.Model
     [AttributeUsage(AttributeTargets.Class, AllowMultiple = false)]
     public class EntityTableAttribute : Attribute
     {
+        private AccessLevel _accessLevel;
+
         /// <summary>
         /// 默认构造配置
         /// </summary>
@@ -119,13 +121,31 @@ namespace ZyGames.Framework.Model
             PersonalName = personalName ?? "UserId";//默认值
             IsExpired = true;
         }
+
         /// <summary>
         /// 访问权限级别
         /// </summary>
         public AccessLevel AccessLevel
         {
-            get;
-            set;
+            get { return _accessLevel; }
+            set
+            {
+                _accessLevel = value;
+                switch (value)
+                {
+                    case AccessLevel.ReadOnly:
+                        StorageType |= StorageType.ReadOnlyDB;
+                        break;
+                    case AccessLevel.WriteOnly:
+                        StorageType |= StorageType.WriteOnlyDB;
+                        break;
+                    case AccessLevel.ReadWrite:
+                        StorageType |= StorageType.ReadWriteRedis;
+                        break;
+                    default:
+                        throw new ArgumentOutOfRangeException("value");
+                }
+            }
         }
 
         /// <summary>
@@ -138,8 +158,13 @@ namespace ZyGames.Framework.Model
         /// </summary>
         public bool IsStoreInDb
         {
-            get;
-            set;
+            set
+            {
+                if (value)
+                {
+                    StorageType |= StorageType.WriteOnlyDB;
+                }
+            }
         }
 
         /// <summary>
@@ -152,6 +177,11 @@ namespace ZyGames.Framework.Model
         /// 自增的启始编号[Redis]
         /// </summary>
         public long IncreaseStartNo { get; set; }
+
+        /// <summary>
+        /// StorageType.
+        /// </summary>
+        public StorageType StorageType { get; set; }
 
         /// <summary>
         /// 是否过期

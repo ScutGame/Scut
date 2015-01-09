@@ -185,8 +185,8 @@ namespace ZyGames.Framework.Model
                 if (entityTable != null)
                 {
                     schema.AccessLevel = entityTable.AccessLevel;
+                    schema.StorageType |= entityTable.StorageType;
                     schema.CacheType = entityTable.CacheType;
-                    schema.IsStoreInDb = entityTable.IsStoreInDb;
                     schema.IncreaseStartNo = entityTable.IncreaseStartNo;
                     schema.IsExpired = entityTable.IsExpired;
                     schema.EntityName = string.IsNullOrEmpty(entityTable.TableName) ? type.Name : entityTable.TableName;
@@ -473,7 +473,9 @@ namespace ZyGames.Framework.Model
             foreach (PropertyInfo property in propertyList)
             {
                 number++;
-                if (!Equals(property.DeclaringType, property.ReflectedType))
+                //Ignore parent property
+                bool isExtend = property.GetCustomAttributes<EntityFieldExtendAttribute>(false).Count() > 0;
+                if (!isExtend && property.DeclaringType != property.ReflectedType)
                 {
                     continue;
                 }

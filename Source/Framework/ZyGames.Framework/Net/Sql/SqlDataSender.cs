@@ -107,7 +107,9 @@ namespace ZyGames.Framework.Net.Sql
         private CommandStruct GenerateCommand<T>(DbBaseProvider dbProvider, T data, SchemaTable schemaTable, bool isChange, EntityBeforeProcess handle) where T : AbstractEntity
         {
             CommandStruct command = null;
-            if (!schemaTable.IsStoreInDb ||
+            if (!(schemaTable.StorageType.HasFlag(StorageType.ReadOnlyDB) ||
+                schemaTable.StorageType.HasFlag(StorageType.ReadWriteDB) ||
+                schemaTable.StorageType.HasFlag(StorageType.WriteOnlyDB)) ||
                 (string.IsNullOrEmpty(schemaTable.ConnectKey) &&
                  string.IsNullOrEmpty(schemaTable.ConnectionString)))
             {

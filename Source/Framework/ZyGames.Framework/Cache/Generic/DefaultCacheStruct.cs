@@ -45,7 +45,6 @@ namespace ZyGames.Framework.Cache.Generic
         {
             SchemaTable schema;
             if (EntitySchemaSet.TryGet<T>(out schema) &&
-                schema.IsStoreInDb &&
                 schema.AccessLevel == AccessLevel.ReadWrite)
             {
                 if (schema.CacheType == CacheType.Entity)

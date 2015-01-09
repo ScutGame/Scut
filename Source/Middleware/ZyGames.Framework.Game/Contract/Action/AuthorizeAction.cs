@@ -22,12 +22,12 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ****************************************************************************/
 
-using ZyGames.Framework.Common.Log;
 using ZyGames.Framework.Game.Com.Generic;
 using ZyGames.Framework.Game.Context;
 using ZyGames.Framework.Game.Lang;
 using ZyGames.Framework.Game.Runtime;
 using ZyGames.Framework.Game.Service;
+using ZyGames.Framework.RPC.Sockets;
 
 namespace ZyGames.Framework.Game.Contract.Action
 {
@@ -167,6 +167,24 @@ namespace ZyGames.Framework.Game.Contract.Action
             {
                 gameUser.RefleshOnlineDate();
             }
+        }
+    }
+
+    /// <summary>
+    /// Websocket use.
+    /// </summary>
+    public abstract class JsonAuthorizeAction : AuthorizeAction
+    {
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="actionId"></param>
+        /// <param name="actionGetter"></param>
+        protected JsonAuthorizeAction(int actionId, ActionGetter actionGetter)
+            : base(actionId, actionGetter)
+        {
+            IsWebSocket = true;
+            actionGetter.OpCode = OpCode.Text;
         }
     }
 }

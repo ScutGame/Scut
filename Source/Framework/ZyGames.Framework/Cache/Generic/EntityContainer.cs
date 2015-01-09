@@ -683,7 +683,6 @@ namespace ZyGames.Framework.Cache.Generic
             if (_cachePool.TryRemove(_containerKey, out container, callback))
             {
                 container.SetRemoveStatus();
-                container.Dispose();
                 return true;
             }
             return false;

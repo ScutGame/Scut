@@ -152,6 +152,7 @@
     <Compile Include="Model\CacheType.cs" />
     <Compile Include="Model\ColumnDbType.cs" />
     <Compile Include="Model\EntityFieldAttribute.cs" />
+    <Compile Include="Model\EntityFieldExtendAttribute.cs" />
     <Compile Include="Model\EntityHistory.cs" />
     <Compile Include="Model\EntitySchemaSet.cs" />
     <Compile Include="Model\EntitySyncAttribute.cs" />

@@ -656,7 +656,7 @@ namespace ZyGames.Framework.Cache.Generic
                         SchemaTable schema;
                         if (EntitySchemaSet.TryGet(entityTypeName, out schema))
                         {
-                            isStoreInDb = schema.IsStoreInDb;
+                            isStoreInDb = schema.StorageType.HasFlag(StorageType.WriteOnlyDB) || schema.StorageType.HasFlag(StorageType.ReadWriteDB);
                         }
                         if (_enableWriteToDb && isStoreInDb)
                         {

@@ -493,6 +493,7 @@ namespace ZyGames.Framework.Data
             HashSet<string> insertFieldNames = new HashSet<string>();
             HashSet<string> insertParamNames = new HashSet<string>();
             List<IDataParameter> updateFieldParams = new List<IDataParameter>();
+            string updateKeyExpress = string.Empty;
 
             foreach (string field in _keyList.Keys)
             {
@@ -502,7 +503,10 @@ namespace ZyGames.Framework.Data
                 {
                     insertFieldNames.Add(fieldName);
                     insertParamNames.Add(paramName);
-                    //updateFieldParams.Add(_keyList[field]);
+                    if (string.IsNullOrEmpty(updateKeyExpress))
+                    {
+                        updateKeyExpress = string.Format("{0} = {1}", fieldName, paramName);
+                    }
                     AppendToDataParam(updateFieldParams, _keyList[field]);
                 }
             }
@@ -551,6 +555,11 @@ namespace ZyGames.Framework.Data
             var tempArray2 = new string[insertParamNames.Count];
             insertFieldNames.CopyTo(tempArray1, 0);
             insertParamNames.CopyTo(tempArray2, 0);
+            if (updateFieldNames.Count == 0)
+            {
+                //add key field
+                updateFieldNames.Add(updateKeyExpress); 
+            }
 
             Sql = FormatUpdateInsertSql(
                 TableName,

@@ -23,10 +23,12 @@ THE SOFTWARE.
 ****************************************************************************/
 using System;
 using System.Diagnostics;
+using System.Text;
 using System.Web;
 using ZyGames.Framework.Common.Configuration;
 using ZyGames.Framework.Common.Log;
 using ZyGames.Framework.Game.Config;
+using ZyGames.Framework.RPC.Sockets;
 
 namespace ZyGames.Framework.Game.Service
 {
@@ -56,6 +58,15 @@ namespace ZyGames.Framework.Game.Service
             /// </summary>
             Fail
         }
+        /// <summary>
+        /// 
+        /// </summary>
+        protected bool IsWebSocket = false;
+
+        /// <summary>
+        /// 
+        /// </summary>
+        protected Encoding encoding = Encoding.UTF8;
         /// <summary>
         /// 接口访问开始时间
         /// </summary>
@@ -354,6 +365,38 @@ namespace ZyGames.Framework.Game.Service
         /// </summary>
         public virtual void WriteResponse(BaseGameResponse response)
         {
+            if (IsWebSocket)
+            {
+                JsonWriteResponse(response);
+            }
+            else
+            {
+                BinaryWriteResponse(response);
+            }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="response"></param>
+        protected void JsonWriteResponse(BaseGameResponse response)
+        {
+            if (!IsNotRespond)
+            {
+                BuildPacket();
+                var message = BuildResponsePack();
+                response.Write(encoding.GetBytes(message));
+            }
+            WriteEnd();
+        }
+
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="response"></param>
+        protected void BinaryWriteResponse(BaseGameResponse response)
+        {
             if (!IsNotRespond)
             {
                 BuildPacket();
@@ -361,6 +404,16 @@ namespace ZyGames.Framework.Game.Service
             WriteAction(response);
             WriteEnd();
         }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        protected virtual string BuildResponsePack()
+        {
+            return string.Empty;
+        }
+
         /// <summary>
         /// 
         /// </summary>

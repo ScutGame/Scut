@@ -31,6 +31,36 @@ using ZyGames.Framework.Common;
 namespace ZyGames.Framework.Model
 {
     /// <summary>
+    /// StorageType
+    /// </summary>
+    public enum StorageType
+    {
+        /// <summary>
+        /// 
+        /// </summary>
+        None = 0,
+        /// <summary>
+        /// 
+        /// </summary>
+        ReadOnlyDB = 1,
+        /// <summary>
+        /// 
+        /// </summary>
+        ReadWriteDB = 2,
+        /// <summary>
+        /// 
+        /// </summary>
+        WriteOnlyDB = 4,
+        /// <summary>
+        /// 
+        /// </summary>
+        ReadOnlyRedis = 8,
+        /// <summary>
+        /// 
+        /// </summary>
+        ReadWriteRedis = 16
+    }
+    /// <summary>
     /// 数据库映射表
     /// </summary>
     public class SchemaTable
@@ -53,7 +83,6 @@ namespace ZyGames.Framework.Model
         {
             AccessLevel = accessLevel;
             CacheType = cacheType;
-            IsStoreInDb = isStoreInDb;
             Keys = new string[0];
             _columns = new ConcurrentDictionary<string, SchemaColumn>();
         }
@@ -73,23 +102,19 @@ namespace ZyGames.Framework.Model
         }
 
         /// <summary>
+        /// StorageType
+        /// </summary>
+        public StorageType StorageType { get; set; }
+
+        /// <summary>
         /// 存储在缓存的类型
         /// </summary>
         public CacheType CacheType { get; set; }
 
         /// <summary>
-        /// Whether synchronous entity.
+        /// Whether synchronous entity, for sync mode use.
         /// </summary>
         public bool IsEntitySync { get; set; }
-
-        /// <summary>
-        /// 是否存储到DB（可从Db取数据，但不能更新回DB）
-        /// </summary>
-        public bool IsStoreInDb
-        {
-            get;
-            set;
-        }
 
         /// <summary>
         /// 是否持久化到DB，当从Redis内存移除后
@@ -101,6 +126,7 @@ namespace ZyGames.Framework.Model
         /// 自增的启始编号
         /// </summary>
         public long IncreaseStartNo { get; set; }
+
         /// <summary>
         /// 是否过期
         /// </summary>

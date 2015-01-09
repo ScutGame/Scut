@@ -885,6 +885,12 @@
             </summary>
             <param name="disposing"></param>
         </member>
+        <member name="M:ZyGames.Framework.Event.IItemChangeEvent.Clone">
+            <summary>
+            Only copy property
+            </summary>
+            <returns></returns>
+        </member>
         <member name="P:ZyGames.Framework.Event.IItemChangeEvent.IsExpired">
             <summary>
             
@@ -1962,26 +1968,6 @@
             Data sync queue manager
             </summary>
         </member>
-        <member name="F:ZyGames.Framework.Cache.Generic.DataSyncQueueManager.RedisSyncQueueKey">
-            <summary>
-            同步缓存数据到Redis的队列名,存储格式:key值:typename_keycode, value值:len(4)+head[id(4)+state(4)] + value,state:1 移除操作
-            </summary>
-        </member>
-        <member name="F:ZyGames.Framework.Cache.Generic.DataSyncQueueManager.RedisSyncErrorQueueKey">
-            <summary>
-            同步缓存出错队列，格式同RedisSyncQueueKey
-            </summary>
-        </member>
-        <member name="F:ZyGames.Framework.Cache.Generic.DataSyncQueueManager.SqlSyncWaitQueueKey">
-            <summary>
-            同步到数据库的Sql等待队列, 存储格式:key值:typename_keycode, value值:head[id(4)+state(4)]
-            </summary>
-        </member>
-        <member name="F:ZyGames.Framework.Cache.Generic.DataSyncQueueManager.SqlSyncWaitErrirQueueKey">
-            <summary>
-            
-            </summary>
-        </member>
         <member name="F:ZyGames.Framework.Cache.Generic.DataSyncQueueManager._entityQueueWacher">
             <summary>
             
@@ -2061,6 +2047,13 @@
             </summary>
             <param name="entityList"></param>
         </member>
+        <member name="M:ZyGames.Framework.Cache.Generic.DataSyncQueueManager.TransSend(ZyGames.Framework.Model.AbstractEntity)">
+            <summary>
+            
+            </summary>
+            <param name="entity"></param>
+            <returns></returns>
+        </member>
         <member name="M:ZyGames.Framework.Cache.Generic.DataSyncQueueManager.GetRedisSyncQueueKey(System.Int32)">
             <summary>
             Sync to redis queue's key
@@ -2105,6 +2098,26 @@
             <param name="keys"></param>
             <param name="values"></param>
             <returns></returns>
+        </member>
+        <member name="P:ZyGames.Framework.Cache.Generic.DataSyncQueueManager.RedisSyncQueueKey">
+            <summary>
+            同步缓存数据到Redis的队列名,存储格式:key值:typename_keycode, value值:len(4)+head[id(4)+state(4)] + value,state:1 移除操作
+            </summary>
+        </member>
+        <member name="P:ZyGames.Framework.Cache.Generic.DataSyncQueueManager.RedisSyncErrorQueueKey">
+            <summary>
+            同步缓存出错队列，格式同RedisSyncQueueKey
+            </summary>
+        </member>
+        <member name="P:ZyGames.Framework.Cache.Generic.DataSyncQueueManager.SqlSyncWaitQueueKey">
+            <summary>
+            同步到数据库的Sql等待队列, 存储格式:key值:typename_keycode, value值:head[id(4)+state(4)]
+            </summary>
+        </member>
+        <member name="P:ZyGames.Framework.Cache.Generic.DataSyncQueueManager.SqlSyncWaitErrirQueueKey">
+            <summary>
+            
+            </summary>
         </member>
         <member name="P:ZyGames.Framework.Cache.Generic.DataSyncQueueManager.IsRunCompleted">
             <summary>
@@ -3899,6 +3912,11 @@
             DbIndex
             </summary>
         </member>
+        <member name="P:ZyGames.Framework.Config.RedisSection.ClientVersion">
+            <summary>
+            ver: 0 is old versin
+            </summary>
+        </member>
         <member name="T:ZyGames.Framework.Config.EntitySection">
             <summary>
             
@@ -3932,6 +3950,11 @@
         <member name="M:ZyGames.Framework.Config.MessageQueueSection.#ctor">
             <summary>
             
+            </summary>
+        </member>
+        <member name="P:ZyGames.Framework.Config.MessageQueueSection.SlaveMessageQueue">
+            <summary>
+            Slave message queue name
             </summary>
         </member>
         <member name="P:ZyGames.Framework.Config.MessageQueueSection.EnableRedisQueue">
@@ -6795,6 +6818,11 @@
             Db映射类型
             </summary>
         </member>
+        <member name="T:ZyGames.Framework.Model.EntityFieldExtendAttribute">
+            <summary>
+            Entity field allow child extend.
+            </summary>
+        </member>
         <member name="T:ZyGames.Framework.Model.EntityHistory">
             <summary>
             Redis backup entity
@@ -7102,6 +7130,11 @@
             自增的启始编号[Redis]
             </summary>
         </member>
+        <member name="P:ZyGames.Framework.Model.EntityTableAttribute.StorageType">
+            <summary>
+            StorageType.
+            </summary>
+        </member>
         <member name="P:ZyGames.Framework.Model.EntityTableAttribute.IsExpired">
             <summary>
             是否过期
@@ -7340,6 +7373,41 @@
             The column Is dictionary child type.
             </summary>
         </member>
+        <member name="T:ZyGames.Framework.Model.StorageType">
+            <summary>
+            StorageType
+            </summary>
+        </member>
+        <member name="F:ZyGames.Framework.Model.StorageType.None">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="F:ZyGames.Framework.Model.StorageType.ReadOnlyDB">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="F:ZyGames.Framework.Model.StorageType.ReadWriteDB">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="F:ZyGames.Framework.Model.StorageType.WriteOnlyDB">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="F:ZyGames.Framework.Model.StorageType.ReadOnlyRedis">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="F:ZyGames.Framework.Model.StorageType.ReadWriteRedis">
+            <summary>
+            
+            </summary>
+        </member>
         <member name="T:ZyGames.Framework.Model.SchemaTable">
             <summary>
             数据库映射表
@@ -7387,6 +7455,11 @@
             访问权限级别
             </summary>
         </member>
+        <member name="P:ZyGames.Framework.Model.SchemaTable.StorageType">
+            <summary>
+            StorageType
+            </summary>
+        </member>
         <member name="P:ZyGames.Framework.Model.SchemaTable.CacheType">
             <summary>
             存储在缓存的类型
@@ -7394,12 +7467,7 @@
         </member>
         <member name="P:ZyGames.Framework.Model.SchemaTable.IsEntitySync">
             <summary>
-            Whether synchronous entity.
-            </summary>
-        </member>
-        <member name="P:ZyGames.Framework.Model.SchemaTable.IsStoreInDb">
-            <summary>
-            是否存储到DB（可从Db取数据，但不能更新回DB）
+            Whether synchronous entity, for sync mode use.
             </summary>
         </member>
         <member name="P:ZyGames.Framework.Model.SchemaTable.IsPersistence">
@@ -8338,12 +8406,34 @@
             <param name="increaseNum">increase num,defalut 1</param>
             <returns></returns>
         </member>
-        <member name="M:ZyGames.Framework.Redis.RedisConnectionPool.ProcessTrans(System.Action{ServiceStack.Redis.IRedisTransaction})">
+        <member name="M:ZyGames.Framework.Redis.RedisConnectionPool.ProcessTrans(System.String,System.Func{ServiceStack.Redis.RedisClient,System.Boolean},System.Action{ServiceStack.Redis.IRedisTransaction})">
             <summary>
             
             </summary>
-            <param name="func"></param>
-            <exception cref="T:System.Exception"></exception>
+            <param name="watchKeys"></param>
+            <param name="processFunc"></param>
+            <param name="transFunc"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ZyGames.Framework.Redis.RedisConnectionPool.ProcessTrans(System.String[],System.Func{ServiceStack.Redis.RedisClient,System.Boolean},System.Action{ServiceStack.Redis.IRedisTransaction},System.Action{ServiceStack.Redis.IRedisTransaction,System.Exception})">
+            <summary>
+            
+            </summary>
+            <param name="watchKeys"></param>
+            <param name="processFunc"></param>
+            <param name="transFunc"></param>
+            <param name="errorFunc"></param>
+        </member>
+        <member name="M:ZyGames.Framework.Redis.RedisConnectionPool.ProcessTrans(ServiceStack.Redis.RedisClient,System.String[],System.Func{System.Boolean},System.Action{ServiceStack.Redis.IRedisTransaction},System.Action{ServiceStack.Redis.IRedisTransaction,System.Exception})">
+            <summary>
+            
+            </summary>
+            <param name="client"></param>
+            <param name="watchKeys"></param>
+            <param name="processFunc"></param>
+            <param name="transFunc"></param>
+            <param name="errorFunc"></param>
+            <returns></returns>
         </member>
         <member name="M:ZyGames.Framework.Redis.RedisConnectionPool.Process(System.Action{ServiceStack.Redis.RedisClient})">
             <summary>
@@ -8414,6 +8504,14 @@
             <param name="removeKeys"></param>
             <returns></returns>
         </member>
+        <member name="M:ZyGames.Framework.Redis.RedisConnectionPool.TransUpdateEntity(ServiceStack.Redis.IRedisTransaction,System.Collections.Generic.IEnumerable{ZyGames.Framework.Model.AbstractEntity})">
+            <summary>
+            
+            </summary>
+            <param name="trans"></param>
+            <param name="dataList"></param>
+            <returns></returns>
+        </member>
         <member name="M:ZyGames.Framework.Redis.RedisConnectionPool.GetRedisEntityKeyName(System.String)">
             <summary>
             Get key name of store redis entity 
@@ -8435,9 +8533,59 @@
             <param name="key"></param>
             <returns></returns>
         </member>
+        <member name="P:ZyGames.Framework.Redis.RedisConnectionPool.RedisInfo">
+            <summary>
+            
+            </summary>
+        </member>
         <member name="P:ZyGames.Framework.Redis.RedisConnectionPool.PoolCount">
             <summary>
             Pool Count
+            </summary>
+        </member>
+        <member name="T:ZyGames.Framework.Redis.RedisInfo">
+            <summary>
+            Server redis info
+            </summary>
+        </member>
+        <member name="M:ZyGames.Framework.Redis.RedisInfo.#ctor">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:ZyGames.Framework.Redis.RedisInfo.HashCode">
+            <summary>
+            Server info hash
+            </summary>
+        </member>
+        <member name="P:ZyGames.Framework.Redis.RedisInfo.ClientVersion">
+            <summary>
+            Redis client version
+            </summary>
+        </member>
+        <member name="P:ZyGames.Framework.Redis.RedisInfo.ServerHost">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:ZyGames.Framework.Redis.RedisInfo.ServerPath">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:ZyGames.Framework.Redis.RedisInfo.SerializerType">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:ZyGames.Framework.Redis.RedisInfo.StarTime">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:ZyGames.Framework.Redis.RedisInfo.SlaveSet">
+            <summary>
+            
             </summary>
         </member>
         <member name="T:ZyGames.Framework.Redis.RedisPoolSetting">
@@ -8483,6 +8631,11 @@
         <member name="P:ZyGames.Framework.Redis.RedisPoolSetting.DbIndex">
             <summary>
             DbIndex
+            </summary>
+        </member>
+        <member name="P:ZyGames.Framework.Redis.RedisPoolSetting.ClientVersion">
+            <summary>
+            ClientVersion
             </summary>
         </member>
         <member name="T:ZyGames.Framework.RPC.Http.ByteResponse">
@@ -10700,12 +10853,13 @@
             
             </summary>
         </member>
-        <member name="M:ZyGames.Framework.RPC.Sockets.ISocket.SendAsync(ZyGames.Framework.RPC.Sockets.ExSocket,System.Byte[])">
+        <member name="M:ZyGames.Framework.RPC.Sockets.ISocket.SendAsync(ZyGames.Framework.RPC.Sockets.ExSocket,System.Byte[],System.Action{ZyGames.Framework.RPC.Sockets.SocketAsyncResult})">
             <summary>
             not proccess buildpack
             </summary>
             <param name="socket"></param>
             <param name="buffer"></param>
+            <param name="callback"></param>
         </member>
         <member name="M:ZyGames.Framework.RPC.Sockets.ISocket.Closing(System.Net.Sockets.SocketAsyncEventArgs,System.SByte,System.String)">
             <summary>
@@ -10733,6 +10887,17 @@
             <param name="data"></param>
             <param name="offset"></param>
             <param name="count"></param>
+        </member>
+        <member name="M:ZyGames.Framework.RPC.Sockets.ISocket.PostSend(ZyGames.Framework.RPC.Sockets.ExSocket,System.SByte,System.Byte[],System.Int32,System.Int32,System.Action{ZyGames.Framework.RPC.Sockets.SocketAsyncResult})">
+            <summary>
+            
+            </summary>
+            <param name="socket"></param>
+            <param name="opCode"></param>
+            <param name="data"></param>
+            <param name="offset"></param>
+            <param name="count"></param>
+            <param name="callback"></param>
         </member>
         <member name="M:ZyGames.Framework.RPC.Sockets.ISocket.Ping(ZyGames.Framework.RPC.Sockets.ExSocket)">
             <summary>
@@ -10799,6 +10964,12 @@
             </summary>
             <param name="e"></param>
         </member>
+        <member name="M:ZyGames.Framework.RPC.Sockets.ClientSocket.OnClosedStatus(System.Int32)">
+            <summary>
+            
+            </summary>
+            <param name="statusCode"></param>
+        </member>
         <member name="M:ZyGames.Framework.RPC.Sockets.ClientSocket.PostSend(System.Byte[],System.Int32,System.Int32)">
             <summary>
             
@@ -10827,6 +10998,16 @@
         </member>
         <member name="M:ZyGames.Framework.RPC.Sockets.ClientSocket.PostSend(ZyGames.Framework.RPC.Sockets.ExSocket,System.SByte,System.Byte[],System.Int32,System.Int32)">
             <summary>
+            
+            </summary>
+            <param name="socket"></param>
+            <param name="opCode"></param>
+            <param name="data"></param>
+            <param name="offset"></param>
+            <param name="count"></param>
+        </member>
+        <member name="M:ZyGames.Framework.RPC.Sockets.ClientSocket.PostSend(ZyGames.Framework.RPC.Sockets.ExSocket,System.SByte,System.Byte[],System.Int32,System.Int32,System.Action{ZyGames.Framework.RPC.Sockets.SocketAsyncResult})">
+            <summary>
             Posts the send.
             </summary>
             <param name="socket"></param>
@@ -10834,6 +11015,7 @@
             <param name="data">Data.</param>
             <param name="offset">Offset.</param>
             <param name="count">Count.</param>
+            <param name="callback"></param>
         </member>
         <member name="M:ZyGames.Framework.RPC.Sockets.ClientSocket.Ping(ZyGames.Framework.RPC.Sockets.ExSocket)">
             <summary>
@@ -10854,12 +11036,13 @@
             <param name="socket"></param>
             <param name="reason"></param>
         </member>
-        <member name="M:ZyGames.Framework.RPC.Sockets.ClientSocket.SendAsync(ZyGames.Framework.RPC.Sockets.ExSocket,System.Byte[])">
+        <member name="M:ZyGames.Framework.RPC.Sockets.ClientSocket.SendAsync(ZyGames.Framework.RPC.Sockets.ExSocket,System.Byte[],System.Action{ZyGames.Framework.RPC.Sockets.SocketAsyncResult})">
             <summary>
             
             </summary>
             <param name="socket"></param>
             <param name="buffer"></param>
+            <param name="callback"></param>
         </member>
         <member name="M:ZyGames.Framework.RPC.Sockets.ClientSocket.Closing(System.Net.Sockets.SocketAsyncEventArgs,System.SByte,System.String)">
             <summary>
@@ -11108,6 +11291,11 @@
             init
             </summary>
         </member>
+        <member name="M:ZyGames.Framework.RPC.Sockets.DataToken.ResultCallback(ZyGames.Framework.RPC.Sockets.ResultCode,System.Exception)">
+            <summary>
+            
+            </summary>
+        </member>
         <member name="M:ZyGames.Framework.RPC.Sockets.DataToken.Reset(System.Boolean)">
             <summary>
             
@@ -11137,6 +11325,11 @@
         <member name="P:ZyGames.Framework.RPC.Sockets.DataToken.IsMessageReady">
             <summary>
             message data is receive complated
+            </summary>
+        </member>
+        <member name="P:ZyGames.Framework.RPC.Sockets.DataToken.AsyncResult">
+            <summary>
+            
             </summary>
         </member>
         <member name="T:ZyGames.Framework.RPC.Sockets.ExSocket">
@@ -11352,20 +11545,22 @@
             </summary>
             <param name="appServer"></param>
         </member>
-        <member name="M:ZyGames.Framework.RPC.Sockets.RequestHandler.SendMessage(ZyGames.Framework.RPC.Sockets.ExSocket,System.String,System.Text.Encoding)">
+        <member name="M:ZyGames.Framework.RPC.Sockets.RequestHandler.SendMessage(ZyGames.Framework.RPC.Sockets.ExSocket,System.String,System.Text.Encoding,System.Action{ZyGames.Framework.RPC.Sockets.SocketAsyncResult})">
             <summary>
             
             </summary>
             <param name="socket"></param>
             <param name="message"></param>
             <param name="encoding"></param>
+            <param name="callback"></param>
         </member>
-        <member name="M:ZyGames.Framework.RPC.Sockets.RequestHandler.SendMessage(ZyGames.Framework.RPC.Sockets.ExSocket,System.Byte[])">
+        <member name="M:ZyGames.Framework.RPC.Sockets.RequestHandler.SendMessage(ZyGames.Framework.RPC.Sockets.ExSocket,System.Byte[],System.Action{ZyGames.Framework.RPC.Sockets.SocketAsyncResult})">
             <summary>
             
             </summary>
             <param name="socket"></param>
             <param name="buffer"></param>
+            <param name="callback"></param>
         </member>
         <member name="M:ZyGames.Framework.RPC.Sockets.RequestHandler.SendHandshake(System.Net.Sockets.SocketAsyncEventArgs)">
             <summary>
@@ -11400,6 +11595,72 @@
             </summary>
         </member>
         <member name="P:ZyGames.Framework.RPC.Sockets.RequestHandler.MessageProcessor">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="T:ZyGames.Framework.RPC.Sockets.ResultCode">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="F:ZyGames.Framework.RPC.Sockets.ResultCode.Wait">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="F:ZyGames.Framework.RPC.Sockets.ResultCode.Success">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="F:ZyGames.Framework.RPC.Sockets.ResultCode.Close">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="F:ZyGames.Framework.RPC.Sockets.ResultCode.Error">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="T:ZyGames.Framework.RPC.Sockets.SocketAsyncResult">
+            <summary>
+            Socket send async result
+            </summary>
+        </member>
+        <member name="M:ZyGames.Framework.RPC.Sockets.SocketAsyncResult.#ctor(System.Byte[])">
+            <summary>
+            
+            </summary>
+            <param name="data"></param>
+        </member>
+        <member name="F:ZyGames.Framework.RPC.Sockets.SocketAsyncResult.ResultCallback">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:ZyGames.Framework.RPC.Sockets.SocketAsyncResult.Callback">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:ZyGames.Framework.RPC.Sockets.SocketAsyncResult.Socket">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:ZyGames.Framework.RPC.Sockets.SocketAsyncResult.Data">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:ZyGames.Framework.RPC.Sockets.SocketAsyncResult.Result">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:ZyGames.Framework.RPC.Sockets.SocketAsyncResult.Error">
             <summary>
             
             </summary>
@@ -11455,6 +11716,16 @@
         </member>
         <member name="M:ZyGames.Framework.RPC.Sockets.SocketListener.PostSend(ZyGames.Framework.RPC.Sockets.ExSocket,System.SByte,System.Byte[],System.Int32,System.Int32)">
             <summary>
+            
+            </summary>
+            <param name="socket"></param>
+            <param name="opCode"></param>
+            <param name="data"></param>
+            <param name="offset"></param>
+            <param name="count"></param>
+        </member>
+        <member name="M:ZyGames.Framework.RPC.Sockets.SocketListener.PostSend(ZyGames.Framework.RPC.Sockets.ExSocket,System.SByte,System.Byte[],System.Int32,System.Int32,System.Action{ZyGames.Framework.RPC.Sockets.SocketAsyncResult})">
+            <summary>
             Posts the send.
             </summary>
             <param name="socket">Socket.</param>
@@ -11462,6 +11733,7 @@
             <param name="data">Data.</param>
             <param name="offset">Offset.</param>
             <param name="count">Count.</param>
+            <param name="callback"></param>
         </member>
         <member name="M:ZyGames.Framework.RPC.Sockets.SocketListener.Ping(ZyGames.Framework.RPC.Sockets.ExSocket)">
             <summary>
@@ -11482,12 +11754,13 @@
             <param name="socket"></param>
             <param name="reason"></param>
         </member>
-        <member name="M:ZyGames.Framework.RPC.Sockets.SocketListener.SendAsync(ZyGames.Framework.RPC.Sockets.ExSocket,System.Byte[])">
+        <member name="M:ZyGames.Framework.RPC.Sockets.SocketListener.SendAsync(ZyGames.Framework.RPC.Sockets.ExSocket,System.Byte[],System.Action{ZyGames.Framework.RPC.Sockets.SocketAsyncResult})">
             <summary>
             
             </summary>
             <param name="socket"></param>
             <param name="buffer"></param>
+            <param name="callback"></param>
         </member>
         <member name="M:ZyGames.Framework.RPC.Sockets.SocketListener.Closing(System.Net.Sockets.SocketAsyncEventArgs,System.SByte,System.String)">
             <summary>
@@ -11528,6 +11801,11 @@
             </summary>
         </member>
         <member name="E:ZyGames.Framework.RPC.Sockets.SocketListener.OnPong">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="E:ZyGames.Framework.RPC.Sockets.SocketListener.OnClosedStatus">
             <summary>
             
             </summary>
@@ -14580,6 +14858,12 @@
             </summary>
             <param name="e"></param>
         </member>
+        <member name="M:ZyGames.Framework.RPC.Sockets.WebSocket.ClientWebSocket.OnClosedStatus(System.Int32)">
+            <summary>
+            
+            </summary>
+            <param name="statusCode"></param>
+        </member>
         <member name="M:ZyGames.Framework.RPC.Sockets.WebSocket.ClientWebSocket.CloseHandshake(ZyGames.Framework.RPC.Sockets.ExSocket,System.String)">
             <summary>
             
@@ -14605,6 +14889,11 @@
             </summary>
         </member>
         <member name="E:ZyGames.Framework.RPC.Sockets.WebSocket.ClientWebSocket.OnOpened">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="E:ZyGames.Framework.RPC.Sockets.WebSocket.ClientWebSocket.OnCloseStatus">
             <summary>
             
             </summary>

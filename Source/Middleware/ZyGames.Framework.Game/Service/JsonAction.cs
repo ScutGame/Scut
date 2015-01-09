@@ -22,11 +22,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ****************************************************************************/
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection.Emit;
 using System.Text;
-using System.Threading.Tasks;
 using OpCode = ZyGames.Framework.RPC.Sockets.OpCode;
 
 namespace ZyGames.Framework.Game.Service
@@ -39,33 +35,14 @@ namespace ZyGames.Framework.Game.Service
         /// <summary>
         /// 
         /// </summary>
-        protected Encoding encoding = Encoding.UTF8;
-
-        /// <summary>
-        /// 
-        /// </summary>
         /// <param name="aActionId"></param>
         /// <param name="actionGetter"></param>
         protected JsonAction(int aActionId, ActionGetter actionGetter)
             : base(aActionId, actionGetter)
         {
+            IsWebSocket = true;
             actionGetter.OpCode = OpCode.Text;
         }
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="response"></param>
-        public override void WriteResponse(BaseGameResponse response)
-        {
-            var message = BuildResponsePack();
-            response.Write(encoding.GetBytes(message));
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <returns></returns>
-        protected abstract string BuildResponsePack();
     }
 }

@@ -188,9 +188,10 @@ namespace ZyGames.Framework.Cache.Generic.Pool
         {
             dataList = null;
             bool hasDbConnect = DbConnectionProvider.CreateDbProvider(receiveParam.Schema) != null;
+            var schema = receiveParam.Schema;
             //表为空时，不加载数据
-            if (receiveParam.Schema == null ||
-                string.IsNullOrEmpty(receiveParam.Schema.EntityName))
+            if (schema == null ||
+                string.IsNullOrEmpty(schema.EntityName))
             {
                 //DB is optional and can no DB configuration
                 dataList = new List<T>();
@@ -198,7 +199,8 @@ namespace ZyGames.Framework.Cache.Generic.Pool
             }
 
             //配置库不放到Redis，尝试从DB加载
-            if (receiveParam.Schema.AccessLevel == AccessLevel.ReadOnly)
+            if (schema.StorageType.HasFlag(StorageType.ReadOnlyDB) ||
+                 schema.StorageType.HasFlag(StorageType.ReadWriteDB))
             {
                 if (!hasDbConnect)
                 {
@@ -210,36 +212,31 @@ namespace ZyGames.Framework.Cache.Generic.Pool
                 return result;
             }
 
-            if (!string.IsNullOrEmpty(receiveParam.RedisKey) &&
-                _redisTransponder.TryReceiveData(receiveParam, out dataList))
+            if (schema.StorageType.HasFlag(StorageType.ReadOnlyRedis) ||
+                schema.StorageType.HasFlag(StorageType.ReadWriteRedis))
             {
-                if (dataList.Count > 0)
+                if (!string.IsNullOrEmpty(receiveParam.RedisKey) &&
+                    _redisTransponder.TryReceiveData(receiveParam, out dataList))
                 {
-                    TraceLog.ReleaseWriteDebug("The data:{0} has been loaded {1}", receiveParam.RedisKey, dataList.Count);
-                    return true;
-                }
-
-                if (!hasDbConnect)
-                {
+                    if (dataList.Count > 0)
+                    {
+                        TraceLog.ReleaseWriteDebug("The data:{0} has been loaded {1}", receiveParam.RedisKey, dataList.Count);
+                        return true;
+                    }
+                    //从Redis历史记录表中加载
+                    if (hasDbConnect && Setting != null && Setting.IsStorageToDb)
+                    {
+                        var result = TryLoadHistory(receiveParam.RedisKey, out dataList);
+                        TraceLog.ReleaseWriteDebug("The data:{0} has been loaded {1} from history.", receiveParam.RedisKey, dataList.Count);
+                        return result;
+                    }
                     dataList = new List<T>();
                     return true;
                 }
-                //从Redis历史记录表中加载
-                if (Setting != null && Setting.IsStorageToDb && TryLoadHistory(receiveParam.RedisKey, out dataList))
-                {
-                    //modify reason:数据不同步时改为在业务自己显示恢复
-                    //Share类型的如果没有数据尝试从DB中取
-                    //if (dataList.Count == 0 && receiveParam.Schema.CacheType == CacheType.Entity)
-                    //{
-                    //    return TryLoadFromDb(receiveParam, out dataList);
-                    //}
-
-                    TraceLog.ReleaseWriteDebug("The data:{0} has been loaded {1} from history.", receiveParam.RedisKey, dataList.Count);
-                    return true;
-                }
-                return true;
+                //read faild from redis.
+                return false;
             }
-            return false;
+            return true;
         }
 
         /// <summary>
@@ -253,7 +250,7 @@ namespace ZyGames.Framework.Cache.Generic.Pool
                 if (dataList.Count > 0)
                 {
                     TraceLog.ReleaseWriteDebug("The data:{0} has been loaded {1} from db.", receiveParam.RedisKey, dataList.Count);
-                    //恢复到Redis
+                    //load to Redis
                     return RedisConnectionPool.TryUpdateEntity(dataList);
                 }
                 return true;
