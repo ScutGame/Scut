@@ -24,6 +24,7 @@ THE SOFTWARE.
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Net;
 using System.Net.NetworkInformation;
@@ -155,6 +156,14 @@ namespace ZyGames.Framework.Redis
         /// 
         /// </summary>
         public static RedisInfo RedisInfo { get; set; }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public static RedisPoolSetting Setting
+        {
+            get { return _setting; }
+        }
 
         /// <summary>
         /// SetNo
@@ -392,10 +401,11 @@ namespace ZyGames.Framework.Redis
 
         private static RedisClient GetPool()
         {
-            string[] arrs = _setting.Host.Split('@', ':');
-            var key = arrs.Length == 3 ? string.Format("{0}:{1}", arrs[1], arrs[2])
-                : arrs.Length == 2 ? string.Format("{0}:{1}", arrs[0], arrs[1])
-                : string.Format("{0}:{1}", arrs[0], 6379);
+            string[] hostParts = _setting.Host.Split('@', ':');
+            var key = hostParts.Length == 3 ? string.Format("{0}:{1}", hostParts[1], hostParts[2])
+                : hostParts.Length == 2 ? string.Format("{0}:{1}", hostParts[0], hostParts[1])
+                : string.Format("{0}:{1}", hostParts[0], 6379);
+
 
             ObjectPoolWithExpire<RedisClient> pool;
             do
@@ -421,10 +431,17 @@ namespace ZyGames.Framework.Redis
 
         private static RedisClient CreateRedisClient(RedisPoolSetting setting)
         {
-            var client = new RedisClient(setting.Host);
-            if (setting.DbIndex > 0)
+            string[] hostParts;
+            RedisClient client = null;
+            if (setting.Host.Contains("@"))
             {
-                client.Db = setting.DbIndex;
+                hostParts = setting.Host.Split('@', ':');
+                client = new RedisClient(hostParts[1], hostParts[2].ToInt(), hostParts[0], setting.DbIndex);
+            }
+            else
+            {
+                hostParts = setting.Host.Split(':');
+                client = new RedisClient(hostParts[0], hostParts[1].ToInt(), null, setting.DbIndex);
             }
             return client;
         }
