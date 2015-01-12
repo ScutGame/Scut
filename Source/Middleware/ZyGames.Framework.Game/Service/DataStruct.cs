@@ -184,6 +184,16 @@ namespace ZyGames.Framework.Game.Service
         {
             PushIntoStackObj(obj);
         }
+
+        /// <summary>
+        /// put byte[]
+        /// </summary>
+        /// <param name="obj"></param>
+        public void PushIntoStack(byte[] obj)
+        {
+            PushIntoStackObj(obj);
+        }
+
         /// <summary>
         /// 将数据加到栈尾
         /// </summary>

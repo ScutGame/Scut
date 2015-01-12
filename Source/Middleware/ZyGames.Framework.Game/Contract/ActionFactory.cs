@@ -343,10 +343,10 @@ namespace ZyGames.Framework.Game.Contract
         /// <param name="opCode"></param>
         /// <param name="onlineInterval"></param>
         /// <returns></returns>
-        public static async System.Threading.Tasks.Task BroadcastAction<T>(int actionId, List<T> userList, Parameters parameters, Action<SocketAsyncResult> complateHandle, sbyte opCode = OpCode.Binary, int onlineInterval = 0)
+        public static async System.Threading.Tasks.Task BroadcastAsyncAction<T>(int actionId, List<T> userList, Parameters parameters, Action<SocketAsyncResult> complateHandle, sbyte opCode = OpCode.Binary, int onlineInterval = 0)
             where T : IUser
         {
-            await BroadcastAction(actionId, userList, parameters, (u, s, result) =>
+            await BroadcastAsyncAction(actionId, userList, parameters, (u, s, result) =>
             {
                 if (complateHandle != null) complateHandle(result);
             }, opCode, onlineInterval);
@@ -362,7 +362,7 @@ namespace ZyGames.Framework.Game.Contract
         /// <param name="complateHandle"></param>
         /// <param name="onlineInterval"></param>
         /// <param name="opCode"></param>
-        public static async System.Threading.Tasks.Task BroadcastAction<T>(int actionId, List<T> userList, Parameters parameters, Action<T, GameSession, SocketAsyncResult> complateHandle, sbyte opCode, int onlineInterval) where T : IUser
+        public static async System.Threading.Tasks.Task BroadcastAsyncAction<T>(int actionId, List<T> userList, Parameters parameters, Action<T, GameSession, SocketAsyncResult> complateHandle, sbyte opCode, int onlineInterval) where T : IUser
         {
             List<GameSession> sessionList = new List<GameSession>();
             GameSession session;
@@ -378,7 +378,7 @@ namespace ZyGames.Framework.Game.Contract
             if (sessionList.Count == 0) return;
 
             RequestPackage package = GetResponsePackage(actionId, sessionList[0], parameters, opCode);
-            await BroadcastAction(actionId, sessionList, package, (s, result) =>
+            await BroadcastAsyncAction(actionId, sessionList, package, (s, result) =>
             {
                 if (complateHandle != null)
                 {
@@ -395,60 +395,129 @@ namespace ZyGames.Framework.Game.Contract
         /// <param name="package">请求参数</param>
         /// <param name="complateHandle">成功回调</param>
         /// <param name="onlineInterval">online interval second</param>
-        public static async System.Threading.Tasks.Task BroadcastAction(int actionId, List<GameSession> sessionList, RequestPackage package, Action<GameSession, SocketAsyncResult> complateHandle, int onlineInterval)
+        public static async System.Threading.Tasks.Task BroadcastAsyncAction(int actionId, List<GameSession> sessionList, RequestPackage package, Action<GameSession, SocketAsyncResult> complateHandle, int onlineInterval)
         {
-
-            if (sessionList.Count == 0) return;
-            if (sessionList.Exists(s => Equals(s, null)))
-            {
-                throw new ArgumentNullException("Session is a null value.");
-            }
             await System.Threading.Tasks.Task.Run(async () =>
             {
-                try
-                {
-                    IActionDispatcher actionDispatcher = new ScutActionDispatcher();
-                    byte[] sendBuffer = GetActionResponse(actionDispatcher, actionId, sessionList[0], package);
+                await BroadcastAciton(actionId, sessionList, package, complateHandle, onlineInterval);
+            });
+        }
 
-                    foreach (var session in sessionList)
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="actionId"></param>
+        /// <param name="userList"></param>
+        /// <param name="parameters"></param>
+        /// <param name="complateHandle"></param>
+        /// <param name="opCode"></param>
+        /// <param name="onlineInterval"></param>
+        /// <returns></returns>
+        public static async System.Threading.Tasks.Task BroadcastAciton<T>(int actionId, List<T> userList, Parameters parameters, Action<SocketAsyncResult> complateHandle, sbyte opCode = OpCode.Binary, int onlineInterval = 0)
+         where T : IUser
+        {
+            await BroadcastAciton(actionId, userList, parameters, (u, s, result) =>
+            {
+                if (complateHandle != null) complateHandle(result);
+            }, opCode, onlineInterval);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="actionId"></param>
+        /// <param name="userList"></param>
+        /// <param name="parameters"></param>
+        /// <param name="complateHandle"></param>
+        /// <param name="opCode"></param>
+        /// <param name="onlineInterval"></param>
+        /// <returns></returns>
+        public static async System.Threading.Tasks.Task BroadcastAciton<T>(int actionId, List<T> userList, Parameters parameters, Action<T, GameSession, SocketAsyncResult> complateHandle, sbyte opCode, int onlineInterval) where T : IUser
+        {
+            List<GameSession> sessionList = new List<GameSession>();
+            GameSession session;
+            foreach (var user in userList)
+            {
+                session = GameSession.Get(user.GetUserId());
+                if (session == null)
+                {
+                    complateHandle(user, null, new SocketAsyncResult(null) { Result = ResultCode.Close });
+                }
+                sessionList.Add(session);
+            }
+            if (sessionList.Count == 0) return;
+
+            RequestPackage package = GetResponsePackage(actionId, sessionList[0], parameters, opCode);
+            await BroadcastAciton(actionId, sessionList, package, (s, result) =>
+            {
+                if (complateHandle != null)
+                {
+                    complateHandle((T)s.User, s, result);
+                }
+            }, onlineInterval);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="actionId"></param>
+        /// <param name="sessionList"></param>
+        /// <param name="package"></param>
+        /// <param name="complateHandle"></param>
+        /// <param name="onlineInterval"></param>
+        /// <returns></returns>
+        public static async System.Threading.Tasks.Task BroadcastAciton(int actionId, List<GameSession> sessionList, RequestPackage package, Action<GameSession, SocketAsyncResult> complateHandle, int onlineInterval)
+        {
+            try
+            {
+                if (sessionList.Count == 0) return;
+                if (sessionList.Exists(s => Equals(s, null)))
+                {
+                    throw new ArgumentNullException("Session is a null value.");
+                }
+
+                IActionDispatcher actionDispatcher = new ScutActionDispatcher();
+                byte[] sendBuffer = GetActionResponse(actionDispatcher, actionId, sessionList[0], package);
+
+                foreach (var session in sessionList)
+                {
+                    GameSession temp = session;
+                    try
                     {
-                        GameSession temp = session;
-                        try
+                        if (onlineInterval <= 0 || session.LastActivityTime > MathUtils.Now.AddSeconds(-onlineInterval))
                         {
-                            if (onlineInterval <= 0 || session.LastActivityTime > MathUtils.Now.AddSeconds(-onlineInterval))
-                            {
-                                await session.SendAsync(package.OpCode, sendBuffer, 0, sendBuffer.Length, result =>
-                                {
-                                    if (complateHandle != null)
-                                    {
-                                        complateHandle(temp, result);
-                                    }
-                                });
-                            }
-                            else
+                            await session.SendAsync(package.OpCode, sendBuffer, 0, sendBuffer.Length, result =>
                             {
                                 if (complateHandle != null)
                                 {
-                                    complateHandle(temp, new SocketAsyncResult(sendBuffer) { Result = ResultCode.Close });
+                                    complateHandle(temp, result);
                                 }
-                            }
+                            });
                         }
-                        catch (Exception ex)
+                        else
                         {
                             if (complateHandle != null)
                             {
-                                complateHandle(temp, new SocketAsyncResult(sendBuffer) { Result = ResultCode.Error, Error = ex });
+                                complateHandle(temp, new SocketAsyncResult(sendBuffer) { Result = ResultCode.Close });
                             }
-                            TraceLog.WriteError("BroadcastAction  action:{0} userId:{1} error:{2}", actionId, session.UserId, ex);
                         }
                     }
-
+                    catch (Exception ex)
+                    {
+                        if (complateHandle != null)
+                        {
+                            complateHandle(temp, new SocketAsyncResult(sendBuffer) { Result = ResultCode.Error, Error = ex });
+                        }
+                        TraceLog.WriteError("BroadcastAction  action:{0} userId:{1} error:{2}", actionId, session.UserId, ex);
+                    }
                 }
-                catch (Exception ex)
-                {
-                    TraceLog.WriteError("BroadcastAction  action:{0} error:{1}", actionId, ex);
-                }
-            });
+            }
+            catch (Exception ex)
+            {
+                TraceLog.WriteError("BroadcastAction  action:{0} error:{1}", actionId, ex);
+            }
         }
 
         /// <summary>
@@ -555,39 +624,89 @@ namespace ZyGames.Framework.Game.Contract
         {
             await System.Threading.Tasks.Task.Run(async () =>
             {
-                IActionDispatcher actionDispatcher = new ScutActionDispatcher();
+                await SendAction(session, actionId, package, complateHandle, onlineInterval);
+            });
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sessionList"></param>
+        /// <param name="actionId"></param>
+        /// <param name="parameters"></param>
+        /// <param name="complateHandle"></param>
+        /// <param name="opCode"></param>
+        /// <param name="onlineInterval"></param>
+        /// <returns></returns>
+        public static async System.Threading.Tasks.Task SendAction(List<GameSession> sessionList, int actionId, Parameters parameters, Action<GameSession, SocketAsyncResult> complateHandle, sbyte opCode, int onlineInterval)
+        {
+            foreach (var session in sessionList)
+            {
                 GameSession temp = session;
-                byte[] sendBuffer = null;
-                try
+                if (session != null)
                 {
-                    sendBuffer = GetActionResponse(actionDispatcher, actionId, session, package);
-                    if ((onlineInterval <= 0 || session.LastActivityTime > MathUtils.Now.AddSeconds(-onlineInterval)))
-                    {
-                        await session.SendAsync(package.OpCode, sendBuffer, 0, sendBuffer.Length, result =>
-                         {
-                             if (complateHandle != null)
-                             {
-                                 complateHandle(temp, result);
-                             }
-                         });
-                    }
-                    else
+                    RequestPackage package = GetResponsePackage(actionId, session, parameters, opCode);
+                    await SendAction(session, actionId, package, (s, result) =>
                     {
                         if (complateHandle != null)
                         {
-                            complateHandle(temp, new SocketAsyncResult(sendBuffer) { Result = ResultCode.Close });
+                            complateHandle(temp, result);
                         }
-                    }
+                    }, onlineInterval);
                 }
-                catch (Exception ex)
+                else
                 {
                     if (complateHandle != null)
                     {
-                        complateHandle(temp, new SocketAsyncResult(sendBuffer) { Result = ResultCode.Error, Error = ex });
+                        complateHandle(temp, new SocketAsyncResult(null) { Result = ResultCode.Close });
                     }
-                    TraceLog.WriteError("SendToClient action:{0} userId:{1} error:{2}", actionId, session.UserId, ex);
                 }
-            });
+            }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="session"></param>
+        /// <param name="actionId"></param>
+        /// <param name="package"></param>
+        /// <param name="complateHandle"></param>
+        /// <param name="onlineInterval"></param>
+        /// <returns></returns>
+        public static async System.Threading.Tasks.Task SendAction(GameSession session, int actionId, RequestPackage package, Action<GameSession, SocketAsyncResult> complateHandle, int onlineInterval)
+        {
+            IActionDispatcher actionDispatcher = new ScutActionDispatcher();
+            GameSession temp = session;
+            byte[] sendBuffer = null;
+            try
+            {
+                sendBuffer = GetActionResponse(actionDispatcher, actionId, session, package);
+                if ((onlineInterval <= 0 || session.LastActivityTime > MathUtils.Now.AddSeconds(-onlineInterval)))
+                {
+                    await session.SendAsync(package.OpCode, sendBuffer, 0, sendBuffer.Length, result =>
+                    {
+                        if (complateHandle != null)
+                        {
+                            complateHandle(temp, result);
+                        }
+                    });
+                }
+                else
+                {
+                    if (complateHandle != null)
+                    {
+                        complateHandle(temp, new SocketAsyncResult(sendBuffer) {Result = ResultCode.Close});
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                if (complateHandle != null)
+                {
+                    complateHandle(temp, new SocketAsyncResult(sendBuffer) {Result = ResultCode.Error, Error = ex});
+                }
+                TraceLog.WriteError("SendToClient action:{0} userId:{1} error:{2}", actionId, session.UserId, ex);
+            }
         }
 
 
