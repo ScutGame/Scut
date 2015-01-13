@@ -90,6 +90,12 @@ namespace ZyGames.Framework.Common.Serialization
                     return _intValue.Value;
                 if (_longValue.HasValue)
                     return _longValue.Value;
+                if (_ushortValue.HasValue)
+                    return _ushortValue.Value;
+                if (_uintValue.HasValue)
+                    return _uintValue.Value;
+                if (_ulongValue.HasValue)
+                    return _ulongValue.Value;
                 if (_floatValue.HasValue)
                     return _floatValue.Value;
                 if (_decimalValue.HasValue)
