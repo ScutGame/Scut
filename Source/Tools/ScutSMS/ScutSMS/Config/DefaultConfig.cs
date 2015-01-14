@@ -89,6 +89,9 @@ namespace ScutServerManager.Config
 
         public const string DataSource = "localhost";
         public const string MysqlCharset = "gbk";
+        public const int MysqlPort = 3306;
+
+        public const int SqlPort = 1433;
 
         public const PublishType DefPublishType = PublishType.Release;
         public const bool EnableGm = false;

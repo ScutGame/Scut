@@ -110,6 +110,13 @@ namespace Scut.SMS.Config
                 AppDomain.CurrentDomain.AppendPrivatePath(Path.GetFullPath(_setting.Entity.AssemblyPath));
                 _setting.Entity.DymincEntity = AssemblyBuilder.ReadAssembly(_setting.Entity.AssemblyPath, null);
             }
+            try
+            {
+                ProtoBufUtils.LoadProtobufType(_setting.Entity.DymincEntity);
+            }
+            catch (Exception)
+            {
+            }
             return error;
         }
 
@@ -156,6 +163,11 @@ namespace Scut.SMS.Config
         public Assembly DymincEntity { get; set; }
     }
 
+    public enum DBType
+    {
+        SQL,
+        MySql
+    }
     public class ContractSetting
     {
         public ContractSetting()
@@ -167,6 +179,9 @@ namespace Scut.SMS.Config
         public string UserId { get; set; }
         public string Password { get; set; }
         public string Database { get; set; }
+
+        public DBType DBType { get; set; }
+        public int Port { get; set; }
 
         [JsonIgnore]
         public bool IsProxyServer { get { return !string.IsNullOrEmpty(Database); } }

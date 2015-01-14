@@ -36,8 +36,10 @@ using Scut.SMS.Config;
 using ScutServerManager.Config;
 using ServiceStack.Redis;
 using ZyGames.Framework.Common;
+using ZyGames.Framework.Common.Configuration;
 using ZyGames.Framework.Common.Log;
 using ZyGames.Framework.Common.Serialization;
+using ZyGames.Framework.Config;
 using ZyGames.Framework.Data;
 using ZyGames.Framework.Game.Contract;
 using ZyGames.Framework.Redis;
@@ -102,6 +104,12 @@ namespace Scut.SMS
                     DbIndex = RedisConfig.Db
 
                 }, serializer);
+
+                var _redisSection = ConfigManager.Configger.GetFirstOrAddConfig<RedisSection>();
+                if (_redisSection == null)
+                {
+                    
+                }
             }
             catch (Exception ex)
             {
@@ -297,17 +305,71 @@ namespace Scut.SMS
             }
             else if (key.StartsWith("$"))
             {
-                byte[][] keyBytes = client.HKeys(key);
-                StringBuilder sb = new StringBuilder();
-                sb.AppendFormat("Count:{0:D}", keyBytes.Length);
-                sb.AppendLine("[");
-                foreach (var buffer in keyBytes)
+                string[] arr = key.TrimStart(new char[]{'$'}).Split(new char[]{'_'});
+                string typeName = arr[0];
+                string keyCode = (arr.Length > 1) ? arr[1] : "";
+                StringBuilder stringBuilder5 = new StringBuilder();
+                if (string.IsNullOrEmpty(keyCode))
                 {
-                    sb.AppendFormat("    {0}", Encoding.UTF8.GetString(buffer));
-                    sb.AppendLine();
+                    byte[][] array10 = client.HKeys(key);
+                    byte[][] array11 = client.HMGet(key, array10);
+                    stringBuilder5.AppendFormat("¡¾{0}¡¿ Count:{1:D}", typeName, array10.Length);
+                    stringBuilder5.AppendLine("");
+                    int num4 = 0;
+                    byte[][] array2 = array10;
+                    for (int i = 0; i < array2.Length; i++)
+                    {
+                        byte[] bytes3 = array2[i];
+                        string arg = "null";
+                        Assembly dymincEntity = AppSetting.Current.Entity.DymincEntity;
+                        if (dymincEntity != null)
+                        {
+                            Type type = dymincEntity.GetType(typeName, false, true);
+                            try
+                            {
+                                byte[] data5 = array11[num4];
+                                object obj = ProtoBufUtils.Deserialize(data5, type);
+                                if (obj != null)
+                                {
+                                    arg = JsonUtils.SerializeCustom(obj);
+                                }
+                            }
+                            catch
+                            {
+                            }
+                        }
+                        stringBuilder5.AppendFormat("©»{0}\t{1}\t{2}", num4 + 1, Encoding.UTF8.GetString(bytes3), arg);
+                        stringBuilder5.AppendLine();
+                        num4++;
+                    }
                 }
-                sb.AppendLine("]");
-                msg = sb.ToString();
+                else
+                {
+                    stringBuilder5.AppendFormat("¡¾{0}¡¿Key:{1}", typeName, keyCode);
+                    stringBuilder5.AppendLine("");
+                    string arg2 = "null";
+                    Assembly dymincEntity2 = AppSetting.Current.Entity.DymincEntity;
+                    if (dymincEntity2 != null)
+                    {
+                        Type type2 = dymincEntity2.GetType(typeName, false, true);
+                        try
+                        {
+                            byte[] data6 = client.HGet("$" + typeName, Encoding.UTF8.GetBytes(keyCode));
+                            object obj2 = ProtoBufUtils.Deserialize(data6, type2);
+                            if (obj2 != null)
+                            {
+                                arg2 = JsonUtils.SerializeCustom(obj2);
+                            }
+                        }
+                        catch
+                        {
+                        }
+                    }
+                    stringBuilder5.AppendFormat("Value:{0}", arg2);
+                    stringBuilder5.AppendLine();
+                }
+                stringBuilder5.AppendLine("");
+                msg = stringBuilder5.ToString();
 
             }
             else
@@ -565,7 +627,12 @@ namespace Scut.SMS
                     {
                         case "server":
                         case "datasource":
-                            conn.DataSource = value;
+                            string[] arr = value.Split(',');
+                            conn.DataSource = arr[0];
+                            if (arr.Length > 1)
+                            {
+                                conn.Port = arr[1].ToInt();
+                            }
                             break;
                         case "charset":
                             conn.Charset = value;
@@ -581,6 +648,9 @@ namespace Scut.SMS
                         case "pwd":
                         case "password":
                             conn.Pwd = value;
+                            break;
+                        case "port":
+                            conn.Port = value.ToInt();
                             break;
                         default:
                             extendAttr += string.Format("{0}={1};", keyValue[0].Trim(), value);

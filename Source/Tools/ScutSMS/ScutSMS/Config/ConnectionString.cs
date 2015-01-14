@@ -42,6 +42,7 @@ namespace ScutServerManager.Config
         public ConnectionString()
         {
             DataSource = DefaultConfig.DataSource;
+            ProviderName = DbProviderType.SqlDataProvider;
         }
 
         [ProtoMember(1),
@@ -51,7 +52,7 @@ namespace ScutServerManager.Config
 
         private DbProviderType _providerName;
 
-        [ProtoMember(2), 
+        [ProtoMember(2),
         Category(CatConnection),
         DefaultValueAttribute(DbProviderType.SqlDataProvider),
         DescriptionAttribute("ProviderName of db.")]
@@ -64,53 +65,62 @@ namespace ScutServerManager.Config
                 if (_providerName == DbProviderType.MySqlDataProvider)
                 {
                     Charset = DefaultConfig.MysqlCharset;
+                    Port = DefaultConfig.MysqlPort;
                 }
                 else
                 {
                     Charset = "";
+                    Port = DefaultConfig.SqlPort;
                 }
             }
         }
 
-        [ProtoMember(3), 
+        [ProtoMember(3),
         Category(CatConnection),
         DefaultValue(DefaultConfig.DataSource),
         DescriptionAttribute("DataSource of db, is required.")]
         public string DataSource { get; set; }
 
-        [ProtoMember(4), 
+        [ProtoMember(4),
         Category(CatConnection),
         DescriptionAttribute("Database of db, is required.")]
         public string Database { get; set; }
 
-        [ProtoMember(5), 
+        [ProtoMember(5),
         Category(CatConnection),
         DescriptionAttribute("User of db.")]
         public string Uid { get; set; }
 
-        [ProtoMember(6), 
+        [ProtoMember(6),
         Category(CatConnection),
         DescriptionAttribute("Password of db.")]
         public string Pwd { get; set; }
 
-        [ProtoMember(7), 
+        [ProtoMember(7),
         Category(CatConnection),
         DefaultValue(DefaultConfig.MysqlCharset),
         DescriptionAttribute("Charset of MySql db, charset:gbk,utf8.")]
         public string Charset { get; set; }
 
-        [ProtoMember(8), 
+        [ProtoMember(8),
         Category(CatConnection),
          DescriptionAttribute("Extend property of db.")]
         public string Extend { get; set; }
 
+        [ProtoMember(9),
+        Category(CatConnection),
+        DescriptionAttribute("port of db.")]
+        public int Port { get; set; }
+
         public string FormatString()
         {
-            string str = string.Format("Data Source={0};Database={1};Uid={2};Pwd={3};{4}",
-                DataSource,
+            string str = string.Format("Data Source={0};Database={1};Uid={2};Pwd={3};{4}{5}{6}",
+                ProviderName == DbProviderType.SqlDataProvider && Port != DefaultConfig.SqlPort ? string.Format("{0},{1}", DataSource, Port) : DataSource,
                 Database,
                 Uid,
                 Pwd,
+                ProviderName == DbProviderType.MySqlDataProvider && Port != DefaultConfig.MysqlPort ? string.Format("Port={0};", Port) : "",
+                ProviderName == DbProviderType.MySqlDataProvider && Charset != DefaultConfig.MysqlCharset ? string.Format("Charset={0};", Charset) : "",
                 (Extend ?? "").Trim());
             return str;
         }

@@ -52,13 +52,17 @@
             this.label4 = new System.Windows.Forms.Label();
             this.txtCaseName = new System.Windows.Forms.TextBox();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.ddDbType = new System.Windows.Forms.ComboBox();
             this.label3 = new System.Windows.Forms.Label();
             this.txtContractDatabase = new System.Windows.Forms.TextBox();
             this.label2 = new System.Windows.Forms.Label();
             this.txtContractPwd = new System.Windows.Forms.TextBox();
             this.label1 = new System.Windows.Forms.Label();
             this.txtContractUid = new System.Windows.Forms.TextBox();
+            this.label5 = new System.Windows.Forms.Label();
+            this.label7 = new System.Windows.Forms.Label();
             this.lblConServer = new System.Windows.Forms.Label();
+            this.txtPort = new System.Windows.Forms.TextBox();
             this.txtContractServer = new System.Windows.Forms.TextBox();
             this.panel2.SuspendLayout();
             this.panel1.SuspendLayout();
@@ -104,9 +108,9 @@
             // 
             // panel1
             // 
-            this.panel1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-                        | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.panel1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.panel1.Controls.Add(this.tabControl1);
             this.panel1.Location = new System.Drawing.Point(0, 2);
             this.panel1.Name = "panel1";
@@ -243,7 +247,7 @@
             this.groupBox2.Controls.Add(this.label4);
             this.groupBox2.Controls.Add(this.txtCaseName);
             this.groupBox2.Dock = System.Windows.Forms.DockStyle.Top;
-            this.groupBox2.Location = new System.Drawing.Point(3, 168);
+            this.groupBox2.Location = new System.Drawing.Point(3, 193);
             this.groupBox2.Name = "groupBox2";
             this.groupBox2.Size = new System.Drawing.Size(572, 105);
             this.groupBox2.TabIndex = 2;
@@ -252,10 +256,10 @@
             // 
             // btnCaseOutpath
             // 
-            this.btnCaseOutpath.Location = new System.Drawing.Point(418, 60);
+            this.btnCaseOutpath.Location = new System.Drawing.Point(441, 60);
             this.btnCaseOutpath.Name = "btnCaseOutpath";
             this.btnCaseOutpath.Size = new System.Drawing.Size(40, 23);
-            this.btnCaseOutpath.TabIndex = 2;
+            this.btnCaseOutpath.TabIndex = 9;
             this.btnCaseOutpath.Text = "...";
             this.btnCaseOutpath.UseVisualStyleBackColor = true;
             this.btnCaseOutpath.Click += new System.EventHandler(this.btnCaseOutpath_Click);
@@ -273,8 +277,8 @@
             // 
             this.txtCaseOutPath.Location = new System.Drawing.Point(174, 62);
             this.txtCaseOutPath.Name = "txtCaseOutPath";
-            this.txtCaseOutPath.Size = new System.Drawing.Size(236, 21);
-            this.txtCaseOutPath.TabIndex = 1;
+            this.txtCaseOutPath.Size = new System.Drawing.Size(260, 21);
+            this.txtCaseOutPath.TabIndex = 8;
             // 
             // label4
             // 
@@ -289,47 +293,62 @@
             // 
             this.txtCaseName.Location = new System.Drawing.Point(174, 31);
             this.txtCaseName.Name = "txtCaseName";
-            this.txtCaseName.Size = new System.Drawing.Size(236, 21);
-            this.txtCaseName.TabIndex = 1;
+            this.txtCaseName.Size = new System.Drawing.Size(260, 21);
+            this.txtCaseName.TabIndex = 7;
             // 
             // groupBox1
             // 
+            this.groupBox1.Controls.Add(this.ddDbType);
             this.groupBox1.Controls.Add(this.label3);
             this.groupBox1.Controls.Add(this.txtContractDatabase);
             this.groupBox1.Controls.Add(this.label2);
             this.groupBox1.Controls.Add(this.txtContractPwd);
             this.groupBox1.Controls.Add(this.label1);
             this.groupBox1.Controls.Add(this.txtContractUid);
+            this.groupBox1.Controls.Add(this.label5);
+            this.groupBox1.Controls.Add(this.label7);
             this.groupBox1.Controls.Add(this.lblConServer);
+            this.groupBox1.Controls.Add(this.txtPort);
             this.groupBox1.Controls.Add(this.txtContractServer);
             this.groupBox1.Dock = System.Windows.Forms.DockStyle.Top;
             this.groupBox1.Location = new System.Drawing.Point(3, 3);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(572, 165);
+            this.groupBox1.Size = new System.Drawing.Size(572, 190);
             this.groupBox1.TabIndex = 1;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Proxy Server";
             // 
+            // ddDbType
+            // 
+            this.ddDbType.FormattingEnabled = true;
+            this.ddDbType.Items.AddRange(new object[] {
+            "SQL",
+            "MySql"});
+            this.ddDbType.Location = new System.Drawing.Point(174, 21);
+            this.ddDbType.Name = "ddDbType";
+            this.ddDbType.Size = new System.Drawing.Size(260, 20);
+            this.ddDbType.TabIndex = 1;
+            // 
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(17, 120);
+            this.label3.Location = new System.Drawing.Point(17, 147);
             this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(59, 12);
+            this.label3.Size = new System.Drawing.Size(89, 12);
             this.label3.TabIndex = 0;
-            this.label3.Text = "Database:";
+            this.label3.Text = "Database Name:";
             // 
             // txtContractDatabase
             // 
-            this.txtContractDatabase.Location = new System.Drawing.Point(174, 117);
+            this.txtContractDatabase.Location = new System.Drawing.Point(174, 144);
             this.txtContractDatabase.Name = "txtContractDatabase";
-            this.txtContractDatabase.Size = new System.Drawing.Size(236, 21);
-            this.txtContractDatabase.TabIndex = 3;
+            this.txtContractDatabase.Size = new System.Drawing.Size(260, 21);
+            this.txtContractDatabase.TabIndex = 6;
             // 
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(17, 90);
+            this.label2.Location = new System.Drawing.Point(17, 117);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(95, 12);
             this.label2.TabIndex = 0;
@@ -337,16 +356,16 @@
             // 
             // txtContractPwd
             // 
-            this.txtContractPwd.Location = new System.Drawing.Point(174, 87);
+            this.txtContractPwd.Location = new System.Drawing.Point(174, 114);
             this.txtContractPwd.Name = "txtContractPwd";
             this.txtContractPwd.PasswordChar = '*';
-            this.txtContractPwd.Size = new System.Drawing.Size(236, 21);
-            this.txtContractPwd.TabIndex = 3;
+            this.txtContractPwd.Size = new System.Drawing.Size(260, 21);
+            this.txtContractPwd.TabIndex = 5;
             // 
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(17, 61);
+            this.label1.Location = new System.Drawing.Point(17, 88);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(83, 12);
             this.label1.TabIndex = 0;
@@ -354,26 +373,51 @@
             // 
             // txtContractUid
             // 
-            this.txtContractUid.Location = new System.Drawing.Point(174, 58);
+            this.txtContractUid.Location = new System.Drawing.Point(174, 85);
             this.txtContractUid.Name = "txtContractUid";
-            this.txtContractUid.Size = new System.Drawing.Size(236, 21);
-            this.txtContractUid.TabIndex = 2;
+            this.txtContractUid.Size = new System.Drawing.Size(260, 21);
+            this.txtContractUid.TabIndex = 4;
+            // 
+            // label5
+            // 
+            this.label5.AutoSize = true;
+            this.label5.Location = new System.Drawing.Point(327, 59);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(35, 12);
+            this.label5.TabIndex = 0;
+            this.label5.Text = "Port:";
+            // 
+            // label7
+            // 
+            this.label7.AutoSize = true;
+            this.label7.Location = new System.Drawing.Point(17, 30);
+            this.label7.Name = "label7";
+            this.label7.Size = new System.Drawing.Size(89, 12);
+            this.label7.TabIndex = 0;
+            this.label7.Text = "Database Type:";
             // 
             // lblConServer
             // 
             this.lblConServer.AutoSize = true;
-            this.lblConServer.Location = new System.Drawing.Point(17, 32);
+            this.lblConServer.Location = new System.Drawing.Point(17, 59);
             this.lblConServer.Name = "lblConServer";
             this.lblConServer.Size = new System.Drawing.Size(77, 12);
             this.lblConServer.TabIndex = 0;
             this.lblConServer.Text = "Data Server:";
             // 
+            // txtPort
+            // 
+            this.txtPort.Location = new System.Drawing.Point(368, 56);
+            this.txtPort.Name = "txtPort";
+            this.txtPort.Size = new System.Drawing.Size(66, 21);
+            this.txtPort.TabIndex = 3;
+            // 
             // txtContractServer
             // 
-            this.txtContractServer.Location = new System.Drawing.Point(174, 29);
+            this.txtContractServer.Location = new System.Drawing.Point(174, 56);
             this.txtContractServer.Name = "txtContractServer";
-            this.txtContractServer.Size = new System.Drawing.Size(236, 21);
-            this.txtContractServer.TabIndex = 1;
+            this.txtContractServer.Size = new System.Drawing.Size(147, 21);
+            this.txtContractServer.TabIndex = 2;
             // 
             // SettingForm
             // 
@@ -436,5 +480,9 @@
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.TextBox txtCaseName;
         private System.Windows.Forms.Button btnCaseOutpath;
+        private System.Windows.Forms.ComboBox ddDbType;
+        private System.Windows.Forms.Label label5;
+        private System.Windows.Forms.Label label7;
+        private System.Windows.Forms.TextBox txtPort;
     }
 }

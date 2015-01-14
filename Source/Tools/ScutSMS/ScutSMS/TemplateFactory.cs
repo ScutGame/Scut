@@ -48,12 +48,20 @@ namespace Scut.SMS
 
         public static void Init()
         {
-            string connectionString = string.Format("Data Source={0};Database={1};Uid={2};Pwd={3};Pooling=true;",
-                AppSetting.Current.Contract.Server,
+            var dbType = AppSetting.Current.Contract.DBType;
+            string connectionString = string.Format("Data Source={0};Database={1};Uid={2};Pwd={3};",
+                dbType == DBType.SQL && AppSetting.Current.Contract.Port > 0
+                ? AppSetting.Current.Contract.Server + "," + AppSetting.Current.Contract.Port
+                : AppSetting.Current.Contract.Server,
                 AppSetting.Current.Contract.Database,
                 AppSetting.Current.Contract.UserId,
                 AppSetting.Current.Contract.Password);
-            dbProvider = DbConnectionProvider.CreateDbProvider("ContractData", "", connectionString);
+            if (dbType == DBType.MySql && AppSetting.Current.Contract.Port > 0)
+            {
+                connectionString += string.Format("Port={0};", AppSetting.Current.Contract.Port);
+            }
+            string privodeType = AppSetting.Current.Contract.DBType == DBType.MySql ? "MySqlDataProvider" : "";
+            dbProvider = DbConnectionProvider.CreateDbProvider("ContractData", privodeType, connectionString);
             saveTempPath = Path.Combine(MathUtils.RuntimePath, AppSetting.Current.Contract.CaseOutPath);
         }
 

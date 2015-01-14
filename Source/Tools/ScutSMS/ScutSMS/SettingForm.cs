@@ -1,10 +1,7 @@
 ﻿using System;
-using System.CodeDom.Compiler;
-using System.IO;
 using System.Windows.Forms;
 using Scut.SMS.Config;
-using ZyGames.Framework.Common.Build;
-using ZyGames.Framework.Script;
+using ZyGames.Framework.Common;
 
 namespace Scut.SMS
 {
@@ -38,10 +35,13 @@ namespace Scut.SMS
 
         private void LoadConfig()
         {
+
             txtEntityAsmPath.Text = _setting.Entity.AssemblyPath;
             txtEntityPath.Text = _setting.Entity.ScriptPath;
 
+            ddDbType.Text = _setting.Contract.DBType.ToString();
             txtContractServer.Text = _setting.Contract.Server;
+            txtPort.Text = _setting.Contract.Port.ToString();
             txtContractUid.Text = _setting.Contract.UserId;
             txtContractPwd.Text = _setting.Contract.Password;
             txtContractDatabase.Text = _setting.Contract.Database;
@@ -122,7 +122,9 @@ namespace Scut.SMS
         {
             SaveEntityConfig();
 
+            _setting.Contract.DBType = ddDbType.Text.ToEnum<DBType>();
             _setting.Contract.Server = txtContractServer.Text;
+            _setting.Contract.Port = txtPort.Text.ToInt();
             _setting.Contract.UserId = txtContractUid.Text;
             _setting.Contract.Password = txtContractPwd.Text;
             _setting.Contract.Database = txtContractDatabase.Text;
@@ -151,7 +153,7 @@ namespace Scut.SMS
         {
             try
             {
-                SaveEntityConfig(); 
+                SaveEntityConfig();
                 _setting.Save();
                 string error = AppSetting.LoadAssembly();
                 if (!string.IsNullOrEmpty(error))
