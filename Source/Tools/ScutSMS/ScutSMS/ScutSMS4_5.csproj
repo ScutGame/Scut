@@ -76,13 +76,13 @@
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
     <Reference Include="ZyGames.Framework">
-      <HintPath>..\..\..\FrameworkPublish\Release\alpha\Lib\ZyGames.Framework.dll</HintPath>
+      <HintPath>..\..\..\Middleware\ZyGames.Framework.Game\bin\Release\ZyGames.Framework.dll</HintPath>
     </Reference>
     <Reference Include="ZyGames.Framework.Common">
-      <HintPath>..\..\..\FrameworkPublish\Release\alpha\Lib\ZyGames.Framework.Common.dll</HintPath>
+      <HintPath>..\..\..\Middleware\ZyGames.Framework.Game\bin\Release\ZyGames.Framework.Common.dll</HintPath>
     </Reference>
     <Reference Include="ZyGames.Framework.Game">
-      <HintPath>..\..\..\FrameworkPublish\Release\alpha\Lib\ZyGames.Framework.Game.dll</HintPath>
+      <HintPath>..\..\..\Middleware\ZyGames.Framework.Game\bin\Release\ZyGames.Framework.Game.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
