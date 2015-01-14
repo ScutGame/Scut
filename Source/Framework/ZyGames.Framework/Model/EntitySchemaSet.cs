@@ -741,6 +741,12 @@ namespace ZyGames.Framework.Model
                 DbBaseProvider dbprovider = DbConnectionProvider.CreateDbProvider(schema);
                 if (dbprovider == null)
                 {
+                    if (schema.StorageType.HasFlag(StorageType.ReadOnlyDB) ||
+                        schema.StorageType.HasFlag(StorageType.ReadWriteDB) ||
+                        schema.StorageType.HasFlag(StorageType.WriteOnlyDB))
+                    {
+                        TraceLog.WriteError("Not found DB connection key \"{1}\" of the {0} entity.", schema.EntityName, schema.ConnectKey);
+                    }
                     return;
                 }
                 DbColumn[] columns;

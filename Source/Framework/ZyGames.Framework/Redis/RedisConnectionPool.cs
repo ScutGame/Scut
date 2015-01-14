@@ -441,7 +441,8 @@ namespace ZyGames.Framework.Redis
             else
             {
                 hostParts = setting.Host.Split(':');
-                client = new RedisClient(hostParts[0], hostParts[1].ToInt(), null, setting.DbIndex);
+                int port = hostParts.Length > 1 ? hostParts[1].ToInt() : 6379;
+                client = new RedisClient(hostParts[0], port, null, setting.DbIndex);
             }
             return client;
         }

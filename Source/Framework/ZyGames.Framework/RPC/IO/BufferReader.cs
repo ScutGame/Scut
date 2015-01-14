@@ -63,6 +63,11 @@ namespace ZyGames.Framework.RPC.IO
             _offset = 0;
             _length = _buffer.Length;
         }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public byte[] Data { get { return _buffer; } }
         /// <summary>
         /// 
         /// </summary>

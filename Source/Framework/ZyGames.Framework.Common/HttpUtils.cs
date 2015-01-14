@@ -145,28 +145,18 @@ namespace ZyGames.Framework.Common
         /// <summary>
         /// Post request
         /// </summary>
-        /// <param name="url"></param>
         /// <param name="parameters"></param>
-        /// <param name="encoding"></param>
-        /// <param name="contentType"></param>
         /// <returns></returns>
-        public static Stream Post(string url, IDictionary<string, string> parameters, Encoding encoding, string contentType = "")
+        public static string BuildPostParams(IDictionary<string, string> parameters)
         {
             StringBuilder buffer = new StringBuilder();
-            int i = 0;
+            string val;
             foreach (string key in parameters.Keys)
             {
-                if (i > 0)
-                {
-                    buffer.AppendFormat("&{0}={1}", key, parameters[key]);
-                }
-                else
-                {
-                    buffer.AppendFormat("{0}={1}", key, parameters[key]);
-                }
-                i++;
+                val = HttpUtility.UrlEncode(parameters[key]);
+                buffer.AppendFormat("&{0}={1}", key, val);
             }
-            return Post(url, buffer.ToString(), encoding, contentType);
+            return buffer.ToString().TrimStart('&');
         }
 
         /// <summary>
@@ -195,7 +185,22 @@ namespace ZyGames.Framework.Common
         /// <returns></returns>
         public static Task<WebResponse> PostAsync(string url, string parameters, int? timeout, string userAgent, Encoding encoding, string contentType, CookieCollection cookies)
         {
-            var request = DoPostRequest(url, parameters, timeout, userAgent, encoding, contentType, cookies);
+            return PostAsync(url, encoding.GetBytes(parameters), timeout, userAgent, contentType, cookies);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="url"></param>
+        /// <param name="inputBytes"></param>
+        /// <param name="timeout"></param>
+        /// <param name="userAgent"></param>
+        /// <param name="contentType"></param>
+        /// <param name="cookies"></param>
+        /// <returns></returns>
+        public static Task<WebResponse> PostAsync(string url, byte[] inputBytes, int? timeout, string userAgent, string contentType, CookieCollection cookies)
+        {
+            var request = DoPostRequest(url, inputBytes, timeout, userAgent, contentType, cookies);
             return request.GetResponseAsync();
         }
 
@@ -212,19 +217,30 @@ namespace ZyGames.Framework.Common
         /// <returns></returns>  
         public static HttpWebResponse Post(string url, string parameters, int? timeout, string userAgent, Encoding encoding, string contentType, CookieCollection cookies)
         {
-            var request = DoPostRequest(url, parameters, timeout, userAgent, encoding, contentType, cookies);
+            return Post(url, encoding.GetBytes(parameters), timeout, userAgent, contentType, cookies);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="url"></param>
+        /// <param name="inputBytes"></param>
+        /// <param name="timeout"></param>
+        /// <param name="userAgent"></param>
+        /// <param name="contentType"></param>
+        /// <param name="cookies"></param>
+        /// <returns></returns>
+        public static HttpWebResponse Post(string url, byte[] inputBytes, int? timeout, string userAgent, string contentType, CookieCollection cookies)
+        {
+            var request = DoPostRequest(url, inputBytes, timeout, userAgent, contentType, cookies);
             return request.GetResponse() as HttpWebResponse;
         }
 
-        private static HttpWebRequest DoPostRequest(string url, string parameters, int? timeout, string userAgent, Encoding encoding, string contentType, CookieCollection cookies)
+        private static HttpWebRequest DoPostRequest(string url, byte[] inputBytes, int? timeout, string userAgent, string contentType, CookieCollection cookies)
         {
             if (string.IsNullOrEmpty(url))
             {
                 throw new ArgumentNullException("url");
-            }
-            if (encoding == null)
-            {
-                throw new ArgumentNullException("encoding");
             }
             HttpWebRequest request = null;
             //如果是发送HTTPS请求  
@@ -263,16 +279,11 @@ namespace ZyGames.Framework.Common
                 request.CookieContainer.Add(cookies);
             }
             //如果需要POST数据  
-            if (!string.IsNullOrEmpty(parameters))
+            if (inputBytes != null && inputBytes.Length > 0)
             {
-                if (parameters.Length > 0 && parameters.StartsWith("?"))
-                {
-                    parameters = parameters.Substring(1);
-                }
-                byte[] data = encoding.GetBytes(parameters);
                 using (Stream stream = request.GetRequestStream())
                 {
-                    stream.Write(data, 0, data.Length);
+                    stream.Write(inputBytes, 0, inputBytes.Length);
                 }
             }
             return request;
