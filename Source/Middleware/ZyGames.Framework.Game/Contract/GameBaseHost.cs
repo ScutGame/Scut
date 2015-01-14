@@ -189,5 +189,77 @@ namespace ZyGames.Framework.Game.Contract
         {
             return actionGetter.CheckSign();
         }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="package"></param>
+        /// <param name="session"></param>
+        /// <returns></returns>
+        protected virtual bool CheckSpecialPackge(RequestPackage package, GameSession session)
+        {
+            //处理特殊包
+            if (package.ActionId == ((int)ActionEnum.Interrupt))
+            {
+                //Proxy server notifly interrupt connect ops
+                OnDisconnected(session);
+                if (session != null && (session.ProxySid == Guid.Empty || GameSession.Count > 1))
+                {
+                    //保留代理服连接
+                    session.Close();
+                    session.ProxySid = Guid.Empty;
+                }
+                return true;
+            }
+
+            if (package.ActionId == ((int)ActionEnum.Heartbeat))
+            {
+                if (session != null)
+                {
+                    // 客户端tcp心跳包
+                    session.Refresh();
+                    OnHeartbeat(session);
+                    BuildHearbeatPackage(package, session);
+                    session.ExitSession();
+                }
+                return true;
+            }
+            return false;
+        }
+
+        /// <summary>
+        /// 心跳包
+        /// </summary>
+        /// <param name="session"></param>
+        protected virtual void OnHeartbeat(GameSession session)
+        {
+
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="session"></param>
+        protected virtual void OnHeartbeatTimeout(GameSession session)
+        {
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="package"></param>
+        /// <param name="session"></param>
+        protected virtual void BuildHearbeatPackage(RequestPackage package, GameSession session)
+        {
+
+        }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="session"></param>
+        protected virtual void OnDisconnected(GameSession session)
+        {
+            
+        }
     }
 }

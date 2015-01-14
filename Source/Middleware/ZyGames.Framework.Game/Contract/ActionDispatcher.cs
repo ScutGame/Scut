@@ -105,69 +105,16 @@ namespace ZyGames.Framework.Game.Contract
         /// <returns></returns>
         public virtual bool TryDecodePackage(ConnectionEventArgs e, out RequestPackage package)
         {
-            package = null;
-            var param = new Dictionary<string, string>(StringComparer.InvariantCultureIgnoreCase);
-            string paramStr = Encoding.ASCII.GetString(e.Data);
-            int index = paramStr.IndexOf("?d=", StringComparison.CurrentCultureIgnoreCase);
-            string routeName = string.Empty;
-            if (index != -1)
+            var packageReader = new PackageReader(e.Data, Encoding.UTF8);
+            if (TryBuildPackage(packageReader, out package))
             {
-                if (paramStr.StartsWith("route:", StringComparison.CurrentCultureIgnoreCase))
-                {
-                    routeName = paramStr.Substring(6, index - 6);
-                }
-                paramStr = paramStr.Substring(index, paramStr.Length - index);
-                paramStr = HttpUtility.ParseQueryString(paramStr)["d"];
+                package.OpCode = e.Meaage.OpCode;
+                package.CommandMessage = e.Socket.IsWebSocket && e.Meaage.OpCode == OpCode.Text
+                    ? e.Meaage.Message
+                    : null;
+                return true;
             }
-
-            LoadParamString(param, paramStr);
-
-            if (param.ContainsKey("route"))
-            {
-                routeName = param["route"];
-            }
-            //if (!param.ContainsKey("ssid")) { Interlocked.Increment(ref errorDropNum); return; }
-            if (!param.ContainsKey("actionid")) { return false; }
-            if (!param.ContainsKey("msgid")) { return false; }
-
-            //sessionId of proxy server
-            Guid proxySid;
-            if (!param.ContainsKey("ssid") || !Guid.TryParse(param["ssid"], out proxySid))
-            {
-                proxySid = Guid.Empty;
-            }
-            int msgid;
-            if (!int.TryParse(param["msgid"], out msgid)) { return false; }
-            int actionid;
-            if (!int.TryParse(param["actionid"], out actionid)) { return false; }
-            int userId;
-            int.TryParse(param["uid"], out userId);
-
-            string sessionId = param.ContainsKey("sid") ? param["sid"] : "";
-            string proxyId = param.ContainsKey("proxyId") ? param["proxyId"] : "";
-            package = new RequestPackage(msgid, sessionId, actionid, userId)
-            {
-                ProxySid = proxySid,
-                ProxyId = proxyId,
-                IsProxyRequest = param.ContainsKey("isproxy"),
-                RouteName = routeName,
-                IsUrlParam = true,
-                UrlParam = paramStr,
-                OpCode = e.Meaage.OpCode,
-                CommandMessage = e.Socket.IsWebSocket && e.Meaage.OpCode == OpCode.Text ? e.Meaage.Message : null
-            };
-            
-            return true;
-        }
-
-        private static void LoadParamString(Dictionary<string, string> param, string paramStr)
-        {
-            var nvc = HttpUtility.ParseQueryString(paramStr);
-            foreach (var key in nvc.AllKeys)
-            {
-                if (string.IsNullOrEmpty(key)) continue;
-                param[key] = nvc[key];
-            }
+            return false;
         }
 
         /// <summary>
@@ -179,9 +126,7 @@ namespace ZyGames.Framework.Game.Contract
         /// <returns></returns>
         public bool TryDecodePackage(HttpListenerRequest request, out RequestPackage package, out int statusCode)
         {
-            statusCode = 200;
-            package = null;
-
+            statusCode = (int)HttpStatusCode.OK;
             string data = "";
             if (Environment.OSVersion.Platform == PlatformID.Unix)
             {
@@ -195,70 +140,8 @@ namespace ZyGames.Framework.Game.Contract
             {
                 data = request.QueryString["d"];
             }
-
-            if (string.IsNullOrEmpty(data))
-            {
-                using (var reader = new StreamReader(request.InputStream, request.ContentEncoding))
-                {
-                    data = reader.ReadToEnd();
-                    data = HttpUtility.ParseQueryString(data)["d"];
-                }
-            }
-            //if data is null  ping command
-            if (string.IsNullOrEmpty(data))
-            {
-                statusCode = (int)HttpStatusCode.OK;
-                return false;
-            }
-
-            int statuscode = 0;
-            Dictionary<string, string> param = new Dictionary<string, string>(StringComparer.InvariantCultureIgnoreCase);
-            if (data != null)
-            {
-                var nvc = HttpUtility.ParseQueryString(data);
-                foreach (var key in nvc.AllKeys)
-                {
-                    param[key] = nvc[key];
-                }
-            }
-            statuscode = CheckHttpParam(param);
-
-            if (statuscode != (int)HttpStatusCode.OK)
-            {
-                statusCode = statuscode;
-                return false;
-            }
-            //sessionId of proxy server
-            Guid proxySid;
-            if (!param.ContainsKey("ssid") || !Guid.TryParse(param["ssid"], out proxySid))
-            {
-                proxySid = Guid.Empty;
-            }
-            int actionid;
-            if (!int.TryParse(param["actionid"], out actionid)) { return false; }
-            int msgid;
-            if (!int.TryParse(param["msgid"], out msgid)) { return false; }
-            int userId;
-            int.TryParse(param["uid"], out userId);
-            string routeName = string.Empty;
-            if (param.ContainsKey("route"))
-            {
-                routeName = param["route"];
-            }
-
-            string sessionId = param.ContainsKey("sid") ? param["sid"] : "";
-            string proxyId = param.ContainsKey("proxyId") ? param["proxyId"] : "";
-            package = new RequestPackage(msgid, sessionId, actionid, userId)
-            {
-                ProxySid = proxySid,
-                ProxyId = proxyId,
-                IsProxyRequest = param.ContainsKey("isproxy"),
-                RouteName = routeName,
-                IsUrlParam = true,
-                UrlParam = data
-            };
-
-            return true;
+            var packageReader = new PackageReader(data, request.InputStream, request.ContentEncoding);
+            return TryBuildPackage(packageReader, out package);
         }
 
         /// <summary>
@@ -295,36 +178,9 @@ namespace ZyGames.Framework.Game.Contract
             {
                 return false;
             }
-            var d = context.Request["d"] ?? "";
-            var nvc = HttpUtility.ParseQueryString(d);
-            Dictionary<string, string> param = new Dictionary<string, string>(StringComparer.InvariantCultureIgnoreCase);
-            foreach (var key in nvc.AllKeys)
-            {
-                param[key] = nvc[key];
-            }
-
-            string sessionId = param.ContainsKey("sid") ? param["sid"] : "";
-            int msgId = (param.ContainsKey("MsgId") ? param["MsgId"] : "0").ToInt();
-            int actionId = (param.ContainsKey("actionId") ? param["actionId"] : "0").ToInt();
-            int userId = (param.ContainsKey("uid") ? param["uid"] : "0").ToInt();
-
-            Guid proxySid;
-            if (!param.ContainsKey("ssid") || !Guid.TryParse(param["ssid"], out proxySid))
-            {
-                proxySid = Guid.Empty;
-            }
-            string proxyId = param.ContainsKey("proxyId") ? param["proxyId"] : "";
-
-
-            package = new RequestPackage(msgId, sessionId, actionId, userId)
-            {
-                ProxySid = proxySid,
-                ProxyId = proxyId,
-                IsProxyRequest = param.ContainsKey("isproxy"),
-                IsUrlParam = true,
-                UrlParam = d,
-            };
-            return true;
+            var data = context.Request["d"] ?? "";
+            var packageReader = new PackageReader(data, context.Request.InputStream, context.Request.ContentEncoding);
+            return TryBuildPackage(packageReader, out package);
         }
 
         /// <summary>
@@ -352,17 +208,46 @@ namespace ZyGames.Framework.Game.Contract
             response.BinaryWrite(sb.PopBuffer());
         }
 
-        private int CheckHttpParam(Dictionary<string, string> param)
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="packageReader"></param>
+        /// <param name="package"></param>
+        /// <returns></returns>
+        protected virtual bool TryBuildPackage(PackageReader packageReader, out RequestPackage package)
         {
-            if (!param.ContainsKey("actionid"))
+            package = null;
+            Guid proxySid;
+            packageReader.TryGetParam("ssid", out proxySid);
+            int actionid;
+            if (!packageReader.TryGetParam("actionid", out actionid))
             {
-                return (int)HttpStatusCode.BadRequest;
+                return false;
             }
-            if (!param.ContainsKey("msgid"))
+            int msgid;
+            if (!packageReader.TryGetParam("msgid", out msgid))
             {
-                return (int)HttpStatusCode.BadRequest;
+                return false;
             }
-            return (int)HttpStatusCode.OK;
+            int userId;
+            packageReader.TryGetParam("uid", out userId);
+            string sessionId;
+            string proxyId;
+            packageReader.TryGetParam("sid", out sessionId);
+            packageReader.TryGetParam("proxyId", out proxyId);
+
+            package = new RequestPackage(msgid, sessionId, actionid, userId)
+            {
+                ProxySid = proxySid,
+                ProxyId = proxyId,
+                IsProxyRequest = packageReader.ContainsKey("isproxy"),
+                RouteName = packageReader.RouteName,
+                IsUrlParam = true,
+                Params = packageReader.Params,
+                Message = packageReader.InputStream,
+                OriginalParam = packageReader.RawParam
+            };
+            return true;
         }
 
     }

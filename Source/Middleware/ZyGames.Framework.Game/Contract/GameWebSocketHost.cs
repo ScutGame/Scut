@@ -158,12 +158,17 @@ namespace ZyGames.Framework.Game.Contract
                     }
                     if ("pong".Equals(command, StringComparison.CurrentCultureIgnoreCase))
                     {
-                        OnPing(sender, e);
+                        OnPong(sender, e);
+                        return;
                     }
                     OnError(sender, e);
                     return;
                 }
                 var session = GetSession(e, package);
+                if (CheckSpecialPackge(package, session))
+                {
+                    return;
+                }
                 package.Bind(session);
                 ProcessPackage(package, session).Wait();
             }
@@ -258,29 +263,13 @@ namespace ZyGames.Framework.Game.Contract
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="session"></param>
-        protected virtual void OnHeartbeatTimeout(GameSession session)
-        {
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
         protected virtual void OnConnectCompleted(object sender, ConnectionEventArgs e)
         {
 
         }
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="session"></param>
-        protected virtual void OnDisconnected(GameSession session)
-        {
-
-        }
-
+  
         /// <summary>
         /// 
         /// </summary>

@@ -213,28 +213,22 @@ namespace ZyGames.Framework.Game.Contract
             int userId = session != null ? session.UserId : 0;
             string sessionId = session != null ? session.SessionId : "";
 
-            StringBuilder shareParam = new StringBuilder();
-            var paramList = new Dictionary<string, object>();
+            var paramList = new Dictionary<string, string>(StringComparer.InvariantCultureIgnoreCase);
             //init head
-            paramList["MsgId"] = 0;
+            paramList["MsgId"] = "0";
             paramList["St"] = "st";
             paramList["Sid"] = sessionId;
-            paramList["Uid"] = userId;
-            paramList["ActionID"] = actionId;
+            paramList["Uid"] = userId.ToString();
+            paramList["ActionID"] = actionId.ToString();
             if (parameters != null)
             {
                 foreach (var parameter in parameters)
                 {
-                    paramList[parameter.Key] = parameter.Value;
+                    paramList[parameter.Key] = parameter.Value.ToString();
                 }
             }
-            foreach (var parameter in paramList)
-            {
-                shareParam.AppendFormat("&{0}={1}", parameter.Key, parameter.Value);
-            }
-
             RequestPackage requestPackage = new RequestPackage(0, sessionId, actionId, userId);
-            requestPackage.UrlParam = shareParam.ToString().TrimStart('&');
+            requestPackage.Params = paramList;
             requestPackage.IsUrlParam = true;
             requestPackage.OpCode = opCode;
             requestPackage.Bind(session);

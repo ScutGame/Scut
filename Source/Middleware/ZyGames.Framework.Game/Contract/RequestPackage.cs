@@ -22,6 +22,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ****************************************************************************/
 using System;
+using System.Collections.Generic;
 using Newtonsoft.Json;
 using ProtoBuf;
 
@@ -52,6 +53,10 @@ namespace ZyGames.Framework.Game.Contract
             UserId = userId;
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        public Dictionary<string, string> Params { get; set; }
         
         /// <summary>
         /// message id of client request
@@ -99,11 +104,12 @@ namespace ZyGames.Framework.Game.Contract
         [ProtoMember(8)]
         public bool IsUrlParam { get; internal protected set; }
 
-        /// <summary>
-        /// param for url request
-        /// </summary>
-        [ProtoMember(9)]
-        public string UrlParam { get; set; }
+        //注释原因：重复解析参数字串
+        ///// <summary>
+        ///// param for url request
+        ///// </summary>
+        //[ProtoMember(9)]
+        //public string UrlParam { get; set; }
 
         /// <summary>
         /// 远程代理客户端的标识ID
@@ -118,7 +124,12 @@ namespace ZyGames.Framework.Game.Contract
         public sbyte OpCode { get; set; }
 
         /// <summary>
-        /// 
+        /// sigin use
+        /// </summary>
+        public string OriginalParam { get; set; }
+
+        /// <summary>
+        /// websocket use
         /// </summary>
         public string CommandMessage { get; set; }
 

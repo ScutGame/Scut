@@ -38,7 +38,7 @@ namespace ZyGames.Framework.Game.Contract
     /// </summary>
     public class HttpGet : ActionGetter
     {
-        private string _requestParam = string.Empty;
+        private string _originalParam = string.Empty;
         private StringBuilder _error = new StringBuilder();
         private Dictionary<string, string> _param = new Dictionary<string, string>(StringComparer.InvariantCultureIgnoreCase);
 
@@ -71,8 +71,11 @@ namespace ZyGames.Framework.Game.Contract
         public HttpGet(RequestPackage package, GameSession session)
             : base(package, session)
         {
-            _paramString = package.UrlParam ?? "";
-            InitData(_paramString);
+            _param = package.Params;
+            _paramString = package.OriginalParam ?? "";
+
+            RemoveSignKey(_paramString);
+            SetParams();
         }
 
         /// <summary>
@@ -138,11 +141,7 @@ namespace ZyGames.Framework.Game.Contract
 
         private void InitData(string d)
         {
-            int index = d.LastIndexOf("&sign=", StringComparison.Ordinal);
-            if (index != -1)
-            {
-                _requestParam = d.Substring(0, index);
-            }
+            RemoveSignKey(d);
             var temp = HttpUtility.ParseQueryString(d);
 
             foreach (var key in temp.AllKeys)
@@ -150,9 +149,30 @@ namespace ZyGames.Framework.Game.Contract
                 if (string.IsNullOrEmpty(key)) continue;
                 _param[key] = temp[key];
             }
+            SetParams();
+        }
+
+        private void SetParams()
+        {
             MsgId = (_param.ContainsKey("MsgId") ? _param["MsgId"] : "0").ToInt();
             _actionId = (_param.ContainsKey("actionId") ? _param["actionId"] : "0").ToInt();
             UserId = (_param.ContainsKey("uid") ? _param["uid"] : "0").ToInt();
+        }
+
+        private void RemoveSignKey(string d)
+        {
+            int startIndex = d.IndexOf("?d=", StringComparison.CurrentCultureIgnoreCase);
+            if (startIndex > -1)
+            {
+                d = d.Substring(startIndex + 3);
+                d = HttpUtility.UrlDecode(d);
+            }
+
+            int index = d.LastIndexOf("&sign=", StringComparison.CurrentCultureIgnoreCase);
+            if (index != -1)
+            {
+                _originalParam = d.Substring(0, index);
+            }
         }
 
         private const int ZeroNum = 0;
@@ -574,14 +594,11 @@ namespace ZyGames.Framework.Game.Contract
             string sign = "";
             if (GetString("sign", ref sign))
             {
-                if (_requestParam != null)
+                string attachParam = _originalParam + signKey;
+                string key = ZyGames.Framework.Common.Security.CryptoHelper.MD5_Encrypt(attachParam, Encoding.UTF8);
+                if (!string.IsNullOrEmpty(key) && key.ToLower() == sign)
                 {
-                    string attachParam = _requestParam + signKey;
-                    string key = ZyGames.Framework.Common.Security.CryptoHelper.MD5_Encrypt(attachParam, Encoding.UTF8);
-                    if (!string.IsNullOrEmpty(key) && key.ToLower() == sign)
-                    {
-                        return true;
-                    }
+                    return true;
                 }
             }
 

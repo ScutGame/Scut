@@ -25,6 +25,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using ZyGames.Framework.Common.Configuration;
+using ZyGames.Framework.Common.Log;
 using ZyGames.Framework.Game.Config;
 using ZyGames.Framework.Game.Runtime;
 using ZyGames.Framework.Game.Service;
@@ -146,9 +147,14 @@ namespace ZyGames.Framework.Game.Contract
             return session;
         }
     }
-
-    class HttpAsyncHandler : IHttpAsyncHandler
+    /// <summary>
+    /// 
+    /// </summary>
+    public class HttpAsyncHandler : IHttpAsyncHandler
     {
+        /// <summary>
+        /// 
+        /// </summary>
         public static readonly IHttpAsyncHandler Default = new HttpAsyncHandler();
 
         public async Task<IHttpResponseAction> Execute(IHttpRequestContext context)
@@ -187,8 +193,9 @@ namespace ZyGames.Framework.Game.Contract
                 {
                     return ScriptEngines.GetCurrentMainScript().ProcessRequest(package, httpGet);
                 }
-                catch (Exception)
+                catch (Exception ex)
                 {
+                    TraceLog.WriteError("Excute mainclass error:{0}",ex);
                     return new byte[0];
                 }
             });

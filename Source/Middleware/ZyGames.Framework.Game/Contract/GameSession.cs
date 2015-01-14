@@ -500,7 +500,10 @@ namespace ZyGames.Framework.Game.Contract
             AppServer = appServer;
         }
 
-        internal void Refresh()
+        /// <summary>
+        /// 
+        /// </summary>
+        public void Refresh()
         {
             IsTimeout = false;
             IsHeartbeatTimeout = false;

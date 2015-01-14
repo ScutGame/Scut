@@ -63,6 +63,17 @@ namespace ZyGames.Framework.Game.Service
         }
 
         /// <summary>
+        /// get request input bytes, socket use '\r\n\r\n' split message.
+        /// </summary>
+        public byte[] InputStreamBytes
+        {
+            get
+            {
+                return ReqPackage.Message as byte[];
+            }
+        }
+
+        /// <summary>
         /// 
         /// </summary>
         /// <returns></returns>

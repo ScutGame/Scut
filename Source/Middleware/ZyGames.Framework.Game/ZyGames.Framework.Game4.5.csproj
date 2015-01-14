@@ -147,6 +147,7 @@
     <Compile Include="Contract\GameBaseHost.cs" />
     <Compile Include="Contract\GameHttpHost.cs" />
     <Compile Include="Contract\GameWebSocketHost.cs" />
+    <Compile Include="Contract\PackageReader.cs" />
     <Compile Include="Contract\RemotePackage.cs" />
     <Compile Include="Contract\RemoteService.cs" />
     <Compile Include="Runtime\AppServerConfigger.cs" />
