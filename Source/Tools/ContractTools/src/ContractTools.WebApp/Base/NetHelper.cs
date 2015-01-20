@@ -58,7 +58,7 @@ namespace ContractTools.WebApp.Base
             else
             {
                 Encoding encode = Encoding.GetEncoding("utf-8");
-                string postData = "d=" + GetSign(requestParams);
+                string postData = "?d=" + GetSign(requestParams);
                 byte[] bufferData = encode.GetBytes(postData);
 
                 HttpWebRequest serverRequest = (HttpWebRequest)WebRequest.Create(serverUrl);

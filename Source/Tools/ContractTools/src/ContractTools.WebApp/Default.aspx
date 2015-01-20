@@ -80,7 +80,7 @@
                                 <asp:DropDownList ID="ddFieldType" runat="server" Width="100px">
                                     <asp:ListItem Value="-1">Password</asp:ListItem>
                                     <asp:ListItem Value="1">Int</asp:ListItem>
-                                    <asp:ListItem Value="2">String</asp:ListItem>
+                                    <asp:ListItem Value="2" Selected="True">String</asp:ListItem>
                                     <asp:ListItem Value="3">Short</asp:ListItem>
                                     <asp:ListItem Value="4">Byte</asp:ListItem>
                                     <asp:ListItem Value="5">Record</asp:ListItem>

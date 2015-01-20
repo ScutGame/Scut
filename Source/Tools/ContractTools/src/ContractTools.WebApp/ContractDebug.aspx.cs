@@ -103,6 +103,10 @@ namespace ContractTools.WebApp
 
         protected void OnRefresh(object sender, EventArgs e)
         {
+            int contractId = ddlContract.Text.ToInt();
+            var paramRecords = DbDataLoader.GetParamInfo(SlnID, contractId, VerID);
+            string postParam = FormatPostParam(paramRecords.Where(t => t.ParamType == 1).ToList(), txtParams.Text);
+            txtPostParam.Text = string.Format("?d={0}", NetHelper.GetSign(postParam));
             Bind();
         }
         protected void OnSendClick(object sender, EventArgs e)
@@ -114,7 +118,6 @@ namespace ContractTools.WebApp
                 Session["pid"] = pid;
                 var paramRecords = DbDataLoader.GetParamInfo(SlnID, contractId, VerID);
                 string postParam = FormatPostParam(paramRecords.Where(t => t.ParamType == 1).ToList(), txtParams.Text);
-                txtPostParam.Text = string.Format("?d={0}", NetHelper.GetSign(postParam));
                 dvResult.InnerHtml = "正在请求,请稍候...";
                 string sid;
                 string uid;
