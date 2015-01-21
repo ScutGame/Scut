@@ -526,6 +526,8 @@ namespace ContractTools.WebApp.Base
                             strTemp.Append(" = reader.readString();");
                             break;
                         case FieldType.Bool:
+                            strTemp.Append(" = reader.getByte() == 0 ? false : true;");
+                            break;
                         case FieldType.Byte:
                             strTemp.Append(" = reader.getByte();");
                             break;
@@ -1388,7 +1390,7 @@ namespace ContractTools.WebApp.Base
                     listVar = listVar + "_" + recordIndex;
                     string currIndent = GetSpaceIndent(indent + depth, 2);
                     strTemp.Append(currIndent);
-                    strTemp.AppendFormat("{0}.PushIntoStack({1}.Length);", currentVar, listVar);
+                    strTemp.AppendFormat("{0}.PushIntoStack({1}.Count);", currentVar, listVar);
                     strTemp.AppendLine();
                     strTemp.Append(currIndent);
                     strTemp.AppendFormat("foreach (var {0} in {1})", enumVar, listVar);
