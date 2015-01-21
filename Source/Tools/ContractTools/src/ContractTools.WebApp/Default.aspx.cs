@@ -412,12 +412,15 @@ namespace ContractTools.WebApp
                 mode.ContractID = ddContract.Text.ToInt();
                 mode.ParamType = keys.Values[1].ToInt();
                 mode.Field = ((TextBox)cell.FindControl("txtField")).Text.Trim();
-                mode.FieldValue = ((TextBox)cell.FindControl("txtFieldValue")).Text.Trim();
                 mode.FieldType = ((DropDownList)cell.FindControl("droFieldType")).SelectedValue.ToEnum<FieldType>();
                 mode.Remark = JoinArray(',', ((TextBox)cell.FindControl("hiDescption")).Text.Trim(),
                     ((TextBox)cell.FindControl("txtDescption")).Text.Trim());//合并到Remark字段
                 mode.Descption = "";
-
+                var fieldVlue = ((TextBox) cell.FindControl("txtFieldValue"));
+                if (fieldVlue != null)
+                {
+                    mode.FieldValue = fieldVlue.Text.Trim();
+                }
                 var conRequired = (DropDownList)cell.FindControl("droRequired");
                 if (conRequired != null)
                 {
