@@ -6,7 +6,7 @@ public class Action##ID## : GameAction
     private ActionResult actionResult;
 
     public Action##ID##()
-        : base((int)ActionType.Regist)
+        : base(##ID##)
     {
     }
 

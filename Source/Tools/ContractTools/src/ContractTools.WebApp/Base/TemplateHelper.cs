@@ -463,7 +463,7 @@ namespace ContractTools.WebApp.Base
                     enumVar = depth < forVarChars.Length
                         ? forVarChars[depth]
                         : forVarChars[forVarChars.Length - 1];
-                    strTemp.AppendFormat("{0}for({1} = 0; {1} < {2}; i++)", currIndent, enumVar, subNumVar);
+                    strTemp.AppendFormat("{0}for(int {1} = 0; {1} < {2}; {1}++)", currIndent, enumVar, subNumVar);
                     strTemp.AppendLine("{");
                     currIndent = GetSpaceIndent(depth + indent + 1, preIndent);
                     strTemp.AppendFormat("{0}var {1} = new ActionResult();", currIndent, subRecordVar);

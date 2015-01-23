@@ -205,6 +205,9 @@
   <ItemGroup>
     <Content Include="Main.Master" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="Properties\PublishProfiles\contracttools.pubxml" />
+  </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
     <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
