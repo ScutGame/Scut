@@ -190,6 +190,83 @@ namespace ContractTools.WebApp.Base
             return ReplaceClientLuaCallback(content, paramList);
         }
 
+        public static string FromatClientQuickSendTemp(string content, int contractId, List<ParamInfoModel> paramList, List<ParamInfoModel> reqParams, string title)
+        {
+            string[] expressList = new string[] { "##ID##", "##Description##", "##Parameter##", "##Fixed##" };
+            foreach (string exp in expressList)
+            {
+                StringBuilder fieldBuilder = new StringBuilder();
+                fieldBuilder.Append(exp.Replace("##", ""));
+                if (fieldBuilder.ToString() == "ID")
+                {
+                    fieldBuilder.Remove(0, fieldBuilder.Length);
+                    fieldBuilder.Append(contractId);
+                }
+                else if (fieldBuilder.ToString() == "Description")
+                {
+                    fieldBuilder.Remove(0, fieldBuilder.Length);
+                    fieldBuilder.Append(title);
+                }
+                else if (fieldBuilder.ToString() == "Parameter")
+                {
+                    fieldBuilder.Remove(0, fieldBuilder.Length);
+                    foreach (var paramInfo in reqParams)
+                    {
+                        if (paramInfo.ParamType == 1)
+                        {
+                            fieldBuilder.Append(ToFistWordCase(paramInfo.Field));
+                            fieldBuilder.Append(", ");
+                        }
+                    }
+                }
+                else if (fieldBuilder.ToString() == "Fixed")
+                {
+                    //write to request param
+                    fieldBuilder.Remove(0, fieldBuilder.Length);
+                    string currIndent = GetSpaceIndent(1, 0);
+                    foreach (var paramInfo in reqParams)
+                    {
+                        if (paramInfo.ParamType == 1)
+                        {
+                            fieldBuilder.Append(Environment.NewLine);
+                            fieldBuilder.Append(currIndent);
+                            fieldBuilder.Append("url:add(\"");
+                            fieldBuilder.Append(paramInfo.Field);
+                            fieldBuilder.Append("\", ");
+                            fieldBuilder.Append(ToFistWordCase(paramInfo.Field));
+                            fieldBuilder.Append(")");
+                        }
+                    }
+                }
+                content = content.Replace(exp, fieldBuilder.ToString());
+
+            }
+            return content;//ReplaceClientLuaCallback(content, paramList);
+        }
+
+        public static string FromatClientQuickReceiveTemp(string content, int contractId, List<ParamInfoModel> paramList, List<ParamInfoModel> reqParams, string title)
+        {
+            string[] expressList = new string[] { "##ID##", "##Description##" };
+            foreach (string exp in expressList)
+            {
+                StringBuilder fieldBuilder = new StringBuilder();
+                fieldBuilder.Append(exp.Replace("##", ""));
+                if (fieldBuilder.ToString() == "ID")
+                {
+                    fieldBuilder.Remove(0, fieldBuilder.Length);
+                    fieldBuilder.Append(contractId);
+                }
+                else if (fieldBuilder.ToString() == "Description")
+                {
+                    fieldBuilder.Remove(0, fieldBuilder.Length);
+                    fieldBuilder.Append(title);
+                }
+                content = content.Replace(exp, fieldBuilder.ToString());
+
+            }
+            return ReplaceClientLuaCallback(content, paramList, true);
+        }
+
 
         public static string FromatClientCsharpTemp(string content, int contractId, List<ParamInfoModel> responseParams, List<ParamInfoModel> requestParams, string title)
         {
@@ -233,6 +310,9 @@ namespace ContractTools.WebApp.Base
                             fieldBuilder.Append(currIndent);
                             switch (paramInfo.FieldType)
                             {
+                                case FieldType.Void:
+                                    continue;
+                                    break;
                                 case FieldType.UInt:
                                 case FieldType.Int:
                                     fieldBuilder.Append("writer.writeInt32(\"");
@@ -281,7 +361,7 @@ namespace ContractTools.WebApp.Base
             return new String(' ', num > 0 ? num : 1);
         }
 
-        protected static string ReplaceClientLuaCallback(string content, List<ParamInfoModel> paramList)
+        protected static string ReplaceClientLuaCallback(string content, List<ParamInfoModel> paramList, bool isQuick = false)
         {
             string field = "##Judge##";
             int depth = 0;
@@ -292,6 +372,7 @@ namespace ContractTools.WebApp.Base
             string subTableVar = "subTabel";
             string subRecordVar = "subRecord";
             string currTableVar = "DataTabel";
+            string readerVar = isQuick ? "rd" : "ZyReader";
             StringBuilder strTemp = new StringBuilder();
             int[] indexList = new int[forVarChars.Length];
 
@@ -315,7 +396,7 @@ namespace ContractTools.WebApp.Base
                     currTableVar = subTableVar;
                     string currIndent = GetSpaceIndent(depth + indent, preIndent);
                     strTemp.AppendLine();
-                    strTemp.AppendFormat("{0}local {1} = ZyReader:getInt()", currIndent, subNumVar);
+                    strTemp.AppendFormat("{0}local {1} = {2}:getInt()", currIndent, subNumVar, readerVar);
                     strTemp.AppendLine();
                     strTemp.AppendFormat("{0}local {1} = {{}}", currIndent, currTableVar);
                     strTemp.AppendLine();
@@ -331,7 +412,7 @@ namespace ContractTools.WebApp.Base
                     currIndent = GetSpaceIndent(depth + indent + 1, preIndent);
                     strTemp.AppendFormat("{0}local {1} = {{}}", currIndent, subRecordVar);
                     strTemp.AppendLine();
-                    strTemp.AppendFormat("{0}ZyReader:recordBegin()", currIndent);
+                    strTemp.AppendFormat("{0}{1}:recordBegin()", currIndent, readerVar);
                     strTemp.AppendLine();
 
                     currTableVar = subRecordVar;
@@ -341,9 +422,16 @@ namespace ContractTools.WebApp.Base
                 {
                     string currIndent = GetSpaceIndent(depth + indent, preIndent);
 
-                    strTemp.AppendFormat("{0}ZyReader:recordEnd()", currIndent);
+                    strTemp.AppendFormat("{0}{1}:recordEnd()", currIndent, readerVar);
                     strTemp.AppendLine();
-                    strTemp.AppendFormat("{0}ZyTable.push_back({1}, {2})", currIndent, subTableVar, subRecordVar);
+                    if (isQuick)
+                    {
+                        strTemp.AppendFormat("{0}table.insert({1}, {2})", currIndent, subTableVar, subRecordVar);
+                    }
+                    else
+                    {
+                        strTemp.AppendFormat("{0}ZyTable.push_back({1}, {2})", currIndent, subTableVar, subRecordVar);
+                    }
                     strTemp.AppendLine();
 
                     indent--;
@@ -385,33 +473,34 @@ namespace ContractTools.WebApp.Base
                         case FieldType.DateTime:
                         case FieldType.Long:
                         case FieldType.ULong:
-                            strTemp.Append(" = ZyReader:getInt64()");
+                            strTemp.AppendFormat(" = {0}:getInt64()", readerVar);
                             break;
                         case FieldType.Int:
-                            strTemp.Append(" = ZyReader:getInt()");
+                            strTemp.AppendFormat(" = {0}:getInt()", readerVar);
                             break;
                         case FieldType.UShort:
                         case FieldType.Short:
-                            strTemp.Append(" = ZyReader:getWORD()");
+                            strTemp.AppendFormat(" = {0}:getWORD()", readerVar);
                             break;
                         case FieldType.Password:
                         case FieldType.String:
-                            strTemp.Append(" = ZyReader:readString()");
+                            strTemp.AppendFormat(" = {0}:readString()", readerVar);
                             break;
                         case FieldType.Bool:
                         case FieldType.Byte:
-                            strTemp.Append(" = ZyReader:getByte()");
+                            strTemp.AppendFormat(" = {0}:getByte()", readerVar);
                             break;
                         case FieldType.Float:
-                            strTemp.Append(" = ZyReader:getFloat()");
+                            strTemp.AppendFormat(" = {0}:getFloat()", readerVar);
                             break;
                         case FieldType.Double:
-                            strTemp.Append(" = ZyReader:getDouble()");
+                            strTemp.AppendFormat(" = {0}:getDouble()", readerVar);
                             break;
                         case FieldType.UInt:
-                            strTemp.Append(" = ZyReader:getDWORD()");
+                            strTemp.AppendFormat(" = {0}:getDWORD()", readerVar);
                             break;
                         default:
+                            strTemp.AppendFormat(" = {0}:get{1}()", readerVar, fieldType.ToString());
                             break;
                     }
                     strTemp.AppendLine();
@@ -515,6 +604,8 @@ namespace ContractTools.WebApp.Base
 
                     switch (fieldType)
                     {
+                        case FieldType.Void:
+                            break;
                         case FieldType.Int:
                             strTemp.Append(" = reader.getInt();");
                             break;

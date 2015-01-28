@@ -1,0 +1,10 @@
+﻿
+--##Description##
+function Respone.act##ID##(rd)
+    local DataTabel = nil
+    if rd:getResult() == Respone.Success then
+        DataTabel = {}
+##Judge##
+    end	
+    return DataTabel	
+end

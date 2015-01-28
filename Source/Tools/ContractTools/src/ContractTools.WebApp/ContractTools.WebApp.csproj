@@ -46,6 +46,9 @@
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="ICSharpCode.SharpZipLib">
+      <HintPath>..\Lib\ICSharpCode.SharpZipLib.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="MySql.Data, Version=6.7.4.0, Culture=neutral, PublicKeyToken=c5687fc88969c44d, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -183,6 +186,8 @@
     <Content Include="js\jquery-1.10.2.min.js" />
     <Content Include="Template\ClientCsharpSelfCode.txt" />
     <Content Include="Template\ClientCsharpCode.txt" />
+    <Content Include="Template\ClientQuickCode-S.txt" />
+    <Content Include="Template\ClientQuickCode-R.txt" />
     <Content Include="Template\ClientLuaCode.txt" />
     <Content Include="Template\ServerCsharpCode.txt" />
     <Content Include="Template\ServerCsharpSelfCode.txt" />
@@ -207,6 +212,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Properties\PublishProfiles\contracttools.pubxml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Base\Code\" />
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>

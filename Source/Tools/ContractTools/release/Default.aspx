@@ -23,11 +23,24 @@
             divObj = document.getElementById("promptDiv");
             divObj.style.visibility = "hidden";
         }
-
+        
+        function onCopyCode(id) {
+            var t = document.getElementById(id);
+            if (t == null) {
+                return false;
+            }
+            t.select();
+            if (window.clipboardData) {
+                window.clipboardData.clearData();
+                window.clipboardData.setData('Text', t.createTextRange().text);
+            } else {
+                alert('你的浏览器不支持复制功能, 请手工复制');
+            }
+        }
     </script>
 </head>
 <body>
-        <div id="promptDiv" class="promptStyle" onmouseout="HiddenPrompt()"></div>
+    <div id="promptDiv" class="promptStyle" onmouseout="HiddenPrompt()"></div>
     <form id="form1" runat="server">
         <div class="layout">
             <% if (IsEdit){ %>
@@ -286,13 +299,17 @@
                             </asp:TemplateField>
                             <asp:TemplateField HeaderText="排序ID" ItemStyle-Width="8%" ItemStyle-HorizontalAlign="Center">
                                 <EditItemTemplate>
-                                    <asp:TextBox ID="txtSortID" runat="server" Text='<%# Bind("SortID") %>' Width="90%"></asp:TextBox>
+                                    <asp:Label ID="txtSortID" runat="server" Text='<%# Bind("SortID") %>' Width="90%"></asp:Label>
                                 </EditItemTemplate>
                                 <ItemTemplate>
                                     <asp:LinkButton ID="btnSortAsc" runat="server" CausesValidation="False" CommandArgument='<%#Eval("id")+","+Eval("ParamType")+","+Eval("SortID")%>'
-                                        Text="↑上移" OnCommand="btnSortAsc_Command"></asp:LinkButton>&nbsp;&nbsp;
+                                        Text="↑上移" OnCommand="btnSortAsc_Command"></asp:LinkButton>&nbsp;
                                     <asp:LinkButton ID="btnSortDes" runat="server" CausesValidation="False" CommandArgument='<%#Eval("id")+","+Eval("ParamType")+","+Eval("SortID")%>'
-                                        Text="↓下移" OnCommand="btnSortDes_Command"></asp:LinkButton>
+                                        Text="↓下移" OnCommand="btnSortDes_Command"></asp:LinkButton>&nbsp;
+                                    <asp:LinkButton ID="btnRecordSortAsc" runat="server" CausesValidation="False" CommandArgument='<%#Eval("id")+","+Eval("FieldTypeId")+","+Eval("SortID")%>'
+                                        Text="↑循环" OnCommand="btnRecordSortAsc_Command"></asp:LinkButton>&nbsp;
+                                    <asp:LinkButton ID="btnRecordSortDes" runat="server" CausesValidation="False" CommandArgument='<%#Eval("id")+","+Eval("FieldTypeId")+","+Eval("SortID")%>'
+                                        Text="↓循环" OnCommand="btnRecordSortDes_Command"></asp:LinkButton>&nbsp;
                                 </ItemTemplate>
                                 <ItemStyle Width="8%"></ItemStyle>
                             </asp:TemplateField>
@@ -345,6 +362,12 @@
                                     <asp:ListItem Value="Python"></asp:ListItem>
                                     <asp:ListItem Value="Lua"></asp:ListItem>
                                 </asp:DropDownList>
+                                <span>&nbsp;</span>
+                                <asp:Button id="btnExportServer" runat="server" Text="导出文件" OnClick="OnExportSererCode"/>
+                                <span>&nbsp;</span>
+                                <asp:Button id="btnExportAllServer" runat="server" Text="批量导出" OnClick="OnExportAllSererCode"/>
+                                <span>&nbsp;</span>
+                                <input type="button" id="btCopyServer" value="复制代码" onclick="onCopyCode('txtServerCode')"/>
                             </div>
                             <div style="width: 100%; height: 542px;">
                                 <asp:TextBox ID="txtServerCode" runat="server" TextMode="MultiLine" CssClass="codeBox"></asp:TextBox>
@@ -355,15 +378,24 @@
                                 <span style="padding-left: 5px;">脚本类型:</span>
                                 <asp:DropDownList ID="ddClientCodeType" runat="server" AutoPostBack="True" OnSelectedIndexChanged="OnClientCodeTypeChanged">
                                     <asp:ListItem Value="Lua">Cocos2d-x of Lua</asp:ListItem>
+                                    <asp:ListItem Value="Quick">Quick</asp:ListItem>
                                     <asp:ListItem Value="C#">Unity3d of C#</asp:ListItem>
                                 </asp:DropDownList>
+                                <span>&nbsp;</span>
+                                <asp:Button id="btnExportClient" runat="server" Text="导出文件" OnClick="OnExportClientCode"/>
+                                <span>&nbsp;</span>
+                                <asp:Button id="btnExportAllClient" runat="server" Text="批量导出" OnClick="OnExportAllClientCode"/>
+                                <span>&nbsp;</span>
+                                <input type="button" id="btCopyClient" value="复制代码" onclick="onCopyCode('txtServerCode')"/>
                             </div>
                             <div style="width: 100%; height: 542px;">
                                 <asp:TextBox ID="txtClientCode" runat="server" TextMode="MultiLine" CssClass="codeBox"></asp:TextBox>
                             </div>
                         </div>
                         <div id="tab_3" class="tab_item">
-                            <div id="lblEnumDescp" runat="server"></div>
+                            <div style="width: 100%; height: 542px;">
+                                <div id="lblEnumDescp" runat="server"></div>
+                            </div>
                         </div>
                         <div id="tab_4" class="tab_item">
                             <iframe id="ifrTest" runat="server" style="width: 100%; height: 100%; border: 0;"></iframe>

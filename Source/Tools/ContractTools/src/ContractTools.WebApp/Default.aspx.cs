@@ -11,6 +11,7 @@ using ContractTools.WebApp.Base;
 using ContractTools.WebApp.Model;
 using ZyGames.Framework.Common;
 using ZyGames.Framework.Common.Log;
+using ZyGames.Framework.RPC.IO;
 
 namespace ContractTools.WebApp
 {
@@ -166,25 +167,10 @@ namespace ContractTools.WebApp
         private void BindGrid(int slnId, int versionId, int contractId)
         {
             //grid bind
-            var paramList = DbDataLoader.GetParamInfo(slnId, contractId, versionId);
-            var pairs = paramList.GroupBy(t => t.ParamType);
-            List<ParamInfoModel> requestParams = new List<ParamInfoModel>();
-            List<ParamInfoModel> responseParams = new List<ParamInfoModel>();
+            List<ParamInfoModel> requestParams;
+            List<ParamInfoModel> responseParams;
             bool isEdit = IsEdit;
-            foreach (var pair in pairs)
-            {
-                switch (pair.Key)
-                {
-                    case 1:
-                        requestParams = pair.ToList();
-                        break;
-                    case 2:
-                        responseParams = pair.ToList();
-                        break;
-                    default:
-                        break;
-                }
-            }
+            GetParamInfo(slnId, contractId, versionId, out requestParams, out responseParams);
 
             gvReqParams.Columns[gvReqParams.Columns.Count - 1].Visible = isEdit;
             gvReqParams.Columns[gvReqParams.Columns.Count - 2].Visible = isEdit;
@@ -205,12 +191,7 @@ namespace ContractTools.WebApp
         private void BindSourceCode(int slnId, int versionId, int contractId, List<ParamInfoModel> requestParams, List<ParamInfoModel> responseParams)
         {
             var modol = DbDataLoader.GetContract(slnId, contractId, 0);
-            string tileName = modol != null ? modol.Descption : "Action " + contractId;
-            int index = tileName.IndexOf("【", System.StringComparison.Ordinal);
-            if (index != -1)
-            {
-                tileName = tileName.Substring(0, index);
-            }
+            var tileName = GetTileName(contractId, modol != null ? modol.Descption : null);
             bool isSelfAction = ckSelfAction.Checked;
 
             string clientTemp = string.Empty;
@@ -224,8 +205,23 @@ namespace ContractTools.WebApp
             }
             else if (ddClientCodeType.Text == "C#")
             {
-                clientTemp = Path.Combine(Server.MapPath("~"), isSelfAction ? "Template/ClientCsharpSelfCode.txt" : "Template/ClientCsharpCode.txt");
-                txtClientCode.Text = TemplateHelper.FromatClientCsharpTemp(TemplateHelper.ReadTemp(clientTemp), contractId, responseParams, requestParams, tileName);
+                clientTemp = Path.Combine(Server.MapPath("~"),
+                    isSelfAction ? "Template/ClientCsharpSelfCode.txt" : "Template/ClientCsharpCode.txt");
+                txtClientCode.Text = TemplateHelper.FromatClientCsharpTemp(TemplateHelper.ReadTemp(clientTemp),
+                    contractId, responseParams, requestParams, tileName);
+            }
+            else if (ddClientCodeType.Text == "Quick")
+            {
+                var clientSendTemp = Path.Combine(Server.MapPath("~"), "Template/ClientQuickCode-S.txt");
+                var clientReceiveTemp = Path.Combine(Server.MapPath("~"), "Template/ClientQuickCode-R.txt");
+                var codeBuild = new StringBuilder();
+                codeBuild.AppendLine(TemplateHelper.FromatClientQuickSendTemp(TemplateHelper.ReadTemp(clientSendTemp), contractId, responseParams, requestParams, tileName));
+                codeBuild.AppendLine(TemplateHelper.FromatClientQuickReceiveTemp(TemplateHelper.ReadTemp(clientReceiveTemp), contractId, responseParams, requestParams, tileName));
+                txtClientCode.Text = codeBuild.ToString();
+            }
+            else
+            {
+                txtClientCode.Text = "Not supported code.";
             }
 
 
@@ -246,6 +242,21 @@ namespace ContractTools.WebApp
                 serverTemp = Path.Combine(Server.MapPath("~"), "Template/ServerLuaCode.txt");
                 txtServerCode.Text = TemplateHelper.FormatLua(TemplateHelper.ReadTemp(serverTemp), contractId, responseParams, requestParams, slnRecord, tileName);
             }
+            else
+            {
+                txtServerCode.Text = "Not supported code.";
+            }
+        }
+
+        private static string GetTileName(int contractId, string descption)
+        {
+            string tileName = descption ?? "Action " + contractId;
+            int index = tileName.IndexOf("【", System.StringComparison.Ordinal);
+            if (index != -1)
+            {
+                tileName = tileName.Substring(0, index);
+            }
+            return tileName;
         }
 
         private void BindResult()
@@ -266,7 +277,7 @@ namespace ContractTools.WebApp
             hlContractCopy.NavigateUrl = "ContractCopy.aspx" + get;
 
             ifrTest.Src = "ContractDebug.aspx" + get;
-            ifrClientConfig.Src = "ClientConfigInfo.aspx" + get;
+            //ifrClientConfig.Src = "ClientConfigInfo.aspx" + get;
             BindGrid(slnId, versionId, contractId);
 
         }
@@ -416,7 +427,7 @@ namespace ContractTools.WebApp
                 mode.Remark = JoinArray(',', ((TextBox)cell.FindControl("hiDescption")).Text.Trim(),
                     ((TextBox)cell.FindControl("txtDescption")).Text.Trim());//合并到Remark字段
                 mode.Descption = "";
-                var fieldVlue = ((TextBox) cell.FindControl("txtFieldValue"));
+                var fieldVlue = ((TextBox)cell.FindControl("txtFieldValue"));
                 if (fieldVlue != null)
                 {
                     mode.FieldValue = fieldVlue.Text.Trim();
@@ -559,6 +570,95 @@ namespace ContractTools.WebApp
 
         }
 
+        protected void btnRecordSortAsc_Command(object sender, CommandEventArgs e)
+        {
+            //当前不是Record或End, 移动到上一个Record前
+            string[] args = e.CommandArgument.ToString().Split(new char[] { ',' });
+            int currID = Convert.ToInt32(args[0]);
+            int fieldType = Convert.ToInt32(args[1]);
+            int currSortID = Convert.ToInt32(args[2]);
+            if (fieldType == (int)FieldType.Record || fieldType == (int)FieldType.End)
+            {
+                return;
+            }
+            LinkButton btnSortAsc = (LinkButton)sender;
+            GridViewRow gridRow = (GridViewRow)btnSortAsc.NamingContainer;
+            int rowIndex = gridRow.RowIndex;
+            int sortID = -1;
+            var keyList = new List<int>();
+            while (rowIndex > 0)
+            {
+                rowIndex--;
+                var row = gvRespParams.Rows[rowIndex];
+                var dataKey = gvRespParams.DataKeys[rowIndex];
+                if (dataKey == null || dataKey.Values == null) return;
+                int keyId = dataKey.Values[0].ToInt();
+                keyList.Add(keyId);
+
+                var input = row.FindControl("LabFieldType") as Label;
+                if (input != null && input.Text == FieldType.Record.ToString())
+                {
+                    var t = row.FindControl("txtSortID") as Label;
+                    sortID = t != null ? t.Text.ToInt() : rowIndex + 1;
+                    break;
+                }
+            }
+            if (sortID > -1)
+            {
+                DbDataLoader.UpdateParamSort(currID, sortID);
+                for (int i = keyList.Count - 1; i >= 0; i--)
+                {
+                    sortID++;
+                    DbDataLoader.UpdateParamSort(keyList[i], sortID);
+                }
+                BindResult();
+            }
+        }
+
+        protected void btnRecordSortDes_Command(object sender, CommandEventArgs e)
+        {
+            //当前不是Record或End, 移动到下一个End后
+            string[] args = e.CommandArgument.ToString().Split(new char[] { ',' });
+            int currID = Convert.ToInt32(args[0]);
+            int fieldType = Convert.ToInt32(args[1]);
+            int currSortID = Convert.ToInt32(args[2]);
+            if (fieldType == (int)FieldType.Record || fieldType == (int)FieldType.End)
+            {
+                return;
+            }
+            LinkButton btnSortAsc = (LinkButton)sender;
+            GridViewRow gridRow = (GridViewRow)btnSortAsc.NamingContainer;
+            int rowIndex = gridRow.RowIndex;
+            int sortID = -1;
+            var keyList = new List<int>();
+            while (rowIndex < gvRespParams.Rows.Count - 1)
+            {
+                rowIndex++;
+                var row = gvRespParams.Rows[rowIndex];
+                var dataKey = gvRespParams.DataKeys[rowIndex];
+                if (dataKey == null || dataKey.Values == null) return;
+                int keyId = dataKey.Values[0].ToInt();
+                keyList.Add(keyId);
+
+                var input = row.FindControl("LabFieldType") as Label;
+                if (input != null && input.Text == FieldType.End.ToString())
+                {
+                    var t = row.FindControl("txtSortID") as Label;
+                    sortID = t != null ? t.Text.ToInt() : rowIndex + 1;
+                    break;
+                }
+            }
+            if (sortID > -1)
+            {
+                DbDataLoader.UpdateParamSort(currID, sortID);
+                for (int i = keyList.Count - 1; i >= 0; i--)
+                {
+                    sortID--;
+                    DbDataLoader.UpdateParamSort(keyList[i], sortID);
+                }
+                BindResult();
+            }
+        }
         protected void OnRespGridDelete(object sender, CommandEventArgs e)
         {
             int id = Convert.ToInt32(e.CommandArgument.ToString());
@@ -655,6 +755,226 @@ namespace ContractTools.WebApp
             BindGrid();
         }
 
+        protected void OnExportSererCode(object sender, EventArgs e)
+        {
+            if (ddServerCodeType.Text == "C#")
+            {
+                SaveAsAttachment(txtServerCode.Text, String.Format("Action{0}.cs", ContractID));
+            }
+            else if (ddServerCodeType.Text == "Python")
+            {
+                SaveAsAttachment(txtServerCode.Text, String.Format("action{0}.py", ContractID));
+            }
+            else if (ddServerCodeType.Text == "Lua")
+            {
+                SaveAsAttachment(txtServerCode.Text, String.Format("action{0}.lua", ContractID));
+            }
+        }
+
+        protected void OnExportClientCode(object sender, EventArgs e)
+        {
+            if (ddClientCodeType.Text == "Lua")
+            {
+                SaveAsAttachment(txtClientCode.Text, String.Format("Action{0}.lua", ContractID));
+            }
+            else if (ddClientCodeType.Text == "Quick")
+            {
+                SaveAsAttachment(txtClientCode.Text, String.Format("Action{0}.lua", ContractID));
+            }
+            else if (ddClientCodeType.Text == "C#")
+            {
+                SaveAsAttachment(txtClientCode.Text, String.Format("Action{0}.cs", ContractID));
+            }
+        }
+
+        protected void OnExportAllSererCode(object sender, EventArgs e)
+        {
+            try
+            {
+                string type = ddServerCodeType.Text;
+                int slnId = ddlSolution.Text.ToInt();
+                int agreementId = ddlAgreement.Text.ToInt();
+                int versionId = ddVersion.Text.ToInt();
+                bool isSelfAction = ckSelfAction.Checked;
+
+                var slnRecord = DbDataLoader.GetSolution(slnId);
+                List<ZipFileInfo> zipFileList = null;
+                List<ContractModel> contractList = DbDataLoader.GetContractByAgreement(slnId, agreementId, versionId);
+
+                string serverTemp = string.Empty;
+                if (type == "C#")
+                {
+                    serverTemp = TemplateHelper.ReadTemp(Path.Combine(Server.MapPath("~"), isSelfAction ? "Template/ServerCsharpSelfCode.txt" : "Template/ServerCsharpCode.txt"));
+                }
+                else if (type == "Python")
+                {
+                    serverTemp = TemplateHelper.ReadTemp(Path.Combine(Server.MapPath("~"), "Template/ServerPythonCode.txt"));
+                }
+                else if (type == "Lua")
+                {
+                    serverTemp = TemplateHelper.ReadTemp(Path.Combine(Server.MapPath("~"), "Template/ServerLuaCode.txt"));
+                }
+                else
+                {
+                    return;
+                }
+
+                ZipFileInfo zipFile;
+                zipFileList = new List<ZipFileInfo>();
+                string fileExt;
+                string content;
+
+                foreach (var model in contractList)
+                {
+                    int contractId = model.ID;
+                    var tileName = GetTileName(model.ID, model.Descption);
+                    List<ParamInfoModel> requestParams;
+                    List<ParamInfoModel> responseParams;
+                    GetParamInfo(slnId, contractId, versionId, out requestParams, out responseParams);
+                    if (type == "C#")
+                    {
+                        fileExt = ".cs";
+                        content = TemplateHelper.FormatTemp(serverTemp, contractId, responseParams, requestParams, slnRecord, tileName);
+                    }
+                    else if (type == "Python")
+                    {
+                        fileExt = ".py";
+                        content = TemplateHelper.FormatPython(serverTemp, responseParams, requestParams, slnRecord, tileName);
+                    }
+                    else if (type == "Lua")
+                    {
+                        fileExt = ".lua";
+                        content = TemplateHelper.FormatLua(serverTemp, contractId, responseParams, requestParams, slnRecord, tileName);
+                    }
+                    else
+                    {
+                        break;
+                    }
+                    zipFile = new ZipFileInfo() { Name = string.Format("Action{0}{1}", contractId, fileExt) };
+                    zipFile.Content = content;
+                    zipFileList.Add(zipFile);
+                }
+                if (zipFileList.Count > 0)
+                {
+                    SaveAsAttachment(string.Format("{0}Action{1}.zip", type, DateTime.Now.ToString("HHmmss")), zipFileList);
+                }
+            }
+            catch (Exception ex)
+            {
+                TraceLog.WriteError("OnExportAllSererCode error:{0}", ex);
+            }
+
+        }
+
+        protected void OnExportAllClientCode(object sender, EventArgs e)
+        {
+            try
+            {
+                string type = ddClientCodeType.Text;
+                int slnId = ddlSolution.Text.ToInt();
+                int agreementId = ddlAgreement.Text.ToInt();
+                int versionId = ddVersion.Text.ToInt();
+                bool isSelfAction = ckSelfAction.Checked;
+
+                List<ZipFileInfo> zipFileList = null;
+                List<ContractModel> contractList = DbDataLoader.GetContractByAgreement(slnId, agreementId, versionId);
+                if (type == "Lua")
+                {
+                    var codeBuild = new StringBuilder("");
+                    zipFileList = new List<ZipFileInfo>();
+                    var clientTemp = TemplateHelper.ReadTemp(Path.Combine(Server.MapPath("~"), "Template/ClientLuaCode.txt"));
+                    foreach (var model in contractList)
+                    {
+                        int contractId = model.ID;
+                        var tileName = GetTileName(model.ID, model.Descption);
+                        List<ParamInfoModel> requestParams;
+                        List<ParamInfoModel> responseParams;
+                        GetParamInfo(slnId, contractId, versionId, out requestParams, out responseParams);
+                        codeBuild.AppendLine(TemplateHelper.FromatClientLuaTemp(clientTemp, contractId, responseParams, requestParams, tileName));
+                        codeBuild.AppendLine();
+                    }
+                    zipFileList.Add(new ZipFileInfo() { Name = "actionLayer.lua", Content = codeBuild.ToString() });
+                }
+                else if (type == "Quick")
+                {
+                    var sendCodeBuild = new StringBuilder("");
+                    var receiveCodeBuild = new StringBuilder();
+                    sendCodeBuild.AppendLine("local Request = {}");
+                    receiveCodeBuild.AppendLine("local Respone = {}");
+                    receiveCodeBuild.AppendLine("Respone.Success = 0");
+                    var clientSendTemp = TemplateHelper.ReadTemp(Path.Combine(Server.MapPath("~"), "Template/ClientQuickCode-S.txt"));
+                    var clientReceiveTemp = TemplateHelper.ReadTemp(Path.Combine(Server.MapPath("~"), "Template/ClientQuickCode-R.txt"));
+                    foreach (var model in contractList)
+                    {
+                        int contractId = model.ID;
+                        var tileName = GetTileName(model.ID, model.Descption);
+                        List<ParamInfoModel> requestParams;
+                        List<ParamInfoModel> responseParams;
+                        GetParamInfo(slnId, contractId, versionId, out requestParams, out responseParams);
+                        sendCodeBuild.AppendLine(TemplateHelper.FromatClientQuickSendTemp(clientSendTemp, contractId, responseParams, requestParams, tileName));
+                        receiveCodeBuild.AppendLine(TemplateHelper.FromatClientQuickReceiveTemp(clientReceiveTemp, contractId, responseParams, requestParams, tileName));
+
+                    }
+                    sendCodeBuild.AppendLine("return Request");
+                    receiveCodeBuild.AppendLine("return Respone");
+                    zipFileList = new List<ZipFileInfo>();
+                    zipFileList.Add(new ZipFileInfo() { Name = "Request.lua", Content = sendCodeBuild.ToString() });
+                    zipFileList.Add(new ZipFileInfo() { Name = "Respone.lua", Content = receiveCodeBuild.ToString() });
+                }
+                else if (type == "C#")
+                {
+                    var clientTemp = TemplateHelper.ReadTemp(Path.Combine(Server.MapPath("~"),
+                          isSelfAction ? "Template/ClientCsharpSelfCode.txt" : "Template/ClientCsharpCode.txt"));
+                    ZipFileInfo zipFile;
+                    zipFileList = new List<ZipFileInfo>();
+
+                    foreach (var model in contractList)
+                    {
+                        int contractId = model.ID;
+                        zipFile = new ZipFileInfo() { Name = string.Format("Action{0}.cs", contractId) };
+                        var tileName = GetTileName(model.ID, model.Descption);
+                        List<ParamInfoModel> requestParams;
+                        List<ParamInfoModel> responseParams;
+                        GetParamInfo(slnId, contractId, versionId, out requestParams, out responseParams);
+                        zipFile.Content = TemplateHelper.FromatClientCsharpTemp(clientTemp, contractId, responseParams, requestParams, tileName);
+
+                        zipFileList.Add(zipFile);
+                    }
+                }
+                if (zipFileList != null)
+                {
+                    SaveAsAttachment(string.Format("{0}Action{1}.zip", type, DateTime.Now.ToString("HHmmss")), zipFileList);
+                }
+            }
+            catch (Exception ex)
+            {
+                TraceLog.WriteError("OnExportAllClientCode error:{0}", ex);
+            }
+        }
+
+        private static void GetParamInfo(int slnId, int contractId, int versionId, out List<ParamInfoModel> requestParams, out List<ParamInfoModel> responseParams)
+        {
+            var paramList = DbDataLoader.GetParamInfo(slnId, contractId, versionId);
+            var pairs = paramList.GroupBy(t => t.ParamType);
+            requestParams = new List<ParamInfoModel>();
+            responseParams = new List<ParamInfoModel>();
+            foreach (var pair in pairs)
+            {
+                switch (pair.Key)
+                {
+                    case 1:
+                        requestParams = pair.ToList();
+                        break;
+                    case 2:
+                        responseParams = pair.ToList();
+                        break;
+                    default:
+                        break;
+                }
+            }
+        }
+
         #endregion
+
     }
 }

@@ -238,6 +238,24 @@ namespace ContractTools.WebApp {
         protected global::System.Web.UI.WebControls.DropDownList ddServerCodeType;
         
         /// <summary>
+        /// btnExportServer 控件。
+        /// </summary>
+        /// <remarks>
+        /// 自动生成的字段。
+        /// 若要进行修改，请将字段声明从设计器文件移到代码隐藏文件。
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Button btnExportServer;
+        
+        /// <summary>
+        /// btnExportAllServer 控件。
+        /// </summary>
+        /// <remarks>
+        /// 自动生成的字段。
+        /// 若要进行修改，请将字段声明从设计器文件移到代码隐藏文件。
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Button btnExportAllServer;
+        
+        /// <summary>
         /// txtServerCode 控件。
         /// </summary>
         /// <remarks>
@@ -254,6 +272,24 @@ namespace ContractTools.WebApp {
         /// 若要进行修改，请将字段声明从设计器文件移到代码隐藏文件。
         /// </remarks>
         protected global::System.Web.UI.WebControls.DropDownList ddClientCodeType;
+        
+        /// <summary>
+        /// btnExportClient 控件。
+        /// </summary>
+        /// <remarks>
+        /// 自动生成的字段。
+        /// 若要进行修改，请将字段声明从设计器文件移到代码隐藏文件。
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Button btnExportClient;
+        
+        /// <summary>
+        /// btnExportAllClient 控件。
+        /// </summary>
+        /// <remarks>
+        /// 自动生成的字段。
+        /// 若要进行修改，请将字段声明从设计器文件移到代码隐藏文件。
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Button btnExportAllClient;
         
         /// <summary>
         /// txtClientCode 控件。
