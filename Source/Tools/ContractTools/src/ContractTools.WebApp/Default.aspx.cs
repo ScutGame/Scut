@@ -900,8 +900,8 @@ namespace ContractTools.WebApp
                     var sendCodeBuild = new StringBuilder("");
                     var receiveCodeBuild = new StringBuilder();
                     sendCodeBuild.AppendLine("local Request = {}");
-                    receiveCodeBuild.AppendLine("local Respone = {}");
-                    receiveCodeBuild.AppendLine("Respone.Success = 0");
+                    receiveCodeBuild.AppendLine("local Response = {}");
+                    receiveCodeBuild.AppendLine("Response.Success = 0");
                     var clientSendTemp = TemplateHelper.ReadTemp(Path.Combine(Server.MapPath("~"), "Template/ClientQuickCode-S.txt"));
                     var clientReceiveTemp = TemplateHelper.ReadTemp(Path.Combine(Server.MapPath("~"), "Template/ClientQuickCode-R.txt"));
                     foreach (var model in contractList)
@@ -916,10 +916,10 @@ namespace ContractTools.WebApp
 
                     }
                     sendCodeBuild.AppendLine("return Request");
-                    receiveCodeBuild.AppendLine("return Respone");
+                    receiveCodeBuild.AppendLine("return Response");
                     zipFileList = new List<ZipFileInfo>();
                     zipFileList.Add(new ZipFileInfo() { Name = "Request.lua", Content = sendCodeBuild.ToString() });
-                    zipFileList.Add(new ZipFileInfo() { Name = "Respone.lua", Content = receiveCodeBuild.ToString() });
+                    zipFileList.Add(new ZipFileInfo() { Name = "Response.lua", Content = receiveCodeBuild.ToString() });
                 }
                 else if (type == "C#")
                 {

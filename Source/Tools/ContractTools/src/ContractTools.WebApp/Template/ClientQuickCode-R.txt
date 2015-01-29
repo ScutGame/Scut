@@ -1,8 +1,8 @@
 ﻿
 --##Description##
-function Respone.act##ID##(rd)
+function Response.act##ID##(rd)
     local DataTabel = nil
-    if rd:getResult() == Respone.Success then
+    if rd:getResult() == Response.Success then
         DataTabel = {}
 ##Judge##
     end	
