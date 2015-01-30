@@ -204,8 +204,10 @@ namespace ZyGames.Framework.Data.MySql
                     return typeof(DateTime);
                 case MySqlDbType.Decimal:
                     return typeof(Decimal);
-                case MySqlDbType.Float:
+                case MySqlDbType.Double:
                     return typeof(Double);
+                case MySqlDbType.Float:
+                    return typeof(Single);
                 case MySqlDbType.LongBlob:
                     return typeof(Object);
                 case MySqlDbType.Int32:
@@ -250,8 +252,12 @@ namespace ZyGames.Framework.Data.MySql
                 case "datetime":
                     dbType = MySqlDbType.DateTime;
                     break;
+                case "numeric":
                 case "decimal":
                     dbType = MySqlDbType.Decimal;
+                    break;
+                case "double":
+                    dbType = MySqlDbType.Double;
                     break;
                 case "float":
                     dbType = MySqlDbType.Float;
@@ -270,9 +276,6 @@ namespace ZyGames.Framework.Data.MySql
                     break;
                 case "char":
                     dbType = MySqlDbType.VarChar;
-                    break;
-                case "numeric":
-                    dbType = MySqlDbType.Decimal;
                     break;
                 case "timestamp":
                     dbType = MySqlDbType.Timestamp;
@@ -337,7 +340,7 @@ namespace ZyGames.Framework.Data.MySql
             }
             if (type.Equals(typeof(Double)))
             {
-                return "Float";
+                return "Double";
             }
             if (type.IsEnum || type.Equals(typeof(Int32)) || type.Equals(typeof(UInt32)))
             {
@@ -345,7 +348,7 @@ namespace ZyGames.Framework.Data.MySql
             }
             if (type.Equals(typeof(Single)))
             {
-                return "Real";
+                return "Float";
             }
             if (type.Equals(typeof(Int16)) || type.Equals(typeof(UInt16)))
             {

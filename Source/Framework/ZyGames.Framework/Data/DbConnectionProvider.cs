@@ -61,6 +61,7 @@ namespace ZyGames.Framework.Data
                 var setting = ConnectionSetting.Create(section.Name, section.ProviderName, section.ConnectionString.Trim());
                 if (setting.ProviderType == DbProviderType.Unkown)
                 {
+                    TraceLog.WriteWarn("Db connection not found provider type, str:{0}", setting.ConnectionString);
                     continue;
                 }
                 var dbBaseProvider = CreateDbProvider(setting);

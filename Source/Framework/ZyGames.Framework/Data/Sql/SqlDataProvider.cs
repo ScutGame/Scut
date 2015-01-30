@@ -204,8 +204,10 @@ namespace ZyGames.Framework.Data.Sql
                     return typeof(DateTime);
                 case SqlDbType.Decimal:
                     return typeof(Decimal);
-                case SqlDbType.Float:
+                case SqlDbType.Real:
                     return typeof(Double);
+                case SqlDbType.Float:
+                    return typeof(Single);
                 case SqlDbType.Image:
                     return typeof(Object);
                 case SqlDbType.Int:
@@ -218,8 +220,6 @@ namespace ZyGames.Framework.Data.Sql
                     return typeof(String);
                 case SqlDbType.NVarChar:
                     return typeof(String);
-                case SqlDbType.Real:
-                    return typeof(Single);
                 case SqlDbType.SmallDateTime:
                     return typeof(DateTime);
                 case SqlDbType.SmallInt:
@@ -268,8 +268,13 @@ namespace ZyGames.Framework.Data.Sql
                 case "datetime":
                     dbType = SqlDbType.DateTime;
                     break;
+                case "numeric":
                 case "decimal":
                     dbType = SqlDbType.Decimal;
+                    break;
+                case "double":
+                case "real":
+                    dbType = SqlDbType.Real;
                     break;
                 case "float":
                     dbType = SqlDbType.Float;
@@ -279,6 +284,9 @@ namespace ZyGames.Framework.Data.Sql
                     break;
                 case "money":
                     dbType = SqlDbType.Money;
+                    break;
+                case "smallmoney":
+                    dbType = SqlDbType.SmallMoney;
                     break;
                 case "ntext":
                     dbType = SqlDbType.NText;
@@ -306,15 +314,6 @@ namespace ZyGames.Framework.Data.Sql
                     break;
                 case "nchar":
                     dbType = SqlDbType.NChar;
-                    break;
-                case "numeric":
-                    dbType = SqlDbType.Decimal;
-                    break;
-                case "real":
-                    dbType = SqlDbType.Real;
-                    break;
-                case "smallmoney":
-                    dbType = SqlDbType.SmallMoney;
                     break;
                 case "sql_variant":
                     dbType = SqlDbType.Variant;
@@ -369,15 +368,15 @@ namespace ZyGames.Framework.Data.Sql
             }
             if (type.Equals(typeof(Double)))
             {
+                return "Real";
+            }
+            if (type.Equals(typeof(Single)))
+            {
                 return "Float";
             }
             if (type.IsEnum || type.Equals(typeof(Int32)) || type.Equals(typeof(UInt32)))
             {
                 return "Int";
-            }
-            if (type.Equals(typeof(Single)))
-            {
-                return "Real";
             }
             if (type.Equals(typeof(Int16)) || type.Equals(typeof(UInt16)))
             {
