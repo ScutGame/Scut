@@ -738,6 +738,11 @@ namespace ZyGames.Framework.Model
             string tableName = schema.GetTableName();
             try
             {
+                if (DbConnectionProvider.Count == 0)
+                {
+                    //not seting connection.
+                    return;
+                }
                 DbBaseProvider dbprovider = DbConnectionProvider.CreateDbProvider(schema);
                 if (dbprovider == null)
                 {

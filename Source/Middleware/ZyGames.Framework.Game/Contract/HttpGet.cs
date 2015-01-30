@@ -61,6 +61,15 @@ namespace ZyGames.Framework.Game.Contract
                 sessionId = request["sid"];
             }
             _session = GameSession.Get(sessionId) ?? GameSession.CreateNew(Guid.NewGuid(), request);
+
+            //set cookie
+            var cookie = request.Cookies.Get("sid");
+            if (cookie == null && HttpContext.Current != null)
+            {
+                cookie = new HttpCookie("sid", SessionId);
+                cookie.Expires = DateTime.Now.AddMinutes(5);
+                HttpContext.Current.Response.Cookies.Add(cookie);
+            }
         }
 
         /// <summary>

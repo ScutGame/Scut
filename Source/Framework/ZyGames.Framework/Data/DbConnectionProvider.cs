@@ -43,6 +43,13 @@ namespace ZyGames.Framework.Data
         private static ConcurrentDictionary<string, DbBaseProvider> dbProviders = new ConcurrentDictionary<string, DbBaseProvider>();
 
         /// <summary>
+        /// Connection count
+        /// </summary>
+        public static int Count
+        {
+            get { return dbProviders.Count; }
+        }
+        /// <summary>
         /// 初始化DB连接
         /// </summary>
         /// <exception cref="Exception"></exception>

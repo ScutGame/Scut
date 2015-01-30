@@ -291,6 +291,8 @@ namespace ZyGames.Framework.Game.Contract
                 catch
                 {
                 }
+                //modify socket's keycod not found reason
+                socket.Reset(session.KeyCode);
                 session._exSocket = socket;
                 session.AppServer = appServer;
                 GameSession temp;
@@ -409,6 +411,35 @@ namespace ZyGames.Framework.Game.Contract
             return list;
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="request"></param>
+        /// <returns></returns>
+        public static GameSession GetSessionByCookie(HttpRequest request)
+        {
+            var cookie = request.Cookies.Get("sid");
+            if (cookie != null && !string.IsNullOrEmpty(cookie.Value))
+            {
+                return Get(cookie.Value);
+            }
+            return null;
+        }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="request"></param>
+        /// <returns></returns>
+        public static GameSession GetSessionByCookie(HttpListenerRequest request)
+        {
+            var cookie = request.Cookies["sid"];
+            if (cookie != null && !string.IsNullOrEmpty(cookie.Value))
+            {
+                return Get(cookie.Value);
+            }
+            return null;
+        }
+
         private string _remoteAddress;
         private int _isInSession;
         private ExSocket _exSocket;
@@ -470,13 +501,6 @@ namespace ZyGames.Framework.Game.Contract
             if (request is HttpRequest)
             {
                 HttpRequest req = ((HttpRequest)request);
-                var cookie = req.Cookies.Get("sid");
-                if (cookie == null)
-                {
-                    cookie = new HttpCookie("sid", SessionId);
-                    cookie.Expires = DateTime.Now.AddMinutes(2);
-                    req.Cookies.Add(cookie);
-                }
                 _remoteAddress = req.UserHostAddress;
             }
             else if (request is HttpListenerRequest)

@@ -96,6 +96,14 @@ namespace ZyGames.Framework.RPC.Sockets
         public bool IsWebSocket { get { return Handshake != null; } }
 
         /// <summary>
+        /// re-connection use.
+        /// </summary>
+        /// <param name="key"></param>
+        public void Reset(Guid key)
+        {
+            HashCode = key;
+        }
+        /// <summary>
         /// 
         /// </summary>
         public void Close()
@@ -112,7 +120,7 @@ namespace ZyGames.Framework.RPC.Sockets
         {
             sendQueue.Enqueue(new SocketAsyncResult(data) { Socket = this, ResultCallback = callback });
         }
-        
+
         internal bool TryDequeue(out SocketAsyncResult result)
         {
             return sendQueue.TryDequeue(out result);

@@ -1,4 +1,4 @@
-﻿/****************************************************************************
+/****************************************************************************
 Copyright (c) 2013-2015 scutgame.com
 
 http://www.scutgame.com
@@ -23,6 +23,7 @@ THE SOFTWARE.
 ****************************************************************************/
 using System;
 using System.Collections.Generic;
+using System.Net;
 using System.Threading.Tasks;
 using ZyGames.Framework.Common.Configuration;
 using ZyGames.Framework.Common.Log;
@@ -56,6 +57,7 @@ namespace ZyGames.Framework.Game.Contract
         protected GameHttpHost()
             : this(HttpAsyncHandler.Default)
         {
+            GameSession.Timeout = 1200;//20min
         }
 
         /// <summary>
@@ -142,7 +144,10 @@ namespace ZyGames.Framework.Game.Contract
             }
             else
             {
-                session = GameSession.Get(package.SessionId) ?? GameSession.CreateNew(Guid.NewGuid(), context.Request);
+                session = (string.IsNullOrEmpty(package.SessionId)
+                        ? GameSession.GetSessionByCookie(context.Request)
+                        : GameSession.Get(package.SessionId))
+                    ?? GameSession.CreateNew(Guid.NewGuid(), context.Request);
             }
             return session;
         }
@@ -157,6 +162,11 @@ namespace ZyGames.Framework.Game.Contract
         /// </summary>
         public static readonly IHttpAsyncHandler Default = new HttpAsyncHandler();
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="context"></param>
+        /// <returns></returns>
         public async Task<IHttpResponseAction> Execute(IHttpRequestContext context)
         {
             int statusCode;
@@ -175,7 +185,10 @@ namespace ZyGames.Framework.Game.Contract
             }
             else
             {
-                session = GameSession.Get(package.SessionId) ?? GameSession.CreateNew(Guid.NewGuid(), context.Request);
+                session = (string.IsNullOrEmpty(package.SessionId)
+                        ? GameSession.GetSessionByCookie(context.Request)
+                        : GameSession.Get(package.SessionId))
+                    ?? GameSession.CreateNew(Guid.NewGuid(), context.Request);
             }
             package.Bind(session);
 
@@ -195,13 +208,25 @@ namespace ZyGames.Framework.Game.Contract
                 }
                 catch (Exception ex)
                 {
-                    TraceLog.WriteError("Excute mainclass error:{0}",ex);
+                    TraceLog.WriteError("Excute mainclass error:{0}", ex);
                     return new byte[0];
                 }
             });
-
-            return new ByteResponse(statusCode, "OK", result);
+            string sessionId = session.SessionId;
+            var response = new ByteResponse(statusCode, "OK", result);
+            response.CookieHandle += ctx =>
+            {
+                var cookie = ctx.Request.Cookies["sid"];
+                if (cookie == null)
+                {
+                    cookie = new Cookie("sid", sessionId);
+                    cookie.Expires = DateTime.Now.AddMinutes(5);
+                    ctx.Response.SetCookie(cookie);
+                }
+            };
+            return response;
         }
 
     }
+
 }

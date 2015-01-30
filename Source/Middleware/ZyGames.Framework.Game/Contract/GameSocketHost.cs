@@ -250,7 +250,7 @@ namespace ZyGames.Framework.Game.Contract
                 {
                     if (session != null && data.Length > 0)
                     {
-                       await session.SendAsync(actionGetter.OpCode, data, 0, data.Length, OnSendCompleted);
+                        await session.SendAsync(actionGetter.OpCode, data, 0, data.Length, OnSendCompleted);
                     }
                 }
                 catch (Exception ex)
@@ -336,7 +336,10 @@ namespace ZyGames.Framework.Game.Contract
                 }
                 else
                 {
-                    session = GameSession.Get(package.SessionId) ?? GameSession.CreateNew(Guid.NewGuid(), context.Request);
+                    session = (string.IsNullOrEmpty(package.SessionId)
+                            ? GameSession.GetSessionByCookie(context.Request)
+                            : GameSession.Get(package.SessionId))
+                        ?? GameSession.CreateNew(Guid.NewGuid(), context.Request);
                 }
                 package.Bind(session);
 
@@ -347,6 +350,15 @@ namespace ZyGames.Framework.Game.Contract
                     httpGet["ssid"] = session.KeyCode.ToString("N");
                     httpGet["http"] = "1";
                 }
+                //set cookie
+                var cookie = context.Request.Cookies["sid"];
+                if (cookie == null)
+                {
+                    cookie = new Cookie("sid", session.SessionId);
+                    cookie.Expires = DateTime.Now.AddMinutes(5);
+                    context.Response.SetCookie(cookie);
+                }
+
 
                 var httpresponse = new SocketGameResponse();
                 httpresponse.WriteErrorCallback += new ScutActionDispatcher().ResponseError;
@@ -407,6 +419,7 @@ namespace ZyGames.Framework.Game.Contract
             {
                 connection.TimeoutTimer.Dispose();
                 HttpListenerResponse response = connection.Context.Response;
+                //response.ContentType = "text/html";
                 response.ContentType = "application/octet-stream";
                 if (data[offset] == 0x1f && data[offset + 1] == 0x8b && data[offset + 2] == 0x08 && data[offset + 3] == 0x00)
                 {

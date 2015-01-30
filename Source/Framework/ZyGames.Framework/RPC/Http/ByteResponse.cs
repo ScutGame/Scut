@@ -21,6 +21,8 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ****************************************************************************/
+
+using System;
 using System.IO;
 using System.IO.Compression;
 using System.Threading.Tasks;
@@ -32,7 +34,7 @@ namespace ZyGames.Framework.RPC.Http
     /// <summary>
     /// 
     /// </summary>
-    public sealed class ByteResponse : StatusResponse, IHttpResponseAction
+    public class ByteResponse : StatusResponse, IHttpResponseAction
     {
         readonly byte[] data;
         /// <summary>
@@ -46,6 +48,23 @@ namespace ZyGames.Framework.RPC.Http
         {
             data = value;
         }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public event Action<IHttpRequestResponseContext> CookieHandle;
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="context"></param>
+        protected virtual void SetCookie(IHttpRequestResponseContext context)
+        {
+            Action<IHttpRequestResponseContext> handler = CookieHandle;
+            if (handler != null) handler(context);
+        }
+
+      
         /// <summary>
         /// 
         /// </summary>
@@ -60,6 +79,7 @@ namespace ZyGames.Framework.RPC.Http
             }
 
             SetStatus(context);
+            SetCookie(context);
             //js call need
             context.Response.AddHeader("Access-Control-Allow-Origin", "*");
             if (context.Request.QueryString["showjson"] == "1")

@@ -732,7 +732,7 @@ namespace ZyGames.Framework.Model
                 {
                     object x = this.GetPropertyValue(key);
                     object y = other.GetPropertyValue(key);
-                    if (x is Enum || x is int || x is short || x is byte || x is bool)
+                    if (x is Enum || x is int || x is short || x is byte || x is bool || x is uint || x is ushort)
                     {
                         result = (x.ToInt()).CompareTo(y.ToInt());
                     }
@@ -750,10 +750,19 @@ namespace ZyGames.Framework.Model
                         var diff = (double)x - (double)y;
                         result = diff > 0 ? 1 : diff < 0 ? -1 : 0;
                     }
-                    else if (x is long)
+                    else if (x is long || x is ulong)
                     {
                         var diff = (long)x - (long)y;
                         result = diff > 0 ? 1 : diff < 0 ? -1 : 0;
+                    }
+                    else if (x is float)
+                    {
+                        var diff = (float)x - (float)y;
+                        result = diff > 0 ? 1 : diff < 0 ? -1 : 0;
+                    }
+                    else if (x is DateTime)
+                    {
+                        result = DateTime.Compare((DateTime)x, (DateTime)y);
                     }
                     else
                     {

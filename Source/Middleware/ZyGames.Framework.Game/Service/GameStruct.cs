@@ -245,6 +245,14 @@ namespace ZyGames.Framework.Game.Service
             dataStruct.PushIntoStack(obj);
         }
         /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="obj"></param>
+        public void PushIntoStack(byte[] obj)
+        {
+            dataStruct.PushIntoStack(obj);
+        }
+        /// <summary>
         /// string类型
         /// </summary>
         /// <param name="obj"></param>
@@ -383,8 +391,7 @@ namespace ZyGames.Framework.Game.Service
         {
             if (!IsNotRespond)
             {
-                BuildPacket();
-                var message = BuildResponsePack();
+                var message = BuildJsonPack();
                 response.Write(encoding.GetBytes(message));
             }
             WriteEnd();
@@ -409,7 +416,7 @@ namespace ZyGames.Framework.Game.Service
         /// 
         /// </summary>
         /// <returns></returns>
-        protected virtual string BuildResponsePack()
+        protected virtual string BuildJsonPack()
         {
             return string.Empty;
         }
