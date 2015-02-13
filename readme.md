@@ -18,7 +18,7 @@ server and client very easy.
 
     $ git clone git://github.com/ScutGame/Scut.git
     or
-    $ git clone git://git.oschina.net/scutgame/Scut.git
+    $ git clone https://git.oschina.net/scutgame/Scut.git
 
 
 ## Git for samples
@@ -28,14 +28,14 @@ else using [github](https://github.com/ScutGame/Scut-samples)
 
     $ git clone git://github.com/ScutGame/Scut-samples.git
     or
-    $ git clone git://git.oschina.net/scutgame/Scut-samples.git
+    $ git clone https://git.oschina.net/scutgame/Scut-samples.git
 
 
 ## Git for Cocos2d-x SDK Source
 
     $ git clone git://github.com/ScutGame/Client-source.git
     or
-    $ git clone git://git.oschina.net/scutgame/Client-source.git
+    $ git clone https://git.oschina.net/scutgame/Client-source.git
 
 ## Requirements
 
