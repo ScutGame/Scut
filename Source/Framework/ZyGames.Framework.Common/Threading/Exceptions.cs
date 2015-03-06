@@ -21,12 +21,14 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ****************************************************************************/
+
 using System;
-#if !(_WINDOWS_CE)
 using System.Runtime.Serialization;
+#if !(_WINDOWS_CE)
+
 #endif
 
-namespace ZyGames.Framework.RPC.Sockets.Threading
+namespace ZyGames.Framework.Common.Threading
 {
     #region Exceptions
 
@@ -36,13 +38,13 @@ namespace ZyGames.Framework.RPC.Sockets.Threading
     public sealed partial class WorkItemCancelException : Exception
     {
 		/// <summary>
-		/// Initializes a new instance of the <see cref="ZyGames.Framework.RPC.Sockets.Threading.WorkItemCancelException"/> class.
+		/// Initializes a new instance of the <see cref="WorkItemCancelException"/> class.
 		/// </summary>
         public WorkItemCancelException()
         {
         }
 		/// <summary>
-		/// Initializes a new instance of the <see cref="ZyGames.Framework.RPC.Sockets.Threading.WorkItemCancelException"/> class.
+		/// Initializes a new instance of the <see cref="WorkItemCancelException"/> class.
 		/// </summary>
 		/// <param name="message">Message.</param>
         public WorkItemCancelException(string message)
@@ -50,7 +52,7 @@ namespace ZyGames.Framework.RPC.Sockets.Threading
         {
         }
 		/// <summary>
-		/// Initializes a new instance of the <see cref="ZyGames.Framework.RPC.Sockets.Threading.WorkItemCancelException"/> class.
+		/// Initializes a new instance of the <see cref="WorkItemCancelException"/> class.
 		/// </summary>
 		/// <param name="message">Message.</param>
 		/// <param name="e">E.</param>
@@ -66,13 +68,13 @@ namespace ZyGames.Framework.RPC.Sockets.Threading
     public sealed partial class WorkItemTimeoutException : Exception
     {
 		/// <summary>
-		/// Initializes a new instance of the <see cref="ZyGames.Framework.RPC.Sockets.Threading.WorkItemTimeoutException"/> class.
+		/// Initializes a new instance of the <see cref="WorkItemTimeoutException"/> class.
 		/// </summary>
         public WorkItemTimeoutException()
         {
         }
 		/// <summary>
-		/// Initializes a new instance of the <see cref="ZyGames.Framework.RPC.Sockets.Threading.WorkItemTimeoutException"/> class.
+		/// Initializes a new instance of the <see cref="WorkItemTimeoutException"/> class.
 		/// </summary>
 		/// <param name="message">Message.</param>
         public WorkItemTimeoutException(string message)
@@ -80,7 +82,7 @@ namespace ZyGames.Framework.RPC.Sockets.Threading
         {
         }
 		/// <summary>
-		/// Initializes a new instance of the <see cref="ZyGames.Framework.RPC.Sockets.Threading.WorkItemTimeoutException"/> class.
+		/// Initializes a new instance of the <see cref="WorkItemTimeoutException"/> class.
 		/// </summary>
 		/// <param name="message">Message.</param>
 		/// <param name="e">E.</param>
@@ -96,13 +98,13 @@ namespace ZyGames.Framework.RPC.Sockets.Threading
     public sealed partial class WorkItemResultException : Exception
     {
 		/// <summary>
-		/// Initializes a new instance of the <see cref="ZyGames.Framework.RPC.Sockets.Threading.WorkItemResultException"/> class.
+		/// Initializes a new instance of the <see cref="WorkItemResultException"/> class.
 		/// </summary>
         public WorkItemResultException()
         {
         }
 		/// <summary>
-		/// Initializes a new instance of the <see cref="ZyGames.Framework.RPC.Sockets.Threading.WorkItemResultException"/> class.
+		/// Initializes a new instance of the <see cref="WorkItemResultException"/> class.
 		/// </summary>
 		/// <param name="message">Message.</param>
         public WorkItemResultException(string message)
@@ -110,7 +112,7 @@ namespace ZyGames.Framework.RPC.Sockets.Threading
         {
         }
 		/// <summary>
-		/// Initializes a new instance of the <see cref="ZyGames.Framework.RPC.Sockets.Threading.WorkItemResultException"/> class.
+		/// Initializes a new instance of the <see cref="WorkItemResultException"/> class.
 		/// </summary>
 		/// <param name="message">Message.</param>
 		/// <param name="e">E.</param>
@@ -129,7 +131,7 @@ namespace ZyGames.Framework.RPC.Sockets.Threading
     public sealed partial class WorkItemCancelException
     {
 		/// <summary>
-		/// Initializes a new instance of the <see cref="ZyGames.Framework.RPC.Sockets.Threading.WorkItemCancelException"/> class.
+		/// Initializes a new instance of the <see cref="WorkItemCancelException"/> class.
 		/// </summary>
 		/// <param name="si">Si.</param>
 		/// <param name="sc">Sc.</param>
@@ -146,7 +148,7 @@ namespace ZyGames.Framework.RPC.Sockets.Threading
     public sealed partial class WorkItemTimeoutException
     {
 		/// <summary>
-		/// Initializes a new instance of the <see cref="ZyGames.Framework.RPC.Sockets.Threading.WorkItemTimeoutException"/> class.
+		/// Initializes a new instance of the <see cref="WorkItemTimeoutException"/> class.
 		/// </summary>
 		/// <param name="si">Si.</param>
 		/// <param name="sc">Sc.</param>
@@ -163,7 +165,7 @@ namespace ZyGames.Framework.RPC.Sockets.Threading
     public sealed partial class WorkItemResultException
     {
 		/// <summary>
-		/// Initializes a new instance of the <see cref="ZyGames.Framework.RPC.Sockets.Threading.WorkItemResultException"/> class.
+		/// Initializes a new instance of the <see cref="WorkItemResultException"/> class.
 		/// </summary>
 		/// <param name="si">Si.</param>
 		/// <param name="sc">Sc.</param>

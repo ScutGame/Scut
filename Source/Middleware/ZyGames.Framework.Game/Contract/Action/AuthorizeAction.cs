@@ -22,6 +22,8 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ****************************************************************************/
 
+using System;
+using ZyGames.Framework.Common;
 using ZyGames.Framework.Game.Com.Generic;
 using ZyGames.Framework.Game.Context;
 using ZyGames.Framework.Game.Lang;
@@ -54,6 +56,36 @@ namespace ZyGames.Framework.Game.Contract.Action
             get;
             protected set;
         }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        protected override bool ValidateElement()
+        {
+            return true;
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        protected virtual bool CheckValidityPeriod(TimeSpan minInterval, TimeSpan maxInterval)
+        {
+            string st = actionGetter.GetSt();
+            if (!string.IsNullOrEmpty(st) && !string.Equals(st, "st", StringComparison.CurrentCultureIgnoreCase))
+            {
+                RefleshSt();
+                long time;
+                if (long.TryParse(st, out time))
+                {
+                    var ts = MathUtils.Now - MathUtils.UnixEpochDateTime.AddSeconds(time);
+                    return ts > minInterval && ts < maxInterval;
+                }
+            }
+            return false;
+        }
+
         /// <summary>
         /// 
         /// </summary>

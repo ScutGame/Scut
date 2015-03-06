@@ -21,7 +21,8 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ****************************************************************************/
-namespace ZyGames.Framework.RPC.Sockets.Threading
+
+namespace ZyGames.Framework.Common.Threading
 {
 	#region WorkItemInfo class
 
@@ -31,7 +32,7 @@ namespace ZyGames.Framework.RPC.Sockets.Threading
 	public class WorkItemInfo
 	{
 		/// <summary>
-		/// Initializes a new instance of the <see cref="ZyGames.Framework.RPC.Sockets.Threading.WorkItemInfo"/> class.
+		/// Initializes a new instance of the <see cref="WorkItemInfo"/> class.
 		/// </summary>
 	    public WorkItemInfo()
 		{
@@ -43,7 +44,7 @@ namespace ZyGames.Framework.RPC.Sockets.Threading
 			WorkItemPriority = SmartThreadPool.DefaultWorkItemPriority;
 		}
 		/// <summary>
-		/// Initializes a new instance of the <see cref="ZyGames.Framework.RPC.Sockets.Threading.WorkItemInfo"/> class.
+		/// Initializes a new instance of the <see cref="WorkItemInfo"/> class.
 		/// </summary>
 		/// <param name="workItemInfo">Work item info.</param>
 		public WorkItemInfo(WorkItemInfo workItemInfo)

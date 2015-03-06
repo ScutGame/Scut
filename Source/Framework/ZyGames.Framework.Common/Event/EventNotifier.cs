@@ -34,8 +34,9 @@ namespace ZyGames.Framework.Common.Event
     /// </summary>
     public abstract class EventNotifier
     {
+        private static readonly object syncRoot = new object();
         private static readonly ConcurrentQueue<NotifyEventArgs> _handlePools;
-        private static readonly ConcurrentQueue<NotifyEventArgs> _asyncHandlePools;
+        private static readonly List<NotifyEventArgs> _asyncHandlePools;
         private static ManualResetEvent singal = new ManualResetEvent(false);
         private static Thread queueProcessThread;
         private static int _runningQueue;
@@ -44,7 +45,7 @@ namespace ZyGames.Framework.Common.Event
         private static long _timerNum;
 
         /// <summary>
-        /// 
+        /// process time
         /// </summary>
         public static long TimerNum
         {
@@ -54,7 +55,7 @@ namespace ZyGames.Framework.Common.Event
         static EventNotifier()
         {
             _handlePools = new ConcurrentQueue<NotifyEventArgs>();
-            _asyncHandlePools = new ConcurrentQueue<NotifyEventArgs>();
+            _asyncHandlePools = new List<NotifyEventArgs>();
             Interlocked.Exchange(ref _runningQueue, 1);
             queueProcessThread = new Thread(ProcessQueue);
             queueProcessThread.Start();
@@ -62,13 +63,40 @@ namespace ZyGames.Framework.Common.Event
         }
 
         /// <summary>
-        /// 
+        /// Dispose
+        /// </summary>
+        public static void Dispose()
+        {
+            try
+            {
+                Interlocked.Exchange(ref _runningQueue, 0);
+                _notifyTimer.Dispose();
+                queueProcessThread.Abort();
+            }
+            catch
+            { }
+        }
+        /// <summary>
+        /// Not process time
         /// </summary>
         public static int WaitEventCount
         {
             get { return _asyncHandlePools.Count; }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        public static int ActiveThreadCount
+        {
+            get
+            {
+                int n;
+                int m;
+                ThreadPool.GetAvailableThreads(out n, out m);
+                return n;
+            }
+        }
         /// <summary>
         /// 
         /// </summary>
@@ -92,18 +120,22 @@ namespace ZyGames.Framework.Common.Event
                             NotifyEventArgs handle;
                             if (_handlePools.TryDequeue(out handle))
                             {
+                                var e = handle;
                                 if (handle.Interrupt)
                                 {
                                     continue;
                                 }
                                 if (handle.Check())
                                 {
-                                    handle.OnCallback();
+                                    ThreadPool.QueueUserWorkItem(obj => e.OnCallback());
                                     OnTimerNum();
                                 }
                                 else
                                 {
-                                    _asyncHandlePools.Enqueue(handle);
+                                    lock (syncRoot)
+                                    {
+                                        _asyncHandlePools.InsertSort(handle, (x, y) => x.ExpiredTime.CompareTo(y.ExpiredTime));
+                                    }
                                 }
                             }
                             else
@@ -141,28 +173,31 @@ namespace ZyGames.Framework.Common.Event
             {
                 if (Interlocked.CompareExchange(ref _asyncQueue, 1, 0) == 0)
                 {
-                    List<NotifyEventArgs> tempList = new List<NotifyEventArgs>();
-                    NotifyEventArgs handle;
-                    while (_asyncHandlePools.TryDequeue(out handle))
+                    List<NotifyEventArgs> removeList = new List<NotifyEventArgs>();
+
+                    lock (syncRoot)
                     {
-                        if (handle.Interrupt)
+                        foreach (var handle in _asyncHandlePools)
                         {
-                            continue;
+                            var e = handle;
+                            if (handle.Interrupt)
+                            {
+                                removeList.Add(handle);
+                                continue;
+                            }
+                            if (handle.Check())
+                            {
+                                ThreadPool.QueueUserWorkItem(obj => e.OnCallback());
+                                OnTimerNum();
+                                removeList.Add(handle);
+                            }
                         }
-                        if (handle.Check())
+                        foreach (var args in removeList)
                         {
-                            handle.OnCallback();
-                            OnTimerNum();
-                        }
-                        else
-                        {
-                            tempList.Add(handle);
+                            _asyncHandlePools.Remove(args);
                         }
                     }
-                    foreach (var args in tempList)
-                    {
-                        _asyncHandlePools.Enqueue(args);
-                    }
+
                 }
             }
             catch (Exception er)

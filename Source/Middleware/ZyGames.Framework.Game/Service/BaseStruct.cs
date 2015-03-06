@@ -22,6 +22,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ****************************************************************************/
 using System;
+using ZyGames.Framework.Common;
 using ZyGames.Framework.Common.Configuration;
 using ZyGames.Framework.Common.Log;
 using ZyGames.Framework.Game.Config;
@@ -285,6 +286,14 @@ namespace ZyGames.Framework.Game.Service
         {
             ErrorCode = errorCode;
             ErrorInfo = errorInfo;
+        }
+
+        /// <summary>
+        /// 刷新时间缀
+        /// </summary>
+        protected virtual void RefleshSt()
+        {
+            St = MathUtils.DiffDate(MathUtils.UnixEpochDateTime).TotalSeconds.ToCeilingInt().ToString();
         }
 
         /// <summary>

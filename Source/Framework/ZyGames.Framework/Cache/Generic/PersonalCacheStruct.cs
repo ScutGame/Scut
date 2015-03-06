@@ -34,6 +34,187 @@ namespace ZyGames.Framework.Cache.Generic
     /// <summary>
     /// 私有的缓存模型
     /// </summary>
+    public static class PersonalCacheStruct
+    {
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="personalId"></param>
+        /// <param name="createFactory"></param>
+        /// <exception cref="Exception"></exception>
+        /// <returns></returns>
+        public static T GetOrAdd<T>(string personalId, Lazy<T> createFactory) where T : BaseEntity, new()
+        {
+            var cache = new PersonalCacheStruct<T>();
+            T result;
+            if (cache.TryFindKey(personalId, out result) != LoadingStatus.Success)
+            {
+                throw new Exception(string.Format("Entity {0} load  personalId:{1} error", typeof(T).Name, personalId));
+            }
+            if (result == default(T))
+            {
+                result = createFactory.Value;
+                cache.Add(result);
+            }
+            return result;
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="personalId"></param>
+        /// <param name="allowNull"></param>
+        /// <exception cref="Exception"></exception>
+        /// <exception cref="NullReferenceException"></exception>
+        /// <returns></returns>
+        public static T Get<T>(string personalId, bool allowNull = false) where T : BaseEntity, new()
+        {
+            var cache = new PersonalCacheStruct<T>();
+            T result;
+            if (cache.TryFindKey(personalId, out result) != LoadingStatus.Success)
+            {
+                throw new Exception(string.Format("Entity {0} load  personalId:{1} error", typeof(T).Name, personalId));
+            }
+            if (!allowNull && result == null)
+            {
+                throw new NullReferenceException(string.Format("Not found entity {0} personalId:{1}.", typeof(T).Name, personalId));
+            }
+            return result;
+        }
+        #region Get
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <typeparam name="T1"></typeparam>
+        /// <typeparam name="T2"></typeparam>
+        /// <param name="personalId"></param>
+        /// <param name="t1"></param>
+        /// <param name="t2"></param>
+        /// <param name="allowNull"></param>
+        public static void Get<T1, T2>(string personalId, out T1 t1, out T2 t2, bool allowNull = false)
+            where T1 : BaseEntity, new()
+            where T2 : BaseEntity, new()
+        {
+            t1 = Get<T1>(personalId, allowNull);
+            t2 = Get<T2>(personalId, allowNull);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <typeparam name="T1"></typeparam>
+        /// <typeparam name="T2"></typeparam>
+        /// <typeparam name="T3"></typeparam>
+        /// <param name="personalId"></param>
+        /// <param name="t1"></param>
+        /// <param name="t2"></param>
+        /// <param name="t3"></param>
+        /// <param name="allowNull"></param>
+        public static void Get<T1, T2, T3>(string personalId, out T1 t1, out T2 t2, out T3 t3, bool allowNull = false)
+            where T1 : BaseEntity, new()
+            where T2 : BaseEntity, new()
+            where T3 : BaseEntity, new()
+        {
+            t1 = Get<T1>(personalId, allowNull);
+            t2 = Get<T2>(personalId, allowNull);
+            t3 = Get<T3>(personalId, allowNull);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <typeparam name="T1"></typeparam>
+        /// <typeparam name="T2"></typeparam>
+        /// <typeparam name="T3"></typeparam>
+        /// <typeparam name="T4"></typeparam>
+        /// <param name="personalId"></param>
+        /// <param name="t1"></param>
+        /// <param name="t2"></param>
+        /// <param name="t3"></param>
+        /// <param name="t4"></param>
+        /// <param name="allowNull"></param>
+        public static void Get<T1, T2, T3, T4>(string personalId, out T1 t1, out T2 t2, out T3 t3, out T4 t4, bool allowNull = false)
+            where T1 : BaseEntity, new()
+            where T2 : BaseEntity, new()
+            where T3 : BaseEntity, new()
+            where T4 : BaseEntity, new()
+        {
+            t1 = Get<T1>(personalId, allowNull);
+            t2 = Get<T2>(personalId, allowNull);
+            t3 = Get<T3>(personalId, allowNull);
+            t4 = Get<T4>(personalId, allowNull);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <typeparam name="T1"></typeparam>
+        /// <typeparam name="T2"></typeparam>
+        /// <typeparam name="T3"></typeparam>
+        /// <typeparam name="T4"></typeparam>
+        /// <typeparam name="T5"></typeparam>
+        /// <param name="personalId"></param>
+        /// <param name="t1"></param>
+        /// <param name="t2"></param>
+        /// <param name="t3"></param>
+        /// <param name="t4"></param>
+        /// <param name="t5"></param>
+        /// <param name="allowNull"></param>
+        public static void Get<T1, T2, T3, T4, T5>(string personalId, out T1 t1, out T2 t2, out T3 t3, out T4 t4, out T5 t5, bool allowNull = false)
+            where T1 : BaseEntity, new()
+            where T2 : BaseEntity, new()
+            where T3 : BaseEntity, new()
+            where T4 : BaseEntity, new()
+            where T5 : BaseEntity, new()
+        {
+            t1 = Get<T1>(personalId, allowNull);
+            t2 = Get<T2>(personalId, allowNull);
+            t3 = Get<T3>(personalId, allowNull);
+            t4 = Get<T4>(personalId, allowNull);
+            t5 = Get<T5>(personalId, allowNull);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <typeparam name="T1"></typeparam>
+        /// <typeparam name="T2"></typeparam>
+        /// <typeparam name="T3"></typeparam>
+        /// <typeparam name="T4"></typeparam>
+        /// <typeparam name="T5"></typeparam>
+        /// <typeparam name="T6"></typeparam>
+        /// <param name="personalId"></param>
+        /// <param name="t1"></param>
+        /// <param name="t2"></param>
+        /// <param name="t3"></param>
+        /// <param name="t4"></param>
+        /// <param name="t5"></param>
+        /// <param name="t6"></param>
+        /// <param name="allowNull"></param>
+        public static void Get<T1, T2, T3, T4, T5, T6>(string personalId, out T1 t1, out T2 t2, out T3 t3, out T4 t4, out T5 t5, out T6 t6, bool allowNull = false)
+            where T1 : BaseEntity, new()
+            where T2 : BaseEntity, new()
+            where T3 : BaseEntity, new()
+            where T4 : BaseEntity, new()
+            where T5 : BaseEntity, new()
+            where T6 : BaseEntity, new()
+        {
+            t1 = Get<T1>(personalId, allowNull);
+            t2 = Get<T2>(personalId, allowNull);
+            t3 = Get<T3>(personalId, allowNull);
+            t4 = Get<T4>(personalId, allowNull);
+            t5 = Get<T5>(personalId, allowNull);
+            t6 = Get<T6>(personalId, allowNull);
+        }
+        #endregion
+    }
+
+    /// <summary>
+    /// 私有的缓存模型
+    /// </summary>
     public class PersonalCacheStruct<T> : BaseCacheStruct<T> where T : BaseEntity, new()
     {
         /// <summary>
@@ -306,7 +487,7 @@ namespace ZyGames.Framework.Cache.Generic
             int maxCount = receiveParam.Schema.Capacity;
             var filter = new DbDataFilter(maxCount);
             receiveParam.DbFilter = filter;
-            receiveParam.Capacity = maxCount;
+            //receiveParam.Capacity = maxCount;
             LoadFrom(receiveParam, match);
         }
 
@@ -388,17 +569,18 @@ namespace ZyGames.Framework.Cache.Generic
             int periodTime = receiveParam.Schema.PeriodTime;
             int maxCount = receiveParam.Schema.Capacity;
             var provider = DbConnectionProvider.CreateDbProvider(receiveParam.Schema);
-            if (provider != null)
+            if (provider == null)
             {
-                var filter = new DbDataFilter(maxCount);
-                if (!string.IsNullOrEmpty(personalId))
-                {
-                    filter.Condition = provider.FormatFilterParam(paramName);
-                    filter.Parameters.Add(paramName, personalId);
-                }
-                receiveParam.DbFilter = filter;
+                TraceLog.WriteError("Not found db connection of {0} entity.", receiveParam.Schema.EntityName);
+                return false;
             }
-            receiveParam.Capacity = maxCount;
+            var filter = new DbDataFilter(maxCount);
+            if (!string.IsNullOrEmpty(personalId))
+            {
+                filter.Condition = provider.FormatFilterParam(paramName);
+                filter.Parameters.Add(paramName, personalId);
+            }
+            receiveParam.DbFilter = filter;
             return TryLoadCache(personalId, receiveParam, periodTime);
         }
 

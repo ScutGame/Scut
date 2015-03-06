@@ -666,13 +666,23 @@ namespace ZyGames.Framework.Model
             return schema;
         }
         /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="type"></param>
+        /// <returns></returns>
+        public static SchemaTable Get(Type type)
+        {
+            return Get(type.FullName);
+        }
+
+        /// <summary>
         /// Get entity schema.
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <returns></returns>
         public static SchemaTable Get<T>()
         {
-            return Get(typeof(T).FullName);
+            return Get(typeof(T));
         }
 
         /// <summary>

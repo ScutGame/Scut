@@ -21,12 +21,13 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ****************************************************************************/
-using System;
-using System.Threading;
-using System.Runtime.CompilerServices;
-using System.Diagnostics;
 
-namespace ZyGames.Framework.RPC.Sockets.Threading
+using System;
+using System.Diagnostics;
+using System.Runtime.CompilerServices;
+using System.Threading;
+
+namespace ZyGames.Framework.Common.Threading
 {
 
 	#region WorkItemsGroup class 
@@ -102,7 +103,7 @@ namespace ZyGames.Framework.RPC.Sockets.Threading
 
 		#region Construction
 		/// <summary>
-		/// Initializes a new instance of the <see cref="ZyGames.Framework.RPC.Sockets.Threading.WorkItemsGroup"/> class.
+		/// Initializes a new instance of the <see cref="WorkItemsGroup"/> class.
 		/// </summary>
 		/// <param name="stp">Stp.</param>
 		/// <param name="concurrency">Concurrency.</param>

@@ -28,30 +28,18 @@ using ZyGames.Framework.Model;
 namespace ZyGames.Framework.Net
 {
     /// <summary>
-    /// 实体事件
-    /// </summary>
-    public class EntityEvent : EventArgs
-    {
-        /// <summary>
-        /// 绑定的实体对象
-        /// </summary>
-        public AbstractEntity Data { get; set; }
-
-        /// <summary>
-        /// 字段名
-        /// </summary>
-        public string FieldName { get; set; }
-
-        /// <summary>
-        /// 字体值
-        /// </summary>
-        public object FieldValue { get; set; }
-
-    }
-    /// <summary>
     /// 数据处理句柄,跨服战时，可重新设置KEY主键规则
     /// </summary>
-    public delegate object EntityBeforeProcess(EntityEvent entityEvent);
+    public delegate object EntityPropertyGetFunc(ISqlEntity entity, SchemaColumn column);
+
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="entity"></param>
+    /// <param name="schema"></param>
+    /// <param name="isChange"></param>
+    /// <returns></returns>
+    public delegate IList<string> EnttiyPostColumnFunc(ISqlEntity entity, SchemaTable schema, bool isChange);
 
     /// <summary>
     /// 数据传送操作接口
@@ -62,33 +50,8 @@ namespace ZyGames.Framework.Net
         /// 
         /// </summary>
         /// <typeparam name="T"></typeparam>
-        /// <param name="data"></param>
-        /// <param name="isChange"></param>
-        void Send<T>(T data, bool isChange = true) where T : AbstractEntity;
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
         /// <param name="dataList"></param>
         void Send<T>(IEnumerable<T> dataList) where T : AbstractEntity;
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="dataList"></param>
-        /// <param name="isChange"></param>
-        void Send<T>(IEnumerable<T> dataList, bool isChange) where T : AbstractEntity;
-
-        /// <summary>
-        /// 发送数据到Redis和Db
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="dataList"></param>
-        /// <param name="isChange">是否只发送发生变化的实体数据</param>
-        /// <param name="connectKey">数据库连接字符串的连接键值</param>
-        /// <param name="handle">发送之前处理委托方法</param>
-        void Send<T>(IEnumerable<T> dataList, bool isChange, string connectKey, EntityBeforeProcess handle) where T : AbstractEntity;
 
     }
 }

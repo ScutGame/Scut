@@ -22,6 +22,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ****************************************************************************/
 
+using System.Collections.Generic;
 using ZyGames.Framework.Model;
 using ZyGames.Framework.Net.Redis;
 using ZyGames.Framework.Net.Sql;
@@ -38,10 +39,11 @@ namespace ZyGames.Framework.Net
         /// 
         /// </summary>
         /// <returns></returns>
-        public static IDataSender GetDataSender()
+        public static IDataSender GetDataSender(bool isChange = true, string connectKey = null)
         {
-            return new SqlDataSender();
+            return new SqlDataSender(isChange, connectKey);
         }
+
         /// <summary>
         /// 
         /// </summary>
@@ -50,18 +52,37 @@ namespace ZyGames.Framework.Net
         /// <returns></returns>
         public static IDataReceiver GetDataGetter(SchemaTable schema, DbDataFilter filter)
         {
-            return GetDataGetter(schema, filter.Capacity, filter);
+            return new SqlDataReceiver(schema, filter);
         }
+
         /// <summary>
         /// 
         /// </summary>
+        /// <typeparam name="T"></typeparam>
         /// <param name="schema"></param>
-        /// <param name="capacity"></param>
         /// <param name="filter"></param>
+        /// <param name="setFunc"></param>
+        /// <param name="dataList"></param>
         /// <returns></returns>
-        public static IDataReceiver GetDataGetter(SchemaTable schema, int capacity, DbDataFilter filter)
+        public static bool TryReceiveSql<T>(SchemaTable schema, DbDataFilter filter, EntityPropertySetFunc<T> setFunc, out List<T> dataList)
+            where T : new()
         {
-            return new SqlDataReceiver(schema, capacity, filter);
+            return new SqlDataReceiver(schema, filter).TryReceive(setFunc, out dataList);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="dataList"></param>
+        /// <param name="isChange"></param>
+        /// <param name="getPropertyFunc"></param>
+        /// <param name="postColumnFunc"></param>
+        /// <returns></returns>
+        public static void SendSql<T>(IEnumerable<T> dataList, bool isChange, EntityPropertyGetFunc getPropertyFunc, EnttiyPostColumnFunc postColumnFunc = null)
+            where T : ISqlEntity
+        {
+            new SqlDataSender(isChange).Send(dataList, getPropertyFunc, postColumnFunc);
         }
         #endregion
 

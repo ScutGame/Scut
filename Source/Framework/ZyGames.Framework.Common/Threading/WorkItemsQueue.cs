@@ -21,10 +21,11 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ****************************************************************************/
+
 using System;
 using System.Threading;
 
-namespace ZyGames.Framework.RPC.Sockets.Threading
+namespace ZyGames.Framework.Common.Threading
 {
 	#region WorkItemsQueue class
 
@@ -656,14 +657,14 @@ namespace ZyGames.Framework.RPC.Sockets.Threading
 
         #region IDisposable Members
 		/// <summary>
-		/// Releases all resource used by the <see cref="ZyGames.Framework.RPC.Sockets.Threading.WorkItemsQueue"/> object.
+		/// Releases all resource used by the <see cref="WorkItemsQueue"/> object.
 		/// </summary>
 		/// <remarks>Call <see cref="Dispose"/> when you are finished using the
-		/// <see cref="ZyGames.Framework.RPC.Sockets.Threading.WorkItemsQueue"/>. The <see cref="Dispose"/> method leaves the
-		/// <see cref="ZyGames.Framework.RPC.Sockets.Threading.WorkItemsQueue"/> in an unusable state. After calling
+		/// <see cref="WorkItemsQueue"/>. The <see cref="Dispose"/> method leaves the
+		/// <see cref="WorkItemsQueue"/> in an unusable state. After calling
 		/// <see cref="Dispose"/>, you must release all references to the
-		/// <see cref="ZyGames.Framework.RPC.Sockets.Threading.WorkItemsQueue"/> so the garbage collector can reclaim the
-		/// memory that the <see cref="ZyGames.Framework.RPC.Sockets.Threading.WorkItemsQueue"/> was occupying.</remarks>
+		/// <see cref="WorkItemsQueue"/> so the garbage collector can reclaim the
+		/// memory that the <see cref="WorkItemsQueue"/> was occupying.</remarks>
         public void Dispose()
         {
             if (!_isDisposed)

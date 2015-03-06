@@ -33,6 +33,188 @@ namespace ZyGames.Framework.Cache.Generic
     /// <summary>
     /// 共享的缓存模型
     /// </summary>
+    public static class ShareCacheStruct
+    {
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="key"></param>
+        /// <param name="createFactory"></param>
+        /// <exception cref="Exception"></exception>
+        /// <returns></returns>
+        public static T GetOrAdd<T>(object key, Lazy<T> createFactory) where T : ShareEntity, new()
+        {
+            var cache = new ShareCacheStruct<T>();
+            T result = cache.FindKey(key);
+            if (cache.LoadingStatus != LoadingStatus.Success)
+            {
+                throw new Exception(string.Format("Entity {0} load  key:{1} error", typeof(T).Name, key));
+            }
+            if (result == default(T))
+            {
+                result = createFactory.Value;
+                cache.Add(result);
+            }
+            return result;
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="key"></param>
+        /// <param name="allowNull"></param>
+        /// <exception cref="Exception"></exception>
+        /// <exception cref="NullReferenceException"></exception>
+        /// <returns></returns>
+        public static T Get<T>(object key, bool allowNull = false) where T : ShareEntity, new()
+        {
+            var cache = new ShareCacheStruct<T>();
+            T result = cache.FindKey(key);
+            if (cache.LoadingStatus != LoadingStatus.Success)
+            {
+                throw new Exception(string.Format("Entity {0} load  key:{1} error", typeof(T).Name, key));
+            }
+            if (!allowNull && result == null)
+            {
+                throw new NullReferenceException(string.Format("Not found entity {0} key:{1}.", typeof(T).Name, key));
+            }
+            return result;
+        }
+
+        #region Get
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <typeparam name="T1"></typeparam>
+        /// <typeparam name="T2"></typeparam>
+        /// <param name="key"></param>
+        /// <param name="t1"></param>
+        /// <param name="t2"></param>
+        /// <param name="allowNull"></param>
+        public static void Get<T1, T2>(object key, out T1 t1, out T2 t2, bool allowNull = false)
+            where T1 : ShareEntity, new()
+            where T2 : ShareEntity, new()
+        {
+            t1 = Get<T1>(key, allowNull);
+            t2 = Get<T2>(key, allowNull);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <typeparam name="T1"></typeparam>
+        /// <typeparam name="T2"></typeparam>
+        /// <typeparam name="T3"></typeparam>
+        /// <param name="key"></param>
+        /// <param name="t1"></param>
+        /// <param name="t2"></param>
+        /// <param name="t3"></param>
+        /// <param name="allowNull"></param>
+        public static void Get<T1, T2, T3>(object key, out T1 t1, out T2 t2, out T3 t3, bool allowNull = false)
+            where T1 : ShareEntity, new()
+            where T2 : ShareEntity, new()
+            where T3 : ShareEntity, new()
+        {
+            t1 = Get<T1>(key, allowNull);
+            t2 = Get<T2>(key, allowNull);
+            t3 = Get<T3>(key, allowNull);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <typeparam name="T1"></typeparam>
+        /// <typeparam name="T2"></typeparam>
+        /// <typeparam name="T3"></typeparam>
+        /// <typeparam name="T4"></typeparam>
+        /// <param name="key"></param>
+        /// <param name="t1"></param>
+        /// <param name="t2"></param>
+        /// <param name="t3"></param>
+        /// <param name="t4"></param>
+        /// <param name="allowNull"></param>
+        public static void Get<T1, T2, T3, T4>(object key, out T1 t1, out T2 t2, out T3 t3, out T4 t4, bool allowNull = false)
+            where T1 : ShareEntity, new()
+            where T2 : ShareEntity, new()
+            where T3 : ShareEntity, new()
+            where T4 : ShareEntity, new()
+        {
+            t1 = Get<T1>(key, allowNull);
+            t2 = Get<T2>(key, allowNull);
+            t3 = Get<T3>(key, allowNull);
+            t4 = Get<T4>(key, allowNull);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <typeparam name="T1"></typeparam>
+        /// <typeparam name="T2"></typeparam>
+        /// <typeparam name="T3"></typeparam>
+        /// <typeparam name="T4"></typeparam>
+        /// <typeparam name="T5"></typeparam>
+        /// <param name="key"></param>
+        /// <param name="t1"></param>
+        /// <param name="t2"></param>
+        /// <param name="t3"></param>
+        /// <param name="t4"></param>
+        /// <param name="t5"></param>
+        /// <param name="allowNull"></param>
+        public static void Get<T1, T2, T3, T4, T5>(object key, out T1 t1, out T2 t2, out T3 t3, out T4 t4, out T5 t5, bool allowNull = false)
+            where T1 : ShareEntity, new()
+            where T2 : ShareEntity, new()
+            where T3 : ShareEntity, new()
+            where T4 : ShareEntity, new()
+            where T5 : ShareEntity, new()
+        {
+            t1 = Get<T1>(key, allowNull);
+            t2 = Get<T2>(key, allowNull);
+            t3 = Get<T3>(key, allowNull);
+            t4 = Get<T4>(key, allowNull);
+            t5 = Get<T5>(key, allowNull);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <typeparam name="T1"></typeparam>
+        /// <typeparam name="T2"></typeparam>
+        /// <typeparam name="T3"></typeparam>
+        /// <typeparam name="T4"></typeparam>
+        /// <typeparam name="T5"></typeparam>
+        /// <typeparam name="T6"></typeparam>
+        /// <param name="key"></param>
+        /// <param name="t1"></param>
+        /// <param name="t2"></param>
+        /// <param name="t3"></param>
+        /// <param name="t4"></param>
+        /// <param name="t5"></param>
+        /// <param name="t6"></param>
+        /// <param name="allowNull"></param>
+        public static void Get<T1, T2, T3, T4, T5, T6>(object key, out T1 t1, out T2 t2, out T3 t3, out T4 t4, out T5 t5, out T6 t6, bool allowNull = false)
+            where T1 : ShareEntity, new()
+            where T2 : ShareEntity, new()
+            where T3 : ShareEntity, new()
+            where T4 : ShareEntity, new()
+            where T5 : ShareEntity, new()
+            where T6 : ShareEntity, new()
+        {
+            t1 = Get<T1>(key, allowNull);
+            t2 = Get<T2>(key, allowNull);
+            t3 = Get<T3>(key, allowNull);
+            t4 = Get<T4>(key, allowNull);
+            t5 = Get<T5>(key, allowNull);
+            t6 = Get<T6>(key, allowNull);
+        }
+        #endregion
+    }
+
+    /// <summary>
+    /// 共享的缓存模型
+    /// </summary>
     public class ShareCacheStruct<T> : BaseCacheStruct<T> where T : ShareEntity, new()
     {
         /// <summary>
@@ -169,7 +351,6 @@ namespace ZyGames.Framework.Cache.Generic
             TransReceiveParam receiveParam = new TransReceiveParam(redisKey);
             receiveParam.Schema = SchemaTable();
             receiveParam.DbFilter = filter;
-            receiveParam.Capacity = filter.Capacity == 0 ? 0 : receiveParam.Schema.Capacity;
             int periodTime = receiveParam.Schema == null ? 0 : receiveParam.Schema.PeriodTime;
             return TryLoadCache(receiveParam, periodTime);
         }

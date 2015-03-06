@@ -25,7 +25,7 @@ THE SOFTWARE.
 
 using System.Threading;
 
-namespace ZyGames.Framework.RPC.Sockets.Threading
+namespace ZyGames.Framework.Common.Threading
 {
 #if _WINDOWS ||  WINDOWS_PHONE
     internal static class STPEventWaitHandle

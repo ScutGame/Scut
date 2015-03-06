@@ -38,7 +38,7 @@ namespace ZyGames.Framework.Model
     /// 实体数据基类
     /// </summary>
     [ProtoContract, Serializable]
-    public abstract class AbstractEntity : EntityChangeEvent, IDataExpired, IComparable<AbstractEntity>
+    public abstract class AbstractEntity : EntityChangeEvent, IDataExpired, ISqlEntity, IComparable<AbstractEntity>
     {
         /// <summary>
         /// 
@@ -117,13 +117,21 @@ namespace ZyGames.Framework.Model
         }
 
         /// <summary>
-        /// 重置状态
+        /// 
         /// </summary>
-        public void Reset()
+        public void ResetState()
         {
             OnUnNew();
             DequeueChangePropertys();
             CompleteUpdate();
+        }
+
+        /// <summary>
+        /// 重置状态
+        /// </summary>
+        public void Reset()
+        {
+            ResetState();
             var e = new CacheItemEventArgs { ChangeType = CacheItemChangeType.UnChange };
             UnChangeNotify(this, e);
         }
@@ -290,6 +298,14 @@ namespace ZyGames.Framework.Model
 
 
         #endregion
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        public int GetMessageQueueId()
+        {
+            return GetIdentityId();
+        }
 
         /// <summary>
         /// 标识ID，消息队列分发
@@ -813,7 +829,7 @@ namespace ZyGames.Framework.Model
             }
         }
 
-        internal object ParseValueType(object value, Type columnType)
+        internal static object ParseValueType(object value, Type columnType)
         {
             if (columnType == typeof(Int64))
             {

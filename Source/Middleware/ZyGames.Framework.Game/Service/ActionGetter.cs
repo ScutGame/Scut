@@ -333,6 +333,14 @@ namespace ZyGames.Framework.Game.Service
         /// <summary>
         /// 
         /// </summary>
+        public virtual bool GetBool(string aName, ref bool rValue)
+        {
+            throw new NotImplementedException();
+        }
+        
+        /// <summary>
+        /// 
+        /// </summary>
         public virtual bool GetByte(string aName, ref Byte rValue)
         {
             throw new NotImplementedException();

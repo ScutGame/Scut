@@ -58,7 +58,7 @@ namespace ZyGames.Framework.Net
         {
             using (IDataSender sender = new RedisDataSender())
             {
-                sender.Send(dataList, sendParam.IsChange, sendParam.ConnectKey, sendParam.BeforeProcessHandle);
+                sender.Send(dataList);
             }
         }
     }

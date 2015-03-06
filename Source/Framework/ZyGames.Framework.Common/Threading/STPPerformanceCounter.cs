@@ -21,10 +21,11 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ****************************************************************************/
+
 using System;
 using System.Diagnostics;
 
-namespace ZyGames.Framework.RPC.Sockets.Threading
+namespace ZyGames.Framework.Common.Threading
 {
 	/// <summary>
 	/// ISTP performance counters reader.
@@ -52,10 +53,7 @@ namespace ZyGames.Framework.RPC.Sockets.Threading
         /// <value>The work items processed.</value>
 		long WorkItemsProcessed { get; }
     }
-}
 
-namespace ZyGames.Framework.RPC.Sockets.Threading
-{
     internal interface ISTPInstancePerformanceCounters : IDisposable
     {
         void Close();

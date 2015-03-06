@@ -143,7 +143,11 @@ namespace ZyGames.Framework.Common.Build
             {
                 savePath = assemblyPath;
             }
-            var ass = AssemblyDefinition.ReadAssembly(assemblyPath);
+            //huhu modify reason: Support for model debugging.
+            var ass = AssemblyDefinition.ReadAssembly(assemblyPath, new ReaderParameters
+            {
+                ReadSymbols = true
+            });
             var types = ass.MainModule.Types.Where(p => !p.IsEnum).ToList();
             foreach (TypeDefinition type in types)
             {
@@ -152,7 +156,10 @@ namespace ZyGames.Framework.Common.Build
 
             if (setSuccess)
             {
-                ass.Write(savePath);
+                ass.Write(savePath, new WriterParameters
+                {
+                    WriteSymbols = true
+                });
                 return true;
             }
             return false;

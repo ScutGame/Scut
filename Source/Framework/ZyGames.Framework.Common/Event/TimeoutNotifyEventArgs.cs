@@ -44,8 +44,7 @@ namespace ZyGames.Framework.Common.Event
         /// </summary>
         public TimeoutNotifyEventArgs(TimeSpan timeout)
         {
-            Timeout = timeout;
-            RefreshDate = DateTime.Now;
+            ExpiredTime = DateTime.Now.Add(timeout);
         }
         /// <summary>
         /// 
@@ -53,16 +52,9 @@ namespace ZyGames.Framework.Common.Event
         /// <returns></returns>
         protected internal override bool Check()
         {
-            return DateTime.Now - RefreshDate > Timeout &&
+            return DateTime.Now >= ExpiredTime &&
                 base.Check();
         }
-
-        internal DateTime RefreshDate { get; set; }
-
-        /// <summary>
-        /// Timeout
-        /// </summary>
-        public TimeSpan Timeout { get; set; }
 
     }
 }

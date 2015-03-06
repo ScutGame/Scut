@@ -21,10 +21,11 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ****************************************************************************/
+
 using System;
 using System.Threading;
 
-namespace ZyGames.Framework.RPC.Sockets.Threading
+namespace ZyGames.Framework.Common.Threading
 {
 	/// <summary>
 	/// Summary description for STPStartInfo.
@@ -43,7 +44,7 @@ namespace ZyGames.Framework.RPC.Sockets.Threading
         private string _threadPoolName = SmartThreadPool.DefaultThreadPoolName;
         private int? _maxStackSize = SmartThreadPool.DefaultMaxStackSize;
 		/// <summary>
-		/// Initializes a new instance of the <see cref="ZyGames.Framework.RPC.Sockets.Threading.STPStartInfo"/> class.
+		/// Initializes a new instance of the <see cref="STPStartInfo"/> class.
 		/// </summary>
         public STPStartInfo()
         {
@@ -56,7 +57,7 @@ namespace ZyGames.Framework.RPC.Sockets.Threading
             _minWorkerThreads = SmartThreadPool.DefaultMinWorkerThreads;
         }
 		/// <summary>
-		/// Initializes a new instance of the <see cref="ZyGames.Framework.RPC.Sockets.Threading.STPStartInfo"/> class.
+		/// Initializes a new instance of the <see cref="STPStartInfo"/> class.
 		/// </summary>
 		/// <param name="stpStartInfo">Stp start info.</param>
 	    public STPStartInfo(STPStartInfo stpStartInfo)

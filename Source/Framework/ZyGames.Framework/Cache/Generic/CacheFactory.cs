@@ -290,37 +290,25 @@ namespace ZyGames.Framework.Cache.Generic
         {
             itemSet = null;
             dynamic entity = null;
-            string[] keys = (redisKey ?? "").Split('_');
-            if (keys.Length == 2 && !string.IsNullOrEmpty(keys[0]))
+            KeyValuePair<string, CacheItemSet> itemPair;
+            if (TryGetCacheItem(redisKey, out itemPair))
             {
-                CacheContainer container;
-                string typeName = RedisConnectionPool.DecodeTypeName(keys[0]);
-                if (_writePools != null && _writePools.TryGetValue(typeName, out  container))
+                itemSet = itemPair.Value;
+                switch (itemPair.Value.ItemType)
                 {
-                    string[] childKeys = keys[1].Split('|');
-                    string personalKey = childKeys[0];
-                    string entityKey = childKeys.Length > 1 ? childKeys[1] : "";
-                    if (!string.IsNullOrEmpty(personalKey) &&
-                        (container.Collection.TryGetValue(entityKey, out itemSet) ||
-                        container.Collection.TryGetValue(personalKey, out itemSet)))
-                    {
-                        switch (itemSet.ItemType)
+                    case CacheType.Entity:
+                        entity = itemPair.Value.ItemData;
+                        break;
+                    case CacheType.Dictionary:
+                        var set = itemPair.Value.ItemData as BaseCollection;
+                        if (set != null)
                         {
-                            case CacheType.Entity:
-                                entity = itemSet.ItemData;
-                                break;
-                            case CacheType.Dictionary:
-                                var set = itemSet.ItemData as BaseCollection;
-                                if (set != null)
-                                {
-                                    set.TryGetValue(entityKey, out entity);
-                                }
-                                break;
-                            default:
-                                TraceLog.WriteError("Not suported CacheType:{0} for GetPersonalEntity key:{1}", itemSet.ItemType, redisKey);
-                                break;
+                            set.TryGetValue(itemPair.Key, out entity);
                         }
-                    }
+                        break;
+                    default:
+                        TraceLog.WriteError("Not suported CacheType:{0} for GetPersonalEntity key:{1}", itemPair.Value.ItemType, redisKey);
+                        break;
                 }
             }
             if (entity == null)
@@ -331,6 +319,72 @@ namespace ZyGames.Framework.Cache.Generic
             return entity;
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="redisKey"></param>
+        /// <param name="entity"></param>
+        /// <returns></returns>
+        public static bool AddOrUpdateEntity(string redisKey, AbstractEntity entity)
+        {
+            KeyValuePair<string, CacheItemSet> itemPair;
+            if (TryGetCacheItem(redisKey, out itemPair))
+            {
+                switch (itemPair.Value.ItemType)
+                {
+                    case CacheType.Entity:
+                        itemPair.Value.SetItem(entity);
+                        return true;
+                    case CacheType.Dictionary:
+                        var set = itemPair.Value.ItemData as BaseCollection;
+                        if (set != null)
+                        {
+                            return set.AddOrUpdate(itemPair.Key, entity, (k, t) => entity) == entity;
+                        }
+                        break;
+                    default:
+                        TraceLog.WriteError("Not suported CacheType:{0} for GetPersonalEntity key:{1}", itemPair.Value.ItemType, redisKey);
+                        break;
+                }
+            }
+            return false;
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="redisKey"></param>
+        /// <param name="itemPair"></param>
+        /// <returns></returns>
+        public static bool TryGetCacheItem(string redisKey, out KeyValuePair<string, CacheItemSet> itemPair)
+        {
+            itemPair = default(KeyValuePair<string, CacheItemSet>);
+            CacheItemSet cacheItem;
+            string[] keys = (redisKey ?? "").Split('_');
+            if (keys.Length == 2 && !string.IsNullOrEmpty(keys[0]))
+            {
+                CacheContainer container;
+                string typeName = RedisConnectionPool.DecodeTypeName(keys[0]);
+                if (_writePools != null && _writePools.TryGetValue(typeName, out  container))
+                {
+                    string[] childKeys = keys[1].Split('|');
+                    string personalKey = childKeys[0];
+                    string entityKey = childKeys.Length > 1 ? childKeys[1] : "";
+                    //存在分类id与实体主键相同情况, 要优先判断实体主键
+                    if (!string.IsNullOrEmpty(personalKey) && container.Collection.TryGetValue(entityKey, out cacheItem))
+                    {
+                        itemPair = new KeyValuePair<string, CacheItemSet>(entityKey, cacheItem);
+                        return true;
+                    }
+                    if (!string.IsNullOrEmpty(personalKey) && container.Collection.TryGetValue(personalKey, out cacheItem))
+                    {
+                        itemPair = new KeyValuePair<string, CacheItemSet>(personalKey, cacheItem);
+                        return true;
+                    }
+                }
+            }
+            return false;
+        }
 
         /// <summary>
         /// 从Redis内存移除，并保存到数据库

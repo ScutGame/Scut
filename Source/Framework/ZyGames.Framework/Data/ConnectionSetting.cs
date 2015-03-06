@@ -57,7 +57,7 @@ namespace ZyGames.Framework.Data
         /// <summary>
         /// 本机的MySql数据服务
         /// </summary>
-        LocalMysql,
+        LocalMySql,
     }
     /// <summary>
     /// 数据提供者类型
@@ -186,7 +186,7 @@ namespace ZyGames.Framework.Data
             else if ("LocalMySqlServer".Equals(ProviderName, StringComparison.CurrentCultureIgnoreCase))
             {
                 ProviderTypeName = "MySqlDataProvider";
-                DbLevel = DbLevel.LocalMysql;
+                DbLevel = DbLevel.LocalMySql;
             }
 
             if (ProviderType == DbProviderType.MySql)

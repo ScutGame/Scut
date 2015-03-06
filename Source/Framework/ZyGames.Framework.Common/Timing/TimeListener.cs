@@ -33,13 +33,13 @@ namespace ZyGames.Framework.Common.Timing
     /// 定时器监听管理
     /// 使用场合:对间隔时间比较精确
     /// </summary>
-    public class TimeListener
+    public static class TimeListener
     {
         private static Timer _timer;
-        private static int _msInterval = 2000;
+        private static int _msInterval = 500;
         private static int _dueTime = 10000;
         private static int _isRunning = 0;
-        private static IMonitorStrategy _lockStrategy = new MonitorLockStrategy();
+        private static readonly object asyncRoot = new object();
         private static List<PlanConfig> _listenerQueue = new List<PlanConfig>();
         private static int _isDisposed = 0;
 
@@ -74,11 +74,17 @@ namespace ZyGames.Framework.Common.Timing
                 throw new Exception("TimeListener has be disposed.");
             }
         }
-
         /// <summary>
         /// 
         /// </summary>
-        public IList<PlanConfig> PlanList
+        public static bool HasWaitPlan
+        {
+            get { return _listenerQueue.Count > 0 && _listenerQueue.Exists(p => !p.IsEnd); }
+        }
+        /// <summary>
+        /// 
+        /// </summary>
+        public static IList<PlanConfig> PlanList
         {
             get { return _listenerQueue; }
         }
@@ -92,7 +98,6 @@ namespace ZyGames.Framework.Common.Timing
             {
                 _timer.Dispose();
                 Interlocked.Exchange(ref _timer, null);
-                _lockStrategy = null;
                 _listenerQueue = null;
                 Interlocked.Exchange(ref _isDisposed, 1);
             }
@@ -109,11 +114,11 @@ namespace ZyGames.Framework.Common.Timing
                 throw new ArgumentNullException("planConfig");
             }
             Initialize();
-            _lockStrategy.TryEnterLock(() =>
+            lock (asyncRoot)
             {
-                planConfig.SetDiffInterval(_msInterval / 1000);
+                planConfig.SetDiffInterval((double)_msInterval / 1000);
                 _listenerQueue.Add(planConfig);
-            });
+            }
 
         }
         /// <summary>
@@ -127,7 +132,10 @@ namespace ZyGames.Framework.Common.Timing
             var index = _listenerQueue.FindIndex(match);
             if (index != -1)
             {
-                _lockStrategy.TryEnterLock(() => _listenerQueue.RemoveAt(index));
+                lock (asyncRoot)
+                {
+                    _listenerQueue.RemoveAt(index);
+                }
                 return true;
             }
             return false;
@@ -138,10 +146,6 @@ namespace ZyGames.Framework.Common.Timing
             if (_timer == null)
             {
                 Interlocked.CompareExchange(ref _timer, new Timer(TimerCallback, null, _dueTime, _msInterval), null);
-                if (_lockStrategy == null)
-                {
-                    _lockStrategy = new MonitorLockStrategy();
-                }
                 if (_listenerQueue == null)
                 {
                     _listenerQueue = new List<PlanConfig>();
@@ -159,39 +163,31 @@ namespace ZyGames.Framework.Common.Timing
                     return;
                 }
                 Interlocked.Exchange(ref _isRunning, 1);
-                var tempList = new PlanConfig[0];
-                _lockStrategy.TryEnterLock(() =>
+                lock (asyncRoot)
                 {
-                    tempList = new PlanConfig[_listenerQueue.Count];
-                    _listenerQueue.CopyTo(tempList, 0);
-                });
-                DateTime currDate = MathUtils.Now;
-                var expiredList = new Queue<PlanConfig>();
-                foreach (var planConfig in tempList)
-                {
-                    if (planConfig == null || planConfig.IsExpired)
+                    DateTime currDate = MathUtils.Now;
+                    var expiredList = new List<PlanConfig>();
+                    foreach (var planConfig in _listenerQueue)
                     {
-                        if (planConfig != null)
+                        if (planConfig == null || planConfig.IsExpired)
                         {
-                            expiredList.Enqueue(planConfig);
+                            if (planConfig != null)
+                            {
+                                expiredList.Add(planConfig);
+                            }
+                            continue;
                         }
-                        continue;
+                        if (planConfig.AutoStart(currDate))
+                        {
+                            DoNotify(planConfig);
+                        }
                     }
-                    if (planConfig.AutoStart(currDate))
+
+                    foreach (var planConfig in expiredList)
                     {
-                        DoNotify(planConfig);
+                        _listenerQueue.Remove(planConfig);
                     }
                 }
-                _lockStrategy.TryEnterLock(() =>
-                {
-                    while (expiredList.Count > 0)
-                    {
-                        var p = expiredList.Dequeue();
-                        _listenerQueue.Remove(p);
-
-                        TraceLog.ReleaseWrite("{0}-{1}>>listener is remove ({2}).", DateTime.Now.ToLongTimeString(), p.Name, _listenerQueue.Count);
-                    }
-                });
                 Interlocked.Exchange(ref _isRunning, 0);
             }
             catch (Exception er)
@@ -203,29 +199,21 @@ namespace ZyGames.Framework.Common.Timing
 
         private static void DoNotify(PlanConfig planConfig)
         {
-            try
+            if (planConfig != null && planConfig.Callback != null)
             {
-                if (planConfig != null && planConfig.Callback != null)
+                ThreadPool.QueueUserWorkItem(obj =>
                 {
-                    //Console.WriteLine("{0}-{1}>>listener begin callback", DateTime.Now.ToLongTimeString(), planConfig.Name);
-                    planConfig.Callback.BeginInvoke(planConfig, EndPlanAsync, planConfig);
-                }
+                    try
+                    {
+                        planConfig.Callback((PlanConfig)obj);
+                    }
+                    catch (Exception ex)
+                    {
+                        TraceLog.WriteError("TimeListener notify error:{0}", ex);
+                    }
+                }, planConfig);
             }
-            catch (Exception ex)
-            {
-                TraceLog.WriteError("TimeListener notify error:{0}", ex);
-            }
-
         }
 
-        private static void EndPlanAsync(IAsyncResult ar)
-        {
-            //if (ar.AsyncState is PlanConfig)
-            //{
-            //    var planConfig = (PlanConfig)ar.AsyncState;
-            //    Console.WriteLine("{0}-{1}>>listener end callback", DateTime.Now.ToLongTimeString(), planConfig.Name);
-            //    Console.WriteLine("");
-            //}
-        }
     }
 }

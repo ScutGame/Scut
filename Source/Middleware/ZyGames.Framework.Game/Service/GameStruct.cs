@@ -125,7 +125,7 @@ namespace ZyGames.Framework.Game.Service
         protected int MsgId = 0;
 
         /// <summary>
-        /// 消息St
+        /// 时间缀
         /// </summary>
         protected string St = "st";
 

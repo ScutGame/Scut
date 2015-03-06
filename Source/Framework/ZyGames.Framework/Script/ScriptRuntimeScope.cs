@@ -118,13 +118,13 @@ namespace ZyGames.Framework.Script
         public abstract object Execute(string scriptCode, string typeName, params object[] args);
 
         /// <summary>
-        /// 执行脚本方法
+        /// 执行脚本方法, 方法不支持返回值
         /// </summary>
-        /// <param name="scriptCode"></param>
-        /// <param name="typeName"></param>
-        /// <param name="typeArgs"></param>
-        /// <param name="method"></param>
-        /// <param name="methodArgs"></param>
+        /// <param name="scriptCode">脚本目录相对路径</param>
+        /// <param name="typeName">类完整名</param>
+        /// <param name="typeArgs">类构造函数的参数</param>
+        /// <param name="method">方法名</param>
+        /// <param name="methodArgs">方法参数</param>
         public abstract bool InvokeMenthod(string scriptCode, string typeName, Object[] typeArgs, string method, params Object[] methodArgs);
 
         /// <summary>

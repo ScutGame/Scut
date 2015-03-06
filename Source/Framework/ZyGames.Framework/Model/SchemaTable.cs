@@ -211,7 +211,7 @@ namespace ZyGames.Framework.Model
         }
 
         /// <summary>
-        /// Get schema column to list.
+        /// Get ordered schema columns.
         /// </summary>
         /// <returns></returns>
         public List<SchemaColumn> GetColumns()

@@ -30,8 +30,7 @@ using System.Reflection;
 using System.Web;
 using System.Runtime.Remoting.Messaging;
 
-
-namespace ZyGames.Framework.RPC.Sockets.Threading
+namespace ZyGames.Framework.Common.Threading
 {
 #region CallerThreadContext class
 

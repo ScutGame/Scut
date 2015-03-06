@@ -142,7 +142,6 @@ namespace ZyGames.Framework.Cache.Generic
             TransReceiveParam receiveParam = new TransReceiveParam(redisKey);
             receiveParam.Schema = SchemaTable();
             receiveParam.DbFilter = filter;
-            receiveParam.Capacity = receiveParam.Schema.Capacity;
             if (DataContainer.TryRecoverFromDb(receiveParam, out dataList))
             {
                 return InitCache(dataList, receiveParam.Schema.PeriodTime);
@@ -303,7 +302,7 @@ namespace ZyGames.Framework.Cache.Generic
             SchemaTable schema;
             if (EntitySchemaSet.TryGet<T>(out schema))
             {
-                TransReceiveParam receiveParam = new TransReceiveParam(redisKey, schema, dataFilter.Capacity, dataFilter);
+                TransReceiveParam receiveParam = new TransReceiveParam(redisKey, schema, dataFilter);
                 return TryLoadCache(groupKey, receiveParam, periodTime);
             }
             return false;

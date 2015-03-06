@@ -290,7 +290,6 @@ namespace ZyGames.Framework.Cache.Generic.Pool
                     filter.Condition = provider.FormatFilterParam(key);
                     filter.Parameters.Add(key, entityNameKey);
                     receiveParam.DbFilter = filter;
-                    receiveParam.Capacity = maxCount;
 
                     List<EntityHistory> historyList;
                     if (_dbTransponder.TryReceiveData(receiveParam, out historyList))

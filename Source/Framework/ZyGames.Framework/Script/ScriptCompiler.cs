@@ -72,15 +72,22 @@ namespace ZyGames.Framework.Script
         {
             ClearTemp(ScriptAssemblyTemp);
         }
+        /// <summary>
+        /// 
+        /// </summary>
+        public static void ClearScriptRuntimeTemp()
+        {
+            ClearTemp(typeof(ScriptRuntimeDomain).Name);
+        }
 
         /// <summary>
         /// Clear temp assmbly.
         /// </summary>
         public static void ClearTemp(string dirName)
         {
+            string tempPath = Path.Combine(_dyScriptPath, dirName);
             try
             {
-                string tempPath = Path.Combine(_dyScriptPath, dirName);
                 if (Directory.Exists(tempPath))
                 {
                     Directory.Delete(tempPath, true);
@@ -88,7 +95,7 @@ namespace ZyGames.Framework.Script
             }
             catch (Exception ex)
             {
-                TraceLog.WriteError("ClearTemp error:{0}", ex);
+                TraceLog.WriteWarn("ClearTemp dir {0} error:{1}", tempPath, ex);
             }
         }
         /// <summary>
@@ -221,7 +228,12 @@ namespace ZyGames.Framework.Script
         internal static Assembly InjectionCompile(string privateBinPath, string[] sources, string[] refAssemblies, string assemblyName, bool isDebug, bool isInMemory, out string pathToAssembly)
         {
             pathToAssembly = null;
-            var result = CompileSource(sources, refAssemblies, assemblyName, isDebug, false);
+            //huhu modify reason: Support for model debugging.
+            var result = isDebug
+                ? Compile(sources, refAssemblies, assemblyName, isDebug, false, ScriptCompiler.ScriptAssemblyTemp)
+                : CompileSource(sources, refAssemblies, assemblyName, isDebug, false);
+
+            //var result = CompileSource(sources, refAssemblies, assemblyName, isDebug, false);
             if (result == null)
             {
                 return null;

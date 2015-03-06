@@ -24,6 +24,7 @@ THE SOFTWARE.
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Linq;
 using ZyGames.Framework.Common;
 using ZyGames.Framework.Common.Log;
 using ZyGames.Framework.Common.Serialization;
@@ -34,26 +35,25 @@ namespace ZyGames.Framework.Net.Sql
 {
     internal class SqlDataSender : IDataSender
     {
-        public void Send<T>(T data, bool isChange = true) where T : AbstractEntity
+        private readonly bool _isChange;
+        private readonly string _connectKey;
+
+        public SqlDataSender(bool isChange, string connectKey = null)
         {
-            Send(new T[] { data }, isChange, null, null);
+            _isChange = isChange;
+            _connectKey = connectKey;
         }
 
         public void Send<T>(IEnumerable<T> dataList) where T : AbstractEntity
         {
-            Send(dataList, true, null, null);
+            Send(dataList, GetPropertyValue, GetPostColumns);
         }
 
-        public void Send<T>(IEnumerable<T> dataList, bool isChange) where T : AbstractEntity
-        {
-            Send(dataList, isChange, null, null);
-        }
-
-        public void Send<T>(IEnumerable<T> dataList, bool isChange, string connectKey, EntityBeforeProcess handle) where T : AbstractEntity
+        public void Send<T>(IEnumerable<T> dataList, EntityPropertyGetFunc getFunc, EnttiyPostColumnFunc postColumnFunc) where T : ISqlEntity
         {
             foreach (var data in dataList)
             {
-                UpdateToDb(data, isChange, connectKey, handle);
+                SendToDb(data, getFunc, postColumnFunc);
             }
         }
 
@@ -62,51 +62,91 @@ namespace ZyGames.Framework.Net.Sql
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="data"></param>
+        /// <param name="getFunc"></param>
+        /// <param name="postColumnFunc"></param>
         /// <returns></returns>
-        internal SqlStatement GenerateSqlQueue<T>(T data) where T : AbstractEntity
+        internal SqlStatement GenerateSqlQueue<T>(T data, EntityPropertyGetFunc getFunc = null, EnttiyPostColumnFunc postColumnFunc = null) where T : ISqlEntity
         {
-            SchemaTable schemaTable = data.GetSchema();
+            SchemaTable schemaTable = EntitySchemaSet.Get(data.GetType());
             DbBaseProvider dbProvider = DbConnectionProvider.CreateDbProvider(schemaTable.ConnectKey);
             if (dbProvider != null)
             {
-                CommandStruct command = GenerateCommand(dbProvider, data, schemaTable, false, null);
+                //process all columns.
+                CommandStruct command = GenerateCommand(dbProvider, data, schemaTable, getFunc, postColumnFunc);
                 if (command != null)
                 {
-                    int identityId = data.GetIdentityId();
+                    int identityId = data.GetMessageQueueId();
                     return dbProvider.GenerateSql(identityId, command);
                 }
             }
             return null;
         }
 
+        private object GetPropertyValue(ISqlEntity data, SchemaColumn column)
+        {
+            object value = null;
+            if (data is AbstractEntity)
+            {
+                value = (data as AbstractEntity).GetPropertyValue(column.CanRead, column.Name);
+                CovertDataValue(column, ref value);
+            }
+            return value;
+        }
+
+        private IList<string> GetPostColumns(ISqlEntity data, SchemaTable schemaTable, bool isChange)
+        {
+            List<string> columns = null;
+            if (data is AbstractEntity)
+            {
+                var entity = data as AbstractEntity;
+                //修正not change column
+                if (!entity.IsNew && !entity.IsDelete &&
+                    entity.HasChangePropertys && isChange &&
+                    schemaTable.Columns.Keys.Count > schemaTable.Keys.Length)
+                {
+                    columns = entity.DequeueChangePropertys().ToList();
+                }
+                else
+                {
+                    if (entity.HasChangePropertys)
+                    {
+                        entity.DequeueChangePropertys();
+                    }
+                    columns = schemaTable.GetColumnNames();
+                }
+            }
+            return columns;
+        }
+
+
         public void Dispose()
         {
 
         }
 
-        private void UpdateToDb<T>(T data, bool isChange, string connectKey, EntityBeforeProcess handle) where T : AbstractEntity
+        private void SendToDb<T>(T data, EntityPropertyGetFunc getFunc, EnttiyPostColumnFunc postColumnFunc) where T : ISqlEntity
         {
-            if (data == null)
+            if (Equals(data, null))
             {
-                return;
+                throw new ArgumentNullException("data");
             }
-            SchemaTable schemaTable = data.GetSchema();
-            DbBaseProvider dbProvider = DbConnectionProvider.CreateDbProvider(connectKey ?? schemaTable.ConnectKey);
+            SchemaTable schemaTable = EntitySchemaSet.Get(data.GetType());
+            DbBaseProvider dbProvider = DbConnectionProvider.CreateDbProvider(_connectKey ?? schemaTable.ConnectKey);
             if (dbProvider == null)
             {
                 return;
             }
-            CommandStruct command = GenerateCommand(dbProvider, data, schemaTable, isChange, handle);
+            CommandStruct command = GenerateCommand(dbProvider, data, schemaTable, getFunc, postColumnFunc);
             if (command != null)
             {
-                dbProvider.ExecuteNonQuery(data.GetIdentityId(), CommandType.Text, command.Sql, command.Parameters);
-                data.OnUnNew();
+                dbProvider.ExecuteNonQuery(data.GetMessageQueueId(), CommandType.Text, command.Sql, command.Parameters);
+                data.ResetState();
             }
         }
 
-        private CommandStruct GenerateCommand<T>(DbBaseProvider dbProvider, T data, SchemaTable schemaTable, bool isChange, EntityBeforeProcess handle) where T : AbstractEntity
+        private CommandStruct GenerateCommand<T>(DbBaseProvider dbProvider, T data, SchemaTable schemaTable, EntityPropertyGetFunc getFunc, EnttiyPostColumnFunc postColumnFunc) where T : ISqlEntity
         {
-            CommandStruct command = null;
+            CommandStruct command;
             if (!(schemaTable.StorageType.HasFlag(StorageType.ReadOnlyDB) ||
                 schemaTable.StorageType.HasFlag(StorageType.ReadWriteDB) ||
                 schemaTable.StorageType.HasFlag(StorageType.WriteOnlyDB)) ||
@@ -115,9 +155,12 @@ namespace ZyGames.Framework.Net.Sql
             {
                 return null;
             }
+            if (getFunc == null) getFunc = GetPropertyValue;
 
-            string[] columns = GetColumns(schemaTable, data, isChange);
-            if (columns == null || columns.Length == 0)
+            IList<string> columns = postColumnFunc != null
+                ? postColumnFunc(data, schemaTable, _isChange)
+                : schemaTable.GetColumnNames();
+            if (columns == null || columns.Count == 0)
             {
                 TraceLog.WriteError("Class:{0} is not change column.", data.GetType().FullName);
                 return null;
@@ -141,26 +184,24 @@ namespace ZyGames.Framework.Net.Sql
             foreach (string columnName in columns)
             {
                 if (columnName.IsEmpty()) continue;
-
-                SchemaColumn schemaColumn;
-                if (schemaTable.Columns.TryGetValue(columnName, out schemaColumn))
+                try
                 {
-                    if (schemaColumn.Disable || schemaColumn.IsIdentity)
+                    SchemaColumn schemaColumn;
+                    if (schemaTable.Columns.TryGetValue(columnName, out schemaColumn))
                     {
-                        continue;
-                    }
-                    object value = data.GetPropertyValue(schemaColumn.CanRead, columnName);
-                    if (handle != null)
-                    {
-                        var e = new EntityEvent() { Data = data, FieldName = columnName, FieldValue = value };
-                        value = handle(e);
-                    }
-                    if (CovertDataValue(schemaTable, schemaColumn, ref value))
-                    {
-                        //changeLog.AppendFormat(",\"{0}\":\"{1}\"", columnName, value);
+                        if (schemaColumn.Disable || schemaColumn.IsIdentity)
+                        {
+                            continue;
+                        }
+                        object value = getFunc(data, schemaColumn);
                         IDataParameter parameter = CreateParameter(dbProvider, columnName, schemaColumn.DbType, value);
                         command.AddParameter(parameter);
+
                     }
+                }
+                catch (Exception ex)
+                {
+                    throw new Exception(string.Format("get {0} column val error.", columnName), ex);
                 }
             }
             //处理条件
@@ -173,22 +214,16 @@ namespace ZyGames.Framework.Net.Sql
             command.Filter = dbProvider.CreateCommandFilter();
             foreach (string columnName in keyList)
             {
-                SchemaColumn schemaColumn;
-                if (schemaTable.Columns.TryGetValue(columnName, out schemaColumn))
+                try
                 {
-                    string keyName = columnName;
-                    string paramName = "F_" + columnName;
-                    if (condition.Length > 0) condition += " AND ";
-                    condition += dbProvider.FormatFilterParam(schemaColumn.Name, "", paramName);
-
-                    object value = data.GetPropertyValue(schemaColumn.CanRead, columnName);
-                    if (handle != null)
+                    SchemaColumn schemaColumn;
+                    if (schemaTable.Columns.TryGetValue(columnName, out schemaColumn))
                     {
-                        var e = new EntityEvent() { Data = data, FieldName = columnName, FieldValue = value };
-                        value = handle(e);
-                    }
-                    if (CovertDataValue(schemaTable, schemaColumn, ref value))
-                    {
+                        string keyName = columnName;
+                        string paramName = "F_" + columnName;
+                        if (condition.Length > 0) condition += " AND ";
+                        condition += dbProvider.FormatFilterParam(schemaColumn.Name, "", paramName);
+                        object value = getFunc(data, schemaColumn);
                         IDataParameter parameter = CreateParameter(dbProvider, paramName, schemaColumn.DbType, value);
                         command.Filter.AddParam(parameter);
                         if (!schemaColumn.IsIdentity)
@@ -196,6 +231,10 @@ namespace ZyGames.Framework.Net.Sql
                             command.AddKey(CreateParameter(dbProvider, keyName, schemaColumn.DbType, value));
                         }
                     }
+                }
+                catch (Exception ex)
+                {
+                    throw new Exception(string.Format("get {0} column val error.", columnName), ex);
                 }
             }
             command.Filter.Condition = condition;
@@ -205,7 +244,7 @@ namespace ZyGames.Framework.Net.Sql
 
         private static IDataParameter CreateParameter(DbBaseProvider dbProvider, string columnName, ColumnDbType dbType, object value)
         {
-            IDataParameter parameter = null;
+            IDataParameter parameter;
             switch (dbType)
             {
                 case ColumnDbType.UniqueIdentifier:
@@ -230,33 +269,12 @@ namespace ZyGames.Framework.Net.Sql
             return parameter;
         }
 
-        private string[] GetColumns(SchemaTable schemaTable, AbstractEntity data, bool isChange)
-        {
-            //修正not change column
-            string[] columns;
-            if (!data.IsNew && !data.IsDelete &&
-                data.HasChangePropertys && isChange &&
-                schemaTable.Columns.Keys.Count > schemaTable.Keys.Length)
-            {
-                columns = data.DequeueChangePropertys();
-            }
-            else
-            {
-                if (data.HasChangePropertys)
-                {
-                    data.DequeueChangePropertys();
-                }
-                columns = new string[schemaTable.Columns.Keys.Count];
-                schemaTable.Columns.Keys.CopyTo(columns, 0);
-            }
-            return columns;
-        }
-
-        private static bool CovertDataValue(SchemaTable schemaTable, SchemaColumn schemaColumn, ref object value)
+        private static void CovertDataValue(SchemaColumn schemaColumn, ref object value)
         {
             if (value is DateTime && value.ToDateTime() < MathUtils.SqlMinDate)
             {
-                return false;
+                value = MathUtils.SqlMinDate;
+                return;
             }
 
             //序列化Json
@@ -264,55 +282,31 @@ namespace ZyGames.Framework.Net.Sql
             {
                 if (schemaColumn.DbType == ColumnDbType.LongBlob || schemaColumn.DbType == ColumnDbType.Blob)
                 {
-                    value = SerializeBinaryObject(schemaTable, schemaColumn, value);
+                    value = SerializeBinaryObject(value);
                 }
                 else
                 {
-                    value = SerializeJson(schemaTable, schemaColumn, value);
+                    value = SerializeJson(schemaColumn, value);
                 }
-                if (value == null) return false;
             }
-            return true;
         }
 
-        private static object SerializeBinaryObject(SchemaTable schemaTable, SchemaColumn schemaColumn, object value)
+        private static object SerializeBinaryObject(object value)
         {
-            try
-            {
-                value = ProtoBufUtils.Serialize(value);
-            }
-            catch (Exception ex)
-            {
-                TraceLog.WriteError("Table:{0} column:\"{0}\" serialize error:\r\n:{1}",
-                    schemaTable.EntityName,
-                    schemaColumn.Name,
-                    ex);
-                return null;
-            }
-            return value;
+            return ProtoBufUtils.Serialize(value);
         }
 
-        private static object SerializeJson(SchemaTable schemaTable, SchemaColumn schemaColumn, object value)
+        private static object SerializeJson(SchemaColumn schemaColumn, object value)
         {
-            try
+
+            value = value ?? string.Empty;
+            if (!string.IsNullOrEmpty(schemaColumn.JsonDateTimeFormat))
             {
-                value = value ?? string.Empty;
-                if (!string.IsNullOrEmpty(schemaColumn.JsonDateTimeFormat))
-                {
-                    value = JsonUtils.SerializeCustom(value);
-                }
-                else
-                {
-                    value = JsonUtils.Serialize(value);
-                }
+                value = JsonUtils.SerializeCustom(value);
             }
-            catch (Exception ex)
+            else
             {
-                TraceLog.WriteError("Table:{0} column:\"{0}\" json serialize error:\r\n:{1}",
-                    schemaTable.EntityName,
-                    schemaColumn.Name,
-                    ex);
-                return null;
+                value = JsonUtils.Serialize(value);
             }
             return value;
         }

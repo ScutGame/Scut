@@ -89,5 +89,10 @@ namespace ZyGames.Framework.Common.Build
         /// 过滤文件类型
         /// </summary>
         public string FilePattern { get; set; }
+
+        /// <summary>
+        /// assembly is support debug.
+        /// </summary>
+        public bool IsDebug { get; set; }
     }
 }

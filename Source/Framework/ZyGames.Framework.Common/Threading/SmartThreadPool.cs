@@ -120,15 +120,15 @@ THE SOFTWARE.
 #endregion
 
 using System;
-using System.Security;
-using System.Threading;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
+using System.Security;
+using System.Threading;
+using Stopwatch = ZyGames.Framework.Common.Threading.Stopwatch;
 
-
-namespace ZyGames.Framework.RPC.Sockets.Threading
+namespace ZyGames.Framework.Common.Threading
 {
 	#region SmartThreadPool class
 	/// <summary>
@@ -1488,14 +1488,14 @@ namespace ZyGames.Framework.RPC.Sockets.Threading
 
         #region IDisposable Members
 		/// <summary>
-		/// Releases all resource used by the <see cref="ZyGames.Framework.RPC.Sockets.Threading.SmartThreadPool"/> object.
+		/// Releases all resource used by the <see cref="SmartThreadPool"/> object.
 		/// </summary>
 		/// <remarks>Call <see cref="Dispose"/> when you are finished using the
-		/// <see cref="ZyGames.Framework.RPC.Sockets.Threading.SmartThreadPool"/>. The <see cref="Dispose"/> method leaves the
-		/// <see cref="ZyGames.Framework.RPC.Sockets.Threading.SmartThreadPool"/> in an unusable state. After calling
+		/// <see cref="SmartThreadPool"/>. The <see cref="Dispose"/> method leaves the
+		/// <see cref="SmartThreadPool"/> in an unusable state. After calling
 		/// <see cref="Dispose"/>, you must release all references to the
-		/// <see cref="ZyGames.Framework.RPC.Sockets.Threading.SmartThreadPool"/> so the garbage collector can reclaim the
-		/// memory that the <see cref="ZyGames.Framework.RPC.Sockets.Threading.SmartThreadPool"/> was occupying.</remarks>
+		/// <see cref="SmartThreadPool"/> so the garbage collector can reclaim the
+		/// memory that the <see cref="SmartThreadPool"/> was occupying.</remarks>
         public void Dispose()
         {
             if (!_isDisposed)

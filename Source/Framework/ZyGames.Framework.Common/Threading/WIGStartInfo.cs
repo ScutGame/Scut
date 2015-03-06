@@ -21,9 +21,10 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ****************************************************************************/
+
 using System;
 
-namespace ZyGames.Framework.RPC.Sockets.Threading
+namespace ZyGames.Framework.Common.Threading
 {
 	/// <summary>
 	/// Summary description for WIGStartInfo.
@@ -43,7 +44,7 @@ namespace ZyGames.Framework.RPC.Sockets.Threading
 		/// </summary>
         protected bool _readOnly;
 		/// <summary>
-		/// Initializes a new instance of the <see cref="ZyGames.Framework.RPC.Sockets.Threading.WIGStartInfo"/> class.
+		/// Initializes a new instance of the <see cref="WIGStartInfo"/> class.
 		/// </summary>
 	    public WIGStartInfo()
         {
@@ -57,7 +58,7 @@ namespace ZyGames.Framework.RPC.Sockets.Threading
             _useCallerCallContext = SmartThreadPool.DefaultUseCallerCallContext;
         }
 		/// <summary>
-		/// Initializes a new instance of the <see cref="ZyGames.Framework.RPC.Sockets.Threading.WIGStartInfo"/> class.
+		/// Initializes a new instance of the <see cref="WIGStartInfo"/> class.
 		/// </summary>
 		/// <param name="wigStartInfo">Wig start info.</param>
 	    public WIGStartInfo(WIGStartInfo wigStartInfo)

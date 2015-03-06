@@ -357,6 +357,76 @@ namespace ZyGames.Framework.Common
         {
             return IsMach("[A-Za-z_][A-Za-z0-9_]*", value);
         }
+
+        /// <summary>
+        /// 尝试相加,防止溢出
+        /// </summary>
+        /// <param name="a"></param>
+        /// <param name="b"></param>
+        /// <param name="success"></param>
+        /// <returns></returns>
+        public static bool TryAdd(uint a, uint b, Action<uint> success)
+        {
+            uint r = a + b;
+            if (r >= a)
+            {
+                success(r);
+                return true;
+            }
+            return false;
+        }
+        /// <summary>
+        /// 尝试相加,防止溢出
+        /// </summary>
+        /// <param name="a"></param>
+        /// <param name="b"></param>
+        /// <param name="success"></param>
+        /// <returns></returns>
+        public static bool TryAdd(ushort a, ushort b, Action<ushort> success)
+        {
+            if (a + b <= ushort.MaxValue)
+            {
+                var r = (ushort)(a + b);
+                success(r);
+                return true;
+            }
+            return false;
+        }
+        /// <summary>
+        /// 尝试相减,防止溢出
+        /// </summary>
+        /// <param name="a"></param>
+        /// <param name="b"></param>
+        /// <param name="success"></param>
+        /// <returns></returns>
+        public static bool TrySub(uint a, uint b, Action<uint> success)
+        {
+            uint r = a - b;
+            if (r <= a)
+            {
+                success(r);
+                return true;
+            }
+            return false;
+        }
+        /// <summary>
+        /// 尝试相减,防止溢出
+        /// </summary>
+        /// <param name="a"></param>
+        /// <param name="b"></param>
+        /// <param name="success"></param>
+        /// <returns></returns>
+        public static bool TrySub(ushort a, ushort b, Action<uint> success)
+        {
+            int r = a - b;
+            if (r >= 0 && r <= a)
+            {
+                success((ushort)r);
+                return true;
+            }
+            return false;
+        }
+
         /// <summary>
         /// 
         /// </summary>

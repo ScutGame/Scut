@@ -21,11 +21,12 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ****************************************************************************/
-using System;
-using System.Threading;
-using System.Diagnostics;
 
-namespace ZyGames.Framework.RPC.Sockets.Threading
+using System;
+using System.Diagnostics;
+using System.Threading;
+
+namespace ZyGames.Framework.Common.Threading
 {
     /// <summary>
     /// Holds a callback delegate and the state for that delegate.

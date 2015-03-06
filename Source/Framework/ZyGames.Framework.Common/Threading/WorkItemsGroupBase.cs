@@ -21,10 +21,11 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ****************************************************************************/
+
 using System;
 using System.Threading;
 
-namespace ZyGames.Framework.RPC.Sockets.Threading
+namespace ZyGames.Framework.Common.Threading
 {
 	/// <summary>
 	/// Work items group base.
@@ -39,7 +40,7 @@ namespace ZyGames.Framework.RPC.Sockets.Threading
         /// </summary>
         private string _name = "WorkItemsGroupBase";
 		/// <summary>
-		/// Initializes a new instance of the <see cref="ZyGames.Framework.RPC.Sockets.Threading.WorkItemsGroupBase"/> class.
+		/// Initializes a new instance of the <see cref="WorkItemsGroupBase"/> class.
 		/// </summary>
         public WorkItemsGroupBase()
         {
@@ -407,7 +408,7 @@ namespace ZyGames.Framework.RPC.Sockets.Threading
 		/// <param name="arg2">Arg2.</param>
 		/// <typeparam name="T1">The 1st type parameter.</typeparam>
 		/// <typeparam name="T2">The 2nd type parameter.</typeparam>
-        public IWorkItemResult QueueWorkItem<T1, T2>(Action<T1, T2> action, T1 arg1, T2 arg2)
+        public IWorkItemResult QueueWorkItem<T1, T2>(Common.Threading.Action<T1, T2> action, T1 arg1, T2 arg2)
         {
             return QueueWorkItem<T1, T2> (action, arg1, arg2, SmartThreadPool.DefaultWorkItemPriority);
         }
@@ -420,7 +421,7 @@ namespace ZyGames.Framework.RPC.Sockets.Threading
 		/// <param name="priority">Priority.</param>
 		/// <typeparam name="T1">The 1st type parameter.</typeparam>
 		/// <typeparam name="T2">The 2nd type parameter.</typeparam>
-        public IWorkItemResult QueueWorkItem<T1, T2> (Action<T1, T2> action, T1 arg1, T2 arg2, WorkItemPriority priority)
+        public IWorkItemResult QueueWorkItem<T1, T2> (Common.Threading.Action<T1, T2> action, T1 arg1, T2 arg2, WorkItemPriority priority)
         {
             PreQueueWorkItem ();
             WorkItem workItem = WorkItemFactory.CreateWorkItem (
@@ -445,7 +446,7 @@ namespace ZyGames.Framework.RPC.Sockets.Threading
 		/// <typeparam name="T1">The 1st type parameter.</typeparam>
 		/// <typeparam name="T2">The 2nd type parameter.</typeparam>
 		/// <typeparam name="T3">The 3rd type parameter.</typeparam>
-        public IWorkItemResult QueueWorkItem<T1, T2, T3>(Action<T1, T2, T3> action, T1 arg1, T2 arg2, T3 arg3)
+        public IWorkItemResult QueueWorkItem<T1, T2, T3>(Common.Threading.Action<T1, T2, T3> action, T1 arg1, T2 arg2, T3 arg3)
         {
             return QueueWorkItem<T1, T2, T3> (action, arg1, arg2, arg3, SmartThreadPool.DefaultWorkItemPriority);
             ;
@@ -461,7 +462,7 @@ namespace ZyGames.Framework.RPC.Sockets.Threading
 		/// <typeparam name="T1">The 1st type parameter.</typeparam>
 		/// <typeparam name="T2">The 2nd type parameter.</typeparam>
 		/// <typeparam name="T3">The 3rd type parameter.</typeparam>
-        public IWorkItemResult QueueWorkItem<T1, T2, T3> (Action<T1, T2, T3> action, T1 arg1, T2 arg2, T3 arg3, WorkItemPriority priority)
+        public IWorkItemResult QueueWorkItem<T1, T2, T3> (Common.Threading.Action<T1, T2, T3> action, T1 arg1, T2 arg2, T3 arg3, WorkItemPriority priority)
         {
             PreQueueWorkItem ();
             WorkItem workItem = WorkItemFactory.CreateWorkItem (
@@ -488,8 +489,7 @@ namespace ZyGames.Framework.RPC.Sockets.Threading
 		/// <typeparam name="T2">The 2nd type parameter.</typeparam>
 		/// <typeparam name="T3">The 3rd type parameter.</typeparam>
 		/// <typeparam name="T4">The 4th type parameter.</typeparam>
-        public IWorkItemResult QueueWorkItem<T1, T2, T3, T4>(
-            Action<T1, T2, T3, T4> action, T1 arg1, T2 arg2, T3 arg3, T4 arg4)
+        public IWorkItemResult QueueWorkItem<T1, T2, T3, T4>(Common.Threading.Action<T1, T2, T3, T4> action, T1 arg1, T2 arg2, T3 arg3, T4 arg4)
         {
             return QueueWorkItem<T1, T2, T3, T4> (action, arg1, arg2, arg3, arg4,
                                                   SmartThreadPool.DefaultWorkItemPriority);
@@ -508,8 +508,7 @@ namespace ZyGames.Framework.RPC.Sockets.Threading
 		/// <typeparam name="T2">The 2nd type parameter.</typeparam>
 		/// <typeparam name="T3">The 3rd type parameter.</typeparam>
 		/// <typeparam name="T4">The 4th type parameter.</typeparam>
-        public IWorkItemResult QueueWorkItem<T1, T2, T3, T4> (
-            Action<T1, T2, T3, T4> action, T1 arg1, T2 arg2, T3 arg3, T4 arg4, WorkItemPriority priority)
+        public IWorkItemResult QueueWorkItem<T1, T2, T3, T4> (Common.Threading.Action<T1, T2, T3, T4> action, T1 arg1, T2 arg2, T3 arg3, T4 arg4, WorkItemPriority priority)
         {
             PreQueueWorkItem ();
             WorkItem workItem = WorkItemFactory.CreateWorkItem (
@@ -533,7 +532,7 @@ namespace ZyGames.Framework.RPC.Sockets.Threading
 		/// </summary>
 		/// <param name="func">Func.</param>
 		/// <typeparam name="TResult">The 1st type parameter.</typeparam>
-        public IWorkItemResult<TResult> QueueWorkItem<TResult>(Func<TResult> func)
+        public IWorkItemResult<TResult> QueueWorkItem<TResult>(Common.Threading.Func<TResult> func)
         {
             PreQueueWorkItem();
             WorkItem workItem = WorkItemFactory.CreateWorkItem(
@@ -553,7 +552,7 @@ namespace ZyGames.Framework.RPC.Sockets.Threading
 		/// <param name="arg">Argument.</param>
 		/// <typeparam name="T">The 1st type parameter.</typeparam>
 		/// <typeparam name="TResult">The 2nd type parameter.</typeparam>
-        public IWorkItemResult<TResult> QueueWorkItem<T, TResult>(Func<T, TResult> func, T arg)
+        public IWorkItemResult<TResult> QueueWorkItem<T, TResult>(Common.Threading.Func<T, TResult> func, T arg)
         {
             PreQueueWorkItem();
             WorkItem workItem = WorkItemFactory.CreateWorkItem(
@@ -576,7 +575,7 @@ namespace ZyGames.Framework.RPC.Sockets.Threading
 		/// <typeparam name="T1">The 1st type parameter.</typeparam>
 		/// <typeparam name="T2">The 2nd type parameter.</typeparam>
 		/// <typeparam name="TResult">The 3rd type parameter.</typeparam>
-        public IWorkItemResult<TResult> QueueWorkItem<T1, T2, TResult>(Func<T1, T2, TResult> func, T1 arg1, T2 arg2)
+        public IWorkItemResult<TResult> QueueWorkItem<T1, T2, TResult>(Common.Threading.Func<T1, T2, TResult> func, T1 arg1, T2 arg2)
         {
             PreQueueWorkItem();
             WorkItem workItem = WorkItemFactory.CreateWorkItem(
@@ -602,8 +601,7 @@ namespace ZyGames.Framework.RPC.Sockets.Threading
 		/// <typeparam name="T2">The 2nd type parameter.</typeparam>
 		/// <typeparam name="T3">The 3rd type parameter.</typeparam>
 		/// <typeparam name="TResult">The 4th type parameter.</typeparam>
-        public IWorkItemResult<TResult> QueueWorkItem<T1, T2, T3, TResult>(
-            Func<T1, T2, T3, TResult> func, T1 arg1, T2 arg2, T3 arg3)
+        public IWorkItemResult<TResult> QueueWorkItem<T1, T2, T3, TResult>(Common.Threading.Func<T1, T2, T3, TResult> func, T1 arg1, T2 arg2, T3 arg3)
         {
             PreQueueWorkItem();
             WorkItem workItem = WorkItemFactory.CreateWorkItem(
@@ -631,8 +629,7 @@ namespace ZyGames.Framework.RPC.Sockets.Threading
 		/// <typeparam name="T3">The 3rd type parameter.</typeparam>
 		/// <typeparam name="T4">The 4th type parameter.</typeparam>
 		/// <typeparam name="TResult">The 5th type parameter.</typeparam>
-        public IWorkItemResult<TResult> QueueWorkItem<T1, T2, T3, T4, TResult>(
-            Func<T1, T2, T3, T4, TResult> func, T1 arg1, T2 arg2, T3 arg3, T4 arg4)
+        public IWorkItemResult<TResult> QueueWorkItem<T1, T2, T3, T4, TResult>(Common.Threading.Func<T1, T2, T3, T4, TResult> func, T1 arg1, T2 arg2, T3 arg3, T4 arg4)
         {
             PreQueueWorkItem();
             WorkItem workItem = WorkItemFactory.CreateWorkItem(

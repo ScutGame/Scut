@@ -92,6 +92,7 @@ namespace ZyGames.Framework.Script
         {
             try
             {
+                ScriptCompiler.ClearScriptRuntimeTemp();
                 ConfigManager.ConfigReloaded += OnScriptSettingReLoad;
                 var scope = InitScriptRuntimeScope();
                 if (scope != null)

@@ -50,7 +50,7 @@ namespace ZyGames.Framework.Net
         public bool TryReceiveData<T>(TransReceiveParam receiveParam, out List<T> dataList) where T : AbstractEntity, new()
         {
             
-            using (IDataReceiver getter = new SqlDataReceiver(receiveParam.Schema, receiveParam.Capacity, receiveParam.DbFilter))
+            using (IDataReceiver getter = new SqlDataReceiver(receiveParam.Schema, receiveParam.DbFilter))
             {
                 return getter.TryReceive<T>(out dataList);
             }
@@ -63,10 +63,10 @@ namespace ZyGames.Framework.Net
         /// <param name="sendParam"></param>
         public void SendData<T>(T[] dataList, TransSendParam sendParam) where T : AbstractEntity, new()
         {
-            
-            using (var sender = new SqlDataSender())
+
+            using (var sender = new SqlDataSender(sendParam.IsChange, sendParam.ConnectKey))
             {
-                sender.Send(dataList, sendParam.IsChange, sendParam.ConnectKey, sendParam.BeforeProcessHandle);
+                sender.Send(dataList);
             }
         }
     }
