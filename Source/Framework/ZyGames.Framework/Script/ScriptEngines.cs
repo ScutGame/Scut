@@ -234,6 +234,12 @@ namespace ZyGames.Framework.Script
                                 TraceLog.WriteLine("{1} {0} compile start...", "model script", DateTime.Now.ToString("HH:mm:ss"));
                                 InitScriptRuntimeScope();
                                 PrintCompiledMessage("model script");
+                                //init script main
+                                _runtimeDomain.MainInstance = Execute(_settupInfo.ScriptMainProgram, _settupInfo.ScriptMainTypeName);
+                                if (_runtimeDomain.MainInstance != null)
+                                {
+                                    _runtimeDomain.MainInstance.ReStart();
+                                }
                                 isLoop = false;
                             }
                             else

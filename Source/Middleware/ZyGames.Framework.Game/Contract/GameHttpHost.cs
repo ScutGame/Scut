@@ -105,14 +105,8 @@ namespace ZyGames.Framework.Game.Contract
         {
             InitLoad();
             httpListener.Run(listenUrls.ToArray());
-            OnStartAffer();
             base.Start(args);
         }
-
-        /// <summary>
-        /// Raises the start affer event.
-        /// </summary>
-        protected abstract void OnStartAffer();
 
         /// <summary>
         /// 

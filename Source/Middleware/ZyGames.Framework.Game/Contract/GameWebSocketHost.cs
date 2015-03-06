@@ -317,10 +317,6 @@ namespace ZyGames.Framework.Game.Contract
         }
 
         /// <summary>
-        /// Raises the start affer event.
-        /// </summary>
-        protected abstract void OnStartAffer();
-        /// <summary>
         /// Raises the service stop event.
         /// </summary>
         protected abstract void OnServiceStop();
@@ -331,7 +327,6 @@ namespace ZyGames.Framework.Game.Contract
         public override void Start(string[] args)
         {
             socketListener.StartListen();
-            OnStartAffer();
             base.Start(args);
         }
 

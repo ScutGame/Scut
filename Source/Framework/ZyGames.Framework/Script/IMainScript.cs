@@ -43,5 +43,10 @@ namespace ZyGames.Framework.Script
         /// Stop
         /// </summary>
         void Stop();
+
+        /// <summary>
+        /// Main
+        /// </summary>
+        void ReStart();
     }
 }

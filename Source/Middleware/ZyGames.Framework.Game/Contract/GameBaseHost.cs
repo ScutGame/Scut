@@ -47,7 +47,7 @@ namespace ZyGames.Framework.Game.Contract
         /// <param name="args"></param>
         public virtual void Start(string[] args)
         {
-            GameEnvironment.IsRunning = true;
+            ReStart();
         }
         /// <summary>
         /// 
@@ -98,6 +98,17 @@ namespace ZyGames.Framework.Game.Contract
         {
             GameEnvironment.IsRunning = false;
         }
+
+        public virtual void ReStart()
+        {
+            OnStartAffer();
+            GameEnvironment.IsRunning = true;
+        }
+
+        /// <summary>
+        /// Raises the start affer event.
+        /// </summary>
+        protected abstract void OnStartAffer();
 
         /// <summary>
         /// 
