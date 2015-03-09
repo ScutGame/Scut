@@ -31,6 +31,7 @@ using System.Security.Permissions;
 using System.Security.Policy;
 using Mono.Cecil;
 using Mono.Cecil.Cil;
+using Mono.Cecil.Pdb;
 
 namespace ZyGames.Framework.Common.Build
 {
@@ -114,7 +115,11 @@ namespace ZyGames.Framework.Common.Build
             outputAssembly = new MemoryStream();
             using (Stream stream = ReadAssembly(assemblyPath))
             {
-                var ass = AssemblyDefinition.ReadAssembly(stream);
+                var ass = AssemblyDefinition.ReadAssembly(stream, new ReaderParameters
+                {
+                    SymbolReaderProvider = new PdbReaderProvider(),
+                    ReadSymbols = true
+                });
                 var types = ass.MainModule.Types.Where(p => !p.IsEnum).ToList();
                 foreach (TypeDefinition type in types)
                 {
@@ -122,7 +127,11 @@ namespace ZyGames.Framework.Common.Build
                 }
                 if (setSuccess)
                 {
-                    ass.Write(outputAssembly);
+                    ass.Write(outputAssembly, new WriterParameters
+                    {
+                        SymbolWriterProvider = new PdbWriterProvider(),
+                        WriteSymbols = true
+                    });
                     return true;
                 }
             }
@@ -146,6 +155,7 @@ namespace ZyGames.Framework.Common.Build
             //huhu modify reason: Support for model debugging.
             var ass = AssemblyDefinition.ReadAssembly(assemblyPath, new ReaderParameters
             {
+                SymbolReaderProvider = new PdbReaderProvider(),
                 ReadSymbols = true
             });
             var types = ass.MainModule.Types.Where(p => !p.IsEnum).ToList();
@@ -158,6 +168,7 @@ namespace ZyGames.Framework.Common.Build
             {
                 ass.Write(savePath, new WriterParameters
                 {
+                    SymbolWriterProvider = new PdbWriterProvider(),
                     WriteSymbols = true
                 });
                 return true;
