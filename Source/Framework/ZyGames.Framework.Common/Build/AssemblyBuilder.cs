@@ -115,10 +115,21 @@ namespace ZyGames.Framework.Common.Build
             outputAssembly = new MemoryStream();
             using (Stream stream = ReadAssembly(assemblyPath))
             {
+                string pdbFile = Path.ChangeExtension(assemblyPath, "pdb");
+                PdbReaderProvider readerProvider = null;
+                PdbWriterProvider writerProvider = null;
+                bool debug = false;
+                if (File.Exists(pdbFile))
+                {
+                    debug = true;
+                    readerProvider = new PdbReaderProvider();
+                    writerProvider = new PdbWriterProvider();
+                }
+
                 var ass = AssemblyDefinition.ReadAssembly(stream, new ReaderParameters
                 {
-                    SymbolReaderProvider = new PdbReaderProvider(),
-                    ReadSymbols = true
+                    SymbolReaderProvider = readerProvider,
+                    ReadSymbols = debug
                 });
                 var types = ass.MainModule.Types.Where(p => !p.IsEnum).ToList();
                 foreach (TypeDefinition type in types)
@@ -129,8 +140,8 @@ namespace ZyGames.Framework.Common.Build
                 {
                     ass.Write(outputAssembly, new WriterParameters
                     {
-                        SymbolWriterProvider = new PdbWriterProvider(),
-                        WriteSymbols = true
+                        SymbolWriterProvider = writerProvider,
+                        WriteSymbols = debug
                     });
                     return true;
                 }
@@ -152,11 +163,21 @@ namespace ZyGames.Framework.Common.Build
             {
                 savePath = assemblyPath;
             }
+            string pdbFile = Path.ChangeExtension(assemblyPath, "pdb");
+            PdbReaderProvider readerProvider = null;
+            PdbWriterProvider writerProvider = null;
+            bool debug = false;
+            if (File.Exists(pdbFile))
+            {
+                debug = true;
+                readerProvider = new PdbReaderProvider();
+                writerProvider = new PdbWriterProvider();
+            }
             //huhu modify reason: Support for model debugging.
             var ass = AssemblyDefinition.ReadAssembly(assemblyPath, new ReaderParameters
             {
-                SymbolReaderProvider = new PdbReaderProvider(),
-                ReadSymbols = true
+                SymbolReaderProvider = readerProvider,
+                ReadSymbols = debug
             });
             var types = ass.MainModule.Types.Where(p => !p.IsEnum).ToList();
             foreach (TypeDefinition type in types)
@@ -168,8 +189,8 @@ namespace ZyGames.Framework.Common.Build
             {
                 ass.Write(savePath, new WriterParameters
                 {
-                    SymbolWriterProvider = new PdbWriterProvider(),
-                    WriteSymbols = true
+                    SymbolWriterProvider = writerProvider,
+                    WriteSymbols = debug
                 });
                 return true;
             }
