@@ -354,7 +354,7 @@ namespace ZyGames.Framework.Cache.Generic
         /// 
         /// </summary>
         /// <param name="redisKey"></param>
-        /// <param name="itemPair"></param>
+        /// <param name="itemPair">key:entity's key, value:</param>
         /// <returns></returns>
         public static bool TryGetCacheItem(string redisKey, out KeyValuePair<string, CacheItemSet> itemPair)
         {
@@ -365,22 +365,40 @@ namespace ZyGames.Framework.Cache.Generic
             {
                 CacheContainer container;
                 string typeName = RedisConnectionPool.DecodeTypeName(keys[0]);
+                var schema = EntitySchemaSet.Get(typeName);
                 if (_writePools != null && _writePools.TryGetValue(typeName, out  container))
                 {
                     string[] childKeys = keys[1].Split('|');
                     string personalKey = childKeys[0];
                     string entityKey = childKeys.Length > 1 ? childKeys[1] : "";
-                    //存在分类id与实体主键相同情况, 要优先判断实体主键
-                    if (!string.IsNullOrEmpty(personalKey) && container.Collection.TryGetValue(entityKey, out cacheItem))
+                    if (schema.CacheType == CacheType.Dictionary &&
+                        container.Collection.TryGetValue(personalKey, out cacheItem))
                     {
                         itemPair = new KeyValuePair<string, CacheItemSet>(entityKey, cacheItem);
                         return true;
                     }
-                    if (!string.IsNullOrEmpty(personalKey) && container.Collection.TryGetValue(personalKey, out cacheItem))
+                    if (schema.CacheType == CacheType.Entity &&
+                        container.Collection.TryGetValue(entityKey, out cacheItem))
                     {
-                        itemPair = new KeyValuePair<string, CacheItemSet>(personalKey, cacheItem);
+                        itemPair = new KeyValuePair<string, CacheItemSet>(entityKey, cacheItem);
                         return true;
                     }
+                    if (schema.CacheType == CacheType.Queue)
+                    {
+                        TraceLog.WriteError("Not support CacheType.Queue get cache, key:{0}.", redisKey);
+                    }
+
+                    ////存在分类id与实体主键相同情况, 要优先判断实体主键
+                    //if (!string.IsNullOrEmpty(personalKey) && container.Collection.TryGetValue(entityKey, out cacheItem))
+                    //{
+                    //    itemPair = new KeyValuePair<string, CacheItemSet>(entityKey, cacheItem);
+                    //    return true;
+                    //}
+                    //if (!string.IsNullOrEmpty(personalKey) && container.Collection.TryGetValue(personalKey, out cacheItem))
+                    //{
+                    //    itemPair = new KeyValuePair<string, CacheItemSet>(entityKey, cacheItem);
+                    //    return true;
+                    //}
                 }
             }
             return false;
