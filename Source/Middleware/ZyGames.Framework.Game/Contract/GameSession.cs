@@ -789,6 +789,15 @@ namespace ZyGames.Framework.Game.Contract
         }
 
         /// <summary>
+        /// is websocket
+        /// </summary>
+        [JsonIgnore]
+        public bool IsWebSocket
+        {
+            get { return _exSocket != null && _exSocket.IsWebSocket; }
+        }
+
+        /// <summary>
         /// Post send to client
         /// </summary>
         /// <param name="opCode"></param>

@@ -24,6 +24,7 @@ THE SOFTWARE.
 
 using ZyGames.Framework.Game.Lang;
 using ZyGames.Framework.Game.Service;
+using ZyGames.Framework.RPC.Sockets;
 
 namespace ZyGames.Framework.Game.Contract.Action
 {
@@ -46,23 +47,48 @@ namespace ZyGames.Framework.Game.Contract.Action
         Lua
     }
     /// <summary>
+    /// 
+    /// </summary>
+    public class JsonScriptAction : ScriptAction
+    {
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="scriptType"></param>
+        /// <param name="aActionId"></param>
+        /// <param name="actionGetter"></param>
+        /// <param name="scriptScope"></param>
+        /// <param name="ignoreAuthorize"></param>
+        public JsonScriptAction(ScriptType scriptType, int aActionId, ActionGetter actionGetter, object scriptScope, bool ignoreAuthorize)
+            : base(scriptType, aActionId, actionGetter, scriptScope, ignoreAuthorize)
+        {
+            EnableWebSocket = true;
+        }
+
+        protected override string BuildJsonPack()
+        {
+            return _scriptScope.buildPacket(_urlParam, _actionResult);
+        }
+    }
+
+    /// <summary>
     /// 提供脚本支持
     /// </summary>
     public class ScriptAction : AuthorizeAction
     {
-		/// <summary>
-		/// The _script scope.
-		/// </summary>
+        /// <summary>
+        /// The _script scope.
+        /// </summary>
         protected readonly dynamic _scriptScope;
         private readonly bool _ignoreAuthorize;
-		/// <summary>
-		/// The _url parameter.
-		/// </summary>
-		protected dynamic _urlParam;
-		/// <summary>
-		/// The _action result.
-		/// </summary>
-		protected dynamic _actionResult;
+        /// <summary>
+        /// The _url parameter.
+        /// </summary>
+        protected dynamic _urlParam;
+        /// <summary>
+        /// The _action result.
+        /// </summary>
+        protected dynamic _actionResult;
         private ScriptType _scriptType;
 
         /// <summary>

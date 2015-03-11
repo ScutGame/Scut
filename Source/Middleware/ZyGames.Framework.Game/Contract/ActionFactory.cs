@@ -640,6 +640,10 @@ namespace ZyGames.Framework.Game.Contract
                 if (scriptScope != null)
                 {
                     bool ignoreAuthorize = _ignoreAuthorizeSet.Contains(actionId);
+                    if (actionGetter.Session.IsWebSocket)
+                    {
+                        return new JsonScriptAction(ScriptType.Python, actionId, actionGetter, scriptScope, ignoreAuthorize);
+                    }
                     return new ScriptAction(ScriptType.Python, actionId, actionGetter, scriptScope, ignoreAuthorize);
                 }
             }
@@ -649,7 +653,11 @@ namespace ZyGames.Framework.Game.Contract
                 dynamic scriptScope = ScriptEngines.ExecuteLua("GetTable", scriptCode, actionId);
                 if (scriptScope != null)
                 {
-                    bool ignoreAuthorize = _ignoreAuthorizeSet.Contains(actionId);
+                    bool ignoreAuthorize = _ignoreAuthorizeSet.Contains(actionId); 
+                    if (actionGetter.Session.IsWebSocket)
+                    {
+                        return new JsonLuaAction(actionId, actionGetter, scriptScope, ignoreAuthorize);
+                    }
                     return new LuaAction(actionId, actionGetter, scriptScope, ignoreAuthorize);
                 }
             }

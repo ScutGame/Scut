@@ -49,6 +49,20 @@ namespace ZyGames.Framework.Game.Contract.Action
         }
 
         /// <summary>
+        /// 
+        /// </summary>
+        protected bool EnableWebSocket
+        {
+            set
+            {
+                if (value)
+                {
+                    IsWebSocket = true;
+                    actionGetter.OpCode = OpCode.Text;
+                }
+            }
+        }
+        /// <summary>
         /// 开启支付通知
         /// </summary>
         public PaymentNotify EnablePayNotify
@@ -215,8 +229,7 @@ namespace ZyGames.Framework.Game.Contract.Action
         protected JsonAuthorizeAction(int actionId, ActionGetter actionGetter)
             : base(actionId, actionGetter)
         {
-            IsWebSocket = true;
-            actionGetter.OpCode = OpCode.Text;
+            EnableWebSocket = true;
         }
     }
 }

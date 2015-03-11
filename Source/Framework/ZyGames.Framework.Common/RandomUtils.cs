@@ -23,8 +23,6 @@ THE SOFTWARE.
 ****************************************************************************/
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Security.Cryptography;
 
 namespace ZyGames.Framework.Common
 {
@@ -36,18 +34,8 @@ namespace ZyGames.Framework.Common
     {
         private static int MinPercent = 1;
         private static int MaxPercent = 100;
-        private static Random random = new Random(GetRandomSeed());
-        private static int[] sortBytes = new[] { -1, 0, 1 };
+        private static Random random = new Random();
 
-        private static int GetRandomSeed()
-        {
-            byte[] bytes = new byte[4];
-            RNGCryptoServiceProvider rng = new RNGCryptoServiceProvider();
-            rng.GetBytes(bytes);
-            return BitConverter.ToInt32(bytes, 0);
-        }
-
-        private const int NameMaxLength = 4;
         /// <summary>
         /// 随机取名字
         /// </summary>
@@ -187,6 +175,41 @@ namespace ZyGames.Framework.Common
         public static bool IsHit(decimal percent)
         {
             return NextBool((double)percent);
+        }
+  
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="percents"></param>
+        /// <returns></returns>
+        public static int HitIndex(double[] percents)
+        {
+            int index = -1;
+            int hitIndex = -1;
+            double max = 0;
+            int maxIndex = 0;
+            var r = random.NextDouble();
+            double offset = 0;
+            foreach (var p in percents)
+            {
+                index++;
+                if (p > max)
+                {
+                    maxIndex = index;
+                    max = p;
+                }
+                offset += p;
+                if (r <= offset)
+                {
+                    hitIndex = index;
+                    break;
+                }
+            }
+            if (hitIndex == -1)
+            {
+                hitIndex = maxIndex;
+            }
+            return hitIndex;
         }
 
         /// <summary>
