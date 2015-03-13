@@ -140,11 +140,17 @@ namespace ZyGames.Framework.Script
                 watcher.Changed += new FileSystemEventHandler(watcher_Changed);
                 watcher.Created += new FileSystemEventHandler(watcher_Changed);
                 watcher.Deleted += new FileSystemEventHandler(watcher_Changed);
-                watcher.NotifyFilter = NotifyFilters.LastWrite;
+                watcher.Error += watcher_Error;
+                watcher.NotifyFilter = NotifyFilters.CreationTime | NotifyFilters.LastAccess | NotifyFilters.LastWrite | NotifyFilters.FileName | NotifyFilters.DirectoryName | NotifyFilters.Size;
                 watcher.IncludeSubdirectories = true;
                 watcher.EnableRaisingEvents = true;
                 _watcherList.Add(watcher);
             }
+        }
+
+        private static void watcher_Error(object sender, ErrorEventArgs e)
+        {
+            TraceLog.WriteError("Script file has changed error:{0}",e.GetException().ToString());
         }
 
         private static ScriptRuntimeScope InitScriptRuntimeScope()

@@ -23,6 +23,8 @@ THE SOFTWARE.
 ****************************************************************************/
 using System;
 using ZyGames.Framework.Common;
+using ZyGames.Framework.Common.Log;
+using ZyGames.Framework.Common.Security;
 using ZyGames.Framework.Game.Context;
 using ZyGames.Framework.Game.Lang;
 using ZyGames.Framework.Game.Runtime;
@@ -176,7 +178,8 @@ namespace ZyGames.Framework.Game.Contract.Action
         public override bool TakeAction()
         {
             ILogin login = CreateLogin();
-            if (login != null && login.CheckLogin())
+            login.Password = DecodePassword(login.Password);
+            if (login.CheckLogin())
             {
                 Uid = login.UserID;
                 Sid = Current.SessionId;
@@ -209,6 +212,8 @@ namespace ZyGames.Framework.Game.Contract.Action
             }
             return false;
         }
+
+      
         /// <summary>
         /// Sets the parameter.
         /// </summary>

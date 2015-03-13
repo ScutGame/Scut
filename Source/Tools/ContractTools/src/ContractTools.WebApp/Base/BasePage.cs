@@ -31,6 +31,11 @@ namespace ContractTools.WebApp
 
     public class BasePage : System.Web.UI.Page
     {
+        protected void Alert(string msg, string url)
+        {
+            Response.Write(string.Format("<script language=javascript>alert('{0}');location.href ='{1}';</script>", msg, url));
+        }
+
         private string GetCookesKey(string key)
         {
             return string.Format("__Contract{0}", key);

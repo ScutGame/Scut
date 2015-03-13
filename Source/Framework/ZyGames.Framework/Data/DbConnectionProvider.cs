@@ -133,6 +133,19 @@ namespace ZyGames.Framework.Data
                     TraceLog.WriteError("ProviderName:{0} instance failed.", connSection.ProviderName);
                 }
             }
+            else
+            {
+                var section = ConfigurationManager.ConnectionStrings[connectKey];
+                try
+                {
+                    dbBaseProvider = CreateDbProvider(section.Name, section.ProviderName, section.ConnectionString);
+                    dbProviders.TryAdd(connectKey, dbBaseProvider);
+                }
+                catch
+                {
+                    TraceLog.WriteError("ProviderName:{0} instance failed.", section.ProviderName);
+                }
+            }
 
             return dbBaseProvider;
         }

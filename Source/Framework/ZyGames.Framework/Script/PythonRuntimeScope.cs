@@ -105,7 +105,17 @@ namespace ZyGames.Framework.Script
             if (!string.IsNullOrEmpty(libPath))
             {
                 string[] items = libPath.Split(';');
-                searchPaths.AddRange(items.Where(p => p.Length > 0));
+                HashSet<string> libPathSet = new HashSet<string>(items.Where(p => p.Length > 0));
+                HashSet<string> libDirPaths = new HashSet<string>(libPathSet);
+                foreach (var path in libPathSet)
+                {
+                    var dirArray = Directory.GetDirectories(path, "*", SearchOption.AllDirectories);
+                    foreach (var dir in dirArray)
+                    {
+                        libDirPaths.Add(dir);
+                    }
+                }
+                searchPaths.AddRange(libDirPaths);
             }
             if (Directory.Exists(pythonPath))
             {

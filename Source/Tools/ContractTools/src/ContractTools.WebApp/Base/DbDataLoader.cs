@@ -30,6 +30,7 @@ using System.Linq;
 using System.Text;
 using ContractTools.WebApp.Model;
 using ZyGames.Framework.Common;
+using ZyGames.Framework.Common.Configuration;
 using ZyGames.Framework.Data;
 
 namespace ContractTools.WebApp.Base
@@ -474,10 +475,8 @@ namespace ContractTools.WebApp.Base
             command.AddParameter("Field", model.Field);
             command.AddParameter("FieldType", model.FieldType);
             command.AddParameter("Descption", model.Descption);
-            if (!string.IsNullOrEmpty(model.FieldValue))
-            {
-                command.AddParameter("FieldValue", model.FieldValue);
-            }
+            command.AddParameter("FieldValue", model.FieldValue);
+            
             command.AddParameter("Required", model.Required);
             command.AddParameter("Remark", model.Remark);
             if (model.SortID > -1)

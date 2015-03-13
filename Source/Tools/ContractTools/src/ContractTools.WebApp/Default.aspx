@@ -297,7 +297,7 @@
                                 </ItemTemplate>
                                 <ItemStyle Width="16%"></ItemStyle>
                             </asp:TemplateField>
-                            <asp:TemplateField HeaderText="排序ID" ItemStyle-Width="8%" ItemStyle-HorizontalAlign="Center">
+                            <asp:TemplateField HeaderText="排序" ItemStyle-Width="10%" ItemStyle-HorizontalAlign="Center">
                                 <EditItemTemplate>
                                     <asp:Label ID="txtSortID" runat="server" Text='<%# Bind("SortID") %>' Width="90%"></asp:Label>
                                 </EditItemTemplate>
@@ -311,10 +311,10 @@
                                     <asp:LinkButton ID="btnRecordSortDes" runat="server" CausesValidation="False" CommandArgument='<%#Eval("id")+","+Eval("FieldTypeId")+","+Eval("SortID")%>'
                                         Text="↓循环" OnCommand="btnRecordSortDes_Command"></asp:LinkButton>&nbsp;
                                 </ItemTemplate>
-                                <ItemStyle Width="8%"></ItemStyle>
+                                <ItemStyle Width="10%"></ItemStyle>
                             </asp:TemplateField>
-                            <asp:CommandField ShowEditButton="True" ItemStyle-Width="6%" ItemStyle-HorizontalAlign="Center">
-                                <ItemStyle HorizontalAlign="Center" Width="6%"></ItemStyle>
+                            <asp:CommandField ShowEditButton="True" ItemStyle-Width="4%" ItemStyle-HorizontalAlign="Center">
+                                <ItemStyle HorizontalAlign="Center" Width="4%"></ItemStyle>
                             </asp:CommandField>
                             <asp:TemplateField ShowHeader="False" HeaderText="操作" ItemStyle-Width="4%" ItemStyle-HorizontalAlign="Center">
                                 <ItemTemplate>

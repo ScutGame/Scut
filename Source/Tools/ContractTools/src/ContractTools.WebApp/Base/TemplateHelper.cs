@@ -339,7 +339,9 @@ namespace ContractTools.WebApp.Base
                             }
                             fieldBuilder.Append(paramInfo.Field);
                             fieldBuilder.Append("\", ");
-                            fieldBuilder.AppendFormat("actionParam.Get<{1}>(\"{0}\")", ToFistWordCase(paramInfo.Field), paramInfo.FieldType.ToString().ToLower());
+                            fieldBuilder.AppendFormat("actionParam.Get<{1}>(\"{0}\")",
+                                ToFistWordCase(paramInfo.Field),
+                                paramInfo.FieldType == FieldType.Password ? "string" : paramInfo.FieldType.ToString().ToLower());
                             fieldBuilder.Append(");");
                         }
                     }
@@ -353,7 +355,7 @@ namespace ContractTools.WebApp.Base
         /// 缩进字符
         /// </summary>
         /// <param name="indent"></param>
-        /// <param name="preIndent"></param>
+        /// <param name="preIndent">上次缩进</param>
         /// <returns></returns>
         public static string GetSpaceIndent(int indent, int preIndent)
         {
@@ -1272,12 +1274,13 @@ namespace ContractTools.WebApp.Base
                     int recordIndex = 0;
                     int[] indexList = new int[forVarChars.Length];
                     fieldBuilder.Remove(0, fieldBuilder.Length);
-                    var list = new List<ParamInfoModel>(reqParams);
-                    list.AddRange(paramList);
+                    var list = new List<ParamInfoModel>(reqParams.Where(t => t.FieldType != FieldType.Void));
+                    list.AddRange(paramList.Where(t => t.FieldType != FieldType.Void));
 
                     foreach (var paramInfo in list)
                     {
                         FieldType fieldType = paramInfo.FieldType;
+                        string descp = paramInfo.Descption + paramInfo.Remark;
                         if (FieldType.Record.Equals(fieldType))
                         {
                             if (depth < indexList.Length)
@@ -1287,6 +1290,15 @@ namespace ContractTools.WebApp.Base
                                 indexList[depth] = recordIndex;
                             }
                             listVar = listVar + "_" + recordIndex;
+                            if (!string.IsNullOrEmpty(descp))
+                            {
+                                fieldBuilder.AppendLine("/// <summary>");
+                                fieldBuilder.Append(GetSpaceIndent(0, 2));
+                                fieldBuilder.AppendLine("/// " + descp.Replace("\r\n", ","));
+                                fieldBuilder.Append(GetSpaceIndent(0, 2));
+                                fieldBuilder.AppendLine("/// </summary>");
+                                fieldBuilder.Append(GetSpaceIndent(0, 2));
+                            }
                             fieldBuilder.AppendFormat("private List<Object> {0};", listVar);
                             fieldBuilder.Append(Environment.NewLine);
                             fieldBuilder.Append(GetSpaceIndent(0, 2));
@@ -1303,9 +1315,18 @@ namespace ContractTools.WebApp.Base
                         {
                             continue;
                         }
+                        if (!string.IsNullOrEmpty(descp))
+                        {
+                            fieldBuilder.AppendLine("/// <summary>");
+                            fieldBuilder.Append(GetSpaceIndent(0, 2));
+                            fieldBuilder.AppendLine("/// " + descp.Replace("\r\n", ","));
+                            fieldBuilder.Append(GetSpaceIndent(0, 2));
+                            fieldBuilder.AppendLine("/// </summary>");
+                            fieldBuilder.Append(GetSpaceIndent(0, 2));
+                        }
                         fieldBuilder.Append("private ");
 
-                        fieldBuilder.Append(fieldType.ToString().ToLower());
+                        fieldBuilder.Append(fieldType == FieldType.Password ? "string" : fieldType.ToString().ToLower());
                         fieldBuilder.Append(" ");
                         fieldBuilder.Append(ToMemberVarName(paramInfo.Field));
                         fieldBuilder.Append(";");
@@ -1338,7 +1359,8 @@ namespace ContractTools.WebApp.Base
 
             int indent = 1;
             string currIndent = GetSpaceIndent(indent, 2);
-            string subIndent = GetSpaceIndent(indent + 1, 2);
+            bool hasRequired = reqParams.Exists(t => t.Required);
+            string subIndent = GetSpaceIndent(hasRequired ? indent + 1 : indent, 2);
 
             foreach (var paramInfo in reqParams)
             {
@@ -1355,37 +1377,25 @@ namespace ContractTools.WebApp.Base
                     {
                         case FieldType.Int:
                             strTemp.Append("httpGet.GetInt(\"");
-                            strTemp.Append(fieldname);
-                            strTemp.Append("\", ref ");
-                            strTemp.Append(varName);
-                            strTemp.Append(SetValueRange(minValue, maxValue));
-                            strTemp.Append(")");
                             break;
                         case FieldType.Short:
-                            strTemp.Append("httpGet.Short(\"");
-                            strTemp.Append(fieldname);
-                            strTemp.Append("\", ref ");
-                            strTemp.Append(varName);
-                            strTemp.Append(SetValueRange(minValue, maxValue));
-                            strTemp.Append(")");
+                            strTemp.Append("httpGet.GetWord(\"");
                             break;
                         case FieldType.Byte:
-                            strTemp.Append("httpGet.Byte(\"");
-                            strTemp.Append(fieldname);
-                            strTemp.Append("\", ref ");
-                            strTemp.Append(varName);
-                            strTemp.Append(SetValueRange(minValue, maxValue));
-                            strTemp.Append(")");
+                            strTemp.Append("httpGet.GetByte(\"");
+                            break;
+                        case FieldType.Bool:
+                            strTemp.Append("httpGet.GetBool(\"");
                             break;
                         default:
                             strTemp.Append("httpGet.GetString(\"");
-                            strTemp.Append(fieldname);
-                            strTemp.Append("\", ref ");
-                            strTemp.Append(varName);
-                            strTemp.Append(SetValueRange(minValue, maxValue));
-                            strTemp.Append(")");
                             break;
                     }
+                    strTemp.Append(fieldname);
+                    strTemp.Append("\", ref ");
+                    strTemp.Append(varName);
+                    strTemp.Append(SetValueRange(minValue, maxValue));
+                    strTemp.Append(")");
 
                     if (paramInfo.Required)
                     {
@@ -1419,16 +1429,22 @@ namespace ContractTools.WebApp.Base
                 stMust.Append("{");
                 stMust.Append(Environment.NewLine);
             }
-            else if (reqParams.Count > 0)
+            //else if (reqParams.Count > 0)
+            //{
+            //    stMust.Append(currIndent);
+            //    stMust.Append("if (true)");
+            //    stMust.Append(Environment.NewLine);
+            //    stMust.Append(currIndent);
+            //    stMust.Append("{");
+            //    stMust.Append(Environment.NewLine);
+            //}
+            if (!hasRequired)
             {
-                stMust.Append(currIndent);
-                stMust.Append("if (true)");
-                stMust.Append(Environment.NewLine);
-                stMust.Append(currIndent);
-                stMust.Append("{");
-                stMust.Append(Environment.NewLine);
+                stMust.Append(stNotMust);
+                stMust.Append(subIndent);
+                stMust.Append("return true;");
             }
-            if (reqParams.Count > 0)
+            else if (reqParams.Count > 0)
             {
                 stMust.Append(stNotMust);
                 stMust.Append(subIndent);

@@ -111,12 +111,20 @@ namespace ZyGames.Framework.Game.Contract
             {
                 EnableHttp = true;
                 var hosts = httpHost.Split(',');
-                foreach (var host in hosts)
+                foreach (var point in hosts)
                 {
+                    var addressList = point.Split(':');
+                    string host = addressList[0];
+                    int hport = httpPort;
+                    if (addressList.Length > 1)
+                    {
+                        int.TryParse(addressList[1], out hport);
+                    }
+
                     string address = host.StartsWith("http", StringComparison.InvariantCultureIgnoreCase)
                                          ? host
                                          : "http://" + host;
-                    httpListener.Prefixes.Add(string.Format("{0}:{1}/{2}/", address, httpPort, httpName));
+                    httpListener.Prefixes.Add(string.Format("{0}:{1}/{2}/", address, hport, httpName));
                 }
             }
         }

@@ -56,7 +56,7 @@ namespace ZyGames.Framework.Game.Sns
         public string Password
         {
             get;
-            protected set;
+            set;
         }
         /// <summary>
         /// 

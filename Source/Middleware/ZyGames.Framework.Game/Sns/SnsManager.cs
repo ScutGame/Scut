@@ -55,7 +55,7 @@ namespace ZyGames.Framework.Game.Sns
                 SnsPassport passport = new SnsPassport();
                 string password = passport.GetRandomPwd();
                 list.Add(passport.GetRegPassport());
-                list.Add(CryptoHelper.DES_Encrypt(password, GameEnvironment.Setting.ProductDesEnKey));
+                list.Add(password);
             }
 
             return list.ToArray();

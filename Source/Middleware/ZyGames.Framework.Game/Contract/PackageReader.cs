@@ -246,6 +246,7 @@ namespace ZyGames.Framework.Game.Contract
             string str = _encoding.GetString(paramBytes);
             if (!string.IsNullOrEmpty(str))
             {
+                if (str.StartsWith("d=")) str = "?" + str;
                 if (string.IsNullOrEmpty(RawParam)) RawParam = str;
                 ParseParamString(str);
             }

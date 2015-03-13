@@ -41,6 +41,10 @@
                 <td><asp:TextBox ID="txtMsgId" runat="server" Width="99%" Text="0" OnTextChanged="OnRefresh" AutoPostBack="True"></asp:TextBox></td>
             </tr>
             <tr>
+                <td style="text-align: right;"><span>St:</span></td>
+                <td><asp:TextBox ID="txtSt" runat="server" Width="99%" Text="" OnTextChanged="OnRefresh" AutoPostBack="True"></asp:TextBox></td>
+            </tr>
+            <tr>
                 <td style="text-align: right; vertical-align: top;"><span>Post参数:</span></td>
                 <td><asp:TextBox ID="txtPostParam" runat="server" TextMode="MultiLine" ReadOnly="True" Height="50px" Width="99%" Wrap="true"></asp:TextBox></td>
             </tr>

@@ -56,7 +56,7 @@ namespace ZyGames.Framework.Game.Sns
             if (userList.Length == 2)
             {
                 PassportID = userList[0];
-                Password = CryptoHelper.DES_Decrypt(userList[1], GameEnvironment.Setting.ProductDesEnKey);
+                Password = userList[1];
             }
             return PassportID;
         }
@@ -66,17 +66,6 @@ namespace ZyGames.Framework.Game.Sns
 		/// <returns></returns>
         public override bool CheckLogin()
         {
-            string pwd = Password;
-            try
-            {
-                pwd = new DESAlgorithmNew().DecodePwd(pwd, GameEnvironment.Setting.ClientDesDeKey);
-            }
-            catch (Exception ex)
-            {
-                TraceLog.WriteError("Decode pwd error:{0}", ex);
-            }
-            pwd = CryptoHelper.DES_Encrypt(pwd, GameEnvironment.Setting.ProductDesEnKey);
-            Password = pwd;
             //快速登录
             UserID = SnsManager.LoginByDevice(PassportID, Password, DeviceID).ToString();
 

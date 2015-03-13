@@ -46,8 +46,9 @@ namespace ContractTools.WebApp.Base
         public static int LoginActionId = ConfigUtils.GetSetting("UnitTest.LoginActionId", 1004);
         private static string SignKey = ConfigUtils.GetSetting("Product.SignKey");
         public static string ClientDesDeKey = ConfigUtils.GetSetting("Product.ClientDesDeKey", "j6=9=1ac");
+        private static bool IsGet = true;
 
-        public static MessageStructure Create(string serverUrl, string requestParams, out MessageHead header, bool isSocket, int actionId, string pid)
+        public static MessageStructure Create(string serverUrl, string requestParams, out MessageHead header, bool isSocket, int actionId, string pid, CookieContainer cookies)
         {
             header = null;
             MessageStructure msgReader = null;
@@ -58,18 +59,28 @@ namespace ContractTools.WebApp.Base
             else
             {
                 Encoding encode = Encoding.GetEncoding("utf-8");
-                string postData = "?d=" + GetSign(requestParams);
-                byte[] bufferData = encode.GetBytes(postData);
-
-                HttpWebRequest serverRequest = (HttpWebRequest)WebRequest.Create(serverUrl);
-                serverRequest.Method = "POST";
-                serverRequest.ContentType = "application/x-www-form-urlencoded";
-                serverRequest.ContentLength = bufferData.Length;
-                Stream requestStream = serverRequest.GetRequestStream();
-                requestStream.Write(bufferData, 0, bufferData.Length);
-                requestStream.Close();
+                string postData = "d=" + GetSign(requestParams);
+                HttpWebRequest serverRequest;
+                if (IsGet)
+                {
+                    serverRequest = (HttpWebRequest)WebRequest.Create(serverUrl + "?" + postData);
+                    serverRequest.CookieContainer = cookies;
+                }
+                else
+                {
+                    byte[] bufferData = encode.GetBytes(postData);
+                    serverRequest = (HttpWebRequest)WebRequest.Create(serverUrl);
+                    serverRequest.Method = "POST";
+                    serverRequest.ContentType = "application/x-www-form-urlencoded";
+                    serverRequest.ContentLength = bufferData.Length;
+                    serverRequest.CookieContainer = cookies;
+                    Stream requestStream = serverRequest.GetRequestStream();
+                    requestStream.Write(bufferData, 0, bufferData.Length);
+                    requestStream.Close();
+                }
                 //
-                WebResponse serverResponse = serverRequest.GetResponse();
+                HttpWebResponse serverResponse = (HttpWebResponse)serverRequest.GetResponse();
+                cookies.Add(serverResponse.Cookies);
                 Stream responseStream = serverResponse.GetResponseStream();
                 msgReader = MessageStructure.Create(responseStream, Encoding.UTF8);
             }

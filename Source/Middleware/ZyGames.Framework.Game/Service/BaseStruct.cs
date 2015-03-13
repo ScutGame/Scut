@@ -25,9 +25,11 @@ using System;
 using ZyGames.Framework.Common;
 using ZyGames.Framework.Common.Configuration;
 using ZyGames.Framework.Common.Log;
+using ZyGames.Framework.Common.Security;
 using ZyGames.Framework.Game.Config;
 using ZyGames.Framework.Game.Contract;
 using ZyGames.Framework.Game.Lang;
+using ZyGames.Framework.Game.Runtime;
 
 namespace ZyGames.Framework.Game.Service
 {
@@ -332,5 +334,24 @@ namespace ZyGames.Framework.Game.Service
                 SaveLog(ex);
             }
         }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="password"></param>
+        /// <returns></returns>
+        protected virtual string DecodePassword(string password)
+        {
+            try
+            {
+                return new DESAlgorithmNew().DecodePwd(password, GameEnvironment.Setting.ClientDesDeKey);
+            }
+            catch (Exception ex)
+            {
+                TraceLog.WriteError("Decode pwd error:{0}", ex);
+            }
+            return password;
+        }
+
     }
 }

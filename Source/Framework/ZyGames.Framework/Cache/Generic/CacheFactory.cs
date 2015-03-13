@@ -47,7 +47,7 @@ namespace ZyGames.Framework.Cache.Generic
         private static CacheListener _cacheExpiredListener;
         private static BaseCachePool _readonlyPools;
         private static BaseCachePool _writePools;
-        private static BaseCachePool _memoryPools;
+        private static BaseCachePool _memoryPools = new CachePool(null, null, false, new ProtobufCacheSerializer());
         private static event UpdateEvent UpdateCallbackHandle;
         private static bool _isRunning;
 
@@ -78,8 +78,7 @@ namespace ZyGames.Framework.Cache.Generic
         {
             _readonlyPools = new CachePool(dbTransponder, redisTransponder, true, serializer);
             _writePools = new CachePool(dbTransponder, redisTransponder, false, serializer) { Setting = setting };
-            _memoryPools = new CachePool(null, null, false, new ProtobufCacheSerializer());
-
+           
             EntitySchemaSet.InitSchema(typeof(EntityHistory));
             DataSyncQueueManager.Start(setting, serializer);
             InitListener("__CachePoolListener", setting.ExpiredInterval, "__CachePoolUpdateListener", setting.UpdateInterval);

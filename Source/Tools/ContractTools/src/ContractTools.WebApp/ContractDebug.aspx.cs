@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Text;
 using System.Web;
 using System.Web.UI;
@@ -92,7 +93,7 @@ namespace ContractTools.WebApp
                     this.txtServerUrl.Text = solutionMode.Url;
                 }
                 int msgId = txtMsgId.Text.ToInt();
-                txtParams.Text = BuildRequestParam(msgId, txtSid.Text, txtUid.Text, contractId, slnId, verId, solutionMode.GameID);
+                txtParams.Text = BuildRequestParam(msgId, txtSid.Text, txtUid.Text, txtSt.Text, contractId, slnId, verId, solutionMode.GameID);
             }
         }
 
@@ -105,7 +106,7 @@ namespace ContractTools.WebApp
         {
             int contractId = ddlContract.Text.ToInt();
             var paramRecords = DbDataLoader.GetParamInfo(SlnID, contractId, VerID);
-            string postParam = FormatPostParam(paramRecords.Where(t => t.ParamType == 1).ToList(), txtParams.Text);
+            string postParam = FormatPostParam(contractId, paramRecords.Where(t => t.ParamType == 1).ToList(), txtParams.Text);
             txtPostParam.Text = string.Format("?d={0}", NetHelper.GetSign(postParam));
             Bind();
         }
@@ -113,28 +114,37 @@ namespace ContractTools.WebApp
         {
             try
             {
+                int msgId = txtMsgId.Text.ToInt() + 1;
+                txtMsgId.Text = msgId.ToString();
                 int contractId = ddlContract.Text.ToInt();
                 string pid = Session["pid"] == null ? Session.SessionID : Session["pid"].ToString();
                 Session["pid"] = pid;
                 var paramRecords = DbDataLoader.GetParamInfo(SlnID, contractId, VerID);
-                string postParam = FormatPostParam(paramRecords.Where(t => t.ParamType == 1).ToList(), txtParams.Text);
+                string postParam = FormatPostParam(contractId, paramRecords.Where(t => t.ParamType == 1).ToList(), txtParams.Text);
+                txtPostParam.Text = string.Format("?d={0}", NetHelper.GetSign(postParam));
                 dvResult.InnerHtml = "正在请求,请稍候...";
                 string sid;
                 string uid;
-                dvResult.InnerHtml = PostGameServer(paramRecords.Where(t => t.ParamType == 2).ToList(), contractId, txtServerUrl.Text, postParam, pid, out sid, out uid);
+                string st;
+                var cookies = Session["cookies"] as CookieContainer ?? new CookieContainer();
+
+                dvResult.InnerHtml = PostGameServer(paramRecords.Where(t => t.ParamType == 2).ToList(), contractId, txtServerUrl.Text, postParam, pid, cookies, out sid, out uid, out st);
+                Session["cookies"] = cookies;
                 if (!string.IsNullOrEmpty(sid))
                 {
                     txtSid.Text = sid;
                     txtUid.Text = uid;
+                    txtSt.Text = st;
                 }
             }
             catch (Exception ex)
             {
+                dvResult.InnerHtml = string.Format("请求异常:{0}", ex.Message);
                 TraceLog.WriteError("Contract debug error:{0}", ex);
             }
         }
 
-        private string FormatPostParam(List<ParamInfoModel> paramList, string text)
+        private string FormatPostParam(int contractId, List<ParamInfoModel> paramList, string text)
         {
             StringBuilder requestParams = new StringBuilder();
             string[] line = text.Split('\r', '\n');
@@ -147,6 +157,13 @@ namespace ContractTools.WebApp
                     string value = paramArray.Length > 2 ? string.Join("=", paramArray, 1, paramArray.Length - 1) : paramArray[1];
                     value = value.Trim();
                     var record = paramList.Find(t => string.Equals(t.Field, name, StringComparison.CurrentCultureIgnoreCase));
+                    //自动登录
+                    if (NetHelper.LoginActionId == contractId)
+                    {
+                        if ("Pid".Equals(name)) SetCookies("Debug_User", value);
+                        if ("Pwd".Equals(name)) SetCookies("Debug_Pwd", value);
+                        if ("DeviceID".Equals(name)) SetCookies("Debug_DeviceID", value);
+                    }
                     if (record != null && record.FieldType == FieldType.Password)
                     {
                         value = new DESAlgorithmNew().EncodePwd(value, NetHelper.ClientDesDeKey);
@@ -158,13 +175,14 @@ namespace ContractTools.WebApp
             return requestParams.ToString().TrimEnd('&');
         }
 
-        private string BuildRequestParam(int msgId, string sid, string uid, int contractId, int slnId, int versionId, int gameId, int serverId = 0)
+        private string BuildRequestParam(int msgId, string sid, string uid, string st, int contractId, int slnId, int versionId, int gameId, int serverId = 0)
         {
             StringBuilder requestParams = new StringBuilder();
             requestParams.AppendLine("MsgId=" + msgId);
             requestParams.AppendLine("Sid=" + sid);
             requestParams.AppendLine("Uid=" + uid);
             requestParams.AppendLine("ActionID=" + contractId);
+            requestParams.AppendLine("St=" + st);
             if (serverId > 0)
             {
                 requestParams.AppendLine("GameType=" + gameId);
@@ -177,23 +195,34 @@ namespace ContractTools.WebApp
             {
                 string fieldName = record.Field;
                 string fieldValue = record.FieldValue;
+                if (NetHelper.LoginActionId == contractId)
+                {
+                    if ("Pid".Equals(fieldName)) fieldValue = GetCookies("Debug_User");
+                    if ("Pwd".Equals(fieldName)) fieldValue = GetCookies("Debug_Pwd");
+                    if ("DeviceID".Equals(fieldName)) fieldValue = GetCookies("Debug_DeviceID");
+                }
+                if (string.IsNullOrEmpty(fieldValue))
+                {
+                    fieldValue = record.FieldValue;
+                }
                 requestParams.AppendLine(fieldName + "=" + fieldValue);
             }
             return requestParams.ToString();
         }
 
 
-        private static string PostGameServer(List<ParamInfoModel> paramList, int contractId, string serverUrl, string requestParams, string pid, out string sid, out string uid)
+        private static string PostGameServer(List<ParamInfoModel> paramList, int contractId, string serverUrl, string requestParams, string pid, CookieContainer cookies, out string sid, out string uid, out string st)
         {
             bool isSocket = !serverUrl.StartsWith("http://");
             sid = "";
             uid = "";
+            st = "";
             StringBuilder respContent = new StringBuilder();
             MessageHead msg = new MessageHead();
-            MessageStructure msgReader = NetHelper.Create(serverUrl, requestParams, out msg, isSocket, contractId, pid);
+            MessageStructure msgReader = NetHelper.Create(serverUrl, requestParams, out msg, isSocket, contractId, pid, cookies);
             if (msgReader != null)
             {
-                ProcessResult(paramList, contractId, respContent, msg, msgReader, out sid, out uid);
+                ProcessResult(paramList, contractId, respContent, msg, msgReader, out sid, out uid, out st);
             }
             else
             {
@@ -202,11 +231,12 @@ namespace ContractTools.WebApp
             return respContent.ToString();
         }
 
-        private static void ProcessResult(List<ParamInfoModel> paramList, int contractId, StringBuilder respContent, MessageHead msg, MessageStructure msgReader, out string sid, out string uid)
+        private static void ProcessResult(List<ParamInfoModel> paramList, int contractId, StringBuilder respContent, MessageHead msg, MessageStructure msgReader, out string sid, out string uid, out string st)
         {
             sid = "";
             uid = "";
-            ResponseHead(contractId, respContent, msg.ErrorCode, msg.ErrorInfo);
+            st = msg.St;
+            ResponseHead(contractId, respContent, msg.ErrorCode, msg.ErrorInfo, msg.St);
 
 
             if (msg.ErrorCode < ErrorCode)
@@ -286,14 +316,16 @@ namespace ContractTools.WebApp
             }
         }
 
-        private static void ResponseHead(int contractId, StringBuilder respContent, int errorCode, string errorInfo)
+        private static void ResponseHead(int contractId, StringBuilder respContent, int errorCode, string errorInfo, string st = "")
         {
             //头部消息
             respContent.AppendFormat("<h3>{0}-{1}</h3>", contractId, "返回头部消息");
             respContent.Append("<table style=\"width:99%; border-color:#f0f0f0\" border=\"1\" cellpadding=\"3\" cellspacing=\"0\">");
-            respContent.Append("<tr><td style=\"width:25%;\"><strong>状态值</strong></td>");
+            respContent.Append("<tr><td style=\"width:25%;\"><strong>时间缀</strong></td>");
+            respContent.Append("<td style=\"width:25%;\"><strong>状态值</strong></td>");
             respContent.Append("<td style=\"width:75%;\"><strong>描述</strong></td></tr>");
-            respContent.AppendFormat("<tr><td>{0}</td>", errorCode);
+            respContent.AppendFormat("<tr><td>{0}</td>", st);
+            respContent.AppendFormat("<td>{0}</td>", errorCode);
             respContent.AppendFormat("<td>{0}&nbsp;</td></tr>", errorInfo);
             respContent.Append("</table>");
         }
