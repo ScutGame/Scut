@@ -184,17 +184,13 @@ namespace ZyGames.Framework.Common.Build
             {
                 setSuccess = ProcessEntityType(type, setSuccess, currentPath);
             }
-
-            if (setSuccess)
+            //modify reason: no model.
+            ass.Write(savePath, new WriterParameters
             {
-                ass.Write(savePath, new WriterParameters
-                {
-                    SymbolWriterProvider = writerProvider,
-                    WriteSymbols = debug
-                });
-                return true;
-            }
-            return false;
+                SymbolWriterProvider = writerProvider,
+                WriteSymbols = debug
+            });
+            return true;
         }
 
 
