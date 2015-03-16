@@ -191,6 +191,7 @@ namespace ZyGames.Framework.Model
                     schema.IsExpired = entityTable.IsExpired;
                     schema.EntityName = string.IsNullOrEmpty(entityTable.TableName) ? type.Name : entityTable.TableName;
                     schema.ConnectKey = string.IsNullOrEmpty(entityTable.ConnectKey) ? "" : entityTable.ConnectKey;
+                    schema.Indexs = entityTable.Indexs;
                     schema.Condition = entityTable.Condition;
                     schema.OrderColumn = entityTable.OrderColumn;
                     //schema.DelayLoad = entityTable.DelayLoad;
@@ -488,6 +489,7 @@ namespace ZyGames.Framework.Model
                     column.IsIdentity = entityField.IsIdentity;
                     column.IdentityNo = entityField.IdentityNo;
                     column.IsKey = entityField.IsKey;
+                    column.IsUnique = entityField.IsUnique;
                     column.ColumnLength = entityField.ColumnLength;
                     column.ColumnScale = entityField.ColumnScale;
                     column.Isnullable = entityField.Isnullable;
@@ -797,6 +799,7 @@ namespace ZyGames.Framework.Model
                     column.Scale = keypair.Value.ColumnScale;
                     column.Isnullable = keypair.Value.Isnullable;
                     column.IsKey = keypair.Value.IsKey;
+                    column.IsUnique = keypair.Value.IsUnique;
                     column.DbType = keypair.Value.DbType.ToString();
                     column.IsIdentity = keypair.Value.IsIdentity;
                     column.IdentityNo = keypair.Value.IdentityNo;
@@ -857,6 +860,7 @@ namespace ZyGames.Framework.Model
                 column.Scale = keypair.Value.ColumnScale;
                 column.Isnullable = keypair.Value.Isnullable;
                 column.IsKey = keypair.Value.IsKey;
+                column.IsUnique = keypair.Value.IsUnique;
                 column.DbType = keypair.Value.DbType.ToString();
                 column.IsIdentity = keypair.Value.IsIdentity;
                 column.IdentityNo = keypair.Value.IdentityNo;
@@ -864,6 +868,10 @@ namespace ZyGames.Framework.Model
             }
             list.Sort((a, b) => a.Id.CompareTo(b.Id));
             dbprovider.CreateTable(tableName, list.ToArray());
+            if (schema.Indexs != null && schema.Indexs.Length > 0)
+            {
+                dbprovider.CreateIndexs(tableName, schema.Indexs);
+            }
         }
     }
 }

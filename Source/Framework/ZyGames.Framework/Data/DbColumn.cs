@@ -47,6 +47,10 @@ namespace ZyGames.Framework.Data
         /// </summary>
         public bool IsKey { get; set; }
         /// <summary>
+        /// 
+        /// </summary>
+        public bool IsUnique { get; set; }
+        /// <summary>
         /// 名称
         /// </summary>
         public string Name { get; set; }

@@ -231,6 +231,10 @@ namespace ZyGames.Framework.Model
         }
 
         /// <summary>
+        /// index column
+        /// </summary>
+        public string[] Indexs { get; set; }
+        /// <summary>
         /// 条件，不需要加Where
         /// </summary>
         public string Condition

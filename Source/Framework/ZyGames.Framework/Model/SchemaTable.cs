@@ -199,6 +199,10 @@ namespace ZyGames.Framework.Model
             get;
             set;
         }
+        /// <summary>
+        /// index column
+        /// </summary>
+        public string[] Indexs { get; set; }
 
         private ConcurrentDictionary<string, SchemaColumn> _columns;
 

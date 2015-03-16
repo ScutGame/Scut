@@ -397,12 +397,18 @@ namespace ZyGames.Framework.Data.MySql
                 command.AppendFormat("CREATE TABLE {0}", FormatName(tableName));
                 command.AppendLine("(");
                 List<string> keys;
+                List<string> uniques;
                 int identityNo;
-                bool hasColumn = CheckProcessColumns(command, columns, out keys, out identityNo);
+                bool hasColumn = CheckProcessColumns(command, columns, out keys, out uniques, out identityNo);
                 if (keys.Count > 0)
                 {
                     command.AppendLine(",");
                     command.AppendFormat("PRIMARY KEY ({0})", FormatQueryColumn(",", keys));
+                }
+                if (uniques.Count > 0)
+                {
+                    command.AppendLine(",");
+                    command.AppendFormat("UNIQUE KEY ({0})", FormatQueryColumn(",", uniques));
                 }
                 command.AppendLine("");
                 string charSet = string.IsNullOrEmpty(ConnectionSetting.CharSet)
@@ -421,9 +427,41 @@ namespace ZyGames.Framework.Data.MySql
             }
         }
 
-        private bool CheckProcessColumns(StringBuilder command, DbColumn[] columns, out List<string> keys, out int identityNo, bool isModify = false)
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="tableName"></param>
+        /// <param name="indexs"></param>
+        public override void CreateIndexs(string tableName, string[] indexs)
+        {
+            StringBuilder command = new StringBuilder();
+            try
+            {
+                foreach (var item in indexs)
+                {
+                    string[] columns = item.Split(',');
+                    if (command.Length > 0)
+                        command.AppendLine("");
+
+                    command.AppendFormat("CREATE INDEX INDEX_{1} ON {0} ({2});",
+                        FormatName(tableName),
+                        string.Join("_", columns),
+                        FormatQueryColumn(",", columns)
+                        );
+                }
+                MySqlHelper.ExecuteNonQuery(ConnectionString, command.ToString());
+
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(string.Format("Execute sql error:{0}", command), ex);
+            }
+        }
+
+        private bool CheckProcessColumns(StringBuilder command, DbColumn[] columns, out List<string> keys, out List<string> uniques, out int identityNo, bool isModify = false)
         {
             keys = new List<string>();
+            uniques = new List<string>();
             int index = 0;
             identityNo = 0;
             foreach (var dbColumn in columns)
@@ -439,6 +477,10 @@ namespace ZyGames.Framework.Data.MySql
                 if (dbColumn.IsKey)
                 {
                     keys.Add(FormatName(dbColumn.Name));
+                }
+                if (dbColumn.IsUnique)
+                {
+                    uniques.Add(FormatName(dbColumn.Name));
                 }
                 if (dbColumn.IsIdentity) identityNo = dbColumn.IdentityNo;
 
@@ -468,8 +510,9 @@ namespace ZyGames.Framework.Data.MySql
                 command.AppendFormat("ALTER TABLE {0}", dbTableName);
                 command.AppendLine(" ADD COLUMN (");
                 List<string> keys;
+                List<string> uniques;
                 int identityNo;
-                bool hasColumn = CheckProcessColumns(command, columns, out keys, out identityNo);
+                bool hasColumn = CheckProcessColumns(command, columns, out keys, out uniques, out identityNo);
                 command.Append(");");
                 if (hasColumn)
                 {
