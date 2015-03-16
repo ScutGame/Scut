@@ -112,6 +112,10 @@ namespace ZyGames.Framework.Game.Contract
         {
             InitLoad();
             httpListener.Run(listenUrls.ToArray());
+            if (httpListener.Error != null)
+            {
+                throw httpListener.Error;
+            }
             base.Start(args);
         }
 

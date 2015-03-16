@@ -93,6 +93,12 @@ namespace ZyGames.Framework.RPC.Http
                 Handler = handler;
             }
         }
+
+        /// <summary>
+        /// listen error.
+        /// </summary>
+        public Exception Error { get; set; }
+
         /// <summary>
         /// 
         /// </summary>
@@ -115,6 +121,7 @@ namespace ZyGames.Framework.RPC.Http
         /// <returns></returns>
         public Task Run(params string[] uriPrefixes)
         {
+            Error = null;
             // Establish a host-handler context:
             _hostContext = new HostContext(this, _handler);
 
@@ -160,6 +167,7 @@ namespace ZyGames.Framework.RPC.Http
                 }
                 catch (HttpListenerException hlex)
                 {
+                    Error = hlex;
                     TraceLog.WriteError("Http start listenning error:{0}", hlex);
                     return;
                 }
