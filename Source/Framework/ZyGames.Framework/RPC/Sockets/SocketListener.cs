@@ -27,6 +27,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using ZyGames.Framework.Common;
 using ZyGames.Framework.Common.Log;
 using NLog;
 
@@ -287,7 +288,7 @@ namespace ZyGames.Framework.RPC.Sockets
             }
             catch (Exception ex)
             {
-                logger.Error(string.Format("IP {0} IO_Completed unkown error:{1}", (ioDataToken != null && ioDataToken.Socket != null ? ioDataToken.Socket.RemoteEndPoint.ToString() : ""), ex));
+                logger.Error(string.Format("IP {0} IO_Completed unkown error:{1}", (ioDataToken != null && ioDataToken.Socket != null ? ioDataToken.Socket.RemoteEndPoint.ToNotNullString() : ""), ex));
             }
         }
 
@@ -370,7 +371,7 @@ namespace ZyGames.Framework.RPC.Sockets
             if (ioEventArgs.SocketError != SocketError.Success)
             {
                 //Socket错误
-                logger.Debug("IP {0} ProcessReceive:{1}", (dataToken != null ? dataToken.Socket.RemoteEndPoint.ToString() : ""), ioEventArgs.SocketError);
+                logger.Debug("IP {0} ProcessReceive:{1}", (dataToken != null ? dataToken.Socket.RemoteEndPoint.ToNotNullString() : ""), ioEventArgs.SocketError);
                 Closing(ioEventArgs);
                 return;
             }
