@@ -303,13 +303,13 @@ namespace ZyGames.Framework.RPC.Sockets
 
             SocketAsyncEventArgs ioEventArgs = this.ioEventArgsPool.Pop();
             ioEventArgs.AcceptSocket = acceptEventArgs.AcceptSocket;
-            acceptEventArgs.AcceptSocket = null;
-            this.acceptEventArgsPool.Push(acceptEventArgs);
             var dataToken = (DataToken)ioEventArgs.UserToken;
             ioEventArgs.SetBuffer(dataToken.bufferOffset, socketSettings.BufferSize);
             var exSocket = new ExSocket(ioEventArgs.AcceptSocket);
             exSocket.LastAccessTime = DateTime.Now;
             dataToken.Socket = exSocket;
+            acceptEventArgs.AcceptSocket = null;
+            this.acceptEventArgsPool.Push(acceptEventArgs);
 
             //AddClient(exSocket);
 

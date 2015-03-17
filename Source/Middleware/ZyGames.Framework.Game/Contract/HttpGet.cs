@@ -519,6 +519,74 @@ namespace ZyGames.Framework.Game.Contract
         /// <summary>
         /// 
         /// </summary>
+        /// <param name="aName"></param>
+        /// <param name="rValue"></param>
+        /// <returns></returns>
+        public override bool GetInt(string aName, ref uint rValue)
+        {
+            return GetInt(aName, ref rValue, ZeroNum, uint.MaxValue);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public override bool GetInt(string aName, ref uint rValue, uint minValue, uint maxValue)
+        {
+            bool result = false;
+            if (_param.ContainsKey(aName))
+            {
+                result = uint.TryParse(_param[aName], out rValue);
+                if (result)
+                {
+                    result = rValue >= minValue && rValue <= maxValue;
+                }
+                if (!result)
+                {
+                    WriteRangOutError(aName, (int)minValue, (int)maxValue);
+                }
+            }
+            else
+            {
+                WriteContainsError(aName);
+            }
+            return result;
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public override bool GetWord(string aName, ref ushort rValue)
+        {
+            return GetWord(aName, ref rValue, ZeroNum, ushort.MaxValue);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public override bool GetWord(string aName, ref ushort rValue, ushort minValue, ushort maxValue)
+        {
+            bool result = false;
+            if (_param.ContainsKey(aName))
+            {
+                result = ushort.TryParse(_param[aName], out rValue);
+                if (result)
+                {
+                    result = rValue >= minValue && rValue <= maxValue;
+                }
+                if (!result)
+                {
+                    WriteRangOutError(aName, minValue, maxValue);
+                }
+            }
+            else
+            {
+                WriteContainsError(aName);
+            }
+            return result;
+        }
+        /// <summary>
+        /// 
+        /// </summary>
         public override bool GetBool(string aName, ref bool rValue)
         {
             bool result = false;
@@ -539,7 +607,7 @@ namespace ZyGames.Framework.Game.Contract
             }
             return result;
         }
-        
+
 
         /// <summary>
         /// 读取Byte类型的请求参数
