@@ -33,28 +33,52 @@ using ZyGames.Framework.Model;
 
 namespace ZyGames.Framework.Net.Sql
 {
+    /// <summary>
+    /// 
+    /// </summary>
     internal class SqlDataSender : IDataSender
     {
         private readonly bool _isChange;
         private readonly string _connectKey;
-
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="isChange"></param>
+        /// <param name="connectKey"></param>
         public SqlDataSender(bool isChange, string connectKey = null)
         {
             _isChange = isChange;
             _connectKey = connectKey;
         }
-
-        public void Send<T>(IEnumerable<T> dataList) where T : AbstractEntity
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="dataList"></param>
+        /// <returns></returns>
+        public bool Send<T>(IEnumerable<T> dataList) where T : AbstractEntity
         {
-            Send(dataList, GetPropertyValue, GetPostColumns);
+            return Send(dataList, GetPropertyValue, GetPostColumns);
         }
 
-        public void Send<T>(IEnumerable<T> dataList, EntityPropertyGetFunc getFunc, EnttiyPostColumnFunc postColumnFunc) where T : ISqlEntity
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="dataList"></param>
+        /// <param name="getFunc"></param>
+        /// <param name="postColumnFunc"></param>
+        /// <param name="synchronous">是否同步</param>
+        /// <returns></returns>
+        public bool Send<T>(IEnumerable<T> dataList, EntityPropertyGetFunc<T> getFunc, EnttiyPostColumnFunc<T> postColumnFunc, bool synchronous = false) where T : ISqlEntity
         {
+            bool result = true;
             foreach (var data in dataList)
             {
-                SendToDb(data, getFunc, postColumnFunc);
+                var r = SendToDb(data, getFunc, postColumnFunc, synchronous);
+                if (!r) result = r;
             }
+            return result;
         }
 
         /// <summary>
@@ -65,7 +89,7 @@ namespace ZyGames.Framework.Net.Sql
         /// <param name="getFunc"></param>
         /// <param name="postColumnFunc"></param>
         /// <returns></returns>
-        internal SqlStatement GenerateSqlQueue<T>(T data, EntityPropertyGetFunc getFunc = null, EnttiyPostColumnFunc postColumnFunc = null) where T : ISqlEntity
+        internal SqlStatement GenerateSqlQueue<T>(T data, EntityPropertyGetFunc<T> getFunc = null, EnttiyPostColumnFunc<T> postColumnFunc = null) where T : ISqlEntity
         {
             SchemaTable schemaTable = EntitySchemaSet.Get(data.GetType());
             DbBaseProvider dbProvider = DbConnectionProvider.CreateDbProvider(schemaTable.ConnectKey);
@@ -82,7 +106,7 @@ namespace ZyGames.Framework.Net.Sql
             return null;
         }
 
-        private object GetPropertyValue(ISqlEntity data, SchemaColumn column)
+        private object GetPropertyValue<T>(T data, SchemaColumn column) where T : ISqlEntity
         {
             object value = null;
             if (data is AbstractEntity)
@@ -124,27 +148,31 @@ namespace ZyGames.Framework.Net.Sql
 
         }
 
-        private void SendToDb<T>(T data, EntityPropertyGetFunc getFunc, EnttiyPostColumnFunc postColumnFunc) where T : ISqlEntity
+        private bool SendToDb<T>(T data, EntityPropertyGetFunc<T> getFunc, EnttiyPostColumnFunc<T> postColumnFunc, bool synchronous) where T : ISqlEntity
         {
             if (Equals(data, null))
             {
-                throw new ArgumentNullException("data");
+                return false;
             }
             SchemaTable schemaTable = EntitySchemaSet.Get(data.GetType());
             DbBaseProvider dbProvider = DbConnectionProvider.CreateDbProvider(_connectKey ?? schemaTable.ConnectKey);
             if (dbProvider == null)
             {
-                return;
+                return false;
             }
             CommandStruct command = GenerateCommand(dbProvider, data, schemaTable, getFunc, postColumnFunc);
             if (command != null)
             {
-                dbProvider.ExecuteNonQuery(data.GetMessageQueueId(), CommandType.Text, command.Sql, command.Parameters);
+                bool result = (synchronous
+                    ? dbProvider.ExecuteQuery(CommandType.Text, command.Sql, command.Parameters)
+                    : dbProvider.ExecuteNonQuery(data.GetMessageQueueId(), CommandType.Text, command.Sql, command.Parameters)) > 0;
                 data.ResetState();
+                return result;
             }
+            return false;
         }
 
-        private CommandStruct GenerateCommand<T>(DbBaseProvider dbProvider, T data, SchemaTable schemaTable, EntityPropertyGetFunc getFunc, EnttiyPostColumnFunc postColumnFunc) where T : ISqlEntity
+        private CommandStruct GenerateCommand<T>(DbBaseProvider dbProvider, T data, SchemaTable schemaTable, EntityPropertyGetFunc<T> getFunc, EnttiyPostColumnFunc<T> postColumnFunc) where T : ISqlEntity
         {
             CommandStruct command;
             if (!(schemaTable.StorageType.HasFlag(StorageType.ReadOnlyDB) ||

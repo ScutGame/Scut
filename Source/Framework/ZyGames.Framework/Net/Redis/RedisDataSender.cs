@@ -36,9 +36,9 @@ namespace ZyGames.Framework.Net.Redis
 
         #region IDataSender 成员
 
-        public void Send<T>(IEnumerable<T> dataList) where T : AbstractEntity
+        public bool Send<T>(IEnumerable<T> dataList) where T : AbstractEntity
         {
-            RedisConnectionPool.TryUpdateEntity(dataList);
+            return RedisConnectionPool.TryUpdateEntity(dataList);
         }
 
         public void Dispose()

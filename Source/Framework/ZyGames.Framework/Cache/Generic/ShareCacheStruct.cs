@@ -41,15 +41,27 @@ namespace ZyGames.Framework.Cache.Generic
         /// <typeparam name="T"></typeparam>
         /// <param name="key"></param>
         /// <param name="createFactory"></param>
-        /// <exception cref="Exception"></exception>
         /// <returns></returns>
         public static T GetOrAdd<T>(object key, Lazy<T> createFactory) where T : ShareEntity, new()
         {
+            return GetOrAdd<T>(new[] { key }, createFactory);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="keys"></param>
+        /// <param name="createFactory"></param>
+        /// <exception cref="Exception"></exception>
+        /// <returns></returns>
+        public static T GetOrAdd<T>(object[] keys, Lazy<T> createFactory) where T : ShareEntity, new()
+        {
             var cache = new ShareCacheStruct<T>();
-            T result = cache.FindKey(key);
+            T result = cache.FindKey(keys);
             if (cache.LoadingStatus != LoadingStatus.Success)
             {
-                throw new Exception(string.Format("Entity {0} load  key:{1} error", typeof(T).Name, key));
+                throw new Exception(string.Format("Entity {0} load  key:{1} error", typeof(T).Name, keys));
             }
             if (result == default(T))
             {
@@ -65,20 +77,32 @@ namespace ZyGames.Framework.Cache.Generic
         /// <typeparam name="T"></typeparam>
         /// <param name="key"></param>
         /// <param name="allowNull"></param>
-        /// <exception cref="Exception"></exception>
-        /// <exception cref="NullReferenceException"></exception>
         /// <returns></returns>
         public static T Get<T>(object key, bool allowNull = false) where T : ShareEntity, new()
         {
+            return Get<T>(new[] { key }, allowNull);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="keys"></param>
+        /// <param name="allowNull"></param>
+        /// <exception cref="Exception"></exception>
+        /// <exception cref="NullReferenceException"></exception>
+        /// <returns></returns>
+        public static T Get<T>(object[] keys, bool allowNull) where T : ShareEntity, new()
+        {
             var cache = new ShareCacheStruct<T>();
-            T result = cache.FindKey(key);
+            T result = cache.FindKey(keys);
             if (cache.LoadingStatus != LoadingStatus.Success)
             {
-                throw new Exception(string.Format("Entity {0} load  key:{1} error", typeof(T).Name, key));
+                throw new Exception(string.Format("Entity {0} load  key:{1} error", typeof(T).Name, string.Join("-", keys)));
             }
             if (!allowNull && result == null)
             {
-                throw new NullReferenceException(string.Format("Not found entity {0} key:{1}.", typeof(T).Name, key));
+                throw new NullReferenceException(string.Format("Not found entity {0} key:{1}.", typeof(T).Name, string.Join("-", keys)));
             }
             return result;
         }

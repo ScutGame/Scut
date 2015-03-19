@@ -42,13 +42,14 @@ namespace ZyGames.Framework.Cache.Generic
         /// <typeparam name="T"></typeparam>
         /// <param name="personalId"></param>
         /// <param name="createFactory"></param>
+        /// <param name="keys"></param>
         /// <exception cref="Exception"></exception>
         /// <returns></returns>
-        public static T GetOrAdd<T>(string personalId, Lazy<T> createFactory) where T : BaseEntity, new()
+        public static T GetOrAdd<T>(string personalId, Lazy<T> createFactory, params object[] keys) where T : BaseEntity, new()
         {
             var cache = new PersonalCacheStruct<T>();
             T result;
-            if (cache.TryFindKey(personalId, out result) != LoadingStatus.Success)
+            if (cache.TryFindKey(personalId, out result, keys) != LoadingStatus.Success)
             {
                 throw new Exception(string.Format("Entity {0} load  personalId:{1} error", typeof(T).Name, personalId));
             }
@@ -66,14 +67,15 @@ namespace ZyGames.Framework.Cache.Generic
         /// <typeparam name="T"></typeparam>
         /// <param name="personalId"></param>
         /// <param name="allowNull"></param>
+        /// <param name="keys"></param>
         /// <exception cref="Exception"></exception>
         /// <exception cref="NullReferenceException"></exception>
         /// <returns></returns>
-        public static T Get<T>(string personalId, bool allowNull = false) where T : BaseEntity, new()
+        public static T Get<T>(string personalId, bool allowNull = false, params object[] keys) where T : BaseEntity, new()
         {
             var cache = new PersonalCacheStruct<T>();
             T result;
-            if (cache.TryFindKey(personalId, out result) != LoadingStatus.Success)
+            if (cache.TryFindKey(personalId, out result, keys) != LoadingStatus.Success)
             {
                 throw new Exception(string.Format("Entity {0} load  personalId:{1} error", typeof(T).Name, personalId));
             }

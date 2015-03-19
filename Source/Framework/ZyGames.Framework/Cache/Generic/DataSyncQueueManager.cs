@@ -325,9 +325,9 @@ namespace ZyGames.Framework.Cache.Generic
         /// 
         /// </summary>
         /// <param name="entityList"></param>
-        public static void SendToDb(params ISqlEntity[] entityList)
+        public static void SendToDb<T>(params T[] entityList) where T : ISqlEntity
         {
-            SendToDb(null, null, entityList);
+            SendToDb<T>(null, null, entityList);
         }
 
         /// <summary>
@@ -336,7 +336,7 @@ namespace ZyGames.Framework.Cache.Generic
         /// <param name="postColumnFunc"></param>
         /// <param name="getPropertyFunc"></param>
         /// <param name="entityList"></param>
-        public static void SendToDb(EntityPropertyGetFunc getPropertyFunc, EnttiyPostColumnFunc postColumnFunc, params ISqlEntity[] entityList)
+        public static void SendToDb<T>(EntityPropertyGetFunc<T> getPropertyFunc, EnttiyPostColumnFunc<T> postColumnFunc, params T[] entityList) where T : ISqlEntity
         {
             string key = "";
             try
@@ -355,7 +355,7 @@ namespace ZyGames.Framework.Cache.Generic
                     {
                         if (entity == null) continue;
 
-                        SqlStatement statement = sender.GenerateSqlQueue(entity, getPropertyFunc, postColumnFunc);
+                        SqlStatement statement = sender.GenerateSqlQueue<T>(entity, getPropertyFunc, postColumnFunc);
                         if (statement == null)
                         {
                             throw new Exception(string.Format("Generate sql of \"{0}\" entity error", entity.GetType().FullName));

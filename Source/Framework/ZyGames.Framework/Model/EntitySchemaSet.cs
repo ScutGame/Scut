@@ -37,6 +37,7 @@ using ZyGames.Framework.Config;
 using ZyGames.Framework.Data;
 using ZyGames.Framework.Event;
 using ZyGames.Framework.Redis;
+using ZyGames.Framework.Common;
 
 namespace ZyGames.Framework.Model
 {
@@ -56,7 +57,7 @@ namespace ZyGames.Framework.Model
         private static Assembly _entityAssembly;
 
         /// <summary>
-        /// 聊天缓存生命周期
+        /// 实体的程序集
         /// </summary>
         public static Assembly EntityAssembly
         {
@@ -787,55 +788,64 @@ namespace ZyGames.Framework.Model
             var list = new List<DbColumn>();
             foreach (var keypair in schema.Columns)
             {
-                string name = keypair.Value.Name;
-                var column = Array.Find(columns, p => string.Equals(p.Name, name, StringComparison.CurrentCultureIgnoreCase));
-                if (column == null)
+                var field = keypair.Value;
+                string name = field.Name;
+                var dbColumn = Array.Find(columns, p => string.Equals(p.Name, name, StringComparison.CurrentCultureIgnoreCase));
+                if (dbColumn == null)
                 {
-                    column = new DbColumn();
-                    column.Id = keypair.Value.Id;
-                    column.Name = name;
-                    column.Type = keypair.Value.ColumnType;
-                    column.Length = keypair.Value.ColumnLength;
-                    column.Scale = keypair.Value.ColumnScale;
-                    column.Isnullable = keypair.Value.Isnullable;
-                    column.IsKey = keypair.Value.IsKey;
-                    column.IsUnique = keypair.Value.IsUnique;
-                    column.DbType = keypair.Value.DbType.ToString();
-                    column.IsIdentity = keypair.Value.IsIdentity;
-                    column.IdentityNo = keypair.Value.IdentityNo;
-                    list.Add(column);
+                    dbColumn = new DbColumn();
+                    dbColumn.Id = field.Id;
+                    dbColumn.Name = name;
+                    dbColumn.Type = field.ColumnType;
+                    dbColumn.Length = field.ColumnLength;
+                    dbColumn.Scale = field.ColumnScale;
+                    dbColumn.Isnullable = field.Isnullable;
+                    dbColumn.IsKey = field.IsKey;
+                    dbColumn.IsUnique = field.IsUnique;
+                    dbColumn.DbType = field.DbType.ToString();
+                    dbColumn.IsIdentity = field.IsIdentity;
+                    dbColumn.IdentityNo = field.IdentityNo;
+                    list.Add(dbColumn);
                 }
                 else
                 {
+                    var fieldType = field.ColumnType;
                     //no modify type: text,blob,byte[], enum,list,dict
-                    if ((column.Type == typeof(decimal) && keypair.Value.ColumnScale > 0 && column.Scale != keypair.Value.ColumnScale)
-                        || (keypair.Value.IsSerialized && keypair.Value.DbType == ColumnDbType.Varchar && column.Type == typeof(string) && column.Length != keypair.Value.ColumnLength)
-                        || (keypair.Value.ColumnType.IsEnum && column.Type != typeof(int))
-                        || (keypair.Value.ColumnType == typeof(ushort) && column.Type != typeof(short))
-                        || (keypair.Value.ColumnType == typeof(uint) && column.Type != typeof(int))
-                        || (keypair.Value.ColumnType == typeof(ulong) && column.Type != typeof(long))
-                        || (!keypair.Value.IsSerialized &&
-                            keypair.Value.ColumnType != typeof(byte[]) &&
-                            !keypair.Value.ColumnType.IsEnum &&
-                            !keypair.Value.IsDictionary &&
-                            !keypair.Value.IsList &&
-                            keypair.Value.ColumnType != typeof(ushort) &&
-                            keypair.Value.ColumnType != typeof(uint) &&
-                            keypair.Value.ColumnType != typeof(ulong) &&
-                            column.Type != keypair.Value.ColumnType
+                    if (
+                        //对象序列化类型
+                        (field.IsSerialized &&
+                           (field.DbType == ColumnDbType.Varchar && (dbColumn.Type != typeof(string) || (field.ColumnLength > 0 && dbColumn.Length != field.ColumnLength))) ||
+                           (field.DbType != ColumnDbType.Varchar && (dbColumn.Type != typeof(string) || dbColumn.DbType.StartsWith("varchar", true)))
+                        ) ||
+                        //特殊值类型
+                        (dbColumn.Type == typeof(decimal) && field.ColumnScale > 0 && dbColumn.Scale != field.ColumnScale) ||
+                        (fieldType.IsEnum && dbColumn.Type != typeof(int)) ||
+                        (fieldType == typeof(ushort) && dbColumn.Type != typeof(short)) ||
+                        (fieldType == typeof(uint) && dbColumn.Type != typeof(int)) ||
+                        (fieldType == typeof(ulong) && dbColumn.Type != typeof(long)) ||
+                        //非对象类型
+                        (!field.IsSerialized &&
+                            !fieldType.IsEnum &&
+                            !field.IsDictionary &&
+                            !field.IsList &&
+                            fieldType != typeof(byte[]) &&
+                            fieldType != typeof(ushort) &&
+                            fieldType != typeof(uint) &&
+                            fieldType != typeof(ulong) &&
+                            dbColumn.Type != fieldType
                             )
                         )
                     {
-                        column.Type = keypair.Value.ColumnType;
-                        column.Length = keypair.Value.ColumnLength;
-                        column.Scale = keypair.Value.ColumnScale;
-                        column.Isnullable = keypair.Value.Isnullable;
-                        column.IsKey = keypair.Value.IsKey;
-                        column.DbType = keypair.Value.DbType.ToString();
-                        column.IsIdentity = keypair.Value.IsIdentity;
-                        column.IdentityNo = keypair.Value.IdentityNo;
-                        column.IsModify = true;
-                        list.Add(column);
+                        dbColumn.Type = fieldType;
+                        dbColumn.Length = field.ColumnLength;
+                        dbColumn.Scale = field.ColumnScale;
+                        dbColumn.Isnullable = field.Isnullable;
+                        dbColumn.IsKey = field.IsKey;
+                        dbColumn.DbType = field.DbType.ToString();
+                        dbColumn.IsIdentity = field.IsIdentity;
+                        dbColumn.IdentityNo = field.IdentityNo;
+                        dbColumn.IsModify = true;
+                        list.Add(dbColumn);
                     }
                 }
             }
@@ -852,18 +862,19 @@ namespace ZyGames.Framework.Model
             var list = new List<DbColumn>();
             foreach (var keypair in schema.Columns)
             {
+                var field = keypair.Value;
                 var column = new DbColumn();
-                column.Id = keypair.Value.Id;
-                column.Name = keypair.Value.Name;
-                column.Type = keypair.Value.ColumnType;
-                column.Length = keypair.Value.ColumnLength;
-                column.Scale = keypair.Value.ColumnScale;
-                column.Isnullable = keypair.Value.Isnullable;
-                column.IsKey = keypair.Value.IsKey;
-                column.IsUnique = keypair.Value.IsUnique;
-                column.DbType = keypair.Value.DbType.ToString();
-                column.IsIdentity = keypair.Value.IsIdentity;
-                column.IdentityNo = keypair.Value.IdentityNo;
+                column.Id = field.Id;
+                column.Name = field.Name;
+                column.Type = field.ColumnType;
+                column.Length = field.ColumnLength;
+                column.Scale = field.ColumnScale;
+                column.Isnullable = field.Isnullable;
+                column.IsKey = field.IsKey;
+                column.IsUnique = field.IsUnique;
+                column.DbType = field.DbType.ToString();
+                column.IsIdentity = field.IsIdentity;
+                column.IdentityNo = field.IdentityNo;
                 list.Add(column);
             }
             list.Sort((a, b) => a.Id.CompareTo(b.Id));

@@ -833,7 +833,13 @@ namespace ZyGames.Framework.Model
             }
         }
 
-        internal static object ParseValueType(object value, Type columnType)
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="value"></param>
+        /// <param name="columnType"></param>
+        /// <returns></returns>
+        public static object ParseValueType(object value, Type columnType)
         {
             if (columnType == typeof(Int64))
             {

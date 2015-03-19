@@ -30,7 +30,7 @@ namespace ZyGames.Framework.Net
     /// <summary>
     /// 数据处理句柄,跨服战时，可重新设置KEY主键规则
     /// </summary>
-    public delegate object EntityPropertyGetFunc(ISqlEntity entity, SchemaColumn column);
+    public delegate object EntityPropertyGetFunc<T>(T entity, SchemaColumn column) where T : ISqlEntity;
 
     /// <summary>
     /// 
@@ -39,7 +39,7 @@ namespace ZyGames.Framework.Net
     /// <param name="schema"></param>
     /// <param name="isChange"></param>
     /// <returns></returns>
-    public delegate IList<string> EnttiyPostColumnFunc(ISqlEntity entity, SchemaTable schema, bool isChange);
+    public delegate IList<string> EnttiyPostColumnFunc<T>(T entity, SchemaTable schema, bool isChange)where T : ISqlEntity;
 
     /// <summary>
     /// 数据传送操作接口
@@ -51,7 +51,7 @@ namespace ZyGames.Framework.Net
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="dataList"></param>
-        void Send<T>(IEnumerable<T> dataList) where T : AbstractEntity;
+        bool Send<T>(IEnumerable<T> dataList) where T : AbstractEntity;
 
     }
 }

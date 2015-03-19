@@ -12,6 +12,11 @@ namespace ZyGames.Framework.Model
     /// </summary>
     public interface ISqlEntity
     {
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        string GetKeyCode();
 
         /// <summary>
         /// Message queue group id.
@@ -22,11 +27,21 @@ namespace ZyGames.Framework.Model
         /// <summary>
         /// 
         /// </summary>
-        bool IsDelete { get; }
+        string PersonalId { get; }
 
         /// <summary>
         /// 
         /// </summary>
+        bool IsDelete { get; }
+
+        /// <summary>
+        /// reset data
+        /// </summary>
         void ResetState();
+
+        /// <summary>
+        /// reset data and trigger unchanged event.
+        /// </summary>
+        void Reset();
     }
 }

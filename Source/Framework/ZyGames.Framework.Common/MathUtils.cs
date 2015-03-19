@@ -213,6 +213,30 @@ namespace ZyGames.Framework.Common
         }
 
         /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="a"></param>
+        /// <param name="b"></param>
+        /// <param name="ignoreCase"></param>
+        /// <returns></returns>
+        public static bool IsEquals(string a, string b, bool ignoreCase)
+        {
+            return ignoreCase ? string.Equals(a, b, StringComparison.CurrentCultureIgnoreCase) : string.Equals(a, b);
+        }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="a"></param>
+        /// <param name="b"></param>
+        /// <param name="ignoreCase"></param>
+        /// <returns></returns>
+        public static bool StartsWith(string a, string b, bool ignoreCase)
+        {
+            if (a == null) throw new ArgumentNullException("a");
+            return ignoreCase ? a.StartsWith(b, StringComparison.CurrentCultureIgnoreCase) : a.StartsWith(b);
+        }
+
+        /// <summary>
         /// Convert to default value by type.
         /// </summary>
         /// <param name="type"></param>

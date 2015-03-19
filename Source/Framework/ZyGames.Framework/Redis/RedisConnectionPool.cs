@@ -455,7 +455,7 @@ namespace ZyGames.Framework.Redis
         /// <param name="table"></param>
         /// <param name="list"></param>
         /// <returns></returns>
-        public static bool TryGetEntity<T>(string redisKey, SchemaTable table, out List<T> list) where T : AbstractEntity
+        public static bool TryGetEntity<T>(string redisKey, SchemaTable table, out List<T> list) where T : ISqlEntity
         {
             bool result = false;
             try
@@ -539,7 +539,7 @@ namespace ZyGames.Framework.Redis
             return result;
         }
 
-        private static bool TryGetOlbValue<T>(string redisKey, out List<T> list) where T : AbstractEntity
+        private static bool TryGetOlbValue<T>(string redisKey, out List<T> list) where T : ISqlEntity
         {
             bool result = false;
             try
@@ -660,7 +660,7 @@ namespace ZyGames.Framework.Redis
         /// </summary>
         /// <param name="dataList"></param>
         /// <returns></returns>
-        public static bool TryUpdateEntity(IEnumerable<AbstractEntity> dataList)
+        public static bool TryUpdateEntity(IEnumerable<ISqlEntity> dataList)
         {
             var groupList = dataList.GroupBy(t => t.GetType().FullName);
             foreach (var g in groupList)
@@ -675,7 +675,7 @@ namespace ZyGames.Framework.Redis
                     var enm = g.GetEnumerator();
                     while (enm.MoveNext())
                     {
-                        AbstractEntity entity = enm.Current;
+                        var entity = enm.Current;
                         string keyCode = entity.GetKeyCode();
                         var keybytes = ToByteKey(keyCode);
                         redisKey += EntityKeySplitChar + keyCode;
@@ -734,7 +734,7 @@ namespace ZyGames.Framework.Redis
         /// <param name="trans"></param>
         /// <param name="dataList"></param>
         /// <returns></returns>
-        public static void TransUpdateEntity(IRedisTransaction trans, IEnumerable<AbstractEntity> dataList)
+        public static void TransUpdateEntity(IRedisTransaction trans, IEnumerable<ISqlEntity> dataList)
         {
             var groupList = dataList.GroupBy(t => t.GetType().FullName);
             foreach (var g in groupList)
@@ -746,7 +746,7 @@ namespace ZyGames.Framework.Redis
                 var enm = g.GetEnumerator();
                 while (enm.MoveNext())
                 {
-                    AbstractEntity entity = enm.Current;
+                    var entity = enm.Current;
                     string keyCode = entity.GetKeyCode();
                     var keybytes = ToByteKey(keyCode);
                     if (entity.IsDelete)

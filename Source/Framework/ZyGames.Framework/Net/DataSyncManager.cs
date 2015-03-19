@@ -78,11 +78,12 @@ namespace ZyGames.Framework.Net
         /// <param name="isChange"></param>
         /// <param name="getPropertyFunc"></param>
         /// <param name="postColumnFunc"></param>
+        /// <param name="synchronous">is sync data to db</param>
         /// <returns></returns>
-        public static void SendSql<T>(IEnumerable<T> dataList, bool isChange, EntityPropertyGetFunc getPropertyFunc, EnttiyPostColumnFunc postColumnFunc = null)
+        public static bool SendSql<T>(IEnumerable<T> dataList, bool isChange, EntityPropertyGetFunc<T> getPropertyFunc, EnttiyPostColumnFunc<T> postColumnFunc = null, bool synchronous = false)
             where T : ISqlEntity
         {
-            new SqlDataSender(isChange).Send(dataList, getPropertyFunc, postColumnFunc);
+            return new SqlDataSender(isChange).Send(dataList, getPropertyFunc, postColumnFunc, synchronous);
         }
         #endregion
 

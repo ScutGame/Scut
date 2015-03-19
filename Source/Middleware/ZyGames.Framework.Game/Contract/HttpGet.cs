@@ -594,6 +594,7 @@ namespace ZyGames.Framework.Game.Contract
             {
                 if ("1".Equals(_param[aName]))
                 {
+                    rValue = true;
                     result = true;
                 }
                 else

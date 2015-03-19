@@ -817,6 +817,9 @@ namespace ContractTools.WebApp.Base
                     string varName = ToMemberVarName(fieldName);
                     switch (fieldType)
                     {
+                        case FieldType.ULong:
+                        case FieldType.Long:
+                        case FieldType.UInt:
                         case FieldType.Int:
                             {
                                 string minandMaxValue = SetValueRange(minValue, maxValue);
@@ -830,6 +833,7 @@ namespace ContractTools.WebApp.Base
                                 }
                             }
                             break;
+                        case FieldType.UShort:
                         case FieldType.Short:
                             {
                                 string minandMaxValue = SetValueRange(minValue, maxValue);
@@ -1375,9 +1379,13 @@ namespace ContractTools.WebApp.Base
                     string varName = ToMemberVarName(fieldname);
                     switch (fieldType)
                     {
+                        case FieldType.ULong:
+                        case FieldType.Long:
+                        case FieldType.UInt:
                         case FieldType.Int:
                             strTemp.Append("httpGet.GetInt(\"");
                             break;
+                        case FieldType.UShort:
                         case FieldType.Short:
                             strTemp.Append("httpGet.GetWord(\"");
                             break;

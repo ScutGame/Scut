@@ -128,7 +128,7 @@ namespace ZyGames.Framework.Game.Pay
             get;
         }
         /// <summary>
-        /// 支付状态(1:为未支付,2:完成)
+        /// 支付状态(1:为未支付,2:完成,3:fail)
         /// </summary>
         public int PayStatus
         {

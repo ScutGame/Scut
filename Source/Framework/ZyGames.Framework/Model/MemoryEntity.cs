@@ -30,8 +30,8 @@ namespace ZyGames.Framework.Model
 {
     /// <summary>
     /// 内存中一定时间存在的实体，不存储数据库
-	/// </summary>
-	[ProtoContract, Serializable]
+    /// </summary>
+    [ProtoContract, Serializable]
     public class MemoryEntity : EntityChangeEvent, IDataExpired, ISqlEntity
     {
         /// <summary>
@@ -59,6 +59,16 @@ namespace ZyGames.Framework.Model
         {
             return true;
         }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        public virtual string GetKeyCode()
+        {
+            throw new NotImplementedException();
+        }
+
         /// <summary>
         /// 
         /// </summary>
@@ -70,12 +80,27 @@ namespace ZyGames.Framework.Model
         /// <summary>
         /// 
         /// </summary>
-        public bool IsDelete { get; private set; }
+        public string PersonalId { get; protected set; }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public bool IsDelete { get; protected set; }
+
         /// <summary>
         /// 
         /// </summary>
         public virtual void ResetState()
         {
+            
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public virtual void Reset()
+        {
+            ResetState();
         }
     }
 }
