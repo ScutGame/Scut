@@ -150,6 +150,7 @@
     <Compile Include="Contract\PackageReader.cs" />
     <Compile Include="Contract\RemotePackage.cs" />
     <Compile Include="Contract\RemoteService.cs" />
+    <Compile Include="Contract\SessionUser.cs" />
     <Compile Include="Runtime\AppServerConfigger.cs" />
     <Compile Include="Runtime\ConsoleRuntimeHost.cs" />
     <Compile Include="Runtime\RuntimeHost.cs" />

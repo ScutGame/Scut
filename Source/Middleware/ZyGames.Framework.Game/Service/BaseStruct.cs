@@ -348,7 +348,7 @@ namespace ZyGames.Framework.Game.Service
             }
             catch (Exception ex)
             {
-                TraceLog.WriteError("Decode pwd error:{0}", ex);
+                TraceLog.WriteError("Decode password:\"{0}\" error:{1}", password, ex);
             }
             return password;
         }

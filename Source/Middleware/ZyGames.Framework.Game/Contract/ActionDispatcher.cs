@@ -202,7 +202,8 @@ namespace ZyGames.Framework.Game.Contract
         /// <param name="errorInfo"></param>
         public virtual void ResponseError(BaseGameResponse response, ActionGetter actionGetter, int errorCode, string errorInfo)
         {
-            MessageHead head = new MessageHead(actionGetter.GetMsgId(), actionGetter.GetActionId(), errorCode, errorInfo);
+            string st = actionGetter.GetSt();
+            MessageHead head = new MessageHead(actionGetter.GetMsgId(), actionGetter.GetActionId(), st, errorCode, errorInfo);
             MessageStructure sb = new MessageStructure();
             sb.WriteBuffer(head);
             response.BinaryWrite(sb.PopBuffer());

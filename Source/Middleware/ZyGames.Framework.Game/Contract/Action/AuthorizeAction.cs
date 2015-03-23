@@ -149,7 +149,7 @@ namespace ZyGames.Framework.Game.Contract.Action
                 default:
                     break;
             }
-            if (user != null && user.IsLock)
+            if (CheckUserIsLocked(user))
             {
                 ErrorCode = Language.Instance.TimeoutCode;
                 ErrorInfo = Language.Instance.AcountIsLocked;
@@ -161,6 +161,17 @@ namespace ZyGames.Framework.Game.Contract.Action
             }
             return result;
         }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="user"></param>
+        /// <returns></returns>
+        protected virtual bool CheckUserIsLocked(IUser user)
+        {
+            return false;
+        }
+
         /// <summary>
         /// Gets a value indicating whether this instance is refresh.
         /// </summary>

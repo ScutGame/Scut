@@ -64,7 +64,10 @@ namespace ZyGames.Framework.Game.Contract.Action
         {
             EnableWebSocket = true;
         }
-
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
         protected override string BuildJsonPack()
         {
             return _scriptScope.buildPacket(_urlParam, _actionResult);

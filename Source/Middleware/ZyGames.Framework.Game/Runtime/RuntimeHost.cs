@@ -36,6 +36,19 @@ namespace ZyGames.Framework.Game.Runtime
     {
 
         private readonly ManualResetEvent runCompleteEvent = new ManualResetEvent(false);
+        /// <summary>
+        /// 
+        /// </summary>
+        protected static string LoginCharFormat =
+@"///////////////////////////////////////////////////////////////////////////
+
+    //   ) )  //   ) )  //   / / /__  ___/   SCUT Server version {0}
+   ((        //        //   / /    / /       Login Server
+     \\     //        //   / /    / /        
+       ) ) //        //   / /    / /        
+((___ / / ((____/ / ((___/ /    / /                http://www.scutgame.com
+
+";
 
         private static string CharFormat =
 @"///////////////////////////////////////////////////////////////////////////
@@ -76,7 +89,7 @@ namespace ZyGames.Framework.Game.Runtime
         /// <summary>
         /// Run
         /// </summary>
-        public virtual void Run()
+        public void Run()
         {
             try
             {
@@ -87,7 +100,7 @@ namespace ZyGames.Framework.Game.Runtime
             {
                 runCompleteEvent.Set();
             }
-            
+
         }
 
         /// <summary>
@@ -130,7 +143,7 @@ namespace ZyGames.Framework.Game.Runtime
         /// 
         /// </summary>
         /// <returns></returns>
-        protected async System.Threading.Tasks.Task RunAsync()
+        protected virtual async System.Threading.Tasks.Task RunAsync()
         {
             try
             {
@@ -150,11 +163,18 @@ namespace ZyGames.Framework.Game.Runtime
                 TraceLog.WriteError("RunMain error:{0}", ex);
             }
 
+            await RunWait();
+        }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        protected async System.Threading.Tasks.Task RunWait()
+        {
             while (!GameEnvironment.IsCanceled)
             {
                 await System.Threading.Tasks.Task.Delay(1000);
             }
         }
-
     }
 }

@@ -39,10 +39,25 @@ namespace ZyGames.Framework.Game.Contract
     /// </summary>
     public class HttpGet : ActionGetter
     {
+        /// <summary>
+        /// 
+        /// </summary>
         public const string ParamSid = "Sid";
+        /// <summary>
+        /// 
+        /// </summary>
         public const string ParamMsgId = "MsgId";
+        /// <summary>
+        /// 
+        /// </summary>
         public const string ParamActionId = "ActionId";
+        /// <summary>
+        /// 
+        /// </summary>
         public const string ParamUid = "Uid";
+        /// <summary>
+        /// 
+        /// </summary>
         public const string ParamSt = "St";
         private string _originalParam = string.Empty;
         private StringBuilder _error = new StringBuilder();

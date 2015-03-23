@@ -98,7 +98,9 @@ namespace ZyGames.Framework.Game.Contract
         {
             GameEnvironment.IsRunning = false;
         }
-
+        /// <summary>
+        /// 
+        /// </summary>
         public virtual void ReStart()
         {
             OnStartAffer();

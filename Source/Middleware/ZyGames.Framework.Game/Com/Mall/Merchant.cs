@@ -96,16 +96,12 @@ namespace ZyGames.Framework.Game.Com.Mall
             {
                 throw new ArgumentNullException("user");
             }
-            errorCode = TradeErrorCode.Fail;
             var goods = _goodsList.Find(m => m.Id == goodsId);
             if (goods != null)
             {
                 return _controller.TradeGoods(user, goods, goodsNum, out errorCode);
             }
-            else
-            {
-                errorCode = TradeErrorCode.NoGodds;
-            }
+            errorCode = TradeErrorCode.NoGodds;
             return false;
         }
     }

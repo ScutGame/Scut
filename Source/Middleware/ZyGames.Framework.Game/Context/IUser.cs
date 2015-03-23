@@ -38,11 +38,6 @@ namespace ZyGames.Framework.Game.Context
         /// user's token
         /// </summary>
         string Token { get; set; }
-        /// <summary>
-        /// is lock status
-        /// </summary>
-        bool IsLock { get; }
-
  
         /// <summary>
         /// is online
