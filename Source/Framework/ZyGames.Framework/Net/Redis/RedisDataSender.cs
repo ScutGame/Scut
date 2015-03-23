@@ -23,6 +23,7 @@ THE SOFTWARE.
 ****************************************************************************/
 
 using System.Collections.Generic;
+using System.Web.UI.WebControls;
 using ZyGames.Framework.Model;
 using ZyGames.Framework.Redis;
 
@@ -36,7 +37,7 @@ namespace ZyGames.Framework.Net.Redis
 
         #region IDataSender 成员
 
-        public bool Send<T>(IEnumerable<T> dataList) where T : AbstractEntity
+        public bool Send<T>(params T[] dataList) where T : AbstractEntity
         {
             return RedisConnectionPool.TryUpdateEntity(dataList);
         }

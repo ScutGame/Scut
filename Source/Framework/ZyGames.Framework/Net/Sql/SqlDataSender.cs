@@ -56,7 +56,7 @@ namespace ZyGames.Framework.Net.Sql
         /// <typeparam name="T"></typeparam>
         /// <param name="dataList"></param>
         /// <returns></returns>
-        public bool Send<T>(IEnumerable<T> dataList) where T : AbstractEntity
+        public bool Send<T>(params T[] dataList) where T : AbstractEntity
         {
             return Send(dataList, GetPropertyValue, GetPostColumns);
         }

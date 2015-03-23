@@ -46,12 +46,13 @@ namespace ZyGames.Framework.Net
     /// </summary>
     public interface IDataSender : IDisposable
     {
+
         /// <summary>
         /// 
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="dataList"></param>
-        bool Send<T>(IEnumerable<T> dataList) where T : AbstractEntity;
+        bool Send<T>(params T[] dataList) where T : AbstractEntity;
 
     }
 }

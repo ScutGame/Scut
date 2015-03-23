@@ -446,7 +446,7 @@ namespace ZyGames.Framework.Cache.Generic
 
             if (entityList.Count > 0)
             {
-                DataSyncManager.GetDataSender().Send<EntityHistory>(entityList);
+                DataSyncManager.GetDataSender().Send<EntityHistory>(entityList.ToArray());
                 RedisConnectionPool.ProcessReadOnly(client => client.RemoveAll(entityKeys));
             }
         }
