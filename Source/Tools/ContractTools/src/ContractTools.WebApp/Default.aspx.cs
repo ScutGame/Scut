@@ -207,61 +207,69 @@ namespace ContractTools.WebApp
 
         private void BindSourceCode(int slnId, int versionId, int contractId, List<ParamInfoModel> requestParams, List<ParamInfoModel> responseParams)
         {
-            var modol = DbDataLoader.GetContract(slnId, contractId, 0);
-            var tileName = GetTileName(contractId, modol != null ? modol.Descption : null);
-            bool isSelfAction = ckSelfAction.Checked;
+            try
+            {
+                var modol = DbDataLoader.GetContract(slnId, contractId, 0);
+                var tileName = GetTileName(contractId, modol != null ? modol.Descption : null);
+                bool isSelfAction = ckSelfAction.Checked;
 
-            string clientTemp = string.Empty;
-            string serverTemp = string.Empty;
+                string clientTemp = string.Empty;
+                string serverTemp = string.Empty;
 
-            if (ddClientCodeType.Text == "Lua")
-            {
-                clientTemp = Path.Combine(Server.MapPath("~"), "Template/ClientLuaCode.txt");
-                txtClientCode.Text = TemplateHelper.FromatClientLuaTemp(TemplateHelper.ReadTemp(clientTemp), contractId, responseParams, requestParams, tileName);
+                if (ddClientCodeType.Text == "Lua")
+                {
+                    clientTemp = Path.Combine(Server.MapPath("~"), "Template/ClientLuaCode.txt");
+                    txtClientCode.Text = TemplateHelper.FromatClientLuaTemp(TemplateHelper.ReadTemp(clientTemp), contractId, responseParams, requestParams, tileName);
+
+                }
+                else if (ddClientCodeType.Text == "C#")
+                {
+                    clientTemp = Path.Combine(Server.MapPath("~"),
+                        isSelfAction ? "Template/ClientCsharpSelfCode.txt" : "Template/ClientCsharpCode.txt");
+                    txtClientCode.Text = TemplateHelper.FromatClientCsharpTemp(TemplateHelper.ReadTemp(clientTemp),
+                        contractId, responseParams, requestParams, tileName);
+                }
+                else if (ddClientCodeType.Text == "Quick")
+                {
+                    var clientSendTemp = Path.Combine(Server.MapPath("~"), "Template/ClientQuickCode-S.txt");
+                    var clientReceiveTemp = Path.Combine(Server.MapPath("~"), "Template/ClientQuickCode-R.txt");
+                    var codeBuild = new StringBuilder();
+                    codeBuild.AppendLine(TemplateHelper.FromatClientQuickSendTemp(TemplateHelper.ReadTemp(clientSendTemp), contractId, responseParams, requestParams, tileName));
+                    codeBuild.AppendLine(TemplateHelper.FromatClientQuickReceiveTemp(TemplateHelper.ReadTemp(clientReceiveTemp), contractId, responseParams, requestParams, tileName));
+                    txtClientCode.Text = codeBuild.ToString();
+                }
+                else
+                {
+                    txtClientCode.Text = "Not supported code.";
+                }
+
+
+                var slnRecord = DbDataLoader.GetSolution(slnId);
+                if (ddServerCodeType.Text == "C#")
+                {
+                    serverTemp = Path.Combine(Server.MapPath("~"), isSelfAction ? "Template/ServerCsharpSelfCode.txt" : "Template/ServerCsharpCode.txt");
+                    txtServerCode.Text = TemplateHelper.FormatTemp(TemplateHelper.ReadTemp(serverTemp), contractId, responseParams, requestParams, slnRecord, tileName);
+                }
+                else if (ddServerCodeType.Text == "Python")
+                {
+                    serverTemp = Path.Combine(Server.MapPath("~"), "Template/ServerPythonCode.txt");
+                    txtServerCode.Text = TemplateHelper.FormatPython(TemplateHelper.ReadTemp(serverTemp), responseParams, requestParams, slnRecord, tileName);
+                }
+                else if (ddServerCodeType.Text == "Lua")
+                {
+                    //todo not
+                    serverTemp = Path.Combine(Server.MapPath("~"), "Template/ServerLuaCode.txt");
+                    txtServerCode.Text = TemplateHelper.FormatLua(TemplateHelper.ReadTemp(serverTemp), contractId, responseParams, requestParams, slnRecord, tileName);
+                }
+                else
+                {
+                    txtServerCode.Text = "Not supported code.";
+                }
 
             }
-            else if (ddClientCodeType.Text == "C#")
+            catch (Exception ex)
             {
-                clientTemp = Path.Combine(Server.MapPath("~"),
-                    isSelfAction ? "Template/ClientCsharpSelfCode.txt" : "Template/ClientCsharpCode.txt");
-                txtClientCode.Text = TemplateHelper.FromatClientCsharpTemp(TemplateHelper.ReadTemp(clientTemp),
-                    contractId, responseParams, requestParams, tileName);
-            }
-            else if (ddClientCodeType.Text == "Quick")
-            {
-                var clientSendTemp = Path.Combine(Server.MapPath("~"), "Template/ClientQuickCode-S.txt");
-                var clientReceiveTemp = Path.Combine(Server.MapPath("~"), "Template/ClientQuickCode-R.txt");
-                var codeBuild = new StringBuilder();
-                codeBuild.AppendLine(TemplateHelper.FromatClientQuickSendTemp(TemplateHelper.ReadTemp(clientSendTemp), contractId, responseParams, requestParams, tileName));
-                codeBuild.AppendLine(TemplateHelper.FromatClientQuickReceiveTemp(TemplateHelper.ReadTemp(clientReceiveTemp), contractId, responseParams, requestParams, tileName));
-                txtClientCode.Text = codeBuild.ToString();
-            }
-            else
-            {
-                txtClientCode.Text = "Not supported code.";
-            }
-
-
-            var slnRecord = DbDataLoader.GetSolution(slnId);
-            if (ddServerCodeType.Text == "C#")
-            {
-                serverTemp = Path.Combine(Server.MapPath("~"), isSelfAction ? "Template/ServerCsharpSelfCode.txt" : "Template/ServerCsharpCode.txt");
-                txtServerCode.Text = TemplateHelper.FormatTemp(TemplateHelper.ReadTemp(serverTemp), contractId, responseParams, requestParams, slnRecord, tileName);
-            }
-            else if (ddServerCodeType.Text == "Python")
-            {
-                serverTemp = Path.Combine(Server.MapPath("~"), "Template/ServerPythonCode.txt");
-                txtServerCode.Text = TemplateHelper.FormatPython(TemplateHelper.ReadTemp(serverTemp), responseParams, requestParams, slnRecord, tileName);
-            }
-            else if (ddServerCodeType.Text == "Lua")
-            {
-                //todo not
-                serverTemp = Path.Combine(Server.MapPath("~"), "Template/ServerLuaCode.txt");
-                txtServerCode.Text = TemplateHelper.FormatLua(TemplateHelper.ReadTemp(serverTemp), contractId, responseParams, requestParams, slnRecord, tileName);
-            }
-            else
-            {
-                txtServerCode.Text = "Not supported code.";
+                txtServerCode.Text = ex.ToString();
             }
         }
 
@@ -578,7 +586,7 @@ namespace ContractTools.WebApp
             {
                 sortID = currSortID;
             }
-            if (rowIndex > 0)
+            if (rowIndex >= 0)
             {
                 if (rowIndex >= gvRespParams.Rows.Count - 1) return;
 
@@ -673,6 +681,11 @@ namespace ContractTools.WebApp
                     sortID = t != null ? t.Text.ToInt() : rowIndex + 1;
                     break;
                 }
+            }
+            if (sortID < 0)
+            {
+                //未找到End，移动下结尾
+                sortID = gvRespParams.Rows.Count - 1;
             }
             if (sortID > -1)
             {
@@ -781,15 +794,15 @@ namespace ContractTools.WebApp
         {
             if (ddServerCodeType.Text == "C#")
             {
-                SaveAsAttachment(txtServerCode.Text, String.Format("Action{0}.cs", ddContract.Text));
+                SaveAsAttachment(txtServerCode.Text, String.Format("Action{0}.cs", ddContract.Text), true);
             }
             else if (ddServerCodeType.Text == "Python")
             {
-                SaveAsAttachment(txtServerCode.Text, String.Format("action{0}.py", ddContract.Text));
+                SaveAsAttachment(txtServerCode.Text, String.Format("action{0}.py", ddContract.Text), true);
             }
             else if (ddServerCodeType.Text == "Lua")
             {
-                SaveAsAttachment(txtServerCode.Text, String.Format("action{0}.lua", ddContract.Text));
+                SaveAsAttachment(txtServerCode.Text, String.Format("action{0}.lua", ddContract.Text), true);
             }
         }
 
@@ -878,7 +891,7 @@ namespace ContractTools.WebApp
                 }
                 if (zipFileList.Count > 0)
                 {
-                    SaveAsAttachment(string.Format("{0}Action{1}.zip", type, DateTime.Now.ToString("HHmmss")), zipFileList);
+                    SaveAsAttachment(string.Format("{0}Action{1}.zip", type, DateTime.Now.ToString("HHmmss")), zipFileList, true);
                 }
             }
             catch (Exception ex)
@@ -934,7 +947,7 @@ end
                     var clientReceiveTemp = TemplateHelper.ReadTemp(Path.Combine(Server.MapPath("~"), "Template/ClientQuickCode-R.txt"));
                     foreach (var model in contractList)
                     {
-                        if(!model.Complated) continue;
+                        if (!model.Complated) continue;
                         int contractId = model.ID;
                         var tileName = GetTileName(model.ID, model.Descption);
                         List<ParamInfoModel> requestParams;

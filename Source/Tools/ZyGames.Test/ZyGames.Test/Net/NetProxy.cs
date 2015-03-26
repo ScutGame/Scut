@@ -35,7 +35,10 @@ namespace ZyGames.Test.Net
 {
     public abstract class NetProxy
     {
-        public static int RequestTimeout = ConfigUtils.GetSetting("Request.Timeout", 8000);
+        /// <summary>
+        /// Config request timeout(3s).
+        /// </summary>
+        public static int RequestTimeout = ConfigUtils.GetSetting("Request.Timeout", 3000);
 
         public static string Encoding(string str)
         {

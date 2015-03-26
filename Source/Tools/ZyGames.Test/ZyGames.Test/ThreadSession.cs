@@ -44,17 +44,23 @@ namespace ZyGames.Test
 
         public TaskSetting Setting { get; set; }
 
-        public NetProxy Proxy
+        /// <summary>
+        /// connect not timer.
+        /// </summary>
+        public void InitConnect()
         {
-            get
+            if (_netProxy == null)
             {
-                return _netProxy ?? (_netProxy = NetProxy.Create(Setting.Url));
+                _netProxy = NetProxy.Create(Setting.Url);
             }
+            _netProxy.CheckConnect();
         }
+
+        public NetProxy Proxy { get { return _netProxy; } }
 
         public int Id { get; set; }
 
         public CaseContext Context { get; set; }
-        
+
     }
 }

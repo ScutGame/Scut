@@ -19,13 +19,18 @@ namespace ContractTools.WebApp
 
         public byte[] Data { get; set; }
 
-        public byte[] ReadBytes()
+        public byte[] ReadBytes(bool isBom)
         {
             if (string.IsNullOrEmpty(Content))
             {
                 return Data;
             }
-            return Encoding.UTF8.GetBytes(Content);
+            UTF8Encoding WithBOM = new System.Text.UTF8Encoding(isBom);
+            if (isBom)
+            {
+                return BufferUtils.MergeBytes(new byte[] { 0xEF, 0xBB, 0xBF }, WithBOM.GetBytes(Content));
+            }
+            return WithBOM.GetBytes(Content);
         }
     }
 
@@ -75,25 +80,36 @@ namespace ContractTools.WebApp
             return (str ?? "").ToString().Replace("\r\n", "<br>").Replace("\n", "<br>").Replace(" ", "&nbsp;").Replace("\t", "&nbsp;&nbsp;&nbsp;&nbsp;");
         }
 
-        public void SaveAsAttachment(string txtContent, string filename)
+        public void SaveAsAttachment(string txtContent, string filename, bool isBom = false)
         {
+            Response.AppendHeader("Pragma", "No-cache");
+            Response.AppendHeader("Cache-Control", "No-cache");
+            Response.Expires = 0;
             Response.ContentType = "application/octet-stream";
-            Response.ContentEncoding = Encoding.UTF8;
             Response.AppendHeader("Content-Encoding", "UTF8");
+            Response.ContentEncoding = new System.Text.UTF8Encoding(isBom);
             Response.AppendHeader("Content-Disposition", "attachment; filename=" + filename);
-            byte[] buffer = Encoding.UTF8.GetBytes(txtContent);
+
+            UTF8Encoding WithBOM = new System.Text.UTF8Encoding(isBom);
+            byte[] buffer = isBom
+                ? BufferUtils.MergeBytes(new byte[] { 0xEF, 0xBB, 0xBF }, WithBOM.GetBytes(txtContent))//UTF-8 Head
+                : WithBOM.GetBytes(txtContent);
+
             Response.OutputStream.Write(buffer, 0, buffer.Length);
             Response.End();
         }
 
-        public void SaveAsAttachment(string fileName, IEnumerable<ZipFileInfo> fileEnumerable)
+        public void SaveAsAttachment(string fileName, IEnumerable<ZipFileInfo> fileEnumerable, bool isBom = false)
         {
             byte[] buffer;
-            if (TryZipFileMain(fileEnumerable, out buffer))
+            if (TryZipFileMain(fileEnumerable, out buffer, isBom))
             {
+                Response.AppendHeader("Pragma", "No-cache");
+                Response.AppendHeader("Cache-Control", "No-cache");
+                Response.Expires = 0;
                 Response.ContentType = "application/octet-stream";
-                Response.ContentEncoding = Encoding.UTF8;
                 Response.AppendHeader("Content-Encoding", "UTF8");
+                Response.ContentEncoding = new System.Text.UTF8Encoding(isBom);
                 Response.AppendHeader("Content-Disposition", "attachment; filename=" + fileName);
                 Response.AddHeader("Content-Length", buffer.Length.ToString());
                 Response.OutputStream.Write(buffer, 0, buffer.Length);
@@ -101,7 +117,7 @@ namespace ContractTools.WebApp
             }
         }
 
-        public bool TryZipFileMain(IEnumerable<ZipFileInfo> fileEnumerable, out byte[] outStream, int zipLevel = 9)
+        public bool TryZipFileMain(IEnumerable<ZipFileInfo> fileEnumerable, out byte[] outStream, bool isBom, int zipLevel = 9)
         {
             bool result = true;
             outStream = null;
@@ -115,7 +131,7 @@ namespace ContractTools.WebApp
                 {
                     foreach (var file in fileEnumerable)
                     {
-                        byte[] buffer = file.ReadBytes();
+                        byte[] buffer = file.ReadBytes(isBom);
                         //建立压缩实体
                         ZipEntry entry = new ZipEntry(file.Name); //原文件名
                         //时间
