@@ -27,7 +27,6 @@ using ZyGames.Framework.Common.Configuration;
 using ZyGames.Framework.Common.Log;
 using ZyGames.Framework.Common.Security;
 using ZyGames.Framework.Game.Config;
-using ZyGames.Framework.Game.Contract;
 using ZyGames.Framework.Game.Lang;
 using ZyGames.Framework.Game.Runtime;
 
@@ -38,30 +37,6 @@ namespace ZyGames.Framework.Game.Service
     /// </summary>
     public abstract class BaseStruct : GameStruct
     {
-        /// <summary>
-        /// 
-        /// </summary>
-        //public static string PublishType = ConfigUtils.GetSetting("PublishType", "Release");
-
-
-        private int _userId;
-        /// <summary>
-        /// 
-        /// </summary>
-        public int UserId
-        {
-            get
-            {
-                return _userId;
-            }
-            set { _userId = value; }
-        }
-
-        /// <summary>
-        /// 当前游戏会话
-        /// </summary>
-        public GameSession Current { get; private set; }
-
         /// <summary>
         /// 兼容子类变量名
         /// </summary>
@@ -87,7 +62,7 @@ namespace ZyGames.Framework.Game.Service
             get
             {
                 var section = ConfigManager.Configger.GetFirstOrAddConfig<AppServerSection>();
-                return section.PublishType.Equals("Release", StringComparison.CurrentCultureIgnoreCase);
+                return section.PublishType.Equals("Release", StringComparison.OrdinalIgnoreCase);
             }
         }
         /// <summary>
@@ -124,9 +99,6 @@ namespace ZyGames.Framework.Game.Service
         /// </summary>
         public void DoInit()
         {
-            _userId = actionGetter.GetUserId();
-            Uid = _userId.ToString();
-
             if (!IsPush)
             {
                 MsgId = actionGetter.GetMsgId();
@@ -151,7 +123,7 @@ namespace ZyGames.Framework.Game.Service
         {
             ErrorCode = Language.Instance.LockTimeoutCode;
             if (isWriteInfo && !IsRealse) ErrorInfo = Language.Instance.ServerBusy;
-            TraceLog.WriteError("Action-{0} Uid:{1} locked timeout.", actionId, UserId);
+            TraceLog.WriteError("Action-{0} Uid:{1} locked timeout.", actionId, Current.UserId);
             WriteErrorAction(response);
         }
 

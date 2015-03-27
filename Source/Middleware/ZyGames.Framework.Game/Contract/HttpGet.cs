@@ -123,11 +123,11 @@ namespace ZyGames.Framework.Game.Contract
         public IList<string> GetCustomKeys()
         {
             return _param.Keys.Where(k =>
-                !string.Equals(k, ParamSid, StringComparison.CurrentCultureIgnoreCase) &&
-                !string.Equals(k, ParamMsgId, StringComparison.CurrentCultureIgnoreCase) &&
-                !string.Equals(k, ParamActionId, StringComparison.CurrentCultureIgnoreCase) &&
-                !string.Equals(k, ParamUid, StringComparison.CurrentCultureIgnoreCase) &&
-                !string.Equals(k, ParamSt, StringComparison.CurrentCultureIgnoreCase)
+                !string.Equals(k, ParamSid, StringComparison.OrdinalIgnoreCase) &&
+                !string.Equals(k, ParamMsgId, StringComparison.OrdinalIgnoreCase) &&
+                !string.Equals(k, ParamActionId, StringComparison.OrdinalIgnoreCase) &&
+                !string.Equals(k, ParamUid, StringComparison.OrdinalIgnoreCase) &&
+                !string.Equals(k, ParamSt, StringComparison.OrdinalIgnoreCase)
                 ).ToList();
         }
 
@@ -164,11 +164,6 @@ namespace ZyGames.Framework.Game.Contract
         {
             get { return _session != null ? _session.RemoteAddress : string.Empty; }
         }
-
-        /// <summary>
-        /// get current UserId.
-        /// </summary>
-        public int UserId { get; private set; }
 
 
         private string _paramString;
@@ -218,19 +213,18 @@ namespace ZyGames.Framework.Game.Contract
         {
             MsgId = (_param.ContainsKey(ParamMsgId) ? _param[ParamMsgId] : "0").ToInt();
             _actionId = (_param.ContainsKey(ParamActionId) ? _param[ParamActionId] : "0").ToInt();
-            UserId = (_param.ContainsKey(ParamUid) ? _param[ParamUid] : "0").ToInt();
         }
 
         private void RemoveSignKey(string d)
         {
-            int startIndex = d.IndexOf("?d=", StringComparison.CurrentCultureIgnoreCase);
+            int startIndex = d.IndexOf("?d=", StringComparison.OrdinalIgnoreCase);
             if (startIndex > -1)
             {
                 d = d.Substring(startIndex + 3);
                 d = HttpUtility.UrlDecode(d);
             }
 
-            int index = d.LastIndexOf("&sign=", StringComparison.CurrentCultureIgnoreCase);
+            int index = d.LastIndexOf("&sign=", StringComparison.OrdinalIgnoreCase);
             if (index != -1)
             {
                 _originalParam = d.Substring(0, index);
@@ -808,7 +802,7 @@ namespace ZyGames.Framework.Game.Contract
         /// <returns></returns>
         public override int GetUserId()
         {
-            return UserId;
+            return Session != null ? Session.UserId : 0;
         }
 
         /// <summary>

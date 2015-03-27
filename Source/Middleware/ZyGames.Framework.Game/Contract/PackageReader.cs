@@ -175,10 +175,10 @@ namespace ZyGames.Framework.Game.Contract
         protected virtual void ParseParamString(string paramString)
         {
             string str = paramString;
-            int index = paramString.IndexOf(PrefixParamChar, StringComparison.CurrentCultureIgnoreCase);
+            int index = paramString.IndexOf(PrefixParamChar, StringComparison.OrdinalIgnoreCase);
             if (index != -1)
             {
-                if (paramString.StartsWith(PrefixRouteChar, StringComparison.CurrentCultureIgnoreCase))
+                if (paramString.StartsWith(PrefixRouteChar, StringComparison.OrdinalIgnoreCase))
                 {
                     //ex: "route:xxx?d="
                     RouteName = paramString.Substring(PrefixRouteChar.Length, index - PrefixRouteChar.Length);
@@ -199,7 +199,7 @@ namespace ZyGames.Framework.Game.Contract
                 if (string.IsNullOrEmpty(key)) continue;
                 var val = nvc[key];
 
-                if (PrefixRouteChar.StartsWith(key, StringComparison.CurrentCultureIgnoreCase))
+                if (PrefixRouteChar.StartsWith(key, StringComparison.OrdinalIgnoreCase))
                 {
                     RouteName = val;
                     continue;

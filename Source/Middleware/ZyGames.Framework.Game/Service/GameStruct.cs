@@ -28,6 +28,7 @@ using System.Web;
 using ZyGames.Framework.Common.Configuration;
 using ZyGames.Framework.Common.Log;
 using ZyGames.Framework.Game.Config;
+using ZyGames.Framework.Game.Contract;
 using ZyGames.Framework.RPC.Sockets;
 
 namespace ZyGames.Framework.Game.Service
@@ -91,6 +92,21 @@ namespace ZyGames.Framework.Game.Service
         protected DataStruct dataStruct = new DataStruct();
 
         /// <summary>
+        /// 当前游戏会话
+        /// </summary>
+        public GameSession Current { get; internal set; }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public int UserId
+        {
+            get
+            {
+                return Current != null ? Current.UserId : 0;
+            }
+        }
+        /// <summary>
         /// ActionID，接口编号
         /// </summary>
         protected int actionId;
@@ -99,11 +115,6 @@ namespace ZyGames.Framework.Game.Service
         /// 本次登录SessionID句柄
         /// </summary>
         protected string Sid;
-        /// <summary>
-        /// 提交Action用户唯一ID
-        /// </summary>
-        protected string Uid;
-
         /// <summary>
         /// 是否是错误的URL请求串
         /// </summary>
@@ -343,7 +354,7 @@ namespace ZyGames.Framework.Game.Service
             var time = (iVisitEndTime - iVisitBeginTime).TotalMilliseconds;
             if (actionTimeOut > 0 && time > actionTimeOut)
             {
-                TraceLog.WriteWarn("Action-{2} Uid:{3} access timeout {0}/{1}ms.", time, actionTimeOut, actionId, Uid);
+                TraceLog.WriteWarn("Action-{2} Uid:{3} access timeout {0}/{1}ms.", time, actionTimeOut, actionId, Current.UserId);
             }
         }
 
@@ -489,24 +500,20 @@ namespace ZyGames.Framework.Game.Service
         /// <summary>
         /// 保存日志到文本文件
         /// </summary>
-        /// <param name="aExObj">出错时的异常描述</param>
-        protected void SaveLog(Exception aExObj)
+        /// <param name="error">出错时的异常描述</param>
+        protected void SaveLog(Exception error)
         {
-            SaveLog("", aExObj);
+            SaveLog("", error);
         }
 
         /// <summary>
         /// 保存日志到文本文件
         /// </summary>
-        /// <param name="aUseLog"></param>
-        /// <param name="aExObj"></param>
-        protected void SaveLog(String aUseLog, Exception aExObj)
+        /// <param name="message"></param>
+        /// <param name="error"></param>
+        protected void SaveLog(String message, Exception error)
         {
-            if (oBaseLog == null)
-            {
-                oBaseLog = new BaseLog("Action" + this.actionId.ToString());
-            }
-            oBaseLog.SaveLog(aUseLog, aExObj);
+            TraceLog.WriteError("Action{0} {1} error:{2}", actionId, message, error);
         }
 
         /// <summary>

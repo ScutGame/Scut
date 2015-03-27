@@ -30,6 +30,7 @@ using ZyGames.Framework.Game.Lang;
 using ZyGames.Framework.Game.Runtime;
 using ZyGames.Framework.Game.Service;
 using ZyGames.Framework.Game.Sns;
+using ZyGames.Framework.Game.Sns.Service;
 
 namespace ZyGames.Framework.Game.Contract.Action
 {
@@ -118,8 +119,8 @@ namespace ZyGames.Framework.Game.Contract.Action
         /// </summary>
         public override void BuildPacket()
         {
-            PushIntoStack(Sid);
-            PushIntoStack(Uid);
+            PushIntoStack(Current.SessionId);
+            PushIntoStack(Current.User.ToNotNullString());
             PushIntoStack(UserType);
             PushIntoStack(MathUtils.Now.ToString("yyyy-MM-dd HH:mm"));
             PushIntoStack(GuideId);
@@ -179,41 +180,53 @@ namespace ZyGames.Framework.Game.Contract.Action
         {
             ILogin login = CreateLogin();
             login.Password = DecodePassword(login.Password);
-            if (login.CheckLogin())
+            try
             {
-                Uid = login.UserID;
-                Sid = Current.SessionId;
-                UserId = Uid.ToInt();
-                PassportId = login.PassportID;
-                UserType = login.UserType;
-
-                SetParameter(login);
-                IUser user;
-                if (!GetError() && DoSuccess(UserId, out user))
+                Sid = string.Empty;
+                if (login.CheckLogin())
                 {
-                    var session = GameSession.Get(Sid);
-                    if (session != null)
+                    Sid = Current.SessionId;
+                    PassportId = login.PassportID;
+                    UserType = login.UserType;
+
+                    SetParameter(login);
+                    IUser user;
+                    if (!GetError() && DoSuccess(login.UserID.ToInt(), out user))
                     {
-                        if (user != null)
+                        var session = GameSession.Get(Sid);
+                        if (session != null)
                         {
-                            session.Bind(user);
+                            if (user != null)
+                            {
+                                session.Bind(user);
+                            }
+                            return true;
                         }
-                        return true;
                     }
                 }
+                else
+                {
+                    DoLoginFail(login);
+                }
             }
-            else
+            catch (HandlerException error)
             {
-                Uid = string.Empty;
-                Sid = string.Empty;
-                UserId = 0;
-                ErrorCode = Language.Instance.ErrorCode;
-                ErrorInfo = Language.Instance.PasswordError;
+                ErrorCode = (int)error.StateCode;
+                ErrorInfo = error.Message;
             }
             return false;
         }
 
-      
+        /// <summary>
+        /// 
+        /// </summary>
+        protected virtual void DoLoginFail(ILogin login)
+        {
+            ErrorCode = Language.Instance.ErrorCode;
+            ErrorInfo = Language.Instance.PasswordError;
+        }
+
+
         /// <summary>
         /// Sets the parameter.
         /// </summary>

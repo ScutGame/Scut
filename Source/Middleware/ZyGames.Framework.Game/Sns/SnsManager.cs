@@ -23,8 +23,6 @@ THE SOFTWARE.
 ****************************************************************************/
 using System;
 using System.Collections.Generic;
-using ZyGames.Framework.Common.Security;
-using ZyGames.Framework.Game.Runtime;
 
 namespace ZyGames.Framework.Game.Sns
 {
@@ -36,14 +34,14 @@ namespace ZyGames.Framework.Game.Sns
         /// <summary>
         /// 获取通行证
         /// </summary>
-        /// <param name="deviceID"></param>
+        /// <param name="imei">if null then get new pid</param>
         /// <returns></returns>
-        public static string[] GetRegPassport(string deviceID)
+        public static string[] GetRegPassport(string imei)
         {
-            if (!SnsCenterUser.CheckDevice(deviceID))
+            if (!SnsCenterUser.CheckDevice(imei))
                 throw (new Exception("禁止登入"));
-            List<string> list = new List<string>();
-            SnsCenterUser user = SnsCenterUser.GetUserByDeviceID(deviceID);
+            var list = new List<string>();
+            SnsCenterUser user = SnsCenterUser.GetUserByDeviceId(imei);
 
             if (user != null)
             {
@@ -64,20 +62,18 @@ namespace ZyGames.Framework.Game.Sns
         /// <summary>
         /// 注册
         /// </summary>
-        /// <param name="user"></param>
+        /// <param name="pid"></param>
         /// <param name="password"></param>
         /// <returns></returns>
-        public static bool Register(string user, string password)
+        public static bool Register(string pid, string password)
         {
-            SnsCenterUser snsCenterUser = new SnsCenterUser(user, password, string.Empty);
-            if (snsCenterUser.GetUserId() == 0)
+            SnsCenterUser snsCenterUser = new SnsCenterUser(pid, password, string.Empty);
+            var snsuser = snsCenterUser.GetUserInfo(pid);
+            if (snsuser.UserId <= 0)
             {
                 return snsCenterUser.InsertSnsUser() > 0;
             }
-            else
-            {
-                return true;
-            }
+            return true;
         }
 
         /// <summary>
@@ -85,23 +81,33 @@ namespace ZyGames.Framework.Game.Sns
         /// </summary>
         /// <param name="pid"></param>
         /// <param name="password"></param>
-        /// <param name="deviceID"></param>
+        /// <param name="imei"></param>
         /// <param name="openId"></param>
         /// <returns>0:失败, 1:成功 2:已绑定</returns>
-        public static int RegisterWeixin(string pid, string password, string deviceID, string openId)
+        public static int RegisterWeixin(string pid, string password, string imei, string openId)
         {
-            SnsCenterUser snsCenterUser = new SnsCenterUser(pid, password, deviceID);
-
-            if (snsCenterUser.GetUserId() > 0)
+            SnsCenterUser snsCenterUser = new SnsCenterUser(pid, password, imei);
+            var snsuser = snsCenterUser.GetUserInfo(pid);
+            if (snsuser.UserId > 0)
             {
-                if (string.IsNullOrEmpty(snsCenterUser.WeixinCode))
+                if (string.IsNullOrEmpty(snsuser.WeixinCode))
                 {
-                    SnsUser snsuser = new SnsUser() { PassportId = pid, WeixinCode = openId };
-                    return snsCenterUser.ChangeUserInfo(pid, snsuser) > 0 ? 1 : 0;
+                    return snsCenterUser.ChangeUserInfo(pid, new SnsUser() { PassportId = pid, WeixinCode = openId }) > 0 ? 1 : 0;
                 }
                 return 2;
             }
             return 0;
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="passportId"></param>
+        /// <param name="password"></param>
+        /// <returns>userid</returns>
+        public static int QuickRegisterPassport(string passportId, string password)
+        {
+            return DoRegisterPassport(passportId, password, null, null);
         }
 
         /// <summary>
@@ -110,19 +116,23 @@ namespace ZyGames.Framework.Game.Sns
         /// <param name="password"></param>
         /// <param name="paramNames"></param>
         /// <param name="paramValues"></param>
-        /// <returns></returns>
-        public static string RegisterPassport(string password, string[] paramNames, string[] paramValues)
+        /// <returns>pid</returns>
+        public static string RegisterPassport(string password, string[] paramNames = null, string[] paramValues = null)
         {
             string pid = new SnsPassport().GetRegPassport();
-            SnsCenterUser snsCenterUser = new SnsCenterUser(pid, password, string.Empty);
-            if (snsCenterUser.InsertSnsUser(paramNames, paramValues) > 0)
+            DoRegisterPassport(pid, password, paramNames, paramValues);
+            return pid;
+        }
+
+        private static int DoRegisterPassport(string passportId, string password, string[] paramNames, string[] paramValues)
+        {
+            SnsCenterUser snsCenterUser = new SnsCenterUser(passportId, password, string.Empty);
+            var snsuser = snsCenterUser.GetUserInfo(passportId);
+            if (snsuser.UserId > 0)
             {
-                return pid;
+                return 0;
             }
-            else
-            {
-                return string.Empty;
-            }
+            return snsCenterUser.InsertSnsUser(paramNames, paramValues);
         }
 
         /// <summary>
@@ -152,20 +162,27 @@ namespace ZyGames.Framework.Game.Sns
         /// </summary>
         /// <param name="user"></param>
         /// <param name="password"></param>
-        /// <param name="deviceID"></param>
+        /// <param name="imei"></param>
         /// <returns></returns>
-        public static int LoginByDevice(string user, string password, string deviceID)
+        public static int LoginByDevice(string user, string password, string imei)
         {
-            if (!SnsCenterUser.CheckDevice(deviceID))
+            if (!SnsCenterUser.CheckDevice(imei))
                 throw (new Exception("禁止登录"));
-            SnsCenterUser snsCenterUser = new SnsCenterUser(user, password, deviceID);
-            int userID = snsCenterUser.GetUserId();
-            if (userID == 0 && !snsCenterUser.IsExist())
+            int userId = 0;
+            var snsCenterUser = new SnsCenterUser(user, password, imei);
+            var snsUser = snsCenterUser.GetUserInfo(user);
+            if (snsUser == null || snsUser.UserId <= 0)
             {
-                userID = snsCenterUser.InsertSnsUser();
+                userId = snsCenterUser.InsertSnsUser();
+                SnsCenterUser.AddLoginLog(imei, user);
+                return userId;
             }
-            SnsCenterUser.AddLoginLog(deviceID, user);
-            return userID;
+            if (snsCenterUser.ValidatePassport(snsUser))
+            {
+                return snsUser.UserId;
+            }
+            SnsCenterUser.AddLoginLog(imei, user);
+            return userId;
         }
 
         /// <summary>
@@ -182,25 +199,26 @@ namespace ZyGames.Framework.Game.Sns
         /// <summary>
         /// 通道商验证登录
         /// </summary>
-        /// <param name="retailID"></param>
+        /// <param name="retailId"></param>
         /// <param name="retailUser"></param>
         /// <returns></returns>
-        public static string[] LoginByRetail(string retailID, string retailUser)
+        public static string[] LoginByRetail(string retailId, string retailUser)
         {
-            string[] sArr = new string[2];
-            SnsCenterUser snsCenterUser = new SnsCenterUser()
+            string[] result = new string[2];
+            SnsCenterUser snsCenterUser = new SnsCenterUser();
+            var snsuser = snsCenterUser.GetUserInfo(retailId, retailUser);
+            if (snsuser.UserId <= 0)
             {
-                RetailID = retailID,
-                RetailUser = retailUser
-            };
-            int userID = snsCenterUser.GetUserId();
-            if (userID == 0 && !snsCenterUser.IsExistRetail())
-            {
-                userID = snsCenterUser.InsertSnsUser();
+                //自动获取通行证
+                SnsPassport passport = new SnsPassport();
+                string pid = passport.GetRegPassport();
+                string pwd = passport.GetRandomPwd();
+                result[0] = new SnsCenterUser(pid, pwd, string.Empty).InsertSnsUser().ToString();
+                result[1] = pid;
             }
-            sArr[0] = userID.ToString();
-            sArr[1] = snsCenterUser.PassportId;
-            return sArr;
+            result[0] = snsuser.UserId.ToString();
+            result[1] = snsuser.PassportId;
+            return result;
         }
 
         /// <summary>
@@ -235,7 +253,8 @@ namespace ZyGames.Framework.Game.Sns
         public static bool CheckPassportPwd(string pid, string password)
         {
             SnsCenterUser snsCenterUser = new SnsCenterUser(pid, password, string.Empty);
-            return snsCenterUser.GetUserId() > 0;
+            var snsuser = snsCenterUser.GetUserInfo(pid);
+            return snsCenterUser.ValidatePassport(snsuser);
         }
 
         /// <summary>

@@ -43,7 +43,6 @@ namespace ZyGames.Framework.Game.Config
             ProductCode = ConfigUtils.GetSetting("Product.Code", 1);
             ProductName = ConfigUtils.GetSetting("Product.Name", "Game");
             ProductServerId = ConfigUtils.GetSetting("Product.ServerId", 1);
-            UserEncodeKey = ConfigUtils.GetSetting("Product.DesEnKey", "BF3856AD");
             UserLoginDecodeKey = ConfigUtils.GetSetting("Product.ClientDesDeKey", "n7=7=7dk");
 
             PublishType = ConfigUtils.GetSetting("PublishType", "Release");
@@ -64,6 +63,7 @@ namespace ZyGames.Framework.Game.Config
             EntityAssemblyName = ConfigUtils.GetSetting("Game.Entity.AssemblyName");
             DecodeFuncTypeName = ConfigUtils.GetSetting("Game.Script.DecodeFunc.TypeName", "");
             RemoteTypeName = ConfigUtils.GetSetting("Game.Remote.Script.TypeName", "Game.Script.Remote.{0}");
+            AccountServerUrl = ConfigUtils.GetSetting("AccountServerUrl", "");
         }
 
         /// <summary>
@@ -90,6 +90,7 @@ namespace ZyGames.Framework.Game.Config
         /// <summary>
         /// user encode password key to db.
         /// </summary>
+        [Obsolete("Sns no use")]
         public string UserEncodeKey { get; set; }
 
         /// <summary>
@@ -127,6 +128,11 @@ namespace ZyGames.Framework.Game.Config
         /// 
         /// </summary>
         public string ScriptTypeName { get; set; }
+        /// <summary>
+        /// 
+        /// </summary>
+        public string AccountServerUrl { get; set; }
+        
 
     }
 }

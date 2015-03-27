@@ -22,14 +22,10 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ****************************************************************************/
 using System;
-using System.Collections.Generic;
-using System.IO;
 using System.Net;
 using System.Text;
 using System.Web;
-using ZyGames.Framework.Common;
 using ZyGames.Framework.Game.Service;
-using ZyGames.Framework.RPC.Http;
 using ZyGames.Framework.RPC.IO;
 using ZyGames.Framework.RPC.Sockets;
 
@@ -130,7 +126,9 @@ namespace ZyGames.Framework.Game.Contract
             string data = "";
             if (Environment.OSVersion.Platform == PlatformID.Unix)
             {
-                if (String.Compare(request.HttpMethod, "get", StringComparison.OrdinalIgnoreCase) == 0)
+                //The RawUrl Get is exist ".aspx?d=" char on the platform of mono.
+                if (String.Compare(request.HttpMethod, "get", StringComparison.OrdinalIgnoreCase) == 0 &&
+                     request.RawUrl.StartsWith(".aspx?d=", StringComparison.OrdinalIgnoreCase))
                 {
                     data = request.RawUrl.Substring(8);
                     data = HttpUtility.UrlDecode(data);

@@ -151,12 +151,12 @@ namespace ZyGames.Framework.Game.Contract
                 {
                     //check command
                     string command = e.Meaage.Message;
-                    if ("ping".Equals(command, StringComparison.CurrentCultureIgnoreCase))
+                    if ("ping".Equals(command, StringComparison.OrdinalIgnoreCase))
                     {
                         OnPing(sender, e);
                         return;
                     }
-                    if ("pong".Equals(command, StringComparison.CurrentCultureIgnoreCase))
+                    if ("pong".Equals(command, StringComparison.OrdinalIgnoreCase))
                     {
                         OnPong(sender, e);
                         return;

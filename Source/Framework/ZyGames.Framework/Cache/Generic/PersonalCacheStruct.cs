@@ -570,19 +570,24 @@ namespace ZyGames.Framework.Cache.Generic
             string paramName = receiveParam.Schema.PersonalName;
             int periodTime = receiveParam.Schema.PeriodTime;
             int maxCount = receiveParam.Schema.Capacity;
+
             var provider = DbConnectionProvider.CreateDbProvider(receiveParam.Schema);
-            if (provider == null)
+            if (receiveParam.Schema.StorageType.HasFlag(StorageType.ReadOnlyDB) ||
+                receiveParam.Schema.StorageType.HasFlag(StorageType.ReadWriteDB))
             {
-                TraceLog.WriteError("Not found db connection of {0} entity.", receiveParam.Schema.EntityName);
-                return false;
+                if (provider == null)
+                {
+                    TraceLog.WriteError("Not found db connection of {0} entity.", receiveParam.Schema.EntityName);
+                    return false;
+                }
+                var filter = new DbDataFilter(maxCount);
+                if (!string.IsNullOrEmpty(personalId))
+                {
+                    filter.Condition = provider.FormatFilterParam(paramName);
+                    filter.Parameters.Add(paramName, personalId);
+                }
+                receiveParam.DbFilter = filter;
             }
-            var filter = new DbDataFilter(maxCount);
-            if (!string.IsNullOrEmpty(personalId))
-            {
-                filter.Condition = provider.FormatFilterParam(paramName);
-                filter.Parameters.Add(paramName, personalId);
-            }
-            receiveParam.DbFilter = filter;
             return TryLoadCache(personalId, receiveParam, periodTime);
         }
 

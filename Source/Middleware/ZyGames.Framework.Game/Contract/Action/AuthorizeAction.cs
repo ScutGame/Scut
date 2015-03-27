@@ -84,20 +84,24 @@ namespace ZyGames.Framework.Game.Contract.Action
         /// 
         /// </summary>
         /// <returns></returns>
-        protected virtual bool CheckValidityPeriod(TimeSpan minInterval, TimeSpan maxInterval)
+        protected bool CheckValidityPeriod(TimeSpan minInterval, TimeSpan maxInterval)
         {
             string st = actionGetter.GetSt();
-            if (!string.IsNullOrEmpty(st) && !string.Equals(st, "st", StringComparison.CurrentCultureIgnoreCase))
+            RefleshSt();
+            if (IgnoreActionId)
             {
-                RefleshSt();
+                return true;
+            }
+            if (!string.IsNullOrEmpty(st) && !string.Equals(st, "st", StringComparison.OrdinalIgnoreCase))
+            {
                 long time;
                 if (long.TryParse(st, out time))
                 {
                     var ts = MathUtils.Now - MathUtils.UnixEpochDateTime.AddSeconds(time);
-                    return ts > minInterval && ts < maxInterval;
+                    return maxInterval == TimeSpan.Zero || (ts > minInterval && ts < maxInterval);
                 }
             }
-            return false;
+            return true;
         }
 
         /// <summary>
