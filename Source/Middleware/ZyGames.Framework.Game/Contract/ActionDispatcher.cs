@@ -126,12 +126,17 @@ namespace ZyGames.Framework.Game.Contract
             string data = "";
             if (Environment.OSVersion.Platform == PlatformID.Unix)
             {
-                //The RawUrl Get is exist ".aspx?d=" char on the platform of mono.
+                //The RawUrl Get is exist "/xxx.aspx?d=" char on the platform of mono.
+                int index;
                 if (String.Compare(request.HttpMethod, "get", StringComparison.OrdinalIgnoreCase) == 0 &&
-                     request.RawUrl.StartsWith(".aspx?d=", StringComparison.OrdinalIgnoreCase))
+                    (index = request.RawUrl.IndexOf("?d=", StringComparison.OrdinalIgnoreCase)) != -1)
                 {
-                    data = request.RawUrl.Substring(8);
+                    data = request.RawUrl.Substring(index + 3);
                     data = HttpUtility.UrlDecode(data);
+                }
+                else
+                {
+                    data = request.RawUrl;
                 }
             }
             else

@@ -238,8 +238,8 @@ namespace ContractTools.WebApp
             st = msg.St;
             ResponseHead(contractId, respContent, msg.ErrorCode, msg.ErrorInfo, msg.St);
 
-
-            if (msg.ErrorCode < ErrorCode)
+            //AccountServer Error
+            if (msg.ErrorCode < ErrorCode && msg.ErrorCode != 105 && msg.ErrorCode != 106)
             {
                 //消息体
                 respContent.AppendFormat("<h3>{0}-{1}</h3>", contractId, "返回结果");
