@@ -95,11 +95,11 @@ namespace ZyGames.Framework.RPC.IO
         //private int _offset;
         private Encoding _encoding = Encoding.UTF8;
 
-        private int _currRecordPos;
+        private Stack<int> _currRecordPos = new Stack<int>();
         /// <summary>
         /// 当前循环体字节长度
         /// </summary>
-        private int _currRecordSize;
+        private Stack<int> _currRecordSize = new Stack<int>();
 
         /// <summary>
         /// 
@@ -160,7 +160,7 @@ namespace ZyGames.Framework.RPC.IO
         /// </summary>
         public void Reset()
         {
-            _currRecordPos = 0;
+            _currRecordPos.Clear();
             _msBuffers.Position = 0;
         }
 
@@ -311,19 +311,30 @@ namespace ZyGames.Framework.RPC.IO
         /// </summary>
         public void RecordStart()
         {
-            _currRecordPos = 0;
-            _currRecordSize = ReadInt();
+            _currRecordPos.Push(0);
+            _currRecordSize.Push(ReadInt());
         }
 
         /// <summary>
         /// 循环结束
         /// </summary>
-        public void RecordEnd()
+        public byte[] RecordEnd()
         {
-            int count = _currRecordSize - _currRecordPos;
-            byte[] bytes = ReadByte(count);
-            _currRecordSize = 0;
-            _currRecordPos = 0;
+            int length = _currRecordSize.Count > 0 ? _currRecordSize.Pop() : 0;
+            int pos = _currRecordPos.Count > 0 ? _currRecordPos.Pop() : 0;
+            int count = length - pos;
+            byte[] bytes = new byte[0];
+            if (count > 0)
+            {
+                bytes = ReadByte(count);
+                if (_currRecordPos.Count > 0) _currRecordPos.Pop();
+            }
+            if (_currRecordPos.Count > 0)
+            {
+                int parentPos = _currRecordPos.Pop();
+                _currRecordPos.Push(parentPos + length);
+            }
+            return bytes;
         }
 
         /// <summary>
@@ -347,7 +358,9 @@ namespace ZyGames.Framework.RPC.IO
             VerifyBufferLength(count);
             byte[] bytes = new byte[count];
             int len = _msBuffers.Read(bytes, 0, count);
-            _currRecordPos += len;
+            int pos = _currRecordPos.Count > 0 ? _currRecordPos.Pop() : 0;
+            pos += len;
+            _currRecordPos.Push(pos);
             return bytes;
         }
 

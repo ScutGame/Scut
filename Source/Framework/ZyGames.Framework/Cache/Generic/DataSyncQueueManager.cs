@@ -120,7 +120,7 @@ namespace ZyGames.Framework.Cache.Generic
         //todo test
         private static ConcurrentDictionary<string, KeyValuePair<int, string>> _checkVersions = new ConcurrentDictionary<string, KeyValuePair<int, string>>();
         /// <summary>
-        /// 
+        /// Total change count.
         /// </summary>
         public static long SendWaitCount;
         /// <summary>
@@ -144,10 +144,11 @@ namespace ZyGames.Framework.Cache.Generic
             }
         }
 
+        private static long PreChangedCount = 0;
         /// <summary>
         /// 
         /// </summary>
-        public static int ExecuteCount = 20;
+        public static int ExecuteCount = 100;
         /// <summary>
         /// 
         /// </summary>
@@ -221,7 +222,7 @@ namespace ZyGames.Framework.Cache.Generic
         public static void Start(CacheSetting setting, ICacheSerializer serializer)
         {
             _serializer = serializer;
-            _entityQueueTimer = new Timer(OnEntitySyncQueue, null, 60, 500);
+            _entityQueueTimer = new Timer(OnEntitySyncQueue, null, 60, 100);
             _entityQueueWacher = new Timer(CheckEntityQueue, null, 60, 60000);
             MessageQueueSection section = GetSection();
             InitRedisQueue(section);
@@ -305,16 +306,19 @@ namespace ZyGames.Framework.Cache.Generic
             try
             {
                 //todo trace
-                int count = _entitySet.Count;
+                var temp = Interlocked.Exchange(ref _entitySet, new HashSet<string>());
+                int count = temp.Count;
                 if (count > MinCheckCount)
                 {
-                    TraceLog.WriteWarn("CheckEntityQueue warn count:{0}, execute:{1}/{2}", count, ExecuteSuccessCount, SendWaitCount);
+                    var persec = MathUtils.ToCeilingInt((decimal)(SendWaitCount - PreChangedCount) / 60);
+                    TraceLog.WriteWarn("CheckEntityQueue no-write count:{0}, execute:{1}/{2}, change_per_sec:{3}/s", count, ExecuteSuccessCount, SendWaitCount, persec);
                     if (count > MaxCheckCount)
                     {
-                        //大于1W，清空掉
-                        Interlocked.Exchange(ref _entityRemoteSet, new HashSet<string>());
+                        //大于10W，清空掉
+                        Interlocked.Exchange(ref _entitySet, new HashSet<string>());
                     }
                 }
+                Interlocked.Exchange(ref PreChangedCount, SendWaitCount);
             }
             catch (Exception ex)
             {
