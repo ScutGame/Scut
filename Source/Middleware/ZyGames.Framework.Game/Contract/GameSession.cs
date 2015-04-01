@@ -402,7 +402,7 @@ namespace ZyGames.Framework.Game.Contract
             {
                 var session = pair.Value;
                 if (!session.IsRemote &&
-                    session.Connected &&
+                    (!session.IsSocket || session.Connected) &&
                     session.LastActivityTime > MathUtils.Now.AddSeconds(-delayTime))
                 {
                     list.Add(session);
