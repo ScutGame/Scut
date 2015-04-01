@@ -67,7 +67,7 @@ namespace ZyGames.Framework.Game.Contract.Action
             if (!result)
             {
                 ErrorCode = Language.Instance.ErrorCode;
-                if (IsRealse)
+                if (!IsRealse)
                 {
                     ErrorInfo = Language.Instance.ServerBusy;
                 }

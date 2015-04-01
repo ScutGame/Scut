@@ -142,7 +142,8 @@ namespace ZyGames.Framework.Game.Sns
             var query = new Dictionary<string, string>();
             query["Handler"] = "Validate";
             query["Token"] = Token;
-            var task = Send(HttpUtils.BuildPostParams(query), _timeout);
+            string queryString = HttpUtils.BuildPostParams(query);
+            var task = Send(queryString, _timeout);
             if (task.Wait(_timeout))
             {
                 var responseStream = (task.Result).GetResponseStream();
@@ -171,8 +172,10 @@ namespace ZyGames.Framework.Game.Sns
                         throw new HandlerException(body.StateCode, body.StateDescription);
                     }
                     TraceLog.WriteError("AccountServer login error:{0}", json);
+                    return false;
                 }
             }
+            TraceLog.WriteError("AccountServer login timeout error:{0}", _url + "?" + queryString);
             return false;
         }
 

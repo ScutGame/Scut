@@ -28,14 +28,13 @@ using System.Text;
 using ZyGames.Framework.Common;
 using ZyGames.Framework.Common.Log;
 using ZyGames.Framework.RPC.IO;
-using ZyGames.Framework.RPC.Sockets.WebSocket;
 
 namespace ZyGames.Framework.RPC.Sockets
 {
     /// <summary>
     /// 
     /// </summary>
-    class MessageHandler : BaseMessageProcessor
+    public class MessageHandler : BaseMessageProcessor
     {
         /// <summary>
         /// 
@@ -96,7 +95,7 @@ namespace ZyGames.Framework.RPC.Sockets
                 if (dataToken.IsMessageReady)
                 {
                     //if (logger.IsDebugEnabled) logger.Debug("完整封包 长度[{0}],总传输[{1}],剩余[{2}]", dataToken.messageLength, ioEventArgs.BytesTransferred, remainingBytesToProcess);
-                    messageList.Add(new DataMeaage() { Data = dataToken.byteArrayForMessage, OpCode = OpCode.Binary});
+                    messageList.Add(new DataMeaage() { Data = dataToken.byteArrayForMessage, OpCode = OpCode.Binary });
                     if (remainingBytesToProcess != 0)
                     {
                         //if (logger.IsDebugEnabled) logger.Debug("重置缓冲区,buffskip指针[{0}]。", dataToken.bufferSkip);

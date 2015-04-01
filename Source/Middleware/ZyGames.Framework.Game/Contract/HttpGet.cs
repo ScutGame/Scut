@@ -718,6 +718,7 @@ namespace ZyGames.Framework.Game.Contract
                 }
                 catch
                 {
+                    WriteContainsError(aName);
                     result = false;
                 }
             }

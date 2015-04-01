@@ -22,11 +22,13 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ****************************************************************************/
 using System;
+using System.Diagnostics;
 using System.Net.Sockets;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Scripting;
 using ZyGames.Framework.Common;
 using ZyGames.Framework.Common.Log;
 using NLog;
@@ -212,32 +214,23 @@ namespace ZyGames.Framework.RPC.Sockets
 
         private void PostAccept()
         {
-            SocketAsyncEventArgs acceptEventArgs;
-            if (this.acceptEventArgsPool.Count > 1)
+            try
             {
-                try
+                if (!_isStart)
                 {
-                    acceptEventArgs = this.acceptEventArgsPool.Pop();
+                    return;
                 }
-                catch
+                this.maxConnectionsEnforcer.WaitOne();
+                SocketAsyncEventArgs acceptEventArgs = acceptEventArgsPool.Pop() ?? CreateAcceptEventArgs();
+                bool willRaiseEvent = listenSocket.AcceptAsync(acceptEventArgs);
+                if (!willRaiseEvent)
                 {
-                    acceptEventArgs = CreateAcceptEventArgs();
+                    ProcessAccept(acceptEventArgs);
                 }
             }
-            else
+            catch (Exception ex)
             {
-                acceptEventArgs = CreateAcceptEventArgs();
-            }
-
-            this.maxConnectionsEnforcer.WaitOne();
-            if (!_isStart)
-            {
-                return;
-            }
-            bool willRaiseEvent = listenSocket.AcceptAsync(acceptEventArgs);
-            if (!willRaiseEvent)
-            {
-                ProcessAccept(acceptEventArgs);
+                TraceLog.WriteError("Post accept listen error:{0}", ex);
             }
         }
 
@@ -294,36 +287,39 @@ namespace ZyGames.Framework.RPC.Sockets
 
         private void ProcessAccept(SocketAsyncEventArgs acceptEventArgs)
         {
-            PostAccept();
-
-            if (acceptEventArgs.SocketError != SocketError.Success)
-            {
-                HandleBadAccept(acceptEventArgs);
-                return;
-            }
-
-            SocketAsyncEventArgs ioEventArgs = this.ioEventArgsPool.Pop();
-            ioEventArgs.AcceptSocket = acceptEventArgs.AcceptSocket;
-            var dataToken = (DataToken)ioEventArgs.UserToken;
-            ioEventArgs.SetBuffer(dataToken.bufferOffset, socketSettings.BufferSize);
-            var exSocket = new ExSocket(ioEventArgs.AcceptSocket);
-            exSocket.LastAccessTime = DateTime.Now;
-            dataToken.Socket = exSocket;
-            acceptEventArgs.AcceptSocket = null;
-            this.acceptEventArgsPool.Push(acceptEventArgs);
-
-            //AddClient(exSocket);
-
             try
             {
-                OnConnected(new ConnectionEventArgs { Socket = exSocket });
-            }
-            catch (Exception ex)
-            {
-                TraceLog.WriteError("OnConnected error:{0}", ex);
-            }
+                if (acceptEventArgs.SocketError != SocketError.Success)
+                {
+                    HandleBadAccept(acceptEventArgs);
+                }
+                else
+                {
+                    SocketAsyncEventArgs ioEventArgs = this.ioEventArgsPool.Pop();
+                    ioEventArgs.AcceptSocket = acceptEventArgs.AcceptSocket;
+                    var dataToken = (DataToken)ioEventArgs.UserToken;
+                    ioEventArgs.SetBuffer(dataToken.bufferOffset, socketSettings.BufferSize);
+                    var exSocket = new ExSocket(ioEventArgs.AcceptSocket);
+                    exSocket.LastAccessTime = DateTime.Now;
+                    dataToken.Socket = exSocket;
+                    acceptEventArgs.AcceptSocket = null;
+                    this.acceptEventArgsPool.Push(acceptEventArgs);
+                    try
+                    {
+                        OnConnected(new ConnectionEventArgs { Socket = exSocket });
+                    }
+                    catch (Exception ex)
+                    {
+                        TraceLog.WriteError("OnConnected error:{0}", ex);
+                    }
+                    PostReceive(ioEventArgs);
+                }
 
-            PostReceive(ioEventArgs);
+            }
+            finally
+            {
+                PostAccept();
+            }
         }
 
         private void ReleaseIOEventArgs(SocketAsyncEventArgs ioEventArgs)

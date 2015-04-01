@@ -119,7 +119,7 @@ namespace ZyGames.Framework.Cache.Generic
         {
             get
             {
-                
+
                 if (_container != null)
                 {
                     return _container.Collection;
@@ -433,6 +433,7 @@ namespace ZyGames.Framework.Cache.Generic
                 }
             }
             entityData.IsInCache = true;
+            entityData.TriggerNotify();
             itemSet.SetItem(entityData);
             itemSet.OnLoadSuccess();
             return true;
@@ -497,18 +498,15 @@ namespace ZyGames.Framework.Cache.Generic
             {
                 entityData.IsInCache = true;
                 var data = (BaseCollection)itemSet.GetItem();
-                T oldValue;
-                if (data.TryGetValue(key, out oldValue))
+                result = data.AddOrUpdate(key, entityData, (k, t) => entityData) == entityData;
+                if (result)
                 {
-                    result = data.TryUpdate(key, entityData, oldValue);
-                }
-                else
-                {
-                    result = data.TryAdd(key, entityData);
-                }
-                if (itemSet.LoadingStatus == LoadingStatus.None)
-                {
-                    itemSet.OnLoadSuccess();
+                    entityData.IsInCache = true;
+                    entityData.TriggerNotify();
+                    if (itemSet.LoadingStatus == LoadingStatus.None)
+                    {
+                        itemSet.OnLoadSuccess();
+                    }
                 }
             }
             return result;
@@ -647,7 +645,7 @@ namespace ZyGames.Framework.Cache.Generic
             if (Container.TryGetValue(groupKey, out itemSet))
             {
                 T entityData;
-                var items = (BaseCollection) itemSet.GetItem();
+                var items = (BaseCollection)itemSet.GetItem();
                 if (items.TryRemove(key, out entityData))
                 {
                     bool result = true;

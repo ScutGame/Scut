@@ -22,6 +22,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ****************************************************************************/
 using System;
+using System.Net;
 using System.Net.Sockets;
 using System.Collections.Generic;
 using System.Text;
@@ -103,7 +104,7 @@ namespace ZyGames.Framework.RPC.Sockets
     /// <summary>
     /// Client socket.
     /// </summary>
-    public class ClientSocket : ISocket
+    public class ClientSocket : ISocket, IDisposable
     {
         #region 事件
 
@@ -138,6 +139,7 @@ namespace ZyGames.Framework.RPC.Sockets
         private ClientSocketSettings clientSettings;
         private SocketAsyncEventArgs sendEventArg;
         private SocketAsyncEventArgs receiveEventArg;
+        private AutoResetEvent receiveWaitEvent = new AutoResetEvent(false);
         /// <summary>
         /// 
         /// </summary>
@@ -190,6 +192,13 @@ namespace ZyGames.Framework.RPC.Sockets
         /// </summary>
         public ClientSocketSettings Settings { get { return clientSettings; } }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        public EndPoint LocalEndPoint
+        {
+            get { return socketClient.LocalEndPoint; }
+        }
         /// <summary>
         /// 
         /// </summary>
@@ -273,12 +282,23 @@ namespace ZyGames.Framework.RPC.Sockets
 
             this.receiveEventArg = new SocketAsyncEventArgs();
             this.receiveEventArg.SetBuffer(buffer, this.clientSettings.BufferSize, this.clientSettings.BufferSize);
-            var receiveDataToken = new DataToken { Socket = exSocket };
+            var receiveDataToken = new DataToken { Socket = exSocket, SyncSegments = new Queue<ArraySegment<byte>>() };
             receiveDataToken.bufferOffset = this.receiveEventArg.Offset;
             this.receiveEventArg.UserToken = receiveDataToken;
             this.receiveEventArg.AcceptSocket = acceptSocket;
             this.receiveEventArg.Completed += new EventHandler<SocketAsyncEventArgs>(IO_Completed);
+            DataReceived += OnReceived;
             requestHandler.Bind(this);
+        }
+
+        private void OnReceived(ClientSocket sender, SocketEventArgs e)
+        {
+            var token = receiveEventArg.UserToken as DataToken;
+            if (token != null)
+            {
+                token.SyncSegments.Enqueue(new ArraySegment<byte>(e.Data));
+            }
+            receiveWaitEvent.Set();
         }
 
         private bool SendHandshake(SocketAsyncEventArgs ioEventArgs)
@@ -440,6 +460,44 @@ namespace ZyGames.Framework.RPC.Sockets
             {
                 ResetSendFlag();
             }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="millisecondsTimeout"></param>
+        public bool Receive(int millisecondsTimeout = 0)
+        {
+            bool result = true;
+            if (millisecondsTimeout > 0)
+            {
+                result = receiveWaitEvent.WaitOne(millisecondsTimeout);
+            }
+            else
+            {
+                receiveWaitEvent.WaitOne();
+            }
+            return result;
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        public bool TryReceiveBytes(out byte[] data)
+        {
+            data = new byte[0];
+            var token = receiveEventArg.UserToken as DataToken;
+            if (token == null)
+            {
+                return false;
+            }
+            if (token.SyncSegments.Count > 0)
+            {
+                data = token.SyncSegments.Dequeue().Array;
+                return true;
+            }
+            return false;
         }
 
         /// <summary>
@@ -694,6 +752,13 @@ namespace ZyGames.Framework.RPC.Sockets
         {
             Connected = false;
             connectState = ConnectState.Closed;
+        }
+        /// <summary>
+        /// 
+        /// </summary>
+        public void Dispose()
+        {
+            Close();
         }
     }
 }
