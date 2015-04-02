@@ -76,14 +76,14 @@ namespace ZyGames.Framework.Game.Runtime
                     setting.ProductServerId,
                     setting.GamePort));
                 GameEnvironment.Start(setting);
-
+                return true;
             }
             catch (Exception ex)
             {
                 TraceLog.WriteLine("{0} Server failed to start error:{1}", DateTime.Now.ToString("HH:mm:ss"), ex.Message);
                 TraceLog.WriteError("OnInit error:{0}", ex);
             }
-            return true;
+            return false;
         }
 
         /// <summary>

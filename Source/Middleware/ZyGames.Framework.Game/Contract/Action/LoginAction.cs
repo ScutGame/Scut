@@ -120,7 +120,7 @@ namespace ZyGames.Framework.Game.Contract.Action
         public override void BuildPacket()
         {
             PushIntoStack(Current.SessionId);
-            PushIntoStack(Current.User.ToNotNullString());
+            PushIntoStack(Current.UserId.ToNotNullString());
             PushIntoStack(UserType);
             PushIntoStack(MathUtils.Now.ToString("yyyy-MM-dd HH:mm"));
             PushIntoStack(GuideId);
