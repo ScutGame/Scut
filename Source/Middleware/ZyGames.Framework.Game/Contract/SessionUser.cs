@@ -35,10 +35,18 @@ namespace ZyGames.Framework.Game.Contract
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="roleUser"></param>
-        public SessionUser(BaseUser roleUser)
+        public SessionUser()
         {
             OnlineInterval = new TimeSpan(0, 1, 0);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="roleUser"></param>
+        public SessionUser(BaseUser roleUser)
+            : this()
+        {
             PassportId = roleUser.GetPassportId();
             UserId = roleUser.GetUserId();
         }
