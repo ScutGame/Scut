@@ -300,6 +300,11 @@ namespace ZyGames.Framework.Model
         [ProtoMember(100025)]
         public DateTime TempTimeModify { get; set; }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        [JsonIgnore]
+        public DateTime ExpiredTime { get; set; }
 
         #endregion
         /// <summary>

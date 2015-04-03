@@ -85,7 +85,8 @@ namespace ZyGames.Framework.Game.Message
 		/// </summary>
 		/// <param name="message">Message.</param>
         public void Send(ChatMessage message)
-        {
+		{
+		    message.ExpiredTime = message.SendDate;
             _chatCacheSet.Add(message);
             WriteLog(message);
         }
@@ -96,6 +97,7 @@ namespace ZyGames.Framework.Game.Message
 		/// <param name="message">Message.</param>
         public void SendWhisper(int toUserId, ChatMessage message)
         {
+            message.ExpiredTime = message.SendDate;
             //系统发私聊出现两条的问题
             if (_userId != toUserId)
             {

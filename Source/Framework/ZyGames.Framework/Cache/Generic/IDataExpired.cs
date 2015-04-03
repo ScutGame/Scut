@@ -22,7 +22,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ****************************************************************************/
 
-using Newtonsoft.Json;
+using System;
 
 namespace ZyGames.Framework.Cache.Generic
 {
@@ -37,5 +37,6 @@ namespace ZyGames.Framework.Cache.Generic
         /// <param name="key"></param>
         /// <returns></returns>
         bool RemoveExpired(string key);
+
     }
 }
