@@ -371,8 +371,7 @@ namespace ZyGames.Framework.RPC.Sockets
                 Closing(ioEventArgs);
                 return;
             }
-
-            var exSocket = dataToken.Socket;
+            ExSocket exSocket = dataToken == null ? null : dataToken.Socket;
             List<DataMeaage> messages;
             bool hasHandshaked;
             bool needPostAnother = requestHandler.TryReceiveMessage(ioEventArgs, out messages, out hasHandshaked);
