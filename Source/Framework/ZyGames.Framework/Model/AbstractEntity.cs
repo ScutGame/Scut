@@ -94,7 +94,7 @@ namespace ZyGames.Framework.Model
         /// <summary>
         /// Initializes a new instance of the <see cref="ZyGames.Framework.Model.AbstractEntity"/> class.
         /// </summary>
-        /// <param name="access">Access.</param>
+        /// <param name="access">Access. no used</param>
         protected AbstractEntity(AccessLevel access)
             : this(access == AccessLevel.ReadOnly)
         {
@@ -109,7 +109,11 @@ namespace ZyGames.Framework.Model
         {
             _isNew = true;
             IsInCache = false;
-            _isReadOnly = isReadOnly;
+            SchemaTable schema;
+            if (EntitySchemaSet.TryGet(GetType(), out schema))
+            {
+                _isReadOnly = schema.AccessLevel == AccessLevel.ReadOnly;
+            }
         }
 
         /// <summary>

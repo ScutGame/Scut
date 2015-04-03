@@ -30,10 +30,18 @@ namespace ZyGames.Framework.Model
     /// </summary>
     public abstract class ShareEntity : AbstractEntity, IComparable<ShareEntity>
     {
+        /// <summary>
+        /// 
+        /// </summary>
+        protected ShareEntity()
+            : base(false)
+        {
+
+        }
 		/// <summary>
 		/// Initializes a new instance of the <see cref="ZyGames.Framework.Model.ShareEntity"/> class.
 		/// </summary>
-		/// <param name="isReadonly">If set to <c>true</c> is readonly.</param>
+        /// <param name="isReadonly">If set to <c>true</c> is readonly. no used</param>
         protected ShareEntity(bool isReadonly)
             : base(isReadonly)
         {
@@ -42,7 +50,7 @@ namespace ZyGames.Framework.Model
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="access"></param>
+        /// <param name="access">no used</param>
         protected ShareEntity(AccessLevel access)
             : base(access)
         {
