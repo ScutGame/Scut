@@ -520,7 +520,7 @@ namespace ZyGames.Framework.Game.Contract
         private void InitSocket(ExSocket exSocket, ISocket appServer)
         {
             _exSocket = exSocket;
-            _remoteAddress = _exSocket.RemoteEndPoint.ToString();
+            _remoteAddress = _exSocket.RemoteEndPoint.ToNotNullString();
             AppServer = appServer;
         }
 
