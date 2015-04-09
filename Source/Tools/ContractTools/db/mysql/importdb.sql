@@ -3290,3 +3290,9 @@ INSERT INTO `solutions` VALUES ('5', '口袋天界', 'ZyGames.Tianjiexing.BLL.Ac
 INSERT INTO `solutions` VALUES ('6', '斗地主', 'ZyGames.HallCenter.Action', '', '127.0.0.1:9500', '7');
 INSERT INTO `solutions` VALUES ('7', '分服中心', 'ZyGames.DirCenter.Action', '', 'http://dir.36you.net/Service.aspx', '6');
 INSERT INTO `solutions` VALUES ('8', 'Scut Demo', 'Scut.Demo.Script.CsScript.Action', 'using ZyGames.Framework.Game.Contract;', '', '1');
+
+
+alter table `Solutions` add `SerUseScript` varchar(20);
+alter table `Solutions` add `CliUseScript` varchar(20);
+alter table `Solutions` add `IsDParam` bit not null default 1;
+alter table `Solutions` add `RespContentType` int not null default 0;

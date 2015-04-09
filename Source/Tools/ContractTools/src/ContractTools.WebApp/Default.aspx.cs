@@ -136,11 +136,19 @@ namespace ContractTools.WebApp
 
         private int BindSolution(int slnId)
         {
-            ddlSolution.DataSource = DbDataLoader.GetSolution();
+            var list = DbDataLoader.GetSolution();
+            ddlSolution.DataSource = list;
             ddlSolution.DataTextField = "SlnName";
             ddlSolution.DataValueField = "SlnID";
             ddlSolution.DataBind();
             ddlSolution.SelectedValue = slnId.ToString();
+
+            SolutionModel model = list.Find(t => t.SlnID == slnId);
+            if (model != null)
+            {
+                ddServerCodeType.Text = model.SerUseScript;
+                ddClientCodeType.Text = model.CliUseScript;
+            }
             return ddlSolution.SelectedValue.ToInt();
         }
         private int BindAgreement(int slnId, int agreementId)
@@ -177,18 +185,56 @@ namespace ContractTools.WebApp
             return ddContract.SelectedValue.ToInt();
         }
 
+        private void BindFieldType(int paramtype)
+        {
+            var data = paramtype - 1 < FieldTypeMaps.Length ? FieldTypeMaps[paramtype - 1] : FieldTypeMaps[0];
+            ddFieldType.DataSource = data;
+            ddFieldType.DataTextField = "Value";
+            ddFieldType.DataValueField = "Key";
+            ddFieldType.DataBind();
+            if (data.Length > 0)
+            {
+                ddFieldType.SelectedValue = data.Length > 1 ? "1" : "0";
+            }
+        }
+
+        private void BindResponseParams(List<ParamInfoModel> list)
+        {
+            ddResponseParams.DataSource = list;
+            ddResponseParams.DataTextField = "ComboxDescp";
+            ddResponseParams.DataValueField = "SortID";
+            ddResponseParams.DataBind();
+            if (list.Count > 0)
+            {
+                ddResponseParams.SelectedValue = (list[list.Count - 1].SortID).ToString();
+            }
+
+            ddParamCopyFrom.DataSource = list;
+            ddParamCopyFrom.DataTextField = "ComboxDescp";
+            ddParamCopyFrom.DataValueField = "SortID";
+            ddParamCopyFrom.DataBind();
+
+            ddParamCopyTo.DataSource = list;
+            ddParamCopyTo.DataTextField = "ComboxDescp";
+            ddParamCopyTo.DataValueField = "SortID";
+            ddParamCopyTo.DataBind();
+        }
+
         private void BindGrid()
         {
             BindGrid(ddlSolution.Text.ToInt(), ddVersion.Text.ToInt(), ddContract.Text.ToInt());
         }
+
         private void BindGrid(int slnId, int versionId, int contractId)
         {
             //grid bind
+
             List<ParamInfoModel> requestParams;
             List<ParamInfoModel> responseParams;
             bool isEdit = IsEdit;
             GetParamInfo(slnId, contractId, versionId, out requestParams, out responseParams);
 
+            BindResponseParams(responseParams);
             gvReqParams.Columns[gvReqParams.Columns.Count - 1].Visible = isEdit;
             gvReqParams.Columns[gvReqParams.Columns.Count - 2].Visible = isEdit;
             gvReqParams.DataKeyNames = new[] { "ID", "ParamType" };
@@ -203,6 +249,7 @@ namespace ContractTools.WebApp
             gvRespParams.DataBind();
 
             BindSourceCode(slnId, versionId, contractId, requestParams, responseParams);
+
         }
 
         private void BindSourceCode(int slnId, int versionId, int contractId, List<ParamInfoModel> requestParams, List<ParamInfoModel> responseParams)
@@ -310,6 +357,8 @@ namespace ContractTools.WebApp
 
             ifrTest.Src = "ContractDebug.aspx" + get;
             //ifrClientConfig.Src = "ClientConfigInfo.aspx" + get;
+
+            BindFieldType(ddParamType.SelectedValue.ToInt());
             BindGrid(slnId, versionId, contractId);
 
         }
@@ -387,24 +436,43 @@ namespace ContractTools.WebApp
 
         protected void OnSolutionChanged(object sender, EventArgs e)
         {
-            SetCookies(string.Empty, ddlSolution.Text);
-            int slnId = ddlSolution.Text.ToInt();
-            BindEnumInfo(slnId);
-            int verId = BindVersion(slnId, VerID);
-            int agreementId = BindAgreement(slnId, AgreementID);
-            int contractId = BindContract(slnId, verId, agreementId, 0);
-            BindResult(slnId, verId, contractId);
+            try
+            {
+                SetCookies(string.Empty, ddlSolution.Text);
+                int slnId = ddlSolution.Text.ToInt();
+                BindEnumInfo(slnId);
+                int verId = BindVersion(slnId, VerID);
+                int agreementId = BindAgreement(slnId, AgreementID);
+                int contractId = BindContract(slnId, verId, agreementId, 0);
+                BindResult(slnId, verId, contractId);
+            }
+            catch (Exception ex)
+            {
+                TraceLog.WriteError("OnSolutionChanged {0}", ex);
+            }
         }
         protected void OnVersionChanged(object sender, EventArgs e)
         {
-            SetCookies(ddlSolution.Text + "_Ver", ddVersion.Text);
-            int slnId = ddlSolution.Text.ToInt();
-            int verId = ddVersion.Text.ToInt();
-            int agreementId = ddlAgreement.Text.ToInt();
-            int contractId = BindContract(slnId, verId, agreementId, 0);
-            BindResult(slnId, verId, contractId);
-
+            try
+            {
+                SetCookies(ddlSolution.Text + "_Ver", ddVersion.Text);
+                int slnId = ddlSolution.Text.ToInt();
+                int verId = ddVersion.Text.ToInt();
+                int agreementId = ddlAgreement.Text.ToInt();
+                int contractId = BindContract(slnId, verId, agreementId, 0);
+                BindResult(slnId, verId, contractId);
+            }
+            catch (Exception ex)
+            {
+                TraceLog.WriteError("OnVersionChanged {0}", ex);
+            }
         }
+
+        protected void OnParamTypeChanged(object sender, EventArgs e)
+        {
+            BindFieldType(ddParamType.SelectedValue.ToInt());
+        }
+
         protected void OnAgreementChanged(object sender, EventArgs e)
         {
             SetCookies(ddlSolution.Text + "_Agreement", ddlAgreement.Text);
@@ -501,44 +569,52 @@ namespace ContractTools.WebApp
 
         protected void OnGridRowDataBound(object sender, GridViewRowEventArgs e)
         {
-            if (e.Row.RowType == DataControlRowType.DataRow)
+            try
             {
-                Label control = (Label)e.Row.FindControl("LabFieldType");
-                if (control != null)
-                {
-                    control.Text = control.Text.ToEnum<FieldType>().ToString();
-                    var paramInfo = e.Row.DataItem as ParamInfoModel;//定义一个DataRowView的实例
 
-                    if (paramInfo != null)
+                if (e.Row.RowType == DataControlRowType.DataRow)
+                {
+                    var control = (Label)e.Row.FindControl("LabFieldType");
+                    if (control != null)
                     {
-                        if (paramInfo.FieldType == FieldType.Record || paramInfo.FieldType == FieldType.End)
+                        control.Text = control.Text.ToEnum<FieldType>().ToString();
+                        var paramInfo = e.Row.DataItem as ParamInfoModel;//定义一个DataRowView的实例
+
+                        if (paramInfo != null)
                         {
-                            e.Row.Font.Bold = true;
-                        }
-                        if (paramInfo.FieldType == FieldType.Void)
-                        {
-                            e.Row.Font.Strikeout = true;
-                        }
-                        if (paramInfo.VerID < ddVersion.Text.ToInt())
-                        {
-                            e.Row.CssClass = "grid-row-old";
-                        }
-                        if (DateTime.Now - paramInfo.ModifyDate < TimeSpan.FromDays(3))
-                        {
-                            e.Row.CssClass = "grid-row-change";
+                            if (paramInfo.FieldType == FieldType.Record || paramInfo.FieldType == FieldType.End)
+                            {
+                                e.Row.Font.Bold = true;
+                            }
+                            if (paramInfo.FieldType == FieldType.Void)
+                            {
+                                e.Row.Font.Strikeout = true;
+                            }
+                            if (paramInfo.VerID < ddVersion.Text.ToInt())
+                            {
+                                e.Row.CssClass = "grid-row-old";
+                            }
+                            if (DateTime.Now - paramInfo.ModifyDate < TimeSpan.FromDays(3))
+                            {
+                                e.Row.CssClass = "grid-row-change";
+                            }
                         }
                     }
+                    Label lblDescption = (Label)e.Row.FindControl("LabDescption");
+                    if (lblDescption != null)
+                    {
+                        lblDescption.Text = FormatTips(lblDescption.Text);
+                    }
+                    Label lblRemark = (Label)e.Row.FindControl("LabRemark");
+                    if (lblRemark != null)
+                    {
+                        lblRemark.Text = FormatTips(lblRemark.Text);
+                    }
                 }
-                Label lblDescption = (Label)e.Row.FindControl("LabDescption");
-                if (lblDescption != null)
-                {
-                    lblDescption.Text = FormatTips(lblDescption.Text);
-                }
-                Label lblRemark = (Label)e.Row.FindControl("LabRemark");
-                if (lblRemark != null)
-                {
-                    lblRemark.Text = FormatTips(lblRemark.Text);
-                }
+            }
+            catch (Exception ex)
+            {
+                TraceLog.WriteError("bind grid error:{0}", ex);
             }
         }
 
@@ -730,6 +806,51 @@ namespace ContractTools.WebApp
             }
         }
 
+
+        protected void btnParamCopy_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                int sortFrom = ddParamCopyFrom.Text.ToInt();
+                int sortTo = ddParamCopyTo.Text.ToInt();
+                if (sortFrom > sortTo) return;
+
+                int insertPos = ddResponseParams.Text.ToInt();
+                int slnId = ddlSolution.Text.ToInt();
+                int verId = ddVersion.Text.ToInt();
+                int contractId = ddContract.Text.ToInt();
+
+                var paramList = DbDataLoader.GetParamInfo(slnId, contractId, 2, verId);
+                var copyList = paramList.FindAll(t => t.SortID >= sortFrom && t.SortID <= sortTo);
+                int sortId = insertPos + copyList.Count;
+
+                foreach (var param in paramList)
+                {
+                    if (param.SortID > insertPos)
+                    {
+                        sortId++;
+                        DbDataLoader.UpdateParamSort(param.ID, sortId);
+                    }
+                }
+                sortId = insertPos;
+                foreach (var param in copyList)
+                {
+                    sortId++;
+                    param.SortID = sortId;
+                    param.VerID = verId;
+                    param.ModifyDate = DateTime.MinValue;
+                    param.CreateDate = DateTime.Now;
+                    DbDataLoader.Add(param);
+                }
+
+                BindGrid(slnId, verId, contractId);
+            }
+            catch (Exception ex)
+            {
+                TraceLog.WriteError("Default ParamCopy error:{0}", ex);
+            }
+        }
+
         protected void btnParamAdd_Click(object sender, EventArgs e)
         {
             try
@@ -749,20 +870,18 @@ namespace ContractTools.WebApp
                 mode.MaxValue = 0;
                 mode.CreateDate = DateTime.Now;
                 mode.VerID = ddVersion.Text.ToInt();
+                int sortID = ddResponseParams.Text.ToInt() + 1;
+                mode.SortID = sortID;
 
-                var paramList = DbDataLoader.GetParamInfo(mode.SlnID, mode.ContractID, mode.ParamType, mode.VerID).OrderBy(p => p.SortID).ToList();
-                if (paramList.Count == 0 || paramList[0].SortID == 0)
+                var paramList = DbDataLoader.GetParamInfo(mode.SlnID, mode.ContractID, mode.ParamType, mode.VerID);
+                foreach (var param in paramList)
                 {
-                    mode.SortID = 1;
+                    if (param.SortID >= mode.SortID)
+                    {
+                        sortID++;
+                        DbDataLoader.UpdateParamSort(param.ID, sortID);
+                    }
                 }
-                else
-                {
-                    int SortID = paramList[paramList.Count - 1].SortID;
-                    SortID++;
-                    mode.SortID = SortID;
-
-                }
-
                 if (DbDataLoader.Add(mode) > 0)
                 {
                     BindGrid(mode.SlnID, mode.VerID, mode.ContractID);

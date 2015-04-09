@@ -43,23 +43,23 @@ namespace ContractTools.WebApp.Base
 {
     public static class NetHelper
     {
-        public static int LoginActionId = ConfigUtils.GetSetting("UnitTest.LoginActionId", 1004);
+        public static String LoginActionId = ConfigUtils.GetSetting("UnitTest.LoginActionId", "1001,1003,1004");
         private static string SignKey = ConfigUtils.GetSetting("Product.SignKey");
         public static string ClientDesDeKey = ConfigUtils.GetSetting("Product.ClientDesDeKey", "j6=9=1ac");
         private static bool IsGet = true;
 
-        public static MessageStructure Create(string serverUrl, string requestParams, out MessageHead header, bool isSocket, int actionId, string pid, CookieContainer cookies)
+        public static Stream Create(string serverUrl, string requestParams, bool isSocket, int actionId, string pid, bool includeParam, CookieContainer cookies)
         {
-            header = null;
             MessageStructure msgReader = null;
             if (isSocket)
             {
-                msgReader = DoRequest(serverUrl, requestParams, actionId, pid);
+                return DoRequest(serverUrl, requestParams, actionId, pid, includeParam);
             }
             else
             {
                 Encoding encode = Encoding.GetEncoding("utf-8");
-                string postData = "d=" + GetSign(requestParams);
+                string postData = GetSign(requestParams, includeParam);
+                if (includeParam) postData = "d=" + postData;
                 HttpWebRequest serverRequest;
                 if (IsGet)
                 {
@@ -81,14 +81,9 @@ namespace ContractTools.WebApp.Base
                 //
                 HttpWebResponse serverResponse = (HttpWebResponse)serverRequest.GetResponse();
                 cookies.Add(serverResponse.Cookies);
-                Stream responseStream = serverResponse.GetResponseStream();
-                msgReader = MessageStructure.Create(responseStream, Encoding.UTF8);
+                return serverResponse.GetResponseStream();
             }
-            if (msgReader != null)
-            {
-                header = msgReader.ReadHeadGzip();
-            }
-            return msgReader;
+
         }
 
         public static bool GetFieldValue(MessageStructure ms, FieldType fieldType, ref string val)
@@ -158,30 +153,32 @@ namespace ContractTools.WebApp.Base
             return result;
         }
 
-        public static string GetSign(string requestParams)
+        public static string GetSign(string requestParams, bool includeParam)
         {
             string sign = "";
             if (!string.IsNullOrEmpty(SignKey))
             {
                 sign = FormsAuthentication.HashPasswordForStoringInConfigFile(requestParams + SignKey, "MD5").ToLower();
             }
-            return Uri.EscapeDataString(string.Format("{0}&sign={1}", requestParams, sign));
+            if (includeParam)
+                return Uri.EscapeDataString(string.Format("{0}&sign={1}", requestParams, sign));
+            return string.Format("{0}&sign={1}", requestParams, sign);
         }
 
-        private static MessageStructure DoRequest(string server, string param, int actionId, string pid)
+        private static Stream DoRequest(string server, string param, int actionId, string pid, bool includeParam)
         {
             string[] serverArray = server.Split(':');
-            return DoRequest(serverArray[0], Convert.ToInt32(serverArray[1]), GetSign(param), actionId, pid);
+            return DoRequest(serverArray[0], Convert.ToInt32(serverArray[1]), GetSign(param, includeParam), actionId, pid);
         }
 
-        private static MessageStructure DoRequest(string host, int port, string param, int actionId, string pid)
+        private static Stream DoRequest(string host, int port, string param, int actionId, string pid)
         {
             var remoteEndPoint = new IPEndPoint(Dns.GetHostAddresses(host)[0], port);
             return DoRequest(remoteEndPoint, param, 1024, actionId, pid);
         }
 
         private static ConcurrentDictionary<string, MyConnect> _clientSockets = new ConcurrentDictionary<string, MyConnect>();
-        private static MessageStructure DoRequest(IPEndPoint remoteEndPoint, string param, int bufferSize, int actionId, string pid)
+        private static Stream DoRequest(IPEndPoint remoteEndPoint, string param, int bufferSize, int actionId, string pid)
         {
             byte[] data = Encoding.UTF8.GetBytes("?d=" + param);
             MyConnect myConnect = null;
@@ -227,7 +224,7 @@ namespace ContractTools.WebApp.Base
         private int _actionId;
         private ConcurrentQueue<MyPack> actionPools = new ConcurrentQueue<MyPack>();
         private ConcurrentQueue<MyPack> pushPools = new ConcurrentQueue<MyPack>();
-        private MessageStructure ms;
+        private Stream ms;
         private Timer checkTimer;
         private int _isRunning = 0;
 
@@ -260,7 +257,7 @@ namespace ContractTools.WebApp.Base
                     {
                         if (pack.Head.Action == myConnect._actionId)
                         {
-                            myConnect.ms = new MessageStructure(pack.Data);
+                            myConnect.ms = new MemoryStream(pack.Data);
                             myConnect.singal.Set();
                         }
                         else
@@ -298,7 +295,7 @@ namespace ContractTools.WebApp.Base
         }
 
 
-        public MessageStructure GetResult()
+        public Stream GetResult()
         {
             singal.WaitOne(10000);
             return ms;

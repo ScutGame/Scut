@@ -104,16 +104,19 @@ namespace ContractTools.WebApp
 
         protected void OnRefresh(object sender, EventArgs e)
         {
+            var slnModel = DbDataLoader.GetSolution(SlnID);
             int contractId = ddlContract.Text.ToInt();
             var paramRecords = DbDataLoader.GetParamInfo(SlnID, contractId, VerID);
             string postParam = FormatPostParam(contractId, paramRecords.Where(t => t.ParamType == 1).ToList(), txtParams.Text);
-            txtPostParam.Text = string.Format("?d={0}", NetHelper.GetSign(postParam));
+            string query = NetHelper.GetSign(postParam, slnModel.IsDParam);
+            txtPostParam.Text = slnModel.IsDParam ? string.Format("?d={0}", query) : query;
             Bind();
         }
         protected void OnSendClick(object sender, EventArgs e)
         {
             try
             {
+                var slnModel = DbDataLoader.GetSolution(SlnID);
                 int msgId = txtMsgId.Text.ToInt() + 1;
                 txtMsgId.Text = msgId.ToString();
                 int contractId = ddlContract.Text.ToInt();
@@ -121,14 +124,18 @@ namespace ContractTools.WebApp
                 Session["pid"] = pid;
                 var paramRecords = DbDataLoader.GetParamInfo(SlnID, contractId, VerID);
                 string postParam = FormatPostParam(contractId, paramRecords.Where(t => t.ParamType == 1).ToList(), txtParams.Text);
-                txtPostParam.Text = string.Format("?d={0}", NetHelper.GetSign(postParam));
+                bool includeParam = slnModel.IsDParam;
+                string query = NetHelper.GetSign(postParam, includeParam);
+                txtPostParam.Text = includeParam ? string.Format("?d={0}", query) : query;
                 dvResult.InnerHtml = "正在请求,请稍候...";
                 string sid;
                 string uid;
                 string st;
                 var cookies = Session["cookies"] as CookieContainer ?? new CookieContainer();
 
-                dvResult.InnerHtml = PostGameServer(paramRecords.Where(t => t.ParamType == 2).ToList(), contractId, txtServerUrl.Text, postParam, pid, cookies, out sid, out uid, out st);
+                dvResult.InnerHtml = PostGameServer(paramRecords.Where(t => t.ParamType == 2).ToList(),
+                    contractId, txtServerUrl.Text, postParam, pid, includeParam, slnModel.RespContentType, ddResponseShowType.Text.ToInt(), cookies,
+                    out sid, out uid, out st);
                 Session["cookies"] = cookies;
                 if (!string.IsNullOrEmpty(sid))
                 {
@@ -158,11 +165,13 @@ namespace ContractTools.WebApp
                     value = value.Trim();
                     var record = paramList.Find(t => string.Equals(t.Field, name, StringComparison.CurrentCultureIgnoreCase));
                     //自动登录
-                    if (NetHelper.LoginActionId == contractId)
+                    if (NetHelper.LoginActionId.IndexOf(contractId.ToString(), StringComparison.OrdinalIgnoreCase) != -1)
                     {
-                        if ("Pid".Equals(name)) SetCookies("Debug_User", value);
-                        if ("Pwd".Equals(name)) SetCookies("Debug_Pwd", value);
-                        if ("DeviceID".Equals(name)) SetCookies("Debug_DeviceID", value);
+                        if ("Pid".Equals(name, StringComparison.OrdinalIgnoreCase)) SetCookies("Debug_User", value);
+                        if ("Pwd".Equals(name, StringComparison.OrdinalIgnoreCase)) SetCookies("Debug_Pwd", value);
+                        if ("DeviceID".Equals(name, StringComparison.OrdinalIgnoreCase)) SetCookies("Debug_DeviceID", value);
+                        if ("IMEI".Equals(name, StringComparison.OrdinalIgnoreCase)) SetCookies("Debug_IMEI", value);
+                        if ("Token".Equals(name, StringComparison.OrdinalIgnoreCase)) SetCookies("Debug_Token", value);
                     }
                     if (record != null && record.FieldType == FieldType.Password)
                     {
@@ -195,11 +204,13 @@ namespace ContractTools.WebApp
             {
                 string fieldName = record.Field;
                 string fieldValue = record.FieldValue;
-                if (NetHelper.LoginActionId == contractId)
+                if (NetHelper.LoginActionId.IndexOf(contractId.ToString(), StringComparison.OrdinalIgnoreCase) != -1)
                 {
-                    if ("Pid".Equals(fieldName)) fieldValue = GetCookies("Debug_User");
-                    if ("Pwd".Equals(fieldName)) fieldValue = GetCookies("Debug_Pwd");
-                    if ("DeviceID".Equals(fieldName)) fieldValue = GetCookies("Debug_DeviceID");
+                    if ("Pid".Equals(fieldName, StringComparison.OrdinalIgnoreCase)) fieldValue = GetCookies("Debug_User");
+                    if ("Pwd".Equals(fieldName, StringComparison.OrdinalIgnoreCase)) fieldValue = GetCookies("Debug_Pwd");
+                    if ("DeviceID".Equals(fieldName, StringComparison.OrdinalIgnoreCase)) fieldValue = GetCookies("Debug_DeviceID");
+                    if ("IMEI".Equals(fieldName, StringComparison.OrdinalIgnoreCase)) fieldValue = GetCookies("Debug_IMEI");
+                    if ("Token".Equals(fieldName, StringComparison.OrdinalIgnoreCase)) fieldValue = GetCookies("Debug_Token");
                 }
                 if (string.IsNullOrEmpty(fieldValue))
                 {
@@ -211,22 +222,45 @@ namespace ContractTools.WebApp
         }
 
 
-        private static string PostGameServer(List<ParamInfoModel> paramList, int contractId, string serverUrl, string requestParams, string pid, CookieContainer cookies, out string sid, out string uid, out string st)
+        private static string PostGameServer(List<ParamInfoModel> paramList, int contractId, string serverUrl, string requestParams, string pid, bool includeParam, int contentType, int showType, CookieContainer cookies, out string sid, out string uid, out string st)
         {
             bool isSocket = !serverUrl.StartsWith("http://");
             sid = "";
             uid = "";
             st = "";
             StringBuilder respContent = new StringBuilder();
-            MessageHead msg = new MessageHead();
-            MessageStructure msgReader = NetHelper.Create(serverUrl, requestParams, out msg, isSocket, contractId, pid, cookies);
-            if (msgReader != null)
+            MessageHead header = null;
+            var responseStream = NetHelper.Create(serverUrl, requestParams, isSocket, contractId, pid, includeParam, cookies);
+
+            switch (contentType)
             {
-                ProcessResult(paramList, contractId, respContent, msg, msgReader, out sid, out uid, out st);
-            }
-            else
-            {
-                ResponseHead(contractId, respContent, ErrorCode, "请求超时");
+                case 0: //stream
+                    var msgReader = MessageStructure.Create(responseStream, Encoding.UTF8);
+                    if (msgReader != null)
+                    {
+                        header = msgReader.ReadHeadGzip();
+                        if (showType == 1) //table
+                        {
+                            ProcessResult(paramList, contractId, respContent, header, msgReader, out sid, out uid, out st);
+                        }
+                        else if (showType == 2) //json
+                        {
+                            respContent.AppendLine("未实现此格式显示");
+                        }
+                    }
+                    else
+                    {
+                        ResponseHead(contractId, respContent, ErrorCode, "请求超时");
+                    }
+                    break;
+                case 1: //json
+                    using (var sr = new System.IO.StreamReader(responseStream))
+                    {
+                        respContent.AppendLine(sr.ReadToEnd());
+                    }
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException("contentType");
             }
             return respContent.ToString();
         }
@@ -277,10 +311,10 @@ namespace ContractTools.WebApp
                             if (NetHelper.GetFieldValue(msgReader, fieldType, ref fieldValue))
                             {
                                 //自动登录
-                                if (NetHelper.LoginActionId == contractId)
+                                if (NetHelper.LoginActionId.IndexOf(contractId.ToString(), StringComparison.OrdinalIgnoreCase) != -1)
                                 {
-                                    if ("SessionID".Equals(fieldName)) sid = fieldValue;
-                                    if ("UserID".Equals(fieldName)) uid = fieldValue;
+                                    if ("SessionID".Equals(fieldName, StringComparison.OrdinalIgnoreCase)) sid = fieldValue;
+                                    if ("UserID".Equals(fieldName, StringComparison.OrdinalIgnoreCase)) uid = fieldValue;
                                 }
                                 respContent.Append("<tr>");
                                 respContent.AppendFormat("<td>&nbsp;{0}</td>", fieldName);
@@ -350,15 +384,15 @@ namespace ContractTools.WebApp
             }
             respContent.Append("<tr>");
             respContent.Append("<td style=\"width:25%;\" align=\"left\">Record(N)</td>");
-            respContent.Append("<td style=\"width:20%;\" align=\"left\">Record</td>");
+            respContent.AppendFormat("<td style=\"width:20%;\" align=\"left\">{0}</td>", queue[0].Remark);
             respContent.AppendFormat("<td style=\"width:50%;\" align=\"left\">{0}</td>", recordCount);
-            respContent.Append("</tr>");
+            respContent.AppendLine("</tr>");
 
-            respContent.Append("<tr><td colspan=\"3\" align=\"center\">");
+            respContent.AppendLine("<tr><td colspan=\"3\" align=\"center\">");
             respContent.Append("<!--子表开始--><table style=\"width:98%; border-color:#f0f0f0\" border=\"1\" cellpadding=\"2\" cellspacing=\"0\">");
             if (recordCount == 0)
             {
-                builderContent.Append("<tr><td align=\"center\">空数据</td></tr>");
+                builderContent.AppendLine("<tr><td align=\"center\">空数据</td></tr>");
             }
 
 
@@ -394,12 +428,13 @@ namespace ContractTools.WebApp
                             {
                                 builderContent.Append("</tr><tr>");
                                 builderContent.AppendFormat("<td colspan=\"{0}\" align=\"right\">", columnNum);
+                                builderContent.AppendLine();
                                 builderContent.Append(
                                     "<!--子表开始--><table style=\"width:95%; border-color:#f0f0f0\" border=\"1\" cellpadding=\"2\" cellspacing=\"0\">");
                                 //处理循环记录
                                 ProcessLoopRocord(builderContent, recordQueue, msgReader);
 
-                                builderContent.Append("</table><!--子表结束-->");
+                                builderContent.AppendLine("</table><!--子表结束-->");
                                 builderContent.Append("</td>");
                                 recordQueue.Clear();
                             }
@@ -438,25 +473,26 @@ namespace ContractTools.WebApp
 
                     #endregion
 
-                    headContent.Append("</tr><!--头结束tr-->");
-                    builderContent.Append("</tr><!--内容结束tr-->");
+                    headContent.AppendLine("</tr><!--头结束tr-->");
+                    builderContent.AppendLine("</tr><!--内容结束tr-->");
                     //读取行结束
                     reader.RecordEnd();
                 }
                 catch (Exception ex)
                 {
-                    builderContent.AppendFormat("<tr><td align=\"left\">{0}行出错{1}</td></tr>", (i + 1), ex.Message);
+                    builderContent.AppendFormat("<tr><td align=\"left\" style=\"color:red;\">{0}行出错{1}</td></tr>", (i + 1), ex.Message);
+                    builderContent.AppendLine();
                     break; //读流出错，直接退出
                 }
             }
 
-            respContent.Append(headContent.ToString());
-            respContent.Append(builderContent.ToString());
-            respContent.Append("</table><!--子表结束-->");
-            respContent.Append("</td></tr>");
+            respContent.AppendLine(headContent.ToString());
+            respContent.AppendLine(builderContent.ToString());
+            respContent.AppendLine("</table><!--子表结束-->");
+            respContent.AppendLine("</td></tr>");
             respContent.Append("<tr>");
             respContent.Append("<td colspan=\"3\" align=\"left\">End</td>");
-            respContent.Append("</tr>");
+            respContent.AppendLine("</tr>");
         }
 
     }

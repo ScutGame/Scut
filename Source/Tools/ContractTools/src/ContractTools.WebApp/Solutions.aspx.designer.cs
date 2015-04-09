@@ -22,15 +22,6 @@ namespace ContractTools.WebApp {
         protected global::System.Web.UI.WebControls.TextBox txtDescption;
         
         /// <summary>
-        /// txtNamespace 控件。
-        /// </summary>
-        /// <remarks>
-        /// 自动生成的字段。
-        /// 若要进行修改，请将字段声明从设计器文件移到代码隐藏文件。
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.TextBox txtNamespace;
-        
-        /// <summary>
         /// txtGameID 控件。
         /// </summary>
         /// <remarks>
@@ -38,6 +29,15 @@ namespace ContractTools.WebApp {
         /// 若要进行修改，请将字段声明从设计器文件移到代码隐藏文件。
         /// </remarks>
         protected global::System.Web.UI.WebControls.TextBox txtGameID;
+        
+        /// <summary>
+        /// txtNamespace 控件。
+        /// </summary>
+        /// <remarks>
+        /// 自动生成的字段。
+        /// 若要进行修改，请将字段声明从设计器文件移到代码隐藏文件。
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.TextBox txtNamespace;
         
         /// <summary>
         /// txtUrl 控件。
@@ -56,6 +56,42 @@ namespace ContractTools.WebApp {
         /// 若要进行修改，请将字段声明从设计器文件移到代码隐藏文件。
         /// </remarks>
         protected global::System.Web.UI.WebControls.TextBox txtRefNamespace;
+        
+        /// <summary>
+        /// ddSerUseScript 控件。
+        /// </summary>
+        /// <remarks>
+        /// 自动生成的字段。
+        /// 若要进行修改，请将字段声明从设计器文件移到代码隐藏文件。
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.DropDownList ddSerUseScript;
+        
+        /// <summary>
+        /// ddCliUseScript 控件。
+        /// </summary>
+        /// <remarks>
+        /// 自动生成的字段。
+        /// 若要进行修改，请将字段声明从设计器文件移到代码隐藏文件。
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.DropDownList ddCliUseScript;
+        
+        /// <summary>
+        /// ddResponseContentType 控件。
+        /// </summary>
+        /// <remarks>
+        /// 自动生成的字段。
+        /// 若要进行修改，请将字段声明从设计器文件移到代码隐藏文件。
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.DropDownList ddResponseContentType;
+        
+        /// <summary>
+        /// ckIsDParam 控件。
+        /// </summary>
+        /// <remarks>
+        /// 自动生成的字段。
+        /// 若要进行修改，请将字段声明从设计器文件移到代码隐藏文件。
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.CheckBox ckIsDParam;
         
         /// <summary>
         /// butSubmit 控件。

@@ -371,9 +371,9 @@ namespace ContractTools.WebApp.Base
             int indent = 0;
             int recordIndex = 0;
             string subNumVar = "subRecordCount";
-            string subTableVar = "subTabel";
+            string subTableVar = "subTable";
             string subRecordVar = "subRecord";
-            string currTableVar = "DataTabel";
+            string currTableVar = "DataTable";
             string readerVar = isQuick ? "rd" : "ZyReader";
             StringBuilder strTemp = new StringBuilder();
             int[] indexList = new int[forVarChars.Length];
@@ -453,7 +453,7 @@ namespace ContractTools.WebApp.Base
                         subTableVar = subTableVar.Substring(0, subTableVar.LastIndexOf('_'));
                         subRecordVar = subRecordVar.Substring(0, subRecordVar.LastIndexOf('_'));
                     }
-                    currTableVar = depth > 0 ? subTableVar : "DataTabel";
+                    currTableVar = depth > 0 ? subRecordVar : "DataTable";
                     strTemp.AppendFormat("{0}{1}.Children{2} = {3}",
                         currIndent,
                         currTableVar,
@@ -519,7 +519,7 @@ namespace ContractTools.WebApp.Base
             int indent = 0;
             int recordIndex = 0;
             string subNumVar = "subRecordCount";
-            string subTableVar = "subTabel";
+            string subTableVar = "subTable";
             string subRecordVar = "subRecord";
             string currTableVar = "actionResult";
             StringBuilder strTemp = new StringBuilder();
@@ -1275,16 +1275,24 @@ namespace ContractTools.WebApp.Base
                 {
                     int depth = 0;
                     string listVar = "_dsItemList";
+                    string className;
                     int recordIndex = 0;
                     int[] indexList = new int[forVarChars.Length];
                     fieldBuilder.Remove(0, fieldBuilder.Length);
                     var list = new List<ParamInfoModel>(reqParams.Where(t => t.FieldType != FieldType.Void));
                     list.AddRange(paramList.Where(t => t.FieldType != FieldType.Void));
 
+                    var classList = new List<StringBuilder>();
+                    var classStack = new Stack<StringBuilder>();
+                    StringBuilder memberBuilder = new StringBuilder();
+
                     foreach (var paramInfo in list)
                     {
-                        FieldType fieldType = paramInfo.FieldType;
                         string descp = paramInfo.Descption + paramInfo.Remark;
+                        string spaceString = GetSpaceIndent(2, depth);
+                        FieldType fieldType = paramInfo.FieldType;
+                        if (fieldType == FieldType.Void) continue;
+
                         if (FieldType.Record.Equals(fieldType))
                         {
                             if (depth < indexList.Length)
@@ -1293,50 +1301,63 @@ namespace ContractTools.WebApp.Base
                                 recordIndex++;
                                 indexList[depth] = recordIndex;
                             }
+                            string memberName = string.IsNullOrEmpty(paramInfo.Field) ? listVar + "_" + recordIndex : paramInfo.Field + "List";
                             listVar = listVar + "_" + recordIndex;
-                            if (!string.IsNullOrEmpty(descp))
+                            className = string.IsNullOrEmpty(paramInfo.Field)
+                                ? listVar.Replace("_dsItemList", "Class")
+                                : paramInfo.Field;
+                            //add class's member
+                            if (depth > 0)
                             {
-                                fieldBuilder.AppendLine("/// <summary>");
-                                fieldBuilder.Append(GetSpaceIndent(0, 2));
-                                fieldBuilder.AppendLine("/// " + descp.Replace("\r\n", ","));
-                                fieldBuilder.Append(GetSpaceIndent(0, 2));
-                                fieldBuilder.AppendLine("/// </summary>");
-                                fieldBuilder.Append(GetSpaceIndent(0, 2));
+                                var classMemberBuilder = classStack.Peek();
+                                BuildMemberCodeByList(classMemberBuilder, GetSpaceIndent(2, depth), className, descp, memberName, true);
                             }
-                            fieldBuilder.AppendFormat("private List<Object> {0};", listVar);
-                            fieldBuilder.Append(Environment.NewLine);
-                            fieldBuilder.Append(GetSpaceIndent(0, 2));
+                            else
+                            {
+                                BuildMemberCodeByList(memberBuilder, spaceString, className, descp, memberName);
+                            }
+                            var classBuilder = new StringBuilder();
+                            BuildClassCode(classBuilder, GetSpaceIndent(2, 0), descp, className);
+                            classBuilder.Append(GetSpaceIndent(1, 0));
+                            classStack.Push(classBuilder);
                             depth++;
                             continue;
                         }
                         if (FieldType.End.Equals(fieldType))
                         {
                             listVar = listVar.Substring(0, listVar.LastIndexOf('_'));
+
+                            var classMemberBuilder = classStack.Pop();
+                            classMemberBuilder.AppendLine("");
+                            classMemberBuilder.Append(GetSpaceIndent(2, 0));
+                            classMemberBuilder.AppendLine("}");
+                            classList.Add(classMemberBuilder);
                             depth--;
                             continue;
                         }
                         if (depth > 0)
                         {
+                            var classMemberBuilder = classStack.Peek();
+                            BuildMemberCode(classMemberBuilder, GetSpaceIndent(2, 1), paramInfo, true);
                             continue;
                         }
-                        if (!string.IsNullOrEmpty(descp))
-                        {
-                            fieldBuilder.AppendLine("/// <summary>");
-                            fieldBuilder.Append(GetSpaceIndent(0, 2));
-                            fieldBuilder.AppendLine("/// " + descp.Replace("\r\n", ","));
-                            fieldBuilder.Append(GetSpaceIndent(0, 2));
-                            fieldBuilder.AppendLine("/// </summary>");
-                            fieldBuilder.Append(GetSpaceIndent(0, 2));
-                        }
-                        fieldBuilder.Append("private ");
 
-                        fieldBuilder.Append(fieldType == FieldType.Password ? "string" : fieldType.ToString().ToLower());
-                        fieldBuilder.Append(" ");
-                        fieldBuilder.Append(ToMemberVarName(paramInfo.Field));
-                        fieldBuilder.Append(";");
-                        fieldBuilder.Append(Environment.NewLine);
-                        fieldBuilder.Append(GetSpaceIndent(0, 2));
+                        BuildMemberCode(memberBuilder, spaceString, paramInfo);
                     }
+
+                    fieldBuilder.AppendLine();
+                    fieldBuilder.Append(GetSpaceIndent(2, 0));
+                    fieldBuilder.AppendLine("#region class object");
+                    foreach (var builder in classList)
+                    {
+                        fieldBuilder.Append(builder);
+                        fieldBuilder.AppendLine();
+                    }
+                    fieldBuilder.Append(GetSpaceIndent(2, 0));
+                    fieldBuilder.AppendLine("#endregion");
+                    fieldBuilder.AppendLine();
+                    fieldBuilder.Append(GetSpaceIndent(2, 0));
+                    fieldBuilder.Append(memberBuilder);
                 }
                 content = content.Replace(exp, fieldBuilder.ToString());
 
@@ -1344,6 +1365,69 @@ namespace ContractTools.WebApp.Base
             content = ReplaceCheckRequest(content, reqParams);
             content = ReplaceBuildPack(content, paramList);
             return content;
+        }
+
+        private static void BuildClassCode(StringBuilder classBuilder, string spaceString, string descp, string className)
+        {
+            classBuilder.Append(spaceString);
+            classBuilder.AppendLine("/// <summary>");
+            classBuilder.Append(spaceString);
+            classBuilder.AppendLine("/// " + descp.Replace("\r\n", ","));
+            classBuilder.Append(spaceString);
+            classBuilder.AppendLine("/// </summary>");
+            classBuilder.Append(spaceString);
+            classBuilder.AppendFormat("class {0}", className);
+            classBuilder.AppendLine("");
+            classBuilder.Append(spaceString);
+            classBuilder.AppendLine("{");
+            classBuilder.Append(spaceString);
+        }
+
+        private static void BuildMemberCodeByList(StringBuilder memberBuilder, string spaceString, string className, string descp, string listVar, bool isClassMember = false)
+        {
+            memberBuilder.AppendLine("/// <summary>");
+            memberBuilder.Append(spaceString);
+            memberBuilder.AppendLine("/// " + descp.Replace("\r\n", ","));
+            memberBuilder.Append(spaceString);
+            memberBuilder.AppendLine("/// </summary>");
+            memberBuilder.Append(spaceString);
+            if (isClassMember)
+            {
+                memberBuilder.AppendFormat("public List<{1}> {0}", listVar, className);
+                memberBuilder.AppendLine(" { get; set; }");
+            }
+            else
+            {
+                memberBuilder.AppendFormat("private List<{1}> {0} = new List<{1}>()", listVar, className);
+                memberBuilder.AppendLine(";");
+            }
+            memberBuilder.Append(spaceString);
+        }
+
+        private static void BuildMemberCode(StringBuilder memberBuilder, string spaceString, ParamInfoModel paramInfo, bool isClassMember = false)
+        {
+            string descp = paramInfo.Descption + paramInfo.Remark;
+            memberBuilder.AppendLine("/// <summary>");
+            memberBuilder.Append(spaceString);
+            memberBuilder.AppendLine("/// " + descp.Replace("\r\n", ","));
+            memberBuilder.Append(spaceString);
+            memberBuilder.AppendLine("/// </summary>");
+            memberBuilder.Append(spaceString);
+            if (isClassMember)
+            {
+                memberBuilder.AppendFormat("public {0} {1}",
+                    paramInfo.FieldType == FieldType.Password ? "string" : paramInfo.FieldType.ToString().ToLower(),
+                    paramInfo.Field);
+                memberBuilder.AppendLine(" { get; set; }");
+            }
+            else
+            {
+                memberBuilder.AppendFormat("private {0} {1}",
+                    paramInfo.FieldType == FieldType.Password ? "string" : paramInfo.FieldType.ToString().ToLower(),
+                    ToMemberVarName(paramInfo.Field));
+                memberBuilder.AppendLine(";");
+            }
+            memberBuilder.Append(spaceString);
         }
 
         private static string SetValueRange(int minValue, int maxValue)
@@ -1478,6 +1562,7 @@ namespace ContractTools.WebApp.Base
             StringBuilder strTemp = new StringBuilder();
             int depth = 0;
             int indent = 1;
+            string parentEnumVar = "";
             string currentVar = "this";
             string itemVar = "dsItem";
             string enumVar = "item";
@@ -1496,19 +1581,22 @@ namespace ContractTools.WebApp.Base
                         recordIndex++;
                         indexList[depth] = recordIndex;
                     }
+                    parentEnumVar = "";
                     if (depth > 0)
                     {
+                        parentEnumVar = enumVar + ".";
                         currentVar = itemVar;
                         itemVar = itemVar + recordIndex;
                         enumVar = enumVar + "_" + recordIndex;
                     }
                     listVar = listVar + "_" + recordIndex;
+                    string memberName = string.IsNullOrEmpty(paramInfo.Field) ? listVar : paramInfo.Field + "List";
                     string currIndent = GetSpaceIndent(indent + depth, 2);
                     strTemp.Append(currIndent);
-                    strTemp.AppendFormat("{0}.PushIntoStack({1}.Count);", currentVar, listVar);
+                    strTemp.AppendFormat("{0}.PushIntoStack({1}{2}.Count);", currentVar, parentEnumVar, memberName);
                     strTemp.AppendLine();
                     strTemp.Append(currIndent);
-                    strTemp.AppendFormat("foreach (var {0} in {1})", enumVar, listVar);
+                    strTemp.AppendFormat("foreach (var {0} in {1}{2})", enumVar, parentEnumVar, memberName);
                     strTemp.AppendLine();
                     strTemp.Append(currIndent);
                     strTemp.Append("{");
@@ -1607,5 +1695,33 @@ namespace ContractTools.WebApp.Base
         }
 
 
+        public static List<ParamInfoModel> InitParamDepth(List<ParamInfoModel> paramList)
+        {
+            int depth = 0;
+            foreach (var paramInfo in paramList)
+            {
+                if (paramInfo.ParamType != 2) continue;
+
+                paramInfo.Depth = depth;
+                FieldType fieldType = paramInfo.FieldType;
+                if (fieldType.Equals(FieldType.Record))
+                {
+                    paramInfo.Depth = depth;
+                    depth++;
+                    continue;
+                }
+                if (fieldType.Equals(FieldType.End))
+                {
+                    depth--;
+                    paramInfo.Depth = depth;
+                    continue;
+                }
+                if (fieldType.Equals(FieldType.Void))
+                {
+                    continue;
+                }
+            }
+            return paramList;
+        }
     }
 }

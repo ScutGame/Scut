@@ -1,10 +1,10 @@
 ﻿
 --##Description##
 function Response.act##ID##(rd)
-    local DataTabel = nil
+    local DataTable = nil
     if rd:getResult() == Response.Success then
-        DataTabel = {}
+        DataTable = {}
 ##Judge##
     end	
-    return DataTabel	
+    return DataTable	
 end

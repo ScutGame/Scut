@@ -36,6 +36,35 @@ namespace ContractTools.WebApp
 
     public class BasePage : System.Web.UI.Page
     {
+        public static KeyValuePair<int, string>[][] FieldTypeMaps = new[]
+        {
+            new []{
+               new KeyValuePair<int, string>(-1,"Password"), 
+               new KeyValuePair<int, string>(1,"Int"), 
+               new KeyValuePair<int, string>(2,"String"), 
+               new KeyValuePair<int, string>(3,"Short"), 
+               new KeyValuePair<int, string>(4,"Byte"), 
+               new KeyValuePair<int, string>(8,"Long"), 
+               new KeyValuePair<int, string>(9,"Bool")
+            },
+             new []{
+               new KeyValuePair<int, string>(1,"Int"), 
+               new KeyValuePair<int, string>(2,"String"), 
+               new KeyValuePair<int, string>(3,"Short"), 
+               new KeyValuePair<int, string>(4,"Byte"), 
+               new KeyValuePair<int, string>(5,"Record"), 
+               new KeyValuePair<int, string>(6,"End"), 
+               new KeyValuePair<int, string>(7,"Void"), 
+               new KeyValuePair<int, string>(8,"Long"), 
+               new KeyValuePair<int, string>(9,"Bool"), 
+               new KeyValuePair<int, string>(10,"Float"), 
+               new KeyValuePair<int, string>(11,"Double"), 
+               new KeyValuePair<int, string>(12,"Date"), 
+               new KeyValuePair<int, string>(13,"UInt"), 
+               new KeyValuePair<int, string>(14,"UShort"), 
+               new KeyValuePair<int, string>(15,"ULong")
+            }
+        };
         protected void Alert(string msg, string url)
         {
             Response.Write(string.Format("<script language=javascript>alert('{0}');location.href ='{1}';</script>", msg, url));

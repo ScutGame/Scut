@@ -58,6 +58,10 @@ namespace ContractTools.WebApp.Base
             command.AddParameter("RefNamespace", model.RefNamespace);
             command.AddParameter("Url", model.Url);
             command.AddParameter("GameID", model.GameID);
+            command.AddParameter("SerUseScript", model.SerUseScript);
+            command.AddParameter("CliUseScript", model.CliUseScript);
+            command.AddParameter("IsDParam", model.IsDParam);
+            command.AddParameter("RespContentType", model.RespContentType);
             command.ReturnIdentity = true;
             command.Parser();
             return _dbBaseProvider.ExecuteQuery(CommandType.Text, command.Sql, command.Parameters);
@@ -71,6 +75,10 @@ namespace ContractTools.WebApp.Base
             command.AddParameter("RefNamespace", model.RefNamespace);
             command.AddParameter("Url", model.Url);
             command.AddParameter("GameID", model.GameID);
+            command.AddParameter("SerUseScript", model.SerUseScript);
+            command.AddParameter("CliUseScript", model.CliUseScript);
+            command.AddParameter("IsDParam", model.IsDParam);
+            command.AddParameter("RespContentType", model.RespContentType);
             command.Filter = _dbBaseProvider.CreateCommandFilter();
             command.Filter.Condition = _dbBaseProvider.FormatFilterParam("SlnID");
             command.Filter.AddParam("SlnID", model.SlnID);
@@ -110,7 +118,7 @@ namespace ContractTools.WebApp.Base
         public static List<SolutionModel> GetSolution(Action<CommandFilter> match)
         {
             var command = _dbBaseProvider.CreateCommandStruct("Solutions", CommandMode.Inquiry);
-            command.Columns = "SlnID,SlnName,Namespace,RefNamespace,Url,GameID";
+            command.Columns = "SlnID,SlnName,Namespace,RefNamespace,Url,GameID,SerUseScript,CliUseScript,IsDParam,RespContentType";
             command.OrderBy = "SlnID ASC";
             command.Filter = _dbBaseProvider.CreateCommandFilter();
             if (match != null)
@@ -130,6 +138,10 @@ namespace ContractTools.WebApp.Base
                     model.Namespace = reader["Namespace"].ToNotNullString();
                     model.RefNamespace = reader["RefNamespace"].ToNotNullString();
                     model.Url = reader["Url"].ToNotNullString();
+                    model.SerUseScript = reader["SerUseScript"].ToNotNullString();
+                    model.CliUseScript = reader["CliUseScript"].ToNotNullString();
+                    model.IsDParam = reader["IsDParam"].ToBool();
+                    model.RespContentType = reader["RespContentType"].ToInt();
                     list.Add(model);
                 }
             }
@@ -542,7 +554,7 @@ namespace ContractTools.WebApp.Base
 
         public static List<ParamInfoModel> GetParamInfo(int slnId, int contractId, int versionId)
         {
-            return GetParamInfo(f =>
+            var result = GetParamInfo(f =>
             {
                 if (versionId > 0)
                 {
@@ -555,6 +567,8 @@ namespace ContractTools.WebApp.Base
                 f.AddParam("ContractID", contractId);
                 f.AddParam("SlnID", slnId);
             });
+
+          return  TemplateHelper.InitParamDepth(result);
         }
 
         public static List<ParamInfoModel> GetParamInfo(Action<CommandFilter> match)
