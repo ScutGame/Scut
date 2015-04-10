@@ -6,12 +6,12 @@ function Action##ID##(currScene, isLoading##Parameter##)
 end
 
 function _##ID##Callback(currScene, lpExternalData)
-    local DataTabel = nil
+    local DataTable = nil
     if ZyReader:getResult() == eZyNetSuccess then
-        DataTabel = {}
+        DataTable = {}
 ##Judge##
     else
         ZyToast.show(currScene, ZyReader:readErrorMsg())
     end
-    return DataTabel
+    return DataTable
 end

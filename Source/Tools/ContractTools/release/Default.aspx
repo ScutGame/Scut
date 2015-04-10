@@ -78,12 +78,12 @@
                 <div class="content">
                     <table style="width: 100%; background: #f0f0f0; padding: 5px;" cellspacing="4">
                         <tr>
-                            <td style="width: 40%; text-align: right;"><span class="space">参数类型:</span></td>
+                            <td style="width: 25%; text-align: right;"><span class="space">参数类型:</span></td>
                             <td>
-                                <asp:DropDownList ID="ddParamType" runat="server" Width="100px">
+                                <asp:DropDownList ID="ddParamType" runat="server" AutoPostBack="True" Width="100px" OnSelectedIndexChanged="OnParamTypeChanged">
                                     <asp:ListItem Value="1">请求</asp:ListItem>
                                     <asp:ListItem Value="2" Selected="True">返回</asp:ListItem>
-                                </asp:DropDownList>
+                                </asp:DropDownList><span>（Record：循环体开始标记，End：结束标记，Void：作废，Password：标记加密）</span>
                             </td>
                         </tr>
                         <tr>
@@ -91,32 +91,18 @@
                                 <span class="space">字段类型:</span></td>
                             <td>
                                 <asp:DropDownList ID="ddFieldType" runat="server" Width="100px">
-                                    <asp:ListItem Value="-1">Password</asp:ListItem>
-                                    <asp:ListItem Value="1">Int</asp:ListItem>
-                                    <asp:ListItem Value="2" Selected="True">String</asp:ListItem>
-                                    <asp:ListItem Value="3">Short</asp:ListItem>
-                                    <asp:ListItem Value="4">Byte</asp:ListItem>
-                                    <asp:ListItem Value="5">Record</asp:ListItem>
-                                    <asp:ListItem Value="6">End</asp:ListItem>
-                                    <asp:ListItem Value="7">Void</asp:ListItem>
-                                    <asp:ListItem Value="8">Long</asp:ListItem>
-                                    <asp:ListItem Value="9">Bool</asp:ListItem>
-                                    <asp:ListItem Value="10">Float</asp:ListItem>
-                                    <asp:ListItem Value="11">Double</asp:ListItem>
-                                    <asp:ListItem Value="12">Date</asp:ListItem>
-                                    <asp:ListItem Value="13">UInt</asp:ListItem>
-                                    <asp:ListItem Value="14">UShort</asp:ListItem>
-                                    <asp:ListItem Value="15">ULong</asp:ListItem>
                                 </asp:DropDownList>
-                                <br><span>【注：Record-是循环体开始标记；End-是循环体结束标记；Void-不使用；UInt-是无负数整数】</span>
+                                <span>新增到位置:</span>
+                                <asp:DropDownList ID="ddResponseParams" runat="server" Width="150px">
+                                 </asp:DropDownList>
                             </td>
                         </tr>
                         <tr>
                             <td style="text-align: right">
                                 <span class="space">字段名:</span></td>
                             <td>
-                                <asp:TextBox ID="txtField" runat="server" Width="100px"></asp:TextBox>
-                                <asp:CheckBox runat="server" ID="ckRequired" Text="必传参数" />
+                                <asp:TextBox ID="txtField" runat="server" Width="300px"></asp:TextBox>
+                                <asp:CheckBox runat="server" ID="ckRequired" Text="必传参数" Checked="True" />
                             </td>
                         </tr>
                         <tr>
@@ -124,11 +110,27 @@
                                 <span class="space">字段说明:</span>
                             </td>
                             <td style="text-align: left;">
-                                <asp:TextBox ID="txtRemark" runat="server" TextMode="MultiLine" Height="30px" Width="200px"></asp:TextBox></td>
+                                <asp:TextBox ID="txtRemark" runat="server" TextMode="MultiLine" Height="30px" Width="300px"></asp:TextBox></td>
+                        </tr>
+                        <tr><td style="text-align: right">
+                                <span class="space"></span>
+                            </td>
+                            <td style="padding-top: 5px;">
+                                <asp:Button ID="btnParamAdd" runat="server" Text="新增参数" OnClick="btnParamAdd_Click" CssClass="btn" />
+                                <span style="padding:0 5px"></span>
+                                <asp:Button ID="btnParamCopy" runat="server" Text="复制参数" OnClick="btnParamCopy_Click" CssClass="btn" AutoPostBack="True" />
+                            </td>
                         </tr>
                         <tr>
-                            <td colspan="2" style="padding-top: 5px; text-align: center;">
-                                <asp:Button ID="btnParamAdd" runat="server" Text="新增参数" OnClick="btnParamAdd_Click" CssClass="btn" />
+                            <td style="text-align: right">
+                                <span>复制参数从位置:</span>
+                            </td>
+                            <td style="padding-top: 5px;">
+                                <asp:DropDownList ID="ddParamCopyFrom" runat="server" Width="150px">
+                                 </asp:DropDownList>
+                                <span>到</span>
+                                <asp:DropDownList ID="ddParamCopyTo" runat="server" Width="150px">
+                                 </asp:DropDownList>
                             </td>
                         </tr>
                     </table>
@@ -251,7 +253,7 @@
                                     <asp:Label ID="IDLabel" runat="server" Text='<%# Bind("ID") %>'></asp:Label>
                                 </ItemTemplate>
                             </asp:TemplateField>
-                            <asp:TemplateField HeaderText="参数类型" ItemStyle-Width="5%" ItemStyle-HorizontalAlign="Left">
+                            <asp:TemplateField HeaderText="参数类型" ItemStyle-Width="10%" ItemStyle-HorizontalAlign="Left">
                                 <EditItemTemplate>
                                     <asp:DropDownList ID="droFieldType" runat="server" SelectedValue='<%# Bind("FieldTypeId") %>'
                                         Width="90%">
@@ -273,7 +275,8 @@
                                     </asp:DropDownList>
                                 </EditItemTemplate>
                                 <ItemTemplate>
-                                    <asp:Label ID="LabFieldType" runat="server" Text='<%# Bind("FieldTypeId") %>'></asp:Label>
+                                    <asp:Label ID="LabFieldType" runat="server" Text='<%# Bind("FieldTypeId") %>' Visible="False"></asp:Label>
+                                    <asp:Label ID="Label1" runat="server" Text='<%# Bind("DepthTypeDescp") %>'></asp:Label>
                                 </ItemTemplate>
                                 <ItemStyle Width="5%"></ItemStyle>
                             </asp:TemplateField>
@@ -286,7 +289,7 @@
                                 </ItemTemplate>
                                 <ItemStyle Width="10%"></ItemStyle>
                             </asp:TemplateField>
-                            <asp:TemplateField HeaderText="参数描述" ItemStyle-Width="16%" ItemStyle-HorizontalAlign="Left">
+                            <asp:TemplateField HeaderText="参数描述" ItemStyle-Width="11%" ItemStyle-HorizontalAlign="Left">
                                 <EditItemTemplate>
                                     <asp:TextBox ID="hiDescption" runat="server" Text='<%# Bind("Descption") %>' Width="90%" Visible="False"></asp:TextBox>
                                     <asp:TextBox ID="txtDescption" runat="server" Text='<%# Bind("Remark") %>' Width="90%" TextMode="MultiLine"></asp:TextBox>
@@ -297,7 +300,7 @@
                                 </ItemTemplate>
                                 <ItemStyle Width="16%"></ItemStyle>
                             </asp:TemplateField>
-                            <asp:TemplateField HeaderText="排序ID" ItemStyle-Width="8%" ItemStyle-HorizontalAlign="Center">
+                            <asp:TemplateField HeaderText="排序" ItemStyle-Width="10%" ItemStyle-HorizontalAlign="Center">
                                 <EditItemTemplate>
                                     <asp:Label ID="txtSortID" runat="server" Text='<%# Bind("SortID") %>' Width="90%"></asp:Label>
                                 </EditItemTemplate>
@@ -311,10 +314,10 @@
                                     <asp:LinkButton ID="btnRecordSortDes" runat="server" CausesValidation="False" CommandArgument='<%#Eval("id")+","+Eval("FieldTypeId")+","+Eval("SortID")%>'
                                         Text="↓循环" OnCommand="btnRecordSortDes_Command"></asp:LinkButton>&nbsp;
                                 </ItemTemplate>
-                                <ItemStyle Width="8%"></ItemStyle>
+                                <ItemStyle Width="10%"></ItemStyle>
                             </asp:TemplateField>
-                            <asp:CommandField ShowEditButton="True" ItemStyle-Width="6%" ItemStyle-HorizontalAlign="Center">
-                                <ItemStyle HorizontalAlign="Center" Width="6%"></ItemStyle>
+                            <asp:CommandField ShowEditButton="True" ItemStyle-Width="4%" ItemStyle-HorizontalAlign="Center">
+                                <ItemStyle HorizontalAlign="Center" Width="4%"></ItemStyle>
                             </asp:CommandField>
                             <asp:TemplateField ShowHeader="False" HeaderText="操作" ItemStyle-Width="4%" ItemStyle-HorizontalAlign="Center">
                                 <ItemTemplate>
