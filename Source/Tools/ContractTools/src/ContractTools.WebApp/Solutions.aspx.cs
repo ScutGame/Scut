@@ -35,6 +35,10 @@ namespace ContractTools.WebApp
                 model.RefNamespace = txtRefNamespace.Text.Trim();
                 model.GameID = Convert.ToInt32((string)txtGameID.Text);
                 model.Url = txtUrl.Text.Trim();
+                model.SerUseScript = ddSerUseScript.Text;
+                model.CliUseScript = ddCliUseScript.Text;
+                model.RespContentType = ddResponseContentType.Text.ToInt();
+                model.IsDParam = ckIsDParam.Checked;
                 if (DbDataLoader.Add(model) > 0)
                 {
                     BindData();

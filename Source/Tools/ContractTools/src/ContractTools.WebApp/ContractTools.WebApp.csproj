@@ -210,9 +210,6 @@
     <Content Include="Main.Master" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Properties\PublishProfiles\contracttools.pubxml" />
-  </ItemGroup>
-  <ItemGroup>
     <Folder Include="Base\Code\" />
   </ItemGroup>
   <PropertyGroup>

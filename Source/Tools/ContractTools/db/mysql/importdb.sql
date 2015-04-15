@@ -10,7 +10,7 @@ Target Server Type    : MYSQL
 Target Server Version : 50615
 File Encoding         : 65001
 
-Date: 2014-08-19 15:17:17
+Date: 2015-04-15 10:32:17
 */
 
 DROP database IF EXISTS `ContractDB`;
@@ -77,10 +77,13 @@ INSERT INTO `contract` VALUES ('1000', '排名录入接口', '0', '8', '', '38'
 INSERT INTO `contract` VALUES ('1001', '服务器列表协议接口', '0', '5', '', '0', '0');
 INSERT INTO `contract` VALUES ('1001', '服务器列表', '1', '7', '', '0', '0');
 INSERT INTO `contract` VALUES ('1001', '排名列表接口', '0', '8', '', '38', '0');
+INSERT INTO `contract` VALUES ('1001', '登陆接口', '1', '9', '', '0', '0');
 INSERT INTO `contract` VALUES ('1002', '获取通行证接口', '0', '5', '', '0', '0');
 INSERT INTO `contract` VALUES ('1002', '获取通行证接口', '0', '6', '', '31', '0');
 INSERT INTO `contract` VALUES ('1002', '获取通行证接口', '0', '8', '', '31', '0');
+INSERT INTO `contract` VALUES ('1002', '获取账号接口', '1', '9', '', '0', '0');
 INSERT INTO `contract` VALUES ('1003', '大区分服列表', '1', '7', '', '0', '0');
+INSERT INTO `contract` VALUES ('1003', '注册接口', '1', '9', '', '0', '0');
 INSERT INTO `contract` VALUES ('1004', '用户登录', '1', '5', '', '0', '0');
 INSERT INTO `contract` VALUES ('1004', '用户登录接口', '0', '6', '', '31', '0');
 INSERT INTO `contract` VALUES ('1004', '全服公告', '1', '7', '', '0', '0');
@@ -88,6 +91,7 @@ INSERT INTO `contract` VALUES ('1004', '用户登录接口', '0', '8', '', '31'
 INSERT INTO `contract` VALUES ('1005', '创建角色', '1', '5', '', '0', '0');
 INSERT INTO `contract` VALUES ('1005', '创建角色接口', '0', '6', '', '31', '0');
 INSERT INTO `contract` VALUES ('1005', '创建角色接口', '0', '8', '', '31', '0');
+INSERT INTO `contract` VALUES ('1005', '游客改密码接口', '1', '9', '', '0', '0');
 INSERT INTO `contract` VALUES ('1006', '密码更新接口', '1', '5', '', '0', '0');
 INSERT INTO `contract` VALUES ('1006', '密码更新接口', '1', '6', '', '31', '0');
 INSERT INTO `contract` VALUES ('1007', '用户检测接口', '1', '5', '', '0', '0');
@@ -338,7 +342,7 @@ CREATE TABLE `enuminfo` (
   `enumDescription` varchar(200) DEFAULT NULL,
   `enumValueInfo` longtext NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=1002 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=1004 DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 -- Records of enuminfo
@@ -432,6 +436,8 @@ INSERT INTO `enuminfo` VALUES ('180', '5', 'ContinuousType', '', '1、1天\r\n2�
 INSERT INTO `enuminfo` VALUES ('239', '7', 'ServerStatus', '分服状态', '1、流畅\r\n2、拥挤\r\n3、爆满\r\n4、停服\r\n5、维护\r\n6、推荐\r\n7、新服');
 INSERT INTO `enuminfo` VALUES ('1000', '0', 'UserStatus', '玩家状态', '0：在线\r\n1：挂机\r\n2：离线');
 INSERT INTO `enuminfo` VALUES ('1001', '8', 'UserStatus', '玩家状态', '0：在线\r\n1：挂机\r\n2：离线');
+INSERT INTO `enuminfo` VALUES ('1002', '9', 'MobileType', '使用的手机类型', '0:电脑PC\r\n1:iPod\r\n2:iPad\r\n3:iPhone(越狱)\r\n4:Phone\r\n5:Android\r\n6:Mac\r\n7:WindowsPhone7\r\n8:Unknow未知');
+INSERT INTO `enuminfo` VALUES ('1003', '9', 'StateCode', '响应错误码', '0:  OK，成功的\r\n100:服务器异常\r\n101:签名错误\r\n102:无处理程序\r\n103:密码错误\r\n105:登录凭证无效\r\n106:登录凭证过期');
 
 -- ----------------------------
 -- Table structure for `paraminfo`
@@ -457,7 +463,7 @@ CREATE TABLE `paraminfo` (
   `MaxValue` int(11) NOT NULL,
   `VerId` int(11) NOT NULL DEFAULT '0',
   PRIMARY KEY (`ID`)
-) ENGINE=InnoDB AUTO_INCREMENT=17063 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=17097 DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 -- Records of paraminfo
@@ -3188,7 +3194,6 @@ INSERT INTO `paraminfo` VALUES ('14020', '1001', '2', '', '6', '', '', '', '', 
 INSERT INTO `paraminfo` VALUES ('14021', '1001', '2', 'UserName', '2', '名字', '', '', '', '3', '0', '2013-10-21 10:31:38', '0', '2013-10-21 10:31:38', '8', '0', '0', '0');
 INSERT INTO `paraminfo` VALUES ('14022', '1001', '2', 'Score', '1', '分数', '', '', '', '4', '0', '2013-10-21 10:31:55', '0', '2013-10-21 10:31:55', '8', '0', '0', '0');
 INSERT INTO `paraminfo` VALUES ('15298', '2001', '2', 'Name', '2', '', '', '', '', '7', '0', '2014-02-12 14:52:34', '0', '1753-01-01 00:00:00', '8', '0', '0', '0');
-
 INSERT INTO `paraminfo` VALUES ('16021', '1003', '2', '', '5', '大区', '', '', '', '1', '0', '2011-05-24 01:48:23', '0', '1753-01-01 00:00:00', '7', '0', '0', '0');
 INSERT INTO `paraminfo` VALUES ('16022', '1003', '2', 'ID', '1', '大区ID', '', '', '', '2', '0', '2011-05-24 01:48:36', '0', '1753-01-01 00:00:00', '7', '0', '0', '0');
 INSERT INTO `paraminfo` VALUES ('16023', '1003', '2', 'AreaName', '2', '大区名称', '', '', '', '3', '0', '2011-05-24 01:48:57', '0', '1753-01-01 00:00:00', '7', '0', '0', '0');
@@ -3268,6 +3273,33 @@ INSERT INTO `paraminfo` VALUES ('17057', '1101', '2', '', '5', '', '', '', '', '
 INSERT INTO `paraminfo` VALUES ('17058', '1101', '2', 'Id', '2', '', '', '', '', '3', '0', '2014-08-04 17:57:40', '0', '1753-01-01 00:00:00', '8', '0', '0', '0');
 INSERT INTO `paraminfo` VALUES ('17061', '1101', '2', '', '6', '', '', '', '', '4', '0', '2014-08-04 17:58:53', '0', '1753-01-01 00:00:00', '8', '0', '0', '0');
 INSERT INTO `paraminfo` VALUES ('17062', '1101', '2', '', '6', '', '', '', '', '5', '0', '2014-08-04 17:59:01', '0', '1753-01-01 00:00:00', '8', '0', '0', '0');
+INSERT INTO `paraminfo` VALUES ('17063', '1001', '1', 'Handler', '2', '', 'Login', '', '程序名', '2', '0', '2015-04-15 09:28:11', '0', '2015-04-15 09:28:26', '9', '0', '0', '0');
+INSERT INTO `paraminfo` VALUES ('17066', '1001', '1', 'MobileType', '1', '', '', '', '【MobileType】手机类型', '4', '0', '2015-04-15 09:55:23', '0', '1753-01-01 00:00:00', '9', '0', '0', '0');
+INSERT INTO `paraminfo` VALUES ('17070', '1001', '1', 'Pid', '2', '', '', '', '账号', '5', '0', '2015-04-15 10:05:32', '0', '2015-04-15 10:06:17', '9', '0', '0', '0');
+INSERT INTO `paraminfo` VALUES ('17071', '1001', '1', 'Pwd', '-1', '', '', '', '密码', '6', '0', '2015-04-15 10:05:44', '0', '2015-04-15 10:06:06', '9', '0', '0', '0');
+INSERT INTO `paraminfo` VALUES ('17072', '1001', '1', 'IMEI', '2', '', '', '', '手机设备ID，游客登录', '7', '0', '2015-04-15 10:06:00', '0', '2015-04-15 10:19:02', '9', '0', '0', '0');
+INSERT INTO `paraminfo` VALUES ('17073', '1001', '1', 'ScreenX', '1', '', '', '', '手机屏幕宽度', '8', '0', '2015-04-15 10:06:44', '0', '2015-04-15 10:19:08', '9', '0', '0', '0');
+INSERT INTO `paraminfo` VALUES ('17074', '1001', '1', 'ScreenY', '1', '', '', '', '手机屏幕高度', '9', '0', '2015-04-15 10:07:00', '0', '2015-04-15 10:19:12', '9', '0', '0', '0');
+INSERT INTO `paraminfo` VALUES ('17075', '1001', '1', 'RetailID', '2', '', '', '', '客户打包的渠道编号', '10', '0', '2015-04-15 10:07:19', '0', '2015-04-15 10:19:18', '9', '0', '0', '0');
+INSERT INTO `paraminfo` VALUES ('17076', '1001', '2', 'Token', '2', '', '', '', '本次登录授权的凭证', '1', '0', '2015-04-15 10:08:02', '0', '1753-01-01 00:00:00', '9', '0', '0', '0');
+INSERT INTO `paraminfo` VALUES ('17077', '1001', '2', 'UserID', '1', '', '', '', '用户ID', '2', '0', '2015-04-15 10:08:19', '0', '1753-01-01 00:00:00', '9', '0', '0', '0');
+INSERT INTO `paraminfo` VALUES ('17079', '1002', '2', 'PassportId', '2', '', '', '', '系统分配账号', '1', '0', '2015-04-15 10:11:46', '0', '1753-01-01 00:00:00', '9', '0', '0', '0');
+INSERT INTO `paraminfo` VALUES ('17080', '1002', '2', 'Password', '2', '', '', '', '6位随机密码', '2', '0', '2015-04-15 10:12:10', '0', '1753-01-01 00:00:00', '9', '0', '0', '0');
+INSERT INTO `paraminfo` VALUES ('17081', '1002', '1', 'Handler', '2', '', 'Passport', '', '程序名', '2', '0', '2015-04-15 10:12:47', '0', '2015-04-15 10:23:34', '9', '0', '0', '0');
+INSERT INTO `paraminfo` VALUES ('17082', '1002', '1', 'IMEI', '2', '', '', '', '手机设备识别码，可以为空', '3', '0', '2015-04-15 10:13:49', '0', '1753-01-01 00:00:00', '9', '0', '0', '0');
+INSERT INTO `paraminfo` VALUES ('17083', '1003', '1', 'Handler', '2', '', 'Regist', '', '程序名', '2', '0', '2015-04-15 10:15:17', '0', '2015-04-15 10:16:49', '9', '0', '0', '0');
+INSERT INTO `paraminfo` VALUES ('17084', '1003', '1', 'MobileType', '1', '', '', '', '【MobileType】手机类型', '4', '0', '2015-04-15 10:15:17', '0', '1753-01-01 00:00:00', '9', '0', '0', '0');
+INSERT INTO `paraminfo` VALUES ('17085', '1003', '1', 'Pid', '2', '', '', '', '账号', '5', '0', '2015-04-15 10:15:17', '0', '1753-01-01 00:00:00', '9', '0', '0', '0');
+INSERT INTO `paraminfo` VALUES ('17086', '1003', '1', 'Pwd', '-1', '', '', '', '密码', '6', '0', '2015-04-15 10:15:17', '0', '1753-01-01 00:00:00', '9', '0', '0', '0');
+INSERT INTO `paraminfo` VALUES ('17087', '1003', '1', 'IMEI', '2', '', '', '', '手机设备ID，游客登录', '7', '0', '2015-04-15 10:15:17', '0', '2015-04-15 10:17:40', '9', '0', '0', '0');
+INSERT INTO `paraminfo` VALUES ('17088', '1003', '1', 'ScreenX', '1', '', '', '', '手机屏幕宽度', '8', '0', '2015-04-15 10:15:17', '0', '2015-04-15 10:16:59', '9', '0', '0', '0');
+INSERT INTO `paraminfo` VALUES ('17089', '1003', '1', 'ScreenY', '1', '', '', '', '手机屏幕高度', '9', '0', '2015-04-15 10:15:17', '0', '2015-04-15 10:17:03', '9', '0', '0', '0');
+INSERT INTO `paraminfo` VALUES ('17090', '1003', '1', 'RetailID', '2', '', '', '', '客户打包的渠道编号', '10', '0', '2015-04-15 10:15:17', '0', '2015-04-15 10:18:50', '9', '0', '0', '0');
+INSERT INTO `paraminfo` VALUES ('17091', '1003', '2', 'Token', '2', '', '', '', '本次登录授权的凭证', '1', '0', '2015-04-15 10:15:17', '0', '1753-01-01 00:00:00', '9', '0', '0', '0');
+INSERT INTO `paraminfo` VALUES ('17092', '1003', '2', 'UserID', '1', '', '', '', '用户ID', '2', '0', '2015-04-15 10:15:17', '0', '1753-01-01 00:00:00', '9', '0', '0', '0');
+INSERT INTO `paraminfo` VALUES ('17094', '1005', '1', 'Handler', '2', '', 'Password', '', '程序名', '2', '0', '2015-04-15 10:21:37', '0', '2015-04-15 10:21:43', '9', '0', '0', '0');
+INSERT INTO `paraminfo` VALUES ('17095', '1005', '1', 'PassportId', '1', '', '', '', '账号', '3', '0', '2015-04-15 10:22:12', '0', '1753-01-01 00:00:00', '9', '0', '0', '0');
+INSERT INTO `paraminfo` VALUES ('17096', '1005', '1', 'Password', '1', '', '', '', '密码', '4', '0', '2015-04-15 10:22:24', '0', '1753-01-01 00:00:00', '9', '0', '0', '0');
 
 -- ----------------------------
 -- Table structure for `solutions`
@@ -3280,19 +3312,18 @@ CREATE TABLE `solutions` (
   `RefNamespace` varchar(200) DEFAULT NULL,
   `Url` varchar(200) DEFAULT NULL,
   `GameID` int(11) DEFAULT NULL,
+  `SerUseScript` varchar(20) DEFAULT NULL,
+  `CliUseScript` varchar(20) DEFAULT NULL,
+  `IsDParam` bit(1) NOT NULL DEFAULT b'1',
+  `RespContentType` int(11) NOT NULL DEFAULT '0',
   PRIMARY KEY (`SlnID`)
-) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 -- Records of solutions
 -- ----------------------------
-INSERT INTO `solutions` VALUES ('5', '口袋天界', 'ZyGames.Tianjiexing.BLL.Action', 'using ZyGames.Base; \r\nusing ZyGames.Tianjiexing.Model; \r\nusing ZyGames.Framework.Game.Service;', 'http://kd1.36you.net/service.aspx', '6');
-INSERT INTO `solutions` VALUES ('6', '斗地主', 'ZyGames.HallCenter.Action', '', '127.0.0.1:9500', '7');
-INSERT INTO `solutions` VALUES ('7', '分服中心', 'ZyGames.DirCenter.Action', '', 'http://dir.36you.net/Service.aspx', '6');
-INSERT INTO `solutions` VALUES ('8', 'Scut Demo', 'Scut.Demo.Script.CsScript.Action', 'using ZyGames.Framework.Game.Contract;', '', '1');
-
-
-alter table `Solutions` add `SerUseScript` varchar(20);
-alter table `Solutions` add `CliUseScript` varchar(20);
-alter table `Solutions` add `IsDParam` bit not null default 1;
-alter table `Solutions` add `RespContentType` int not null default 0;
+INSERT INTO `solutions` VALUES ('5', '口袋天界', 'ZyGames.Tianjiexing.BLL.Action', 'using ZyGames.Base; \r\nusing ZyGames.Tianjiexing.Model; \r\nusing ZyGames.Framework.Game.Service;', 'http://kd1.36you.net/service.aspx', '6', null, null, '', '0');
+INSERT INTO `solutions` VALUES ('6', '斗地主', 'ZyGames.HallCenter.Action', '', '127.0.0.1:9500', '7', null, null, '', '0');
+INSERT INTO `solutions` VALUES ('7', '分服中心', 'ZyGames.DirCenter.Action', '', 'http://dir.36you.net/Service.aspx', '6', null, null, '', '0');
+INSERT INTO `solutions` VALUES ('8', 'Scut Demo', 'Scut.Demo.Script.CsScript.Action', 'using ZyGames.Framework.Game.Contract;', '', '1', null, null, '', '0');
+INSERT INTO `solutions` VALUES ('9', '登录服务器', 'ZyGames.AccountServer.Action', '', 'http://pass.scutgame.com/', '0', 'C#', 'Quick', '', '0');

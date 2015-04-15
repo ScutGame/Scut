@@ -196,6 +196,10 @@ namespace ContractTools.WebApp
             {
                 ddFieldType.SelectedValue = data.Length > 1 ? "1" : "0";
             }
+            List<ParamInfoModel> requestParams;
+            List<ParamInfoModel> responseParams;
+            GetParamInfo(ddlSolution.Text.ToInt(), ddContract.Text.ToInt(), ddVersion.Text.ToInt(), out requestParams, out responseParams);
+            BindResponseParams(paramtype == 1 ? requestParams : responseParams);
         }
 
         private void BindResponseParams(List<ParamInfoModel> list)
@@ -206,6 +210,7 @@ namespace ContractTools.WebApp
             ddResponseParams.DataBind();
             if (list.Count > 0)
             {
+                ddResponseParams.Items.Insert(0, new ListItem("<First>", "0"));
                 ddResponseParams.SelectedValue = (list[list.Count - 1].SortID).ToString();
             }
 
@@ -231,10 +236,11 @@ namespace ContractTools.WebApp
 
             List<ParamInfoModel> requestParams;
             List<ParamInfoModel> responseParams;
-            bool isEdit = IsEdit;
             GetParamInfo(slnId, contractId, versionId, out requestParams, out responseParams);
 
-            BindResponseParams(responseParams);
+            BindResponseParams(ddParamType.Text.ToInt() == 1 ? requestParams : responseParams);
+
+            bool isEdit = IsEdit;
             gvReqParams.Columns[gvReqParams.Columns.Count - 1].Visible = isEdit;
             gvReqParams.Columns[gvReqParams.Columns.Count - 2].Visible = isEdit;
             gvReqParams.DataKeyNames = new[] { "ID", "ParamType" };
@@ -819,8 +825,9 @@ namespace ContractTools.WebApp
                 int slnId = ddlSolution.Text.ToInt();
                 int verId = ddVersion.Text.ToInt();
                 int contractId = ddContract.Text.ToInt();
+                int paramType = ddParamType.Text.ToInt();
 
-                var paramList = DbDataLoader.GetParamInfo(slnId, contractId, 2, verId);
+                var paramList = DbDataLoader.GetParamInfo(slnId, contractId, paramType, verId);
                 var copyList = paramList.FindAll(t => t.SortID >= sortFrom && t.SortID <= sortTo);
                 int sortId = insertPos + copyList.Count;
 
@@ -870,10 +877,19 @@ namespace ContractTools.WebApp
                 mode.MaxValue = 0;
                 mode.CreateDate = DateTime.Now;
                 mode.VerID = ddVersion.Text.ToInt();
-                int sortID = ddResponseParams.Text.ToInt() + 1;
-                mode.SortID = sortID;
 
                 var paramList = DbDataLoader.GetParamInfo(mode.SlnID, mode.ContractID, mode.ParamType, mode.VerID);
+                int sortID = 0;
+                if (!string.IsNullOrEmpty(ddResponseParams.Text))
+                {
+                    sortID = ddResponseParams.Text.ToInt() + 1;
+                }
+                else
+                {
+                    sortID = paramList.Count == 0 ? 1 : paramList.Max(t => t.SortID) + 1;
+                }
+                mode.SortID = sortID;
+
                 foreach (var param in paramList)
                 {
                     if (param.SortID >= mode.SortID)
