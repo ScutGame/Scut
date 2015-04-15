@@ -369,7 +369,6 @@ namespace ContractTools.WebApp.Base
             int depth = 0;
             int preIndent = 2;
             int indent = 0;
-            int recordIndex = 0;
             string subNumVar = "subRecordCount";
             string subTableVar = "subTable";
             string subRecordVar = "subRecord";
@@ -383,6 +382,7 @@ namespace ContractTools.WebApp.Base
                 FieldType fieldType = paramInfo.FieldType;
                 if (fieldType.Equals(FieldType.Record))
                 {
+                    int recordIndex = 0;
                     if (depth < indexList.Length)
                     {
                         recordIndex = indexList[depth];
@@ -422,6 +422,7 @@ namespace ContractTools.WebApp.Base
                 }
                 else if (fieldType.Equals(FieldType.End))
                 {
+
                     string currIndent = GetSpaceIndent(depth + indent, preIndent);
 
                     strTemp.AppendFormat("{0}{1}:recordEnd()", currIndent, readerVar);
@@ -453,6 +454,7 @@ namespace ContractTools.WebApp.Base
                         subTableVar = subTableVar.Substring(0, subTableVar.LastIndexOf('_'));
                         subRecordVar = subRecordVar.Substring(0, subRecordVar.LastIndexOf('_'));
                     }
+                    int recordIndex = depth < indexList.Length ? indexList[depth] : 0;
                     currTableVar = depth > 0 ? subRecordVar : "DataTable";
                     strTemp.AppendFormat("{0}{1}.Children{2} = {3}",
                         currIndent,
