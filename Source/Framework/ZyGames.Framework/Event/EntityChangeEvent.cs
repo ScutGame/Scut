@@ -319,6 +319,7 @@ namespace ZyGames.Framework.Event
             IItemChangeEvent val = obj as IItemChangeEvent;
             if (val != null)
             {
+                val.IsInCache = true;
                 val.PropertyName = PropertyName;
                 AddChildrenListener(val);
             }

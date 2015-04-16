@@ -179,6 +179,11 @@ namespace ZyGames.Framework.Common.Build
                 SymbolReaderProvider = readerProvider,
                 ReadSymbols = debug
             });
+            BaseAssemblyResolver resolver = ass.MainModule.AssemblyResolver as BaseAssemblyResolver;
+            if (resolver != null)
+            {
+                resolver.AddSearchDirectory(currentPath);
+            }
             var types = ass.MainModule.Types.Where(p => !p.IsEnum).ToList();
             foreach (TypeDefinition type in types)
             {

@@ -215,6 +215,7 @@ namespace ZyGames.Framework.Game.Sns
                 string pwd = passport.GetRandomPwd();
                 result[0] = new SnsCenterUser(pid, pwd, string.Empty).InsertSnsUser().ToString();
                 result[1] = pid;
+                return result;
             }
             result[0] = snsuser.UserId.ToString();
             result[1] = snsuser.PassportId;

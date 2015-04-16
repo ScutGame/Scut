@@ -56,6 +56,7 @@ namespace ZyGames.Framework.Game.Message
         /// 
         /// </summary>        
         [ProtoMember(1)]
+        [EntityFieldExtend]
         [EntityField(true)]
         public int Code
         {
@@ -67,6 +68,7 @@ namespace ZyGames.Framework.Game.Message
         /// 
         /// </summary>        
         [ProtoMember(2)]
+        [EntityFieldExtend]
         [EntityField]
         public string Word
         {

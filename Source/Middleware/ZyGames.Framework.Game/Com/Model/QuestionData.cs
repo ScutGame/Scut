@@ -52,7 +52,8 @@ namespace ZyGames.Framework.Game.Com.Model
         /// 
         /// </summary>        
         [ProtoMember(1)]
-        [EntityField("ID", IsKey = true)]
+        [EntityFieldExtend]
+        [EntityField(true)]
         public Int32 ID
         {
             get
@@ -69,7 +70,8 @@ namespace ZyGames.Framework.Game.Com.Model
         /// 
         /// </summary>        
         [ProtoMember(2)]
-        [EntityField("Topic")]
+        [EntityFieldExtend]
+        [EntityField]
         public String Topic
         {
             get
@@ -86,7 +88,8 @@ namespace ZyGames.Framework.Game.Com.Model
         /// 
         /// </summary>        
         [ProtoMember(3)]
-        [EntityField("Options", IsJsonSerialize = true, DbType = ColumnDbType.Text)]
+        [EntityFieldExtend]
+        [EntityField( true, ColumnDbType.Text)]
         public CacheList<QuestionOption> Options
         {
             get
@@ -103,7 +106,8 @@ namespace ZyGames.Framework.Game.Com.Model
         /// 
         /// </summary>        
         [ProtoMember(4)]
-        [EntityField("Answer")]
+        [EntityFieldExtend]
+        [EntityField]
         public string Answer
         {
             get

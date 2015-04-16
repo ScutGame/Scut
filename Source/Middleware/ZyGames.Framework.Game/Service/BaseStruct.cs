@@ -33,6 +33,21 @@ using ZyGames.Framework.Game.Runtime;
 namespace ZyGames.Framework.Game.Service
 {
     /// <summary>
+    /// 
+    /// </summary>
+    public class TipException : Exception
+    {
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="errorInfo"></param>
+        public TipException(string errorInfo)
+            : base(errorInfo)
+        {
+
+        }
+    }
+    /// <summary>
     /// Base struct.
     /// </summary>
     public abstract class BaseStruct : GameStruct
@@ -163,6 +178,11 @@ namespace ZyGames.Framework.Game.Service
                 }
                 result = TakeAction();
                 TakeActionAffter(result);
+            }
+            catch (TipException tip)
+            {
+                Tips(tip.Message);
+                return false;
             }
             catch (Exception ex)
             {

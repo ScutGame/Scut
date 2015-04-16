@@ -593,6 +593,7 @@ namespace ZyGames.Framework.Model
                 {
                     val.DisableChildNotify();
                 }
+                val.IsInCache = true;
                 AddChildrenListener(val);
             }
             Notify(this, CacheItemChangeType.Modify, propertyName);
@@ -627,6 +628,7 @@ namespace ZyGames.Framework.Model
                 {
                     val.DisableChildNotify();
                 }
+                val.IsInCache = true;
                 AddChildrenListener(val);
             }
             Notify(this, CacheItemChangeType.Modify, propertyName);
@@ -716,7 +718,7 @@ namespace ZyGames.Framework.Model
         {
             if (fieldValue == null)
             {
-                return new T();
+                fieldValue = new T();
             }
             if (fieldValue is T)
             {
@@ -726,6 +728,7 @@ namespace ZyGames.Framework.Model
                 {
                     temp.DisableChildNotify();
                 }
+                temp.IsInCache = true;
                 AddChildrenListener(temp);
                 return temp;
             }

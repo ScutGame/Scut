@@ -61,7 +61,8 @@ namespace ZyGames.Framework.Game.Message
         /// <summary>
         /// </summary>        
         [ProtoMember(1)]
-        [EntityField("MailID", IsKey = true, DbType = ColumnDbType.UniqueIdentifier)]
+        [EntityFieldExtend]
+        [EntityField(true, ColumnDbType.UniqueIdentifier)]
         public virtual Guid MailID
         {
             get
@@ -81,7 +82,8 @@ namespace ZyGames.Framework.Game.Message
         /// <summary>
         /// </summary>        
         [ProtoMember(2)]
-        [EntityField("UserId")]
+        [EntityFieldExtend]
+        [EntityField]
         public virtual Int32 UserId
         {
             get
@@ -100,7 +102,8 @@ namespace ZyGames.Framework.Game.Message
         /// <summary>
         /// </summary>        
         [ProtoMember(3)]
-        [EntityField("MailType")]
+        [EntityFieldExtend]
+        [EntityField]
         public virtual Int32 MailType
         {
             get
@@ -119,7 +122,8 @@ namespace ZyGames.Framework.Game.Message
         /// <summary>
         /// </summary>        
         [ProtoMember(4)]
-        [EntityField("FromUserId")]
+        [EntityFieldExtend]
+        [EntityField]
         public virtual Int32 FromUserId
         {
             get
@@ -138,7 +142,8 @@ namespace ZyGames.Framework.Game.Message
         /// <summary>
         /// </summary>        
         [ProtoMember(5)]
-        [EntityField("FromUserName")]
+        [EntityFieldExtend]
+        [EntityField]
         public virtual String FromUserName
         {
             get
@@ -157,7 +162,8 @@ namespace ZyGames.Framework.Game.Message
         /// <summary>
         /// </summary>        
         [ProtoMember(6)]
-        [EntityField("ToUserID")]
+        [EntityFieldExtend]
+        [EntityField]
         public virtual Int32 ToUserID
         {
             get
@@ -176,7 +182,8 @@ namespace ZyGames.Framework.Game.Message
         /// <summary>
         /// </summary>        
         [ProtoMember(7)]
-        [EntityField("ToUserName")]
+        [EntityFieldExtend]
+        [EntityField]
         public virtual String ToUserName
         {
             get
@@ -195,7 +202,8 @@ namespace ZyGames.Framework.Game.Message
         /// <summary>
         /// </summary>        
         [ProtoMember(8)]
-        [EntityField("Title")]
+        [EntityFieldExtend]
+        [EntityField]
         public virtual String Title
         {
             get
@@ -214,7 +222,8 @@ namespace ZyGames.Framework.Game.Message
         /// <summary>
         /// </summary>        
         [ProtoMember(9)]
-        [EntityField("Content")]
+        [EntityFieldExtend]
+        [EntityField]
         public virtual String Content
         {
             get
@@ -233,7 +242,8 @@ namespace ZyGames.Framework.Game.Message
         /// <summary>
         /// </summary>        
         [ProtoMember(10)]
-        [EntityField("SendDate")]
+        [EntityFieldExtend]
+        [EntityField]
         public virtual DateTime SendDate
         {
             get
@@ -252,7 +262,8 @@ namespace ZyGames.Framework.Game.Message
         /// <summary>
         /// </summary>        
         [ProtoMember(11)]
-        [EntityField("IsRead")]
+        [EntityFieldExtend]
+        [EntityField]
         public virtual Boolean IsRead
         {
             get
@@ -271,7 +282,8 @@ namespace ZyGames.Framework.Game.Message
         /// <summary>
         /// </summary>        
         [ProtoMember(12)]
-        [EntityField("IsRemove")]
+        [EntityFieldExtend]
+        [EntityField]
         public virtual Boolean IsRemove
         {
             get
@@ -290,7 +302,8 @@ namespace ZyGames.Framework.Game.Message
         /// <summary>
         /// </summary>        
         [ProtoMember(13)]
-        [EntityField("RemoveDate")]
+        [EntityFieldExtend]
+        [EntityField]
         public virtual DateTime RemoveDate
         {
             get

@@ -222,7 +222,14 @@ namespace ZyGames.Framework.Model
         {
             return _columns.Values.OrderBy(col => col.Id).ToList();
         }
-
+        /// <summary>
+        /// Get serialized object columns.
+        /// </summary>
+        /// <returns></returns>
+        public List<SchemaColumn> GetObjectColumns()
+        {
+            return _columns.Values.Where(t=>t.IsSerialized).OrderBy(col => col.Id).ToList();
+        }
         /// <summary>
         /// Get schema column name to list.
         /// </summary>

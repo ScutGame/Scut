@@ -108,6 +108,7 @@ namespace ZyGames.Framework.Script
             catch (Exception er)
             {
                 IsError = true;
+                TraceLog.WriteError("Script init error:{0}.", er);
                 throw er;
             }
         }
@@ -150,7 +151,7 @@ namespace ZyGames.Framework.Script
 
         private static void watcher_Error(object sender, ErrorEventArgs e)
         {
-            TraceLog.WriteError("Script file has changed error:{0}",e.GetException().ToString());
+            TraceLog.WriteError("Script file has changed error:{0}", e.GetException().ToString());
         }
 
         private static ScriptRuntimeScope InitScriptRuntimeScope()

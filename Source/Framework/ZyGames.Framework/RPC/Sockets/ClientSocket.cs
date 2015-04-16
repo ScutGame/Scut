@@ -169,7 +169,7 @@ namespace ZyGames.Framework.RPC.Sockets
         {
             this.clientSettings = clientSettings;
             this.requestHandler = requestHandler;
-            socketClient = new Socket(this.clientSettings.RemoteEndPoint.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
+            Restart();
         }
 
         /// <summary>
@@ -210,6 +210,16 @@ namespace ZyGames.Framework.RPC.Sockets
                 return dataToken != null ? dataToken.Socket : null;
             }
         }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public void Restart()
+        {
+            Connected = false;
+            connectState = ConnectState.None;
+            socketClient = new Socket(this.clientSettings.RemoteEndPoint.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
+        }
         /// <summary>
         /// 
         /// </summary>
@@ -221,7 +231,20 @@ namespace ZyGames.Framework.RPC.Sockets
             var e = new SocketAsyncEventArgs();
             e.AcceptSocket = socketClient;
             e.Completed += OnConnectComplated;
-            return socketClient.ConnectAsync(e);
+            try
+            {
+                return socketClient.ConnectAsync(e);
+            }
+            catch (ObjectDisposedException)
+            {
+                Restart();
+                return socketClient.ConnectAsync(e);
+            }
+            catch (InvalidOperationException)
+            {
+                Restart();
+                return socketClient.ConnectAsync(e);
+            }
         }
 
         private void OnConnectComplated(object sender, SocketAsyncEventArgs e)
@@ -236,7 +259,20 @@ namespace ZyGames.Framework.RPC.Sockets
         {
             Connected = false;
             connectState = ConnectState.None;
-            socketClient.Connect(this.clientSettings.RemoteEndPoint);
+            try
+            {
+                socketClient.Connect(clientSettings.RemoteEndPoint);
+            }
+            catch (ObjectDisposedException)
+            {
+                Restart();
+                socketClient.Connect(clientSettings.RemoteEndPoint);
+            }
+            catch (InvalidOperationException)
+            {
+                Restart();
+                socketClient.Connect(clientSettings.RemoteEndPoint);
+            }
             ConnectComplated(socketClient);
         }
 
@@ -468,6 +504,15 @@ namespace ZyGames.Framework.RPC.Sockets
         /// <param name="millisecondsTimeout"></param>
         public bool Receive(int millisecondsTimeout = 0)
         {
+            return Wait(millisecondsTimeout);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        public bool Wait(int millisecondsTimeout = 0)
+        {
             bool result = true;
             if (millisecondsTimeout > 0)
             {
@@ -479,7 +524,6 @@ namespace ZyGames.Framework.RPC.Sockets
             }
             return result;
         }
-
         /// <summary>
         /// 
         /// </summary>

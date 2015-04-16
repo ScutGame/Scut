@@ -58,13 +58,13 @@ namespace ZyGames.Framework.Game.Sns.Service
                     else
                     {
                         body.StateCode = StateCode.NoHandler;
-                        body.StateDescription = "";
+                        body.StateDescription = string.Format("Not found \"{0}\" handler.", param);
                     }
                 }
                 else
                 {
                     body.StateCode = StateCode.SignError;
-                    body.StateDescription = "";
+                    body.StateDescription = "Sign error.";
                 }
             }
             catch (HandlerException handlerError)
@@ -76,7 +76,7 @@ namespace ZyGames.Framework.Game.Sns.Service
             catch (Exception error)
             {
                 body.StateCode = StateCode.Error;
-                body.StateDescription = "";
+                body.StateDescription = "Process request fail.";
                 TraceLog.WriteError("Request handle error:{0}", error);
             }
             ProcessResponse(context.Response, body);
@@ -94,7 +94,7 @@ namespace ZyGames.Framework.Game.Sns.Service
             {
                 TraceLog.WriteError("Response handle error:{0}", error);
                 httpResponse.StatusCode = 500;
-                httpResponse.StatusDescription = "";
+                httpResponse.StatusDescription = "Response error.";
             }
         }
         /// <summary>

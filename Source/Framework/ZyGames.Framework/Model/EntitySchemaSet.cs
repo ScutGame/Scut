@@ -118,6 +118,7 @@ namespace ZyGames.Framework.Model
         /// </summary>
         public static void StartCheckTableTimer()
         {
+            if (_tableListener.IsRunning) return;
             _tableListener.Start();
         }
 
@@ -127,6 +128,7 @@ namespace ZyGames.Framework.Model
         public static void Init()
         {
             SchemaSet = new DictionaryExtend<string, SchemaTable>();
+            StartCheckTableTimer();
         }
 
         /// <summary>

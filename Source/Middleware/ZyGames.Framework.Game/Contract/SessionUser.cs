@@ -69,7 +69,7 @@ namespace ZyGames.Framework.Game.Contract
         /// <summary>
         /// 
         /// </summary>
-        public bool IsOnlining { get { return MathUtils.DiffDate(OnlineDate) > OnlineInterval; } }
+        public bool IsOnlining { get { return MathUtils.DiffDate(OnlineDate) < OnlineInterval; } }
 
         /// <summary>
         /// 
