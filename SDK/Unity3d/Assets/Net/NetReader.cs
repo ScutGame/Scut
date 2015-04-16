@@ -1,3 +1,5 @@
+using System.Reflection;
+using Newtonsoft.Json;
 using UnityEngine;
 using System.Collections.Generic;
 using System;
@@ -65,6 +67,8 @@ public class NetReader
         get { return _head == null ? "" : _head.StrTime; }
     }
 
+    private object Data;
+
     public void SetBuffer(byte[] buf)
     {
         _bytes = buf;
@@ -77,9 +81,23 @@ public class NetReader
     /// </summary>
     /// <param name="buffer"></param>
     /// <param name="type"></param>
+    /// <param name="respContentType"></param>
     /// <returns></returns>
-    public bool pushNetStream(byte[] buffer, NetworkType type)
+    public bool pushNetStream(byte[] buffer, NetworkType type, ResponseContentType respContentType)
     {
+        if (respContentType == ResponseContentType.Json)
+        {
+            string jsonData = Encoding.UTF8.GetString(buffer);
+            Debug.Log("response json:" + jsonData);
+            if (!_formater.TryParse(jsonData, type, out _head, out Data))
+            {
+                Debug.LogError(" Failed: NetReader's pushNetStream parse error.");
+                return false;
+            }
+            SetBuffer(new byte[0]);
+            Debug.Log("parse json ok." + _head.Description);
+            return true;
+        }
         byte[] data;
         if (!_formater.TryParse(buffer, out _head, out data))
         {
@@ -117,6 +135,11 @@ public class NetReader
     public byte[] Buffer
     {
         get { return _bytes ?? new byte[0]; }
+    }
+
+    public T readValue<T>()
+    {
+        return JsonConvert.DeserializeObject<T>(JsonConvert.SerializeObject(Data));
     }
 
     public bool recordBegin()
