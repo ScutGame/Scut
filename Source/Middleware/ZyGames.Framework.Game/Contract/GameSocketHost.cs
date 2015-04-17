@@ -469,7 +469,6 @@ namespace ZyGames.Framework.Game.Contract
                 }
                 return false;
             };
-            OnStartAffer();
             base.Start(args);
         }
 
