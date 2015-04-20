@@ -213,7 +213,9 @@ namespace ZyGames.Framework.Game.Sns
                 SnsPassport passport = new SnsPassport();
                 string pid = passport.GetRegPassport();
                 string pwd = passport.GetRandomPwd();
-                result[0] = new SnsCenterUser(pid, pwd, string.Empty).InsertSnsUser().ToString();
+                //modify login of retail bug.
+                snsCenterUser = new SnsCenterUser(pid, pwd, string.Empty) { RetailID = retailId, RetailUser = retailUser };
+                result[0] = snsCenterUser.InsertSnsUser().ToString();
                 result[1] = pid;
                 return result;
             }

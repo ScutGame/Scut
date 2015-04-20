@@ -470,8 +470,8 @@ namespace ZyGames.Framework.Game.Sns
             SetUserInfo(f =>
             {
                 f.Condition = string.Format("{0} AND {1}", f.FormatExpression("RetailID"), f.FormatExpression("RetailUser"));
-                f.AddParam("RetailID", RetailID);
-                f.AddParam("RetailUser", RetailUser);
+                f.AddParam("RetailID", retailID);
+                f.AddParam("RetailUser", retailUser);
             }, snsUser);
             return snsUser;
         }
