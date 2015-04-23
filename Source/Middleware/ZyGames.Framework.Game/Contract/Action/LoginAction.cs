@@ -188,18 +188,16 @@ namespace ZyGames.Framework.Game.Contract.Action
                     Sid = Current.SessionId;
                     PassportId = login.PassportID;
                     UserType = login.UserType;
-
                     SetParameter(login);
+                    int userId = login.UserID.ToInt();
                     IUser user;
-                    if (!GetError() && DoSuccess(login.UserID.ToInt(), out user))
+                    if (!GetError() && DoSuccess(userId, out user))
                     {
                         var session = GameSession.Get(Sid);
                         if (session != null)
                         {
-                            if (user != null)
-                            {
-                                session.Bind(user);
-                            }
+                            //user is null in create role.
+                            session.Bind(user ?? new SessionUser() { PassportId = PassportId, UserId = userId });
                             return true;
                         }
                     }

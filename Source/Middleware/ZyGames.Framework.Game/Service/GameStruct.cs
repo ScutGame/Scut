@@ -513,7 +513,7 @@ namespace ZyGames.Framework.Game.Service
         /// <param name="error"></param>
         protected void SaveLog(String message, Exception error)
         {
-            TraceLog.WriteError("Action{0} {1} error:{2}", actionId, message, error);
+            TraceLog.WriteError("Action{0}{1} error:{2}.\r\n{3}", actionId, message, error, actionGetter.ToParamString());
         }
 
         /// <summary>

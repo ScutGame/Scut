@@ -22,7 +22,9 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ****************************************************************************/
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace ZyGames.Framework.Game.Sns
 {
@@ -31,6 +33,21 @@ namespace ZyGames.Framework.Game.Sns
     /// </summary>
     public class SnsManager
     {
+        class PassportExpired
+        {
+            public PassportExpired(string pid)
+            {
+                Pid = pid;
+                ExpiredTime = DateTime.Now.AddSeconds(10);//5s 后可以产生新的PID
+            }
+            public string Pid { get; set; }
+            public DateTime ExpiredTime { get; set; }
+        }
+        /// <summary>
+        /// 防多次点击产生多个账号与imei绑定
+        /// </summary>
+        private static ConcurrentDictionary<string, PassportExpired> imeiMap = new ConcurrentDictionary<string, PassportExpired>();
+
         /// <summary>
         /// 获取通行证
         /// </summary>
@@ -42,17 +59,44 @@ namespace ZyGames.Framework.Game.Sns
                 throw (new Exception("禁止登入"));
             var list = new List<string>();
             SnsCenterUser user = SnsCenterUser.GetUserByDeviceId(imei);
+            string passportId = string.Empty;
 
             if (user != null)
             {
-                list.Add(user.PassportId);
+                passportId = user.PassportId;
+                list.Add(passportId);
                 list.Add(user.Password);
             }
             else
             {
                 SnsPassport passport = new SnsPassport();
+                PassportExpired passportExpired;
+                if (!imeiMap.TryGetValue(imei, out passportExpired))
+                {
+                    passportId = passport.GetRegPassport();
+                    imeiMap[imei] = new PassportExpired(passportId);
+                }
+                else
+                {
+                    passportId = passportExpired.Pid;
+                    if (passportExpired.ExpiredTime < DateTime.Now)
+                    {
+                        //过期移除
+                        imeiMap.TryRemove(imei, out passportExpired);
+                    }
+                    //检查超出
+                    List<string> expiredMap;
+                    if (imeiMap.Count > 100 && ((expiredMap = imeiMap.Where(t => t.Value.ExpiredTime < DateTime.Now).Select(t => t.Key).ToList()).Count > 10))
+                    {
+                        foreach (var expired in expiredMap)
+                        {
+                            imeiMap.TryRemove(expired, out passportExpired);
+                        }
+                    }
+                }
+
                 string password = passport.GetRandomPwd();
-                list.Add(passport.GetRegPassport());
+                list.Add(passportId);
                 list.Add(password);
             }
 
@@ -175,6 +219,10 @@ namespace ZyGames.Framework.Game.Sns
             {
                 userId = snsCenterUser.InsertSnsUser();
                 SnsCenterUser.AddLoginLog(imei, user);
+
+                //过期移除
+                PassportExpired passportExpired;
+                imeiMap.TryRemove(imei, out passportExpired);
                 return userId;
             }
             if (snsCenterUser.ValidatePassport(snsUser))
