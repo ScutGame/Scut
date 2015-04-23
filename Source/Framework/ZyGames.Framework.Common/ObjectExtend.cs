@@ -57,6 +57,29 @@ namespace ZyGames.Framework.Common
         }
 
         /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="a"></param>
+        /// <param name="b"></param>
+        /// <param name="ignoreCase"></param>
+        /// <returns></returns>
+        public static bool IsEquals(this string a, string b, bool ignoreCase)
+        {
+            return MathUtils.IsEquals(a, b, ignoreCase);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="a"></param>
+        /// <param name="b"></param>
+        /// <param name="ignoreCase"></param>
+        /// <returns></returns>
+        public static bool StartsWith(this string a, string b, bool ignoreCase)
+        {
+            return MathUtils.StartsWith(a, b, ignoreCase);
+        }
+        /// <summary>
         /// 同string.IsNullOrEmpty
         /// </summary>
         /// <param name="value"></param>

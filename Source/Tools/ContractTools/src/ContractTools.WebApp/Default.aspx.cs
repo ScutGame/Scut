@@ -4,14 +4,11 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
-using System.Web;
-using System.Web.UI;
 using System.Web.UI.WebControls;
 using ContractTools.WebApp.Base;
 using ContractTools.WebApp.Model;
 using ZyGames.Framework.Common;
 using ZyGames.Framework.Common.Log;
-using ZyGames.Framework.RPC.IO;
 
 namespace ContractTools.WebApp
 {
@@ -48,6 +45,26 @@ namespace ContractTools.WebApp
 
                 SetCookies(ddlSolution.Text + "_Ver", Request["VerID"]);
                 return Convert.ToInt32(Request["VerID"]);
+            }
+        }
+
+        protected int AgreementID
+        {
+            get
+            {
+                if (string.IsNullOrEmpty(Request["AgreementID"]))
+                {
+                    string val = GetCookies(ddlSolution.Text + "_Agreement");
+                    int verId;
+                    if (int.TryParse(val, out verId))
+                    {
+                        return verId;
+                    }
+                    return 0;
+                }
+
+                SetCookies(ddlSolution.Text + "_Agreement", Request["AgreementID"]);
+                return Convert.ToInt32(Request["AgreementID"]);
             }
         }
 
@@ -106,8 +123,8 @@ namespace ContractTools.WebApp
             {
                 int slnId = BindSolution(SlnID.ToInt());
                 BindEnumInfo(slnId);
-                int verId = BindVersion(slnId);
-                int agreementId = BindAgreement(slnId);
+                int verId = BindVersion(slnId, VerID);
+                int agreementId = BindAgreement(slnId, AgreementID);
                 int contractId = BindContract(slnId, verId, agreementId, ContractID.ToInt());
                 BindResult(slnId, verId, contractId);
             }
@@ -119,31 +136,39 @@ namespace ContractTools.WebApp
 
         private int BindSolution(int slnId)
         {
-            ddlSolution.DataSource = DbDataLoader.GetSolution();
+            var list = DbDataLoader.GetSolution();
+            ddlSolution.DataSource = list;
             ddlSolution.DataTextField = "SlnName";
             ddlSolution.DataValueField = "SlnID";
             ddlSolution.DataBind();
             ddlSolution.SelectedValue = slnId.ToString();
+
+            SolutionModel model = list.Find(t => t.SlnID == slnId);
+            if (model != null)
+            {
+                ddServerCodeType.Text = model.SerUseScript;
+                ddClientCodeType.Text = model.CliUseScript;
+            }
             return ddlSolution.SelectedValue.ToInt();
         }
-        private int BindAgreement(int slnId)
+        private int BindAgreement(int slnId, int agreementId)
         {
             ddlAgreement.DataSource = DbDataLoader.GetAgreement(slnId);
             ddlAgreement.DataTextField = "Title";
             ddlAgreement.DataValueField = "AgreementID";
             ddlAgreement.DataBind();
             ddlAgreement.Items.Insert(0, new ListItem("All", "0"));
-            ddlAgreement.SelectedValue = "0";
+            ddlAgreement.SelectedValue = agreementId.ToString();
             return ddlAgreement.SelectedValue.ToInt();
         }
-        private int BindVersion(int slnId)
+        private int BindVersion(int slnId, int verId)
         {
             ddVersion.DataSource = DbDataLoader.GetVersion(slnId);
             ddVersion.DataTextField = "Title";
             ddVersion.DataValueField = "ID";
             ddVersion.DataBind();
             ddVersion.Items.Insert(0, new ListItem("None", "0"));
-            ddVersion.SelectedValue = "0";
+            ddVersion.SelectedValue = verId.ToString();
             return ddVersion.SelectedValue.ToInt();
         }
 
@@ -160,18 +185,62 @@ namespace ContractTools.WebApp
             return ddContract.SelectedValue.ToInt();
         }
 
+        private void BindFieldType(int paramtype)
+        {
+            var data = paramtype - 1 < FieldTypeMaps.Length ? FieldTypeMaps[paramtype - 1] : FieldTypeMaps[0];
+            ddFieldType.DataSource = data;
+            ddFieldType.DataTextField = "Value";
+            ddFieldType.DataValueField = "Key";
+            ddFieldType.DataBind();
+            if (data.Length > 0)
+            {
+                ddFieldType.SelectedValue = data.Length > 1 ? "1" : "0";
+            }
+            List<ParamInfoModel> requestParams;
+            List<ParamInfoModel> responseParams;
+            GetParamInfo(ddlSolution.Text.ToInt(), ddContract.Text.ToInt(), ddVersion.Text.ToInt(), out requestParams, out responseParams);
+            BindResponseParams(paramtype == 1 ? requestParams : responseParams);
+        }
+
+        private void BindResponseParams(List<ParamInfoModel> list)
+        {
+            ddResponseParams.DataSource = list;
+            ddResponseParams.DataTextField = "ComboxDescp";
+            ddResponseParams.DataValueField = "SortID";
+            ddResponseParams.DataBind();
+            if (list.Count > 0)
+            {
+                ddResponseParams.Items.Insert(0, new ListItem("<First>", "0"));
+                ddResponseParams.SelectedValue = (list[list.Count - 1].SortID).ToString();
+            }
+
+            ddParamCopyFrom.DataSource = list;
+            ddParamCopyFrom.DataTextField = "ComboxDescp";
+            ddParamCopyFrom.DataValueField = "SortID";
+            ddParamCopyFrom.DataBind();
+
+            ddParamCopyTo.DataSource = list;
+            ddParamCopyTo.DataTextField = "ComboxDescp";
+            ddParamCopyTo.DataValueField = "SortID";
+            ddParamCopyTo.DataBind();
+        }
+
         private void BindGrid()
         {
             BindGrid(ddlSolution.Text.ToInt(), ddVersion.Text.ToInt(), ddContract.Text.ToInt());
         }
+
         private void BindGrid(int slnId, int versionId, int contractId)
         {
             //grid bind
+
             List<ParamInfoModel> requestParams;
             List<ParamInfoModel> responseParams;
-            bool isEdit = IsEdit;
             GetParamInfo(slnId, contractId, versionId, out requestParams, out responseParams);
 
+            BindResponseParams(ddParamType.Text.ToInt() == 1 ? requestParams : responseParams);
+
+            bool isEdit = IsEdit;
             gvReqParams.Columns[gvReqParams.Columns.Count - 1].Visible = isEdit;
             gvReqParams.Columns[gvReqParams.Columns.Count - 2].Visible = isEdit;
             gvReqParams.DataKeyNames = new[] { "ID", "ParamType" };
@@ -186,65 +255,74 @@ namespace ContractTools.WebApp
             gvRespParams.DataBind();
 
             BindSourceCode(slnId, versionId, contractId, requestParams, responseParams);
+
         }
 
         private void BindSourceCode(int slnId, int versionId, int contractId, List<ParamInfoModel> requestParams, List<ParamInfoModel> responseParams)
         {
-            var modol = DbDataLoader.GetContract(slnId, contractId, 0);
-            var tileName = GetTileName(contractId, modol != null ? modol.Descption : null);
-            bool isSelfAction = ckSelfAction.Checked;
+            try
+            {
+                var modol = DbDataLoader.GetContract(slnId, contractId, 0);
+                var tileName = GetTileName(contractId, modol != null ? modol.Descption : null);
+                bool isSelfAction = ckSelfAction.Checked;
 
-            string clientTemp = string.Empty;
-            string serverTemp = string.Empty;
+                string clientTemp = string.Empty;
+                string serverTemp = string.Empty;
 
-            if (ddClientCodeType.Text == "Lua")
-            {
-                clientTemp = Path.Combine(Server.MapPath("~"), "Template/ClientLuaCode.txt");
-                txtClientCode.Text = TemplateHelper.FromatClientLuaTemp(TemplateHelper.ReadTemp(clientTemp), contractId, responseParams, requestParams, tileName);
+                if (ddClientCodeType.Text == "Lua")
+                {
+                    clientTemp = Path.Combine(Server.MapPath("~"), "Template/ClientLuaCode.txt");
+                    txtClientCode.Text = TemplateHelper.FromatClientLuaTemp(TemplateHelper.ReadTemp(clientTemp), contractId, responseParams, requestParams, tileName);
+
+                }
+                else if (ddClientCodeType.Text == "C#")
+                {
+                    clientTemp = Path.Combine(Server.MapPath("~"),
+                        isSelfAction ? "Template/ClientCsharpSelfCode.txt" : "Template/ClientCsharpCode.txt");
+                    txtClientCode.Text = TemplateHelper.FromatClientCsharpTemp(TemplateHelper.ReadTemp(clientTemp),
+                        contractId, responseParams, requestParams, tileName);
+                }
+                else if (ddClientCodeType.Text == "Quick")
+                {
+                    var clientSendTemp = Path.Combine(Server.MapPath("~"), "Template/ClientQuickCode-S.txt");
+                    var clientReceiveTemp = Path.Combine(Server.MapPath("~"), "Template/ClientQuickCode-R.txt");
+                    var codeBuild = new StringBuilder();
+                    codeBuild.AppendLine(TemplateHelper.FromatClientQuickSendTemp(TemplateHelper.ReadTemp(clientSendTemp), contractId, responseParams, requestParams, tileName));
+                    codeBuild.AppendLine(TemplateHelper.FromatClientQuickReceiveTemp(TemplateHelper.ReadTemp(clientReceiveTemp), contractId, responseParams, requestParams, tileName));
+                    txtClientCode.Text = codeBuild.ToString();
+                }
+                else
+                {
+                    txtClientCode.Text = "Not supported code.";
+                }
+
+
+                var slnRecord = DbDataLoader.GetSolution(slnId);
+                if (ddServerCodeType.Text == "C#")
+                {
+                    serverTemp = Path.Combine(Server.MapPath("~"), isSelfAction ? "Template/ServerCsharpSelfCode.txt" : "Template/ServerCsharpCode.txt");
+                    txtServerCode.Text = TemplateHelper.FormatTemp(TemplateHelper.ReadTemp(serverTemp), contractId, responseParams, requestParams, slnRecord, tileName);
+                }
+                else if (ddServerCodeType.Text == "Python")
+                {
+                    serverTemp = Path.Combine(Server.MapPath("~"), "Template/ServerPythonCode.txt");
+                    txtServerCode.Text = TemplateHelper.FormatPython(TemplateHelper.ReadTemp(serverTemp), responseParams, requestParams, slnRecord, tileName);
+                }
+                else if (ddServerCodeType.Text == "Lua")
+                {
+                    //todo not
+                    serverTemp = Path.Combine(Server.MapPath("~"), "Template/ServerLuaCode.txt");
+                    txtServerCode.Text = TemplateHelper.FormatLua(TemplateHelper.ReadTemp(serverTemp), contractId, responseParams, requestParams, slnRecord, tileName);
+                }
+                else
+                {
+                    txtServerCode.Text = "Not supported code.";
+                }
 
             }
-            else if (ddClientCodeType.Text == "C#")
+            catch (Exception ex)
             {
-                clientTemp = Path.Combine(Server.MapPath("~"),
-                    isSelfAction ? "Template/ClientCsharpSelfCode.txt" : "Template/ClientCsharpCode.txt");
-                txtClientCode.Text = TemplateHelper.FromatClientCsharpTemp(TemplateHelper.ReadTemp(clientTemp),
-                    contractId, responseParams, requestParams, tileName);
-            }
-            else if (ddClientCodeType.Text == "Quick")
-            {
-                var clientSendTemp = Path.Combine(Server.MapPath("~"), "Template/ClientQuickCode-S.txt");
-                var clientReceiveTemp = Path.Combine(Server.MapPath("~"), "Template/ClientQuickCode-R.txt");
-                var codeBuild = new StringBuilder();
-                codeBuild.AppendLine(TemplateHelper.FromatClientQuickSendTemp(TemplateHelper.ReadTemp(clientSendTemp), contractId, responseParams, requestParams, tileName));
-                codeBuild.AppendLine(TemplateHelper.FromatClientQuickReceiveTemp(TemplateHelper.ReadTemp(clientReceiveTemp), contractId, responseParams, requestParams, tileName));
-                txtClientCode.Text = codeBuild.ToString();
-            }
-            else
-            {
-                txtClientCode.Text = "Not supported code.";
-            }
-
-
-            var slnRecord = DbDataLoader.GetSolution(slnId);
-            if (ddServerCodeType.Text == "C#")
-            {
-                serverTemp = Path.Combine(Server.MapPath("~"), isSelfAction ? "Template/ServerCsharpSelfCode.txt" : "Template/ServerCsharpCode.txt");
-                txtServerCode.Text = TemplateHelper.FormatTemp(TemplateHelper.ReadTemp(serverTemp), contractId, responseParams, requestParams, slnRecord, tileName);
-            }
-            else if (ddServerCodeType.Text == "Python")
-            {
-                serverTemp = Path.Combine(Server.MapPath("~"), "Template/ServerPythonCode.txt");
-                txtServerCode.Text = TemplateHelper.FormatPython(TemplateHelper.ReadTemp(serverTemp), responseParams, requestParams, slnRecord, tileName);
-            }
-            else if (ddServerCodeType.Text == "Lua")
-            {
-                //todo not
-                serverTemp = Path.Combine(Server.MapPath("~"), "Template/ServerLuaCode.txt");
-                txtServerCode.Text = TemplateHelper.FormatLua(TemplateHelper.ReadTemp(serverTemp), contractId, responseParams, requestParams, slnRecord, tileName);
-            }
-            else
-            {
-                txtServerCode.Text = "Not supported code.";
+                txtServerCode.Text = ex.ToString();
             }
         }
 
@@ -264,6 +342,13 @@ namespace ContractTools.WebApp
             BindResult(ddlSolution.Text.ToInt(), ddVersion.Text.ToInt(), ddContract.Text.ToInt());
         }
 
+        private string GetUrl()
+        {
+            int slnId = ddlSolution.Text.ToInt();
+            int versionId = ddVersion.Text.ToInt();
+            int contractId = ddContract.Text.ToInt();
+            return "Default.aspx?" + (!IsEdit ? "" : "edit=true&") + string.Format("ID={0}&slnID={1}&VerID={2}&GameID={1}", contractId, slnId, versionId);
+        }
         private void BindResult(int slnId, int versionId, int contractId)
         {
             hlTopEdit.NavigateUrl = "Default.aspx" + (IsEdit ? "" : "?edit=true");
@@ -272,12 +357,14 @@ namespace ContractTools.WebApp
             hlVersion.NavigateUrl = "VersionEdit.aspx" + get;
             hlEnum.NavigateUrl = "EnumEdit.aspx" + get;
             hlAgreement.NavigateUrl = "AgreementEdit.aspx" + get;
-            hlContract.NavigateUrl = "ContractEdit.aspx" + get;
+            hlContract.NavigateUrl = "ContractEdit.aspx" + get + "&AgreementID=" + ddlAgreement.Text;
             hlContractEdit.NavigateUrl = "ContractEdit.aspx" + get + "&modify=true";
             hlContractCopy.NavigateUrl = "ContractCopy.aspx" + get;
 
             ifrTest.Src = "ContractDebug.aspx" + get;
             //ifrClientConfig.Src = "ClientConfigInfo.aspx" + get;
+
+            BindFieldType(ddParamType.SelectedValue.ToInt());
             BindGrid(slnId, versionId, contractId);
 
         }
@@ -355,25 +442,46 @@ namespace ContractTools.WebApp
 
         protected void OnSolutionChanged(object sender, EventArgs e)
         {
-            SetCookies(string.Empty, ddlSolution.Text);
-            int slnId = ddlSolution.Text.ToInt();
-            BindEnumInfo(slnId);
-            int verId = BindVersion(slnId);
-            int agreementId = BindAgreement(slnId);
-            int contractId = BindContract(slnId, verId, agreementId, 0);
-            BindResult(slnId, verId, contractId);
+            try
+            {
+                SetCookies(string.Empty, ddlSolution.Text);
+                int slnId = ddlSolution.Text.ToInt();
+                BindEnumInfo(slnId);
+                int verId = BindVersion(slnId, VerID);
+                int agreementId = BindAgreement(slnId, AgreementID);
+                int contractId = BindContract(slnId, verId, agreementId, 0);
+                BindResult(slnId, verId, contractId);
+            }
+            catch (Exception ex)
+            {
+                TraceLog.WriteError("OnSolutionChanged {0}", ex);
+            }
         }
         protected void OnVersionChanged(object sender, EventArgs e)
         {
-            int slnId = ddlSolution.Text.ToInt();
-            int verId = ddVersion.Text.ToInt();
-            int agreementId = ddlAgreement.Text.ToInt();
-            int contractId = BindContract(slnId, verId, agreementId, 0);
-            BindResult(slnId, verId, contractId);
-
+            try
+            {
+                SetCookies(ddlSolution.Text + "_Ver", ddVersion.Text);
+                int slnId = ddlSolution.Text.ToInt();
+                int verId = ddVersion.Text.ToInt();
+                int agreementId = ddlAgreement.Text.ToInt();
+                int contractId = BindContract(slnId, verId, agreementId, 0);
+                BindResult(slnId, verId, contractId);
+            }
+            catch (Exception ex)
+            {
+                TraceLog.WriteError("OnVersionChanged {0}", ex);
+            }
         }
+
+        protected void OnParamTypeChanged(object sender, EventArgs e)
+        {
+            BindFieldType(ddParamType.SelectedValue.ToInt());
+        }
+
         protected void OnAgreementChanged(object sender, EventArgs e)
         {
+            SetCookies(ddlSolution.Text + "_Agreement", ddlAgreement.Text);
             int slnId = ddlSolution.Text.ToInt();
             int verId = ddVersion.Text.ToInt();
             int agreementId = ddlAgreement.Text.ToInt();
@@ -467,44 +575,52 @@ namespace ContractTools.WebApp
 
         protected void OnGridRowDataBound(object sender, GridViewRowEventArgs e)
         {
-            if (e.Row.RowType == DataControlRowType.DataRow)
+            try
             {
-                Label control = (Label)e.Row.FindControl("LabFieldType");
-                if (control != null)
-                {
-                    control.Text = control.Text.ToEnum<FieldType>().ToString();
-                    var paramInfo = e.Row.DataItem as ParamInfoModel;//定义一个DataRowView的实例
 
-                    if (paramInfo != null)
+                if (e.Row.RowType == DataControlRowType.DataRow)
+                {
+                    var control = (Label)e.Row.FindControl("LabFieldType");
+                    if (control != null)
                     {
-                        if (paramInfo.FieldType == FieldType.Record || paramInfo.FieldType == FieldType.End)
+                        control.Text = control.Text.ToEnum<FieldType>().ToString();
+                        var paramInfo = e.Row.DataItem as ParamInfoModel;//定义一个DataRowView的实例
+
+                        if (paramInfo != null)
                         {
-                            e.Row.Font.Bold = true;
-                        }
-                        if (paramInfo.FieldType == FieldType.Void)
-                        {
-                            e.Row.Font.Strikeout = true;
-                        }
-                        if (paramInfo.VerID < ddVersion.Text.ToInt())
-                        {
-                            e.Row.CssClass = "grid-row-old";
-                        }
-                        if (DateTime.Now - paramInfo.ModifyDate < TimeSpan.FromDays(3))
-                        {
-                            e.Row.CssClass = "grid-row-change";
+                            if (paramInfo.FieldType == FieldType.Record || paramInfo.FieldType == FieldType.End)
+                            {
+                                e.Row.Font.Bold = true;
+                            }
+                            if (paramInfo.FieldType == FieldType.Void)
+                            {
+                                e.Row.Font.Strikeout = true;
+                            }
+                            if (paramInfo.VerID < ddVersion.Text.ToInt())
+                            {
+                                e.Row.CssClass = "grid-row-old";
+                            }
+                            if (DateTime.Now - paramInfo.ModifyDate < TimeSpan.FromDays(3))
+                            {
+                                e.Row.CssClass = "grid-row-change";
+                            }
                         }
                     }
+                    Label lblDescption = (Label)e.Row.FindControl("LabDescption");
+                    if (lblDescption != null)
+                    {
+                        lblDescption.Text = FormatTips(lblDescption.Text);
+                    }
+                    Label lblRemark = (Label)e.Row.FindControl("LabRemark");
+                    if (lblRemark != null)
+                    {
+                        lblRemark.Text = FormatTips(lblRemark.Text);
+                    }
                 }
-                Label lblDescption = (Label)e.Row.FindControl("LabDescption");
-                if (lblDescption != null)
-                {
-                    lblDescption.Text = FormatTips(lblDescption.Text);
-                }
-                Label lblRemark = (Label)e.Row.FindControl("LabRemark");
-                if (lblRemark != null)
-                {
-                    lblRemark.Text = FormatTips(lblRemark.Text);
-                }
+            }
+            catch (Exception ex)
+            {
+                TraceLog.WriteError("bind grid error:{0}", ex);
             }
         }
 
@@ -552,7 +668,7 @@ namespace ContractTools.WebApp
             {
                 sortID = currSortID;
             }
-            if (rowIndex > 0)
+            if (rowIndex >= 0)
             {
                 if (rowIndex >= gvRespParams.Rows.Count - 1) return;
 
@@ -648,6 +764,11 @@ namespace ContractTools.WebApp
                     break;
                 }
             }
+            if (sortID < 0)
+            {
+                //未找到End，移动下结尾
+                sortID = gvRespParams.Rows.Count - 1;
+            }
             if (sortID > -1)
             {
                 DbDataLoader.UpdateParamSort(currID, sortID);
@@ -664,11 +785,11 @@ namespace ContractTools.WebApp
             int id = Convert.ToInt32(e.CommandArgument.ToString());
             if (DbDataLoader.Delete(new ParamInfoModel() { ID = id }))
             {
-                Response.Write("<script language=javascript>alert('删除成功！')</script>");
+                Alert("删除成功！", GetUrl());
             }
             else
             {
-                Response.Write("<script language=javascript>alert('删除失败！')</script>");
+                Alert("删除失败！", GetUrl());
             }
             BindResult();
         }
@@ -689,9 +810,51 @@ namespace ContractTools.WebApp
             {
                 Bind();
             }
-            else
+        }
+
+
+        protected void btnParamCopy_Click(object sender, EventArgs e)
+        {
+            try
             {
-                Response.Write("<script language=javascript>alert('提交失败！')</script>");
+                int sortFrom = ddParamCopyFrom.Text.ToInt();
+                int sortTo = ddParamCopyTo.Text.ToInt();
+                if (sortFrom > sortTo) return;
+
+                int insertPos = ddResponseParams.Text.ToInt();
+                int slnId = ddlSolution.Text.ToInt();
+                int verId = ddVersion.Text.ToInt();
+                int contractId = ddContract.Text.ToInt();
+                int paramType = ddParamType.Text.ToInt();
+
+                var paramList = DbDataLoader.GetParamInfo(slnId, contractId, paramType, verId);
+                var copyList = paramList.FindAll(t => t.SortID >= sortFrom && t.SortID <= sortTo);
+                int sortId = insertPos + copyList.Count;
+
+                foreach (var param in paramList)
+                {
+                    if (param.SortID > insertPos)
+                    {
+                        sortId++;
+                        DbDataLoader.UpdateParamSort(param.ID, sortId);
+                    }
+                }
+                sortId = insertPos;
+                foreach (var param in copyList)
+                {
+                    sortId++;
+                    param.SortID = sortId;
+                    param.VerID = verId;
+                    param.ModifyDate = DateTime.MinValue;
+                    param.CreateDate = DateTime.Now;
+                    DbDataLoader.Add(param);
+                }
+
+                BindGrid(slnId, verId, contractId);
+            }
+            catch (Exception ex)
+            {
+                TraceLog.WriteError("Default ParamCopy error:{0}", ex);
             }
         }
 
@@ -715,19 +878,26 @@ namespace ContractTools.WebApp
                 mode.CreateDate = DateTime.Now;
                 mode.VerID = ddVersion.Text.ToInt();
 
-                var paramList = DbDataLoader.GetParamInfo(mode.SlnID, mode.ContractID, mode.ParamType, mode.VerID).OrderBy(p => p.SortID).ToList();
-                if (paramList.Count == 0 || paramList[0].SortID == 0)
+                var paramList = DbDataLoader.GetParamInfo(mode.SlnID, mode.ContractID, mode.ParamType, mode.VerID);
+                int sortID = 0;
+                if (!string.IsNullOrEmpty(ddResponseParams.Text))
                 {
-                    mode.SortID = 1;
+                    sortID = ddResponseParams.Text.ToInt() + 1;
                 }
                 else
                 {
-                    int SortID = paramList[paramList.Count - 1].SortID;
-                    SortID++;
-                    mode.SortID = SortID;
-
+                    sortID = paramList.Count == 0 ? 1 : paramList.Max(t => t.SortID) + 1;
                 }
+                mode.SortID = sortID;
 
+                foreach (var param in paramList)
+                {
+                    if (param.SortID >= mode.SortID)
+                    {
+                        sortID++;
+                        DbDataLoader.UpdateParamSort(param.ID, sortID);
+                    }
+                }
                 if (DbDataLoader.Add(mode) > 0)
                 {
                     BindGrid(mode.SlnID, mode.VerID, mode.ContractID);
@@ -736,7 +906,7 @@ namespace ContractTools.WebApp
                 }
                 else
                 {
-                    Response.Write("<script language=javascript>alert('增加失败！')</script>");
+                    Alert("增加失败！", GetUrl());
                 }
             }
             catch (Exception ex)
@@ -759,15 +929,15 @@ namespace ContractTools.WebApp
         {
             if (ddServerCodeType.Text == "C#")
             {
-                SaveAsAttachment(txtServerCode.Text, String.Format("Action{0}.cs", ContractID));
+                SaveAsAttachment(txtServerCode.Text, String.Format("Action{0}.cs", ddContract.Text), true);
             }
             else if (ddServerCodeType.Text == "Python")
             {
-                SaveAsAttachment(txtServerCode.Text, String.Format("action{0}.py", ContractID));
+                SaveAsAttachment(txtServerCode.Text, String.Format("action{0}.py", ddContract.Text), true);
             }
             else if (ddServerCodeType.Text == "Lua")
             {
-                SaveAsAttachment(txtServerCode.Text, String.Format("action{0}.lua", ContractID));
+                SaveAsAttachment(txtServerCode.Text, String.Format("action{0}.lua", ddContract.Text), true);
             }
         }
 
@@ -775,15 +945,15 @@ namespace ContractTools.WebApp
         {
             if (ddClientCodeType.Text == "Lua")
             {
-                SaveAsAttachment(txtClientCode.Text, String.Format("Action{0}.lua", ContractID));
+                SaveAsAttachment(txtClientCode.Text, String.Format("Action{0}.lua", ddContract.Text));
             }
             else if (ddClientCodeType.Text == "Quick")
             {
-                SaveAsAttachment(txtClientCode.Text, String.Format("Action{0}.lua", ContractID));
+                SaveAsAttachment(txtClientCode.Text, String.Format("Action{0}.lua", ddContract.Text));
             }
             else if (ddClientCodeType.Text == "C#")
             {
-                SaveAsAttachment(txtClientCode.Text, String.Format("Action{0}.cs", ContractID));
+                SaveAsAttachment(txtClientCode.Text, String.Format("Action{0}.cs", ddContract.Text));
             }
         }
 
@@ -856,7 +1026,7 @@ namespace ContractTools.WebApp
                 }
                 if (zipFileList.Count > 0)
                 {
-                    SaveAsAttachment(string.Format("{0}Action{1}.zip", type, DateTime.Now.ToString("HHmmss")), zipFileList);
+                    SaveAsAttachment(string.Format("{0}Action{1}.zip", type, DateTime.Now.ToString("HHmmss")), zipFileList, true);
                 }
             }
             catch (Exception ex)
@@ -885,6 +1055,7 @@ namespace ContractTools.WebApp
                     var clientTemp = TemplateHelper.ReadTemp(Path.Combine(Server.MapPath("~"), "Template/ClientLuaCode.txt"));
                     foreach (var model in contractList)
                     {
+                        if (!model.Complated) continue;
                         int contractId = model.ID;
                         var tileName = GetTileName(model.ID, model.Descption);
                         List<ParamInfoModel> requestParams;
@@ -899,13 +1070,19 @@ namespace ContractTools.WebApp
                 {
                     var sendCodeBuild = new StringBuilder("");
                     var receiveCodeBuild = new StringBuilder();
-                    sendCodeBuild.AppendLine("local Request = {}");
+                    sendCodeBuild.AppendLine(@"
+local Request = class(""Request"")
+function Request:ctor()
+    
+end
+");
                     receiveCodeBuild.AppendLine("local Response = {}");
                     receiveCodeBuild.AppendLine("Response.Success = 0");
                     var clientSendTemp = TemplateHelper.ReadTemp(Path.Combine(Server.MapPath("~"), "Template/ClientQuickCode-S.txt"));
                     var clientReceiveTemp = TemplateHelper.ReadTemp(Path.Combine(Server.MapPath("~"), "Template/ClientQuickCode-R.txt"));
                     foreach (var model in contractList)
                     {
+                        if (!model.Complated) continue;
                         int contractId = model.ID;
                         var tileName = GetTileName(model.ID, model.Descption);
                         List<ParamInfoModel> requestParams;
@@ -930,6 +1107,7 @@ namespace ContractTools.WebApp
 
                     foreach (var model in contractList)
                     {
+                        if (!model.Complated) continue;
                         int contractId = model.ID;
                         zipFile = new ZipFileInfo() { Name = string.Format("Action{0}.cs", contractId) };
                         var tileName = GetTileName(model.ID, model.Descption);

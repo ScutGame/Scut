@@ -35,6 +35,18 @@ namespace ContractTools.WebApp
                 return Convert.ToInt32(Request["VerID"]);
             }
         }
+        protected int AgreementID
+        {
+            get
+            {
+                if (string.IsNullOrEmpty(Request["AgreementID"]))
+                {
+                    return 0;
+                }
+                return Convert.ToInt32(Request["AgreementID"]);
+            }
+        }
+
         protected int ContractID
         {
             get
@@ -72,6 +84,7 @@ namespace ContractTools.WebApp
                         ddlAgreement.Items.Add(new ListItem("选择类别", "0"));
                     }
 
+
                     var versiontList = DbDataLoader.GetVersion(slnId);
                     versiontList.Insert(0, new VersionMode() { ID = 0, SlnID = slnId, Title = "选择版本" });
                     ddVersion.DataSource = versiontList;
@@ -93,6 +106,7 @@ namespace ContractTools.WebApp
                     }
                     else
                     {
+                        ddlAgreement.SelectedValue = AgreementID.ToString();
                         btnDelete.Visible = false;
                         ddVersion.SelectedValue = VerID.ToString();
                     }
@@ -122,6 +136,7 @@ namespace ContractTools.WebApp
                 {
                     DbDataLoader.Add(model);
                 }
+                Response.Redirect(string.Format("Default.aspx?edit=true&ID={0}&slnID={1}&VerID={2}&GameID={1}&AgreementID={3}", model.ID, model.SlnID, model.VerID, model.AgreementID));
             }
             catch (Exception ex)
             {
@@ -133,24 +148,24 @@ namespace ContractTools.WebApp
         {
             try
             {
-            var contractModel = new ContractModel() { ID = txtID.Text.ToInt(), SlnID = SlnID };
-            if (DbDataLoader.Delete(contractModel))
-            {
-                Response.Write("<script language=javascript>alert('删除成功！')</script>");
-                Response.Redirect("Default.aspx?edit=true");
-            }
-            else
-            {
-                Response.Write("<script language=javascript>alert('删除失败！')</script>");
-            }
+                var contractModel = new ContractModel() { ID = txtID.Text.ToInt(), SlnID = SlnID };
+                if (DbDataLoader.Delete(contractModel))
+                {
+                    Response.Write("<script language=javascript>alert('删除成功！')</script>");
+                    Response.Redirect("Default.aspx?edit=true");
+                }
+                else
+                {
+                    Response.Write("<script language=javascript>alert('删除失败！')</script>");
+                }
 
             }
             catch (Exception ex)
             {
-                TraceLog.WriteError("delete contract error:{0}",ex);
+                TraceLog.WriteError("delete contract error:{0}", ex);
             }
         }
 
-        
+
     }
 }

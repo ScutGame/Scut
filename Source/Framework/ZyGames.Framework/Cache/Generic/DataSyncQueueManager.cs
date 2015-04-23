@@ -33,14 +33,15 @@ using ZyGames.Framework.Common;
 using ZyGames.Framework.Common.Configuration;
 using ZyGames.Framework.Common.Log;
 using ZyGames.Framework.Common.Serialization;
+using ZyGames.Framework.Common.Threading;
 using ZyGames.Framework.Config;
 using ZyGames.Framework.Data;
 using ZyGames.Framework.Event;
 using ZyGames.Framework.Model;
+using ZyGames.Framework.Net;
 using ZyGames.Framework.Net.Sql;
 using ZyGames.Framework.Redis;
 using ZyGames.Framework.RPC.IO;
-using ZyGames.Framework.RPC.Sockets.Threading;
 
 namespace ZyGames.Framework.Cache.Generic
 {
@@ -119,7 +120,7 @@ namespace ZyGames.Framework.Cache.Generic
         //todo test
         private static ConcurrentDictionary<string, KeyValuePair<int, string>> _checkVersions = new ConcurrentDictionary<string, KeyValuePair<int, string>>();
         /// <summary>
-        /// 
+        /// Total change count.
         /// </summary>
         public static long SendWaitCount;
         /// <summary>
@@ -136,13 +137,18 @@ namespace ZyGames.Framework.Cache.Generic
         /// </summary>
         public static bool IsRunCompleted
         {
-            get { return _entityQueueRunning == 0 && _entitySet.Count == 0; }
+            get
+            {
+                return _entityQueueRunning == 0 &&
+                       _entitySet.Count == 0;
+            }
         }
 
+        private static long PreChangedCount = 0;
         /// <summary>
         /// 
         /// </summary>
-        public static int ExecuteCount = 20;
+        public static int ExecuteCount = 100;
         /// <summary>
         /// 
         /// </summary>
@@ -216,7 +222,7 @@ namespace ZyGames.Framework.Cache.Generic
         public static void Start(CacheSetting setting, ICacheSerializer serializer)
         {
             _serializer = serializer;
-            _entityQueueTimer = new Timer(OnEntitySyncQueue, null, 60, 500);
+            _entityQueueTimer = new Timer(OnEntitySyncQueue, null, 60, 100);
             _entityQueueWacher = new Timer(CheckEntityQueue, null, 60, 60000);
             MessageQueueSection section = GetSection();
             InitRedisQueue(section);
@@ -300,36 +306,49 @@ namespace ZyGames.Framework.Cache.Generic
             try
             {
                 //todo trace
-                int count = _entitySet.Count;
+                var temp = Interlocked.Exchange(ref _entitySet, new HashSet<string>());
+                int count = temp.Count;
                 if (count > MinCheckCount)
                 {
-                    TraceLog.WriteWarn("CheckEntityQueue warn count:{0}, execute:{1}/{2}", count, ExecuteSuccessCount, SendWaitCount);
+                    var persec = MathUtils.ToCeilingInt((decimal)(SendWaitCount - PreChangedCount) / 60);
+                    TraceLog.WriteWarn("CheckEntityQueue no-write count:{0}, execute:{1}/{2}, change_per_sec:{3}/s", count, ExecuteSuccessCount, SendWaitCount, persec);
                     if (count > MaxCheckCount)
                     {
-                        //大于1W，清空掉
-                        Interlocked.Exchange(ref _entityRemoteSet, new HashSet<string>());
+                        //大于10W，清空掉
+                        Interlocked.Exchange(ref _entitySet, new HashSet<string>());
                     }
                 }
+                Interlocked.Exchange(ref PreChangedCount, SendWaitCount);
             }
             catch (Exception ex)
             {
                 TraceLog.WriteError("CheckEntityQueue:{0)", ex);
             }
         }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="entityList"></param>
+        public static void SendToDb<T>(params T[] entityList) where T : ISqlEntity
+        {
+            SendToDb<T>(null, null, entityList);
+        }
 
         /// <summary>
         /// Send entity to db saved.
         /// </summary>
+        /// <param name="postColumnFunc"></param>
+        /// <param name="getPropertyFunc"></param>
         /// <param name="entityList"></param>
-        public static void SendToDb(params AbstractEntity[] entityList)
+        public static void SendToDb<T>(EntityPropertyGetFunc<T> getPropertyFunc, EnttiyPostColumnFunc<T> postColumnFunc, params T[] entityList) where T : ISqlEntity
         {
             string key = "";
             try
             {
                 if (entityList == null || entityList.Length == 0) return;
 
-                var sender = new SqlDataSender();
-                var groupList = entityList.GroupBy(t => t.GetIdentityId());
+                var sender = new SqlDataSender(false);
+                var groupList = entityList.GroupBy(t => t.GetMessageQueueId());
                 var sqlList = new List<KeyValuePair<string, KeyValuePair<byte[], long>>>();
 
                 foreach (var g in groupList)
@@ -340,7 +359,7 @@ namespace ZyGames.Framework.Cache.Generic
                     {
                         if (entity == null) continue;
 
-                        SqlStatement statement = sender.GenerateSqlQueue(entity);
+                        SqlStatement statement = sender.GenerateSqlQueue<T>(entity, getPropertyFunc, postColumnFunc);
                         if (statement == null)
                         {
                             throw new Exception(string.Format("Generate sql of \"{0}\" entity error", entity.GetType().FullName));
@@ -508,6 +527,10 @@ namespace ZyGames.Framework.Cache.Generic
         {
             entity.TempTimeModify = MathUtils.Now;
             string key = GetQueueFormatKey(entity);
+            if (!entity.IsInCache)
+            {
+                CacheFactory.AddOrUpdateEntity(key, entity);
+            }
             if (_entitySet.Add(key))
             {
                 SendWaitCount++;
@@ -811,7 +834,7 @@ namespace ZyGames.Framework.Cache.Generic
         {
             try
             {
-                var sqlSender = new SqlDataSender();
+                var sqlSender = new SqlDataSender(false);
 
                 RedisConnectionPool.Process(client =>
                 {

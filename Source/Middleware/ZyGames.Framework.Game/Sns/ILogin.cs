@@ -33,7 +33,7 @@ namespace ZyGames.Framework.Game.Sns
         /// <summary>
         /// 
         /// </summary>
-        string PassportID { get; }
+        string PassportID { get;}
         /// <summary>
         /// 
         /// </summary>
@@ -46,7 +46,7 @@ namespace ZyGames.Framework.Game.Sns
         /// <summary>
         /// 
         /// </summary>
-        string Password { get; }
+        string Password { get; set; }
         /// <summary>
         /// 
         /// </summary>

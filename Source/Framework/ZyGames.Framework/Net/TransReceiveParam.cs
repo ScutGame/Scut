@@ -42,13 +42,11 @@ namespace ZyGames.Framework.Net
         ///</summary>
         ///<param name="redisKey"></param>
         ///<param name="schema"></param>
-        ///<param name="capacity"></param>
         ///<param name="dbFilter"></param>
-        public TransReceiveParam(string redisKey, SchemaTable schema, int capacity, DbDataFilter dbFilter)
+        public TransReceiveParam(string redisKey, SchemaTable schema, DbDataFilter dbFilter)
             : this(redisKey)
         {
             Schema = schema;
-            Capacity = capacity;
             DbFilter = dbFilter;
         }
         
@@ -60,9 +58,9 @@ namespace ZyGames.Framework.Net
         ///</summary>
         public SchemaTable Schema { get; set; }
 
-        ///<summary>
-        ///</summary>
-        public int Capacity { get; set; }
+        /////<summary>
+        /////</summary>
+        //public int Capacity { get; set; }
 
         ///<summary>
         ///</summary>

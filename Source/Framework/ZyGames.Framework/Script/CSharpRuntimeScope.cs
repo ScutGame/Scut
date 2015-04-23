@@ -27,6 +27,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text;
+using System.Threading;
 using ZyGames.Framework.Collection.Generic;
 using ZyGames.Framework.Common;
 using ZyGames.Framework.Common.Log;
@@ -45,6 +46,10 @@ namespace ZyGames.Framework.Script
         private const string FileFilter = "*.cs";
         private DictionaryExtend<string, ScriptFileInfo> _modelCodeCache;
         private DictionaryExtend<string, ScriptFileInfo> _csharpCodeCache;
+        /// <summary>
+        /// Script assembly verion
+        /// </summary>
+        private static int ScriptVerionId;
 
         /// <summary>
         /// 
@@ -260,6 +265,7 @@ namespace ZyGames.Framework.Script
             {
                 if (Directory.Exists(path))
                 {
+                    LoadScriptInfo(path);
                     var files = Directory.GetFiles(path, FileFilter, SearchOption.AllDirectories);
                     foreach (var fileName in files)
                     {
@@ -287,7 +293,8 @@ namespace ZyGames.Framework.Script
             {
                 string src = t.Value.Source;
                 t.Value.Source = null;
-                return src;
+                //huhu modify reason: Support for model debugging.
+                return SettupInfo.ScriptIsDebug ? t.Value.FileName : src;
             }).ToArray();
             if (sources.Length == 0) return;
             //加载实体程序集
@@ -323,6 +330,59 @@ namespace ZyGames.Framework.Script
             else
             {
                 throw new Exception("The csharp script compile error");
+            }
+        }
+
+        private static string ScriptAssembllyInfo = @"
+using System.Reflection;
+using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
+
+[assembly: AssemblyTitle(""{0}"")]
+[assembly: AssemblyProduct(""{0}"")]
+[assembly: AssemblyCopyright(""Copyright Scut"")]
+[assembly: ComVisible(false)]
+[assembly: Guid(""{1}"")]
+[assembly: AssemblyVersion(""1.0.0.{2}"")]
+";
+        private void LoadScriptInfo(string scriptPath)
+        {
+            Interlocked.Increment(ref ScriptVerionId);
+            string title = string.Format("Script.{0}", Path.GetFileName(scriptPath));
+            string guid = Guid.NewGuid().ToString();
+            string path = Path.Combine(scriptPath, "Properties");
+            string fileName = Path.Combine(path, "AssemblyInfo.cs");
+            string scriptCode = GetScriptCode(fileName);
+            string source = string.Format(ScriptAssembllyInfo, title, guid, ScriptVerionId);
+            try
+            {
+                if (!Directory.Exists(path))
+                {
+                    Directory.CreateDirectory(path);
+                }
+                if (File.Exists(fileName))
+                {
+                    File.Delete(fileName);
+                }
+                File.AppendAllText(fileName, source);
+                ScriptFileInfo scriptFile = new CSharpFileInfo(scriptCode, fileName)
+                {
+                    HashCode = CryptoHelper.ToMd5Hash(source),
+                    Source = source
+                };
+
+                if (scriptPath == _modelScriptPath)
+                {
+                    _modelCodeCache[scriptCode] = scriptFile;
+                }
+                else
+                {
+                    _csharpCodeCache[scriptCode] = scriptFile;
+                }
+            }
+            catch (Exception ex)
+            {
+                TraceLog.WriteWarn("Script AssemblyInfo error:{0}", ex);
             }
         }
 

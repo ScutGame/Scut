@@ -27,6 +27,19 @@ using ZyGames.Framework.Game.Service;
 
 namespace ZyGames.Framework.Game.Contract.Action
 {
+    class JsonLuaAction : LuaAction
+    {
+        public JsonLuaAction(int actionId, ActionGetter actionGetter, object scriptScope, bool ignoreAuthorize)
+            : base(actionId, actionGetter, scriptScope, ignoreAuthorize)
+        {
+            EnableWebSocket = true;
+        }
+
+        protected override string BuildJsonPack()
+        {
+            return _scriptScope["buildPacket"].Call(_scriptScope, _urlParam, _actionResult)[0];
+        }
+    }
     class LuaAction : ScriptAction
     {
         public LuaAction(int actionId, ActionGetter actionGetter, object scriptScope, bool ignoreAuthorize)
@@ -54,7 +67,7 @@ namespace ZyGames.Framework.Game.Contract.Action
             if (!result)
             {
                 ErrorCode = Language.Instance.ErrorCode;
-                if (IsRealse)
+                if (!IsRealse)
                 {
                     ErrorInfo = Language.Instance.ServerBusy;
                 }

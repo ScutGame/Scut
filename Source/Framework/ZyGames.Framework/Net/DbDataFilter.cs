@@ -32,11 +32,20 @@ namespace ZyGames.Framework.Net
         /// <summary>
         /// 
         /// </summary>
+        public DbDataFilter()
+        {
+            Parameters = new Parameters();
+        }
+
+
+        /// <summary>
+        /// 
+        /// </summary>
         /// <param name="capacity"></param>
         public DbDataFilter(int capacity)
+            : this()
         {
             Capacity = capacity;
-            Parameters = new Parameters();
         }
 
         /// <summary>

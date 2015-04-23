@@ -16,7 +16,6 @@ end
 
 
 function Action##ID##:buildPacket(writer, urlParam, actionResult)
-    PushIntoStack(writer, actionResult._content)
 ##buildPacket##
     return true
 end

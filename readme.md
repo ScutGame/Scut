@@ -94,14 +94,12 @@ Language:
 
 ## Update Log
 
-### Version: 6.7.9.6 (2015-1-9) RC
+### Version: 6.7.9.7 (2015-4-9) RC
 
-* Modify WebSocket Bug
-* Modify the entity has only one field update Bug
-
-* Add the entity's field support inherited from the parent class
-* Add the entity read and write DB data to support configuration
-* Add game server's info of Redis, prevent has be used of multiple game service
+* Modify framework bug.
+* Modify framework API method.
+* Modify 'Model' of script can debug problems.
+* Add surport for distributed login server
 
 
 old version [more](http://scutgame.com/log).

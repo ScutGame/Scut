@@ -49,9 +49,20 @@ namespace ZyGames.Framework.RPC.Sockets
         public ExSocket(Socket socket)
         {
             HashCode = Guid.NewGuid();
-            this.socket = socket;
-            this.remoteEndPoint = (IPEndPoint)socket.RemoteEndPoint;
             sendQueue = new ConcurrentQueue<SocketAsyncResult>();
+            this.socket = socket;
+            InitData();
+        }
+
+        private void InitData()
+        {
+            try
+            {
+                remoteEndPoint = (IPEndPoint)socket.RemoteEndPoint;
+            }
+            catch (Exception)
+            {
+            }
         }
 
         /// <summary>

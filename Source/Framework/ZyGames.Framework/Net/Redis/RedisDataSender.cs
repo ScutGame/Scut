@@ -23,6 +23,7 @@ THE SOFTWARE.
 ****************************************************************************/
 
 using System.Collections.Generic;
+using System.Web.UI.WebControls;
 using ZyGames.Framework.Model;
 using ZyGames.Framework.Redis;
 
@@ -33,30 +34,12 @@ namespace ZyGames.Framework.Net.Redis
     /// </summary>
     class RedisDataSender : IDataSender
     {
-        public RedisDataSender()
-        {
-        }
 
         #region IDataSender 成员
 
-        public void Send<T>(T data, bool isChange = true) where T : AbstractEntity
+        public bool Send<T>(params T[] dataList) where T : AbstractEntity
         {
-            Send(new T[] { data }, isChange, null, null);
-        }
-
-        public void Send<T>(IEnumerable<T> dataList) where T : AbstractEntity
-        {
-            Send(dataList, true, null, null);
-        }
-
-        public void Send<T>(IEnumerable<T> dataList, bool isChange) where T : AbstractEntity
-        {
-            Send(dataList, isChange, null, null);
-        }
-
-        public void Send<T>(IEnumerable<T> dataList, bool isChange, string connectKey, EntityBeforeProcess handle) where T : AbstractEntity
-        {
-            RedisConnectionPool.TryUpdateEntity(dataList);
+            return RedisConnectionPool.TryUpdateEntity(dataList);
         }
 
         public void Dispose()

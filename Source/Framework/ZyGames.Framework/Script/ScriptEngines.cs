@@ -55,6 +55,7 @@ namespace ZyGames.Framework.Script
         private static List<FileSystemWatcher> _watcherList;
         private static HashSet<string> _changedFiles;
         private static Timer _changeWatchingTimer;
+        private static int _isCompiling = 0;
         /// <summary>
         /// Script loaded event
         /// </summary>
@@ -66,6 +67,10 @@ namespace ZyGames.Framework.Script
             if (handler != null) handler(type, files);
         }
 
+        /// <summary>
+        /// Is compiling
+        /// </summary>
+        public static bool IsCompiling { get { return _isCompiling == 1; } }
         /// <summary>
         /// Is error
         /// </summary>
@@ -92,6 +97,7 @@ namespace ZyGames.Framework.Script
         {
             try
             {
+                ScriptCompiler.ClearScriptRuntimeTemp();
                 ConfigManager.ConfigReloaded += OnScriptSettingReLoad;
                 var scope = InitScriptRuntimeScope();
                 if (scope != null)
@@ -102,6 +108,7 @@ namespace ZyGames.Framework.Script
             catch (Exception er)
             {
                 IsError = true;
+                TraceLog.WriteError("Script init error:{0}.", er);
                 throw er;
             }
         }
@@ -134,49 +141,64 @@ namespace ZyGames.Framework.Script
                 watcher.Changed += new FileSystemEventHandler(watcher_Changed);
                 watcher.Created += new FileSystemEventHandler(watcher_Changed);
                 watcher.Deleted += new FileSystemEventHandler(watcher_Changed);
-                watcher.NotifyFilter = NotifyFilters.LastWrite;
+                watcher.Error += watcher_Error;
+                watcher.NotifyFilter = NotifyFilters.CreationTime | NotifyFilters.LastAccess | NotifyFilters.LastWrite | NotifyFilters.FileName | NotifyFilters.DirectoryName | NotifyFilters.Size;
                 watcher.IncludeSubdirectories = true;
                 watcher.EnableRaisingEvents = true;
                 _watcherList.Add(watcher);
             }
         }
 
+        private static void watcher_Error(object sender, ErrorEventArgs e)
+        {
+            TraceLog.WriteError("Script file has changed error:{0}", e.GetException().ToString());
+        }
+
         private static ScriptRuntimeScope InitScriptRuntimeScope()
         {
-            string runtimePath = MathUtils.RuntimePath ?? MathUtils.RuntimeBinPath;
-            AppDomain.CurrentDomain.AppendPrivatePath(ScriptCompiler.ScriptPath);
-            bool isFirstRun = _runtimeDomain == null;
-            if (!isFirstRun && _settupInfo.ModelChangedBefore != null)
+            //star compile
+            Interlocked.Exchange(ref _isCompiling, 1);
+            try
             {
-                _settupInfo.ModelChangedBefore(_runtimeDomain.Scope.ModelAssembly);
+                string runtimePath = MathUtils.RuntimePath ?? MathUtils.RuntimeBinPath;
+                AppDomain.CurrentDomain.AppendPrivatePath(ScriptCompiler.ScriptPath);
+                bool isFirstRun = _runtimeDomain == null;
+                if (!isFirstRun && _settupInfo.ModelChangedBefore != null)
+                {
+                    _settupInfo.ModelChangedBefore(_runtimeDomain.Scope.ModelAssembly);
+                }
+
+                _runtimeDomain = new ScriptRuntimeDomain(typeof(ScriptRuntimeDomain).Name, new[] { _settupInfo.RuntimePrivateBinPath, ScriptCompiler.ScriptPath });
+
+                ScriptDomainContext domainContext = _runtimeDomain.InitDomainContext();
+
+                foreach (var assemblyName in _settupInfo.ReferencedAssemblyNames)
+                {
+                    //排除System的dll
+                    if (string.IsNullOrEmpty(assemblyName) ||
+                       !Path.IsPathRooted(assemblyName)) continue;
+                    string key = Path.GetFileNameWithoutExtension(assemblyName);
+                    domainContext.LoadAssembly(key, assemblyName);
+                }
+
+                var scope = _runtimeDomain.CreateScope(_settupInfo);
+                if (scope == null) return scope;
+                PrintCompiledMessage();
+                if (!isFirstRun && _settupInfo.ModelChangedAfter != null)
+                {
+                    _settupInfo.ModelChangedAfter(scope.ModelAssembly);
+                }
+                else if (scope.ModelAssembly != null)
+                {
+                    ProtoBufUtils.LoadProtobufType(scope.ModelAssembly);
+                    EntitySchemaSet.LoadAssembly(scope.ModelAssembly);
+                }
+                return scope;
             }
-
-            _runtimeDomain = new ScriptRuntimeDomain(typeof(ScriptRuntimeDomain).Name, new[] { _settupInfo.RuntimePrivateBinPath, ScriptCompiler.ScriptPath });
-
-            ScriptDomainContext domainContext = _runtimeDomain.InitDomainContext();
-
-            foreach (var assemblyName in _settupInfo.ReferencedAssemblyNames)
+            finally
             {
-                //排除System的dll
-                if (string.IsNullOrEmpty(assemblyName) ||
-                   !Path.IsPathRooted(assemblyName)) continue;
-                string key = Path.GetFileNameWithoutExtension(assemblyName);
-                domainContext.LoadAssembly(key, assemblyName);
+                Interlocked.Exchange(ref _isCompiling, 0);
             }
-
-            var scope = _runtimeDomain.CreateScope(_settupInfo);
-            if (scope == null) return scope;
-            PrintCompiledMessage();
-            if (!isFirstRun && _settupInfo.ModelChangedAfter != null)
-            {
-                _settupInfo.ModelChangedAfter(scope.ModelAssembly);
-            }
-            else if (scope.ModelAssembly != null)
-            {
-                ProtoBufUtils.LoadProtobufType(scope.ModelAssembly);
-                EntitySchemaSet.LoadAssembly(scope.ModelAssembly);
-            }
-            return scope;
         }
 
         private static void PrintCompiledMessage(string message = "script")
@@ -216,13 +238,30 @@ namespace ZyGames.Framework.Script
                         case ".cs":
                             if (hasModelFile)
                             {
+                                TraceLog.WriteLine("{1} {0} compile start...", "model script", DateTime.Now.ToString("HH:mm:ss"));
                                 InitScriptRuntimeScope();
                                 PrintCompiledMessage("model script");
+                                //init script main
+                                _runtimeDomain.MainInstance = Execute(_settupInfo.ScriptMainProgram, _settupInfo.ScriptMainTypeName);
+                                if (_runtimeDomain.MainInstance != null)
+                                {
+                                    _runtimeDomain.MainInstance.ReStart();
+                                }
                                 isLoop = false;
                             }
                             else
                             {
-                                _runtimeDomain.Scope.InitCsharp();
+                                //star compile
+                                Interlocked.Exchange(ref _isCompiling, 1);
+                                try
+                                {
+                                    TraceLog.WriteLine("{1} {0} compile start...", "csharp script", DateTime.Now.ToString("HH:mm:ss"));
+                                    _runtimeDomain.Scope.InitCsharp();
+                                }
+                                finally
+                                {
+                                    Interlocked.Exchange(ref _isCompiling, 0);
+                                }
                                 PrintCompiledMessage("csharp script");
                             }
                             break;
@@ -251,7 +290,7 @@ namespace ZyGames.Framework.Script
         {
             try
             {
-                if (!string.Equals(e.FullPath, _settupInfo.PythonReferenceLibFile, StringComparison.CurrentCultureIgnoreCase))
+                if (!IsCompiling && !string.Equals(e.FullPath, _settupInfo.PythonReferenceLibFile, StringComparison.CurrentCultureIgnoreCase))
                 {
                     _changedFiles.Add(e.FullPath);
                     _changeWatchingTimer.Change(_settupInfo.ScriptChangedDelay, Timeout.Infinite);

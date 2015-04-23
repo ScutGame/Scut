@@ -63,8 +63,8 @@ namespace ZyGames.Framework.Game.Contract.Action
 		/// </summary>
         public override void BuildPacket()
         {
-            PushIntoStack(Sid);
-            PushIntoStack(Uid);
+            PushIntoStack(Current.SessionId);
+            PushIntoStack(Current.UserId.ToNotNullString());
             PushIntoStack(UserType);
             PushIntoStack(MathUtils.Now.ToString("yyyy-MM-dd HH:mm"));
             PushIntoStack(GuideId);

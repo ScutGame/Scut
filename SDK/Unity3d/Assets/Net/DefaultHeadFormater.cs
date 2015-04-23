@@ -1,11 +1,71 @@
 ﻿using System;
 using System.Text;
+using Newtonsoft.Json;
 
+/// <summary>
+/// 
+/// </summary>
+class ResponseBody
+{
+    /// <summary>
+    /// 
+    /// </summary>
+    public ResponseBody()
+    {
+        StateCode = 0;
+        StateDescription = "";
+        Vesion = "1.0";
+        Handler = "";
+    }
+    /// <summary>
+    /// 
+    /// </summary>
+    public int StateCode { get; set; }
+    /// <summary>
+    /// /
+    /// </summary>
+    public string StateDescription { get; set; }
+    /// <summary>
+    /// 
+    /// </summary>
+    public string Vesion { get; set; }
+    /// <summary>
+    /// 
+    /// </summary>
+    public string Handler { get; set; }
+    /// <summary>
+    /// 
+    /// </summary>
+    public object Data { get; set; }
+}
 /// <summary>
 /// 
 /// </summary>
 class DefaultHeadFormater : IHeadFormater
 {
+
+    public bool TryParse(string data, NetworkType type, out PackageHead head, out object body)
+    {
+        body = null;
+        head = null;
+        try
+        {
+            ResponseBody result = JsonConvert.DeserializeObject<ResponseBody>(data);
+            if (result == null) return false;
+
+            head = new PackageHead();
+            head.StatusCode = result.StateCode;
+            head.Description = result.StateDescription;
+            body = result.Data;
+            return true;
+
+        }
+        catch (Exception ex)
+        {
+            return false;
+        }
+    }
+
     public bool TryParse(byte[] data, out PackageHead head, out byte[] bodyBytes)
     {
         bodyBytes = null;
@@ -15,6 +75,7 @@ class DefaultHeadFormater : IHeadFormater
         {
             return false;
         }
+
         int nStreamSize = GetInt(data, ref pos);
 
         if (nStreamSize != data.Length)

@@ -1,7 +1,7 @@
 ﻿
 --##Description##
-function Request.act##ID##(##Parameter##obj, userdata)
+function Request:act##ID##(##Parameter##obj, userdata)
     local url = ext.URL.new()
     url:add("ActionId", ##ID##)##Fixed##
-    ext.Net.Get(url, handler(obj, obj.netCallback), userdata)
+    ext.Net:Get(url, obj, userdata)
 end

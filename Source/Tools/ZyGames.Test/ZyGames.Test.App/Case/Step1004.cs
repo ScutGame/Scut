@@ -24,9 +24,8 @@ THE SOFTWARE.
 
 using ZyGames.Framework.Common;
 using ZyGames.Framework.RPC.IO;
-using ZyGames.Test;
 
-namespace ZyGames.Quanmin.Test.Case
+namespace ZyGames.Test.App.Case
 {
     /// <summary>
     /// 登录

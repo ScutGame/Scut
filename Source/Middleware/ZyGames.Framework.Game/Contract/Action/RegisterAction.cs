@@ -140,7 +140,7 @@ namespace ZyGames.Framework.Game.Contract.Action
                 ErrorInfo = Language.Instance.ServerLoading;
                 return false;
             }
-            if (UserId <= 0)
+            if (Current.UserId <= 0)
             {
                 ErrorCode = Language.Instance.ErrorCode;
                 ErrorInfo = Language.Instance.UrlElement;

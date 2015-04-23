@@ -118,7 +118,8 @@ namespace ZyGames.Test
         {
             try
             {
-                CheckConnect();
+                //todo: connect
+                InitConnect();
                 SetUrlElement();
                 var sendData = GetRequestData();
                 for (int i = 0; i < Runtimes; i++)
@@ -200,9 +201,9 @@ namespace ZyGames.Test
             return true;
         }
 
-        private void CheckConnect()
+        private void InitConnect()
         {
-            _session.Proxy.CheckConnect();
+            _session.InitConnect();
         }
 
         protected void SetChildStep(string stepName)

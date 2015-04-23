@@ -53,7 +53,7 @@ namespace ZyGames.Framework.Game.Command
         /// <returns></returns>
         public static bool Check(string command)
         {
-            return command.StartsWith("gm:", StringComparison.CurrentCultureIgnoreCase);
+            return command.StartsWith("gm:", StringComparison.OrdinalIgnoreCase);
         }
 
         /// <summary>

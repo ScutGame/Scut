@@ -22,6 +22,8 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ****************************************************************************/
 
+using System;
+using ZyGames.Framework.Common;
 using ZyGames.Framework.Game.Com.Generic;
 using ZyGames.Framework.Game.Context;
 using ZyGames.Framework.Game.Lang;
@@ -47,6 +49,20 @@ namespace ZyGames.Framework.Game.Contract.Action
         }
 
         /// <summary>
+        /// 
+        /// </summary>
+        protected bool EnableWebSocket
+        {
+            set
+            {
+                if (value)
+                {
+                    IsWebSocket = true;
+                    actionGetter.OpCode = OpCode.Text;
+                }
+            }
+        }
+        /// <summary>
         /// 开启支付通知
         /// </summary>
         public PaymentNotify EnablePayNotify
@@ -54,6 +70,40 @@ namespace ZyGames.Framework.Game.Contract.Action
             get;
             protected set;
         }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        protected override bool ValidateElement()
+        {
+            return true;
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        protected bool CheckValidityPeriod(TimeSpan minInterval, TimeSpan maxInterval)
+        {
+            string st = actionGetter.GetSt();
+            RefleshSt();
+            if (IgnoreActionId)
+            {
+                return true;
+            }
+            if (!string.IsNullOrEmpty(st) && !string.Equals(st, "st", StringComparison.OrdinalIgnoreCase))
+            {
+                long time;
+                if (long.TryParse(st, out time))
+                {
+                    var ts = MathUtils.Now - MathUtils.UnixEpochDateTime.AddSeconds(time);
+                    return maxInterval == TimeSpan.Zero || (ts > minInterval && ts < maxInterval);
+                }
+            }
+            return true;
+        }
+
         /// <summary>
         /// 
         /// </summary>
@@ -103,7 +153,7 @@ namespace ZyGames.Framework.Game.Contract.Action
                 default:
                     break;
             }
-            if (user != null && user.IsLock)
+            if (CheckUserIsLocked(user))
             {
                 ErrorCode = Language.Instance.TimeoutCode;
                 ErrorInfo = Language.Instance.AcountIsLocked;
@@ -115,6 +165,17 @@ namespace ZyGames.Framework.Game.Contract.Action
             }
             return result;
         }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="user"></param>
+        /// <returns></returns>
+        protected virtual bool CheckUserIsLocked(IUser user)
+        {
+            return false;
+        }
+
         /// <summary>
         /// Gets a value indicating whether this instance is refresh.
         /// </summary>
@@ -183,8 +244,7 @@ namespace ZyGames.Framework.Game.Contract.Action
         protected JsonAuthorizeAction(int actionId, ActionGetter actionGetter)
             : base(actionId, actionGetter)
         {
-            IsWebSocket = true;
-            actionGetter.OpCode = OpCode.Text;
+            EnableWebSocket = true;
         }
     }
 }

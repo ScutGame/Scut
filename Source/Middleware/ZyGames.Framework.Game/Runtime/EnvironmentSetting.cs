@@ -128,11 +128,11 @@ namespace ZyGames.Framework.Game.Runtime
             ProductCode = appServer.ProductCode;
             ProductName = appServer.ProductName;
             ProductServerId = appServer.ProductServerId;
-            ProductDesEnKey = appServer.UserEncodeKey;
             ClientDesDeKey = appServer.UserLoginDecodeKey;
             ActionTypeName = appServer.ActionTypeName;
             ScriptTypeName = appServer.ScriptTypeName;
             RemoteTypeName = appServer.RemoteTypeName;
+            AccountServerUrl = appServer.AccountServerUrl;
 
             var protocol = GetProtocolSection();
             ProductSignKey = protocol.SignKey;
@@ -218,6 +218,7 @@ namespace ZyGames.Framework.Game.Runtime
         /// <summary>
         /// Des encryption key account password.
         /// </summary>
+        [Obsolete("Sns no use")]
         public string ProductDesEnKey { get; set; }
 
         /// <summary>
@@ -289,6 +290,13 @@ namespace ZyGames.Framework.Game.Runtime
         /// Remote type name.
         /// </summary>
         public string RemoteTypeName { get; set; }
+
+
+        /// <summary>
+        /// Account login server's url
+        /// </summary>
+        public string AccountServerUrl { get; set; }
+
         /// <summary>
         /// local ip
         /// </summary>

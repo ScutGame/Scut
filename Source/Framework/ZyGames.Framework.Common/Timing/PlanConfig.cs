@@ -22,6 +22,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ****************************************************************************/
 using System;
+using System.Diagnostics;
 
 namespace ZyGames.Framework.Common.Timing
 {
@@ -119,7 +120,7 @@ namespace ZyGames.Framework.Common.Timing
 
         class PlanState
         {
-            public int OffsetSecond { get; set; }
+            public double OffsetSecond { get; set; }
             public DateTime StartDate { get; set; }
             public DateTime StopDate { get; set; }
             public DateTime PreDate { get; private set; }
@@ -135,7 +136,7 @@ namespace ZyGames.Framework.Common.Timing
 
             public void Reset(PlanConfig config)
             {
-                StartDate = config.BeginTime.ToDateTime();
+                StartDate = (string.IsNullOrEmpty(config.BeginTime) ? "00:00:00" : config.BeginTime).ToDateTime();
                 StopDate = config.EndTime.ToDateTime(DateTime.MinValue);
                 IsEnd = false;
             }
@@ -181,7 +182,7 @@ namespace ZyGames.Framework.Common.Timing
                     excuteDate = PreDate.AddSeconds(secondInterval);
                     nextExcuteDate = excuteDate.AddSeconds(secondInterval);
                 }
-
+                //Trace.WriteLine(string.Format("timing pre:{0}, cur:{1}, next:{2}", PreDate, currDate, excuteDate));
                 if (PreDate <= currDate && currDate < excuteDate)
                 {
                     //时间还没有到
@@ -343,7 +344,7 @@ namespace ZyGames.Framework.Common.Timing
         /// <summary>
         /// 设置误差间隔
         /// </summary>
-        public void SetDiffInterval(int secondInterval)
+        public void SetDiffInterval(double secondInterval)
         {
             _planState.OffsetSecond = secondInterval;
         }

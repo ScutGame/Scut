@@ -119,7 +119,7 @@ namespace ZyGames.Framework.Cache.Generic
         {
             get
             {
-                
+
                 if (_container != null)
                 {
                     return _container.Collection;
@@ -432,7 +432,9 @@ namespace ZyGames.Framework.Cache.Generic
                     return false;
                 }
             }
+            CheckEventBind(entityData as AbstractEntity);
             entityData.IsInCache = true;
+            entityData.TriggerNotify();
             itemSet.SetItem(entityData);
             itemSet.OnLoadSuccess();
             return true;
@@ -462,6 +464,7 @@ namespace ZyGames.Framework.Cache.Generic
             itemSet.SetItem(entityData);
             if (Container.TryAdd(entityKey, itemSet))
             {
+                CheckEventBind(entityData as AbstractEntity);
                 entityData.IsInCache = true;
                 entityData.TriggerNotify();
                 itemSet.OnLoadSuccess();
@@ -495,20 +498,21 @@ namespace ZyGames.Framework.Cache.Generic
             CacheItemSet itemSet = InitGroupContainer(groupKey, periodTime);
             if (itemSet != null && !Equals(entityData, default(T)))
             {
-                entityData.IsInCache = true;
                 var data = (BaseCollection)itemSet.GetItem();
-                T oldValue;
-                if (data.TryGetValue(key, out oldValue))
+                result = data.AddOrUpdate(key, entityData, (k, t) => entityData) == entityData;
+                if (result)
                 {
-                    result = data.TryUpdate(key, entityData, oldValue);
-                }
-                else
-                {
-                    result = data.TryAdd(key, entityData);
-                }
-                if (itemSet.LoadingStatus == LoadingStatus.None)
-                {
-                    itemSet.OnLoadSuccess();
+                    var temp = entityData as AbstractEntity;
+                    CheckEventBind(temp);
+                    entityData.IsInCache = true;
+                    if (temp != null && (temp.IsNew || temp.HasChanged))
+                    {
+                        entityData.TriggerNotify();
+                    }
+                    if (itemSet.LoadingStatus == LoadingStatus.None)
+                    {
+                        itemSet.OnLoadSuccess();
+                    }
                 }
             }
             return result;
@@ -528,6 +532,7 @@ namespace ZyGames.Framework.Cache.Generic
             {
                 if (!Equals(entityData, default(T)) && ((BaseCollection)itemSet.GetItem()).TryAdd(key, entityData))
                 {
+                    CheckEventBind(entityData as AbstractEntity);
                     entityData.IsInCache = true;
                     entityData.TriggerNotify();
                     itemSet.OnLoadSuccess();
@@ -647,7 +652,7 @@ namespace ZyGames.Framework.Cache.Generic
             if (Container.TryGetValue(groupKey, out itemSet))
             {
                 T entityData;
-                var items = (BaseCollection) itemSet.GetItem();
+                var items = (BaseCollection)itemSet.GetItem();
                 if (items.TryRemove(key, out entityData))
                 {
                     bool result = true;
@@ -747,7 +752,6 @@ namespace ZyGames.Framework.Cache.Generic
 
         public void UnChangeNotify(string key)
         {
-
             CacheItemSet itemSet;
             if (Container.TryGetValue(key, out itemSet))
             {
@@ -760,6 +764,10 @@ namespace ZyGames.Framework.Cache.Generic
                 if (itemData != null)
                 {
                     itemData.UnChangeNotify(this, e);
+                }
+                else if (itemSet.ItemData is BaseCollection)
+                {
+                    //Not notify
                 }
             }
         }
@@ -828,5 +836,25 @@ namespace ZyGames.Framework.Cache.Generic
             return false;
         }
 
+        /// <summary>
+        /// 检查是否有绑定事件，防止没有绑定导致数据丢失
+        /// </summary>
+        /// <param name="data"></param>
+        private void CheckEventBind(AbstractEntity data)
+        {
+            if (data == null || data.IsReadOnly) return;
+
+            var columns = data.GetSchema().GetObjectColumns();
+            foreach (var column in columns)
+            {
+                var temp = data.GetPropertyValue(column.Name) as IItemChangeEvent;
+                if (temp != null && temp.ItemEvent.Parent == null)
+                {
+                    temp.IsInCache = true;
+                    temp.PropertyName = column.Name;
+                    data.AddChildrenListener(temp);
+                }
+            }
+        }
     }
 }

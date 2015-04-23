@@ -172,6 +172,8 @@ namespace ZyGames.Framework.Game.Pay
             {
                 command.AddParameter("ServerID", model.ServerID);
                 command.AddParameter("PassportID", model.PassportID);
+                if (!string.IsNullOrEmpty(model.Expand))
+                    command.AddParameter("Expand", model.Expand);
                 command.AddParameter("GameID", model.GameID);
                 command.AddParameter("RetailID", model.RetailID);//20
 

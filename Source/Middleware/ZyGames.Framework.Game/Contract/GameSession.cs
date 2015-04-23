@@ -402,7 +402,7 @@ namespace ZyGames.Framework.Game.Contract
             {
                 var session = pair.Value;
                 if (!session.IsRemote &&
-                    session.Connected &&
+                    (!session.IsSocket || session.Connected) &&
                     session.LastActivityTime > MathUtils.Now.AddSeconds(-delayTime))
                 {
                     list.Add(session);
@@ -520,7 +520,7 @@ namespace ZyGames.Framework.Game.Contract
         private void InitSocket(ExSocket exSocket, ISocket appServer)
         {
             _exSocket = exSocket;
-            _remoteAddress = _exSocket.RemoteEndPoint.ToString();
+            _remoteAddress = _exSocket.RemoteEndPoint.ToNotNullString();
             AppServer = appServer;
         }
 
@@ -786,6 +786,15 @@ namespace ZyGames.Framework.Game.Contract
         public bool IsSocket
         {
             get { return _exSocket != null; }
+        }
+
+        /// <summary>
+        /// is websocket
+        /// </summary>
+        [JsonIgnore]
+        public bool IsWebSocket
+        {
+            get { return _exSocket != null && _exSocket.IsWebSocket; }
         }
 
         /// <summary>

@@ -39,6 +39,11 @@ namespace ZyGames.Framework.Game.Sns
             get;
             set;
         }
+        /// <summary>
+        /// 
+        /// </summary>
+        public string IMEI { get; set; }
+
 
         /// <summary>
         /// 
@@ -56,6 +61,23 @@ namespace ZyGames.Framework.Game.Sns
             get;
             set;
         }
+        /// <summary>
+        /// 
+        /// </summary>
+        public string Password
+        {
+            get;
+            set;
+        }
+        /// <summary>
+        /// 
+        /// </summary>
+        public RegType RegType { get; set; }
+        /// <summary>
+        /// 
+        /// </summary>
+        public PwdType PwdType { get; set; }
+
         /// <summary>
         /// 
         /// </summary>

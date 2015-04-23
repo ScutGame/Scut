@@ -61,7 +61,10 @@ namespace ZyGames.Framework.Data
                 var setting = ConnectionSetting.Create(section.Name, section.ProviderName, section.ConnectionString.Trim());
                 if (setting.ProviderType == DbProviderType.Unkown)
                 {
-                    TraceLog.WriteWarn("Db connection not found provider type, str:{0}", setting.ConnectionString);
+                    if (setting.DbLevel != DbLevel.LocalMySql && setting.DbLevel != DbLevel.LocalSql)
+                    {
+                        TraceLog.WriteWarn("Db connection not found provider type, {0} connectionString:{1}", section.Name, setting.ConnectionString);
+                    }
                     continue;
                 }
                 var dbBaseProvider = CreateDbProvider(setting);
@@ -95,7 +98,7 @@ namespace ZyGames.Framework.Data
         {
             var providers = dbProviders.Where(
                 pair => pair.Value.ConnectionSetting.DbLevel != DbLevel.LocalSql &&
-                    pair.Value.ConnectionSetting.DbLevel != DbLevel.LocalMysql)
+                    pair.Value.ConnectionSetting.DbLevel != DbLevel.LocalMySql)
                 .ToList();
             return providers.FirstOrDefault();
         }
@@ -128,6 +131,19 @@ namespace ZyGames.Framework.Data
                 catch
                 {
                     TraceLog.WriteError("ProviderName:{0} instance failed.", connSection.ProviderName);
+                }
+            }
+            else
+            {
+                var section = ConfigurationManager.ConnectionStrings[connectKey];
+                try
+                {
+                    dbBaseProvider = CreateDbProvider(section.Name, section.ProviderName, section.ConnectionString);
+                    dbProviders.TryAdd(connectKey, dbBaseProvider);
+                }
+                catch
+                {
+                    TraceLog.WriteError("ProviderName:{0} instance failed.", section.ProviderName);
                 }
             }
 

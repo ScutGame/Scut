@@ -1,5 +1,6 @@
 ﻿using System;
 using GameRanking.Pack;
+using Newtonsoft.Json;
 using ZyGames.Framework.Common.Serialization;
 
 /// <summary>
@@ -7,6 +8,28 @@ using ZyGames.Framework.Common.Serialization;
 /// </summary>
 public class CustomHeadFormater : IHeadFormater
 {
+    public bool TryParse(string data, NetworkType type, out PackageHead head, out object body)
+    {
+        body = null;
+        head = null;
+        try
+        {
+            ResponseBody result = JsonConvert.DeserializeObject<ResponseBody>(data);
+            if (result == null) return false;
+
+            head = new PackageHead();
+            head.StatusCode = result.StateCode;
+            head.Description = result.StateDescription;
+            body = result.Data;
+            return true;
+
+        }
+        catch (Exception ex)
+        {
+            return false;
+        }
+    }
+
     public bool TryParse(byte[] data, out PackageHead head, out byte[] bodyBytes)
     {
         bodyBytes = null;

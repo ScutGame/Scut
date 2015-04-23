@@ -141,6 +141,10 @@ namespace ZyGames.Framework.RPC.Sockets.WebSocket
         /// </summary>
         public event Action<int> OnCloseStatus;
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="closeStatus"></param>
         protected void TriggerCloseStatus(int closeStatus)
         {
             Action<int> handler = OnCloseStatus;

@@ -25,16 +25,16 @@ using System;
 using System.Collections.Generic;
 using System.Net.Sockets;
 using System.Text;
+using ZyGames.Framework.Common;
 using ZyGames.Framework.Common.Log;
 using ZyGames.Framework.RPC.IO;
-using ZyGames.Framework.RPC.Sockets.WebSocket;
 
 namespace ZyGames.Framework.RPC.Sockets
 {
     /// <summary>
     /// 
     /// </summary>
-    class MessageHandler : BaseMessageProcessor
+    public class MessageHandler : BaseMessageProcessor
     {
         /// <summary>
         /// 
@@ -82,7 +82,7 @@ namespace ZyGames.Framework.RPC.Sockets
                         byte[] bufferBytes = BufferUtils.MergeBytes(dataToken.byteArrayForPrefix, dataToken.byteArrayForMessage);
                         string data = Encoding.UTF8.GetString(bufferBytes);
                         //消息头已接收完毕，并且接收到的消息长度大于10M，socket传输的数据已紊乱，关闭掉
-                        TraceLog.WriteWarn("Receive Ip {1} message length error:{0}\r\nData:{2}", dataToken.messageLength, (dataToken != null ? dataToken.Socket.RemoteEndPoint.ToString() : ""), data);
+                        TraceLog.ReleaseWriteDebug("Receive Ip {1} message length error:{0}\r\nData:{2}", dataToken.messageLength, (dataToken != null ? dataToken.Socket.RemoteEndPoint.ToNotNullString() : ""), data);
                         needPostAnother = false;
                         break;
                     }
@@ -95,7 +95,7 @@ namespace ZyGames.Framework.RPC.Sockets
                 if (dataToken.IsMessageReady)
                 {
                     //if (logger.IsDebugEnabled) logger.Debug("完整封包 长度[{0}],总传输[{1}],剩余[{2}]", dataToken.messageLength, ioEventArgs.BytesTransferred, remainingBytesToProcess);
-                    messageList.Add(new DataMeaage() { Data = dataToken.byteArrayForMessage, OpCode = OpCode.Binary});
+                    messageList.Add(new DataMeaage() { Data = dataToken.byteArrayForMessage, OpCode = OpCode.Binary });
                     if (remainingBytesToProcess != 0)
                     {
                         //if (logger.IsDebugEnabled) logger.Debug("重置缓冲区,buffskip指针[{0}]。", dataToken.bufferSkip);

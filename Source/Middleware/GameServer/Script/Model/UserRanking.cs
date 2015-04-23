@@ -30,7 +30,7 @@ using ZyGames.Framework.Cache.Generic;
 namespace GameServer.Model
 {
     /// <summary>
-    /// 鐜╁鎺掕姒滃疄浣撶被
+    /// user ranking
     /// </summary>
     [Serializable, ProtoContract]
     [EntityTable(CacheType.Entity, "ConnData")]

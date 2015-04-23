@@ -59,5 +59,37 @@ namespace ContractTools.WebApp.Model
             get;
             set;
         }
+        /// <summary>
+        /// 
+        /// </summary>
+        public string SerUseScript
+        {
+            get;
+            set;
+        }
+        /// <summary>
+        /// 
+        /// </summary>
+        public string CliUseScript
+        {
+            get;
+            set;
+        }
+        /// <summary>
+        /// 
+        /// </summary>
+        public bool IsDParam
+        {
+            get;
+            set;
+        }
+        /// <summary>
+        /// 
+        /// </summary>
+        public int RespContentType
+        {
+            get;
+            set;
+        }
     }
 }

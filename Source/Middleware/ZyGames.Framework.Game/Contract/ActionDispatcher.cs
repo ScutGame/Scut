@@ -22,14 +22,10 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ****************************************************************************/
 using System;
-using System.Collections.Generic;
-using System.IO;
 using System.Net;
 using System.Text;
 using System.Web;
-using ZyGames.Framework.Common;
 using ZyGames.Framework.Game.Service;
-using ZyGames.Framework.RPC.Http;
 using ZyGames.Framework.RPC.IO;
 using ZyGames.Framework.RPC.Sockets;
 
@@ -130,10 +126,17 @@ namespace ZyGames.Framework.Game.Contract
             string data = "";
             if (Environment.OSVersion.Platform == PlatformID.Unix)
             {
-                if (String.Compare(request.HttpMethod, "get", StringComparison.OrdinalIgnoreCase) == 0)
+                //The RawUrl Get is exist "/xxx.aspx?d=" char on the platform of mono.
+                int index;
+                if (String.Compare(request.HttpMethod, "get", StringComparison.OrdinalIgnoreCase) == 0 &&
+                    (index = request.RawUrl.IndexOf("?d=", StringComparison.OrdinalIgnoreCase)) != -1)
                 {
-                    data = request.RawUrl.Substring(8);
+                    data = request.RawUrl.Substring(index + 3);
                     data = HttpUtility.UrlDecode(data);
+                }
+                else
+                {
+                    data = request.RawUrl;
                 }
             }
             else
@@ -202,7 +205,8 @@ namespace ZyGames.Framework.Game.Contract
         /// <param name="errorInfo"></param>
         public virtual void ResponseError(BaseGameResponse response, ActionGetter actionGetter, int errorCode, string errorInfo)
         {
-            MessageHead head = new MessageHead(actionGetter.GetMsgId(), actionGetter.GetActionId(), errorCode, errorInfo);
+            string st = actionGetter.GetSt();
+            MessageHead head = new MessageHead(actionGetter.GetMsgId(), actionGetter.GetActionId(), st, errorCode, errorInfo);
             MessageStructure sb = new MessageStructure();
             sb.WriteBuffer(head);
             response.BinaryWrite(sb.PopBuffer());

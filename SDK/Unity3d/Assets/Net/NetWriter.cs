@@ -4,12 +4,17 @@ using System.Linq;
 using System.Text;
 using UnityEngine;
 
+public enum ResponseContentType
+{
+    Stream = 0,
+    Json
+}
 public class NetWriter
 {
     private static ulong s_userID = 0;
     private static string s_strSessionID = "";
     private static string s_strSt = "";
-
+    private static ResponseContentType _respContentType = ResponseContentType.Stream;
     private static string s_strUrl = "";
     private static string s_strPostData = "";
     private static string s_strUserData = "";
@@ -22,6 +27,16 @@ public class NetWriter
     public static NetWriter Instance
     {
         get { return s_isntance; }
+    }
+
+    public static bool IsGet { get; private set; }
+        
+    public static ResponseContentType ResponseContentType
+    {
+        get
+        {
+            return _respContentType;
+        }
     }
 
     public static int MsgId
@@ -148,9 +163,17 @@ public class NetWriter
     {
         System.Diagnostics.Debug.Assert(false);
     }
+
     public static void SetUrl(string szUrl)
     {
+        SetUrl(szUrl, ResponseContentType.Stream);
+    }
+
+    public static void SetUrl(string szUrl, ResponseContentType respContentType, bool isGet = false)
+    {
         s_strUrl = szUrl;
+        IsGet = isGet;
+        _respContentType = respContentType;
     }
 
     public static string GetUrl()
@@ -189,6 +212,12 @@ public class NetWriter
         {
             //支持自定义结构
             data = GetDataBuffer();
+        }
+        else if (_respContentType == ResponseContentType.Json)
+        {
+            s_strPostData = s_strUserData + "&sign=" + getMd5String(s_strUserData + s_md5Key);
+            Debug.Log("request param:" + s_strPostData);
+            data = Encoding.UTF8.GetBytes(s_strPostData);
         }
         else
         {

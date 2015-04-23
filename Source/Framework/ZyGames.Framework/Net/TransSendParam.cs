@@ -59,8 +59,5 @@ namespace ZyGames.Framework.Net
         ///</summary>
         public string ConnectKey { get; set; }
 
-        ///<summary>
-        ///</summary>
-        public EntityBeforeProcess BeforeProcessHandle { get; set; }
     }
 }

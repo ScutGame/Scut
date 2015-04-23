@@ -30,7 +30,7 @@ using ZyGames.Framework.Common.Serialization;
 namespace ZyGames.Framework.Event
 {
     /// <summary>
-    /// 实体变更事件,定义属性时不要使用get;set简写方式，在WebService调用时只读时会有异常
+    /// 实体变更事件
     /// </summary>
     [ProtoContract, Serializable]
     public class EntityChangeEvent : IItemChangeEvent
@@ -319,6 +319,7 @@ namespace ZyGames.Framework.Event
             IItemChangeEvent val = obj as IItemChangeEvent;
             if (val != null)
             {
+                val.IsInCache = true;
                 val.PropertyName = PropertyName;
                 AddChildrenListener(val);
             }

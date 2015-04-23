@@ -98,6 +98,10 @@ namespace ZyGames.Framework.RPC.Sockets
         /// </summary>
         public List<DataSegmentFrame> DataFrames { get; set; }
 
+        /// <summary>
+        /// Sync recieve data.
+        /// </summary>
+        public Queue<ArraySegment<byte>> SyncSegments { get; set; }
 
         /// <summary>
         /// offset

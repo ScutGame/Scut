@@ -6,6 +6,7 @@ using System.Web.UI;
 using System.Web.UI.WebControls;
 using ContractTools.WebApp.Base;
 using ContractTools.WebApp.Model;
+using ZyGames.Framework.Common;
 
 namespace ContractTools.WebApp
 {
@@ -34,6 +35,10 @@ namespace ContractTools.WebApp
                 model.RefNamespace = txtRefNamespace.Text.Trim();
                 model.GameID = Convert.ToInt32((string)txtGameID.Text);
                 model.Url = txtUrl.Text.Trim();
+                model.SerUseScript = ddSerUseScript.Text;
+                model.CliUseScript = ddCliUseScript.Text;
+                model.RespContentType = ddResponseContentType.Text.ToInt();
+                model.IsDParam = ckIsDParam.Checked;
                 if (DbDataLoader.Add(model) > 0)
                 {
                     BindData();
@@ -74,6 +79,11 @@ namespace ContractTools.WebApp
                 string url = ((TextBox)GridView1.Rows[e.RowIndex].FindControl("Url")).Text;
                 string gameid = ((TextBox)GridView1.Rows[e.RowIndex].FindControl("gameid")).Text;
 
+                string SerUseScript = ((DropDownList)GridView1.Rows[e.RowIndex].FindControl("SerUseScript")).Text;
+                string CliUseScript = ((DropDownList)GridView1.Rows[e.RowIndex].FindControl("CliUseScript")).Text;
+                string RespContentType = ((DropDownList)GridView1.Rows[e.RowIndex].FindControl("RespContentType")).Text;
+                bool IsDParam = ((CheckBox)GridView1.Rows[e.RowIndex].FindControl("IsDParam")).Checked;
+
                 SolutionModel mode = new SolutionModel();
                 mode.SlnID = id;
                 mode.SlnName = SlnName;
@@ -81,6 +91,10 @@ namespace ContractTools.WebApp
                 mode.RefNamespace = RefNamespace;
                 mode.Url = url;
                 mode.GameID = Convert.ToInt32(gameid);
+                mode.SerUseScript = SerUseScript;
+                mode.CliUseScript = CliUseScript;
+                mode.RespContentType = RespContentType.ToInt();
+                mode.IsDParam = IsDParam;
                 if (DbDataLoader.Update(mode))
                 {
                     GridView1.EditIndex = -1;

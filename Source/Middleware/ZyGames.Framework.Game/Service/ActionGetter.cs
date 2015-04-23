@@ -333,6 +333,48 @@ namespace ZyGames.Framework.Game.Service
         /// <summary>
         /// 
         /// </summary>
+        /// <param name="aName"></param>
+        /// <param name="rValue"></param>
+        /// <returns></returns>
+        public virtual bool GetInt(string aName, ref uint rValue)
+        {
+            throw new NotImplementedException();
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public virtual bool GetInt(string aName, ref uint rValue, uint minValue, uint maxValue)
+        {
+            throw new NotImplementedException();
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public virtual bool GetWord(string aName, ref ushort rValue)
+        {
+            throw new NotImplementedException();
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public virtual bool GetWord(string aName, ref ushort rValue, ushort minValue, ushort maxValue)
+        {
+            throw new NotImplementedException();
+        }
+        /// <summary>
+        /// 
+        /// </summary>
+        public virtual bool GetBool(string aName, ref bool rValue)
+        {
+            throw new NotImplementedException();
+        }
+        
+        /// <summary>
+        /// 
+        /// </summary>
         public virtual bool GetByte(string aName, ref Byte rValue)
         {
             throw new NotImplementedException();

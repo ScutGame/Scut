@@ -141,7 +141,7 @@ public class SocketConnect
                         }
 
                         NetReader reader = new NetReader(_formater);
-                        reader.pushNetStream(data, NetworkType.Socket);
+                        reader.pushNetStream(data, NetworkType.Socket, NetWriter.ResponseContentType);
                         SocketPackage findPackage = null;
 
                         Debug.Log("Socket receive ok, revLen:" + recnum
@@ -324,15 +324,19 @@ public class SocketConnect
         if (_socket == null) return;
         try
         {
-            _socket.Shutdown(SocketShutdown.Both);
-            _socket.Close();
-            _socket = null;
+            lock (this)
+            {
+                _socket.Shutdown(SocketShutdown.Both);
+                _socket.Close();
+                _socket = null;
 
-            _heartbeatThread.Dispose();
-            _heartbeatThread = null;
+                _heartbeatThread.Dispose();
+                _heartbeatThread = null;
 
-            _thread.Abort();
-            _thread = null;
+                _thread.Abort();
+                _thread = null;
+            }
+
         }
         catch (Exception)
         {
@@ -412,7 +416,7 @@ public class SocketConnect
             {
                 if (isDisposing)
                 {
-                    Close();
+                    //if (socket != null) socket.Dispose(true);
                 }
             }
         }

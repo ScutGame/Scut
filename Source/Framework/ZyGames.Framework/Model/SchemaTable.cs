@@ -199,6 +199,10 @@ namespace ZyGames.Framework.Model
             get;
             set;
         }
+        /// <summary>
+        /// index column
+        /// </summary>
+        public string[] Indexs { get; set; }
 
         private ConcurrentDictionary<string, SchemaColumn> _columns;
 
@@ -211,14 +215,21 @@ namespace ZyGames.Framework.Model
         }
 
         /// <summary>
-        /// Get schema column to list.
+        /// Get ordered schema columns.
         /// </summary>
         /// <returns></returns>
         public List<SchemaColumn> GetColumns()
         {
             return _columns.Values.OrderBy(col => col.Id).ToList();
         }
-
+        /// <summary>
+        /// Get serialized object columns.
+        /// </summary>
+        /// <returns></returns>
+        public List<SchemaColumn> GetObjectColumns()
+        {
+            return _columns.Values.Where(t=>t.IsSerialized).OrderBy(col => col.Id).ToList();
+        }
         /// <summary>
         /// Get schema column name to list.
         /// </summary>

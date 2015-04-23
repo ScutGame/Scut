@@ -34,6 +34,11 @@ namespace ZyGames.Framework.Game.Runtime
         private bool isStop;
 
         /// <summary>
+        /// 
+        /// </summary>
+        public bool IsStoped { get { return isStop; } }
+
+        /// <summary>
         /// init
         /// </summary>
         public ConsoleRuntimeHost()
@@ -48,10 +53,14 @@ namespace ZyGames.Framework.Game.Runtime
         {
             ConsoleColor currentForeColor = Console.ForegroundColor;
             SetColor(ConsoleColor.DarkYellow);
-            OnStart();
+            if (!OnStart())
+            {
+                RunWait().Wait();
+                return;
+            }
             SetColor(currentForeColor);
             Run();
-            if (!isStop)
+            if (!IsStoped)
             {
                 OnStop();
             }

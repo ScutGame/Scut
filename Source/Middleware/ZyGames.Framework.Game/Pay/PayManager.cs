@@ -65,7 +65,8 @@ namespace ZyGames.Framework.Game.Pay
         /// <param name="ServiceName">Service name.</param>
         /// <param name="orderNo">Order no.</param>
         /// <param name="RetailID">Retail I.</param>
-        public static void get91PayInfo(int game, int Server, string Account, string ServiceName, string orderNo, string RetailID)
+        /// <param name="userId"></param>
+        public static void get91PayInfo(int game, int Server, string Account, string ServiceName, string orderNo, string RetailID, string userId = "")
         {
             //增加游戏名称避免出现游戏名称为空的现象 panx 2012-11-26
             string GameName = string.Empty;
@@ -81,6 +82,7 @@ namespace ZyGames.Framework.Game.Pay
             orderInfo.Currency = "CNY";
             orderInfo.Amount = 0;
             orderInfo.PassportID = Account;
+            orderInfo.Expand = userId;
             orderInfo.RetailID = RetailID;
             orderInfo.PayStatus = 1;
             orderInfo.GameID = game;
@@ -96,9 +98,8 @@ namespace ZyGames.Framework.Game.Pay
         }
 
 
-
         /// <summary>
-		/// appstroe充值
+        /// appstroe充值
         /// </summary>
         /// <param name="game">Game.</param>
         /// <param name="Server">Server.</param>
@@ -108,7 +109,9 @@ namespace ZyGames.Framework.Game.Pay
         /// <param name="orderNo">Order no.</param>
         /// <param name="RetailID">Retail I.</param>
         /// <param name="MemberMac">Member mac.</param>
-        public static void AppStorePay(int game, int Server, string Account, int Silver, int Amount, string orderNo, string RetailID, string MemberMac)
+        /// <param name="payState"></param>
+        /// <param name="userId"></param>
+        public static void AppStorePay(int game, int Server, string Account, int Silver, int Amount, string orderNo, string RetailID, string MemberMac, bool payState = true, string userId = "")
         {
             try
             {
@@ -127,8 +130,9 @@ namespace ZyGames.Framework.Game.Pay
                 orderInfo.Currency = "CNY";
                 orderInfo.Amount = Amount;
                 orderInfo.PassportID = Account;
+                orderInfo.Expand = userId;
                 orderInfo.RetailID = RetailID;
-                orderInfo.PayStatus = 2;
+                orderInfo.PayStatus = payState ? 2 : 3;
                 orderInfo.GameID = game;
                 orderInfo.ServerID = Server;
                 orderInfo.GameName = GameName;
@@ -140,11 +144,11 @@ namespace ZyGames.Framework.Game.Pay
                 orderInfo.DeviceID = MemberMac;
                 OrderFormBLL obll = new OrderFormBLL();
                 obll.Add(orderInfo);
-                TraceLog.ReleaseWrite("AppStore充值完成");
+                TraceLog.ReleaseWrite("User:{0} AppStore充值{1}完成,order:{2}", Account, Amount, orderNo);
             }
             catch (Exception ex)
             {
-                TraceLog.ReleaseWriteFatal(ex.ToString());
+                TraceLog.ReleaseWriteFatal("User:{0} AppStore充值{1}异常, order:{2}\r\nError:{3}", Account, Amount, orderNo, ex.ToString());
             }
         }
 
@@ -154,10 +158,10 @@ namespace ZyGames.Framework.Game.Pay
             return ordrBLL.GetServerData(gameID, serverID);
         }
 
-		/// <summary>
-		/// Abnormal the specified OrderNO.
-		/// </summary>
-		/// <param name="OrderNO">Order N.</param>
+        /// <summary>
+        /// Abnormal the specified OrderNO.
+        /// </summary>
+        /// <param name="OrderNO">Order N.</param>
         public static void Abnormal(string OrderNO)
         {
             OrderFormBLL ordrBLL = new OrderFormBLL();
@@ -240,11 +244,11 @@ namespace ZyGames.Framework.Game.Pay
                 TraceLog.ReleaseWriteFatal(ex.ToString());
             }
         }
-		/// <summary>
-		/// Adds the order.
-		/// </summary>
-		/// <returns><c>true</c>, if order was added, <c>false</c> otherwise.</returns>
-		/// <param name="orderInfo">Order info.</param>
+        /// <summary>
+        /// Adds the order.
+        /// </summary>
+        /// <returns><c>true</c>, if order was added, <c>false</c> otherwise.</returns>
+        /// <param name="orderInfo">Order info.</param>
         public static bool AddOrder(OrderInfo orderInfo)
         {
             try

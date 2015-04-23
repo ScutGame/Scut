@@ -25,7 +25,11 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using ZyGames.Framework.Common;
+using ZyGames.Framework.Common.Reflect;
+using ZyGames.Framework.Common.Serialization;
 using ZyGames.Framework.Model;
+using ZyGames.Framework.Net;
+using ZyGames.Framework.Redis;
 
 namespace ZyGames.Framework.Cache.Generic
 {
@@ -158,6 +162,15 @@ namespace ZyGames.Framework.Cache.Generic
         }
 
         /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        public List<T> FindAll()
+        {
+            return FindAll(t => true);
+        }
+
+        /// <summary>
         /// 查找所有匹配数据
         /// </summary>
         /// <param name="match"></param>
@@ -166,13 +179,119 @@ namespace ZyGames.Framework.Cache.Generic
         {
             return _container.Collection.Find(match);
         }
-		/// <summary>
-		/// Inits the cache.
-		/// </summary>
-		/// <returns><c>true</c>, if cache was inited, <c>false</c> otherwise.</returns>
+        /// <summary>
+        /// Inits the cache.
+        /// </summary>
+        /// <returns><c>true</c>, if cache was inited, <c>false</c> otherwise.</returns>
         protected virtual bool InitCache()
         {
             return true;
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="entity"></param>
+        /// <param name="column"></param>
+        /// <returns></returns>
+        protected virtual object GetPropertyValue(T entity, SchemaColumn column)
+        {
+            return ObjectAccessor.Create(entity)[column.Name];
+        }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="entity"></param>
+        /// <param name="column"></param>
+        /// <param name="value"></param>
+        protected virtual void SetPropertyValue(T entity, SchemaColumn column, object value)
+        {
+            object fieldValue;
+            if (column.IsSerialized)
+            {
+                //指定序列化方式
+                if (column.DbType == ColumnDbType.LongBlob ||
+                    column.DbType == ColumnDbType.Blob)
+                {
+                    fieldValue = ProtoBufUtils.Deserialize(value as byte[], column.ColumnType);
+                }
+                else
+                {
+                    fieldValue = DeserializeJsonObject(value, column);
+                }
+            }
+            else
+            {
+                fieldValue = AbstractEntity.ParseValueType(value, column.ColumnType);
+            }
+            ObjectAccessor.Create(entity)[column.Name] = fieldValue;
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="filter"></param>
+        /// <param name="dataList"></param>
+        /// <returns></returns>
+        protected bool TryLoadFromDb(DbDataFilter filter, out List<T> dataList)
+        {
+            var schema = EntitySchemaSet.Get<T>();
+            return DataSyncManager.TryReceiveSql<T>(schema, filter, SetPropertyValue, out dataList);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="entityList"></param>
+        /// <param name="synchronous"></param>
+        /// <returns></returns>
+        protected bool TrySaveToDb(IEnumerable<T> entityList, bool synchronous = false)
+        {
+            return DataSyncManager.SendSql<T>(entityList, true, GetPropertyValue, null, synchronous);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="personalId"></param>
+        /// <param name="dataList"></param>
+        /// <returns></returns>
+        protected bool TryLoadFromRedis(out List<T> dataList, string personalId = null)
+        {
+            string redisKey = string.IsNullOrEmpty(personalId) ? containerKey : string.Format("{0}_{1}", containerKey, personalId);
+            SchemaTable schema = EntitySchemaSet.Get<T>();
+            return RedisConnectionPool.TryGetEntity(redisKey, schema, out dataList);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="entityList"></param>
+        /// <returns></returns>
+        protected bool TrySaveToRedis(IEnumerable<T> entityList)
+        {
+            return RedisConnectionPool.TryUpdateEntity(entityList);
+        }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="value"></param>
+        /// <param name="fieldAttr"></param>
+        /// <returns></returns>
+        protected object DeserializeJsonObject(object value, SchemaColumn fieldAttr)
+        {
+            if (fieldAttr.ColumnType.IsSubclassOf(typeof(Array)))
+            {
+                value = value.ToString().StartsWith("[") ? value : "[" + value + "]";
+            }
+            string tempValue = value.ToNotNullString();
+            if (!string.IsNullOrEmpty(fieldAttr.JsonDateTimeFormat) &&
+                tempValue.IndexOf(@"\/Date(", StringComparison.Ordinal) == -1)
+            {
+                return JsonUtils.DeserializeCustom(tempValue, fieldAttr.ColumnType, fieldAttr.JsonDateTimeFormat);
+            }
+            return JsonUtils.Deserialize(tempValue, fieldAttr.ColumnType);
+
         }
     }
 }

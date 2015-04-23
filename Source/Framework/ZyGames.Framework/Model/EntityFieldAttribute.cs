@@ -135,6 +135,11 @@ namespace ZyGames.Framework.Model
         }
 
         /// <summary>
+        /// 
+        /// </summary>
+        public bool IsUnique { get; set; }
+
+        /// <summary>
         /// 是否自增
         /// </summary>
         public bool IsIdentity

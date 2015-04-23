@@ -1,0 +1,70 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!--
+您 Web 项目的发布/打包进程将使用此文件。您可以通过编辑此 MSBuild 文件
+来自定义该进程的行为。若要了解与此相关的详细信息，请访问 http://go.microsoft.com/fwlink/?LinkID=208121。
+-->
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <TimeStampOfAssociatedLegacyPublishXmlFile />
+    <_PublishTargetUrl>E:\Developer\ServerRelease\pass.36you.net</_PublishTargetUrl>
+  </PropertyGroup>
+  <ItemGroup>
+    <File Include="bin/AccountServer.dll">
+      <publishTime>03/26/2015 14:24:43</publishTime>
+    </File>
+    <File Include="bin/Microsoft.Scripting.dll">
+      <publishTime>11/06/2014 17:08:15</publishTime>
+    </File>
+    <File Include="bin/Mono.Cecil.dll">
+      <publishTime>11/06/2014 17:08:16</publishTime>
+    </File>
+    <File Include="bin/Mono.Cecil.Pdb.dll">
+      <publishTime>10/15/2013 10:13:34</publishTime>
+    </File>
+    <File Include="bin/MySql.Data.dll">
+      <publishTime>02/09/2015 15:10:09</publishTime>
+    </File>
+    <File Include="bin/Newtonsoft.Json.dll">
+      <publishTime>11/06/2014 17:08:16</publishTime>
+    </File>
+    <File Include="bin/NLog.config">
+      <publishTime>03/24/2015 16:06:57</publishTime>
+    </File>
+    <File Include="bin/NLog.dll">
+      <publishTime>02/09/2015 15:36:12</publishTime>
+    </File>
+    <File Include="bin/protobuf-net.dll">
+      <publishTime>11/06/2014 17:08:16</publishTime>
+    </File>
+    <File Include="bin/ServiceStack.Common.dll">
+      <publishTime>11/06/2014 17:08:16</publishTime>
+    </File>
+    <File Include="bin/ServiceStack.Redis.dll">
+      <publishTime>11/06/2014 17:08:16</publishTime>
+    </File>
+    <File Include="bin/ServiceStack.Text.dll">
+      <publishTime>11/06/2014 17:08:15</publishTime>
+    </File>
+    <File Include="bin/ZyGames.Framework.Common.dll">
+      <publishTime>03/23/2015 12:26:12</publishTime>
+    </File>
+    <File Include="bin/ZyGames.Framework.dll">
+      <publishTime>03/23/2015 12:30:21</publishTime>
+    </File>
+    <File Include="bin/ZyGames.Framework.Game.dll">
+      <publishTime>03/26/2015 14:24:42</publishTime>
+    </File>
+    <File Include="Default.ashx">
+      <publishTime>03/24/2015 12:59:34</publishTime>
+    </File>
+    <File Include="Global.asax">
+      <publishTime>03/24/2015 18:40:43</publishTime>
+    </File>
+    <File Include="NLog.config">
+      <publishTime>03/24/2015 16:06:57</publishTime>
+    </File>
+    <File Include="Web.config">
+      <publishTime>03/26/2015 13:08:40</publishTime>
+    </File>
+  </ItemGroup>
+</Project>

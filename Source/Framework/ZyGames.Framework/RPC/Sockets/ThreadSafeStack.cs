@@ -45,7 +45,6 @@ namespace ZyGames.Framework.RPC.Sockets
             {
                 return result;
             }
-            TraceLog.WriteError("\"{0}\" stack is out of.", typeof(T).FullName);
             return null;
         }
 

@@ -156,6 +156,12 @@ namespace ZyGames.Framework.Data
         /// <param name="columns"></param>
         /// <returns></returns>
         public abstract void CreateTable(string tableName, DbColumn[] columns);
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="tableName"></param>
+        /// <param name="indexs">index cloumn, ex:"col1,col2"</param>
+        public abstract void CreateIndexs(string tableName, string[] indexs);
 
         /// <summary>
         /// 创建列

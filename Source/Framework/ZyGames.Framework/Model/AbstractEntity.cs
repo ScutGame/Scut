@@ -38,7 +38,7 @@ namespace ZyGames.Framework.Model
     /// 实体数据基类
     /// </summary>
     [ProtoContract, Serializable]
-    public abstract class AbstractEntity : EntityChangeEvent, IDataExpired, IComparable<AbstractEntity>
+    public abstract class AbstractEntity : EntityChangeEvent, IDataExpired, ISqlEntity, IComparable<AbstractEntity>
     {
         /// <summary>
         /// 
@@ -67,7 +67,9 @@ namespace ZyGames.Framework.Model
         /// <returns></returns>
         public static string EncodeKeyCode(string keyCode)
         {
-            return keyCode.Replace(KeyCodeJoinChar.ToString(), "%45");
+            return keyCode.Replace(KeyCodeJoinChar.ToString(), "%45")
+                .Replace("_", "%46")
+                .Replace("|", "%7C");
         }
 
         /// <summary>
@@ -77,7 +79,9 @@ namespace ZyGames.Framework.Model
         /// <returns></returns>
         public static string DecodeKeyCode(string keyCode)
         {
-            return keyCode.Replace("%45", KeyCodeJoinChar.ToString());
+            return keyCode.Replace("%45", KeyCodeJoinChar.ToString())
+                .Replace("%46", "_")
+                .Replace("%7C", "|");
         }
 
         /// <summary>
@@ -90,7 +94,7 @@ namespace ZyGames.Framework.Model
         /// <summary>
         /// Initializes a new instance of the <see cref="ZyGames.Framework.Model.AbstractEntity"/> class.
         /// </summary>
-        /// <param name="access">Access.</param>
+        /// <param name="access">Access. no used</param>
         protected AbstractEntity(AccessLevel access)
             : this(access == AccessLevel.ReadOnly)
         {
@@ -105,7 +109,11 @@ namespace ZyGames.Framework.Model
         {
             _isNew = true;
             IsInCache = false;
-            _isReadOnly = isReadOnly;
+            SchemaTable schema;
+            if (EntitySchemaSet.TryGet(GetType(), out schema))
+            {
+                _isReadOnly = schema.AccessLevel == AccessLevel.ReadOnly;
+            }
         }
 
         /// <summary>
@@ -117,13 +125,21 @@ namespace ZyGames.Framework.Model
         }
 
         /// <summary>
-        /// 重置状态
+        /// 
         /// </summary>
-        public void Reset()
+        public void ResetState()
         {
             OnUnNew();
             DequeueChangePropertys();
             CompleteUpdate();
+        }
+
+        /// <summary>
+        /// 重置状态
+        /// </summary>
+        public void Reset()
+        {
+            ResetState();
             var e = new CacheItemEventArgs { ChangeType = CacheItemChangeType.UnChange };
             UnChangeNotify(this, e);
         }
@@ -288,8 +304,21 @@ namespace ZyGames.Framework.Model
         [ProtoMember(100025)]
         public DateTime TempTimeModify { get; set; }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        [JsonIgnore]
+        public DateTime ExpiredTime { get; set; }
 
         #endregion
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        public int GetMessageQueueId()
+        {
+            return GetIdentityId();
+        }
 
         /// <summary>
         /// 标识ID，消息队列分发
@@ -564,6 +593,7 @@ namespace ZyGames.Framework.Model
                 {
                     val.DisableChildNotify();
                 }
+                val.IsInCache = true;
                 AddChildrenListener(val);
             }
             Notify(this, CacheItemChangeType.Modify, propertyName);
@@ -598,6 +628,7 @@ namespace ZyGames.Framework.Model
                 {
                     val.DisableChildNotify();
                 }
+                val.IsInCache = true;
                 AddChildrenListener(val);
             }
             Notify(this, CacheItemChangeType.Modify, propertyName);
@@ -687,7 +718,7 @@ namespace ZyGames.Framework.Model
         {
             if (fieldValue == null)
             {
-                return new T();
+                fieldValue = new T();
             }
             if (fieldValue is T)
             {
@@ -697,6 +728,7 @@ namespace ZyGames.Framework.Model
                 {
                     temp.DisableChildNotify();
                 }
+                temp.IsInCache = true;
                 AddChildrenListener(temp);
                 return temp;
             }
@@ -813,7 +845,13 @@ namespace ZyGames.Framework.Model
             }
         }
 
-        internal object ParseValueType(object value, Type columnType)
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="value"></param>
+        /// <param name="columnType"></param>
+        /// <returns></returns>
+        public static object ParseValueType(object value, Type columnType)
         {
             if (columnType == typeof(Int64))
             {

@@ -210,11 +210,20 @@ namespace ZyGames.Framework.Game.Runtime
             }
             ScriptEngines.RegisterModelChangedBefore(OnModelChangeBefore);
             ScriptEngines.RegisterModelChangedAfter(OnModelChangeAtfer);
+            ScriptEngines.OnLoaded += OnScriptLoaded;
             ScriptEngines.Initialize();
             Language.SetLang();
             CacheFactory.Initialize(cacheSetting, _setting.Serializer);
             EntitySchemaSet.StartCheckTableTimer();
             Global = new ContextCacheSet<CacheItem>("__gameenvironment_global");
+        }
+
+        private static void OnScriptLoaded(string type, string[] files)
+        {
+            if (".cs".Equals(type))
+            {
+                Language.Reset();
+            }
         }
 
 

@@ -64,7 +64,7 @@ namespace ZyGames.Framework.RPC.Http
             if (handler != null) handler(context);
         }
 
-      
+
         /// <summary>
         /// 
         /// </summary>
@@ -98,27 +98,16 @@ namespace ZyGames.Framework.RPC.Http
                 context.Response.ContentType = "application/octet-stream";
                 context.Response.SendChunked = false;
                 int offset = 0;
-                if (!(data.Length > 3 && data[offset] == 0x1f && data[offset + 1] == 0x8b && data[offset + 2] == 0x08 && data[offset + 3] == 0x00) && data.Length > 1024)
+                if (data.Length > 3 && data[offset] == 0x1f && data[offset + 1] == 0x8b && data[offset + 2] == 0x08 && data[offset + 3] == 0x00)
                 {
                     context.Response.AddHeader("Content-Encoding", "gzip");
-                    using (MemoryStream ms = new MemoryStream())
-                    using (GZipStream gzs = new GZipStream(ms, CompressionMode.Compress, true))
-                    {
-                        gzs.Write(data, 0, data.Length);
-                        gzs.Close();
-                        context.Response.ContentLength64 = ms.Length;
-                        await context.Response.OutputStream.WriteAsync(ms.GetBuffer(), 0, (int)ms.Length);
-                        context.Response.OutputStream.Close();
-                    }
                 }
-                else
+
+                context.Response.ContentLength64 = data.Length;
+                using (Stream output = context.Response.OutputStream)
                 {
-                    context.Response.ContentLength64 = data.Length;
-                    using (Stream output = context.Response.OutputStream)
-                    {
-                        await output.WriteAsync(data, 0, data.Length);
-                        output.Close();
-                    }
+                    await output.WriteAsync(data, 0, data.Length);
+                    output.Close();
                 }
             }
         }

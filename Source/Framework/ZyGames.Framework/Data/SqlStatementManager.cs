@@ -24,14 +24,15 @@ THE SOFTWARE.
 using System;
 using System.Data;
 using System.Data.SqlClient;
+using System.Linq;
 using System.Threading;
 using MySql.Data.MySqlClient;
 using ZyGames.Framework.Common.Configuration;
 using ZyGames.Framework.Common.Log;
 using ZyGames.Framework.Common.Serialization;
+using ZyGames.Framework.Common.Threading;
 using ZyGames.Framework.Config;
 using ZyGames.Framework.Redis;
-using ZyGames.Framework.RPC.Sockets.Threading;
 
 namespace ZyGames.Framework.Data
 {
@@ -58,8 +59,7 @@ namespace ZyGames.Framework.Data
         static SqlStatementManager()
         {
         }
-
-
+        
         private static MessageQueueSection GetSection()
         {
             return ConfigManager.Configger.GetFirstOrAddConfig<MessageQueueSection>();

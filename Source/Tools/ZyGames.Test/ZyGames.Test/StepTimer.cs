@@ -92,7 +92,7 @@ namespace ZyGames.Test
         public void StartTime()
         {
             Runtimes++;
-            _watch.Start();
+            _watch.Restart();
         }
 
         public void StopTime()

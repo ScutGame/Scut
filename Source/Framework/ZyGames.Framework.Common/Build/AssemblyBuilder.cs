@@ -31,6 +31,7 @@ using System.Security.Permissions;
 using System.Security.Policy;
 using Mono.Cecil;
 using Mono.Cecil.Cil;
+using Mono.Cecil.Pdb;
 
 namespace ZyGames.Framework.Common.Build
 {
@@ -114,7 +115,22 @@ namespace ZyGames.Framework.Common.Build
             outputAssembly = new MemoryStream();
             using (Stream stream = ReadAssembly(assemblyPath))
             {
-                var ass = AssemblyDefinition.ReadAssembly(stream);
+                string pdbFile = Path.ChangeExtension(assemblyPath, "pdb");
+                PdbReaderProvider readerProvider = null;
+                PdbWriterProvider writerProvider = null;
+                bool debug = false;
+                if (File.Exists(pdbFile))
+                {
+                    debug = true;
+                    readerProvider = new PdbReaderProvider();
+                    writerProvider = new PdbWriterProvider();
+                }
+
+                var ass = AssemblyDefinition.ReadAssembly(stream, new ReaderParameters
+                {
+                    SymbolReaderProvider = readerProvider,
+                    ReadSymbols = debug
+                });
                 var types = ass.MainModule.Types.Where(p => !p.IsEnum).ToList();
                 foreach (TypeDefinition type in types)
                 {
@@ -122,7 +138,11 @@ namespace ZyGames.Framework.Common.Build
                 }
                 if (setSuccess)
                 {
-                    ass.Write(outputAssembly);
+                    ass.Write(outputAssembly, new WriterParameters
+                    {
+                        SymbolWriterProvider = writerProvider,
+                        WriteSymbols = debug
+                    });
                     return true;
                 }
             }
@@ -143,19 +163,39 @@ namespace ZyGames.Framework.Common.Build
             {
                 savePath = assemblyPath;
             }
-            var ass = AssemblyDefinition.ReadAssembly(assemblyPath);
+            string pdbFile = Path.ChangeExtension(assemblyPath, "pdb");
+            PdbReaderProvider readerProvider = null;
+            PdbWriterProvider writerProvider = null;
+            bool debug = false;
+            if (File.Exists(pdbFile))
+            {
+                debug = true;
+                readerProvider = new PdbReaderProvider();
+                writerProvider = new PdbWriterProvider();
+            }
+            //huhu modify reason: Support for model debugging.
+            var ass = AssemblyDefinition.ReadAssembly(assemblyPath, new ReaderParameters
+            {
+                SymbolReaderProvider = readerProvider,
+                ReadSymbols = debug
+            });
+            BaseAssemblyResolver resolver = ass.MainModule.AssemblyResolver as BaseAssemblyResolver;
+            if (resolver != null)
+            {
+                resolver.AddSearchDirectory(currentPath);
+            }
             var types = ass.MainModule.Types.Where(p => !p.IsEnum).ToList();
             foreach (TypeDefinition type in types)
             {
                 setSuccess = ProcessEntityType(type, setSuccess, currentPath);
             }
-
-            if (setSuccess)
+            //modify reason: no model.
+            ass.Write(savePath, new WriterParameters
             {
-                ass.Write(savePath);
-                return true;
-            }
-            return false;
+                SymbolWriterProvider = writerProvider,
+                WriteSymbols = debug
+            });
+            return true;
         }
 
 

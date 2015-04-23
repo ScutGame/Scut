@@ -1,4 +1,4 @@
-﻿/*
+/*
 参数:
 $dbpath 数据库存储路径
 */
@@ -134,4 +134,11 @@ go
 
 alter table [Contract] add [VerId] int not null default(0);
 alter table [ParamInfo] add [VerId] int not null default(0);
+go
+
+
+alter table [Solutions] add [SerUseScript] varchar(20);
+alter table [Solutions] add [CliUseScript] varchar(20);
+alter table [Solutions] add [IsDParam] bit not null default(1);
+alter table [Solutions] add [RespContentType] int not null default(0);
 go

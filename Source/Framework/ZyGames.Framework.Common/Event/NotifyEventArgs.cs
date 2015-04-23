@@ -49,33 +49,38 @@ namespace ZyGames.Framework.Common.Event
         /// <summary>
         /// 
         /// </summary>
-        public event NotifyCallback Callback;
+        public DateTime ExpiredTime { get; set; }
+
         /// <summary>
         /// 
+        /// </summary>
+        public event NotifyCallback Callback;
+
+        /// <summary>
+        /// Check where
         /// </summary>
         /// <returns></returns>
         internal protected virtual bool Check()
         {
             return true;
         }
+
+
         /// <summary>
         /// 
         /// </summary>
         internal void OnCallback()
         {
-            try
-            {
+            //try
+            //{
                 NotifyCallback handler = Callback;
-                if (handler != null) handler.BeginInvoke(this, EndCallback, null);
-            }
-            catch (Exception ex)
-            {
-                TraceLog.WriteError("Notify callback error:{0}", ex);
-            }
+                if (handler != null) handler(this);
+            //}
+            //catch (Exception ex)
+            //{
+            //    TraceLog.WriteError("Notify callback error:{0}", ex);
+            //}
         }
 
-        private void EndCallback(IAsyncResult ar)
-        {
-        }
     }
 }

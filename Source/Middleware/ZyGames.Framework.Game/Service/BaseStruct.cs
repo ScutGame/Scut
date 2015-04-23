@@ -22,43 +22,36 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ****************************************************************************/
 using System;
+using ZyGames.Framework.Common;
 using ZyGames.Framework.Common.Configuration;
 using ZyGames.Framework.Common.Log;
+using ZyGames.Framework.Common.Security;
 using ZyGames.Framework.Game.Config;
-using ZyGames.Framework.Game.Contract;
 using ZyGames.Framework.Game.Lang;
+using ZyGames.Framework.Game.Runtime;
 
 namespace ZyGames.Framework.Game.Service
 {
+    /// <summary>
+    /// 
+    /// </summary>
+    public class TipException : Exception
+    {
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="errorInfo"></param>
+        public TipException(string errorInfo)
+            : base(errorInfo)
+        {
+
+        }
+    }
     /// <summary>
     /// Base struct.
     /// </summary>
     public abstract class BaseStruct : GameStruct
     {
-        /// <summary>
-        /// 
-        /// </summary>
-        //public static string PublishType = ConfigUtils.GetSetting("PublishType", "Release");
-
-
-        private int _userId;
-        /// <summary>
-        /// 
-        /// </summary>
-        public int UserId
-        {
-            get
-            {
-                return _userId;
-            }
-            set { _userId = value; }
-        }
-
-        /// <summary>
-        /// 当前游戏会话
-        /// </summary>
-        public GameSession Current { get; private set; }
-
         /// <summary>
         /// 兼容子类变量名
         /// </summary>
@@ -84,7 +77,7 @@ namespace ZyGames.Framework.Game.Service
             get
             {
                 var section = ConfigManager.Configger.GetFirstOrAddConfig<AppServerSection>();
-                return section.PublishType.Equals("Release", StringComparison.CurrentCultureIgnoreCase);
+                return section.PublishType.Equals("Release", StringComparison.OrdinalIgnoreCase);
             }
         }
         /// <summary>
@@ -121,9 +114,6 @@ namespace ZyGames.Framework.Game.Service
         /// </summary>
         public void DoInit()
         {
-            _userId = actionGetter.GetUserId();
-            Uid = _userId.ToString();
-
             if (!IsPush)
             {
                 MsgId = actionGetter.GetMsgId();
@@ -148,7 +138,7 @@ namespace ZyGames.Framework.Game.Service
         {
             ErrorCode = Language.Instance.LockTimeoutCode;
             if (isWriteInfo && !IsRealse) ErrorInfo = Language.Instance.ServerBusy;
-            TraceLog.WriteError("Action-{0} Uid:{1} locked timeout.", actionId, UserId);
+            TraceLog.WriteError("Action-{0} Uid:{1} locked timeout.", actionId, Current.UserId);
             WriteErrorAction(response);
         }
 
@@ -188,6 +178,11 @@ namespace ZyGames.Framework.Game.Service
                 }
                 result = TakeAction();
                 TakeActionAffter(result);
+            }
+            catch (TipException tip)
+            {
+                Tips(tip.Message);
+                return false;
             }
             catch (Exception ex)
             {
@@ -288,6 +283,14 @@ namespace ZyGames.Framework.Game.Service
         }
 
         /// <summary>
+        /// 刷新时间缀
+        /// </summary>
+        protected virtual void RefleshSt()
+        {
+            St = MathUtils.DiffDate(MathUtils.UnixEpochDateTime).TotalSeconds.ToCeilingInt().ToString();
+        }
+
+        /// <summary>
         /// 较验参数
         /// </summary>
         /// <returns></returns>
@@ -323,5 +326,24 @@ namespace ZyGames.Framework.Game.Service
                 SaveLog(ex);
             }
         }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="password"></param>
+        /// <returns></returns>
+        protected virtual string DecodePassword(string password)
+        {
+            try
+            {
+                return new DESAlgorithmNew().DecodePwd(password, GameEnvironment.Setting.ClientDesDeKey);
+            }
+            catch (Exception ex)
+            {
+                TraceLog.WriteError("Decode password:\"{0}\" error:{1}", password, ex);
+            }
+            return password;
+        }
+
     }
 }

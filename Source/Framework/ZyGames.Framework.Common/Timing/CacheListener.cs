@@ -81,6 +81,7 @@ namespace ZyGames.Framework.Common.Timing
         private readonly string _dependency;
         private CacheListenerHandle _callback;
         private Timer _dueThread;
+        private int isRunning = 0;
 
         static CacheListener()
         {
@@ -132,9 +133,15 @@ namespace ZyGames.Framework.Common.Timing
         /// <summary>
         /// 
         /// </summary>
+        public bool IsRunning { get { return isRunning == 1; } }
+
+        /// <summary>
+        /// 
+        /// </summary>
         public void Start()
         {
             _dueThread = new Timer(OnDueFirstRun, null, DueTime, Timeout.Infinite);
+            Interlocked.Exchange(ref isRunning, 1);
         }
 
         private void OnDueFirstRun(object obj)
@@ -250,6 +257,7 @@ namespace ZyGames.Framework.Common.Timing
         /// </summary>
         public void Stop()
         {
+            Interlocked.Exchange(ref isRunning, 0);
             if (_cacheListener[_cacheKey] != null)
                 return;
             _cacheListener[_cacheKey] = false;

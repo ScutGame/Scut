@@ -426,11 +426,17 @@ namespace ZyGames.Framework.Data.Sql
                 command.AppendFormat("Create Table {0}", FormatName(tableName));
                 command.AppendLine("(");
                 List<string> keys;
-                bool hasColumn = CheckProcessColumns(command, columns, out keys);
+                List<string> uniques;
+                bool hasColumn = CheckProcessColumns(command, columns, out keys, out uniques);
                 if (keys.Count > 0)
                 {
                     command.AppendLine(",");
                     command.AppendFormat("constraint PK_{0} primary key({1})", tableName, FormatQueryColumn(",", keys));
+                }
+                if (uniques.Count > 0)
+                {
+                    command.AppendLine(",");
+                    command.AppendFormat("constraint UQ_{0} unique({1})", tableName, FormatQueryColumn(",", uniques));
                 }
                 command.AppendLine("");
                 command.AppendLine(")");
@@ -445,9 +451,41 @@ namespace ZyGames.Framework.Data.Sql
             }
         }
 
-        private bool CheckProcessColumns(StringBuilder command, DbColumn[] columns, out List<string> keys, bool isModify = false)
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="tableName"></param>
+        /// <param name="indexs"></param>
+        public override void CreateIndexs(string tableName, string[] indexs)
+        {
+            StringBuilder command = new StringBuilder();
+            try
+            {
+                foreach (var item in indexs)
+                {
+                    string[] columns = item.Split(',');
+                    if (command.Length > 0)
+                        command.AppendLine("");
+
+                    command.AppendFormat("CREATE INDEX INDEX_{1} ON {0} ({2});",
+                        FormatName(tableName),
+                        string.Join("_", columns),
+                        FormatQueryColumn(",", columns)
+                        );
+                }
+                SqlHelper.ExecuteNonQuery(ConnectionString, CommandType.Text, command.ToString());
+
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(string.Format("Execute sql error:{0}", command), ex);
+            }
+        }
+
+        private bool CheckProcessColumns(StringBuilder command, DbColumn[] columns, out List<string> keys, out List<string> uniques, bool isModify = false)
         {
             keys = new List<string>();
+            uniques = new List<string>();
             int index = 0;
             foreach (var dbColumn in columns)
             {
@@ -463,10 +501,14 @@ namespace ZyGames.Framework.Data.Sql
                 {
                     keys.Add(FormatName(dbColumn.Name));
                 }
+                if (dbColumn.IsUnique)
+                {
+                    uniques.Add(FormatName(dbColumn.Name));
+                }
                 command.AppendFormat("    {0} {1}{2}{3}",
                                      FormatName(dbColumn.Name),
                                      ConvertToDbType(dbColumn.Type, dbColumn.DbType, dbColumn.Length, dbColumn.Scale, dbColumn.IsKey),
-                                     (dbColumn.Isnullable ? "" : " not null"),
+                                     (dbColumn.Isnullable ? "" : " NOT NULL"),
                                      (dbColumn.IsIdentity ? dbColumn.IdentityNo > 0 ? string.Format(" IDENTITY({0},1)", dbColumn.IdentityNo) : " IDENTITY(1,1)" : ""));
                 index++;
             }
@@ -490,7 +532,8 @@ namespace ZyGames.Framework.Data.Sql
                 command.AppendFormat("Alter Table {0}", dbTableName);
                 command.AppendLine(" Add");
                 List<string> keys;
-                bool hasColumn = CheckProcessColumns(command, columns, out keys);
+                List<string> uniques;
+                bool hasColumn = CheckProcessColumns(command, columns, out keys, out uniques);
                 command.Append(";");
                 if (hasColumn)
                 {

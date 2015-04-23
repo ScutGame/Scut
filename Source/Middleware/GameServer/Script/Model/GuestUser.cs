@@ -67,12 +67,7 @@ namespace GameServer.Model
         {
             return UserId;
         }
-
-        public override string GetSessionId()
-        {
-            return SId;
-        }
-
+        
         public override int GetUserId()
         {
             return UserId;

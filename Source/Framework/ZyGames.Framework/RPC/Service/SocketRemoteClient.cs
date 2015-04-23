@@ -97,6 +97,15 @@ namespace ZyGames.Framework.RPC.Service
         /// <summary>
         /// 
         /// </summary>
+        /// <param name="millisecondsTimeout"></param>
+        /// <returns></returns>
+        public bool Wait(int millisecondsTimeout = 0)
+        {
+            return _client.Wait(millisecondsTimeout);
+        }
+        /// <summary>
+        /// 
+        /// </summary>
         /// <param name="data"></param>
         public override async Task Send(string data)
         {

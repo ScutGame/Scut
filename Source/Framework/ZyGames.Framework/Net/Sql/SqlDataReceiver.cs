@@ -38,11 +38,10 @@ namespace ZyGames.Framework.Net.Sql
         private SchemaTable _schema;
         private DbDataFilter _filter;
 
-        public SqlDataReceiver(SchemaTable schema, int capacity, DbDataFilter filter)
+        public SqlDataReceiver(SchemaTable schema, DbDataFilter filter)
         {
             _schema = schema;
             _filter = filter;
-            Capacity = capacity;
         }
 
         public void Dispose()
@@ -59,6 +58,17 @@ namespace ZyGames.Framework.Net.Sql
         /// <returns></returns>
         public bool TryReceive<T>(out List<T> dataList) where T : AbstractEntity, new()
         {
+            return TryReceive((t, c, v) =>
+            {
+                t.Init();
+                t.SetValueBefore();
+                SetEntityValue(t, c, v);
+                t.SetValueAfter();
+            }, out dataList);
+        }
+
+        public bool TryReceive<T>(EntityPropertySetFunc<T> setFunc, out List<T> dataList) where T : new()
+        {
             bool result = false;
             dataList = null;
             if (string.IsNullOrEmpty(_schema.ConnectKey) && string.IsNullOrEmpty(_schema.ConnectionString))
@@ -66,27 +76,31 @@ namespace ZyGames.Framework.Net.Sql
                 dataList = new List<T>();
                 return true;
             }
-            using (IDataReader reader = GetReader<T>())
+            try
             {
-                if (reader != null)
+
+                using (IDataReader reader = GetReader<T>())
                 {
-                    dataList = new List<T>();
-                    while (reader.Read())
+                    if (reader != null)
                     {
-                        T entity = new T();
-                        entity.Init();
-                        entity.SetValueBefore();
-                        SetEntityValue(_schema, reader, entity);
-                        entity.SetValueAfter();
-                        dataList.Add(entity);
+                        dataList = new List<T>();
+                        while (reader.Read())
+                        {
+                            T entity = ReadEntityProperty(reader, setFunc);
+                            dataList.Add(entity);
+                        }
+                        result = true;
                     }
-                    result = true;
                 }
+            }
+            catch (Exception ex)
+            {
+                TraceLog.WriteError("Read entity property error:{0}", ex);
             }
             return result;
         }
 
-        public int Capacity { get; set; }
+        public int Capacity { get { return _filter != null ? _filter.Capacity : 0; } }
 
         private IDataReader GetReader<T>()
         {
@@ -116,7 +130,7 @@ namespace ZyGames.Framework.Net.Sql
                 var columns = _schema.GetColumnNames();
                 command.Columns = string.Join(",", columns);
                 command.OrderBy = (string.IsNullOrEmpty(_filter.OrderColumn) ? _schema.OrderColumn : _filter.OrderColumn) ?? "";
-                if (Capacity != int.MaxValue && Capacity > 0)
+                if (Capacity < int.MaxValue && Capacity > 0)
                 {
                     command.Top = Capacity;
                     if (string.IsNullOrEmpty(command.OrderBy))
@@ -175,110 +189,85 @@ namespace ZyGames.Framework.Net.Sql
             }
         }
 
-        private void SetEntityValue(SchemaTable schemaTable, IDataReader reader, AbstractEntity entity)
+
+        private T ReadEntityProperty<T>(IDataReader reader, EntityPropertySetFunc<T> setFunc) where T : new()
         {
-            var columns = schemaTable.GetColumnNames();
-            foreach (var columnName in columns)
+            T entity = new T();
+            var columns = _schema.GetColumns();
+            foreach (var column in columns)
             {
-                SchemaColumn fieldAttr;
-                if (!schemaTable.Columns.TryGetValue(columnName, out fieldAttr))
+                try
                 {
-                    continue;
+                    object fieldValue = reader[column.Name];
+                    if (setFunc != null) setFunc(entity, column, fieldValue);
                 }
-                object fieldValue = null;
-                if (fieldAttr.IsSerialized)
+                catch (Exception ex)
                 {
-                    var value = reader[columnName];
-                    //指定序列化方式
-                    if (fieldAttr.DbType == ColumnDbType.LongBlob || fieldAttr.DbType == ColumnDbType.Blob)
-                    {
-                        fieldValue = DeserializeBinaryObject(schemaTable, entity, value, fieldAttr, columnName);
-                    }
-                    else
-                    {
-                        fieldValue = DeserializeJsonObject(schemaTable, entity, value, fieldAttr, columnName);
-                    }
-                    if (fieldValue is EntityChangeEvent)
-                    {
-                        ((EntityChangeEvent)fieldValue).PropertyName = columnName;
-                    }
+                    throw new Exception(string.Format("read {0} table's {1} column error.", _schema.EntityName, column.Name), ex);
                 }
-                else
+            }
+            return entity;
+        }
+
+        private void SetEntityValue(AbstractEntity entity, SchemaColumn fieldAttr, object value)
+        {
+            string columnName = fieldAttr.Name;
+            object fieldValue;
+            if (fieldAttr.IsSerialized)
+            {
+                //指定序列化方式
+                if (fieldAttr.DbType == ColumnDbType.LongBlob || fieldAttr.DbType == ColumnDbType.Blob)
                 {
-                    try
-                    {
-                        fieldValue = entity.ParseValueType(reader[columnName], fieldAttr.ColumnType);
-                    }
-                    catch (Exception ex)
-                    {
-                        TraceLog.WriteError("Table:{0} column:{1} parse value error:\r\n{0}", schemaTable.EntityName, columnName, ex);
-                    }
-                }
-                if (fieldAttr.CanWrite)
-                {
-                    entity.SetPropertyValue(columnName, fieldValue);
+                    fieldValue = DeserializeBinaryObject(value, fieldAttr);
                 }
                 else
                 {
-                    entity.SetFieldValue(columnName, fieldValue);
+                    fieldValue = DeserializeJsonObject(value, fieldAttr);
                 }
+                if (fieldValue is EntityChangeEvent)
+                {
+                    ((EntityChangeEvent)fieldValue).PropertyName = columnName;
+                }
+            }
+            else
+            {
+                fieldValue = AbstractEntity.ParseValueType(value, fieldAttr.ColumnType);
+            }
+            if (fieldAttr.CanWrite)
+            {
+                entity.SetPropertyValue(columnName, fieldValue);
+            }
+            else
+            {
+                entity.SetFieldValue(columnName, fieldValue);
             }
         }
 
-        private object DeserializeBinaryObject(SchemaTable schemaTable, AbstractEntity entity, object value, SchemaColumn fieldAttr, string columnName)
+        private object DeserializeBinaryObject(object value, SchemaColumn fieldAttr)
         {
-            try
+            if (value is byte[])
             {
-                if (value is byte[])
-                {
-                    byte[] buffer = value as byte[];
-                    return ProtoBufUtils.Deserialize(buffer, fieldAttr.ColumnType);
-                }
-                throw new Exception("value is not byte[] type.");
+                byte[] buffer = value as byte[];
+                return ProtoBufUtils.Deserialize(buffer, fieldAttr.ColumnType);
             }
-            catch (Exception ex)
-            {
-                TraceLog.WriteError("Table:{0} key:{1} column:{2} deserialize binary error:byte[] to {3}\r\nException:{4}",
-                    schemaTable.EntityName,
-                    entity.GetKeyCode(),
-                    columnName,
-                    fieldAttr.ColumnType.FullName,
-                    ex);
-            }
-            return null;
+            throw new Exception(string.Format("The {0} column value is not byte[] type.", fieldAttr.Name));
+
         }
 
-        private static object DeserializeJsonObject(SchemaTable schemaTable, AbstractEntity entity, object value,
-            SchemaColumn fieldAttr, string columnName)
+        private static object DeserializeJsonObject(object value, SchemaColumn fieldAttr)
         {
-            try
+            if (fieldAttr.ColumnType.IsSubclassOf(typeof(Array)))
             {
-                if (fieldAttr.ColumnType.IsSubclassOf(typeof(Array)))
-                {
-                    value = value.ToString().StartsWith("[") ? value : "[" + value + "]";
-                }
-                string tempValue = value.ToNotNullString();
-                if (!string.IsNullOrEmpty(fieldAttr.JsonDateTimeFormat) &&
-                    tempValue.IndexOf(@"\/Date(") == -1)
-                {
-                    return JsonUtils.DeserializeCustom(tempValue, fieldAttr.ColumnType, fieldAttr.JsonDateTimeFormat);
-                }
-                else
-                {
-                    return JsonUtils.Deserialize(tempValue, fieldAttr.ColumnType);
-                }
+                value = value.ToString().StartsWith("[") ? value : "[" + value + "]";
             }
-            catch (Exception ex)
+            string tempValue = value.ToNotNullString();
+            if (!string.IsNullOrEmpty(fieldAttr.JsonDateTimeFormat) &&
+                tempValue.IndexOf(@"\/Date(", StringComparison.Ordinal) == -1)
             {
-                TraceLog.WriteError("Table:{0} key:{1} column:{2} deserialize json error:{3} to {4}\r\nException:{5}",
-                    schemaTable.EntityName,
-                    entity.GetKeyCode(),
-                    columnName,
-                    value,
-                    fieldAttr.ColumnType.FullName,
-                    ex);
+                return JsonUtils.DeserializeCustom(tempValue, fieldAttr.ColumnType, fieldAttr.JsonDateTimeFormat);
             }
-            return null;
+            return JsonUtils.Deserialize(tempValue, fieldAttr.ColumnType);
+
         }
     }
 }
