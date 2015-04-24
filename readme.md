@@ -94,6 +94,11 @@ Language:
 
 ## Update Log
 
+### Version: 6.7.9.8 (2015-4-24) R1
+
+* Modify 6.7.9.7 bug.
+
+
 ### Version: 6.7.9.7 (2015-4-9) RC
 
 * Modify framework bug.

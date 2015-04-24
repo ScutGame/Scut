@@ -6173,6 +6173,11 @@
             延迟执行时间，单位毫秒
             </summary>
         </member>
+        <member name="P:ZyGames.Framework.Common.Timing.CacheListener.IsRunning">
+            <summary>
+            
+            </summary>
+        </member>
         <member name="T:ZyGames.Framework.Common.Timing.CodeTimer">
             <summary>
             Code timer

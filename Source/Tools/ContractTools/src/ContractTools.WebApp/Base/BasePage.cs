@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Web;
+using ContractTools.WebApp.Base;
 using ContractTools.WebApp.Model;
 using ICSharpCode.SharpZipLib.Checksums;
 using ICSharpCode.SharpZipLib.Zip;
@@ -195,6 +196,28 @@ namespace ContractTools.WebApp
                 }
             }
             return result;
+        }
+
+        public static void GetParamInfo(int slnId, int contractId, int versionId, out List<ParamInfoModel> requestParams, out List<ParamInfoModel> responseParams)
+        {
+            var paramList = DbDataLoader.GetParamInfo(slnId, contractId, versionId);
+            var pairs = paramList.GroupBy(t => t.ParamType);
+            requestParams = new List<ParamInfoModel>();
+            responseParams = new List<ParamInfoModel>();
+            foreach (var pair in pairs)
+            {
+                switch (pair.Key)
+                {
+                    case 1:
+                        requestParams = pair.ToList();
+                        break;
+                    case 2:
+                        responseParams = pair.ToList();
+                        break;
+                    default:
+                        break;
+                }
+            }
         }
     }
 

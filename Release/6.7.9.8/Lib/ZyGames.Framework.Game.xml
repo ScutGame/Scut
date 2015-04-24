@@ -2459,7 +2459,7 @@
             <param name="actionGetter">请求参数对象</param>
             <param name="response">字节输出处理</param>
         </member>
-        <member name="M:ZyGames.Framework.Game.Contract.ActionFactory.GetActionResponse(ZyGames.Framework.Game.Contract.IActionDispatcher,System.Int32,ZyGames.Framework.Game.Contract.GameSession,ZyGames.Framework.Net.Parameters,System.SByte)">
+        <member name="M:ZyGames.Framework.Game.Contract.ActionFactory.GetActionResponse(ZyGames.Framework.Game.Contract.IActionDispatcher,System.Int32,ZyGames.Framework.Game.Contract.GameSession,ZyGames.Framework.Net.Parameters,System.SByte,System.Object)">
             <summary>
             获取Action处理的输出字节流
             </summary>
@@ -2468,9 +2468,10 @@
             <param name="session"></param>
             <param name="parameters"></param>
             <param name="opCode"></param>
+            <param name="message"></param>
             <returns></returns>
         </member>
-        <member name="M:ZyGames.Framework.Game.Contract.ActionFactory.GetResponsePackage(System.Int32,ZyGames.Framework.Game.Contract.GameSession,ZyGames.Framework.Net.Parameters,System.SByte)">
+        <member name="M:ZyGames.Framework.Game.Contract.ActionFactory.GetResponsePackage(System.Int32,ZyGames.Framework.Game.Contract.GameSession,ZyGames.Framework.Net.Parameters,System.SByte,System.Object)">
             <summary>
             
             </summary>
@@ -2504,40 +2505,40 @@
             <param name="actionGetter"></param>
             <param name="response"></param>
         </member>
-        <member name="M:ZyGames.Framework.Game.Contract.ActionFactory.BroadcastAsyncAction``1(System.Int32,System.Collections.Generic.List{``0},ZyGames.Framework.Net.Parameters,System.Action{ZyGames.Framework.RPC.Sockets.SocketAsyncResult},System.SByte,System.Int32)">
+        <member name="M:ZyGames.Framework.Game.Contract.ActionFactory.BroadcastAsyncAction``1(System.Int32,System.Collections.Generic.List{``0},System.Object,System.Action{ZyGames.Framework.RPC.Sockets.SocketAsyncResult},System.SByte,System.Int32)">
             <summary>
             
             </summary>
             <typeparam name="T"></typeparam>
             <param name="actionId"></param>
             <param name="userList"></param>
-            <param name="parameters"></param>
+            <param name="parameter"></param>
             <param name="complateHandle"></param>
             <param name="opCode"></param>
             <param name="onlineInterval"></param>
             <returns></returns>
         </member>
-        <member name="M:ZyGames.Framework.Game.Contract.ActionFactory.BroadcastAction``1(System.Int32,System.Collections.Generic.List{``0},ZyGames.Framework.Net.Parameters,System.Action{ZyGames.Framework.RPC.Sockets.SocketAsyncResult},System.SByte,System.Int32)">
+        <member name="M:ZyGames.Framework.Game.Contract.ActionFactory.BroadcastAction``1(System.Int32,System.Collections.Generic.List{``0},System.Object,System.Action{ZyGames.Framework.RPC.Sockets.SocketAsyncResult},System.SByte,System.Int32)">
             <summary>
             
             </summary>
             <typeparam name="T"></typeparam>
             <param name="actionId"></param>
             <param name="userList"></param>
-            <param name="parameters"></param>
+            <param name="parameter"></param>
             <param name="complateHandle"></param>
             <param name="opCode"></param>
             <param name="onlineInterval"></param>
             <returns></returns>
         </member>
-        <member name="M:ZyGames.Framework.Game.Contract.ActionFactory.BroadcastAction``1(System.Int32,System.Collections.Generic.List{``0},ZyGames.Framework.Net.Parameters,System.Action{``0,ZyGames.Framework.Game.Contract.GameSession,ZyGames.Framework.RPC.Sockets.SocketAsyncResult},System.SByte,System.Int32)">
+        <member name="M:ZyGames.Framework.Game.Contract.ActionFactory.BroadcastAction``1(System.Int32,System.Collections.Generic.List{``0},System.Object,System.Action{``0,ZyGames.Framework.Game.Contract.GameSession,ZyGames.Framework.RPC.Sockets.SocketAsyncResult},System.SByte,System.Int32)">
             <summary>
             
             </summary>
             <typeparam name="T"></typeparam>
             <param name="actionId"></param>
             <param name="userList"></param>
-            <param name="parameters"></param>
+            <param name="parameter">Allow Parameters or Custom object as paramter</param>
             <param name="complateHandle"></param>
             <param name="opCode"></param>
             <param name="onlineInterval"></param>
@@ -2554,51 +2555,51 @@
             <param name="onlineInterval"></param>
             <returns></returns>
         </member>
-        <member name="M:ZyGames.Framework.Game.Contract.ActionFactory.SendAsyncAction``1(System.Collections.Generic.List{``0},System.Int32,ZyGames.Framework.Net.Parameters,System.Action{ZyGames.Framework.RPC.Sockets.SocketAsyncResult},System.SByte,System.Int32)">
+        <member name="M:ZyGames.Framework.Game.Contract.ActionFactory.SendAsyncAction``1(System.Collections.Generic.List{``0},System.Int32,System.Object,System.Action{ZyGames.Framework.RPC.Sockets.SocketAsyncResult},System.SByte,System.Int32)">
             <summary>
             
             </summary>
             <typeparam name="T"></typeparam>
             <param name="userList"></param>
             <param name="actionId"></param>
-            <param name="parameters"></param>
+            <param name="parameter"></param>
             <param name="complateHandle"></param>
             <param name="opCode"></param>
             <param name="onlineInterval"></param>
             <returns></returns>
         </member>
-        <member name="M:ZyGames.Framework.Game.Contract.ActionFactory.SendAction``1(System.Collections.Generic.List{``0},System.Int32,ZyGames.Framework.Net.Parameters,System.Action{ZyGames.Framework.RPC.Sockets.SocketAsyncResult},System.SByte,System.Int32)">
+        <member name="M:ZyGames.Framework.Game.Contract.ActionFactory.SendAction``1(System.Collections.Generic.List{``0},System.Int32,System.Object,System.Action{ZyGames.Framework.RPC.Sockets.SocketAsyncResult},System.SByte,System.Int32)">
             <summary>
             
             </summary>
             <typeparam name="T"></typeparam>
             <param name="userList"></param>
             <param name="actionId"></param>
-            <param name="parameters"></param>
+            <param name="parameter"></param>
             <param name="complateHandle"></param>
             <param name="opCode"></param>
             <param name="onlineInterval"></param>
             <returns></returns>
         </member>
-        <member name="M:ZyGames.Framework.Game.Contract.ActionFactory.SendAction``1(System.Collections.Generic.List{``0},System.Int32,ZyGames.Framework.Net.Parameters,System.Action{``0,ZyGames.Framework.Game.Contract.GameSession,ZyGames.Framework.RPC.Sockets.SocketAsyncResult},System.SByte,System.Int32)">
+        <member name="M:ZyGames.Framework.Game.Contract.ActionFactory.SendAction``1(System.Collections.Generic.List{``0},System.Int32,System.Object,System.Action{``0,ZyGames.Framework.Game.Contract.GameSession,ZyGames.Framework.RPC.Sockets.SocketAsyncResult},System.SByte,System.Int32)">
             <summary>
             
             </summary>
             <typeparam name="T"></typeparam>
             <param name="userList"></param>
             <param name="actionId"></param>
-            <param name="parameters"></param>
+            <param name="parameter">Allow Parameters or Custom object as paramter</param>
             <param name="complateHandle"></param>
             <param name="opCode"></param>
             <param name="onlineInterval"></param>
         </member>
-        <member name="M:ZyGames.Framework.Game.Contract.ActionFactory.SendAction(System.Collections.Generic.List{ZyGames.Framework.Game.Contract.GameSession},System.Int32,ZyGames.Framework.Net.Parameters,System.Action{ZyGames.Framework.Game.Contract.GameSession,ZyGames.Framework.RPC.Sockets.SocketAsyncResult},System.SByte,System.Int32)">
+        <member name="M:ZyGames.Framework.Game.Contract.ActionFactory.SendAction(System.Collections.Generic.List{ZyGames.Framework.Game.Contract.GameSession},System.Int32,System.Object,System.Action{ZyGames.Framework.Game.Contract.GameSession,ZyGames.Framework.RPC.Sockets.SocketAsyncResult},System.SByte,System.Int32)">
             <summary>
             
             </summary>
             <param name="sessionList"></param>
             <param name="actionId"></param>
-            <param name="parameters"></param>
+            <param name="parameter">Allow Parameters or Custom object as paramter</param>
             <param name="complateHandle"></param>
             <param name="opCode"></param>
             <param name="onlineInterval"></param>
@@ -9325,6 +9326,17 @@
             当前累计的访问次数
             </summary>
         </member>
+        <member name="T:ZyGames.Framework.Game.Service.TipException">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:ZyGames.Framework.Game.Service.TipException.#ctor(System.String)">
+            <summary>
+            
+            </summary>
+            <param name="errorInfo"></param>
+        </member>
         <member name="T:ZyGames.Framework.Game.Service.DataStruct">
             <summary>
             DataStruct 的摘要说明
@@ -10688,6 +10700,11 @@
         <member name="T:ZyGames.Framework.Game.Sns.SnsManager">
             <summary>
             用户中心登录管理类
+            </summary>
+        </member>
+        <member name="F:ZyGames.Framework.Game.Sns.SnsManager.imeiMap">
+            <summary>
+            防多次点击产生多个账号与imei绑定
             </summary>
         </member>
         <member name="M:ZyGames.Framework.Game.Sns.SnsManager.GetRegPassport(System.String)">

@@ -1130,27 +1130,6 @@ end
             }
         }
 
-        private static void GetParamInfo(int slnId, int contractId, int versionId, out List<ParamInfoModel> requestParams, out List<ParamInfoModel> responseParams)
-        {
-            var paramList = DbDataLoader.GetParamInfo(slnId, contractId, versionId);
-            var pairs = paramList.GroupBy(t => t.ParamType);
-            requestParams = new List<ParamInfoModel>();
-            responseParams = new List<ParamInfoModel>();
-            foreach (var pair in pairs)
-            {
-                switch (pair.Key)
-                {
-                    case 1:
-                        requestParams = pair.ToList();
-                        break;
-                    case 2:
-                        responseParams = pair.ToList();
-                        break;
-                    default:
-                        break;
-                }
-            }
-        }
 
         #endregion
 
