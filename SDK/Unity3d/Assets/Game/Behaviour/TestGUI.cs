@@ -5,9 +5,9 @@ using UnityEngine;
 public class TestGUI : MonoBehaviour
 {
     private List<RankData> rankList;
-    private ActionParam actionParam;
     //todo 启用自定的结构
     bool useCustomAction = true;
+    private int index = 1;
 
     // Use this for initialization
     void Start()
@@ -15,16 +15,21 @@ public class TestGUI : MonoBehaviour
         if (useCustomAction)
         {
             Net.Instance.HeadFormater = new CustomHeadFormater();
-            Request1001Pack requestPack = new Request1001Pack() { PageIndex = 1, PageSize = 20 };
-            actionParam = new ActionParam(requestPack);
-        }
-        else
-        {
-            actionParam = new ActionParam();
-            actionParam["PageIndex"] = "1";
-            actionParam["PageSize"] = "20";
         }
 
+    }
+
+    ActionParam GetReuqest1001()
+    {
+        if (Net.Instance.HeadFormater is CustomHeadFormater)
+        {
+            Request1001Pack requestPack = new Request1001Pack() { PageIndex = 1, PageSize = 20 };
+            return  new ActionParam(requestPack);
+        }
+        var actionParam = new ActionParam();
+        actionParam["PageIndex"] = "1";
+        actionParam["PageSize"] = "20";
+        return actionParam;
     }
 
     // Update is called once per frame
@@ -40,21 +45,30 @@ public class TestGUI : MonoBehaviour
         // Now create any Controls you like, and they will be displayed with the custom Skin
         if (GUILayout.Button("Get ranking for Http"))
         {
-            //NetWriter.SetUrl("http://127.0.0.1:8036/service.aspx");
             NetWriter.SetUrl("http://ph.scutgame.com/service.aspx");
-            Net.Instance.Send((int)ActionType.RankSelect, OnRankingCallback, actionParam);
+            Net.Instance.Send((int)ActionType.RankSelect, OnRankingCallback, GetReuqest1001());
         }
         GUILayout.Space(20);
         // Any Controls created here will use the default Skin and not the custom Skin
         if (GUILayout.Button("Get ranking for Socket"))
         {
             NetWriter.SetUrl("ph.scutgame.com:9001");
-            Net.Instance.Send((int)ActionType.RankSelect, OnRankingCallback, actionParam);
+            Net.Instance.Send((int)ActionType.RankSelect, OnRankingCallback, GetReuqest1001());
         }
+        GUILayout.Space(20);
+        if (GUILayout.Button("Add ranking for Socket"))
+        {
+            NetWriter.SetUrl("ph.scutgame.com:9001");
+            var actionParam = new ActionParam(new RankData() { Score = 90, UserName = "Cocos" + index });
+            index++;
+            Net.Instance.Send((int)ActionType.RankAdd, OnRankAddCallback, actionParam);
+        }
+
         GUILayout.EndHorizontal();
         GUILayout.EndArea();
         OnRankGUI();
     }
+
 
     private void OnRankGUI()
     {
@@ -84,5 +98,9 @@ public class TestGUI : MonoBehaviour
             return;
         }
         rankList = pack.Items;
+    }
+
+    private void OnRankAddCallback(ActionResult actionResult)
+    {
     }
 }
