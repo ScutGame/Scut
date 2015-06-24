@@ -93,11 +93,12 @@ namespace ZyGames.Framework.Net
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="redisKey"></param>
+        /// <param name="schema"></param>
+        /// <param name="key"></param>
         /// <returns></returns>
-        public static IDataSender GetRedisSender(string redisKey)
+        public static IDataSender GetRedisSender(SchemaTable schema, string key)
         {
-            return new RedisDataSender();
+            return new RedisDataSender(new TransSendParam(key) { Schema = schema });
         }
         /// <summary>
         /// 

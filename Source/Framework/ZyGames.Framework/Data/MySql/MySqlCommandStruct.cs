@@ -40,7 +40,7 @@ namespace ZyGames.Framework.Data.MySql
         /// <param name="editType"></param>
         /// <param name="columns"></param>
         public MySqlCommandStruct(string tableName, CommandMode editType, string columns = "")
-            : base(tableName, editType, columns)
+            : base(tableName, editType, new MySqlCommandFilter(), columns)
         {
         }
 

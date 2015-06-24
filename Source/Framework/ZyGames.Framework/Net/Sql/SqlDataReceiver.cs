@@ -71,7 +71,8 @@ namespace ZyGames.Framework.Net.Sql
         {
             bool result = false;
             dataList = null;
-            if (string.IsNullOrEmpty(_schema.ConnectKey) && string.IsNullOrEmpty(_schema.ConnectionString))
+            if ((string.IsNullOrEmpty(_schema.ConnectKey) && string.IsNullOrEmpty(_schema.ConnectionString)) ||
+                _schema.Columns.Count == 0)
             {
                 dataList = new List<T>();
                 return true;
@@ -113,7 +114,7 @@ namespace ZyGames.Framework.Net.Sql
                     TraceLog.WriteError("The {0} schema config is empty.", typeof(T).FullName);
                     return null;
                 }
-                string tableName = _schema.GetTableName();
+                string tableName = _schema.GetTableName(_filter.CreateTime);
                 if (string.IsNullOrEmpty(tableName))
                 {
                     TraceLog.WriteError("The {0} schema table name is empty.", _schema.EntityType.FullName);

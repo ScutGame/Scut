@@ -68,21 +68,12 @@ namespace ZyGames.Framework.Game.Sns
         }
 
         /// <summary>
-        /// 获取6位随机密码
-        /// </summary>
-        /// <returns></returns>
-        public string GetRandomPwd()
-        {
-            Random random = new Random();
-            int rid = random.Next(0, 999999);
-            return rid.ToString().PadLeft(6, '0');
-        }
-        /// <summary>
         /// 从DB中加载未被注册的通行证ID
         /// </summary>
         /// <returns></returns>
         public string GetRegPassport()
         {
+            var watch = ZyGames.Framework.Common.Timing.RunTimeWatch.StartNew("GetRegPassport");
             bool isGet = false;
             //从未下发和过期1天已分配的账号从取
             var command = ConnectManager.Provider.CreateCommandStruct("SnsPassportLog", CommandMode.Inquiry, "PASSPORTID");
@@ -105,6 +96,7 @@ namespace ZyGames.Framework.Game.Sns
                     passsportList.Add(aReader["PASSPORTID"].ToString());
                 }
             }
+            watch.Check("get pid");
             if (isGet)
             {
                 iPassportId = FormatPassport(passsportList.Count > 1 ? passsportList[RandomUtils.GetRandom(0, passsportList.Count)] : passsportList[0]); //随机取
@@ -113,13 +105,15 @@ namespace ZyGames.Framework.Game.Sns
                 {
                     throw new Exception("Update passport state error");
                 }
+                watch.Check("update state");
+                watch.Flush(true, 100);
                 return iPassportId;
             }
             //新创建
             command = ConnectManager.Provider.CreateCommandStruct("SnsPassportLog", CommandMode.Insert);
             command.ReturnIdentity = true;
-            command.AddParameter("mark", Convert.ToInt32(PassMark.IsPushToNewUser));
-            command.AddParameter("regpushtime", MathUtils.Now);
+            command.AddParameter("MARK", Convert.ToInt32(PassMark.IsPushToNewUser));
+            command.AddParameter("RegPushTime", MathUtils.Now);
             command.Parser();
 
             using (var aReader = ConnectManager.Provider.ExecuteReader(CommandType.Text, command.Sql, command.Parameters))
@@ -127,6 +121,8 @@ namespace ZyGames.Framework.Game.Sns
                 if (aReader.Read())
                 {
                     iPassportId = FormatPassport(aReader[0].ToString());
+                    watch.Check("new pid");
+                    watch.Flush(true, 100);
                     return iPassportId;
                 }
                 else

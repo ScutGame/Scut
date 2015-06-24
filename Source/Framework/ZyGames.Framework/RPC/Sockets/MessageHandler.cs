@@ -66,7 +66,13 @@ namespace ZyGames.Framework.RPC.Sockets
         {
             return HandleMessage(saea.Buffer, dataToken.DataOffset, dataToken, remainingBytesToProcess);
         }
-
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="dataToken"></param>
+        /// <param name="buffer"></param>
+        /// <param name="messageList"></param>
+        /// <returns></returns>
         public override bool TryReadMeaage(DataToken dataToken, byte[] buffer, out List<DataMeaage> messageList)
         {
             messageList = new List<DataMeaage>();
@@ -170,7 +176,15 @@ namespace ZyGames.Framework.RPC.Sockets
 
             return nonCopiedBytes;
         }
-
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="exSocket"></param>
+        /// <param name="opCode"></param>
+        /// <param name="data"></param>
+        /// <param name="offset"></param>
+        /// <param name="count"></param>
+        /// <returns></returns>
         public override byte[] BuildMessagePack(ExSocket exSocket, sbyte opCode, byte[] data, int offset, int count)
         {
             byte[] buffer = new byte[count + 4];
@@ -189,7 +203,11 @@ namespace ZyGames.Framework.RPC.Sockets
         {
             return null;
         }
-
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="code"></param>
+        /// <returns></returns>
         protected override bool IsValidCloseCode(int code)
         {
             return false;

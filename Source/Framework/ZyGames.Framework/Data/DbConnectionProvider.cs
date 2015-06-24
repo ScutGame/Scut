@@ -196,14 +196,14 @@ namespace ZyGames.Framework.Data
             Type type;
             if (!string.IsNullOrEmpty(providerTypeName))
             {
-                if (providerTypeName.IndexOf(",") != -1)
+                if (providerTypeName.Contains(","))
                 {
                     type = Type.GetType(providerTypeName);
                 }
                 else
                 {
                     string typeName = string.Empty;
-                    if (providerTypeName.StartsWith("mysql", StringComparison.CurrentCultureIgnoreCase))
+                    if (providerTypeName.ToLower().StartsWith("mysql", StringComparison.Ordinal))
                     {
                         typeName = string.Format("ZyGames.Framework.Data.MySql.{0},ZyGames.Framework", providerTypeName);
                     }

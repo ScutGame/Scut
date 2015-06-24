@@ -32,7 +32,7 @@ namespace AccountServer.Handler
     /// <summary>
     /// User login
     /// </summary>
-    public class Login : BaseHandler,IHandler<LoginInfo>
+    public class Login : BaseHandler, IHandler<LoginInfo>
     {
         public ResponseData Excute(LoginInfo data)
         {
@@ -40,10 +40,7 @@ namespace AccountServer.Handler
             {
                 throw new HandlerException(StateCode.Error, StateDescription.PassworkLengthError);
             }
-            if (data.Pwd.Length > 32)
-            {
-                data.Pwd = DecodePassword(data.Pwd);
-            }
+            data.Pwd = DecodePassword(data.Pwd);
             //快速登录
             var userId = SnsManager.LoginByDevice(data.Pid, data.Pwd, data.IMEI);
             if (userId <= 0)

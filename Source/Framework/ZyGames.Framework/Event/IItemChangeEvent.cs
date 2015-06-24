@@ -22,7 +22,6 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ****************************************************************************/
 using System;
-using System.Threading;
 using Newtonsoft.Json;
 using ZyGames.Framework.Common;
 
@@ -31,6 +30,7 @@ namespace ZyGames.Framework.Event
     /// <summary>
     /// 变更事件接口
     /// </summary>
+    [Serializable]
     public abstract class IItemChangeEvent : IDisposable, ICloneable
     {
         /// <summary>
@@ -152,12 +152,21 @@ namespace ZyGames.Framework.Event
         }
 
         /// <summary>
-        /// Only copy property
+        /// Depth copy property and field of object.
         /// </summary>
         /// <returns></returns>
         public object Clone()
         {
-           return ObjectCloner.Clone(this);
+            return ObjectCloner.Clone(this);
+        }
+        /// <summary>
+        /// Depth copy property and field of object.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <returns></returns>
+        public T Clone<T>()
+        {
+            return (T)Clone();
         }
     }
 }

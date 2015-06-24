@@ -63,7 +63,8 @@ namespace ContractTools.WebApp
                new KeyValuePair<int, string>(12,"Date"), 
                new KeyValuePair<int, string>(13,"UInt"), 
                new KeyValuePair<int, string>(14,"UShort"), 
-               new KeyValuePair<int, string>(15,"ULong")
+               new KeyValuePair<int, string>(15,"ULong"),
+               new KeyValuePair<int, string>(16,"SigleRecord"), 
             }
         };
         protected void Alert(string msg, string url)

@@ -309,15 +309,15 @@ namespace ZyGames.Framework.Data.MySql
         /// <returns></returns>
         private string ConvertToDbType(Type type, string dbType, long length, int scale, bool isKey, string fieldName)
         {
-            if (string.Equals(dbType, "text", StringComparison.CurrentCultureIgnoreCase))
+            if (MathUtils.IsEquals(dbType, "text", true))
             {
                 return "text";
             }
-            if (string.Equals(dbType, "longtext", StringComparison.CurrentCultureIgnoreCase))
+            if (MathUtils.IsEquals(dbType, "longtext", true))
             {
                 return "longtext";
             }
-            if (string.Equals(dbType, "longblob", StringComparison.CurrentCultureIgnoreCase))
+            if (MathUtils.IsEquals(dbType, "longblob", true))
             {
                 return "longblob";
             }
@@ -363,12 +363,12 @@ namespace ZyGames.Framework.Data.MySql
                 return "LongBlob";
             }
 
-            if (string.Equals(dbType, "uniqueidentifier", StringComparison.CurrentCultureIgnoreCase) ||
+            if (MathUtils.IsEquals(dbType, "uniqueidentifier", true) ||
                 type.Equals(typeof(Guid)))
             {
                 return "VarChar(36)";
             }
-            if (string.Equals(dbType, "varchar", StringComparison.CurrentCultureIgnoreCase) ||
+            if (MathUtils.IsEquals(dbType, "varchar", true) ||
                 type.Equals(typeof(String)))
             {
                 if (isKey && length == 0)

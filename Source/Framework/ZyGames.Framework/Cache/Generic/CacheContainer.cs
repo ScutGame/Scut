@@ -39,10 +39,10 @@ namespace ZyGames.Framework.Cache.Generic
 
         internal CacheContainer(bool isReadOnly)
         {
-            LoadingStatus = LoadingStatus.None;
             _collection = isReadOnly
                 ? (BaseCollection)new ReadonlyCacheCollection()
                 : new CacheCollection(true);
+            LoadingStatus = LoadingStatus.None;
         }
 
         /// <summary>
@@ -111,19 +111,13 @@ namespace ZyGames.Framework.Cache.Generic
             base.Dispose(disposing);
         }
 
-        /// <summary>
-        /// 设置移除状态
-        /// </summary>
-        internal void SetRemoveStatus()
+        internal void ResetStatus()
         {
             if (_collection == null)
             {
                 return;
             }
-            lock (_collection)
-            {
-                LoadingStatus = LoadingStatus.Remove;
-            }
+            LoadingStatus = LoadingStatus.None;
         }
 
         /// <summary>
@@ -139,15 +133,12 @@ namespace ZyGames.Framework.Cache.Generic
                 TraceLog.WriteError("LoadFactory loaded fail,collection is null");
                 return;
             }
-            lock (_collection)
+            //重新加载或未加载成功时，执行加载数据工厂
+            if (isReload || !HasLoadSuccess)
             {
-                //重新加载或未加载成功时，执行加载数据工厂
-                if (isReload || !HasLoadSuccess)
+                if (loadFactory != null)
                 {
-                    if (loadFactory != null && loadFactory())
-                    {
-                        LoadingStatus = LoadingStatus.Success;
-                    }
+                    LoadingStatus = loadFactory() ? LoadingStatus.Success : LoadingStatus.Error;
                 }
             }
         }

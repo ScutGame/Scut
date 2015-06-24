@@ -50,7 +50,7 @@ namespace ZyGames.Framework.Redis
         /// <summary>
         /// Redis client version
         /// </summary>
-        public int ClientVersion { get; set; }
+        public RedisStorageVersion ClientVersion { get; set; }
 
         /// <summary>
         /// 

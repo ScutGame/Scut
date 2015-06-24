@@ -22,6 +22,8 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ****************************************************************************/
 
+using System;
+
 namespace ZyGames.Framework.Net
 {
     /// <summary>
@@ -46,6 +48,7 @@ namespace ZyGames.Framework.Net
             : this()
         {
             Capacity = capacity;
+            CreateTime = DateTime.Now;
         }
 
         /// <summary>
@@ -84,5 +87,9 @@ namespace ZyGames.Framework.Net
             set;
         }
 
+        /// <summary>
+        /// 动态表名指定的日期
+        /// </summary>
+        public DateTime CreateTime { get; set; }
     }
 }

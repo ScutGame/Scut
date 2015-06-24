@@ -53,13 +53,36 @@ namespace ZyGames.Framework.Game.Runtime
         private static string CharFormat =
 @"///////////////////////////////////////////////////////////////////////////
 
-    //   ) )  //   ) )  //   / / /__  ___/   SCUT Server version {0}
-   ((        //        //   / /    / /       Game: {1}   Server: {2}
-     \\     //        //   / /    / /        Port: {3}
-       ) ) //        //   / /    / /        
+    //   ) )  //   ) )  //   / / /__  ___/   SCUT {0} ({1} bit)
+   ((        //        //   / /    / /       Running in {2} platform
+     \\     //        //   / /    / /        Game: {3}   Server: {4}
+       ) ) //        //   / /    / /         
 ((___ / / ((____/ / ((___/ /    / /                http://www.scutgame.com
-
 ";
+
+        private EnvironmentSetting _setting;
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public virtual void OnInit()
+        {
+            try
+            {
+                _setting = new EnvironmentSetting();
+                var osbit = GetOsBit();
+                var platform = GetRunPlatform();
+                TraceLog.WriteLine(string.Format(CharFormat,
+                    Assembly.GetExecutingAssembly().GetName().Version,
+                    osbit,
+                    platform,
+                    _setting.ProductCode,
+                    _setting.ProductServerId));
+            }
+            catch
+            {
+            }
+        }
 
         /// <summary>
         /// Process start logic init
@@ -69,23 +92,40 @@ namespace ZyGames.Framework.Game.Runtime
         {
             try
             {
-                var setting = new EnvironmentSetting();
-                TraceLog.WriteLine(string.Format(CharFormat,
-                    Assembly.GetExecutingAssembly().GetName().Version,
-                    setting.ProductCode,
-                    setting.ProductServerId,
-                    setting.GamePort));
-                GameEnvironment.Start(setting);
+                GameEnvironment.Start(_setting);
                 return true;
             }
             catch (Exception ex)
             {
                 TraceLog.WriteLine("{0} Server failed to start error:{1}", DateTime.Now.ToString("HH:mm:ss"), ex.Message);
                 TraceLog.WriteError("OnInit error:{0}", ex);
+                TraceLog.WriteLine("# Server exit command \"Ctrl+C\" or \"Ctrl+Break\".");
             }
             return false;
         }
 
+        private int GetOsBit()
+        {
+            try
+            {
+                return Environment.Is64BitProcess ? 64 : 32;
+            }
+            catch (Exception)
+            {
+                return 32;
+            }
+        }
+        private string GetRunPlatform()
+        {
+            try
+            {
+                return Environment.OSVersion.Platform.ToString();
+            }
+            catch (Exception)
+            {
+                return "Unknow";
+            }
+        }
         /// <summary>
         /// Run
         /// </summary>
@@ -93,7 +133,6 @@ namespace ZyGames.Framework.Game.Runtime
         {
             try
             {
-                TraceLog.WriteLine("# Server command \"Ctrl+C\" or \"Ctrl+Break\" exit.");
                 RunAsync().Wait();
             }
             finally
@@ -161,6 +200,10 @@ namespace ZyGames.Framework.Game.Runtime
             {
                 TraceLog.WriteLine("{0} Server failed to start error:{1}", DateTime.Now.ToString("HH:mm:ss"), ex.Message);
                 TraceLog.WriteError("RunMain error:{0}", ex);
+            }
+            finally
+            {
+                TraceLog.WriteLine("# Server exit command \"Ctrl+C\" or \"Ctrl+Break\".");
             }
 
             await RunWait();

@@ -102,6 +102,39 @@ namespace ZyGames.Framework.Cache.Generic
         {
             RemoveAt(index);
         }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="t"></param>
+        /// <returns></returns>
+        public int BinarySearch(T t)
+        {
+            lock (_syncRoot)
+            {
+                return _list.BinarySearch(t);
+            }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="index1"></param>
+        /// <param name="index2"></param>
+        /// <returns></returns>
+        public bool Exchange(int index1, int index2)
+        {
+            lock (_syncRoot)
+            {
+                if (index1 < 0 || index2 < 0 || index1 >= _list.Count || index2 >= _list.Count) return false;
+
+                var item = _list[index1];
+                _list[index1] = _list[index2];
+                _list[index2] = item;
+            }
+            return false;
+        }
+
         /// <summary>
         /// 
         /// </summary>
@@ -155,7 +188,7 @@ namespace ZyGames.Framework.Cache.Generic
         /// 
         /// </summary>
         /// <param name="collection"></param>
-        public void AddRange(IList<T> collection)
+        public void AddRange(IEnumerable<T> collection)
         {
             lock (_syncRoot)
             {
@@ -357,30 +390,42 @@ namespace ZyGames.Framework.Cache.Generic
         /// <returns></returns>
         public int RemoveAll(Predicate<T> match)
         {
+            List<T> removeList;
+            RemoveAll(match, out removeList);
+            return removeList.Count;
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="match"></param>
+        /// <param name="removeList"></param>
+        /// <returns></returns>
+        public bool RemoveAll(Predicate<T> match, out List<T> removeList)
+        {
             List<T> list = null;
             lock (_syncRoot)
             {
                 list = _list.ToList();
             }
-
-            var tempList = list.FindAll(match);
-            int count = 0;
+            removeList = new List<T>();
             lock (_syncRoot)
             {
-                foreach (var item in tempList)
+                foreach (var item in list)
                 {
-                    if (_list.Remove(item))
+                    if (match(item) && _list.Remove(item))
                     {
-                        count++;
+                        removeList.Add(item);
                         RemoveChildrenListener(item);
                     }
                 }
             }
-            if (count > 0)
+            if (removeList.Count > 0)
             {
                 Notify(this, CacheItemChangeType.RemoveAll, PropertyName);
+                return true;
             }
-            return count;
+            return false;
         }
 
         /// <summary>

@@ -135,6 +135,7 @@ namespace ZyGames.Framework.Cache.Generic
         {
             return GetEnumerator();
         }
+
         /// <summary>
         /// 
         /// </summary>

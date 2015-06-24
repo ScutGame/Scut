@@ -101,7 +101,7 @@ namespace ZyGames.Framework.Redis
         /// <summary>
         /// ClientVersion
         /// </summary>
-        public int ClientVersion
+        public RedisStorageVersion ClientVersion
         {
             get { return _redisSection.ClientVersion; }
             set { _redisSection.ClientVersion = value; }

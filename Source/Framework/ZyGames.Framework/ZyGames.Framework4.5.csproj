@@ -108,13 +108,13 @@
     <Compile Include="Cache\Generic\DataSyncQueueManager.cs" />
     <Compile Include="Cache\Generic\DefaultCacheStruct.cs" />
     <Compile Include="Cache\Generic\EntityContainer.cs" />
-    <Compile Include="Cache\Generic\IDataContainer.cs" />
     <Compile Include="Cache\Generic\IDataExpired.cs" />
     <Compile Include="Cache\Generic\MemoryCacheStruct.cs" />
     <Compile Include="Cache\Generic\PersonalCacheStruct.cs" />
     <Compile Include="Cache\Generic\Pool\BaseCachePool.cs" />
     <Compile Include="Cache\Generic\Pool\CachePool.cs" />
     <Compile Include="Cache\Generic\ReadonlyCacheCollection.cs" />
+    <Compile Include="Cache\Generic\RankCacheStruct.cs" />
     <Compile Include="Cache\Generic\ShareCacheStruct.cs" />
     <Compile Include="Collection\Generic\DictionaryExtend.cs" />
     <Compile Include="Collection\Generic\GroupList.cs" />
@@ -161,6 +161,7 @@
     <Compile Include="Model\LoadingStatus.cs" />
     <Compile Include="Model\LogEntity.cs" />
     <Compile Include="Model\MemoryEntity.cs" />
+    <Compile Include="Model\RankEntity.cs" />
     <Compile Include="Model\SchemaColumn.cs" />
     <Compile Include="Model\SchemaTable.cs" />
     <Compile Include="Model\ShareEntity.cs" />
@@ -195,6 +196,7 @@
     <Compile Include="RPC\Http\ContentResponse.cs" />
     <Compile Include="RPC\Http\Extensions.cs" />
     <Compile Include="RPC\Http\HttpAsyncHost.cs" />
+    <Compile Include="RPC\Http\HttpCDNAddress.cs" />
     <Compile Include="RPC\Http\HttpRequestContext.cs" />
     <Compile Include="RPC\Http\HttpRequestResponseContext.cs" />
     <Compile Include="RPC\Http\IConfigurationTrait.cs" />

@@ -123,11 +123,11 @@ namespace ZyGames.Framework.Data
             ProviderName = providerName;
             ProviderTypeName = providerTypeName;
             ProviderType = DbProviderType.Unkown;
-            if (typeof(SqlDataProvider).Name.Equals(ProviderTypeName, StringComparison.CurrentCultureIgnoreCase))
+            if (typeof(SqlDataProvider).Name.IsEquals(ProviderTypeName, true))
             {
                 ProviderType = DbProviderType.MsSql;
             }
-            else if (typeof(MySqlDataProvider).Name.Equals(ProviderTypeName, StringComparison.CurrentCultureIgnoreCase))
+            else if (typeof(MySqlDataProvider).Name.IsEquals(ProviderTypeName, true))
             {
                 ProviderType = DbProviderType.MySql;
             }
@@ -143,33 +143,34 @@ namespace ZyGames.Framework.Data
                 string[] keyValue = item.Split('=');
                 if (keyValue.Length == 2)
                 {
-                    string key = keyValue[0].Trim();
+                    string key = keyValue[0].Trim().ToLower();
                     string val = keyValue[1].Trim();
-                    if ("Server".Equals(key, StringComparison.CurrentCultureIgnoreCase) ||
-                        "Data Source".Equals(key, StringComparison.CurrentCultureIgnoreCase))
+                    if ("server".Equals(key, StringComparison.Ordinal) ||
+                        "data source".Equals(key, StringComparison.Ordinal))
                     {
                         DataSource = val;
                         continue;
                     }
-                    if ("CharSet".Equals(key, StringComparison.CurrentCultureIgnoreCase))
+                    if ("charset".Equals(key, StringComparison.Ordinal))
                     {
                         CharSet = val;
                         continue;
                     }
-                    if ("Database".Equals(key, StringComparison.CurrentCultureIgnoreCase) ||
-                        "Initial Catalog".Equals(key, StringComparison.CurrentCultureIgnoreCase))
+                    if ("database".Equals(key, StringComparison.Ordinal) ||
+                        "initial catalog".Equals(key, StringComparison.Ordinal))
                     {
                         DatabaseName = val;
                         DbLevel = DbLevel.UnKown;
-                        if (val.IndexOf("Config", StringComparison.CurrentCultureIgnoreCase) != -1)
+                        val = val.ToLower();
+                        if (val.IndexOf("config", StringComparison.Ordinal) != -1)
                         {
                             DbLevel = DbLevel.Config;
                         }
-                        else if (val.IndexOf("Data", StringComparison.CurrentCultureIgnoreCase) != -1)
+                        else if (val.IndexOf("data", StringComparison.Ordinal) != -1)
                         {
                             DbLevel = DbLevel.Game;
                         }
-                        else if (val.IndexOf("Log", StringComparison.CurrentCultureIgnoreCase) != -1)
+                        else if (val.IndexOf("log", StringComparison.Ordinal) != -1)
                         {
                             DbLevel = DbLevel.Log;
                         }
@@ -178,12 +179,12 @@ namespace ZyGames.Framework.Data
                 }
             }
 
-            if ("LocalSqlServer".Equals(ProviderName, StringComparison.CurrentCultureIgnoreCase))
+            if ("localsqlserver".Equals(ProviderName.ToLower(), StringComparison.Ordinal))
             {
                 ProviderTypeName = "SqlDataProvider";
                 DbLevel = DbLevel.LocalSql;
             }
-            else if ("LocalMySqlServer".Equals(ProviderName, StringComparison.CurrentCultureIgnoreCase))
+            else if ("localmysqlserver".Equals(ProviderName.ToLower(), StringComparison.Ordinal))
             {
                 ProviderTypeName = "MySqlDataProvider";
                 DbLevel = DbLevel.LocalMySql;

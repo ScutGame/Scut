@@ -22,9 +22,12 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ****************************************************************************/
 using System;
+using System.Diagnostics;
+using System.Text;
 using ZyGames.Framework.Common;
 using ZyGames.Framework.Common.Log;
 using ZyGames.Framework.Common.Security;
+using ZyGames.Framework.Common.Timing;
 using ZyGames.Framework.Game.Context;
 using ZyGames.Framework.Game.Lang;
 using ZyGames.Framework.Game.Runtime;
@@ -180,11 +183,15 @@ namespace ZyGames.Framework.Game.Contract.Action
         {
             ILogin login = CreateLogin();
             login.Password = DecodePassword(login.Password);
+            //todo: login test
+            var watch = RunTimeWatch.StartNew("Request login server");
             try
             {
                 Sid = string.Empty;
                 if (login.CheckLogin())
                 {
+                    watch.Check("GetResponse");
+
                     Sid = Current.SessionId;
                     PassportId = login.PassportID;
                     UserType = login.UserType;
@@ -193,6 +200,7 @@ namespace ZyGames.Framework.Game.Contract.Action
                     IUser user;
                     if (!GetError() && DoSuccess(userId, out user))
                     {
+                        watch.Check("DoSuccess");
                         var session = GameSession.Get(Sid);
                         if (session != null)
                         {
@@ -211,6 +219,10 @@ namespace ZyGames.Framework.Game.Contract.Action
             {
                 ErrorCode = (int)error.StateCode;
                 ErrorInfo = error.Message;
+            }
+            finally
+            {
+                watch.Flush(true, 100);
             }
             return false;
         }

@@ -274,7 +274,7 @@ namespace ZyGames.Framework.RPC.IO
         public DateTime ReadDateTime()
         {
             long time = ReadLong();
-            return MathUtils.UnixEpochDateTime + TimeSpan.FromSeconds(time);
+            return MathUtils.ToTimeFromUnixEpoch(TimeSpan.FromSeconds(time));
         }
         /// <summary>
         /// Read object of Protobuf serialize.

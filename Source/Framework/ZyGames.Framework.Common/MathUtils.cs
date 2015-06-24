@@ -59,6 +59,32 @@ namespace ZyGames.Framework.Common
         }
 
         /// <summary>
+        /// Use Utc time
+        /// </summary>
+        public static TimeSpan UnixEpochTimeSpan
+        {
+            get { return (DateTime.UtcNow - UnixEpochDateTime); }
+        }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="date"></param>
+        /// <returns></returns>
+        public static TimeSpan GetUnixEpochTimeSpan(DateTime date)
+        {
+            return date - UnixEpochDateTime; 
+        }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="ts"></param>
+        /// <returns></returns>
+        public static DateTime ToTimeFromUnixEpoch(TimeSpan ts)
+        {
+            return UnixEpochDateTime.Add(ts);
+        }
+
+        /// <summary>
         /// 当天时间一年中是第几周
         /// </summary>
         public static int WeekOfYear
@@ -221,7 +247,7 @@ namespace ZyGames.Framework.Common
         /// <returns></returns>
         public static bool IsEquals(string a, string b, bool ignoreCase)
         {
-            return ignoreCase ? string.Equals(a, b, StringComparison.CurrentCultureIgnoreCase) : string.Equals(a, b);
+            return ignoreCase ? string.Equals(a.ToLower(), b.ToLower(), StringComparison.Ordinal) : string.Equals(a, b);
         }
         /// <summary>
         /// 
@@ -233,7 +259,7 @@ namespace ZyGames.Framework.Common
         public static bool StartsWith(string a, string b, bool ignoreCase)
         {
             if (a == null) throw new ArgumentNullException("a");
-            return ignoreCase ? a.StartsWith(b, StringComparison.CurrentCultureIgnoreCase) : a.StartsWith(b);
+            return ignoreCase ? a.ToLower().StartsWith(b.ToLower(), StringComparison.Ordinal) : a.StartsWith(b);
         }
 
         /// <summary>
@@ -383,7 +409,7 @@ namespace ZyGames.Framework.Common
         }
 
         /// <summary>
-        /// 尝试相加,防止溢出
+        /// 
         /// </summary>
         /// <param name="a"></param>
         /// <param name="b"></param>
@@ -391,16 +417,33 @@ namespace ZyGames.Framework.Common
         /// <returns></returns>
         public static bool TryAdd(uint a, uint b, Action<uint> success)
         {
+            uint increment;
+            return TryAdd(a, b, success, out  increment);
+        }
+
+        /// <summary>
+        /// 尝试相加,防止溢出
+        /// </summary>
+        /// <param name="a"></param>
+        /// <param name="b"></param>
+        /// <param name="success"></param>
+        /// <param name="increment"></param>
+        /// <returns></returns>
+        public static bool TryAdd(uint a, uint b, Action<uint> success, out uint increment)
+        {
+            increment = 0;
             uint r = a + b;
             if (r >= a)
             {
+                increment = b;
                 success(r);
                 return true;
             }
             return false;
         }
+
         /// <summary>
-        /// 尝试相加,防止溢出
+        /// 
         /// </summary>
         /// <param name="a"></param>
         /// <param name="b"></param>
@@ -408,16 +451,32 @@ namespace ZyGames.Framework.Common
         /// <returns></returns>
         public static bool TryAdd(ushort a, ushort b, Action<ushort> success)
         {
+            ushort increment;
+            return TryAdd(a, b, success, out  increment);
+        }
+
+        /// <summary>
+        /// 尝试相加,防止溢出
+        /// </summary>
+        /// <param name="a"></param>
+        /// <param name="b"></param>
+        /// <param name="success"></param>
+        /// <param name="increment"></param>
+        /// <returns></returns>
+        public static bool TryAdd(ushort a, ushort b, Action<ushort> success, out ushort increment)
+        {
+            increment = 0;
             if (a + b <= ushort.MaxValue)
             {
                 var r = (ushort)(a + b);
+                increment = b;
                 success(r);
                 return true;
             }
             return false;
         }
         /// <summary>
-        /// 尝试相减,防止溢出
+        /// 
         /// </summary>
         /// <param name="a"></param>
         /// <param name="b"></param>
@@ -425,16 +484,32 @@ namespace ZyGames.Framework.Common
         /// <returns></returns>
         public static bool TrySub(uint a, uint b, Action<uint> success)
         {
+            uint decrement;
+            return TrySub(a, b, success, out  decrement);
+        }
+
+        /// <summary>
+        /// 尝试相减,防止溢出
+        /// </summary>
+        /// <param name="a"></param>
+        /// <param name="b"></param>
+        /// <param name="success"></param>
+        /// <param name="decrement"></param>
+        /// <returns></returns>
+        public static bool TrySub(uint a, uint b, Action<uint> success, out uint decrement)
+        {
+            decrement = 0;
             uint r = a - b;
             if (r <= a)
             {
+                decrement = b;
                 success(r);
                 return true;
             }
             return false;
         }
         /// <summary>
-        /// 尝试相减,防止溢出
+        /// 
         /// </summary>
         /// <param name="a"></param>
         /// <param name="b"></param>
@@ -442,9 +517,25 @@ namespace ZyGames.Framework.Common
         /// <returns></returns>
         public static bool TrySub(ushort a, ushort b, Action<uint> success)
         {
+            ushort decrement;
+            return TrySub(a, b, success, out decrement);
+        }
+
+        /// <summary>
+        /// 尝试相减,防止溢出
+        /// </summary>
+        /// <param name="a"></param>
+        /// <param name="b"></param>
+        /// <param name="success"></param>
+        /// <param name="decrement"></param>
+        /// <returns></returns>
+        public static bool TrySub(ushort a, ushort b, Action<uint> success, out ushort decrement)
+        {
+            decrement = 0;
             int r = a - b;
             if (r >= 0 && r <= a)
             {
+                decrement = b;
                 success((ushort)r);
                 return true;
             }
@@ -1263,7 +1354,7 @@ namespace ZyGames.Framework.Common
                     string tempValue = value.ToNotNullString();
                     return tempValue.IsEmpty() ? 0 : Enum.Parse(type, tempValue, true);
                 }
-                return Enum.ToObject(type, value);
+                return Enum.ToObject(type, (value == null || value == DBNull.Value) ? 0 : value);
             }
             catch
             {

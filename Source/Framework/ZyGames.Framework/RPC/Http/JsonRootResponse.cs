@@ -102,6 +102,12 @@ namespace ZyGames.Framework.RPC.Http
         /// <summary>
         /// 
         /// </summary>
+        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+        public string Identity { get; set; }
+
+        /// <summary>
+        /// 
+        /// </summary>
         /// <param name="context"></param>
         /// <returns></returns>
         public async Task Execute(IHttpRequestResponseContext context)

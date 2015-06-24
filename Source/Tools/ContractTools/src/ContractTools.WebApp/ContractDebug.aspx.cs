@@ -322,7 +322,7 @@ namespace ContractTools.WebApp
                                 respContent.AppendFormat("<td>&nbsp;{0}</td>", fieldValue);
                                 respContent.Append("</tr>");
                             }
-                            if (fieldType == FieldType.Record)
+                            if (fieldType == FieldType.Record || fieldType == FieldType.SigleRecord)
                             {
                                 loopDepth++;
                                 recordQueue.Add(record);
@@ -330,7 +330,7 @@ namespace ContractTools.WebApp
                         }
                         else if (fieldType != FieldType.End)
                         {
-                            if (fieldType == FieldType.Record)
+                            if (fieldType == FieldType.Record || fieldType == FieldType.SigleRecord)
                             {
                                 loopDepth++;
                             }
@@ -449,7 +449,7 @@ namespace ContractTools.WebApp
                                     builderContent.AppendFormat("<td align=\"center\">&nbsp;{0}</td>", (fieldValue ?? "").Replace("{", "%7B").Replace("}", "%7D"));
                                     columnNum++;
                                 }
-                                if (fieldType == FieldType.Record)
+                                if (fieldType == FieldType.Record || fieldType == FieldType.SigleRecord)
                                 {
                                     loopDepth++;
                                     recordQueue.Add(record);
@@ -457,7 +457,7 @@ namespace ContractTools.WebApp
                             }
                             else if (fieldType != FieldType.End)
                             {
-                                if (fieldType == FieldType.Record)
+                                if (fieldType == FieldType.Record || fieldType == FieldType.SigleRecord)
                                 {
                                     loopDepth++;
                                 }

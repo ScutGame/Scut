@@ -102,7 +102,7 @@ namespace ZyGames.Framework.Event
             get;
             set;
         }
-
+        [NonSerialized]
         private CacheItemChangeEvent _itemEvent;
 
         /// <summary>
@@ -114,6 +114,7 @@ namespace ZyGames.Framework.Event
             get { return _itemEvent; }
         }
 
+        [NonSerialized]
         private CacheItemChangeEvent _childrenEvent;
 
         /// <summary>
@@ -319,11 +320,11 @@ namespace ZyGames.Framework.Event
             IItemChangeEvent val = obj as IItemChangeEvent;
             if (val != null)
             {
-                val.IsInCache = true;
                 val.PropertyName = PropertyName;
                 AddChildrenListener(val);
             }
             Notify(this, CacheItemChangeType.Modify, PropertyName);
+            if (val != null) val.IsInCache = true;
         }
 
         /// <summary>
@@ -334,7 +335,11 @@ namespace ZyGames.Framework.Event
         /// <param name="propertyName"></param>
         protected void Notify(object sender, CacheItemChangeType changeType, string propertyName)
         {
-            Notify(sender, new CacheItemEventArgs(changeType, propertyName));
+            //在内存状态后才开启事件通知
+            if (IsInCache)
+            {
+                Notify(sender, new CacheItemEventArgs(changeType, propertyName));
+            }
         }
 
         /// <summary>
@@ -345,8 +350,13 @@ namespace ZyGames.Framework.Event
         protected virtual void Notify(object sender, CacheItemEventArgs eventArgs)
         {
             //modify reason:调用ExclusiveModify方法多个属性被修改时,修改状态延后通知，减少频繁同步数据
-            if (!_isDisableEvent && !IsModifying)
+            if (!_isDisableEvent && !IsModifying && IsInCache)
             {
+                IItemChangeEvent val;
+                if ((val = sender as IItemChangeEvent) != null && !val.IsInCache)
+                {
+                    val.IsInCache = true;
+                }
                 _hasChanged = true;
                 if (ItemEvent != null)
                 {
@@ -362,7 +372,7 @@ namespace ZyGames.Framework.Event
         /// <param name="eventArgs"></param>
         protected virtual void NotifyByChildren(object sender, CacheItemEventArgs eventArgs)
         {
-            if (!_isDisableEvent)
+            if (!_isDisableEvent && IsInCache)
             {
                 _hasChanged = true;
                 if (ItemEvent != null)

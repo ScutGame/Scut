@@ -25,7 +25,6 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using ProtoBuf;
-using ZyGames.Framework.Event;
 using System.Collections.Concurrent;
 
 namespace ZyGames.Framework.Cache.Generic
@@ -37,7 +36,7 @@ namespace ZyGames.Framework.Cache.Generic
     public class CacheCollection : BaseCollection, IDictionary<string, object>
     {
         private ConcurrentDictionary<string, object> _cacheStruct;
-        
+
         /// <summary>
         /// 
         /// </summary>
@@ -70,10 +69,7 @@ namespace ZyGames.Framework.Cache.Generic
             }
             set
             {
-
                 _cacheStruct[key] = value;
-                //AddChildrenListener(value);
-                //Notify(value, CacheItemChangeType.Modify, PropertyName);
             }
         }
         /// <summary>
@@ -163,15 +159,7 @@ namespace ZyGames.Framework.Cache.Generic
         /// <returns></returns>
         public override T GetOrAdd<T>(string key, Func<string, T> valueFactory)
         {
-
-            Func<string, object> func = (updateKey) =>
-            {
-                var value = valueFactory(updateKey);
-                //AddChildrenListener(value);
-                //Notify(value, CacheItemChangeType.Add, PropertyName);
-                return value;
-            };
-            return (T)_cacheStruct.GetOrAdd(key, func);
+            return (T)_cacheStruct.GetOrAdd(key, updateKey => valueFactory(updateKey));
         }
         /// <summary>
         /// 
@@ -342,6 +330,15 @@ namespace ZyGames.Framework.Cache.Generic
         /// 
         /// </summary>
         /// <returns></returns>
+        public override IEnumerable<KeyValuePair<string, object>> GetEnumerable()
+        {
+            return _cacheStruct;
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
         public override IEnumerator<KeyValuePair<string, object>> GetEnumerator()
         {
             return _cacheStruct.GetEnumerator();
@@ -390,17 +387,17 @@ namespace ZyGames.Framework.Cache.Generic
             return GetEnumerator();
         }
 
-/*event
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="eventArgs"></param>
-        protected override void Notify(object sender, CacheItemEventArgs eventArgs)
-        {
-            base.Notify(sender, eventArgs);
-        }
-*/
+        /*event
+                /// <summary>
+                /// 
+                /// </summary>
+                /// <param name="sender"></param>
+                /// <param name="eventArgs"></param>
+                protected override void Notify(object sender, CacheItemEventArgs eventArgs)
+                {
+                    base.Notify(sender, eventArgs);
+                }
+        */
 
         /// <summary>
         /// 

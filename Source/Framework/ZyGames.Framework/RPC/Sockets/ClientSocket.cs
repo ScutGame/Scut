@@ -27,9 +27,7 @@ using System.Net.Sockets;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading;
-using System.Collections.Concurrent;
 using System.Threading.Tasks;
-using NLog;
 using ZyGames.Framework.Common.Log;
 
 namespace ZyGames.Framework.RPC.Sockets
@@ -134,7 +132,6 @@ namespace ZyGames.Framework.RPC.Sockets
         }
         #endregion
 
-        Logger logger = LogManager.GetLogger("ClientSocket");
         private Socket socketClient;
         private ClientSocketSettings clientSettings;
         private SocketAsyncEventArgs sendEventArg;
@@ -378,7 +375,7 @@ namespace ZyGames.Framework.RPC.Sockets
             }
             catch (Exception ex)
             {
-                logger.Error("IO_Completed", ex);
+                TraceLog.WriteError("IO_Completed of client error:{0}", ex);
             }
         }
 
@@ -446,7 +443,7 @@ namespace ZyGames.Framework.RPC.Sockets
                     }
                     catch (Exception ex)
                     {
-                        logger.Error("OnDataReceived", ex);
+                        TraceLog.WriteError("OnDataReceived of client error:{0}", ex);
                     }
                 }
             }
@@ -772,11 +769,11 @@ namespace ZyGames.Framework.RPC.Sockets
                 };
                 DoClosed(e);
                 OnDisconnected(e);
-                exSocket.Close();
+                if (exSocket != null) exSocket.Close();
             }
             catch (Exception ex)
             {
-                logger.Error("OnDisconnected", ex);
+                TraceLog.WriteError("Dispose connect of client error:{0}", ex);
             }
 
         }

@@ -22,16 +22,13 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ****************************************************************************/
 using System;
-using System.Diagnostics;
 using System.Net.Sockets;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Scripting;
 using ZyGames.Framework.Common;
 using ZyGames.Framework.Common.Log;
-using NLog;
 
 namespace ZyGames.Framework.RPC.Sockets
 {
@@ -40,6 +37,14 @@ namespace ZyGames.Framework.RPC.Sockets
     /// </summary>
     public class SocketListener : ISocket
     {
+        class SummaryStatus
+        {
+            public long TotalConnectCount;
+            public int CurrentConnectCount;
+            public int RejectedConnectCount;
+            public int CloseConnectCount;
+        }
+
         #region 事件
         /// <summary>
         /// 连接事件
@@ -120,7 +125,6 @@ namespace ZyGames.Framework.RPC.Sockets
 
         #endregion
 
-        private Logger logger = LogManager.GetLogger("SocketListener");
         private BufferManager bufferManager;
         private Socket listenSocket;
         private Semaphore maxConnectionsEnforcer;
@@ -133,6 +137,8 @@ namespace ZyGames.Framework.RPC.Sockets
         private ThreadSafeStack<SocketAsyncEventArgs> ioEventArgsPool;
         //Timer expireTimer;
         private bool _isStart;
+        private SummaryStatus _summaryStatus = new SummaryStatus();
+        private Timer _summaryTimer;
 
         /// <summary>
         /// 
@@ -182,15 +188,21 @@ namespace ZyGames.Framework.RPC.Sockets
                 ioEventArgs.UserToken = dataToken;
                 this.ioEventArgsPool.Push(ioEventArgs);
             }
+            _summaryTimer = new Timer(OnSummaryTrace, null, 600, 60000);
         }
 
-        //private void AddClient(ExSocket socket)
-        //{
-        //    lock (clientSockets)
-        //    {
-        //        clientSockets.Add(socket);
-        //    }
-        //}
+        private void OnSummaryTrace(object state)
+        {
+            try
+            {
+                TraceLog.Write("Socket connect status: TotalCount={0}, CurrentCount={1}, CloseCount={2}, RejectedCount={3}",
+                      _summaryStatus.TotalConnectCount,
+                      _summaryStatus.CurrentConnectCount,
+                      _summaryStatus.CloseConnectCount,
+                      _summaryStatus.RejectedConnectCount);
+            }
+            catch { }
+        }
 
         private SocketAsyncEventArgs CreateAcceptEventArgs()
         {
@@ -220,7 +232,6 @@ namespace ZyGames.Framework.RPC.Sockets
                 {
                     return;
                 }
-                this.maxConnectionsEnforcer.WaitOne();
                 SocketAsyncEventArgs acceptEventArgs = acceptEventArgsPool.Pop() ?? CreateAcceptEventArgs();
                 bool willRaiseEvent = listenSocket.AcceptAsync(acceptEventArgs);
                 if (!willRaiseEvent)
@@ -242,14 +253,73 @@ namespace ZyGames.Framework.RPC.Sockets
             }
             catch (Exception ex)
             {
-                logger.Error(string.Format("AcceptCompleted method error:{0}", ex));
+                TraceLog.WriteError("AcceptCompleted method error:{0}", ex);
 
                 if (acceptEventArgs.AcceptSocket != null)
                 {
-                    acceptEventArgs.AcceptSocket.Close();
+                    try
+                    {
+                        acceptEventArgs.AcceptSocket.Close();
+                    }
+                    catch
+                    {
+                    }
                     acceptEventArgs.AcceptSocket = null;
                 }
-                acceptEventArgsPool.Push(acceptEventArgs);
+                ReleaseAccept(acceptEventArgs);
+            }
+        }
+
+        private void ProcessAccept(SocketAsyncEventArgs acceptEventArgs)
+        {
+            try
+            {
+                Interlocked.Increment(ref _summaryStatus.TotalConnectCount);
+                maxConnectionsEnforcer.WaitOne();
+
+                if (acceptEventArgs.SocketError != SocketError.Success)
+                {
+                    Interlocked.Increment(ref _summaryStatus.RejectedConnectCount);
+                    HandleBadAccept(acceptEventArgs);
+                }
+                else
+                {
+                    Interlocked.Increment(ref _summaryStatus.CurrentConnectCount);
+
+                    SocketAsyncEventArgs ioEventArgs = this.ioEventArgsPool.Pop();
+                    ioEventArgs.AcceptSocket = acceptEventArgs.AcceptSocket;
+                    var dataToken = (DataToken)ioEventArgs.UserToken;
+                    ioEventArgs.SetBuffer(dataToken.bufferOffset, socketSettings.BufferSize);
+                    var exSocket = new ExSocket(ioEventArgs.AcceptSocket);
+                    exSocket.LastAccessTime = DateTime.Now;
+                    dataToken.Socket = exSocket;
+                    acceptEventArgs.AcceptSocket = null;
+
+                    //release connect when socket has be closed.
+                    ReleaseAccept(acceptEventArgs, false);
+                    try
+                    {
+                        OnConnected(new ConnectionEventArgs { Socket = exSocket });
+                    }
+                    catch (Exception ex)
+                    {
+                        TraceLog.WriteError("OnConnected error:{0}", ex);
+                    }
+                    PostReceive(ioEventArgs);
+                }
+
+            }
+            finally
+            {
+                PostAccept();
+            }
+        }
+
+        private void ReleaseAccept(SocketAsyncEventArgs acceptEventArgs, bool isRelease = true)
+        {
+            acceptEventArgsPool.Push(acceptEventArgs);
+            if (isRelease)
+            {
                 maxConnectionsEnforcer.Release();
             }
         }
@@ -281,44 +351,7 @@ namespace ZyGames.Framework.RPC.Sockets
             }
             catch (Exception ex)
             {
-                logger.Error(string.Format("IP {0} IO_Completed unkown error:{1}", (ioDataToken != null && ioDataToken.Socket != null ? ioDataToken.Socket.RemoteEndPoint.ToNotNullString() : ""), ex));
-            }
-        }
-
-        private void ProcessAccept(SocketAsyncEventArgs acceptEventArgs)
-        {
-            try
-            {
-                if (acceptEventArgs.SocketError != SocketError.Success)
-                {
-                    HandleBadAccept(acceptEventArgs);
-                }
-                else
-                {
-                    SocketAsyncEventArgs ioEventArgs = this.ioEventArgsPool.Pop();
-                    ioEventArgs.AcceptSocket = acceptEventArgs.AcceptSocket;
-                    var dataToken = (DataToken)ioEventArgs.UserToken;
-                    ioEventArgs.SetBuffer(dataToken.bufferOffset, socketSettings.BufferSize);
-                    var exSocket = new ExSocket(ioEventArgs.AcceptSocket);
-                    exSocket.LastAccessTime = DateTime.Now;
-                    dataToken.Socket = exSocket;
-                    acceptEventArgs.AcceptSocket = null;
-                    this.acceptEventArgsPool.Push(acceptEventArgs);
-                    try
-                    {
-                        OnConnected(new ConnectionEventArgs { Socket = exSocket });
-                    }
-                    catch (Exception ex)
-                    {
-                        TraceLog.WriteError("OnConnected error:{0}", ex);
-                    }
-                    PostReceive(ioEventArgs);
-                }
-
-            }
-            finally
-            {
-                PostAccept();
+                TraceLog.WriteError("IP {0} IO_Completed unkown error:{1}", (ioDataToken != null && ioDataToken.Socket != null ? ioDataToken.Socket.RemoteEndPoint.ToNotNullString() : ""), ex);
             }
         }
 
@@ -341,6 +374,8 @@ namespace ZyGames.Framework.RPC.Sockets
         /// <param name="ioEventArgs"></param>
         private void PostReceive(SocketAsyncEventArgs ioEventArgs)
         {
+            if (ioEventArgs.AcceptSocket == null) return;
+
             bool willRaiseEvent = ioEventArgs.AcceptSocket.ReceiveAsync(ioEventArgs);
 
             if (!willRaiseEvent)
@@ -365,9 +400,8 @@ namespace ZyGames.Framework.RPC.Sockets
             }
 
             if (ioEventArgs.SocketError != SocketError.Success)
-            {
-                //Socket错误
-                logger.Debug("IP {0} ProcessReceive:{1}", (dataToken != null ? dataToken.Socket.RemoteEndPoint.ToNotNullString() : ""), ioEventArgs.SocketError);
+            {//Socket错误
+                TraceLog.Write("IP {0} ProcessReceive:{1}", (dataToken != null ? dataToken.Socket.RemoteEndPoint.ToNotNullString() : ""), ioEventArgs.SocketError);
                 Closing(ioEventArgs);
                 return;
             }
@@ -622,12 +656,10 @@ namespace ZyGames.Framework.RPC.Sockets
         /// <param name="reason"></param>
         internal protected override void Closing(SocketAsyncEventArgs ioEventArgs, sbyte opCode = OpCode.Close, string reason = "")
         {
+            Interlocked.Decrement(ref _summaryStatus.CurrentConnectCount);
+            Interlocked.Increment(ref _summaryStatus.CloseConnectCount);
             bool needClose = true;
             var dataToken = (DataToken)ioEventArgs.UserToken;
-            //lock (clientSockets)
-            //{
-            //    needClose = clientSockets.Remove(dataToken.Socket);
-            //}
             try
             {
                 if (opCode != OpCode.Empty)
@@ -643,11 +675,25 @@ namespace ZyGames.Framework.RPC.Sockets
             {
                 needClose = false;
             }
+            finally
+            {
+                try
+                {
+                    maxConnectionsEnforcer.Release();
+                }
+                catch
+                {
+                    TraceLog.WriteError("Closed error, connect status: TotalCount={0}, CurrentCount={1}, CloseCount={2}, RejectedCount={3}",
+                          _summaryStatus.TotalConnectCount,
+                          _summaryStatus.CurrentConnectCount,
+                          _summaryStatus.CloseConnectCount,
+                          _summaryStatus.RejectedConnectCount);
+                }
+            }
 
             if (needClose)
             {
                 //logger.InfoFormat("Socket：{0}关闭，关闭原因：SocketError：{1}。", dataToken.Socket.RemoteEndPoint, ioEventArgs.SocketError);
-                maxConnectionsEnforcer.Release();
                 try
                 {
                     OnDisconnected(new ConnectionEventArgs { Socket = dataToken.Socket });
@@ -663,10 +709,15 @@ namespace ZyGames.Framework.RPC.Sockets
 
         private void HandleBadAccept(SocketAsyncEventArgs acceptEventArgs)
         {
-            ResetSAEAObject(acceptEventArgs);
-            acceptEventArgs.AcceptSocket = null;
-            acceptEventArgsPool.Push(acceptEventArgs);
-            maxConnectionsEnforcer.Release();
+            try
+            {
+                ResetSAEAObject(acceptEventArgs);
+                acceptEventArgs.AcceptSocket = null;
+                ReleaseAccept(acceptEventArgs);
+            }
+            catch
+            {
+            }
         }
 
 
@@ -678,6 +729,7 @@ namespace ZyGames.Framework.RPC.Sockets
             _isStart = false;
             DisposeAllSaeaObjects();
             listenSocket.Close();
+            _summaryTimer.Dispose();
         }
 
         private void DisposeAllSaeaObjects()

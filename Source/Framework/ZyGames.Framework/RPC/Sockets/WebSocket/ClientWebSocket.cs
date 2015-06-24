@@ -42,10 +42,10 @@ namespace ZyGames.Framework.RPC.Sockets.WebSocket
             Uri uri;
             if (Uri.TryCreate(url, UriKind.RelativeOrAbsolute, out uri))
             {
-                if (("ws".Equals(uri.Scheme, StringComparison.CurrentCultureIgnoreCase) ||
-                     "wss".Equals(uri.Scheme, StringComparison.CurrentCultureIgnoreCase)))
+                if (("ws".Equals(uri.Scheme.ToLower(), StringComparison.Ordinal) ||
+                     "wss".Equals(uri.Scheme.ToLower(), StringComparison.Ordinal)))
                 {
-                    if ("wss".Equals(uri.Scheme, StringComparison.CurrentCultureIgnoreCase) &&
+                    if ("wss".Equals(uri.Scheme.ToLower(), StringComparison.Ordinal) &&
                         (protocol == null || protocol.Length == 0))
                     {
                         throw new ArgumentException("When using \"wss\" schema, it need use sub protocol.");

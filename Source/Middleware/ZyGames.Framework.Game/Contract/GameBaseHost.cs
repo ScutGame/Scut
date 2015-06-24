@@ -61,7 +61,7 @@ namespace ZyGames.Framework.Game.Contract
             ActionGetter actionGetter = null;
             try
             {
-                httpresponse.WriteErrorCallback += new ScutActionDispatcher().ResponseError;
+                httpresponse.WriteErrorCallback += GameEnvironment.Setting.ActionDispatcher.ResponseError;
 
                 RequestPackage p = package as RequestPackage;
                 actionGetter = param as ActionGetter;

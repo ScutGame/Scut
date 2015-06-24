@@ -168,6 +168,15 @@ namespace ZyGames.Framework.Script
             }
             return false;
         }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="fileName"></param>
+        /// <returns></returns>
+        public override bool VerifyScriptHashCode(string fileName)
+        {
+            return false;
+        }
 
         /// <summary>
         /// 

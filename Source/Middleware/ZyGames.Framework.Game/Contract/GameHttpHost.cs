@@ -25,6 +25,7 @@ using System;
 using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
+using JetBrains.Annotations;
 using ZyGames.Framework.Common.Configuration;
 using ZyGames.Framework.Common.Log;
 using ZyGames.Framework.Game.Config;
@@ -57,7 +58,6 @@ namespace ZyGames.Framework.Game.Contract
         protected GameHttpHost()
             : this(HttpAsyncHandler.Default)
         {
-            GameSession.Timeout = 1200;//20min
         }
 
         /// <summary>
@@ -105,6 +105,18 @@ namespace ZyGames.Framework.Game.Contract
         protected List<string> listenUrls { get; set; }
 
         /// <summary>
+        /// Sets Address key of http
+        /// </summary>
+        protected string[] HttpCdnAddressKeys
+        {
+            set
+            {
+                if (value == null) throw new ArgumentNullException("value");
+                httpListener.HttpCdnAddress = new HttpCDNAddress(value);
+            }
+        }
+
+        /// <summary>
         /// 
         /// </summary>
         /// <param name="args"></param>
@@ -112,6 +124,10 @@ namespace ZyGames.Framework.Game.Contract
         {
             InitLoad();
             httpListener.Run(listenUrls.ToArray());
+            foreach (var listenUrl in listenUrls)
+            {
+                TraceLog.WriteLine("{0} Http service:{1} is started.", DateTime.Now.ToString("HH:mm:ss"), listenUrl.TrimEnd('/'));
+            }
             if (httpListener.Error != null)
             {
                 throw httpListener.Error;
@@ -120,11 +136,12 @@ namespace ZyGames.Framework.Game.Contract
         }
 
         /// <summary>
-        /// 
+        /// on web site use
         /// </summary>
         /// <param name="context"></param>
         public void Request(System.Web.HttpContext context)
         {
+            string userHostAddress = httpListener.HttpCdnAddress.GetUserHostAddress(context.Request.UserHostAddress, key => context.Request.Headers[key]);
             var actionDispatcher = GameEnvironment.Setting.ActionDispatcher;
             RequestPackage package;
             if (!actionDispatcher.TryDecodePackage(context, out package))
@@ -132,6 +149,7 @@ namespace ZyGames.Framework.Game.Contract
                 return;
             }
             var session = GetSession(context, package);
+            session.RemoteAddress = userHostAddress;
             package.Bind(session);
             ActionGetter actionGetter = actionDispatcher.GetActionGetter(package, session);
             BaseGameResponse response = new HttpGameResponse(context.Response);
@@ -154,6 +172,7 @@ namespace ZyGames.Framework.Game.Contract
                         : GameSession.Get(package.SessionId))
                     ?? GameSession.CreateNew(Guid.NewGuid(), context.Request);
             }
+            session.InitHttp(context.Request);
             return session;
         }
     }
@@ -195,6 +214,8 @@ namespace ZyGames.Framework.Game.Contract
                         : GameSession.Get(package.SessionId))
                     ?? GameSession.CreateNew(Guid.NewGuid(), context.Request);
             }
+            session.InitHttp(context.Request);
+            session.RemoteAddress = context.UserHostAddress;
             package.Bind(session);
 
             ActionGetter httpGet = actionDispatcher.GetActionGetter(package, session);
@@ -218,7 +239,7 @@ namespace ZyGames.Framework.Game.Contract
                 }
             });
             string sessionId = session.SessionId;
-            var response = new ByteResponse(statusCode, "OK", result);
+            var response = new ByteResponse(statusCode, "OK", result, session.UserId.ToString());
             response.CookieHandle += ctx =>
             {
                 var cookie = ctx.Request.Cookies["sid"];

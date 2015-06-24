@@ -43,5 +43,9 @@ namespace ZyGames.Framework.RPC.Http
         /// 
         /// </summary>
         IPrincipal User { get; }
+        /// <summary>
+        /// 
+        /// </summary>
+        string UserHostAddress { get; }
     }
 }

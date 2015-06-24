@@ -294,7 +294,7 @@ namespace ZyGames.Framework.Data
                     }
                     catch (Exception e)
                     {
-                        TraceLog.WriteSqlError("Error:{0}\r\nSql>>\r\n{1}", e, statement != null ? statement.CommandText : "");
+                        TraceLog.WriteSqlError("Error:{0}\r\nSql>>\r\n{1}", e, statement != null ? statement.ToString() : "");
                         PutError(buffer);
                         if (!hasClear && dbProvider != null)
                         {

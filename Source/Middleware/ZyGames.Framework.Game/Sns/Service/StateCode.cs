@@ -56,5 +56,13 @@ namespace ZyGames.Framework.Game.Sns.Service
         /// 
         /// </summary>
         TokenExpired = 106,
+        /// <summary>
+        /// Request account server Timeout.
+        /// </summary>
+        Timeout = 107,
+        /// <summary>
+        /// Parse json error.
+        /// </summary>
+        ParseError = 108
     }
 }

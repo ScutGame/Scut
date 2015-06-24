@@ -205,7 +205,7 @@ namespace ZyGames.Framework.Common.Threading
         /// <summary>
         /// The default thread pool name. (SmartThreadPool)
         /// </summary>
-        public const string DefaultThreadPoolName = "";
+        public const string DefaultThreadPoolName = "STP";
 
         /// <summary>
         /// The default Max Stack Size. (SmartThreadPool)

@@ -67,7 +67,7 @@ namespace ZyGames.Framework.Script
         /// <returns></returns>
         public bool IsModelScript(string file)
         {
-            return file.IndexOf(_modelScriptPath, StringComparison.CurrentCultureIgnoreCase) != -1;
+            return file.ToLower().IndexOf(_modelScriptPath.ToLower(), StringComparison.Ordinal) != -1;
         }
         /// <summary>
         /// 
@@ -237,6 +237,40 @@ namespace ZyGames.Framework.Script
         }
 
         /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="fileName"></param>
+        /// <returns></returns>
+        public override bool VerifyScriptHashCode(string fileName)
+        {
+            string ext = Path.GetExtension(fileName);
+            if (string.Compare(ext, ".cs", StringComparison.OrdinalIgnoreCase) != 0)
+            {
+                return base.VerifyScriptHashCode(fileName);
+            }
+            string scriptCode = GetScriptCode(fileName);
+            if (File.Exists(fileName))
+            {
+                if (fileName.EndsWith("AssemblyInfo.cs", StringComparison.OrdinalIgnoreCase))
+                {
+                    return true;
+                }
+                ScriptFileInfo code = null;
+                if (_modelCodeCache.ContainsKey(scriptCode))
+                {
+                    code = _modelCodeCache[scriptCode];
+                }
+                if (_csharpCodeCache.ContainsKey(scriptCode))
+                {
+                    code = _csharpCodeCache[scriptCode];
+                }
+                if (code == null) return false;
+                string source = Decode(File.ReadAllText(fileName), ext);
+                return code.HashCode == CryptoHelper.ToMd5Hash(source);
+            }
+            return false;
+        }
+        /// <summary>
         /// Init csharp script.
         /// </summary>
         public void InitCsharp()
@@ -245,9 +279,13 @@ namespace ZyGames.Framework.Script
             if (Directory.Exists(path))
             {
                 var files = Directory.GetFiles(path, FileFilter, SearchOption.AllDirectories);
+                if (files.Length > 0)
+                {
+                    LoadScriptAssemblyInfo(path);
+                }
                 foreach (var fileName in files)
                 {
-                    LoadScript(path, fileName, true);
+                    LoadScript(path, fileName);
                 }
             }
             CompileCsharp();
@@ -265,8 +303,11 @@ namespace ZyGames.Framework.Script
             {
                 if (Directory.Exists(path))
                 {
-                    LoadScriptInfo(path);
                     var files = Directory.GetFiles(path, FileFilter, SearchOption.AllDirectories);
+                    if (files.Length > 0)
+                    {
+                        LoadScriptAssemblyInfo(path);
+                    }
                     foreach (var fileName in files)
                     {
                         LoadScript(path, fileName);
@@ -345,7 +386,11 @@ using System.Runtime.InteropServices;
 [assembly: Guid(""{1}"")]
 [assembly: AssemblyVersion(""1.0.0.{2}"")]
 ";
-        private void LoadScriptInfo(string scriptPath)
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="scriptPath"></param>
+        private void LoadScriptAssemblyInfo(string scriptPath)
         {
             Interlocked.Increment(ref ScriptVerionId);
             string title = string.Format("Script.{0}", Path.GetFileName(scriptPath));
@@ -386,19 +431,10 @@ using System.Runtime.InteropServices;
             }
         }
 
-        private ScriptFileInfo LoadScript(string scriptPath, string fileName, bool isReLoad = false)
+        private ScriptFileInfo LoadScript(string scriptPath, string fileName)
         {
             ScriptFileInfo scriptFileInfo = null;
             string scriptCode = GetScriptCode(fileName);
-            if (!isReLoad && _csharpCodeCache.ContainsKey(scriptCode))
-            {
-                var old = _csharpCodeCache[scriptCode];
-                if (!File.Exists(fileName) ||
-                    old.HashCode == GetFileHashCode(fileName))
-                {
-                    return old;
-                }
-            }
             scriptFileInfo = CreateScriptFile(fileName);
             if (scriptFileInfo != null)
             {
@@ -426,16 +462,12 @@ using System.Runtime.InteropServices;
             {
                 return scriptFileInfo;
             }
-
-            FileInfo fi = new FileInfo(fileName);
-            if (fi.Extension == ".cs")
+            string ext = Path.GetExtension(fileName);
+            if (string.Compare(ext, ".cs", StringComparison.OrdinalIgnoreCase) == 0)
             {
                 string fileCode = GetScriptCode(fileName);
                 scriptFileInfo = new CSharpFileInfo(fileCode, fileName);
-                using (var sr = fi.OpenText())
-                {
-                    scriptFileInfo.Source = Decode(sr.ReadToEnd(), fi.Extension);
-                }
+                scriptFileInfo.Source = Decode(File.ReadAllText(fileName), ext);
                 scriptFileInfo.HashCode = CryptoHelper.ToMd5Hash(scriptFileInfo.Source);
             }
             else
@@ -488,7 +520,7 @@ using System.Runtime.InteropServices;
         private string ParseScriptCode(string typeName)
         {
             string scriptCode;
-            int index = typeName.IndexOf(SettupInfo.CSharpScriptPath + ".", StringComparison.CurrentCultureIgnoreCase);
+            int index = typeName.ToLower().IndexOf(SettupInfo.CSharpScriptPath.ToLower() + ".", StringComparison.Ordinal);
             if (index > -1)
             {
                 scriptCode = typeName.Substring(index) + ".cs";

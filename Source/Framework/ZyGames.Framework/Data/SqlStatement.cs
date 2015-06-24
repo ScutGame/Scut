@@ -23,6 +23,7 @@ THE SOFTWARE.
 ****************************************************************************/
 using System;
 using System.Data;
+using System.Text;
 using ProtoBuf;
 
 namespace ZyGames.Framework.Data
@@ -76,5 +77,20 @@ namespace ZyGames.Framework.Data
         /// </summary>
         [ProtoMember(6)]
         public SqlParam[] Params { get; set; }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        public override string ToString()
+        {
+            var sql = new StringBuilder();
+            sql.AppendLine(CommandText);
+            foreach (var sqlParam in Params)
+            {
+                sql.AppendLine(string.Format("{0}:{1}", sqlParam.ParamName, sqlParam.Value));
+            }
+            return sql.ToString();
+        }
     }
 }

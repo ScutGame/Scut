@@ -119,6 +119,8 @@
                                 <asp:Button ID="btnParamAdd" runat="server" Text="新增参数" OnClick="btnParamAdd_Click" CssClass="btn" />
                                 <span style="padding:0 5px"></span>
                                 <asp:Button ID="btnParamCopy" runat="server" Text="复制参数" OnClick="btnParamCopy_Click" CssClass="btn" AutoPostBack="True" />
+                                <span style="padding:0 5px"></span>
+                                <asp:Button ID="btnParamRemove" runat="server" Text="删除参数" OnClick="btnParamRemove_Click" CssClass="btn"/>
                             </td>
                         </tr>
                         <tr>

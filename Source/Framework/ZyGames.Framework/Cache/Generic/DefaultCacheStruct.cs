@@ -41,7 +41,7 @@ namespace ZyGames.Framework.Cache.Generic
             return true;
         }
 
-        public override void Update(bool isChange)
+        public override bool Update(bool isChange, string changeKey = null)
         {
             SchemaTable schema;
             if (EntitySchemaSet.TryGet<T>(out schema) &&
@@ -49,17 +49,15 @@ namespace ZyGames.Framework.Cache.Generic
             {
                 if (schema.CacheType == CacheType.Entity)
                 {
-                    UpdateEntity(isChange);
+                  return  UpdateEntity(isChange, changeKey);
                 }
-                else if (schema.CacheType == CacheType.Queue)
+                if (schema.CacheType == CacheType.Queue)
                 {
-                    UpdateQueue(isChange);
+                    return UpdateQueue(isChange, changeKey);
                 }
-                else
-                {
-                    UpdateGroup(isChange);
-                }
+                return UpdateGroup(isChange, changeKey);
             }
+            return false;
         }
     }
 }

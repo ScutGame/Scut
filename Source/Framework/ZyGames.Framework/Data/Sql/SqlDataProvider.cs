@@ -336,16 +336,16 @@ namespace ZyGames.Framework.Data.Sql
 
         private string ConvertToDbType(Type type, string dbType, long length, int scale, bool isKey)
         {
-            if (string.Equals(dbType, "text", StringComparison.CurrentCultureIgnoreCase) ||
-                string.Equals(dbType, "longtext", StringComparison.CurrentCultureIgnoreCase))
+            if (MathUtils.IsEquals(dbType, "text", true) ||
+               MathUtils.IsEquals(dbType, "longtext", true))
             {
                 return "text";
             }
-            if (string.Equals(dbType, "blob", StringComparison.CurrentCultureIgnoreCase))
+            if (MathUtils.IsEquals(dbType, "blob", true))
             {
                 return "varbinary(max)";
             }
-            if (string.Equals(dbType, "longblob", StringComparison.CurrentCultureIgnoreCase))
+            if (MathUtils.IsEquals(dbType, "longblob", true))
             {
                 return "image";
             }
@@ -391,12 +391,12 @@ namespace ZyGames.Framework.Data.Sql
                 return "varbinary(max)";
             }
 
-            if (string.Equals(dbType, "uniqueidentifier", StringComparison.CurrentCultureIgnoreCase) ||
+            if (MathUtils.IsEquals(dbType, "uniqueidentifier", true) ||
                 type.Equals(typeof(Guid)))
             {
                 return "UniqueIdentifier";
             }
-            if (string.Equals(dbType, "varchar", StringComparison.CurrentCultureIgnoreCase) ||
+            if (MathUtils.IsEquals(dbType, "varchar", true) ||
                 type.Equals(typeof(String)))
             {
                 if (isKey && length == 0)

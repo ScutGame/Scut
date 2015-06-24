@@ -157,13 +157,6 @@ namespace ZyGames.Framework.Game.Contract
             get { return _actionId; }
         }
 
-        /// <summary>
-        /// get address for remote
-        /// </summary>
-        public string RemoteAddress
-        {
-            get { return _session != null ? _session.RemoteAddress : string.Empty; }
-        }
 
 
         private string _paramString;
@@ -604,6 +597,11 @@ namespace ZyGames.Framework.Game.Contract
                 if ("1".Equals(_param[aName]))
                 {
                     rValue = true;
+                    result = true;
+                }
+                else if ("0".Equals(_param[aName]))
+                {
+                    rValue = false;
                     result = true;
                 }
                 else

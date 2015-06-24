@@ -38,15 +38,18 @@ namespace ZyGames.Framework.RPC.Http
         /// 
         /// </summary>
         protected readonly string statusDescription;
+
         /// <summary>
         /// 
         /// </summary>
         /// <param name="statusCode"></param>
         /// <param name="statusDescription"></param>
-        protected StatusResponse(int statusCode, string statusDescription)
+        /// <param name="identity"></param>
+        protected StatusResponse(int statusCode, string statusDescription, string identity = null)
         {
             this.statusCode = statusCode;
             this.statusDescription = statusDescription;
+            this.Identity = identity;
         }
         /// <summary>
         /// 
@@ -58,6 +61,11 @@ namespace ZyGames.Framework.RPC.Http
             if (statusDescription != null)
                 context.Response.StatusDescription = statusDescription;
         }
+        /// <summary>
+        /// 
+        /// </summary>
+        public string Identity { get; private set; }
+
         /// <summary>
         /// 
         /// </summary>

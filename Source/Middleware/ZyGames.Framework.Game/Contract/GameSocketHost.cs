@@ -31,6 +31,7 @@ using ZyGames.Framework.Game.Config;
 using ZyGames.Framework.Game.Lang;
 using ZyGames.Framework.Game.Runtime;
 using ZyGames.Framework.Game.Service;
+using ZyGames.Framework.RPC.Http;
 using ZyGames.Framework.RPC.Sockets;
 using ZyGames.Framework.RPC.IO;
 
@@ -44,6 +45,7 @@ namespace ZyGames.Framework.Game.Contract
         //private SmartThreadPool threadPool;
         private SocketListener socketListener;
         private HttpListener httpListener;
+        private HttpCDNAddress _httpCdnAddress;
 
         /// <summary>
         /// Protocol Section
@@ -58,6 +60,18 @@ namespace ZyGames.Framework.Game.Contract
         /// </summary>
         protected bool EnableHttp;
 
+
+        /// <summary>
+        /// Sets Address key of http
+        /// </summary>
+        protected string[] HttpCdnAddressKeys
+        {
+            set
+            {
+                if (value == null) throw new ArgumentNullException("value");
+                _httpCdnAddress = new HttpCDNAddress(value);
+            }
+        }
 
         /// <summary>
         /// Action repeater
@@ -101,7 +115,7 @@ namespace ZyGames.Framework.Game.Contract
             socketListener.Connected += new ConnectionEventHandler(socketLintener_OnConnectCompleted);
             socketListener.Disconnected += new ConnectionEventHandler(socketLintener_Disconnected);
 
-
+            _httpCdnAddress = new HttpCDNAddress();
             httpListener = new HttpListener();
             var httpHost = section.HttpHost;
             var httpPort = section.HttpPort;
@@ -213,6 +227,7 @@ namespace ZyGames.Framework.Game.Contract
             {
                 GameSession.Recover(session, e.Socket.HashCode, e.Socket, socketListener);
             }
+            session.InitSocket(e.Socket, socketListener);
             return session;
         }
 
@@ -329,7 +344,8 @@ namespace ZyGames.Framework.Game.Contract
                 HttpListener listener = (HttpListener)result.AsyncState;
                 HttpListenerContext context = listener.EndGetContext(result);
                 listener.BeginGetContext(OnHttpRequest, listener);
-
+                string userHostAddress = _httpCdnAddress.GetUserHostAddress(context.Request.RemoteEndPoint,
+                    key => context.Request.Headers[key]);
                 RequestPackage package;
                 if (!ActionDispatcher.TryDecodePackage(context, out package))
                 {
@@ -349,6 +365,7 @@ namespace ZyGames.Framework.Game.Contract
                             : GameSession.Get(package.SessionId))
                         ?? GameSession.CreateNew(Guid.NewGuid(), context.Request);
                 }
+                session.RemoteAddress = userHostAddress;
                 package.Bind(session);
 
                 ActionGetter httpGet = ActionDispatcher.GetActionGetter(package, session);
@@ -456,6 +473,10 @@ namespace ZyGames.Framework.Game.Contract
             if (EnableHttp)
             {
                 httpListener.Start();
+                foreach (var prefix in httpListener.Prefixes)
+                {
+                    TraceLog.WriteLine("{0} Http service:{1} is started.", DateTime.Now.ToString("HH:mm:ss"), prefix.TrimEnd('/'));
+                }
                 httpListener.BeginGetContext(OnHttpRequest, httpListener);
             }
             EntitySyncManger.SendHandle += (userId, data) =>
@@ -469,6 +490,7 @@ namespace ZyGames.Framework.Game.Contract
                 }
                 return false;
             };
+            TraceLog.WriteLine("{0} Socket service {1}:{2} is started.", DateTime.Now.ToString("HH:mm:ss"), _setting.GameIpAddress, _setting.GamePort);
             base.Start(args);
         }
 

@@ -84,6 +84,7 @@ namespace ZyGames.Framework.Model
         {
             try
             {
+                DateTime date = DateTime.Now;
                 int logPriorBuildMonth = GetEntitySection().LogPriorBuildMonth;
                 var tableTypes = _dynamicTables.ToList();
                 foreach (var schema in tableTypes)
@@ -97,7 +98,7 @@ namespace ZyGames.Framework.Model
                     int count = logPriorBuildMonth > 1 ? logPriorBuildMonth : 2;
                     for (int i = 0; i < count; i++)
                     {
-                        tableName = schema.GetTableName(i);
+                        tableName = schema.GetTableName(date, i);
 
                         DbColumn[] columns;
                         if (!dbprovider.CheckTable(tableName, out columns))
@@ -135,7 +136,7 @@ namespace ZyGames.Framework.Model
         /// 生成存储在Redis的Key
         /// </summary>
         /// <returns></returns>
-        public static string GenerateRedisKey<T>(string personalKey) where T : AbstractEntity
+        public static string GenerateRedisKey<T>(string personalKey) where T : ISqlEntity
         {
             return GenerateRedisKey(typeof(T), personalKey);
         }
@@ -176,9 +177,15 @@ namespace ZyGames.Framework.Model
         /// 
         /// </summary>
         /// <param name="type"></param>
-        public static SchemaTable InitSchema(Type type)
+        /// <param name="isReset"></param>
+        public static SchemaTable InitSchema(Type type, bool isReset = false)
         {
-            SchemaTable schema = new SchemaTable();
+            SchemaTable schema;
+            if (!isReset && TryGet(type, out schema))
+            {
+                return schema;
+            }
+            schema = new SchemaTable();
             try
             {
                 schema.IsEntitySync = type.GetCustomAttributes(typeof(EntitySyncAttribute), false).Length > 0;
@@ -522,6 +529,7 @@ namespace ZyGames.Framework.Model
                     //column.DbType = ColumnDbType.Varchar;
                 }
                 schema.Columns.TryAdd(column.Name, column);
+                if (column.IsSerialized) schema.HasObjectColumns = true;
                 if (column.IsKey)
                 {
                     keySet.Add(column.Name);
@@ -728,6 +736,15 @@ namespace ZyGames.Framework.Model
             return SchemaSet.TryGetValue(typeName, out schema);
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        public static IEnumerable<SchemaTable> GetEnumerable()
+        {
+            return SchemaSet.Select(pair => pair.Value);
+        }
+
 
         private static T FindAttribute<T>(object[] attrList) where T : Attribute, new()
         {
@@ -750,7 +767,7 @@ namespace ZyGames.Framework.Model
         /// <param name="schema"></param>
         private static void CheckTableSchema(SchemaTable schema)
         {
-            string tableName = schema.GetTableName();
+            string tableName = schema.GetTableName(DateTime.Now);
             try
             {
                 if (DbConnectionProvider.Count == 0)
@@ -792,7 +809,7 @@ namespace ZyGames.Framework.Model
             {
                 var field = keypair.Value;
                 string name = field.Name;
-                var dbColumn = Array.Find(columns, p => string.Equals(p.Name, name, StringComparison.CurrentCultureIgnoreCase));
+                var dbColumn = Array.Find(columns, p => MathUtils.IsEquals(p.Name, name, true));
                 if (dbColumn == null)
                 {
                     dbColumn = new DbColumn();

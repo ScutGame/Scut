@@ -131,6 +131,13 @@ namespace ZyGames.Framework.Game.Service
         public string SessionId { get { return _session != null ? _session.SessionId : ""; } }
 
         /// <summary>
+        /// get address for remote
+        /// </summary>
+        public string RemoteAddress
+        {
+            get { return _session != null ? _session.RemoteAddress : string.Empty; }
+        }
+        /// <summary>
         /// 
         /// </summary>
         /// <returns></returns>
@@ -371,7 +378,7 @@ namespace ZyGames.Framework.Game.Service
         {
             throw new NotImplementedException();
         }
-        
+
         /// <summary>
         /// 
         /// </summary>
@@ -421,5 +428,17 @@ namespace ZyGames.Framework.Game.Service
         }
         #endregion
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        public override string ToString()
+        {
+            return string.Format("Url:{0}, Uid:{1}, Pid:{2}\r\nHost:{3}",
+                ToParamString(), 
+                Session.UserId,
+                Session.User != null ? Session.User.GetPassportId() : "",
+                RemoteAddress);
+        }
     }
 }

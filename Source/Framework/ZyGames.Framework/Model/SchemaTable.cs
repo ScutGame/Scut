@@ -206,6 +206,8 @@ namespace ZyGames.Framework.Model
 
         private ConcurrentDictionary<string, SchemaColumn> _columns;
 
+        internal bool HasObjectColumns;
+
         /// <summary>
         /// Get schema column.
         /// </summary>
@@ -266,24 +268,26 @@ namespace ZyGames.Framework.Model
         }
         private const string DateVarString = "$date";
         private const string WeekOfYearString = "$week";
+
         /// <summary>
         /// 获取动态的表名
         /// </summary>
+        /// <param name="date"></param>
         /// <param name="increase">使用表达式时的日期增量,默认当天</param>
         /// <returns></returns>
-        public string GetTableName(int increase = 0)
+        public string GetTableName(DateTime date, int increase = 0)
         {
             string format = NameFormat ?? "";
-            DateTime date = DateTime.Now;
+            //date = DateTime.Now;
             int weekOfYear = 0;
             //处理日期周
-            if (format.IndexOf(WeekOfYearString, StringComparison.CurrentCultureIgnoreCase) != -1)
+            if (format.ToLower().IndexOf(WeekOfYearString, StringComparison.Ordinal) != -1)
             {
                 date = date.AddDays(increase * 7);
                 weekOfYear = MathUtils.ToWeekOfYear(date);
                 format = format.Replace(WeekOfYearString, weekOfYear.ToString());
             }
-            int index = format.IndexOf(DateVarString, StringComparison.CurrentCultureIgnoreCase);
+            int index = format.ToLower().IndexOf(DateVarString, StringComparison.Ordinal);
             if (index > -1)
             {
                 string formatStart = format.Substring(0, index);
@@ -293,10 +297,10 @@ namespace ZyGames.Framework.Model
                 {
                     formatEnd = format.Substring(index + DateVarString.Length);
                     //查找是否有日期格式
-                    int dateIndex = formatEnd.IndexOf("[", StringComparison.CurrentCultureIgnoreCase);
+                    int dateIndex = formatEnd.IndexOf("[", StringComparison.Ordinal);
                     if (dateIndex > -1)
                     {
-                        int indexTo = formatEnd.IndexOf("]", StringComparison.CurrentCultureIgnoreCase);
+                        int indexTo = formatEnd.IndexOf("]", StringComparison.Ordinal);
                         if (indexTo > -1 && indexTo > dateIndex)
                         {
                             string dateFormat = formatEnd.Substring(dateIndex + 1, indexTo - dateIndex - 1);
@@ -317,19 +321,19 @@ namespace ZyGames.Framework.Model
 
         private static DateTime GetIncreaseDateTime(int increase, string dateFormat, DateTime date)
         {
-            if (dateFormat.EndsWith("yy", StringComparison.CurrentCultureIgnoreCase))
+            if (dateFormat.EndsWith("yy", StringComparison.Ordinal))
             {
                 date = date.AddYears(increase);
             }
-            else if (dateFormat.EndsWith("MM", false, CultureInfo.CurrentCulture))
+            else if (dateFormat.EndsWith("MM", StringComparison.Ordinal))
             {
                 date = date.AddMonths(increase);
             }
-            else if (dateFormat.EndsWith("d", StringComparison.CurrentCultureIgnoreCase))
+            else if (dateFormat.EndsWith("d", StringComparison.Ordinal))
             {
                 date = date.AddDays(increase);
             }
-            else if (dateFormat.EndsWith("h", StringComparison.CurrentCultureIgnoreCase))
+            else if (dateFormat.EndsWith("h", StringComparison.Ordinal))
             {
                 date = date.AddHours(increase);
             }

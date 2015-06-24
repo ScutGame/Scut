@@ -48,7 +48,7 @@ namespace ZyGames.Framework.Common.Serialization
         /// <returns></returns>
         public object Deserialize(byte[] data, Type type)
         {
-            return ProtoBufUtils.Deserialize(data, type);
+            return ProtoBufUtils.Deserialize(data, type, false);
         }
     }
 }

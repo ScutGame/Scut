@@ -30,13 +30,14 @@ namespace AccountServer.Lang
 {
     public static class StateDescription
     {
-        public const string Error = "服务器异常！";
+        public const string Error = "账号服务器异常！";
+        public const string IMEINullError = "IMEI为空！";
         public const string SignError = "签名错误！";
         public const string NoHandler = "无处理程序！";
         public const string PassworkLengthError = "密码长度错误！";
         public const string PassworkError = "密码错误！";
         public const string PasswordOrPassError = "账号或密码为空！";
-        public const string RegistError = "账号已存在！";
+        public const string RegistError = "账号已存在，注册失败！";
         public const string ChangePassError = "修改密码失败！";
 
         public const string NoToken = "登录凭证无效！";

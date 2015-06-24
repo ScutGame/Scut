@@ -31,22 +31,40 @@ using System.Net.NetworkInformation;
 using System.Net.Sockets;
 using System.Text;
 using ServiceStack.Redis;
+using ServiceStack.Redis.Pipeline;
 using ZyGames.Framework.Common.Configuration;
 using ZyGames.Framework.Common.Log;
 using ZyGames.Framework.Common.Serialization;
+using ZyGames.Framework.Common.Timing;
 using ZyGames.Framework.Config;
 using ZyGames.Framework.Model;
 using ZyGames.Framework.Common;
 
 namespace ZyGames.Framework.Redis
 {
-
+    /// <summary>
+    /// 
+    /// </summary>
+    public enum RedisStorageVersion
+    {
+        /// <summary>
+        /// first version
+        /// </summary>
+        Default = 0,
+        /// <summary>
+        /// Entity use hash storage version.
+        /// </summary>
+        Hash = 5,
+        /// <summary>
+        /// Entity use hash storage and mutil key use map find version.
+        /// </summary>
+        HashMutilKeyMap = 7
+    }
     /// <summary>
     /// 连接池管理
     /// </summary>
     public static class RedisConnectionPool
     {
-        internal const int EntityMinVersion = 5;
         /// <summary>
         /// 
         /// </summary>
@@ -85,10 +103,23 @@ namespace ZyGames.Framework.Redis
         {
             _setting = setting;
             _serializer = serializer;
-            InitRedisInfo();
+            //init pool
+            string key = GenratePoolKey(setting.Host);
+            var pool = GenrateObjectPool(setting);
+            for (int i = 0; i < pool.MinPoolSize; i++)
+            {
+                pool.Put();
+            }
+            _poolCache[key] = pool;
+            InitRedisInfo(setting.ClientVersion);
         }
 
-        private static void InitRedisInfo()
+        private static ObjectPoolWithExpire<RedisClient> GenrateObjectPool(RedisPoolSetting setting)
+        {
+            return new ObjectPoolWithExpire<RedisClient>(() => CreateRedisClient(setting), true, setting.PoolTimeOut, setting.MaxWritePoolSize / 10);
+        }
+
+        private static void InitRedisInfo(RedisStorageVersion redisClientVersion)
         {
             ProcessTrans(RedisInfoKey, cli =>
             {
@@ -107,12 +138,12 @@ namespace ZyGames.Framework.Redis
                     RedisInfo.ServerHost = host;
                     RedisInfo.ServerPath = serverPath;
                     RedisInfo.SerializerType = serializerType;
-                    RedisInfo.ClientVersion = _setting.ClientVersion;
+                    RedisInfo.ClientVersion = redisClientVersion;
                     RedisInfo.StarTime = MathUtils.Now;
                 }
                 else if (string.IsNullOrEmpty(slaveName) && string.Equals(hashCode, RedisInfo.HashCode))
                 {
-                    RedisInfo.ClientVersion = _setting.ClientVersion;
+                    RedisInfo.ClientVersion = redisClientVersion;
                     RedisInfo.SerializerType = serializerType;
                     RedisInfo.StarTime = MathUtils.Now;
                 }
@@ -127,7 +158,7 @@ namespace ZyGames.Framework.Redis
                         slaveInfo.ServerHost = host;
                         slaveInfo.ServerPath = serverPath;
                         slaveInfo.SerializerType = serializerType;
-                        slaveInfo.ClientVersion = _setting.ClientVersion;
+                        slaveInfo.ClientVersion = redisClientVersion;
                         slaveInfo.StarTime = MathUtils.Now;
                         RedisInfo.SlaveSet[slaveName] = slaveInfo;
                     }
@@ -135,7 +166,7 @@ namespace ZyGames.Framework.Redis
                     {
                         slaveInfo = RedisInfo.SlaveSet[slaveName];
                         slaveInfo.SerializerType = serializerType;
-                        slaveInfo.ClientVersion = _setting.ClientVersion;
+                        slaveInfo.ClientVersion = redisClientVersion;
                         slaveInfo.StarTime = MathUtils.Now;
                     }
                     else
@@ -158,7 +189,7 @@ namespace ZyGames.Framework.Redis
         public static RedisInfo RedisInfo { get; set; }
 
         /// <summary>
-        /// 
+        /// Gets default redis pool setting.
         /// </summary>
         public static RedisPoolSetting Setting
         {
@@ -194,17 +225,35 @@ namespace ZyGames.Framework.Redis
         /// </summary>
         /// <param name="key"></param>
         /// <param name="increaseNum">increase num,defalut 1</param>
+        /// <param name="isLock"></param>
         /// <returns></returns>
-        public static long GetNextNo(string key, uint increaseNum = 1)
+        public static long GetNextNo(string key, uint increaseNum = 1, bool isLock = false)
         {
             long result = 0;
             Process(client =>
             {
+                if (isLock) client.Watch(key);
                 result = client.Increment(key, increaseNum);
             });
             return result;
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="key"></param>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        public static long SetNoTo(string key, uint value)
+        {
+            long increment = 0;
+            Process(client =>
+            {
+                increment = client.Increment(key, value);
+                client.UnWatch();
+            });
+            return increment;
+        }
         /// <summary>
         /// 
         /// </summary>
@@ -266,12 +315,119 @@ namespace ZyGames.Framework.Redis
         }
 
         /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="func"></param>
+        /// <param name="pipelineAction"></param>
+        /// <param name="setting"></param>
+        public static void ProcessPipeline(Action<RedisClient> func, Action<IRedisPipeline> pipelineAction, RedisPoolSetting setting = null)
+        {
+            var client = setting == null ? GetClient() : GetOrAddPool(setting);
+            try
+            {
+                if (func != null)
+                {
+                    func(client);
+                }
+                using (var p = client.CreatePipeline())
+                {
+                    pipelineAction(p);
+                }
+            }
+            finally
+            {
+                PuttPool(client);
+            }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="pipelineActions"></param>
+        public static void ProcessPipeline(params Action<RedisClient>[] pipelineActions)
+        {
+            ProcessPipeline(null, null, pipelineActions);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="action"></param>
+        /// <param name="pipelineActions"></param>
+        public static void ProcessPipeline(Action<RedisClient> action, params Action<RedisClient>[] pipelineActions)
+        {
+            ProcessPipeline(action, null, pipelineActions);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="action"></param>
+        /// <param name="pipelineActions"></param>
+        /// <param name="setting"></param>
+        public static void ProcessPipeline(Action<RedisClient> action, RedisPoolSetting setting, params  Action<RedisClient>[] pipelineActions)
+        {
+            var client = setting == null ? GetClient() : GetOrAddPool(setting);
+            try
+            {
+                if (action != null)
+                {
+                    action(client);
+                }
+                if (pipelineActions.Length > 0)
+                {
+                    ProcessPipeline(client, pipelineActions);
+                }
+            }
+            finally
+            {
+                PuttPool(client);
+            }
+        }
+
+        private static void ProcessPipeline(RedisClient client, Action<RedisClient>[] pipelineActions)
+        {
+            using (var pipeline = client.CreatePipeline())
+            {
+                foreach (var pipelineFunc in pipelineActions)
+                {
+                    Action<RedisClient> func = pipelineFunc;
+                    pipeline.QueueCommand(c => func((RedisClient)c));
+                }
+                pipeline.Flush();
+            }
+        }
+
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="func"></param>
+        /// <param name="setting"></param>
+        public static void ProcessPipeline(Action<IRedisPipeline> func, RedisPoolSetting setting = null)
+        {
+            var client = setting == null ? GetClient() : GetOrAddPool(setting);
+            try
+            {
+                using (var p = client.CreatePipeline())
+                {
+                    func(p);
+                }
+            }
+            finally
+            {
+                PuttPool(client);
+            }
+        }
+
+        /// <summary>
         /// Process delegate
         /// </summary>
         /// <param name="func"></param>
-        public static void Process(Action<RedisClient> func)
+        /// <param name="setting"></param>
+        public static void Process(Action<RedisClient> func, RedisPoolSetting setting = null)
         {
-            var client = GetClient();
+            var client = setting == null ? GetClient() : GetOrAddPool(setting);
             try
             {
                 func(client);
@@ -285,9 +441,10 @@ namespace ZyGames.Framework.Redis
         /// Process ReadOnly delegate
         /// </summary>
         /// <param name="func"></param>
-        public static void ProcessReadOnly(Action<RedisClient> func)
+        /// <param name="setting"></param>
+        public static void ProcessReadOnly(Action<RedisClient> func, RedisPoolSetting setting = null)
         {
-            var client = GetReadOnlyClient();
+            var client = setting == null ? GetReadOnlyClient() : GetOrAddPool(setting);
             try
             {
                 func(client);
@@ -297,11 +454,23 @@ namespace ZyGames.Framework.Redis
                 PuttPool(client);
             }
         }
+
         /// <summary>
-        /// check connect to redis.
+        /// 
         /// </summary>
         /// <returns></returns>
         public static bool CheckConnect()
+        {
+            return CheckConnect(null);
+        }
+
+
+        /// <summary>
+        /// check connect to redis.
+        /// </summary>
+        /// <param name="setting"></param>
+        /// <returns></returns>
+        public static bool CheckConnect(RedisPoolSetting setting)
         {
             bool result = false;
             try
@@ -309,12 +478,12 @@ namespace ZyGames.Framework.Redis
                 Process(client =>
                 {
                     result = client.Ping();
-                });
+                }, setting);
 
                 ProcessReadOnly(client =>
                 {
                     result = client.Ping();
-                });
+                }, setting);
                 return result;
             }
             catch (Exception ex)
@@ -332,14 +501,16 @@ namespace ZyGames.Framework.Redis
         {
             try
             {
-                Ping objPingSender = new Ping();
-                PingOptions objPinOptions = new PingOptions();
-                objPinOptions.DontFragment = true;
-                string data = "";
-                byte[] buffer = Encoding.UTF8.GetBytes(data);
-                int intTimeout = 120;
-                PingReply objPinReply = objPingSender.Send(ip, intTimeout, buffer, objPinOptions);
-                return objPinReply != null && objPinReply.Status == IPStatus.Success;
+                using (Ping objPingSender = new Ping())
+                {
+                    PingOptions objPinOptions = new PingOptions();
+                    objPinOptions.DontFragment = true;
+                    string data = "";
+                    byte[] buffer = Encoding.UTF8.GetBytes(data);
+                    int intTimeout = 120;
+                    PingReply objPinReply = objPingSender.Send(ip, intTimeout, buffer, objPinOptions);
+                    return objPinReply != null && objPinReply.Status == IPStatus.Success;
+                }
             }
             catch (Exception)
             {
@@ -364,7 +535,7 @@ namespace ZyGames.Framework.Redis
         /// <returns></returns>
         public static RedisClient GetClient()
         {
-            return GetPool();
+            return GetOrAddPool(_setting);
             //return (RedisClient)_pooledRedis.GetClient();
         }
         /// <summary>
@@ -373,7 +544,7 @@ namespace ZyGames.Framework.Redis
         /// <returns></returns>
         public static RedisClient GetReadOnlyClient()
         {
-            return GetPool();
+            return GetOrAddPool(_setting);
             //return (RedisClient)_pooledRedis.GetReadOnlyClient();
         }
         /// <summary>
@@ -382,14 +553,14 @@ namespace ZyGames.Framework.Redis
         /// <param name="client"></param>
         public static void PuttPool(RedisClient client)
         {
-            var key = string.Format("{0}:{1}", client.Host, client.Port);
+            var key = GenratePoolKey(client.Host, client.Port);
             ObjectPoolWithExpire<RedisClient> pool;
             if (_poolCache.TryGetValue(key, out pool))
             {
                 if (client.HadExceptions)
                 {
                     client.Dispose();
-                    client = CreateRedisClient(_setting);//create new client modify by Seamoon
+                    client = pool.Create(); //create new client modify by Seamoon
                 }
                 pool.Put(client);
             }
@@ -399,34 +570,58 @@ namespace ZyGames.Framework.Redis
             }
         }
 
-        private static RedisClient GetPool()
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="host"></param>
+        /// <returns>has null</returns>
+        public static RedisClient GetPool(string host)
         {
-            string[] hostParts = _setting.Host.Split('@', ':');
-            var key = hostParts.Length == 3 ? string.Format("{0}:{1}", hostParts[1], hostParts[2])
-                : hostParts.Length == 2 ? string.Format("{0}:{1}", hostParts[0], hostParts[1])
-                : string.Format("{0}:{1}", hostParts[0], 6379);
-
-
+            var key = GenratePoolKey(host);
             ObjectPoolWithExpire<RedisClient> pool;
-            do
+            if (_poolCache.TryGetValue(key, out pool))
             {
-                if (!_poolCache.TryGetValue(key, out pool))
-                {
-                    pool = new ObjectPoolWithExpire<RedisClient>(() => CreateRedisClient(_setting), true);
-                    if (_poolCache.TryAdd(key, pool))
-                    {
-                        //init pool
-                        for (int i = 0; i < pool.MinPoolSize; i++)
-                        {
-                            pool.Put(CreateRedisClient(_setting));
-                        }
-                        break;
-                    }
-                }
-                else break;
-            } while (true);
-
+                return pool.Get();
+            }
+            return null;
+        }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="setting"></param>
+        /// <returns></returns>
+        public static RedisClient GetOrAddPool(RedisPoolSetting setting)
+        {
+            var key = GenratePoolKey(setting.Host);
+            var lazy = new Lazy<ObjectPoolWithExpire<RedisClient>>(() => GenrateObjectPool(setting));
+            ObjectPoolWithExpire<RedisClient> pool = _poolCache.GetOrAdd(key, k => lazy.Value);
             return pool.Get();
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="host"></param>
+        /// <param name="port"></param>
+        /// <returns></returns>
+        public static string GenratePoolKey(string host, int port)
+        {
+            return string.Format("{0}:{1}", host, port);
+        }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="host"></param>
+        /// <returns></returns>
+        public static string GenratePoolKey(string host)
+        {
+            string[] hostParts = host.Split('@', ':');
+            var key = hostParts.Length == 3
+                ? string.Format("{0}:{1}", hostParts[1], hostParts[2])
+                : hostParts.Length == 2
+                    ? string.Format("{0}:{1}", hostParts[0], hostParts[1])
+                    : string.Format("{0}:{1}", hostParts[0], 6379);
+            return key;
         }
 
         private static RedisClient CreateRedisClient(RedisPoolSetting setting)
@@ -435,17 +630,203 @@ namespace ZyGames.Framework.Redis
             RedisClient client = null;
             if (setting.Host.Contains("@"))
             {
+                //have password.
                 hostParts = setting.Host.Split('@', ':');
-                client = new RedisClient(hostParts[1], hostParts[2].ToInt(), hostParts[0], setting.DbIndex);
+                client = new RedisClient(hostParts[1], hostParts[2].ToInt(), hostParts[0], setting.DbIndex) { ConnectTimeout = setting.ConnectTimeout };
             }
             else
             {
                 hostParts = setting.Host.Split(':');
                 int port = hostParts.Length > 1 ? hostParts[1].ToInt() : 6379;
-                client = new RedisClient(hostParts[0], port, null, setting.DbIndex);
+                client = new RedisClient(hostParts[0], port, null, setting.DbIndex) { ConnectTimeout = setting.ConnectTimeout };
             }
             return client;
         }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="key"></param>
+        /// <param name="value"></param>
+        /// <param name="expireSecond"></param>
+        public static void SetExpire(string key, string value, int expireSecond)
+        {
+            SetExpire(new[] { key }, new[] { value }, expireSecond);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="keys"></param>
+        /// <param name="values"></param>
+        /// <param name="expireSecond">0 is del</param>
+        public static void SetExpire(string[] keys, string[] values, int expireSecond)
+        {
+            var funcList = new Action<RedisClient>[keys.Length];
+            for (int i = 0; i < keys.Length; i++)
+            {
+                string key = keys[i];
+                var value = Encoding.UTF8.GetBytes(values[i]);
+                if (expireSecond == 0)
+                {
+                    funcList[i] = c => c.Del(key);
+                }
+                else
+                {
+                    funcList[i] = c => c.Set(key, value, expireSecond);
+                }
+            }
+            ProcessPipeline(funcList);
+            /*string script = @"
+            local second = KEYS[1]
+            local len = table.getn(KEYS)
+            print(table.concat(ARGV, ','))
+            for i=2, len do
+                local setId = KEYS[i]
+                local val = ARGV[i-1]
+                redis.call('Set', setId, val, 'EX', second)
+            end
+            return 0
+            ";
+            var list = new List<string>(keys);
+            list.Insert(0, expireSecond.ToString());
+            ProcessReadOnly(client => client.ExecLuaAsInt(script, list.ToArray(), values));*/
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="personalIds"></param>
+        /// <returns></returns>
+        public static IEnumerable<T> GetAllEntity<T>(IEnumerable<string> personalIds)
+        {
+            return GetAllEntity<T>(personalIds, RedisInfo.ClientVersion >= RedisStorageVersion.HashMutilKeyMap);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="personalIds"></param>
+        /// <param name="hasMutilKeyIndexs"></param>
+        /// <returns></returns>
+        public static IEnumerable<T> GetAllEntity<T>(IEnumerable<string> personalIds, bool hasMutilKeyIndexs)
+        {
+            //todo: trace
+            SchemaTable table = EntitySchemaSet.Get<T>();
+            var watch = RunTimeWatch.StartNew("Get redis data of " + table.EntityName);
+            try
+            {
+                var keys = personalIds.ToArray();
+                string hashId = GetRedisEntityKeyName(table.EntityType);
+                var entityKeys = keys.Select(ToByteKey).ToArray();
+                watch.Check("init count:" + entityKeys.Length);
+                byte[][] valueBytes = null;
+                ProcessReadOnly(client =>
+                {
+                    if (typeof(T).IsSubclassOf(typeof(BaseEntity))
+                         && table.Keys.Length > 1)
+                    {
+                        //修正未使用Persional作为Key,而是多个Key时,加载数据为空问题,修改成加载所有
+                        valueBytes = hasMutilKeyIndexs
+                            ? GetValuesFromMutilKeyMap(client, hashId, keys)
+                            : GetValuesFromMutilKey(client, hashId, entityKeys);
+                    }
+                    else
+                    {
+                        valueBytes = client.HMGet(hashId, entityKeys);
+                    }
+                });
+                watch.Check("redis get");
+                if (valueBytes != null)
+                {
+                    return valueBytes.Where(t => t != null).Select(t => (T)_serializer.Deserialize(t, typeof(T)));
+                }
+                return null;
+            }
+            finally
+            {
+                watch.Check("deserialize");
+                watch.Flush(true, 100);
+            }
+        }
+
+        /// <summary>
+        /// Get mutil entity instance from redis, but mutil key of entity not surported.
+        /// </summary>
+        /// <param name="personalId"></param>
+        /// <param name="entityTypes"></param>
+        /// <returns></returns>
+        public static object[] GetAllEntity(string personalId, params  Type[] entityTypes)
+        {
+            //todo: trace
+            var watch = RunTimeWatch.StartNew("Get redis data of persionalId:" + personalId);
+            if (entityTypes.Length == 0) return null;
+
+            byte[] keytBytes = ToByteKey(personalId);
+            var redisKeys = new List<string>();
+            foreach (var type in entityTypes)
+            {
+                redisKeys.Add(GetRedisEntityKeyName(type));
+            }
+            try
+            {
+                byte[][] valueBytes = null;
+                /*
+                                string script = @"
+                local result={}
+                local key = KEYS[1]
+                local len = table.getn(KEYS)
+                for i=2, len do
+                    local hashId = KEYS[i]
+                    local values = redis.call('HGet', hashId, key)
+                    table.insert(result, values)
+                end
+                return result
+                ";
+                */
+                ProcessReadOnly(client =>
+                {
+                    var values = new List<byte[]>();
+                    using (var p = client.CreatePipeline())
+                    {
+                        foreach (var key in redisKeys)
+                        {
+                            string k = key;
+                            p.QueueCommand(cli => ((RedisNativeClient)cli).HGet(k, keytBytes), values.Add);
+                        }
+                        p.Flush();
+                    }
+                    valueBytes = values.ToArray();
+                    //valueBytes = client.Eval(script, redisKeys.Count, redisKeys.ToArray());
+                });
+                watch.Check("redis get");
+                if (valueBytes != null)
+                {
+                    var result = new object[entityTypes.Length];
+                    for (int i = 0; i < entityTypes.Length; i++)
+                    {
+                        var type = entityTypes[i];
+                        var val = i < valueBytes.Length ? valueBytes[i] : null;
+                        result[i] = val == null || val.Length == 0
+                            ? null
+                            : _serializer.Deserialize(val, type);
+                    }
+                    return result;
+                }
+            }
+            catch (Exception ex)
+            {
+                TraceLog.WriteError("Get redis data of persionalId:{0} error:{1}", personalId, ex);
+            }
+            finally
+            {
+                watch.Flush(true, 100);
+            }
+            return null;
+        }
+
 
         /// <summary>
         /// Try get entity
@@ -457,9 +838,28 @@ namespace ZyGames.Framework.Redis
         /// <returns></returns>
         public static bool TryGetEntity<T>(string redisKey, SchemaTable table, out List<T> list) where T : ISqlEntity
         {
-            bool result = false;
+            if (RedisInfo.ClientVersion < RedisStorageVersion.Hash)
+            {
+                return TryGetOlbValue(redisKey, table, out list);
+            }
+            return TryGetValue(redisKey, table, out list, RedisInfo.ClientVersion >= RedisStorageVersion.HashMutilKeyMap);
+        }
+        /// <summary>
+        /// /
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="redisKey"></param>
+        /// <param name="table"></param>
+        /// <param name="list"></param>
+        /// <param name="hasMutilKeyIndexs">has mutil key map index</param>
+        /// <returns></returns>
+        private static bool TryGetValue<T>(string redisKey, SchemaTable table, out List<T> list, bool hasMutilKeyIndexs) where T : ISqlEntity
+        {
+            //todo: trace
+            var watch = RunTimeWatch.StartNew("Redis TryGetEntity " + redisKey);
             try
             {
+                CacheType cacheType = table.CacheType;
                 //修改存储统一Hash格式(TypeName, keyCode, value)
                 var keys = redisKey.Split('_');
                 string keyValue = "";
@@ -471,84 +871,169 @@ namespace ZyGames.Framework.Redis
                     keyCode = ToByteKey(keyValue);
                 }
                 byte[][] valueBytes = null;
+                byte[][] keyValueBytes = null;
                 byte[] value = null;
-                bool isFilter = false;
-                try
+                watch.Check("init");
+                ProcessReadOnly(client =>
                 {
-                    ProcessReadOnly(client =>
+                    if (cacheType == CacheType.Rank)
                     {
-                        if (keyCode == null)
-                        {
-                            if (client.ContainsKey(hashId))
-                            {
-                                valueBytes = client.HVals(hashId);//.Where((b, index) => index % 2 == 1).ToArray();
-                            }
-                        }
-                        else
-                        {
-                            value = client.HGet(hashId, keyCode);
-                            //修正未使用Persional作为Key,而是多个Key时,加载数据为空问题,修改成加载所有
-                            if (value == null && table != null
-                                && !string.IsNullOrEmpty(keyValue)
-                                && typeof(T).IsSubclassOf(typeof(BaseEntity))
-                                && table.Keys.Length > 1)
-                            {
-                                isFilter = true;
-                                byte[][] resultKeys = client.HKeys(hashId).Where(k => ContainKey(k, keyCode, AbstractEntity.KeyCodeJoinChar)).ToArray();
-                                if (resultKeys.Length > 0)
-                                {
-                                    valueBytes = client.HMGet(hashId, resultKeys);//.Where((b, index) => index % 2 == 1).ToArray();
-                                }
-                            }
-                        }
-                    });
-
-                    if (valueBytes != null || value != null)
-                    {
-                        if (value != null)
-                        {
-                            list = new List<T> { (T)_serializer.Deserialize(value, typeof(T)) };
-                            return true;
-                        }
-                        if (valueBytes != null)
-                        {
-                            if (isFilter)
-                            {
-                                list = valueBytes.Select(t => (T)_serializer.Deserialize(t, typeof(T))).Where(t => t.PersonalId == keyValue).ToList();
-                            }
-                            else
-                            {
-                                list = valueBytes.Select(t => (T)_serializer.Deserialize(t, typeof(T))).ToList();
-                            }
-                            return true;
-                        }
+                        //get value from hight to low
+                        string setId = string.Format("{0}:{1}", hashId, keyValue);
+                        keyValueBytes = table.Capacity > 0
+                            ? client.ZRevRangeByScoreWithScores(setId, 0, long.MaxValue, null, table.Capacity)
+                            : client.ZRevRangeByScoreWithScores(setId, 0, long.MaxValue, null, null);
                     }
-                }
-                catch (Exception er)
+                    else if (keyCode == null)
+                    {
+                        valueBytes = client.HVals(hashId);
+                    }
+                    else if (!string.IsNullOrEmpty(keyValue)
+                         && typeof(T).IsSubclassOf(typeof(BaseEntity))
+                         && table.Keys.Length > 1)
+                    {
+                        //修正未使用Persional作为Key,而是多个Key时,加载数据为空问题,修改成加载所有
+                        valueBytes = hasMutilKeyIndexs
+                            ? GetValuesFromMutilKeyMap(client, hashId, new[] { keyValue })
+                            : GetValuesFromMutilKey(client, hashId, new[] { keyCode });
+                    }
+                    else
+                    {
+                        value = client.HGet(hashId, keyCode);
+                    }
+                });
+                watch.Check("redis get");
+                if (value != null)
                 {
-                    TraceLog.WriteError("Get redis \"{0}\" key:\"{1}\" cache error:{2}", typeof(T).FullName, redisKey, er);
+                    list = new List<T> { (T)_serializer.Deserialize(value, typeof(T)) };
+                    return true;
                 }
-
-                result = TryGetOlbValue(redisKey, out list);
+                if (valueBytes != null)
+                {
+                    list = valueBytes.Select(t => (T)_serializer.Deserialize(t, typeof(T))).ToList();
+                    return true;
+                }
+                if (keyValueBytes != null)
+                {
+                    list = new List<T>();
+                    for (int i = 0; i < keyValueBytes.Length; i += 2)
+                    {
+                        var values = keyValueBytes[i];
+                        var score = keyValueBytes[i + 1];
+                        var t = _serializer.Deserialize(values, typeof(T));
+                        ((RankEntity)t).Score = Encoding.UTF8.GetString(score).ToDouble();
+                        list.Add((T)t);
+                    }
+                    return true;
+                }
+                list = new List<T>();
+                return true;
             }
             catch (Exception ex)
             {
                 list = null;
                 TraceLog.WriteError("Get redis \"{0}\" key:\"{1}\" cache error:{2}", typeof(T).FullName, redisKey, ex);
             }
-            return result;
+            finally
+            {
+                watch.Check("deserialize");
+                watch.Flush(true, 100);
+            }
+            return false;
         }
 
-        private static bool TryGetOlbValue<T>(string redisKey, out List<T> list) where T : ISqlEntity
+        private static byte[][] GetValuesFromMutilKeyMap(RedisClient client, string hashId, IEnumerable<string> keyCodes)
+        {
+            //string script = @"
+            //local hashId = KEYS[1]
+            //local setId = KEYS[2]
+            //local keys = redis.call('SMembers',setId)
+            //local values = redis.call('HMGet',hashId,unpack(keys));
+            //return values
+            //";
+            //return client.Eval(script, 2, ToByteKey(hashId), ToByteKey(string.Format("{0}:{1}", hashId, keyCode)));
+            var resultKeys = new List<byte[]>();
+            using (var pipeline = client.CreatePipeline())
+            {
+                foreach (var keyCode in keyCodes)
+                {
+                    string key = keyCode;
+                    pipeline.QueueCommand(c => ((RedisClient)c).SMembers(string.Format("{0}:{1}", hashId, key)), r =>
+                    {
+                        if (r != null && r.Length > 0) resultKeys.AddRange(r);
+                    });
+                }
+                pipeline.Flush();
+            }
+
+            byte[][] valueBytes = null;
+            if (resultKeys.Count > 0)
+            {
+                valueBytes = client.HMGet(hashId, resultKeys.ToArray());
+            }
+            return valueBytes;
+        }
+
+        /// <summary>
+        /// old storage modle.
+        /// </summary>
+        /// <returns></returns>
+        private static byte[][] GetValuesFromMutilKey(RedisClient client, string hashId, IEnumerable<byte[]> keyCodes)
+        {
+            byte[][] valueBytes = null;
+            byte[] pre = MathUtils.CharToByte(AbstractEntity.KeyCodeJoinChar);
+            var resultKeys = client.HKeys(hashId).Where(k => ContainKey(k, keyCodes, pre)).ToArray();
+            if (resultKeys.Length > 0)
+            {
+                valueBytes = client.HMGet(hashId, resultKeys);
+            }
+            return valueBytes;
+            /*
+            byte[][] valueBytes = null;
+            string key = ToStringKey(keyCode);
+            byte[] pre = MathUtils.CharToByte(AbstractEntity.KeyCodeJoinChar);
+            var pattern = MathUtils.Join(pre, keyCode);
+            var resultKeys = client.SMembers(string.Format("{0}:{1}", hashId, key));
+            if (resultKeys.Length == 0)
+            {
+                resultKeys = client.HKeys(hashId).Where(k => ContainKey(k, pattern, pre)).ToArray();
+                if (resultKeys.Length > 0) SetMutilKeyMap(client, hashId, key, resultKeys);
+            }
+            if (resultKeys.Length > 0)
+            {
+                valueBytes = client.HMGet(hashId, resultKeys);
+            }
+            return valueBytes;*/
+        }
+
+        internal static void SetMutilKeyMap(RedisClient client, string hashId, string firstKey, params byte[][] secondKeyBytes)
+        {
+            client.SAdd(string.Format("{0}:{1}", hashId, firstKey), secondKeyBytes);
+        }
+        internal static void RemoveMutilKeyMap(RedisClient client, string hashId, string firstKey, params byte[][] secondKeyBytes)
+        {
+            client.SRem(string.Format("{0}:{1}", hashId, firstKey), secondKeyBytes);
+        }
+
+        /// <summary>
+        /// update key map
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="client"></param>
+        /// <param name="personalId"></param>
+        /// <param name="entitys"></param>
+        public static void UpdateFromMutilKeyMap<T>(RedisClient client, string personalId, params T[] entitys) where T : ISqlEntity
+        {
+            string hashId = GetRedisEntityKeyName(typeof(T).FullName);
+            byte[][] keyCodes = entitys.Select(t => ToByteKey(t.GetKeyCode())).ToArray();
+            SetMutilKeyMap(client, hashId, personalId, keyCodes);
+        }
+
+        private static bool TryGetOlbValue<T>(string redisKey, SchemaTable table, out List<T> list) where T : ISqlEntity
         {
             bool result = false;
             try
             {
-                if (RedisInfo.ClientVersion >= EntityMinVersion)
-                {
-                    list = new List<T>();
-                    return true;
-                }
                 //从旧版本存储格式中查找
                 if (typeof(T).IsSubclassOf(typeof(ShareEntity)))
                 {
@@ -646,14 +1131,60 @@ namespace ZyGames.Framework.Redis
             return result;
         }
 
-        private static bool ContainKey(byte[] bytes, byte[] pattern, char pre)
+        private static bool ContainKey(byte[] bytes, IEnumerable<byte[]> patterns, byte[] pre)
         {
-            byte[] arr = MathUtils.CharToByte(pre);
-            bytes = MathUtils.Join(arr, bytes);
-            pattern = MathUtils.Join(arr, pattern);
-            return MathUtils.IndexOf(bytes, pattern) > -1;
+            bytes = MathUtils.Join(pre, bytes);
+            return patterns.Any(pattern => MathUtils.IndexOf(bytes, MathUtils.Join(pre, pattern)) > -1);
+        }
+        /// <summary>
+        /// The object of T isn't changed.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="key"></param>
+        /// <param name="t1"></param>
+        /// <param name="t2"></param>
+        /// <returns></returns>
+        public static bool TryExchangeRankEntity<T>(string key, T t1, T t2) where T : RankEntity
+        {
+            var setId = string.Format("{0}:{1}", GetRedisEntityKeyName(typeof(T)), key);
+            var score1 = t1.Score;
+            var score2 = t2.Score;
+            ProcessPipeline(new Action<RedisClient>[]
+            {
+                c => c.ZAdd(setId, score1, _serializer.Serialize(t2)),
+                c => c.ZAdd(setId, score2, _serializer.Serialize(t1))
+            });
+            return true;
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="key"></param>
+        /// <param name="dataList"></param>
+        /// <returns></returns>
+        public static bool TryUpdateRankEntity<T>(string key, params T[] dataList) where T : AbstractEntity
+        {
+            if (dataList.Length == 0) return false;
+
+            var setId = string.Format("{0}:{1}", GetRedisEntityKeyName(typeof(T)), key);
+            var pipelineActions = new Action<RedisClient>[dataList.Length];
+            for (int i = 0; i < pipelineActions.Length; i++)
+            {
+                var entity = dataList[i] as RankEntity;
+                if (entity == null) continue;
+                if (entity.IsDelete)
+                {
+                    pipelineActions[i] = c => c.ZRem(setId, _serializer.Serialize(entity));
+                }
+                else
+                {
+                    pipelineActions[i] = c => c.ZAdd(setId, entity.Score, _serializer.Serialize(entity));
+                }
+            }
+            ProcessPipeline(pipelineActions);
+            return true;
+        }
 
         /// <summary>
         /// Try update entity
@@ -688,6 +1219,7 @@ namespace ZyGames.Framework.Redis
                         keys.Add(keybytes);
                         values.Add(_serializer.Serialize(entity));
                     }
+
                     UpdateEntity(typeName, keys.ToArray(), values.ToArray(), removeKeys.ToArray());
                     return true;
                 }
@@ -780,6 +1312,17 @@ namespace ZyGames.Framework.Redis
                     cli.HDel(hashId, removeKeys);
                 });
             }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="type"></param>
+        /// <returns></returns>
+        public static string GetRedisEntityKeyName(Type type)
+        {
+            string typeName = EncodeTypeName(type.FullName);
+            return GetRedisEntityKeyName(typeName);
         }
 
         /// <summary>

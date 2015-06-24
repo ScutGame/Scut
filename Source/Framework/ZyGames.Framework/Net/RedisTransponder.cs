@@ -54,11 +54,11 @@ namespace ZyGames.Framework.Net
         /// <typeparam name="T"></typeparam>
         /// <param name="dataList"></param>
         /// <param name="sendParam"></param>
-        public void SendData<T>(T[] dataList, TransSendParam sendParam) where T : AbstractEntity, new()
+        public bool SendData<T>(T[] dataList, TransSendParam sendParam) where T : AbstractEntity, new()
         {
-            using (IDataSender sender = new RedisDataSender())
+            using (IDataSender sender = new RedisDataSender(sendParam))
             {
-                sender.Send(dataList);
+                return sender.Send(dataList);
             }
         }
     }

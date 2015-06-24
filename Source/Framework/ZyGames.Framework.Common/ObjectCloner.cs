@@ -24,7 +24,9 @@ THE SOFTWARE.
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
+using ZyGames.Framework.Common.Reflect;
 
 namespace ZyGames.Framework.Common
 {
@@ -104,7 +106,7 @@ namespace ZyGames.Framework.Common
     public static class ObjectCloner
     {
         /// <summary>
-        /// 
+        /// Depth copy property and field of object.
         /// </summary>
         /// <param name="model"></param>
         /// <returns></returns>
@@ -139,82 +141,100 @@ namespace ZyGames.Framework.Common
             if (cloneDictionary.ContainsKey(model))
                 return cloneDictionary[model];
 
-            object clone = null;
-
-            try
-            {
-                clone = Activator.CreateInstance(model.GetType());
-            }
-            catch
-            {
-            }
-
+            object clone = FastActivator.Create(model.GetType());
             cloneDictionary[model] = clone;
 
             if (clone == null)
                 return null;
 
-            foreach (PropertyInfo prop in model.GetType().GetProperties(BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance))
+            object value = null;
+
+            foreach (PropertyInfo prop in model.GetType().GetProperties(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.GetProperty | BindingFlags.SetProperty | BindingFlags.GetField | BindingFlags.SetField))
             {
-                if (!prop.CanRead)
-                    continue;
-
-                if (ExcludeProperty(model, flavor, prop))
-                    continue;
-
-                if (prop.PropertyType.GetInterface("IList") != null)
+                if (!prop.CanRead ||
+                    !prop.CanWrite ||
+                    ExcludeProperty(model, flavor, prop) ||
+                    prop.GetIndexParameters().Length > 0
+                    )
                 {
-                    IList origCollection = prop.GetValue(model, null) as IList;
+                    continue;
+                }
+
+                if (prop.PropertyType.GetInterface(typeof(IDictionary<,>).Name) != null)
+                {
+                    var origCollection = prop.GetValue(model, null) as IEnumerable;
+                    dynamic cloneCollection = null;
+                    if (origCollection != null)
+                    {
+                        cloneCollection = FastActivator.Create(prop.PropertyType);
+                        foreach (dynamic elem in origCollection)
+                        {
+                            var key = Clone(elem.Key, flavor, cloneDictionary);
+                            var obj = Clone(elem.Value, flavor, cloneDictionary);
+                            cloneCollection.Add(key, obj);
+                        }
+                    }
+                    prop.SetValue(clone, cloneCollection, null);
+                    continue;
+                }
+                if (prop.PropertyType.GetInterface(typeof(ICollection<>).Name) != null)
+                {
+                    var origCollection = prop.GetValue(model, null) as IEnumerable;
                     if (origCollection == null)
                     {
-                        if (prop.CanWrite)
-                            prop.SetValue(clone, null, null);
-
+                        prop.SetValue(clone, null, null);
                         continue;
                     }
-
-                    IList cloneCollection = prop.GetValue(clone, null) as IList;
-
-                    Type t = origCollection.GetType();
-
-                    if (t.IsArray)
+                    dynamic cloneCollection = null;
+                    if (prop.PropertyType.IsArray)
                     {
-                        if (prop.CanWrite)
+                        //cloneCollection = (origCollection as Array).Clone();
+                        Type elemType = prop.PropertyType.GetElementType();
+                        dynamic list = FastActivator.Create(Type.GetType(string.Format("{0}[[{1},{2}]]", typeof(List<>).FullName, elemType.FullName, elemType.Assembly.GetName())));
+                        foreach (var elem in origCollection)
                         {
-                            cloneCollection = (origCollection as Array).Clone() as IList;
-                            prop.SetValue(clone, cloneCollection, null);
+                            dynamic obj = Clone(elem, flavor, cloneDictionary);
+                            list.Add(obj);
                         }
+                        cloneCollection = list.ToArray();
                     }
                     else
                     {
-                        if (cloneCollection == null)
+                        cloneCollection = FastActivator.Create(prop.PropertyType);
+                        foreach (var elem in origCollection)
                         {
-                            cloneCollection = Activator.CreateInstance(t) as IList;
-                            prop.SetValue(clone, cloneCollection, null);
-                        }
-
-                        foreach (object elem in origCollection)
-                        {
-                            cloneCollection.Add(Clone(elem, flavor, cloneDictionary));
+                            dynamic obj = Clone(elem, flavor, cloneDictionary);
+                            cloneCollection.Add(obj);
                         }
                     }
-
+                    prop.SetValue(clone, cloneCollection, null);
                     continue;
                 }
-
-                if (!prop.CanWrite)
-                    continue;
+                try
+                {
+                    value = prop.GetValue(model, null);
+                }
+                catch (Exception e)
+                {
+                }
 
                 if (prop.PropertyType.IsValueType)
                 {
-                    prop.SetValue(clone, prop.GetValue(model, null), null);
+                    prop.SetValue(clone, value, null);
                 }
                 else
                 {
-                    prop.SetValue(clone, Clone(prop.GetValue(model, null), flavor, cloneDictionary), null);
+                    var obj = Clone(value, flavor, cloneDictionary);
+                    try
+                    {
+                        prop.SetValue(clone, obj, null);
+                    }
+                    catch (Exception e)
+                    {
+                        throw e;
+                    }
                 }
             }
-
             return clone;
         }
 

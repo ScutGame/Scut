@@ -22,12 +22,14 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ****************************************************************************/
 using System;
+using ProtoBuf;
 
 namespace ZyGames.Framework.Model
 {
     /// <summary>
     /// 私有实体基类
     /// </summary>
+    [ProtoContract, Serializable]
     public abstract class BaseEntity : AbstractEntity, IComparable<BaseEntity>
     {
         /// <summary>

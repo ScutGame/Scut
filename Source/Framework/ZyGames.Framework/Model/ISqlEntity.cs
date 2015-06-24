@@ -21,12 +21,8 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ****************************************************************************/
+
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Security.Cryptography.X509Certificates;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ZyGames.Framework.Model
 {
@@ -66,5 +62,10 @@ namespace ZyGames.Framework.Model
         /// reset data and trigger unchanged event.
         /// </summary>
         void Reset();
+
+        /// <summary>
+        /// Get table name of log
+        /// </summary>
+        DateTime GetCreateTime();
     }
 }

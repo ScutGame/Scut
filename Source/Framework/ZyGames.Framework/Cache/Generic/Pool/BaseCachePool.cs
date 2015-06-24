@@ -178,6 +178,30 @@ namespace ZyGames.Framework.Cache.Generic.Pool
         public abstract bool IsEmpty { get; }
 
         /// <summary>
+        /// 
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="sendParam"></param>
+        /// <param name="dataList"></param>
+        /// <returns></returns>
+        public bool TrySetRankData<T>(TransSendParam sendParam, params T[] dataList) where T : RankEntity, new()
+        {
+            return _redisTransponder.SendData(dataList, sendParam);
+        }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="key"></param>
+        /// <param name="t1"></param>
+        /// <param name="t2"></param>
+        /// <returns></returns>
+        public bool TryExchangeRankData<T>(string key, T t1, T t2) where T : RankEntity, new()
+        {
+            return RedisConnectionPool.TryExchangeRankEntity(key, t1, t2);
+        }
+
+        /// <summary>
         /// 尝试接收数据
         /// </summary>
         /// <typeparam name="T"></typeparam>
@@ -186,6 +210,8 @@ namespace ZyGames.Framework.Cache.Generic.Pool
         /// <returns>return null is load error</returns>
         public bool TryReceiveData<T>(TransReceiveParam receiveParam, out List<T> dataList) where T : AbstractEntity, new()
         {
+            //todo:Trace
+            //var watch = RunTimeWatch.StartNew("Cache load " + receiveParam.RedisKey);
             dataList = null;
             bool hasDbConnect = DbConnectionProvider.CreateDbProvider(receiveParam.Schema) != null;
             var schema = receiveParam.Schema;
@@ -197,7 +223,6 @@ namespace ZyGames.Framework.Cache.Generic.Pool
                 dataList = new List<T>();
                 return true;
             }
-
             //配置库不放到Redis，尝试从DB加载
             if (schema.StorageType.HasFlag(StorageType.ReadOnlyDB) ||
                  schema.StorageType.HasFlag(StorageType.ReadWriteDB))
@@ -207,33 +232,42 @@ namespace ZyGames.Framework.Cache.Generic.Pool
                     dataList = new List<T>();
                     return true;
                 }
-                var result = _dbTransponder.TryReceiveData(receiveParam, out dataList);
-                TraceLog.ReleaseWriteDebug("The readonly-data:{0} has been loaded {1}", receiveParam.RedisKey, dataList.Count);
-                return result;
+                if (_dbTransponder.TryReceiveData(receiveParam, out dataList))
+                {
+                    //TraceLog.ReleaseWriteDebug("The readonly-data:{0} has been loaded {1}", receiveParam.RedisKey, dataList.Count);
+                    return true;
+                }
+                TraceLog.WriteError("The data:{0} loaded  from db fail.\r\n{1}", receiveParam.RedisKey, TraceLog.GetStackTrace());
+                return false;
             }
 
             if (schema.StorageType.HasFlag(StorageType.ReadOnlyRedis) ||
                 schema.StorageType.HasFlag(StorageType.ReadWriteRedis))
             {
+                //watch.Check("init");
                 if (!string.IsNullOrEmpty(receiveParam.RedisKey) &&
                     _redisTransponder.TryReceiveData(receiveParam, out dataList))
                 {
+                    //watch.Check("loaded");
                     if (dataList.Count > 0)
                     {
-                        TraceLog.ReleaseWriteDebug("The data:{0} has been loaded {1}", receiveParam.RedisKey, dataList.Count);
+                        //watch.Flush(true);
+                        //TraceLog.ReleaseWriteDebug("The data:{0} has been loaded {1}", receiveParam.RedisKey, dataList.Count);
                         return true;
                     }
                     //从Redis历史记录表中加载
                     if (hasDbConnect && Setting != null && Setting.IsStorageToDb)
                     {
                         var result = TryLoadHistory(receiveParam.RedisKey, out dataList);
-                        TraceLog.ReleaseWriteDebug("The data:{0} has been loaded {1} from history.", receiveParam.RedisKey, dataList.Count);
+                        TraceLog.Write("The data:{0} has been loaded {1} from history.", receiveParam.RedisKey, dataList.Count);
                         return result;
                     }
+                    //watch.Flush(true);
                     dataList = new List<T>();
                     return true;
                 }
                 //read faild from redis.
+                TraceLog.WriteError("The data:{0} loaded  from redis fail.\r\n{1}", receiveParam.RedisKey, TraceLog.GetStackTrace());
                 return false;
             }
             return true;
@@ -424,26 +458,25 @@ namespace ZyGames.Framework.Cache.Generic.Pool
                 var itemSetList = containerPair.Value.Collection.ToList<CacheItemSet>();
                 foreach (var itemPair in itemSetList)
                 {
-                    if (itemPair.Value.HasChanged || !itemPair.Value.IsPeriod)
+                    CacheItemSet itemSet = itemPair.Value;
+                    if (itemSet.HasChanged || !itemSet.IsPeriod)
                     {
                         //clear sub item is expired.
-                        itemPair.Value.RemoveExpired(itemPair.Key);
+                        itemSet.RemoveExpired(itemPair.Key);
                         continue;
                     }
-                    CacheItemSet itemSet;
-                    if (containerPair.Value.Collection.TryRemove(itemPair.Key, out itemSet))
+                    TraceLog.ReleaseWrite("Cache item:{0} key:{1} expired has been removed.", containerPair.Key, itemPair.Key);
+                    itemSet.ProcessExpired(itemPair.Key);
+                    object temp;
+                    if (containerPair.Value.Collection.TryRemove(itemPair.Key, out temp))
                     {
-                        TraceLog.ReleaseWrite("Cache item:{0} key:{1} expired has been removed.",
-                            containerPair.Key,
-                            itemPair.Key);
-                        itemSet.ProcessExpired(itemPair.Key);
-                        itemSet.SetRemoveStatus();
+                        itemSet.ResetStatus();
                         itemSet.Dispose();
                     }
                 }
                 if (containerPair.Value.Collection.Count == 0)
                 {
-                    containerPair.Value.SetRemoveStatus();
+                    containerPair.Value.ResetStatus();
                 }
             }
         }

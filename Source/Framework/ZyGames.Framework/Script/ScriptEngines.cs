@@ -210,8 +210,31 @@ namespace ZyGames.Framework.Script
         {
             try
             {
+                if (IsCompiling)
+                {
+                    //延迟处理
+                    _changeWatchingTimer.Change(_settupInfo.ScriptChangedDelay, Timeout.Infinite);
+                    return;
+                }
                 HashSet<string> tmp = new HashSet<string>();
-                var localChangedFiles = Interlocked.Exchange<HashSet<string>>(ref _changedFiles, tmp);
+                var changedFiles = Interlocked.Exchange<HashSet<string>>(ref _changedFiles, tmp);
+                _changeWatchingTimer.Change(Timeout.Infinite, Timeout.Infinite);
+
+                HashSet<string> localChangedFiles = new HashSet<string>();
+                foreach (var file in changedFiles)
+                {
+                    //check file changed for md5 encode.
+                    if (_runtimeDomain.Scope.VerifyScriptHashCode(file))
+                    {
+                        continue;
+                    }
+                    localChangedFiles.Add(file);
+                }
+                TraceLog.WriteLine("Update script file count:{0}.", localChangedFiles.Count);
+                if (localChangedFiles.Count == 0)
+                {
+                    return;
+                }
                 bool hasModelFile = false;
                 //以文件类型分组
                 var changeGroup = localChangedFiles.GroupBy(t =>
@@ -236,33 +259,34 @@ namespace ZyGames.Framework.Script
                     switch (ext)
                     {
                         case ".cs":
-                            if (hasModelFile)
+                            //star compile
+                            try
                             {
-                                TraceLog.WriteLine("{1} {0} compile start...", "model script", DateTime.Now.ToString("HH:mm:ss"));
-                                InitScriptRuntimeScope();
-                                PrintCompiledMessage("model script");
-                                //init script main
-                                _runtimeDomain.MainInstance = Execute(_settupInfo.ScriptMainProgram, _settupInfo.ScriptMainTypeName);
-                                if (_runtimeDomain.MainInstance != null)
-                                {
-                                    _runtimeDomain.MainInstance.ReStart();
-                                }
-                                isLoop = false;
-                            }
-                            else
-                            {
-                                //star compile
                                 Interlocked.Exchange(ref _isCompiling, 1);
-                                try
+                                if (hasModelFile)
+                                {
+                                    TraceLog.WriteLine("{1} {0} compile start...", "model script", DateTime.Now.ToString("HH:mm:ss"));
+                                    InitScriptRuntimeScope();
+                                    PrintCompiledMessage("model script");
+                                    //init script main
+                                    _runtimeDomain.MainInstance = Execute(_settupInfo.ScriptMainProgram, _settupInfo.ScriptMainTypeName);
+                                    if (_runtimeDomain.MainInstance != null)
+                                    {
+                                        _runtimeDomain.MainInstance.ReStart();
+                                    }
+                                    isLoop = false;
+                                }
+                                else
                                 {
                                     TraceLog.WriteLine("{1} {0} compile start...", "csharp script", DateTime.Now.ToString("HH:mm:ss"));
                                     _runtimeDomain.Scope.InitCsharp();
+
+                                    PrintCompiledMessage("csharp script");
                                 }
-                                finally
-                                {
-                                    Interlocked.Exchange(ref _isCompiling, 0);
-                                }
-                                PrintCompiledMessage("csharp script");
+                            }
+                            finally
+                            {
+                                Interlocked.Exchange(ref _isCompiling, 0);
                             }
                             break;
                         case ".py":
@@ -290,7 +314,7 @@ namespace ZyGames.Framework.Script
         {
             try
             {
-                if (!IsCompiling && !string.Equals(e.FullPath, _settupInfo.PythonReferenceLibFile, StringComparison.CurrentCultureIgnoreCase))
+                if (!IsCompiling)
                 {
                     _changedFiles.Add(e.FullPath);
                     _changeWatchingTimer.Change(_settupInfo.ScriptChangedDelay, Timeout.Infinite);
@@ -367,7 +391,14 @@ namespace ZyGames.Framework.Script
         /// </summary>
         public static ScriptRuntimeScope RuntimeScope
         {
-            get { return _runtimeDomain.Scope; }
+            get
+            {
+                if (IsCompiling)
+                {
+                    throw new Exception("Script is compiling.");
+                }
+                return _runtimeDomain.Scope;
+            }
         }
 
         /// <summary>
@@ -456,6 +487,7 @@ namespace ZyGames.Framework.Script
         /// <returns>csharp脚本返回指定typeName实例对象；python脚本返回ScriptCode对象</returns>
         public static dynamic Execute(string scriptCode, string typeName, params object[] args)
         {
+            if (IsCompiling) return null;
             return _runtimeDomain.Scope.Execute(scriptCode, typeName, args);
         }
 
@@ -466,6 +498,7 @@ namespace ZyGames.Framework.Script
         /// <returns></returns>
         public static dynamic ExecuteCSharp<T>()
         {
+            if (IsCompiling) return null;
             return _runtimeDomain.Scope.ExecuteCSharp(typeof(T).FullName);
         }
 
@@ -477,6 +510,7 @@ namespace ZyGames.Framework.Script
         /// <returns></returns>
         public static dynamic ExecuteCSharp(string typeName, params object[] args)
         {
+            if (IsCompiling) return null;
             return _runtimeDomain.Scope.ExecuteCSharp(typeName, args);
         }
 
@@ -487,6 +521,7 @@ namespace ZyGames.Framework.Script
         /// <returns></returns>
         public static dynamic ExecutePython(string scriptCode)
         {
+            if (IsCompiling) return null;
             return _runtimeDomain.Scope.ExecutePython(scriptCode);
         }
 
@@ -519,6 +554,7 @@ namespace ZyGames.Framework.Script
         /// <returns></returns>
         public static object ExecuteLua(string funcName, params object[] args)
         {
+            if (IsCompiling) return null;
             return _runtimeDomain.Scope.ExecuteLua(funcName, args);
         }
         /// <summary>
@@ -530,6 +566,7 @@ namespace ZyGames.Framework.Script
         /// <returns></returns>
         public static object ExecuteLua(string luaMethod, string funcName, params object[] args)
         {
+            if (IsCompiling) return null;
             return _runtimeDomain.Scope.ExecuteLua(luaMethod, funcName, args);
         }
         /// <summary>
@@ -542,6 +579,7 @@ namespace ZyGames.Framework.Script
         /// <returns></returns>
         public static object ExecuteLuaSource(string[] sources, string luaMethod, string funcName, params object[] args)
         {
+            if (IsCompiling) return null;
             return _runtimeDomain.Scope.ExecuteLuaSource(sources, luaMethod, funcName, args);
         }
 
@@ -555,6 +593,7 @@ namespace ZyGames.Framework.Script
         /// <returns></returns>
         public static dynamic ExecuteCSharpSource(string[] sources, string[] refAssemblies, string typeName, params object[] args)
         {
+            if (IsCompiling) return null;
             return _runtimeDomain.Scope.ExecuteCSharpSource(sources, refAssemblies, typeName, args);
         }
 
@@ -567,6 +606,7 @@ namespace ZyGames.Framework.Script
         /// <returns></returns>
         public static ScriptScope ExecutePythonSource(string sources, string[] refAssemblies, SourceCodeKind codeKind = SourceCodeKind.Statements)
         {
+            if (IsCompiling) return null;
             return _runtimeDomain.Scope.ExecutePythonSource(sources, refAssemblies, codeKind);
         }
 
