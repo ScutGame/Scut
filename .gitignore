@@ -16,3 +16,4 @@
 /Source/Middleware/*.suo
 /SDK/Unity3d/obj
 /SDK/Unity3d/Library/metadata
+/Source/Framework/packages
