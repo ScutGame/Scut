@@ -42,7 +42,7 @@ namespace AccountServer.Handler
             }
             data.Pwd = DecodePassword(data.Pwd);
             //快速登录
-            var userId = SnsManager.LoginByDevice(data.Pid, data.Pwd, data.IMEI);
+            var userId = SnsManager.LoginByDevice(data.Pid, data.Pwd, data.IMEI, data.IsCustom);
             if (userId <= 0)
             {
                 throw new HandlerException(StateCode.PassworkError, StateDescription.PassworkError);

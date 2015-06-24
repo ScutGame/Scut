@@ -214,7 +214,7 @@ namespace ZyGames.Framework.Common
                 {
                     value = prop.GetValue(model, null);
                 }
-                catch (Exception e)
+                catch (Exception)
                 {
                 }
 

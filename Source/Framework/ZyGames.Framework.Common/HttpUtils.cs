@@ -56,8 +56,11 @@ namespace ZyGames.Framework.Common
         /// <returns></returns>
         public static string GetString(string url, Encoding encoding, string contentType = "")
         {
-            var stream = Get(url, contentType);
-            return new StreamReader(stream, encoding).ReadToEnd();
+            using (var resp = Get(url, contentType, null, string.Empty, null))
+            using (var sr = new StreamReader(resp.GetResponseStream(), encoding))
+            {
+                return sr.ReadToEnd();
+            }
         }
 
         /// <summary>
@@ -68,7 +71,26 @@ namespace ZyGames.Framework.Common
         /// <returns></returns>
         public static Stream Get(string url, string contentType = "")
         {
-            return Get(url, contentType, null, string.Empty, null).GetResponseStream();
+            using (var resp = Get(url, contentType, null, string.Empty, null))
+            {
+                return resp.GetResponseStream();
+            }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="url"></param>
+        /// <param name="encoding"></param>
+        /// <param name="contentType"></param>
+        /// <returns></returns>
+        public static async Task<string> GetStringAsync(string url, Encoding encoding, string contentType = "")
+        {
+            using (var resp = await GetAsync(url, contentType, null, string.Empty, null))
+            using (var sr = new StreamReader(resp.GetResponseStream(), encoding))
+            {
+                return sr.ReadToEnd();
+            }
         }
 
         /// <summary>
@@ -139,7 +161,28 @@ namespace ZyGames.Framework.Common
         /// <returns></returns>
         public static string PostString(string url, string parameters, Encoding encoding, string contentType = "")
         {
-            return new StreamReader(Post(url, parameters, encoding, contentType), encoding).ReadToEnd();
+            using (var resp = Post(url, parameters, null, string.Empty, encoding, contentType, null))
+            using (var sr = new StreamReader(resp.GetResponseStream(), encoding))
+            {
+                return sr.ReadToEnd();
+            }
+        }
+
+        /// <summary>
+        /// Post request
+        /// </summary>
+        /// <param name="url"></param>
+        /// <param name="parameters"></param>
+        /// <param name="encoding"></param>
+        /// <param name="contentType"></param>
+        /// <returns></returns>
+        public static async Task<string> PostStringAsync(string url, string parameters, Encoding encoding, string contentType = "")
+        {
+            using (var resp = await PostAsync(url, parameters, null, String.Empty, encoding, contentType, null))
+            using (var sr = new StreamReader(resp.GetResponseStream(), encoding))
+            {
+                return sr.ReadToEnd();
+            }
         }
 
         /// <summary>
@@ -169,39 +212,10 @@ namespace ZyGames.Framework.Common
         /// <returns></returns>
         public static Stream Post(string url, string parameters, Encoding encoding, string contentType)
         {
-            return Post(url, parameters, null, string.Empty, encoding, contentType, null).GetResponseStream();
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="url"></param>
-        /// <param name="parameters"></param>
-        /// <param name="timeout"></param>
-        /// <param name="userAgent"></param>
-        /// <param name="encoding"></param>
-        /// <param name="contentType"></param>
-        /// <param name="cookies"></param>
-        /// <returns></returns>
-        public static Task<WebResponse> PostAsync(string url, string parameters, int? timeout, string userAgent, Encoding encoding, string contentType, CookieCollection cookies)
-        {
-            return PostAsync(url, encoding.GetBytes(parameters), timeout, userAgent, contentType, cookies);
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="url"></param>
-        /// <param name="inputBytes"></param>
-        /// <param name="timeout"></param>
-        /// <param name="userAgent"></param>
-        /// <param name="contentType"></param>
-        /// <param name="cookies"></param>
-        /// <returns></returns>
-        public static Task<WebResponse> PostAsync(string url, byte[] inputBytes, int? timeout, string userAgent, string contentType, CookieCollection cookies)
-        {
-            var request = DoPostRequest(url, inputBytes, timeout, userAgent, contentType, cookies);
-            return request.GetResponseAsync();
+            using (var resp = Post(url, parameters, null, string.Empty, encoding, contentType, null))
+            {
+                return resp.GetResponseStream();
+            }
         }
 
         /// <summary>  
@@ -234,6 +248,38 @@ namespace ZyGames.Framework.Common
         {
             var request = DoPostRequest(url, inputBytes, timeout, userAgent, contentType, cookies);
             return request.GetResponse() as HttpWebResponse;
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="url"></param>
+        /// <param name="parameters"></param>
+        /// <param name="timeout"></param>
+        /// <param name="userAgent"></param>
+        /// <param name="encoding"></param>
+        /// <param name="contentType"></param>
+        /// <param name="cookies"></param>
+        /// <returns></returns>
+        public static Task<WebResponse> PostAsync(string url, string parameters, int? timeout, string userAgent, Encoding encoding, string contentType, CookieCollection cookies)
+        {
+            return PostAsync(url, encoding.GetBytes(parameters), timeout, userAgent, contentType, cookies);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="url"></param>
+        /// <param name="inputBytes"></param>
+        /// <param name="timeout"></param>
+        /// <param name="userAgent"></param>
+        /// <param name="contentType"></param>
+        /// <param name="cookies"></param>
+        /// <returns></returns>
+        public static Task<WebResponse> PostAsync(string url, byte[] inputBytes, int? timeout, string userAgent, string contentType, CookieCollection cookies)
+        {
+            var request = DoPostRequest(url, inputBytes, timeout, userAgent, contentType, cookies);
+            return request.GetResponseAsync();
         }
 
         private static HttpWebRequest DoPostRequest(string url, byte[] inputBytes, int? timeout, string userAgent, string contentType, CookieCollection cookies)

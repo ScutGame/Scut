@@ -132,14 +132,15 @@ namespace ZyGames.Framework.Game.Sns
         /// <param name="pid"></param>
         /// <param name="password"></param>
         /// <param name="imei"></param>
+        /// <param name="isCustom">use custom passport</param>
         /// <returns></returns>
-        public static bool Register(string pid, string password, string imei)
+        public static bool Register(string pid, string password, string imei, bool isCustom = false)
         {
             SnsCenterUser snsCenterUser = new SnsCenterUser(pid, password, imei);
             var snsuser = snsCenterUser.GetUserInfo(pid);
             if (snsuser.UserId <= 0)
             {
-                return snsCenterUser.InsertSnsUser() > 0;
+                return snsCenterUser.InsertSnsUser(isCustom) > 0;
             }
             return true;
         }
@@ -173,10 +174,11 @@ namespace ZyGames.Framework.Game.Sns
         /// <param name="passportId"></param>
         /// <param name="password"></param>
         /// <param name="imei"></param>
+        /// <param name="isCustom">use custom passport</param>
         /// <returns>userid</returns>
-        public static int QuickRegisterPassport(string passportId, string password, string imei)
+        public static int QuickRegisterPassport(string passportId, string password, string imei, bool isCustom = false)
         {
-            return DoRegisterPassport(passportId, password, imei, null, null);
+            return DoRegisterPassport(passportId, password, imei, null, null, isCustom);
         }
 
         /// <summary>
@@ -190,11 +192,11 @@ namespace ZyGames.Framework.Game.Sns
         public static string RegisterPassport(string password, string imei, string[] paramNames = null, string[] paramValues = null)
         {
             string pid = new SnsPassport().GetRegPassport();
-            DoRegisterPassport(pid, password, imei, paramNames, paramValues);
+            DoRegisterPassport(pid, password, imei, paramNames, paramValues, false);
             return pid;
         }
 
-        private static int DoRegisterPassport(string passportId, string password, string imei, string[] paramNames, string[] paramValues)
+        private static int DoRegisterPassport(string passportId, string password, string imei, string[] paramNames, string[] paramValues, bool isCustom)
         {
             SnsCenterUser snsCenterUser = new SnsCenterUser(passportId, password, imei);
             var snsuser = snsCenterUser.GetUserInfo(passportId);
@@ -202,7 +204,7 @@ namespace ZyGames.Framework.Game.Sns
             {
                 return 0;
             }
-            return snsCenterUser.InsertSnsUser(paramNames, paramValues);
+            return snsCenterUser.InsertSnsUser(paramNames, paramValues, isCustom);
         }
 
 
@@ -211,22 +213,25 @@ namespace ZyGames.Framework.Game.Sns
         /// </summary>
         /// <param name="user"></param>
         /// <param name="password"></param>
+        /// <param name="isCustom">use custom passport</param>
         /// <returns></returns>
-        public static int Login(string user, string password)
+        public static int Login(string user, string password, bool isCustom = false)
         {
-            return LoginByDevice(user, password, string.Empty);
+            return LoginByDevice(user, password, string.Empty, isCustom);
         }
+
         /// <summary>
         /// 
         /// </summary>
         /// <param name="user"></param>
         /// <param name="password"></param>
         /// <param name="imei"></param>
+        /// <param name="isCustom">use custom passport</param>
         /// <returns></returns>
-        public static int LoginByDevice(string user, string password, string imei)
+        public static int LoginByDevice(string user, string password, string imei, bool isCustom = false)
         {
             RegType userType;
-            return LoginByDevice(user, password, imei, out userType);
+            return LoginByDevice(user, password, imei, out userType, isCustom);
         }
 
         /// <summary>
@@ -236,8 +241,9 @@ namespace ZyGames.Framework.Game.Sns
         /// <param name="password"></param>
         /// <param name="imei"></param>
         /// <param name="userType"></param>
+        /// <param name="isCustom">use custom passport</param>
         /// <returns></returns>
-        public static int LoginByDevice(string user, string password, string imei, out RegType userType)
+        public static int LoginByDevice(string user, string password, string imei, out RegType userType, bool isCustom = false)
         {
             if (!SnsCenterUser.CheckDevice(imei))
                 throw (new Exception("禁止登录"));
@@ -251,7 +257,7 @@ namespace ZyGames.Framework.Game.Sns
                     Guid gid;
                     userType = Guid.TryParse(password, out gid) ? RegType.Guest : RegType.Normal;
                     snsCenterUser.RegType = userType;
-                    userId = snsCenterUser.InsertSnsUser();
+                    userId = snsCenterUser.InsertSnsUser(isCustom);
                     //过期移除
                     PassportExpired passportExpired;
                     bool result = string.IsNullOrEmpty(imei) ? imeiMap.TryRemove(user, out passportExpired) : imeiMap.TryRemove(imei, out passportExpired);
@@ -301,7 +307,7 @@ namespace ZyGames.Framework.Game.Sns
                 string pwd = GetRandomPwd();
                 //modify login of retail bug.
                 snsCenterUser = new SnsCenterUser(pid, pwd, imei) { RetailID = retailId, RetailUser = retailUser };
-                result[0] = snsCenterUser.InsertSnsUser().ToString();
+                result[0] = snsCenterUser.InsertSnsUser(false).ToString();
                 result[1] = pid;
                 return result;
             }

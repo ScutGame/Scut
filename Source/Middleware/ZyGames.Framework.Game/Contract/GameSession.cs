@@ -410,9 +410,9 @@ namespace ZyGames.Framework.Game.Contract
         /// Get all session
         /// </summary>
         /// <returns></returns>
-        public static List<GameSession> GetAll()
+        public static IEnumerable<GameSession> GetAll()
         {
-            return _globalSession.Values.ToList();
+            return _globalSession.Values;
         }
 
         /// <summary>
@@ -438,7 +438,7 @@ namespace ZyGames.Framework.Game.Contract
         /// 
         /// </summary>
         /// <returns></returns>
-        public static List<GameSession> GetOnlineAll()
+        public static IEnumerable<GameSession> GetOnlineAll()
         {
             return GetOnlineAll(HeartbeatTimeout);
         }
@@ -447,9 +447,8 @@ namespace ZyGames.Framework.Game.Contract
         /// 
         /// </summary>
         /// <returns></returns>
-        public static List<GameSession> GetOnlineAll(int delayTime)
+        public static IEnumerable<GameSession> GetOnlineAll(int delayTime)
         {
-            List<GameSession> list = new List<GameSession>();
             foreach (var pair in _globalSession)
             {
                 var session = pair.Value;
@@ -457,10 +456,9 @@ namespace ZyGames.Framework.Game.Contract
                     (!session.IsSocket || session.Connected) &&
                     session.LastActivityTime > MathUtils.Now.AddSeconds(-delayTime))
                 {
-                    list.Add(session);
+                    yield return session;
                 }
             }
-            return list;
         }
 
         /// <summary>

@@ -124,8 +124,7 @@ namespace ZyGames.Framework.Redis
             ProcessTrans(RedisInfoKey, cli =>
             {
                 RedisInfo = cli.GetValue(RedisInfoKey).ParseJson<RedisInfo>() ?? new RedisInfo();
-                var ips = Dns.GetHostAddresses(Dns.GetHostName());
-                string host = (ips.FirstOrDefault(t => t.AddressFamily == AddressFamily.InterNetwork) ?? ips[0]).ToString();
+                string host = Dns.GetHostName();
                 string serverPath = MathUtils.RuntimePath;
                 string hashCode = MathUtils.ToHexMd5Hash(host + serverPath);
 
@@ -171,13 +170,13 @@ namespace ZyGames.Framework.Redis
                     }
                     else
                     {
-                        throw new Exception(string.Format("Redis server is using {0} slave \"{1}\" game server, it's path:{2}",
+                        throw new Exception(string.Format("The slave[{0}] game server is using Redis at host name \"{1}\" path {2}.",
                            slaveName, RedisInfo.ServerHost, RedisInfo.ServerPath));
                     }
                 }
                 else
                 {
-                    throw new Exception(string.Format("Redis server is using \"{0}\" game server, it's path:{1}", RedisInfo.ServerHost, RedisInfo.ServerPath));
+                    throw new Exception(string.Format("The game server is using Redis at host name \"{0}\" path {1}.", RedisInfo.ServerHost, RedisInfo.ServerPath));
                 }
                 return true;
             }, trans => trans.QueueCommand(c => c.SetEntry(RedisInfoKey, MathUtils.ToJson(RedisInfo))));

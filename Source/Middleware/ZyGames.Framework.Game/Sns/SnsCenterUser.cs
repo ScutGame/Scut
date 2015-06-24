@@ -224,16 +224,18 @@ namespace ZyGames.Framework.Game.Sns
             }, snsUser);
             return snsUser;
         }
+
         /// <summary>
         /// Inserts the sns user.
         /// </summary>
         /// <returns>The sns user.</returns>
         /// <param name="paramNames">Parameter names.</param>
         /// <param name="paramValues">Parameter values.</param>
-        public int InsertSnsUser(string[] paramNames, string[] paramValues)
+        /// <param name="isCustom"></param>
+        public int InsertSnsUser(string[] paramNames, string[] paramValues, bool isCustom)
         {
             SnsPassport oSnsPassportLog = new SnsPassport();
-            if (!oSnsPassportLog.VerifyRegPassportId(_PassportId))
+            if (isCustom && !oSnsPassportLog.VerifyRegPassportId(_PassportId))
             {
                 return 0;
             }
@@ -262,7 +264,7 @@ namespace ZyGames.Framework.Game.Sns
 
             try
             {
-                if (!oSnsPassportLog.SetPassportReg(_PassportId))
+                if (isCustom && !oSnsPassportLog.SetPassportReg(_PassportId))
                 {
                     throw new Exception("Set passport  State.Reg fail.");
                 }
@@ -285,9 +287,9 @@ namespace ZyGames.Framework.Game.Sns
         /// 向社区中心添加用户
         /// </summary>
         /// <returns></returns>
-        public int InsertSnsUser()
+        public int InsertSnsUser(bool isCustom)
         {
-            return InsertSnsUser(new string[0], new string[0]);
+            return InsertSnsUser(new string[0], new string[0], isCustom);
         }
 
         /// <summary>

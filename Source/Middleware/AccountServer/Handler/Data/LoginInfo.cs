@@ -32,5 +32,9 @@ namespace AccountServer.Handler.Data
         public int ScreenX { get; set; }
         public int ScreenY { get; set; }
         public string RetailID { get; set; }
+        /// <summary>
+        /// use custom passport
+        /// </summary>
+        public bool IsCustom { get; set; }
     }
 }
