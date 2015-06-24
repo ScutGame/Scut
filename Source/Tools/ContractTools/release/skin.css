@@ -28,7 +28,7 @@ ul{ list-style: none;}
 .bottombar{display:block;width:100%;padding-top: 10px; height:35px; line-height:35px;background: #f0f0f0; border-top: 1px solid #a9a9a9; text-align: center;}
 .bottombar span{ margin:0 15px;}
 .bottombar span a,.bottombar span input[type="submit"]{ background: url(images/edit.png) no-repeat;padding-left: 18px;border: 1px solid #a9a9a9;cursor: pointer;  }
-.btn-search{background: url(images/search.png) no-repeat;padding-left: 18px;}
+.btn-search{background: url(images/search.png) no-repeat;padding-left: 18px; cursor:pointer}
 
 .grid{ width: 100%;color: #666666;}
 .grid span{ padding: 0 5px; }

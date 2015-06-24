@@ -37,6 +37,18 @@
                 alert('你的浏览器不支持复制功能, 请手工复制');
             }
         }
+
+        function OnSearch() {
+            var txtSearch = document.getElementById("txtSearch").valueOf || '';
+            __doPostBack && __doPostBack("btnSerach", txtSearch);
+        }
+
+        function EnterPress(e) {
+            var e = e || window.event;
+            if(e.keyCode == 13) {
+                OnSearch();
+            }
+        }
     </script>
 </head>
 <body>
@@ -67,12 +79,14 @@
                 <div class="toolbar">
                     <span>
                         <asp:HyperLink ID="hlTopEdit" runat="server" CssClass="edit" ToolTip="开启或关闭编辑">项目</asp:HyperLink>:</span>
-                    <asp:DropDownList ID="ddlSolution" runat="server" Width="130px" AutoPostBack="True" OnSelectedIndexChanged="OnSolutionChanged"></asp:DropDownList>
+                    <asp:DropDownList ID="ddlSolution" runat="server" Width="120px" AutoPostBack="True" OnSelectedIndexChanged="OnSolutionChanged"></asp:DropDownList>
                     <span>版本:</span>
                     <asp:DropDownList ID="ddVersion" runat="server" Width="80px" AutoPostBack="True" OnSelectedIndexChanged="OnVersionChanged"></asp:DropDownList>
                     <span>协议:</span>
-                    <asp:DropDownList ID="ddlAgreement" runat="server" Width="130px" AutoPostBack="True" OnSelectedIndexChanged="OnAgreementChanged"></asp:DropDownList>
-                    <asp:DropDownList ID="ddContract" runat="server" Width="250px" AutoPostBack="True" OnSelectedIndexChanged="OnContractChanged"></asp:DropDownList>
+                    <asp:DropDownList ID="ddlAgreement" runat="server" Width="120px" AutoPostBack="True" OnSelectedIndexChanged="OnAgreementChanged"></asp:DropDownList>
+                    <asp:DropDownList ID="ddContract" runat="server" Width="220px" AutoPostBack="True" OnSelectedIndexChanged="OnContractChanged"></asp:DropDownList>
+                    <span>筛选:</span><input type="text" id="txtSearch" name="txtSearch" style="width: 120px" onkeypress="EnterPress(event)" onkeydown="EnterPress()"/>
+                    <a class="btn-search" id="btnSerach" onclick="OnSearch()" ></a>
                 </div>
                 <% if (IsEdit){ %>
                 <div class="content">
@@ -274,6 +288,7 @@
                                         <asp:ListItem Value="13">UInt</asp:ListItem>
                                         <asp:ListItem Value="14">UShort</asp:ListItem>
                                         <asp:ListItem Value="15">ULong</asp:ListItem>
+                                        <asp:ListItem Value="16">SigleRecord</asp:ListItem>
                                     </asp:DropDownList>
                                 </EditItemTemplate>
                                 <ItemTemplate>
