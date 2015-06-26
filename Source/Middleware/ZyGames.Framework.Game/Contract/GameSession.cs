@@ -523,7 +523,12 @@ namespace ZyGames.Framework.Game.Contract
         /// </summary>
         public bool EnterLock(int actionId, object agr1, out object arg2)
         {
+#if LOCK_TEST
+            arg2 = null;
+            return true;
+#else
             return _monitorLock.TryEnter(actionId, RequestTimeout, agr1, out arg2);
+#endif
         }
         /// <summary>
         /// 
@@ -531,7 +536,10 @@ namespace ZyGames.Framework.Game.Contract
         /// <param name="actionId"></param>
         public void ExitLock(int actionId)
         {
+#if LOCK_TEST
+#else
             _monitorLock.Exit(actionId);
+#endif
         }
 
         /// <summary>

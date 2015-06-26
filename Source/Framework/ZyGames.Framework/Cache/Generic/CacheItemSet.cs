@@ -303,23 +303,39 @@ namespace ZyGames.Framework.Cache.Generic
         }
 
 
-        internal void ProcessExpired(string key)
+        /// <summary>
+        /// 是否能处理过期
+        /// </summary>
+        /// <param name="key"></param>
+        /// <returns></returns>
+        internal bool TryProcessExpired(string key)
         {
             if (_itemData is AbstractEntity)
             {
                 var t = ((AbstractEntity)_itemData);
+                if (t.HasChanged) return false;
+
                 t.IsInCache = false;
                 t.IsExpired = true;
             }
             else if (_itemData is BaseCollection)
             {
+                bool hasChanged = false;
                 ((BaseCollection)_itemData).Foreach<AbstractEntity>((k, t) =>
                 {
+                    if (t.HasChanged)
+                    {
+                        hasChanged = t.HasChanged;
+                        return false;
+                    }
                     t.IsInCache = false;
                     t.IsExpired = true;
                     return true;
                 });
+
+                if (hasChanged) return false;
             }
+            return true;
         }
     }
 }

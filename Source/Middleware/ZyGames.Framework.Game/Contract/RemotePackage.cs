@@ -49,6 +49,14 @@ namespace ZyGames.Framework.Game.Contract
         /// 服务器间内部通讯通道
         /// </summary>
         public string RouteName { get; set; }
+        /// <summary>
+        /// 
+        /// </summary>
+        public int ErrorCode { get; set; }
+        /// <summary>
+        /// 
+        /// </summary>
+        public string ErrorInfo { get; set; }
 
         /// <summary>
         /// Message of custom

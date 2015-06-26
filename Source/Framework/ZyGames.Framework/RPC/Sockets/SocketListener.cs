@@ -401,7 +401,10 @@ namespace ZyGames.Framework.RPC.Sockets
 
             if (ioEventArgs.SocketError != SocketError.Success)
             {//Socket错误
-                TraceLog.Write("IP {0} ProcessReceive:{1}", (dataToken != null ? dataToken.Socket.RemoteEndPoint.ToNotNullString() : ""), ioEventArgs.SocketError);
+                TraceLog.Write("ProcessReceive IP {0} SocketError:{1}, bytes len:{2}",
+                    (dataToken != null ? dataToken.Socket.RemoteEndPoint.ToNotNullString() : ""),
+                    ioEventArgs.SocketError.ToString(),
+                    ioEventArgs.BytesTransferred);
                 Closing(ioEventArgs);
                 return;
             }

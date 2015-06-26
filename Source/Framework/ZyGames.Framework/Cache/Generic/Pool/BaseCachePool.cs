@@ -465,8 +465,11 @@ namespace ZyGames.Framework.Cache.Generic.Pool
                         itemSet.RemoveExpired(itemPair.Key);
                         continue;
                     }
+                    if (!itemSet.TryProcessExpired(itemPair.Key))
+                    {
+                        continue;
+                    }
                     TraceLog.ReleaseWrite("Cache item:{0} key:{1} expired has been removed.", containerPair.Key, itemPair.Key);
-                    itemSet.ProcessExpired(itemPair.Key);
                     object temp;
                     if (containerPair.Value.Collection.TryRemove(itemPair.Key, out temp))
                     {

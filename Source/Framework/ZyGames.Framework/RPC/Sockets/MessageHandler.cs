@@ -85,10 +85,15 @@ namespace ZyGames.Framework.RPC.Sockets
                     remainingBytesToProcess = HandlePrefix(buffer, dataToken.bufferSkip, dataToken, remainingBytesToProcess);
                     if (dataToken.prefixBytesDone == 4 && (dataToken.messageLength > 10 * 1024 * 1024 || dataToken.messageLength <= 0))
                     {
-                        byte[] bufferBytes = BufferUtils.MergeBytes(dataToken.byteArrayForPrefix, dataToken.byteArrayForMessage);
+                        byte[] bufferBytes = dataToken.byteArrayForMessage == null ?
+                            BufferUtils.MergeBytes(dataToken.byteArrayForPrefix, BufferUtils.GetBytes(buffer, dataToken.bufferSkip, buffer.Length - dataToken.bufferSkip)) :
+                            BufferUtils.MergeBytes(dataToken.byteArrayForPrefix, dataToken.byteArrayForMessage, buffer);
                         string data = Encoding.UTF8.GetString(bufferBytes);
                         //消息头已接收完毕，并且接收到的消息长度大于10M，socket传输的数据已紊乱，关闭掉
-                        TraceLog.ReleaseWriteDebug("Receive Ip {1} message length error:{0}\r\nData:{2}", dataToken.messageLength, (dataToken != null ? dataToken.Socket.RemoteEndPoint.ToNotNullString() : ""), data);
+                        TraceLog.Write("The host[{0}] request parser head byte error, byte len={1}\r\ndata:{2}",
+                            dataToken.Socket.RemoteEndPoint.ToNotNullString(),
+                            dataToken.messageLength,
+                            data);
                         needPostAnother = false;
                         break;
                     }

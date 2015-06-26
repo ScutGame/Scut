@@ -74,8 +74,7 @@ namespace ZyGames.Framework.Cache.Generic
         /// </summary>
         public bool IsPeriod
         {
-            
-            get { return !IsPersistence && MathUtils.DiffDate(_preAccessTime).TotalSeconds > PeriodTime; }
+            get { return !IsPersistence && MathUtils.DiffDate(_accessTime).TotalSeconds > PeriodTime; }
         }
 
         /// <summary>
@@ -117,7 +116,6 @@ namespace ZyGames.Framework.Cache.Generic
         /// </summary>
         public void RefreshAccessTime()
         {
-            
             _preAccessTime = _accessTime;
             _accessTime = DateTime.Now;
             _preAccessCounter = _accessCounter;
