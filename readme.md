@@ -94,6 +94,16 @@ Language:
 
 ## Update Log
 
+### Version: 6.7.9.10 (2015-6-26) Beta
+
+* Modify entity can not be async saved when entity is expiring.
+* Modify socket can not accept connect bug.
+* Modify machine-name & app path limit when mutil server connect to the Redis.
+* Modify account server support use custom name regist.
+* Add more key & type loading entity to cache.
+* Add rank entity of list model use to cache.
+
+
 ### Version: 6.7.9.8 (2015-4-24) R1
 
 * Modify 6.7.9.7 bug.
