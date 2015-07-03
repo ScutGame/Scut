@@ -46,6 +46,7 @@ namespace ZyGames.Framework.Cache.Generic
         /// <returns></returns>
         public static object[] Load(string personalId, params Type[] types)
         {
+            personalId = AbstractEntity.EncodeKeyCode(personalId);
             var param = types.Where(t => !CacheFactory.ContainEntityKey(t, personalId)).ToArray();
             if (param.Length == 0) return null;
 
@@ -69,6 +70,7 @@ namespace ZyGames.Framework.Cache.Generic
         /// </summary>
         public static void ReLoad(string personalId, Predicate<SchemaTable> match, bool isReLoad = false)
         {
+            personalId = AbstractEntity.EncodeKeyCode(personalId);
             foreach (var schemaTable in EntitySchemaSet.GetEnumerable())
             {
                 if (match(schemaTable))
@@ -373,6 +375,7 @@ namespace ZyGames.Framework.Cache.Generic
         /// <returns></returns>
         public bool HasChange(string personalId)
         {
+            personalId = AbstractEntity.EncodeKeyCode(personalId);
             return HasChangeCache(personalId);
         }
 
@@ -383,6 +386,7 @@ namespace ZyGames.Framework.Cache.Generic
         /// <returns></returns>
         public bool ContainKey(string personalId)
         {
+            personalId = AbstractEntity.EncodeKeyCode(personalId);
             return ContainGroupKey(personalId);
         }
 
@@ -410,6 +414,7 @@ namespace ZyGames.Framework.Cache.Generic
             LoadingStatus loadStatus;
             BaseCollection collection;
             data = default(T);
+            personalId = AbstractEntity.EncodeKeyCode(personalId);
             if (TryGetGroup(personalId, out collection, out loadStatus))
             {
                 string key = keys.Length > 0 ? AbstractEntity.CreateKeyCode(keys) : personalId;
@@ -466,6 +471,7 @@ namespace ZyGames.Framework.Cache.Generic
         /// <returns></returns>
         public IEnumerable<T> TakeOrLoad(string personalId)
         {
+            personalId = AbstractEntity.EncodeKeyCode(personalId);
             return DataContainer.TakeOrLoadGroup(personalId);
         }
         /// <summary>
@@ -475,7 +481,7 @@ namespace ZyGames.Framework.Cache.Generic
         /// <returns></returns>
         public IEnumerable<T> TakeOrLoad(IEnumerable<string> personalList)
         {
-            return DataContainer.TakeOrLoadGroup(personalList);
+            return DataContainer.TakeOrLoadGroup(personalList.Select(AbstractEntity.EncodeKeyCode));
         }
         /// <summary>
         /// 
@@ -502,6 +508,7 @@ namespace ZyGames.Framework.Cache.Generic
             LoadingStatus loadStatus;
             T t = default(T);
             BaseCollection collection;
+            personalId = AbstractEntity.EncodeKeyCode(personalId);
             if (TryGetGroup(personalId, out collection, out loadStatus))
             {
                 collection.Foreach<T>((key, value) =>
@@ -567,6 +574,7 @@ namespace ZyGames.Framework.Cache.Generic
             LoadingStatus loadStatus;
             List<T> tempList = new List<T>();
             BaseCollection collection;
+            personalId = AbstractEntity.EncodeKeyCode(personalId);
             if (TryGetGroup(personalId, out collection, out loadStatus))
             {
                 collection.Foreach<T>((key, value) =>
@@ -633,6 +641,7 @@ namespace ZyGames.Framework.Cache.Generic
         {
             LoadingStatus loadStatus;
             BaseCollection collection;
+            personalId = AbstractEntity.EncodeKeyCode(personalId);
             if (TryGetGroup(personalId, out collection, out loadStatus))
             {
                 return collection;
@@ -647,6 +656,7 @@ namespace ZyGames.Framework.Cache.Generic
         /// <returns></returns>
         public bool AutoLoad(string personalId)
         {
+            personalId = AbstractEntity.EncodeKeyCode(personalId);
             if (!IsExistData(personalId))
             {
                 return TryLoadItem(personalId, false);
@@ -766,6 +776,7 @@ namespace ZyGames.Framework.Cache.Generic
         /// <param name="personalId"></param>
         public void UpdateSelf(string personalId)
         {
+            personalId = AbstractEntity.EncodeKeyCode(personalId);
             UpdateGroup(true, personalId);
         }
         /// <summary>
@@ -832,10 +843,11 @@ namespace ZyGames.Framework.Cache.Generic
         /// 更新所有的数据
         /// </summary>
         /// <param name="isChange"></param>
-        /// <param name="changeKey"></param>
-        public override bool Update(bool isChange, string changeKey = null)
+        /// <param name="personalId"></param>
+        public override bool Update(bool isChange, string personalId = null)
         {
-            return UpdateGroup(isChange, changeKey);
+            personalId = AbstractEntity.EncodeKeyCode(personalId);
+            return UpdateGroup(isChange, personalId);
         }
         /// <summary>
         /// The value has be removed from the cache
@@ -875,6 +887,7 @@ namespace ZyGames.Framework.Cache.Generic
         {
             LoadingStatus loadStatus;
             BaseCollection enityGroup;
+            personalId = AbstractEntity.EncodeKeyCode(personalId);
             return TryGetGroup(personalId, out enityGroup, out loadStatus);
         }
 

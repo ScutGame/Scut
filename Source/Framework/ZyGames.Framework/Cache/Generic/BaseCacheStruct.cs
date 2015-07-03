@@ -160,6 +160,7 @@ namespace ZyGames.Framework.Cache.Generic
         public bool TryRecoverFromDb(DbDataFilter filter, string personalId = "")
         {
             List<T> dataList;
+            if (!string.IsNullOrEmpty(personalId)) personalId = AbstractEntity.EncodeKeyCode(personalId);
             string redisKey = CreateRedisKey(personalId);
             TransReceiveParam receiveParam = new TransReceiveParam(redisKey);
             receiveParam.Schema = SchemaTable();
@@ -467,6 +468,7 @@ namespace ZyGames.Framework.Cache.Generic
             Update(false, groupKey);
             if (!string.IsNullOrEmpty(groupKey))
             {
+                groupKey = AbstractEntity.EncodeKeyCode(groupKey);
                 DataContainer.ReLoadItem(groupKey);
             }
             else
@@ -587,8 +589,8 @@ namespace ZyGames.Framework.Cache.Generic
         /// 
         /// </summary>
         /// <param name="isChange">更新到库中是全部数据还是改变的数据</param>
-        /// <param name="changeKey"></param>
-        public virtual bool Update(bool isChange, string changeKey = null)
+        /// <param name="personalId"></param>
+        public virtual bool Update(bool isChange, string personalId = null)
         {
             return false;
         }

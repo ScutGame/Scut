@@ -436,7 +436,7 @@ namespace ZyGames.Framework.Cache.Generic
                             }
 
                             AbstractEntity entity = CacheFactory.GetPersonalEntity(key) as AbstractEntity;
-                            int id = keyValues[1].ToInt();
+                            int id = AbstractEntity.DecodeKeyCode(keyValues[1]).ToInt();
                             string keyCode = keyValues[2];
                             string redisKey = string.Format("{0}_{1}", keyValues[0], keyCode);
                             string hashId = GetRedisSyncQueueKey(id);
@@ -558,7 +558,7 @@ namespace ZyGames.Framework.Cache.Generic
         /// <returns></returns>
         private static string GetRedisSyncQueueKey(int identityId)
         {
-            int queueIndex = identityId % _queueWatchTimers.Length;
+            int queueIndex = Math.Abs(identityId) % _queueWatchTimers.Length;
             string queueKey = string.Format("{0}{1}",
                 RedisSyncQueueKey,
                 _queueWatchTimers.Length > 1 ? ":" + queueIndex : "");
@@ -567,7 +567,7 @@ namespace ZyGames.Framework.Cache.Generic
 
         private static string GetSqlWaitSyncQueueKey(int identityId)
         {
-            int queueIndex = identityId % _sqlWaitTimers.Length;
+            int queueIndex = Math.Abs(identityId) % _sqlWaitTimers.Length;
             string queueKey = string.Format("{0}{1}",
                 SqlSyncWaitQueueKey,
                 _sqlWaitTimers.Length > 1 ? ":" + queueIndex : "");
@@ -650,7 +650,7 @@ namespace ZyGames.Framework.Cache.Generic
                 entity.TempTimeModify = MathUtils.Now;
                 string key = GetQueueFormatKey(entity);
                 var keyValues = key.Split('_', '|');
-                int id = keyValues[1].ToInt();
+                int id = AbstractEntity.DecodeKeyCode(keyValues[1]).ToInt();
                 string keyCode = keyValues[2];
                 string redisKey = string.Format("{0}_{1}", keyValues[0], keyCode);
                 byte[] idBytes = BufferUtils.GetBytes(id);

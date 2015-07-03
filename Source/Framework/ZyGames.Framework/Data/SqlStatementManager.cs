@@ -207,7 +207,7 @@ namespace ZyGames.Framework.Data
         /// <returns></returns>
         internal static string GetSqlQueueKey(int identityId)
         {
-            int index = identityId % _queueWatchTimers.Length;
+            int index = Math.Abs(identityId) % _queueWatchTimers.Length;
             string queueKey = string.Format("{0}{1}{2}",
                 SlaveMessageQueue,
                 SqlSyncQueueKey,

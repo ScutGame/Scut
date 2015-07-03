@@ -64,7 +64,7 @@ namespace ZyGames.Framework.Model
         private ObjectAccessor _typeAccessor;
 
         /// <summary>
-        /// 
+        /// Conver '-' char
         /// </summary>
         /// <param name="keyCode"></param>
         /// <returns></returns>
@@ -299,11 +299,11 @@ namespace ZyGames.Framework.Model
             get
             {
                 int id = GetIdentityId();
-                if (id <= 0)
+                if (id == 0)
                 {
                     TraceLog.WriteError("The {0} property \"PersonalId\" is empty.", _schema.EntityType.FullName);
                 }
-                return id.ToString();
+                return EncodeKeyCode(id.ToString());
             }
         }
 

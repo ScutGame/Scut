@@ -268,7 +268,7 @@ namespace ZyGames.Framework.Cache.Generic
         /// <returns></returns>
         public static dynamic GetPersonalEntity(string entityType, string personalId, params object[] keys)
         {
-            string key = personalId;
+            string key = AbstractEntity.EncodeKeyCode(personalId);
             if (keys.Length > 0)
             {
                 key += "|" + AbstractEntity.CreateKeyCode(keys);
@@ -287,6 +287,7 @@ namespace ZyGames.Framework.Cache.Generic
         public static bool ContainEntityKey(Type type, string key)
         {
             CacheContainer container;
+            key = AbstractEntity.EncodeKeyCode(key);
             if (_writePools != null && _writePools.TryGetValue(type.FullName, out container))
             {
                 CacheItemSet itemSet;
@@ -353,7 +354,7 @@ namespace ZyGames.Framework.Cache.Generic
 
             return string.Format("{0}_{1}|{2}",
                 RedisConnectionPool.EncodeTypeName(entity.GetType().FullName),
-                entity.GetIdentityId(),
+                entity.PersonalId,
                 entity.GetKeyCode());
         }
 
