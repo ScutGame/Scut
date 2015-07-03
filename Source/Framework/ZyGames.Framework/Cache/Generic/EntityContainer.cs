@@ -45,11 +45,11 @@ namespace ZyGames.Framework.Cache.Generic
     {
         private string _containerKey;
         private BaseCachePool _cachePool;
-        private readonly Func<bool> _loadFactory;
-        private readonly Func<string, bool> _loadItemFactory;
+        private readonly Func<bool, bool> _loadFactory;
+        private readonly Func<string, bool, bool> _loadItemFactory;
         private CacheContainer _container;
 
-        internal EntityContainer(BaseCachePool cachePool, Func<bool> loadFactory, Func<string, bool> loadItemFactory)
+        internal EntityContainer(BaseCachePool cachePool, Func<bool, bool> loadFactory, Func<string, bool, bool> loadItemFactory)
         {
             _cachePool = cachePool;
             _loadFactory = loadFactory;
@@ -262,7 +262,7 @@ namespace ZyGames.Framework.Cache.Generic
         /// <param name="key"></param>
         /// <param name="itemSet"></param>
         /// <returns></returns>
-        public bool TryGetCache(string key, out CacheItemSet itemSet)
+        public bool TryGetCacheItem(string key, out CacheItemSet itemSet)
         {
             if (Container.TryGetValue(key, out itemSet))
             {
@@ -460,6 +460,20 @@ namespace ZyGames.Framework.Cache.Generic
         public bool AddOrUpdateEntity(string entityKey, T entityData, int periodTime, bool isLoad = false)
         {
             CacheItemSet itemSet;
+            return AddOrUpdateEntity(entityKey, entityData, periodTime, out itemSet, isLoad);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="entityKey"></param>
+        /// <param name="entityData"></param>
+        /// <param name="periodTime"></param>
+        /// <param name="itemSet"></param>
+        /// <param name="isLoad"></param>
+        /// <returns></returns>
+        public bool AddOrUpdateEntity(string entityKey, T entityData, int periodTime, out  CacheItemSet itemSet, bool isLoad = false)
+        {
             if (!Container.TryGetValue(entityKey, out itemSet))
             {
                 itemSet = CreateItemSet(CacheType.Entity, periodTime);
@@ -471,11 +485,7 @@ namespace ZyGames.Framework.Cache.Generic
             }
             CheckEventBind(entityData as AbstractEntity);
             itemSet.SetItem(entityData);
-            if (isLoad)
-            {
-                itemSet.OnLoadSuccess();
-            }
-            else
+            if (!isLoad)
             {
                 entityData.TriggerNotify();
             }
@@ -490,20 +500,17 @@ namespace ZyGames.Framework.Cache.Generic
         /// <param name="entityKey"></param>
         /// <param name="entityData"></param>
         /// <param name="periodTime"></param>
+        /// <param name="itemSet"></param>
         /// <param name="isLoad"></param>
         /// <returns></returns>
-        public bool TryAddEntity(string entityKey, T entityData, int periodTime, bool isLoad = false)
+        public bool TryAddEntity(string entityKey, T entityData, int periodTime, out  CacheItemSet itemSet, bool isLoad = false)
         {
-            var itemSet = CreateItemSet(CacheType.Entity, periodTime);
+            itemSet = CreateItemSet(CacheType.Entity, periodTime);
             itemSet.SetItem(entityData);
             if (Container.TryAdd(entityKey, itemSet))
             {
                 CheckEventBind(entityData as AbstractEntity);
-                if (isLoad)
-                {
-                    itemSet.OnLoadSuccess();
-                }
-                else
+                if (!isLoad)
                 {
                     entityData.TriggerNotify();
                 }
@@ -547,11 +554,7 @@ namespace ZyGames.Framework.Cache.Generic
                 {
                     var temp = entityData as AbstractEntity;
                     CheckEventBind(temp);
-                    if (isLoad)
-                    {
-                        itemSet.OnLoadSuccess();
-                    }
-                    else
+                    if (!isLoad)
                     {
                         entityData.TriggerNotify();
                     }
@@ -578,11 +581,7 @@ namespace ZyGames.Framework.Cache.Generic
                 if (!Equals(entityData, default(T)) && ((BaseCollection)itemSet.GetItem()).TryAdd(key, entityData))
                 {
                     CheckEventBind(entityData as AbstractEntity);
-                    if (isLoad)
-                    {
-                        itemSet.OnLoadSuccess();
-                    }
-                    else
+                    if (!isLoad)
                     {
                         entityData.TriggerNotify();
                     }
@@ -756,6 +755,7 @@ namespace ZyGames.Framework.Cache.Generic
             TransSendParam sendParam = new TransSendParam(key) { Schema = schema };
             return _cachePool.TrySetRankData(sendParam, removeList.ToArray());
         }
+
         /// <summary>
         /// 
         /// </summary>
@@ -763,12 +763,17 @@ namespace ZyGames.Framework.Cache.Generic
         /// <param name="dataList"></param>
         /// <param name="periodTime"></param>
         /// <param name="isLoad"></param>
+        /// <param name="isReplace"></param>
         /// <returns></returns>
-        internal bool TryLoadRangeRank<V>(string key, IEnumerable<V> dataList, int periodTime = 0, bool isLoad = false) where V : RankEntity, new()
+        internal bool TryLoadRangeRank<V>(string key, IEnumerable<V> dataList, int periodTime = 0, bool isLoad = false, bool isReplace = false) where V : RankEntity, new()
         {
             CacheItemSet itemSet;
             if (!TryGetOrAddRank(key, out itemSet, periodTime)) return false;
             var cacheItems = (CacheList<V>)itemSet.GetItem();
+            if (isReplace && cacheItems.Count > 0)
+            {
+                cacheItems.Clear();
+            }
             foreach (var item in dataList)
             {
                 item.IsInCache = true;
@@ -885,8 +890,9 @@ namespace ZyGames.Framework.Cache.Generic
         /// 加载指定Key数据
         /// </summary>
         /// <param name="key"></param>
+        /// <param name="isReplace"></param>
         /// <returns></returns>
-        public bool LoadItem(string key)
+        public bool LoadItem(string key, bool isReplace)
         {
             if (string.IsNullOrEmpty(key))
             {
@@ -903,7 +909,7 @@ namespace ZyGames.Framework.Cache.Generic
 
             if (_loadItemFactory != null)
             {
-                return _loadItemFactory(key);
+                return _loadItemFactory(key, isReplace);
             }
             return false;
 
@@ -930,7 +936,7 @@ namespace ZyGames.Framework.Cache.Generic
                     _container.Collection.Clear();
                     _container.ResetStatus();
                 }
-                _container.OnLoadFactory(() =>
+                _container.OnLoadFactory((r) =>
                 {
                     if (_cachePool.TryReceiveData(receiveParam, out dataList))
                     {
@@ -955,7 +961,7 @@ namespace ZyGames.Framework.Cache.Generic
             {
                 itemSet.ResetStatus();
             }
-            return LoadItem(key);
+            return LoadItem(key, true);
         }
 
         #endregion
@@ -1117,6 +1123,7 @@ namespace ZyGames.Framework.Cache.Generic
             CacheContainer container;
             if (_cachePool.TryRemove(_containerKey, out container, callback))
             {
+                container.Collection.Clear();
                 container.ResetStatus();
                 return true;
             }
@@ -1178,7 +1185,7 @@ namespace ZyGames.Framework.Cache.Generic
                 loadStatus = itemSet.LoadingStatus;
                 return true;
             }
-            if (isAutoLoad && LoadItem(groupKey))
+            if (isAutoLoad && LoadItem(groupKey, false))
             {
                 if (Container.TryGetValue(groupKey, out itemSet) && itemSet.HasLoadSuccess)
                 {

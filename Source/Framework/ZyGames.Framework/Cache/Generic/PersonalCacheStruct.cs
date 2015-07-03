@@ -39,7 +39,7 @@ namespace ZyGames.Framework.Cache.Generic
     public static class PersonalCacheStruct
     {
         /// <summary>
-        /// Get entity from redis
+        /// Get entity from redis, but not surported mutil key of entity.
         /// </summary>
         /// <param name="personalId"></param>
         /// <param name="types"></param>
@@ -54,7 +54,11 @@ namespace ZyGames.Framework.Cache.Generic
             {
                 var entity = t as AbstractEntity;
                 if (entity == null) continue;
-                CacheFactory.AddOrUpdateEntity(entity);
+                CacheItemSet itemSet;
+                if (CacheFactory.AddOrUpdateEntity(entity, out itemSet))
+                {
+                    itemSet.OnLoadSuccess();
+                }
             }
             return result;
         }
@@ -188,7 +192,7 @@ namespace ZyGames.Framework.Cache.Generic
             {
                 foreach (var t in enumerable)
                 {
-                    CacheFactory.AddOrUpdateEntity(t, false, period);
+                    CacheFactory.AddOrUpdateEntity(t, period);
                 }
                 return true;
             }
@@ -645,7 +649,7 @@ namespace ZyGames.Framework.Cache.Generic
         {
             if (!IsExistData(personalId))
             {
-                return TryLoadItem(personalId);
+                return TryLoadItem(personalId, false);
             }
             return true;
         }
@@ -654,7 +658,8 @@ namespace ZyGames.Framework.Cache.Generic
         /// 从Redis加载所有缓存
         /// </summary>
         /// <param name="match"></param>
-        public void LoadFrom(Predicate<T> match)
+        /// <param name="isReplace"></param>
+        public void LoadFrom(Predicate<T> match, bool isReplace = false)
         {
             string redisKey = CreateRedisKey();
             TransReceiveParam receiveParam = new TransReceiveParam(redisKey);
@@ -663,7 +668,7 @@ namespace ZyGames.Framework.Cache.Generic
             var filter = new DbDataFilter(maxCount);
             receiveParam.DbFilter = filter;
             //receiveParam.Capacity = maxCount;
-            LoadFrom(receiveParam, match);
+            LoadFrom(receiveParam, match, isReplace);
         }
 
         /// <summary>
@@ -767,31 +772,34 @@ namespace ZyGames.Framework.Cache.Generic
         /// 
         /// </summary>
         /// <returns></returns>
-        protected override bool LoadFactory()
+        protected override bool LoadFactory(bool isReplace)
         {
             return true;
         }
+
         /// <summary>
         /// 
         /// </summary>
         /// <param name="key"></param>
+        /// <param name="isReplace"></param>
         /// <returns></returns>
-        protected override bool LoadItemFactory(string key)
+        protected override bool LoadItemFactory(string key, bool isReplace)
         {
             //Model实体设置检查
             if ("10000".Equals(key))
             {
                 TraceLog.WriteError("The {0} entity's attr cacheType is share.", DataContainer.RootKey);
             }
-            return ProcessLoadParam(key);
+            return ProcessLoadParam(key, isReplace);
         }
 
         /// <summary>
         /// 处理加载数据参数
         /// </summary>
         /// <param name="personalId"></param>
+        /// <param name="isReplace"></param>
         /// <returns></returns>
-        protected bool ProcessLoadParam(string personalId)
+        protected bool ProcessLoadParam(string personalId, bool isReplace)
         {
             string redisKey = CreateRedisKey(personalId);
             TransReceiveParam receiveParam = new TransReceiveParam(redisKey);
@@ -817,7 +825,7 @@ namespace ZyGames.Framework.Cache.Generic
                 }
                 receiveParam.DbFilter = filter;
             }
-            return TryLoadCache(personalId, receiveParam, periodTime);
+            return TryLoadCache(personalId, receiveParam, periodTime, false);
         }
 
         /// <summary>

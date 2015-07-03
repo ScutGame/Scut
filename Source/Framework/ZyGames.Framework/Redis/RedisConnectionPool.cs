@@ -752,7 +752,7 @@ namespace ZyGames.Framework.Redis
         }
 
         /// <summary>
-        /// Get mutil entity instance from redis, but mutil key of entity not surported.
+        /// Get mutil entity instance from redis, but not surported mutil key of entity.
         /// </summary>
         /// <param name="personalId"></param>
         /// <param name="entityTypes"></param>

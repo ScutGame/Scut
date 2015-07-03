@@ -518,12 +518,6 @@ namespace ZyGames.Framework.Game.Contract
         }
 
 
-        /// <summary>
-        /// Raises the service stop event.
-        /// </summary>
-        protected abstract void OnServiceStop();
-
-
         private class HttpClientConnection
         {
             public GameSession Session;

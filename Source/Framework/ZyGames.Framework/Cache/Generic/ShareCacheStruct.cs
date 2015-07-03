@@ -158,7 +158,7 @@ namespace ZyGames.Framework.Cache.Generic
             {
                 foreach (var t in enumerable)
                 {
-                    CacheFactory.AddOrUpdateEntity(t, false, period);
+                    CacheFactory.AddOrUpdateEntity(t, period);
                 }
                 return true;
             }
@@ -509,7 +509,7 @@ namespace ZyGames.Framework.Cache.Generic
             receiveParam.Schema = SchemaTable();
             receiveParam.DbFilter = filter;
             int periodTime = receiveParam.Schema == null ? 0 : receiveParam.Schema.PeriodTime;
-            return TryLoadCache(receiveParam, periodTime);
+            return TryLoadCache(receiveParam, periodTime, false);
         }
 
         private bool IsExistData()
@@ -642,7 +642,7 @@ namespace ZyGames.Framework.Cache.Generic
         /// 
         /// </summary>
         /// <returns></returns>
-        protected override bool LoadFactory()
+        protected override bool LoadFactory(bool isReplace)
         {
             int capacity = 0;
             SchemaTable schemaTable;
@@ -657,8 +657,9 @@ namespace ZyGames.Framework.Cache.Generic
         /// 
         /// </summary>
         /// <param name="key"></param>
+        /// <param name="isReplace"></param>
         /// <returns></returns>
-        protected override bool LoadItemFactory(string key)
+        protected override bool LoadItemFactory(string key, bool isReplace)
         {
             //string redisKey = CreateRedisKey(key);
             //var schema = SchemaTable();
@@ -684,20 +685,31 @@ namespace ZyGames.Framework.Cache.Generic
         /// </summary>
         /// <param name="dataList"></param>
         /// <param name="periodTime"></param>
+        /// <param name="isReplace"></param>
         /// <returns></returns>
-        protected override bool InitCache(List<T> dataList, int periodTime)
+        protected override bool InitCache(List<T> dataList, int periodTime, bool isReplace)
         {
             foreach (var data in dataList)
             {
                 if (data == null) continue;
                 data.Reset();
                 string key = data.GetKeyCode();
-                bool result = AddOrUpdateEntity(key, data, periodTime, true);
+                CacheItemSet itemSet;
+                bool result = true;
+                if (isReplace)
+                {
+                    result = DataContainer.AddOrUpdateEntity(key, data, periodTime, out itemSet, true);
+                }
+                else
+                {
+                    DataContainer.TryAddEntity(key, data, periodTime, out itemSet, true);
+                }
                 if (!result)
                 {
                     TraceLog.WriteError("Load data:\"{0}\" tryadd key:\"{1}\" error.", DataContainer.RootKey, key);
                     return false;
                 }
+                itemSet.OnLoadSuccess();
                 //reason:load entity is no changed.
                 //DataContainer.UnChangeNotify(key);
             }

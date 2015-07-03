@@ -52,26 +52,30 @@ namespace ZyGames.Framework.Game.Cache
         /// 加载数据工厂
         /// </summary>
         /// <returns></returns>
-        protected override bool LoadFactory()
+        protected override bool LoadFactory(bool isReplace)
         {
             return true;
         }
+
         /// <summary>
         /// 加载子项数据工厂
         /// </summary>
         /// <returns></returns>
         /// <param name="key">Key.</param>
-        protected override bool LoadItemFactory(string key)
+        /// <param name="isReplace"></param>
+        protected override bool LoadItemFactory(string key, bool isReplace)
         {
             return true;
         }
+
         /// <summary>
         /// 
         /// </summary>
         /// <param name="dataList"></param>
         /// <param name="periodTime"></param>
+        /// <param name="isReplace"></param>
         /// <returns></returns>
-        protected override bool InitCache(List<T> dataList, int periodTime)
+        protected override bool InitCache(List<T> dataList, int periodTime, bool isReplace)
         {
             bool result = false;
             foreach (var data in dataList)

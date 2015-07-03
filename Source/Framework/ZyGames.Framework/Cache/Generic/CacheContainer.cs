@@ -126,7 +126,7 @@ namespace ZyGames.Framework.Cache.Generic
         /// <param name="loadFactory"></param>
         /// <param name="isReload">是否重新加载</param>
         /// <exception cref="NullReferenceException"></exception>
-        internal void OnLoadFactory(Func<bool> loadFactory, bool isReload)
+        internal void OnLoadFactory(Func<bool, bool> loadFactory, bool isReload)
         {
             if (_collection == null)
             {
@@ -138,7 +138,7 @@ namespace ZyGames.Framework.Cache.Generic
             {
                 if (loadFactory != null)
                 {
-                    LoadingStatus = loadFactory() ? LoadingStatus.Success : LoadingStatus.Error;
+                    LoadingStatus = loadFactory(isReload) ? LoadingStatus.Success : LoadingStatus.Error;
                 }
             }
         }

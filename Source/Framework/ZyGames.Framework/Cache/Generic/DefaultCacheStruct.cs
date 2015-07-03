@@ -31,12 +31,12 @@ namespace ZyGames.Framework.Cache.Generic
     /// <typeparam name="T"></typeparam>
     class DefaultCacheStruct<T> : BaseCacheStruct<T> where T : AbstractEntity, new()
     {
-        protected override bool LoadFactory()
+        protected override bool LoadFactory(bool isReplace)
         {
             return true;
         }
 
-        protected override bool LoadItemFactory(string key)
+        protected override bool LoadItemFactory(string key, bool isReplace)
         {
             return true;
         }

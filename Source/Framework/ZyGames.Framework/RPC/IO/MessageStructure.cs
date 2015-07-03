@@ -57,6 +57,7 @@ namespace ZyGames.Framework.RPC.IO
 
         static MessageStructure()
         {
+            EnableGzip = true;
             EnableGzipMinByte = 10240;
         }
 
@@ -106,7 +107,6 @@ namespace ZyGames.Framework.RPC.IO
         /// </summary>
         public MessageStructure()
         {
-            EnableGzip = true;
             _msBuffers = new MemoryStream();
             //_buffersQueue = new ConcurrentQueue<byte>();
         }
@@ -117,7 +117,6 @@ namespace ZyGames.Framework.RPC.IO
         /// <param name="buffer"></param>
         public MessageStructure(IEnumerable<byte> buffer)
         {
-            EnableGzip = true;
             _msBuffers = new MemoryStream(buffer.ToArray());
             //_buffersQueue = new ConcurrentQueue<byte>(buffer);
         }

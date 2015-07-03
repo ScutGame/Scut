@@ -166,7 +166,7 @@ namespace ZyGames.Framework.Cache.Generic
             receiveParam.DbFilter = filter;
             if (DataContainer.TryRecoverFromDb(receiveParam, out dataList))
             {
-                return InitCache(dataList, receiveParam.Schema.PeriodTime);
+                return InitCache(dataList, receiveParam.Schema.PeriodTime, true);
             }
             return false;
         }
@@ -202,7 +202,7 @@ namespace ZyGames.Framework.Cache.Generic
         {
             return DataContainer.TryTakeGroup(personalId, out list);
         }
-        
+
         /// <summary>
         /// 遍历实体方式
         /// </summary>
@@ -292,7 +292,8 @@ namespace ZyGames.Framework.Cache.Generic
         /// <returns></returns>
         protected bool TryAddEntity(string key, T t, int periodTime, bool isLoad = false)
         {
-            return DataContainer.TryAddEntity(key, t, periodTime, isLoad);
+            CacheItemSet itemSet;
+            return DataContainer.TryAddEntity(key, t, periodTime, out itemSet, isLoad);
         }
 
         /// <summary>
@@ -311,13 +312,13 @@ namespace ZyGames.Framework.Cache.Generic
         /// 加载数据工厂
         /// </summary>
         /// <returns></returns>
-        protected abstract bool LoadFactory();
+        protected abstract bool LoadFactory(bool isReplace);
 
         /// <summary>
         /// 加载子项数据工厂
         /// </summary>
         /// <returns></returns>
-        protected abstract bool LoadItemFactory(string key);
+        protected abstract bool LoadItemFactory(string key, bool isReplace);
 
         /// <summary>
         /// 是否存在实体
@@ -343,15 +344,16 @@ namespace ZyGames.Framework.Cache.Generic
         /// <param name="groupKey"></param>
         /// <param name="dataFilter"></param>
         /// <param name="periodTime"></param>
+        /// <param name="isReplace"></param>
         /// <returns></returns>
-        protected bool TryLoadCache(string groupKey, DbDataFilter dataFilter, int periodTime)
+        protected bool TryLoadCache(string groupKey, DbDataFilter dataFilter, int periodTime, bool isReplace)
         {
             string redisKey = CreateRedisKey(groupKey);
             SchemaTable schema;
             if (EntitySchemaSet.TryGet<T>(out schema))
             {
                 TransReceiveParam receiveParam = new TransReceiveParam(redisKey, schema, dataFilter);
-                return TryLoadCache(groupKey, receiveParam, periodTime);
+                return TryLoadCache(groupKey, receiveParam, periodTime, isReplace);
             }
             return false;
         }
@@ -361,8 +363,9 @@ namespace ZyGames.Framework.Cache.Generic
         /// </summary>
         /// <param name="receiveParam"></param>
         /// <param name="periodTime"></param>
+        /// <param name="isReplace"></param>
         /// <returns></returns>
-        protected bool TryLoadCache(TransReceiveParam receiveParam, int periodTime)
+        protected bool TryLoadCache(TransReceiveParam receiveParam, int periodTime, bool isReplace)
         {
             //todo: trace
             var watch = RunTimeWatch.StartNew(string.Format("Try load cache data:{0}", receiveParam.Schema.EntityType.FullName));
@@ -373,7 +376,7 @@ namespace ZyGames.Framework.Cache.Generic
                 {
                     watch.Check("received count:" + dataList.Count, 20);
                     if (dataList.Count == 0) return true;
-                    return InitCache(dataList, periodTime);
+                    return InitCache(dataList, periodTime, isReplace);
                 }
             }
             catch (Exception ex)
@@ -394,8 +397,9 @@ namespace ZyGames.Framework.Cache.Generic
         /// <param name="groupKey"></param>
         /// <param name="receiveParam"></param>
         /// <param name="periodTime">缓存的生命周期，单位秒</param>
+        /// <param name="isReplace"></param>
         /// <returns></returns>
-        protected bool TryLoadCache(string groupKey, TransReceiveParam receiveParam, int periodTime)
+        protected bool TryLoadCache(string groupKey, TransReceiveParam receiveParam, int periodTime, bool isReplace)
         {
             //todo: trace
             var watch = RunTimeWatch.StartNew(string.Format("Try load cache data:{0}-{1}", receiveParam.Schema.EntityType.FullName, groupKey));
@@ -406,7 +410,7 @@ namespace ZyGames.Framework.Cache.Generic
                 if (DataContainer.TryReceiveData(receiveParam, out dataList))
                 {
                     watch.Check("received count:" + dataList.Count);
-                    InitCache(dataList, periodTime);
+                    InitCache(dataList, periodTime, isReplace);
                     itemSet.OnLoadSuccess();
                     watch.Check("Init cache:");
                     return true;
@@ -426,7 +430,8 @@ namespace ZyGames.Framework.Cache.Generic
         /// </summary>
         /// <param name="receiveParam"></param>
         /// <param name="match"></param>
-        protected void LoadFrom(TransReceiveParam receiveParam, Predicate<T> match)
+        /// <param name="isReplace"></param>
+        protected void LoadFrom(TransReceiveParam receiveParam, Predicate<T> match, bool isReplace)
         {
             List<T> dataList = DataContainer.LoadFrom<T>(receiveParam);
             if (DataContainer.LoadStatus == LoadingStatus.Success && dataList != null)
@@ -437,7 +442,7 @@ namespace ZyGames.Framework.Cache.Generic
                 foreach (var pair in pairs)
                 {
                     CacheItemSet itemSet = InitContainer(pair.Key, periodTime);
-                    InitCache(pair.ToList(), periodTime);
+                    InitCache(pair.ToList(), periodTime, isReplace);
                     itemSet.OnLoadSuccess();
                 }
             }
@@ -447,10 +452,11 @@ namespace ZyGames.Framework.Cache.Generic
         /// 加载指定Key数据
         /// </summary>
         /// <param name="groupKey"></param>
+        /// <param name="isReplace"></param>
         /// <returns></returns>
-        protected bool TryLoadItem(string groupKey)
+        protected bool TryLoadItem(string groupKey, bool isReplace)
         {
-            return DataContainer.LoadItem(groupKey);
+            return DataContainer.LoadItem(groupKey, isReplace);
         }
 
         /// <summary>
@@ -494,8 +500,9 @@ namespace ZyGames.Framework.Cache.Generic
         /// </summary>
         /// <param name="dataList"></param>
         /// <param name="periodTime"></param>
+        /// <param name="isReplace">Whether to replace the entity in cache</param>
         /// <returns></returns>
-        protected virtual bool InitCache(List<T> dataList, int periodTime)
+        protected virtual bool InitCache(List<T> dataList, int periodTime, bool isReplace)
         {
             foreach (var data in dataList)
             {
@@ -507,7 +514,15 @@ namespace ZyGames.Framework.Cache.Generic
                 }
                 data.Reset();
                 string key = data.GetKeyCode();
-                bool result = DataContainer.AddOrUpdateGroup(personalId, key, data, periodTime, true);
+                bool result = true;
+                if (isReplace)
+                {
+                    result = DataContainer.AddOrUpdateGroup(personalId, key, data, periodTime, true);
+                }
+                else
+                {
+                    DataContainer.TryAddGroup(personalId, key, data, periodTime, true);
+                }
                 if (!result)
                 {
                     TraceLog.WriteError("Load data:\"{0}\" tryadd key:\"{1}\" error.", DataContainer.RootKey, key);

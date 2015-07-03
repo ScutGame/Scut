@@ -36,7 +36,7 @@ namespace ZyGames.Framework.Cache.Generic
     /// <typeparam name="T"></typeparam>
     /// <typeparam name="V"></typeparam>
     [ProtoContract, Serializable]
-    public class CacheDictionary<T, V> : EntityChangeEvent, IDictionary<T, V>, IDataExpired, IDisposable
+    public class CacheDictionary<T, V> : EntityChangeEvent, IDictionary<T, V>, IReadOnlyDictionary<T, V>, IDataExpired, IDisposable
     {
         private readonly ConcurrentDictionary<T, V> _cacheStruct;
         private bool _isReadOnly;
@@ -296,6 +296,17 @@ namespace ZyGames.Framework.Cache.Generic
         {
             get { return _cacheStruct.Values; }
         }
+
+        IEnumerable<T> IReadOnlyDictionary<T, V>.Keys
+        {
+            get { return _cacheStruct.Keys; }
+        }
+
+        IEnumerable<V> IReadOnlyDictionary<T, V>.Values
+        {
+            get { return _cacheStruct.Values; }
+        }
+
         /// <summary>
         /// 
         /// </summary>
@@ -321,5 +332,7 @@ namespace ZyGames.Framework.Cache.Generic
             }
             base.Dispose(disposing);
         }
+
+
     }
 }

@@ -182,15 +182,23 @@ namespace ZyGames.Framework.Cache.Generic
         {
             return _container.Collection.Find(match);
         }
+
         /// <summary>
         /// Inits the cache.
         /// </summary>
         /// <returns><c>true</c>, if cache was inited, <c>false</c> otherwise.</returns>
+        protected virtual bool InitCache(bool isReplace)
+        {
+            return InitCache();
+        }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
         protected virtual bool InitCache()
         {
             return true;
         }
-
         /// <summary>
         /// 
         /// </summary>

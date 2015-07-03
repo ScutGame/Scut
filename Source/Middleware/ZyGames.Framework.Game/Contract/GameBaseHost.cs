@@ -92,6 +92,13 @@ namespace ZyGames.Framework.Game.Contract
         }
 
         /// <summary>
+        /// Raises the service stop event.
+        /// </summary>
+        protected virtual void OnServiceStop()
+        {
+        }
+
+        /// <summary>
         /// 
         /// </summary>
         public virtual void Stop()

@@ -361,12 +361,36 @@ namespace ZyGames.Framework.Cache.Generic
         /// 
         /// </summary>
         /// <param name="entity"></param>
-        /// <param name="isLoad"></param>
         /// <param name="periodTime"></param>
         /// <returns></returns>
-        public static bool AddOrUpdateEntity(AbstractEntity entity, bool isLoad = true, int periodTime = 0)
+        public static bool AddOrUpdateEntity(AbstractEntity entity, int periodTime = 0)
         {
-            return AddOrUpdateEntity(GenerateEntityKey(entity), entity, isLoad, periodTime);
+            CacheItemSet itemSet;
+            return AddOrUpdateEntity(entity, out itemSet, periodTime);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="entity"></param>
+        /// <param name="itemSet"></param>
+        /// <param name="periodTime"></param>
+        /// <returns></returns>
+        public static bool AddOrUpdateEntity(AbstractEntity entity, out CacheItemSet itemSet, int periodTime = 0)
+        {
+            return AddOrUpdateEntity(GenerateEntityKey(entity), entity, out itemSet, periodTime);
+        }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="redisKey"></param>
+        /// <param name="entity"></param>
+        /// <param name="periodTime"></param>
+        /// <returns></returns>
+        public static bool AddOrUpdateEntity(string redisKey, AbstractEntity entity, int periodTime = 0)
+        {
+            CacheItemSet itemSet;
+            return AddOrUpdateEntity(redisKey, entity, out itemSet, periodTime);
         }
 
         /// <summary>
@@ -374,15 +398,16 @@ namespace ZyGames.Framework.Cache.Generic
         /// </summary>
         /// <param name="redisKey"></param>
         /// <param name="entity"></param>
-        /// <param name="isLoad"></param>
+        /// <param name="itemSet"></param>
         /// <param name="periodTime"></param>
         /// <returns></returns>
-        public static bool AddOrUpdateEntity(string redisKey, AbstractEntity entity, bool isLoad = true, int periodTime = 0)
+        public static bool AddOrUpdateEntity(string redisKey, AbstractEntity entity, out CacheItemSet itemSet, int periodTime = 0)
         {
+            itemSet = null;
             KeyValuePair<string, CacheItemSet> itemPair;
             if (TryGetCacheItem(redisKey, out itemPair, periodTime))
             {
-                if (isLoad) itemPair.Value.OnLoadSuccess();
+                itemSet = itemPair.Value;
                 switch (itemPair.Value.ItemType)
                 {
                     case CacheType.Entity:
@@ -593,6 +618,24 @@ namespace ZyGames.Framework.Cache.Generic
             }
         }
 
+        //todo test
+        /// <summary>
+        /// 
+        /// </summary>
+        public static void TestDisposeCache()
+        {
+            try
+            {
+                _readonlyPools.DisposeCache();
+                _writePools.DisposeCache();
+                TraceLog.WriteLine("{0} Clear expired cache end.", DateTime.Now.ToString("HH:mm:ss"));
+            }
+            catch (Exception ex)
+            {
+                TraceLog.WriteError("Cache manager timing error:{0}", ex);
+            }
+        }
+
         /// <summary>
         /// 启动缓存写库监听
         /// </summary>
@@ -655,7 +698,7 @@ namespace ZyGames.Framework.Cache.Generic
         /// <returns></returns>
         public static EntityContainer<T> GetOrCreate<T>() where T : IItemChangeEvent, IDataExpired, new()
         {
-            return GetOrCreate<T>(false, () => true, (key) => true);
+            return GetOrCreate<T>(false, (r) => true, (r, key) => true);
         }
 
         /// <summary>
@@ -666,7 +709,7 @@ namespace ZyGames.Framework.Cache.Generic
         /// <param name="loadFactory"></param>
         /// <param name="loadItemFactory"></param>
         /// <returns></returns>
-        public static EntityContainer<T> GetOrCreate<T>(bool isReadonly, Func<bool> loadFactory, Func<string, bool> loadItemFactory) where T : IItemChangeEvent, IDataExpired, new()
+        public static EntityContainer<T> GetOrCreate<T>(bool isReadonly, Func<bool, bool> loadFactory, Func<string, bool, bool> loadItemFactory) where T : IItemChangeEvent, IDataExpired, new()
         {
             if (_isDisposed == 1)
             {

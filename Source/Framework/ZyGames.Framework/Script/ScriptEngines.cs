@@ -170,15 +170,13 @@ namespace ZyGames.Framework.Script
 
                 _runtimeDomain = new ScriptRuntimeDomain(typeof(ScriptRuntimeDomain).Name, new[] { _settupInfo.RuntimePrivateBinPath, ScriptCompiler.ScriptPath });
 
-                ScriptDomainContext domainContext = _runtimeDomain.InitDomainContext();
-
                 foreach (var assemblyName in _settupInfo.ReferencedAssemblyNames)
                 {
                     //排除System的dll
                     if (string.IsNullOrEmpty(assemblyName) ||
                        !Path.IsPathRooted(assemblyName)) continue;
                     string key = Path.GetFileNameWithoutExtension(assemblyName);
-                    domainContext.LoadAssembly(key, assemblyName);
+                    _runtimeDomain.LoadAssembly(key, assemblyName);
                 }
 
                 var scope = _runtimeDomain.CreateScope(_settupInfo);

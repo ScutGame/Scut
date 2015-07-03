@@ -77,13 +77,15 @@ namespace ZyGames.Framework.Game.Cache
             {
             }
         }
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="dataList"></param>
-		/// <param name="periodTime"></param>
-		/// <returns></returns>
-        protected override bool InitCache(List<NoticeMessage> dataList, int periodTime)
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="dataList"></param>
+        /// <param name="periodTime"></param>
+        /// <param name="isReplace"></param>
+        /// <returns></returns>
+        protected override bool InitCache(List<NoticeMessage> dataList, int periodTime, bool isReplace)
         {
             bool result = false;
             foreach (var data in dataList)

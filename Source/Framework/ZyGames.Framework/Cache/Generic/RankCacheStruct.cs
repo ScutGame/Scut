@@ -41,7 +41,7 @@ namespace ZyGames.Framework.Cache.Generic
         /// 
         /// </summary>
         /// <returns></returns>
-        protected override bool LoadFactory()
+        protected override bool LoadFactory(bool isReplace)
         {
             return true;
         }
@@ -116,12 +116,14 @@ namespace ZyGames.Framework.Cache.Generic
         }
 
         #region init
+
         /// <summary>
         /// 
         /// </summary>
         /// <param name="key"></param>
+        /// <param name="isReplace"></param>
         /// <returns></returns>
-        protected override bool LoadItemFactory(string key)
+        protected override bool LoadItemFactory(string key, bool isReplace)
         {
             string redisKey = CreateRedisKey(key);
             TransReceiveParam receiveParam = new TransReceiveParam(redisKey);
@@ -130,7 +132,7 @@ namespace ZyGames.Framework.Cache.Generic
             if (receiveParam.Schema.StorageType.HasFlag(StorageType.ReadOnlyRedis) ||
                 receiveParam.Schema.StorageType.HasFlag(StorageType.ReadWriteRedis))
             {
-                return TryLoadRankCache(key, receiveParam, periodTime);
+                return TryLoadRankCache(key, receiveParam, periodTime, isReplace);
             }
             return false;
         }
@@ -140,8 +142,9 @@ namespace ZyGames.Framework.Cache.Generic
         /// </summary>
         /// <param name="dataList"></param>
         /// <param name="periodTime"></param>
+        /// <param name="isReplace"></param>
         /// <returns></returns>
-        protected override bool InitCache(List<T> dataList, int periodTime)
+        protected override bool InitCache(List<T> dataList, int periodTime, bool isReplace)
         {
             string key;
             List<T> list;
@@ -156,7 +159,7 @@ namespace ZyGames.Framework.Cache.Generic
                     data.Reset();
                     list.Add(data);
                 }
-                DataContainer.TryLoadRangeRank(key, list, 0, true);
+                DataContainer.TryLoadRangeRank(key, list, 0, true, isReplace);
             }
             return true;
         }
@@ -167,8 +170,9 @@ namespace ZyGames.Framework.Cache.Generic
         /// <param name="key"></param>
         /// <param name="receiveParam"></param>
         /// <param name="periodTime"></param>
+        /// <param name="isReplace"></param>
         /// <returns></returns>
-        protected bool TryLoadRankCache(string key, TransReceiveParam receiveParam, int periodTime)
+        protected bool TryLoadRankCache(string key, TransReceiveParam receiveParam, int periodTime, bool isReplace)
         {
             //todo: trace
             var watch = RunTimeWatch.StartNew(string.Format("Try load rank cache:{0}-{1}", receiveParam.Schema.EntityType.FullName, key));
@@ -180,7 +184,7 @@ namespace ZyGames.Framework.Cache.Generic
                     CacheItemSet itemSet;
                     DataContainer.TryGetOrAddRank(key, out itemSet, periodTime);
                     watch.Check("received count:" + dataList.Count);
-                    InitCache(dataList, periodTime);
+                    InitCache(dataList, periodTime, isReplace);
                     watch.Check("Init cache:");
                     itemSet.OnLoadSuccess();
                     return true;

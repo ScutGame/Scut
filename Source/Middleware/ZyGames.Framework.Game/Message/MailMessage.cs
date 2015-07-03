@@ -62,7 +62,7 @@ namespace ZyGames.Framework.Game.Message
         /// </summary>        
         [ProtoMember(1)]
         [EntityFieldExtend]
-        [EntityField(true, ColumnDbType.UniqueIdentifier)]
+        [EntityField(true, DbType = ColumnDbType.UniqueIdentifier)]
         public virtual Guid MailID
         {
             get

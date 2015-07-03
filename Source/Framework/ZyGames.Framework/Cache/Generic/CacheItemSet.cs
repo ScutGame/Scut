@@ -254,7 +254,7 @@ namespace ZyGames.Framework.Cache.Generic
 
 
         /// <summary>
-        /// 加载成功
+        /// 加载成功,只在加载成功后设置
         /// </summary>
         internal void OnLoadSuccess()
         {

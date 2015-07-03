@@ -36,7 +36,7 @@ namespace ZyGames.Framework.Cache.Generic
     /// </summary>
     /// <typeparam name="T"></typeparam>
     [ProtoContract, Serializable]
-    public class CacheList<T> : EntityChangeEvent, IDataExpired, IList<T>
+    public class CacheList<T> : EntityChangeEvent, IDataExpired, IList<T>, IReadOnlyList<T>
     {
         private readonly object _syncRoot = new object();
         private List<T> _list;
