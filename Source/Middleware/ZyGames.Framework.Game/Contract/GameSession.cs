@@ -81,7 +81,6 @@ namespace ZyGames.Framework.Game.Contract
         private static ConcurrentDictionary<string, Guid> _remoteHash;
         private static SyncTimer clearTime;
         private static string sessionRedisKey = "__GLOBAL_SESSIONS";
-        private static HashSet<GameSession> changeSession;
 
         static GameSession()
         {
@@ -90,7 +89,6 @@ namespace ZyGames.Framework.Game.Contract
             Timeout = 2 * 60 * 60;//2H
             clearTime = new SyncTimer(OnClearSession, 6000, 60000);
             clearTime.Start();
-            changeSession = new HashSet<GameSession>();
             _globalSession = new ConcurrentDictionary<Guid, GameSession>();
             _userHash = new ConcurrentDictionary<int, Guid>();
             _remoteHash = new ConcurrentDictionary<string, Guid>();
@@ -151,18 +149,16 @@ namespace ZyGames.Framework.Game.Contract
             string sid = session.KeyCode.ToString("N");
             RedisConnectionPool.SetExpire(string.Format("{0}:{1}", sessionRedisKey, sid), user, timeout);
         }
-        private static void SaveTo()
+        private static void SaveTo(IList<GameSession> sessions)
         {
             try
             {
-                var tempSet = Interlocked.Exchange(ref changeSession, new HashSet<GameSession>());
-                if (tempSet.Count == 0) return;
+                if (sessions.Count == 0) return;
 
                 var keys = new List<string>();
                 var values = new List<string>();
-                foreach (GameSession session in tempSet)
+                foreach (GameSession session in sessions)
                 {
-                    if (session.LastActivityTime.AddMinutes(1) > DateTime.Now || session.User == null) continue;
                     var user = MathUtils.ToJson(session.User);
                     keys.Add(string.Format("{0}:{1}", sessionRedisKey, session.KeyCode.ToString("N")));
                     values.Add(user);
@@ -220,10 +216,16 @@ namespace ZyGames.Framework.Game.Contract
         {
             try
             {
+                var sessions = new List<GameSession>();
                 foreach (var pair in _globalSession)
                 {
                     var session = pair.Value;
                     if (session == null) continue;
+                    if (session.LastActivityTime.AddMinutes(1) <= DateTime.Now && session.User != null)
+                    {
+                        //1min to change the session
+                        sessions.Add(session);
+                    }
 
                     if (session.CheckExpired())
                     {
@@ -243,7 +245,7 @@ namespace ZyGames.Framework.Game.Contract
                         session.DoHeartbeatTimeout();
                     }
                 }
-                SaveTo();
+                SaveTo(sessions);
             }
             catch (Exception er)
             {
@@ -591,7 +593,6 @@ namespace ZyGames.Framework.Game.Contract
         /// </summary>
         public void Refresh()
         {
-            changeSession.Add(this);
             IsTimeout = false;
             IsHeartbeatTimeout = false;
             LastActivityTime = DateTime.Now;
