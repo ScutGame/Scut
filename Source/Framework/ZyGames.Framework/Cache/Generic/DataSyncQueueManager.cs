@@ -991,15 +991,15 @@ namespace ZyGames.Framework.Cache.Generic
                     {
                         asmName = "," + enitityAsm.GetName().Name;
                     }
-
-                    Type type = Type.GetType(string.Format("{0}{1}", RedisConnectionPool.DecodeTypeName(typeName), asmName), false, true);
+                    string entityTypeName = RedisConnectionPool.DecodeTypeName(typeName);
+                    Type type = Type.GetType(string.Format("{0}{1}", entityTypeName, asmName), false, true);
                     if (type == null)
                     {
                         //调试模式下type为空处理
-                        type = enitityAsm != null ? enitityAsm.GetType(RedisConnectionPool.DecodeTypeName(typeName), false, true) : null;
+                        type = enitityAsm != null ? enitityAsm.GetType(entityTypeName, false, true) : null;
                         if (type == null)
                         {
-                            throw new ArgumentTypeException(string.Format("Get entity \"{0}\" type is null", entityParentKey));
+                            throw new ArgumentTypeException(string.Format("Get entity \"{0}\" type is null", entityTypeName));
                         }
                     }
                     var keyBuffers = g.Select(p => p.Value[0]).ToArray();

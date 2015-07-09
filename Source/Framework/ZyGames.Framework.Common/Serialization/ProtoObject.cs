@@ -163,7 +163,7 @@ namespace ZyGames.Framework.Common.Serialization
                 else
                 {
                     string type = value.GetType().Name;
-                    throw new NotImplementedException("Unexpected Type:" + type + " for value:" + value);
+                    throw new NotImplementedException("Unexpected Type:\"" + type + "\" of value:\"" + value + "\" on ProtoObject.");
                 }
             }
         }

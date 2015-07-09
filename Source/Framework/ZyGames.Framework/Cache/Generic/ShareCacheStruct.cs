@@ -700,16 +700,20 @@ namespace ZyGames.Framework.Cache.Generic
                 {
                     result = DataContainer.AddOrUpdateEntity(key, data, periodTime, out itemSet, true);
                 }
-                else
+                else if (!DataContainer.TryAddEntity(key, data, periodTime, out itemSet, true))
                 {
-                    DataContainer.TryAddEntity(key, data, periodTime, out itemSet, true);
+                    //gets itemSet in cache
+                    DataContainer.TryGetCacheItem(key, out itemSet);
                 }
                 if (!result)
                 {
                     TraceLog.WriteError("Load data:\"{0}\" tryadd key:\"{1}\" error.", DataContainer.RootKey, key);
                     return false;
                 }
-                itemSet.OnLoadSuccess();
+                if (itemSet != null)
+                {
+                    itemSet.OnLoadSuccess();
+                }
                 //reason:load entity is no changed.
                 //DataContainer.UnChangeNotify(key);
             }
