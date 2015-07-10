@@ -235,7 +235,7 @@ namespace ZyGames.Framework.Game.Sns
         public int InsertSnsUser(string[] paramNames, string[] paramValues, bool isCustom)
         {
             SnsPassport oSnsPassportLog = new SnsPassport();
-            if (isCustom && !oSnsPassportLog.VerifyRegPassportId(_PassportId))
+            if (!isCustom && !oSnsPassportLog.VerifyRegPassportId(_PassportId))
             {
                 return 0;
             }
@@ -264,7 +264,7 @@ namespace ZyGames.Framework.Game.Sns
 
             try
             {
-                if (isCustom && !oSnsPassportLog.SetPassportReg(_PassportId))
+                if (!isCustom && !oSnsPassportLog.SetPassportReg(_PassportId))
                 {
                     throw new Exception("Set passport  State.Reg fail.");
                 }
