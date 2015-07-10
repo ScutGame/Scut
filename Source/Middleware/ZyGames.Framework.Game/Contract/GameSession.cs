@@ -878,6 +878,12 @@ namespace ZyGames.Framework.Game.Contract
             {
                 return false;
             }
+            if (!IsRemote)
+            {
+                //return proxy data format.
+                data = CheckAdditionalHead(data, ProxySid);
+            }
+
             await AppServer.PostSend(_exSocket, opCode, data, offset, count, callback);
             return true;
         }
@@ -891,10 +897,6 @@ namespace ZyGames.Framework.Game.Contract
         /// <returns></returns>
         public async System.Threading.Tasks.Task<bool> SendAsync(byte[] data, int offset, int count)
         {
-            if (!IsRemote)
-            {
-                data = CheckAdditionalHead(data, ProxySid);
-            }
             return await SendAsync(OpCode.Binary, data, offset, count, result => { });
         }
 
