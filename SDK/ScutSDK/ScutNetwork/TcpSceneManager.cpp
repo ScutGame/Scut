@@ -165,7 +165,7 @@ namespace ScutNetwork
 #ifdef SCUT_WIN32
 		Sleep(time);
 #elif SCUT_ANDROID
-		usleep(time);
+		//usleep(time);
 #else
 		usleep(time);
 #endif

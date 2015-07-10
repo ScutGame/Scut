@@ -137,8 +137,8 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <TargetExt>.lib</TargetExt>
-    <OutDir>$(SolutionDir)$(Configuration)\</OutDir>
-    <IntDir>$(Configuration)\</IntDir>
+    <OutDir>$(SolutionDir)$(Configuration).win32\</OutDir>
+    <IntDir>$(Configuration).win32\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <IntDir>$(Configuration)\</IntDir>
@@ -147,7 +147,7 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>$(QUICK_COCOS2DX_ROOT)\lib\cocos2d-x\cocos2dx\platform\third_party\win32\zlib;$(QUICK_COCOS2DX_ROOT)\lib\cocos2d-x\cocos2dx\platform;$(QUICK_COCOS2DX_ROOT)\lib\cocos2d-x\cocos2dx\layers_scenes_transitions_nodes;$(QUICK_COCOS2DX_ROOT)\lib\cocos2d-x\cocos2dx\kazmath\include;$(QUICK_COCOS2DX_ROOT)\lib\cocos2d-x\cocos2dx\platform\third_party\win32\OGLES;$(QUICK_COCOS2DX_ROOT)\lib\cocos2d-x\cocos2dx\platform\third_party\win32\OGLES\GL;$(QUICK_COCOS2DX_ROOT)\lib\cocos2d-x\cocos2dx\script_support;$(QUICK_COCOS2DX_ROOT)\lib\cocos2d-x\cocos2dx\include;$(QUICK_COCOS2DX_ROOT)\lib\cocos2d-x\scripting\lua\luajit\include;$(QUICK_COCOS2DX_ROOT)\lib\cocos2d-x\scripting\lua\tolua;$(ProjectDir)\..\ScutSystem\Markup\;$(ProjectDir)\..\ScutDataLogic\zip_support;$(ProjectDir)\..\ScutNetwork\;$(ProjectDir)\..\ScutDataLogic\;$(ProjectDir)\..\ScutSystem\;$(QUICK_COCOS2DX_ROOT)\lib\cocos2d-x\cocos2dx\;$(QUICK_COCOS2DX_ROOT)\lib\cocos2d-x\cocos2dx\platform\third_party\win32\curl;$(QUICK_COCOS2DX_ROOT)\lib\cocos2d-x\scripting\lua\cocos2dx_support;$(QUICK_COCOS2DX_ROOT)\lib\cocos2d-x\cocos2dx\platform\third_party\win32;$(QUICK_COCOS2DX_ROOT)\lib\cocos2d-x\cocos2dx\platform\win32;$(ProjectDir)\..;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)\..\..\cocos2d-x\external\curl\include\win32\;$(ProjectDir)\..\..\cocos2d-x\external\glfw3\include\win32;$(ProjectDir)\..\..\cocos2d-x\external\win32-specific\zlib\include;$(ProjectDir)\..\..\cocos2d-x\cocos\cocos2d-x\cocos2dx\platform;$(ProjectDir)\..\..\cocos2d-x\cocos\layers_scenes_transitions_nodes;$(ProjectDir)\..\..\cocos2d-x\cocos\kazmath\include;$(ProjectDir)\..\..\cocos2d-x\external\win32-specific\;$(ProjectDir)\..\..\cocos2d-x\cocos\script_support;$(ProjectDir)\..\..\cocos2d-x\cocos\include;$(ProjectDir)\..\..\cocos2d-x\external\lua\luajit\include;$(ProjectDir)\..\..\cocos2d-x\external\lua\tolua;$(ProjectDir)\..\ScutSystem\Markup\;$(ProjectDir)\..\ScutDataLogic\zip_support;$(ProjectDir)\..\ScutNetwork\;$(ProjectDir)\..\ScutDataLogic\;$(ProjectDir)\..\ScutSystem\;$(ProjectDir)\..\..\cocos2d-x\cocos\;$(ProjectDir)\..\..\cocos2d-x\external\lua\quick;$(ProjectDir)\..\..\cocos2d-x\cocos\platform\win32;$(ProjectDir)\..;$(MSBuildProgramFiles32)\Microsoft SDKs\Windows\v7.1A\include;$(ProjectDir)\..\..\cocos2d-x\external\win32-specific\gles\include\OGLES;$(ProjectDir)\..\..\cocos2d-x\external\curl\include\win32\curl;$(ProjectDir)\..\..\cocos2d-x\cocos\scripting\lua-bindings\manual;$(ProjectDir)\..\..\cocos2d-x\cocos\platform;$(ProjectDir)\..\..\cocos2d-x\cocos\base;$(ProjectDir)\..\..\cocos2d-x\cocos\2d</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;_WINDOWS;_DEBUG;_LIB;_CRT_SECURE_NO_WARNINGS;_SCL_SECURE_NO_WARNINGS;SCUT_WIN32;CURL_STATICLIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
