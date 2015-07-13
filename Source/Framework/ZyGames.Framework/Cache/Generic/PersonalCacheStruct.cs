@@ -194,7 +194,16 @@ namespace ZyGames.Framework.Cache.Generic
             {
                 foreach (var t in enumerable)
                 {
-                    CacheFactory.AddOrUpdateEntity(t, period);
+                    CacheItemSet itemSet;
+                    if (CacheFactory.AddOrUpdateEntity(t, out itemSet, period))
+                    {
+                        var schema = t.GetSchema();
+                        if (schema.Keys.Length > 1 && !itemSet.HasLoadSuccess)
+                        {
+                            throw new Exception("Don't add entities, it has more than one Key.");
+                        }
+                        itemSet.OnLoadSuccess();
+                    }
                 }
                 return true;
             }
@@ -699,6 +708,7 @@ namespace ZyGames.Framework.Cache.Generic
                 int periodTime = 0;
                 if (TryAddGroup(t.PersonalId, key, t, periodTime, true))
                 {
+                    CheckMutilKeyAndLoad(t.PersonalId);
                     SetLoadSuccess(t.PersonalId);
                 }
             }
@@ -721,6 +731,7 @@ namespace ZyGames.Framework.Cache.Generic
             int periodTime = 0;
             if (Update(t) && TryAddGroup(t.PersonalId, key, t, periodTime, true))
             {
+                CheckMutilKeyAndLoad(t.PersonalId);
                 SetLoadSuccess(t.PersonalId);
                 return true;
             }
@@ -742,6 +753,7 @@ namespace ZyGames.Framework.Cache.Generic
             int periodTime = 0;
             if (Update(t) && AddOrUpdateGroup(t.PersonalId, key, t, periodTime, true))
             {
+                CheckMutilKeyAndLoad(t.PersonalId);
                 SetLoadSuccess(t.PersonalId);
                 return true;
             }
@@ -765,11 +777,29 @@ namespace ZyGames.Framework.Cache.Generic
                 int periodTime = 0;
                 if (AddOrUpdateGroup(t.PersonalId, key, t, periodTime, true))
                 {
+                    CheckMutilKeyAndLoad(t.PersonalId);
                     SetLoadSuccess(t.PersonalId);
                     continue;
                 }
             }
             return true;
+        }
+
+
+        /// <summary>
+        /// 是否有多个键且未加载成功状态
+        /// </summary>
+        /// <param name="personalId"></param>
+        private void CheckMutilKeyAndLoad(string personalId)
+        {
+            CacheItemSet itemSet;
+            var schema = EntitySchemaSet.Get<T>();
+            if (schema.Keys.Length > 1 &&
+                DataContainer.TryGetCacheItem(personalId, out itemSet) &&
+               !itemSet.HasLoadSuccess)
+            {
+                TryLoadItem(personalId, true);
+            }
         }
 
 

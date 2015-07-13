@@ -76,12 +76,12 @@ namespace ZyGames.Framework.Event
             _isDisableEvent = true;
             if (_itemEvent != null)
             {
-                ItemEvent.Dispose();
+                _itemEvent.Dispose();
                 _itemEvent = null;
             }
             if (_childrenEvent != null)
             {
-                ChildrenEvent.Dispose();
+                _childrenEvent.Dispose();
                 _childrenEvent = null;
             }
         }
@@ -394,8 +394,16 @@ namespace ZyGames.Framework.Event
             if (disposing)
             {
                 //释放 托管资源 
-                _itemEvent = null;
-                _childrenEvent = null;
+                if (_itemEvent != null)
+                {
+                    _itemEvent.Dispose();
+                    _itemEvent = null;
+                }
+                if (_childrenEvent != null)
+                {
+                    _childrenEvent.Dispose();
+                    _childrenEvent = null;
+                }
             }
             base.Dispose(disposing);
         }

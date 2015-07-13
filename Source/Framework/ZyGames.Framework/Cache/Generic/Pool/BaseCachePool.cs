@@ -24,6 +24,7 @@ THE SOFTWARE.
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using ZyGames.Framework.Collection.Generic;
 using ZyGames.Framework.Common;
 using ZyGames.Framework.Common.Log;
 using ZyGames.Framework.Common.Serialization;
@@ -453,12 +454,29 @@ namespace ZyGames.Framework.Cache.Generic.Pool
         {
 
             KeyValuePair<string, CacheContainer>[] containerList = ToArray();
+            var entityKeyDict = new Dictionary<string, bool>();
             foreach (var containerPair in containerList)
             {
                 var itemSetList = containerPair.Value.Collection.ToList<CacheItemSet>();
                 foreach (var itemPair in itemSetList)
                 {
                     CacheItemSet itemSet = itemPair.Value;
+                    if (itemSet.ItemType == CacheType.Entity)
+                    {
+                        //所有对象都过期才删除
+                        if (entityKeyDict.ContainsKey(containerPair.Key))
+                        {
+                            entityKeyDict[containerPair.Key] = entityKeyDict[containerPair.Key] &&
+                                                               (!itemSet.HasChanged && itemSet.IsPeriod &&
+                                                                !itemSet.HasItemChanged);
+                        }
+                        else
+                        {
+                            entityKeyDict[containerPair.Key] = (!itemSet.HasChanged && itemSet.IsPeriod &&
+                                                               !itemSet.HasItemChanged);
+                        }
+                        continue;
+                    }
                     if (itemSet.HasChanged || !itemSet.IsPeriod)
                     {
                         //clear sub item is expired.
@@ -480,6 +498,31 @@ namespace ZyGames.Framework.Cache.Generic.Pool
                 if (containerPair.Value.Collection.Count == 0)
                 {
                     containerPair.Value.ResetStatus();
+                }
+            }
+            //处理共享缓存
+            foreach (var pair in entityKeyDict)
+            {
+                //排除不过期的
+                if (!pair.Value) continue;
+
+                CacheContainer container;
+                if (TryRemove(pair.Key, out container, t => true))
+                {
+                    var itemSetList = container.Collection.ToList<CacheItemSet>();
+                    TraceLog.ReleaseWrite("Cache shard entity:{0} expired has been removed, count:{1}.", pair.Key, itemSetList.Count());
+                    foreach (var itemPair in itemSetList)
+                    {
+                        CacheItemSet itemSet = itemPair.Value;
+                        object temp;
+                        if (container.Collection.TryRemove(itemPair.Key, out temp))
+                        {
+                            itemSet.ResetStatus();
+                            itemSet.Dispose();
+                        }
+                    }
+                    container.ResetStatus();
+                    container.Dispose();
                 }
             }
         }

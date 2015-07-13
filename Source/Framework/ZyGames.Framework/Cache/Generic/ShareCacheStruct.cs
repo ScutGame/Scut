@@ -158,7 +158,11 @@ namespace ZyGames.Framework.Cache.Generic
             {
                 foreach (var t in enumerable)
                 {
-                    CacheFactory.AddOrUpdateEntity(t, period);
+                    CacheItemSet itemSet;
+                    if (CacheFactory.AddOrUpdateEntity(t, out itemSet, period))
+                    {
+                        itemSet.OnLoadSuccess();
+                    }
                 }
                 return true;
             }

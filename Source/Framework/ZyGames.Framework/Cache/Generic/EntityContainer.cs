@@ -1205,8 +1205,10 @@ namespace ZyGames.Framework.Cache.Generic
         private IEnumerable<T> GetMutilCacheItem(IEnumerable<string> keys, bool isAutoLoad)
         {
             CheckLoad();
+            //保证返回顺序
             var result = new List<T>();
             var loadKey = new List<string>();
+            var indexList = new Queue<int>();
             foreach (var key in keys)
             {
                 CacheItemSet itemSet;
@@ -1226,6 +1228,8 @@ namespace ZyGames.Framework.Cache.Generic
                 else
                 {
                     loadKey.Add(key);
+                    indexList.Enqueue(result.Count);
+                    result.Add(null);
                 }
             }
             if (loadKey.Count == 0)
@@ -1237,8 +1241,20 @@ namespace ZyGames.Framework.Cache.Generic
             {
                 var entity = t as AbstractEntity;
                 if (entity == null) continue;
-                CacheFactory.AddOrUpdateEntity(entity);
-                result.Add(t);
+                CacheItemSet itemSet;
+                if (CacheFactory.AddOrUpdateEntity(entity, out itemSet))
+                {
+                    itemSet.OnLoadSuccess();
+                }
+                int index = indexList.Count > 0 ? indexList.Dequeue() : -1;
+                if (index == -1)
+                {
+                    result.Add(t);
+                }
+                else
+                {
+                    result[index] = t;
+                }
             }
             return result;
         }

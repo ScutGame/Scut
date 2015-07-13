@@ -302,6 +302,14 @@ namespace ZyGames.Framework.Cache.Generic
             Dispose(true);
         }
 
+        internal bool HasItemChanged
+        {
+            get
+            {
+                var t = (_itemData as AbstractEntity);
+                return t != null && t.HasChanged;
+            }
+        }
 
         /// <summary>
         /// 是否能处理过期

@@ -362,18 +362,6 @@ namespace ZyGames.Framework.Cache.Generic
         /// 
         /// </summary>
         /// <param name="entity"></param>
-        /// <param name="periodTime"></param>
-        /// <returns></returns>
-        public static bool AddOrUpdateEntity(AbstractEntity entity, int periodTime = 0)
-        {
-            CacheItemSet itemSet;
-            return AddOrUpdateEntity(entity, out itemSet, periodTime);
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="entity"></param>
         /// <param name="itemSet"></param>
         /// <param name="periodTime"></param>
         /// <returns></returns>

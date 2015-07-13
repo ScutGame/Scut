@@ -110,11 +110,11 @@ namespace ZyGames.Framework.Data
         /// <returns></returns>
         public static DbBaseProvider CreateDbProvider(string connectKey)
         {
-            DbBaseProvider dbBaseProvider = null;
             if (string.IsNullOrEmpty(connectKey))
             {
-                return dbBaseProvider;
+                return null;
             }
+            DbBaseProvider dbBaseProvider;
             if (dbProviders.TryGetValue(connectKey, out dbBaseProvider))
             {
                 return dbBaseProvider;
@@ -136,6 +136,10 @@ namespace ZyGames.Framework.Data
             else
             {
                 var section = ConfigurationManager.ConnectionStrings[connectKey];
+                if (section == null)
+                {
+                    return null;
+                }
                 try
                 {
                     dbBaseProvider = CreateDbProvider(section.Name, section.ProviderName, section.ConnectionString);
