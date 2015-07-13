@@ -450,6 +450,19 @@ namespace ZyGames.Framework.Cache.Generic
         }
 
         /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="key"></param>
+        protected void SetLoadSuccess(string key)
+        {
+            CacheItemSet itemSet;
+            if (DataContainer.TryGetCacheItem(key, out itemSet))
+            {
+                itemSet.OnLoadSuccess();
+            }
+        }
+
+        /// <summary>
         /// 加载指定Key数据
         /// </summary>
         /// <param name="groupKey"></param>

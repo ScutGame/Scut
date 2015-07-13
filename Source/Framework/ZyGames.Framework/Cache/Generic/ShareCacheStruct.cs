@@ -540,6 +540,7 @@ namespace ZyGames.Framework.Cache.Generic
             int periodTime = schemaTable == null ? 0 : schemaTable.PeriodTime;
             if (Update(t) && TryAddEntity(key, t, periodTime, true))
             {
+                SetLoadSuccess(key);
                 return true;
             }
             return false;
@@ -564,6 +565,7 @@ namespace ZyGames.Framework.Cache.Generic
                 int periodTime = schemaTable == null ? 0 : schemaTable.PeriodTime;
                 if (TryAddEntity(key, t, periodTime, true))
                 {
+                    SetLoadSuccess(key);
                     continue;
                 }
             }
@@ -589,6 +591,7 @@ namespace ZyGames.Framework.Cache.Generic
                 int periodTime = schemaTable == null ? 0 : schemaTable.PeriodTime;
                 if (AddOrUpdateEntity(key, t, periodTime, true))
                 {
+                    SetLoadSuccess(key);
                     continue;
                 }
             }
@@ -608,6 +611,7 @@ namespace ZyGames.Framework.Cache.Generic
             int periodTime = schemaTable == null ? 0 : schemaTable.PeriodTime;
             if (Update(t) && AddOrUpdateEntity(key, t, periodTime, true))
             {
+                SetLoadSuccess(key);
                 return true;
             }
             return false;

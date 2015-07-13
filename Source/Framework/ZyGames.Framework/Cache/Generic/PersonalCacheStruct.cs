@@ -699,7 +699,7 @@ namespace ZyGames.Framework.Cache.Generic
                 int periodTime = 0;
                 if (TryAddGroup(t.PersonalId, key, t, periodTime, true))
                 {
-                    continue;
+                    SetLoadSuccess(t.PersonalId);
                 }
             }
             return true;
@@ -721,6 +721,7 @@ namespace ZyGames.Framework.Cache.Generic
             int periodTime = 0;
             if (Update(t) && TryAddGroup(t.PersonalId, key, t, periodTime, true))
             {
+                SetLoadSuccess(t.PersonalId);
                 return true;
             }
             return false;
@@ -741,6 +742,7 @@ namespace ZyGames.Framework.Cache.Generic
             int periodTime = 0;
             if (Update(t) && AddOrUpdateGroup(t.PersonalId, key, t, periodTime, true))
             {
+                SetLoadSuccess(t.PersonalId);
                 return true;
             }
             return false;
@@ -763,6 +765,7 @@ namespace ZyGames.Framework.Cache.Generic
                 int periodTime = 0;
                 if (AddOrUpdateGroup(t.PersonalId, key, t, periodTime, true))
                 {
+                    SetLoadSuccess(t.PersonalId);
                     continue;
                 }
             }
