@@ -878,10 +878,11 @@ namespace ZyGames.Framework.Game.Contract
             {
                 return false;
             }
-            if (!IsRemote)
+            if (!IsRemote && ProxySid != Guid.Empty)
             {
                 //return proxy data format.
                 data = CheckAdditionalHead(data, ProxySid);
+                count += 16;
             }
 
             await AppServer.PostSend(_exSocket, opCode, data, offset, count, callback);
@@ -921,10 +922,6 @@ namespace ZyGames.Framework.Game.Contract
         /// <returns></returns>
         private static byte[] CheckAdditionalHead(byte[] data, Guid ssid)
         {
-            if (ssid == Guid.Empty)
-            {
-                return data;
-            }
             var buffer = new byte[data.Length + 16];
             Buffer.BlockCopy(ssid.ToByteArray(), 0, buffer, 0, 16);
             Buffer.BlockCopy(data, 0, buffer, 16, data.Length);

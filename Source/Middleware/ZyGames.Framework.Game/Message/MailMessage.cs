@@ -83,7 +83,7 @@ namespace ZyGames.Framework.Game.Message
         /// </summary>        
         [ProtoMember(2)]
         [EntityFieldExtend]
-        [EntityField]
+        [EntityField(true)]
         public virtual Int32 UserId
         {
             get
