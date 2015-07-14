@@ -43,10 +43,10 @@ namespace ZyGames.Framework.Cache.Generic
         {
             foreach (var schemaTable in EntitySchemaSet.GetEnumerable())
             {
-                if (match(schemaTable))
+                Type entityType = schemaTable.EntityType;
+                if (entityType.IsSubclassOf(typeof(ShareEntity)) && match(schemaTable))
                 {
                     Type cachType = typeof(ShareCacheStruct<>);
-                    Type entityType = schemaTable.EntityType;
                     string typeName = string.Format("{0}[[{1}, {2}]], {3}",
                         cachType.FullName,
                         entityType.FullName,
