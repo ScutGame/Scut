@@ -511,42 +511,36 @@ namespace ZyGames.Framework.Cache.Generic
         }
 
         /// <summary>
-        /// 从Redis内存移除，并保存到数据库
+        /// 从Redis内存移除，并保存到数据库,
         /// </summary>
-        /// <param name="keys"></param>
-        public static void RemoveToDatabase(params string[] keys)
+        /// <param name="match">实体类型, 实体Key列表</param>
+        public static void RemoveToDatabase(params KeyValuePair<Type, IList<string>>[] match)
         {
-            var entityKeys = new List<string>();
+            var removeEntityKeys = new List<KeyValuePair<string, byte[][]>>();
             var entityList = new List<EntityHistory>();
             RedisConnectionPool.ProcessReadOnly(client =>
             {
-                foreach (var k in keys)
+                foreach (var express in match)
                 {
                     try
                     {
-                        string key = k;
-                        string setId = key + "_remove";
-                        if (key.EndsWith("_remove"))
-                        {
-                            setId = key;
-                            key = key.Replace("_remove", "");
-                        }
-                        else
-                        {
-                            if (client.ContainsKey(key))
-                            {
-                                client.Rename(key, setId);
-                            }
-                        }
-                        entityKeys.Add(setId);
+                        string hashtId = RedisConnectionPool.GetRedisEntityKeyName(express.Key);
+                        byte[][] keyBytes = express.Value.Select(t => RedisConnectionPool.ToByteKey(t)).ToArray();
+                        removeEntityKeys.Add(new KeyValuePair<string, byte[][]>(hashtId, keyBytes));
                         //转存到DB使用protobuf
-                        byte[] keyValues = ProtoBufUtils.Serialize(client.HGetAll(setId));
-                        var history = new EntityHistory() { Key = key, Value = keyValues };
-                        entityList.Add(history);
+                        byte[][] valueBytes = client.HMGet(hashtId, keyBytes);
+                        for (int i = 0; i < keyBytes.Length; i++)
+                        {
+                            entityList.Add(new EntityHistory()
+                            {
+                                Key = string.Format("{0}_{1}", hashtId, AbstractEntity.EncodeKeyCode(RedisConnectionPool.ToStringKey(keyBytes[i]))),
+                                Value = valueBytes[i]
+                            });
+                        }
                     }
                     catch (Exception ex)
                     {
-                        TraceLog.WriteError("Redis cache remove key:{0} to Database error:{1}", k, ex);
+                        TraceLog.WriteError("Redis cache remove key:{0} to Database error:{1}", express, ex);
                     }
                 }
             });
@@ -554,7 +548,13 @@ namespace ZyGames.Framework.Cache.Generic
             if (entityList.Count > 0)
             {
                 DataSyncManager.GetDataSender().Send<EntityHistory>(entityList.ToArray());
-                RedisConnectionPool.ProcessReadOnly(client => client.RemoveAll(entityKeys));
+                RedisConnectionPool.ProcessReadOnly(client =>
+                {
+                    foreach (var pair in removeEntityKeys)
+                    {
+                        client.HDel(pair.Key, pair.Value);
+                    }
+                });
             }
         }
 

@@ -24,7 +24,6 @@ THE SOFTWARE.
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using ZyGames.Framework.Collection.Generic;
 using ZyGames.Framework.Common;
 using ZyGames.Framework.Common.Log;
 using ZyGames.Framework.Common.Serialization;
@@ -302,7 +301,10 @@ namespace ZyGames.Framework.Cache.Generic.Pool
         /// <returns></returns>
         public bool TryLoadHistory<T>(string redisKey, out List<T> dataList)
         {
-            string entityNameKey = RedisConnectionPool.GetRedisEntityKeyName(redisKey);
+            string[] entityAndKeys = (redisKey ?? "").Split('_');
+            var entityKey = entityAndKeys.Length > 1 ? AbstractEntity.EncodeKeyCode(entityAndKeys[1]) : null;
+            string entityNameKey = RedisConnectionPool.GetRedisEntityKeyName(entityAndKeys[0]);
+
             bool result = false;
             dataList = null;
             SchemaTable schemaTable;
@@ -322,29 +324,39 @@ namespace ZyGames.Framework.Cache.Generic.Pool
                     int maxCount = receiveParam.Schema.Capacity;
                     var filter = new DbDataFilter(maxCount);
                     string key = schemaTable.Keys[0];
-                    filter.Condition = provider.FormatFilterParam(key);
-                    filter.Parameters.Add(key, entityNameKey);
+                    if (schemaTable.Keys.Length == 1)
+                    {
+                        filter.Condition = provider.FormatFilterParam(key);
+                        filter.Parameters.Add(key, string.Format("{0}_{1}", entityNameKey, entityKey));
+                    }
+                    else
+                    {
+                        filter.Condition = provider.FormatFilterParam(key, "LIKE");
+                        filter.Parameters.Add(key, string.Format("{0}_%{1}%", entityNameKey, entityKey));
+                    }
                     receiveParam.DbFilter = filter;
 
                     List<EntityHistory> historyList;
                     if (_dbTransponder.TryReceiveData(receiveParam, out historyList))
                     {
-                        EntityHistory history = historyList.Count > 0 ? historyList[0] : null;
-                        if (history != null && history.Value != null && history.Value.Length > 0)
-                        {
-                            //从DB备份中取使用protobuf
-                            byte[][] bufferBytes = ProtoBufUtils.Deserialize<byte[][]>(history.Value);
-                            byte[][] keys = bufferBytes.Where((b, index) => index % 2 == 0).ToArray();
-                            byte[][] values = bufferBytes.Where((b, index) => index % 2 == 1).ToArray();
-                            RedisConnectionPool.Process(client => client.HMSet(entityNameKey, keys, values));
-                            dataList = values.Select(value => (T)_serializer.Deserialize(value, typeof(T))).ToList();
-                            result = true;
-                        }
-                        else
+                        if (historyList.Count == 0)
                         {
                             dataList = new List<T>();
-                            result = true;
+                            return true;
                         }
+                        dataList = new List<T>();
+                        var keyBytes = new byte[historyList.Count][];
+                        var valueBytes = new byte[historyList.Count][];
+                        for (int i = 0; i < keyBytes.Length; i++)
+                        {
+                            var entityHistory = historyList[i];
+                            keyBytes[i] = RedisConnectionPool.ToByteKey(AbstractEntity.DecodeKeyCode(entityHistory.Key.Split('_')[1]));
+                            valueBytes[i] = entityHistory.Value;
+                            dataList.Add((T)_serializer.Deserialize(entityHistory.Value, typeof(T)));
+                        }
+                        //从DB备份中恢复到Redis
+                        RedisConnectionPool.Process(client => client.HMSet(entityNameKey, keyBytes, valueBytes));
+                        result = true;
                     }
                 }
                 catch (Exception ex)

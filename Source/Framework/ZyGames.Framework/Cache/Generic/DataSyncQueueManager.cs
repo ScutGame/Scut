@@ -240,12 +240,12 @@ namespace ZyGames.Framework.Cache.Generic
         public static void Start(CacheSetting setting, ICacheSerializer serializer)
         {
             _serializer = serializer;
+            _threadPools = new SmartThreadPool(180 * 1000, 100, 5);
             _entityQueueTimer = new Timer(OnEntitySyncQueue, null, 60, 100);
             _entityQueueWacher = new Timer(CheckEntityQueue, null, 60, 60000);
             MessageQueueSection section = GetSection();
             InitRedisQueue(section);
             InitSqlQueue(section);
-            _threadPools = new SmartThreadPool(180 * 1000, 100, 5);
             _threadPools.Start();
         }
 

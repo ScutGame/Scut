@@ -45,7 +45,7 @@ namespace ZyGames.Framework.Model
         /// <summary>
         /// The key.
         /// </summary>
-        [EntityField(true)]
+        [EntityField(true, ColumnLength = 255)]
         public string Key
         {
             get;
@@ -53,7 +53,7 @@ namespace ZyGames.Framework.Model
         }
 
         /// <summary>
-        /// The bytes data for hash(key/value).
+        /// The bytes data for hash(value).
         /// </summary>
         [EntityField]
         public byte[] Value
