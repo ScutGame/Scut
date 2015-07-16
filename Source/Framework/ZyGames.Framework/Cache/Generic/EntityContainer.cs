@@ -409,22 +409,24 @@ namespace ZyGames.Framework.Cache.Generic
         /// 
         /// </summary>
         /// <param name="keys"></param>
+        /// <param name="isAutoLoad"></param>
         /// <returns></returns>
-        public IEnumerable<T> TakeOrLoadGroup(IEnumerable<string> keys)
+        public IEnumerable<T> TakeOrLoadGroup(IEnumerable<string> keys, bool isAutoLoad)
         {
-            return GetMutilCacheItem(keys, true);
+            return GetMutilCacheItem(keys, isAutoLoad);
         }
 
         /// <summary>
         /// 
         /// </summary>
         /// <param name="key"></param>
+        /// <param name="isAutoLoad"></param>
         /// <returns></returns>
-        public IEnumerable<T> TakeOrLoadGroup(string key)
+        public IEnumerable<T> TakeOrLoadGroup(string key, bool isAutoLoad)
         {
             BaseCollection enityGroup;
             LoadingStatus loadStatus;
-            if (TryGetCacheItem(key, true, out enityGroup, out loadStatus))
+            if (TryGetCacheItem(key, isAutoLoad, out enityGroup, out loadStatus))
             {
                 foreach (var @enum in enityGroup.GetEnumerable())
                 {

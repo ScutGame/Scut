@@ -79,7 +79,7 @@ namespace ZyGames.Framework.Net
         }
 
         /// <summary>
-        /// 获取或设置参数
+        /// 获取或设置参数, 数据名不需要@前缀
         /// </summary>
         public Parameters Parameters
         {

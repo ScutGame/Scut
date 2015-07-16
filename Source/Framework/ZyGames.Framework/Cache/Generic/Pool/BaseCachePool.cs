@@ -324,7 +324,9 @@ namespace ZyGames.Framework.Cache.Generic.Pool
                     int maxCount = receiveParam.Schema.Capacity;
                     var filter = new DbDataFilter(maxCount);
                     string key = schemaTable.Keys[0];
-                    if (schemaTable.Keys.Length == 1)
+                    var entitySchema = EntitySchemaSet.Get(entityAndKeys[0]);
+
+                    if (entitySchema != null && entitySchema.Keys.Length == 1)
                     {
                         filter.Condition = provider.FormatFilterParam(key);
                         filter.Parameters.Add(key, string.Format("{0}_{1}", entityNameKey, entityKey));

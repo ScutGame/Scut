@@ -267,13 +267,13 @@ namespace ZyGames.Framework.RPC.IO
             return _encoding.GetString(bytes);
         }
         /// <summary>
-        /// Read DateTime
+        /// Read DateTime, use UTC time
         /// </summary>
         /// <returns></returns>
         public DateTime ReadDateTime()
         {
             long time = ReadLong();
-            return MathUtils.ToTimeFromUnixEpoch(TimeSpan.FromSeconds(time));
+            return MathUtils.ToTimeFromUnixEpoch(TimeSpan.FromSeconds(time)).ToLocalTime();
         }
         /// <summary>
         /// Read object of Protobuf serialize.
@@ -1085,7 +1085,7 @@ namespace ZyGames.Framework.RPC.IO
                     }
                     else if (item is DateTime)
                     {
-                        long ts = (item.ToDateTime() - MathUtils.UnixEpochDateTime).TotalSeconds.ToLong();
+                        long ts = (item.ToDateTime().ToUniversalTime() - MathUtils.UnixEpochDateTime).TotalSeconds.ToLong();
                         WriteByte(ts);
                     }
                     else if (item is MessageStructure)

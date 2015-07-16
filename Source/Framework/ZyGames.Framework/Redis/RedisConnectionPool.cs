@@ -909,7 +909,7 @@ namespace ZyGames.Framework.Redis
                 }
                 if (valueBytes != null)
                 {
-                    list = valueBytes.Select(t => (T)_serializer.Deserialize(t, typeof(T))).ToList();
+                    list = valueBytes.Where(t => t != null).Select(t => (T)_serializer.Deserialize(t, typeof(T))).ToList();
                     return true;
                 }
                 if (keyValueBytes != null)
