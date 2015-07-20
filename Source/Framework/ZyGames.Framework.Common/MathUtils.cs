@@ -156,7 +156,7 @@ namespace ZyGames.Framework.Common
         {
             if (bytes == null || bytes.Length == 0)
             {
-                throw new ArgumentOutOfRangeException("b");
+                throw new ArgumentOutOfRangeException("bytes");
             }
             if (startIndex > bytes.Length - 1)
             {

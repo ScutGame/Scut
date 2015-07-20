@@ -526,6 +526,7 @@ namespace ZyGames.Framework.Cache.Generic
                     {
                         string hashtId = RedisConnectionPool.GetRedisEntityKeyName(express.Key);
                         byte[][] keyBytes = express.Value.Select(t => RedisConnectionPool.ToByteKey(t)).ToArray();
+                        if (keyBytes.Length == 0) continue;
                         removeEntityKeys.Add(new KeyValuePair<string, byte[][]>(hashtId, keyBytes));
                         //转存到DB使用protobuf
                         byte[][] valueBytes = client.HMGet(hashtId, keyBytes);
@@ -533,7 +534,7 @@ namespace ZyGames.Framework.Cache.Generic
                         {
                             entityList.Add(new EntityHistory()
                             {
-                                Key = string.Format("{0}_{1}", hashtId, AbstractEntity.EncodeKeyCode(RedisConnectionPool.ToStringKey(keyBytes[i]))),
+                                Key = string.Format("{0}_{1}", hashtId, RedisConnectionPool.ToStringKey(keyBytes[i])),
                                 Value = valueBytes[i]
                             });
                         }
@@ -547,7 +548,7 @@ namespace ZyGames.Framework.Cache.Generic
 
             if (entityList.Count > 0)
             {
-                DataSyncManager.GetDataSender().Send<EntityHistory>(entityList.ToArray());
+                DataSyncManager.SendSql<EntityHistory>(entityList, false, true);
                 RedisConnectionPool.ProcessReadOnly(client =>
                 {
                     foreach (var pair in removeEntityKeys)

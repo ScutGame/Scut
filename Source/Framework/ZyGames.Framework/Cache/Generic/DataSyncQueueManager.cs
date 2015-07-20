@@ -782,7 +782,7 @@ namespace ZyGames.Framework.Cache.Generic
                         var subGroup = g.GroupBy(t => t.UserId);
                         foreach (var @group in subGroup)
                         {
-                            string firstKey = @group.Key.ToString();
+                            string firstKey = AbstractEntity.EncodeKeyCode(@group.Key.ToString());
                             var keybytes = @group.Select(p => p.KeyBytes).ToArray();
                             pipeline.QueueCommand(client => RedisConnectionPool.SetMutilKeyMap((RedisClient)client, hashId, firstKey, keybytes));
                             hasPost = true;
@@ -794,7 +794,7 @@ namespace ZyGames.Framework.Cache.Generic
                         var subGroup = g.GroupBy(t => t.UserId);
                         foreach (var @group in subGroup)
                         {
-                            string firstKey = @group.Key.ToString();
+                            string firstKey = AbstractEntity.EncodeKeyCode(@group.Key.ToString());
                             var keybytes = @group.Select(p => p.KeyBytes).ToArray();
                             pipeline.QueueCommand(client => RedisConnectionPool.RemoveMutilKeyMap((RedisClient)client, hashId, firstKey, keybytes));
                             hasPost = true;

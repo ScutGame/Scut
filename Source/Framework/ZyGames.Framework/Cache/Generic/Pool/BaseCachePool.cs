@@ -302,7 +302,7 @@ namespace ZyGames.Framework.Cache.Generic.Pool
         public bool TryLoadHistory<T>(string redisKey, out List<T> dataList)
         {
             string[] entityAndKeys = (redisKey ?? "").Split('_');
-            var entityKey = entityAndKeys.Length > 1 ? AbstractEntity.EncodeKeyCode(entityAndKeys[1]) : null;
+            var entityKey = entityAndKeys.Length > 1 ? entityAndKeys[1] : null;
             string entityNameKey = RedisConnectionPool.GetRedisEntityKeyName(entityAndKeys[0]);
 
             bool result = false;
@@ -352,7 +352,7 @@ namespace ZyGames.Framework.Cache.Generic.Pool
                         for (int i = 0; i < keyBytes.Length; i++)
                         {
                             var entityHistory = historyList[i];
-                            keyBytes[i] = RedisConnectionPool.ToByteKey(AbstractEntity.DecodeKeyCode(entityHistory.Key.Split('_')[1]));
+                            keyBytes[i] = RedisConnectionPool.ToByteKey(entityHistory.Key.Split('_')[1]);
                             valueBytes[i] = entityHistory.Value;
                             dataList.Add((T)_serializer.Deserialize(entityHistory.Value, typeof(T)));
                         }

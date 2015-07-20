@@ -70,7 +70,9 @@ namespace ZyGames.Framework.Model
         /// <returns></returns>
         public static string EncodeKeyCode(string keyCode)
         {
-            return (keyCode ?? "").Replace(KeyCodeJoinChar.ToString(), "%45")
+            return (keyCode ?? "")
+                .Replace("%", "%25")
+                .Replace(KeyCodeJoinChar.ToString(), "%45")
                 .Replace("_", "%46")
                 .Replace("|", "%7C");
         }
@@ -82,7 +84,9 @@ namespace ZyGames.Framework.Model
         /// <returns></returns>
         public static string DecodeKeyCode(string keyCode)
         {
-            return (keyCode ?? "").Replace("%45", KeyCodeJoinChar.ToString())
+            return (keyCode ?? "")
+                .Replace("%25", "%")
+                .Replace("%45", KeyCodeJoinChar.ToString())
                 .Replace("%46", "_")
                 .Replace("%7C", "|");
         }

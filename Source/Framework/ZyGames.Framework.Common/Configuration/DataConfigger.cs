@@ -81,7 +81,7 @@ namespace ZyGames.Framework.Common.Configuration
             _watcher.Changed += new FileSystemEventHandler(OnWatcherChanged);
             _watcher.Created += new FileSystemEventHandler(OnWatcherChanged);
             _watcher.Deleted += new FileSystemEventHandler(OnWatcherChanged);
-            _watcher.NotifyFilter = NotifyFilters.LastWrite;
+            _watcher.NotifyFilter = NotifyFilters.CreationTime | NotifyFilters.LastAccess | NotifyFilters.LastWrite | NotifyFilters.FileName | NotifyFilters.DirectoryName | NotifyFilters.Size;
             _watcher.IncludeSubdirectories = false;
             _watcher.EnableRaisingEvents = true;
             IsDependenced = true;
