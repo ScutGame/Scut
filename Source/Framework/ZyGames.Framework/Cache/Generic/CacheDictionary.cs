@@ -25,6 +25,7 @@ using System;
 using System.Collections;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Linq;
 using ProtoBuf;
 using ZyGames.Framework.Event;
 
@@ -153,9 +154,10 @@ namespace ZyGames.Framework.Cache.Generic
         /// </summary>
         public void Clear()
         {
+            var values = _cacheStruct.Values.ToList();
             _cacheStruct.Clear();
             Notify(this, CacheItemChangeType.Clear, PropertyName);
-            ClearChildrenEvent();
+            ClearChildrenEvent(values);
         }
         /// <summary>
         /// 

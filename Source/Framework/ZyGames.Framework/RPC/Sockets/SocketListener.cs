@@ -33,18 +33,33 @@ using ZyGames.Framework.Common.Log;
 namespace ZyGames.Framework.RPC.Sockets
 {
     /// <summary>
+    /// 
+    /// </summary>
+    public class SummaryStatus
+    {
+        /// <summary>
+        /// 
+        /// </summary>
+        public long TotalConnectCount;
+        /// <summary>
+        /// 
+        /// </summary>
+        public int CurrentConnectCount;
+        /// <summary>
+        /// 
+        /// </summary>
+        public int RejectedConnectCount;
+        /// <summary>
+        /// 
+        /// </summary>
+        public int CloseConnectCount;
+    }
+
+    /// <summary>
     /// Socket listener.
     /// </summary>
     public class SocketListener : ISocket
     {
-        class SummaryStatus
-        {
-            public long TotalConnectCount;
-            public int CurrentConnectCount;
-            public int RejectedConnectCount;
-            public int CloseConnectCount;
-        }
-
         #region 事件
         /// <summary>
         /// 连接事件
@@ -196,13 +211,19 @@ namespace ZyGames.Framework.RPC.Sockets
             try
             {
                 TraceLog.Write("Socket connect status: TotalCount={0}, CurrentCount={1}, CloseCount={2}, RejectedCount={3}",
-                      _summaryStatus.TotalConnectCount,
-                      _summaryStatus.CurrentConnectCount,
-                      _summaryStatus.CloseConnectCount,
-                      _summaryStatus.RejectedConnectCount);
+                    _summaryStatus.TotalConnectCount,
+                    _summaryStatus.CurrentConnectCount,
+                    _summaryStatus.CloseConnectCount,
+                    _summaryStatus.RejectedConnectCount);
             }
-            catch { }
+            catch
+            {
+            }
         }
+        /// <summary>
+        /// 
+        /// </summary>
+        public SummaryStatus Status { get { return _summaryStatus; } }
 
         private SocketAsyncEventArgs CreateAcceptEventArgs()
         {
@@ -671,12 +692,17 @@ namespace ZyGames.Framework.RPC.Sockets
                 }
                 if (ioEventArgs.AcceptSocket != null)
                 {
-                    ioEventArgs.AcceptSocket.Shutdown(SocketShutdown.Both);
+                    try
+                    {
+                        ioEventArgs.AcceptSocket.Shutdown(SocketShutdown.Both);
+                    }
+                    catch { }
                 }
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                needClose = false;
+                TraceLog.WriteError("closing error:{0}", ex);
+                //needClose = false;
             }
             finally
             {

@@ -22,6 +22,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ****************************************************************************/
 using System;
+using System.Collections.Generic;
 using System.Threading;
 using Newtonsoft.Json;
 using ProtoBuf;
@@ -89,9 +90,12 @@ namespace ZyGames.Framework.Event
         /// <summary>
         /// 清除子类事件句柄
         /// </summary>
-        internal void ClearChildrenEvent()
+        internal void ClearChildrenEvent<T>(IEnumerable<T> childs)
         {
-            _childrenEvent = new CacheItemChangeEvent();
+            foreach (var child in childs)
+            {
+                RemoveChildrenListener(child);
+            }
         }
         /// <summary>
         /// 实体映射的字段名

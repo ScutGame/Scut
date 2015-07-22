@@ -244,12 +244,14 @@ namespace ZyGames.Framework.Cache.Generic
         /// </summary>
         public void Clear()
         {
+            T[] copyList;
             lock (_syncRoot)
             {
+                copyList=_list.ToArray();
                 _list.Clear();
             }
             Notify(this, CacheItemChangeType.Clear, PropertyName);
-            ClearChildrenEvent();
+            ClearChildrenEvent(copyList);
         }
 
         /// <summary>
