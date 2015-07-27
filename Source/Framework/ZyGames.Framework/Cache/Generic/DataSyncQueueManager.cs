@@ -117,11 +117,11 @@ namespace ZyGames.Framework.Cache.Generic
         /// <summary>
         /// 
         /// </summary>
-        public static ConcurrentBag<string> _entitySet = new ConcurrentBag<string>();
+        public static HashSet<string> _entitySet = new HashSet<string>();
         /// <summary>
         /// 
         /// </summary>
-        public static ConcurrentBag<string> _entityRemoteSet = new ConcurrentBag<string>();
+        public static HashSet<string> _entityRemoteSet = new HashSet<string>();
 
         private static SmartThreadPool _threadPools;
         /// <summary>
@@ -324,8 +324,7 @@ namespace ZyGames.Framework.Cache.Generic
             try
             {
                 //todo trace
-                var temp = Interlocked.Exchange(ref _entitySet, new ConcurrentBag<string>());
-                int count = temp.Count;
+                int count = _entitySet.Count;
                 if (count > MinCheckCount)
                 {
                     var persec = MathUtils.ToCeilingInt((decimal)(SendWaitCount - PreChangedCount) / 60);
@@ -333,7 +332,7 @@ namespace ZyGames.Framework.Cache.Generic
                     if (count > MaxCheckCount)
                     {
                         //大于10W，清空掉
-                        Interlocked.Exchange(ref _entitySet, new ConcurrentBag<string>());
+                        Interlocked.Exchange(ref _entitySet, new HashSet<string>());
                     }
                 }
                 Interlocked.Exchange(ref PreChangedCount, SendWaitCount);
@@ -417,8 +416,8 @@ namespace ZyGames.Framework.Cache.Generic
             {
                 try
                 {
-                    var tempRemove = Interlocked.Exchange(ref _entityRemoteSet, new ConcurrentBag<string>());
-                    var temp = Interlocked.Exchange(ref _entitySet, new ConcurrentBag<string>());
+                    var tempRemove = Interlocked.Exchange(ref _entityRemoteSet, new HashSet<string>());
+                    var temp = Interlocked.Exchange(ref _entitySet, new HashSet<string>());
                     if (temp.Count == 0 || _queueWatchTimers == null) return;
                     TraceLog.WriteWarn("OnEntitySyncQueue execute count:{0}, success:{1}/total {2}, fail:{3} start...", temp.Count, ExecuteSuccessCount, SendWaitCount, ExecuteFailCount);
 
@@ -538,11 +537,14 @@ namespace ZyGames.Framework.Cache.Generic
             {
                 CacheFactory.AddOrUpdateEntity(key, entity);
             }
-            _entitySet.Add(key);
-            SendWaitCount++;
-            if (entity.IsDelete)
+            lock (entitySyncRoot)
             {
-                _entityRemoteSet.Add(key);
+                _entitySet.Add(key);
+                SendWaitCount++;
+                if (entity.IsDelete)
+                {
+                    _entityRemoteSet.Add(key);
+                }
             }
         }
 

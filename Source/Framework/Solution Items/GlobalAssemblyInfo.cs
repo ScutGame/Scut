@@ -31,7 +31,7 @@ using System.Reflection;
 //      Revision
 //
 //
-[assembly: AssemblyVersion("6.7.0.355")]
+[assembly: AssemblyVersion("6.7.0.357")]
 [assembly: AssemblyCompany("scutgame.com")]
 [assembly: AssemblyProduct("SCUT Server Engine")]
 [assembly: AssemblyCopyright("Copyright © 2013-2015 Gavin Wu")]
