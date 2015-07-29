@@ -89,10 +89,19 @@ namespace ZyGames.Framework.Game.Contract
         }
 
         private EnvironmentSetting _setting;
+
         /// <summary>
         /// 
         /// </summary>
         protected GameSocketHost()
+            : this(new RequestHandler(new MessageHandler()))
+        {
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        protected GameSocketHost(RequestHandler requestHandler)
         {
             _setting = GameEnvironment.Setting;
             int port = _setting != null ? _setting.GamePort : 0;
@@ -110,7 +119,7 @@ namespace ZyGames.Framework.Game.Contract
             //threadPool.Start();
 
             var socketSettings = new SocketSettings(maxConnections, backlog, maxAcceptOps, bufferSize, localEndPoint, expireInterval, expireTime);
-            socketListener = new SocketListener(socketSettings);
+            socketListener = new SocketListener(socketSettings, requestHandler);
             socketListener.DataReceived += new ConnectionEventHandler(socketLintener_DataReceived);
             socketListener.Connected += new ConnectionEventHandler(socketLintener_OnConnectCompleted);
             socketListener.Disconnected += new ConnectionEventHandler(socketLintener_Disconnected);
