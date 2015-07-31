@@ -29,6 +29,7 @@ using System.Configuration;
 using ZyGames.Framework.Common;
 using ZyGames.Framework.Common.Configuration;
 using ZyGames.Framework.Common.Log;
+using ZyGames.Framework.Data.MySql;
 using ZyGames.Framework.Data.Sql;
 using ZyGames.Framework.Model;
 
@@ -187,40 +188,27 @@ namespace ZyGames.Framework.Data
 
         private static DbBaseProvider CreateDbProvider(ConnectionSetting setting)
         {
-            Type type = TryGetProviderType(setting.ProviderTypeName);
-            if (type == null)
-            {
-                type = typeof(SqlDataProvider);
-            }
+            Type type = TryGetProviderType(setting.ProviderTypeName) ?? typeof(SqlDataProvider);
             return type.CreateInstance<DbBaseProvider>(setting);
         }
 
         private static Type TryGetProviderType(string providerTypeName)
         {
+            if (string.IsNullOrEmpty(providerTypeName)) return null;
+
             Type type;
-            if (!string.IsNullOrEmpty(providerTypeName))
+            Type temp;
+            if ((temp = typeof(MySqlDataProvider)).Name.IsEquals(providerTypeName, true))
             {
-                if (providerTypeName.Contains(","))
-                {
-                    type = Type.GetType(providerTypeName);
-                }
-                else
-                {
-                    string typeName = string.Empty;
-                    if (providerTypeName.ToLower().StartsWith("mysql", StringComparison.Ordinal))
-                    {
-                        typeName = string.Format("ZyGames.Framework.Data.MySql.{0},ZyGames.Framework", providerTypeName);
-                    }
-                    else
-                    {
-                        typeName = string.Format("ZyGames.Framework.Data.Sql.{0},ZyGames.Framework", providerTypeName);
-                    }
-                    type = Type.GetType(typeName, false, true);
-                }
+                type = temp;
+            }
+            else if ((temp = typeof(SqlDataProvider)).Name.IsEquals(providerTypeName, true))
+            {
+                type = temp;
             }
             else
             {
-                type = typeof(SqlDataProvider);
+                throw new NotSupportedException("Not support \"" + providerTypeName + "\" db provider");
             }
             return type;
         }

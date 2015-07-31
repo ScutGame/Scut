@@ -280,10 +280,6 @@ namespace ZyGames.Framework.Common.Build
                 }
                 MethodReference notifyMethod = type.Module.Import(method);
                 var paramType = setMethod.Parameters[0].ParameterType;
-                //bool isIgnore = paramType.Name == "DateTime" || paramType.Name == "Boolean";
-                //var fieldRefType = Type.GetType("System.Object&");
-                //var fieldType = Type.GetType("System.Object");
-                //var exchangeMethod = type.Module.Import(typeof(Interlocked).GetMethod("Exchange", new Type[] { fieldRefType, fieldType }));
                 ILProcessor worker = setMethod.Body.GetILProcessor();
                 Instruction ins = setMethod.Body.Instructions[setMethod.Body.Instructions.Count - 1];
                 var equalsMethod = type.Module.Import(typeof(Object).GetMethod("Equals", new Type[] { typeof(object), typeof(object) }));
