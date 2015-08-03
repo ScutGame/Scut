@@ -118,8 +118,28 @@ namespace ZyGames.Framework.Game.Contract
                         var user = Encoding.UTF8.GetString(pair.Value).ParseJson<SessionUser>();
                         if (user == null) continue;
                         var session = new GameSession(sessionId, null) { LastActivityTime = user.OnlineDate };
-                        session.Bind(user);
                         _globalSession[sessionId] = session;
+
+                        int userId = user.GetUserId();
+                        GameSession oldsession;
+                        Guid sid;
+                        if (_userHash.TryGetValue(userId, out sid) && 
+                            sid != session.KeyCode &&
+                            (oldsession = Get(sid)) != null)
+                        {
+                            //防止先后问题
+                            if (oldsession.LastActivityTime < session.LastActivityTime)
+                            {
+                                session.UnBind();
+                                Expire(session, 0);
+                            }
+                            else
+                            {
+                                continue;
+                            }
+                        }
+                        _userHash[userId] = session.KeyCode;
+                        session.User = user;
                     }
                 }
             }
@@ -624,10 +644,6 @@ namespace ZyGames.Framework.Game.Contract
                         {
                             session.UnBind();
                             Expire(session, 0);
-                        }
-                        else
-                        {
-                            return;
                         }
                     }
                 }
