@@ -31,6 +31,7 @@ using System.Threading.Tasks;
 using ZyGames.Framework.Common;
 using ZyGames.Framework.Common.Configuration;
 using ZyGames.Framework.Data;
+using ZyGames.Framework.RPC.IO;
 
 namespace ZyGames.Framework.Game.Runtime
 {
@@ -60,6 +61,10 @@ namespace ZyGames.Framework.Game.Runtime
                 if (connSetting == null) continue;
                 AddNodeData(new ConnectionSection(connSetting.Name, connSetting.ProviderName, connSetting.ConnectionString));
             }
+            var setting = GameEnvironment.Setting;
+            setting.Reset();
+            MessageStructure.EnableGzip = setting.ActionEnableGZip;
+            MessageStructure.EnableGzipMinByte = setting.ActionGZipOutLength;
             base.LoadConfigData();
         }
     }

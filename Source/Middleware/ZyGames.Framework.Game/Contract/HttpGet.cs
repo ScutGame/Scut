@@ -248,7 +248,28 @@ namespace ZyGames.Framework.Game.Contract
         {
             return ParamString;
         }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="param"></param>
+        /// <returns></returns>
+        public override long GetLongValue(string param)
+        {
+            return GetLongValue(param, ZeroNum, long.MaxValue, false);
+        }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        public override long GetLongValue(string param, long min, long max, bool isRequired = true)
+        {
+            long value = 0;
+            if (!GetLong(param, ref value, min, max) && isRequired)
+            {
+                throw new ArgumentOutOfRangeException("param", string.Format("{0} value out of range[{1}-{2}]", param, min, max));
+            }
+            return value;
+        }
         /// <summary>
         /// 
         /// </summary>
@@ -436,6 +457,30 @@ namespace ZyGames.Framework.Game.Contract
             }
             WriteContainsError(param);
             return false;
+        }
+        /// <summary>
+        /// 
+        /// </summary>
+        public override bool GetLong(string aName, ref long rValue, long minValue = 0, long maxValue = long.MaxValue)
+        {
+            bool result = false;
+            if (_param.ContainsKey(aName))
+            {
+                result = long.TryParse(_param[aName], out rValue);
+                if (result)
+                {
+                    result = rValue >= minValue && rValue <= maxValue;
+                }
+                if (!result)
+                {
+                    WriteRangOutError(aName, minValue, maxValue);
+                }
+            }
+            else
+            {
+                WriteContainsError(aName);
+            }
+            return result;
         }
 
         /// <summary>
@@ -764,7 +809,7 @@ namespace ZyGames.Framework.Game.Contract
             _error.AppendFormat(Language.Instance.UrlNoParam, param);
         }
 
-        private void WriteRangOutError(string param, int min, int max)
+        private void WriteRangOutError(string param, long min, long max)
         {
             if (_error.Length > 0)
             {

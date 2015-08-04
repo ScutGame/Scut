@@ -190,6 +190,23 @@ namespace ZyGames.Framework.Game.Service
             get { throw new NotImplementedException(); }
             set { throw new NotImplementedException(); }
         }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="param"></param>
+        /// <returns></returns>
+        public virtual long GetLongValue(string param)
+        {
+            throw new NotImplementedException();
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public virtual long GetLongValue(string param, long min, long max, bool isRequired = true)
+        {
+            throw new NotImplementedException();
+        }
 
         /// <summary>
         /// 
@@ -316,6 +333,14 @@ namespace ZyGames.Framework.Game.Service
         /// <summary>
         /// 
         /// </summary>
+        public virtual bool GetLong(string aName, ref long rValue, long minValue = 0, long maxValue = long.MaxValue)
+        {
+            throw new NotImplementedException();
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
         public virtual bool GetInt(string aName, ref Int32 rValue, Int32 minValue, Int32 maxValue)
         {
             throw new NotImplementedException();
@@ -435,7 +460,7 @@ namespace ZyGames.Framework.Game.Service
         public override string ToString()
         {
             return string.Format("Url:{0}, Uid:{1}, Pid:{2}\r\nHost:{3}",
-                ToParamString(), 
+                ToParamString(),
                 Session.UserId,
                 Session.User != null ? Session.User.GetPassportId() : "",
                 RemoteAddress);
