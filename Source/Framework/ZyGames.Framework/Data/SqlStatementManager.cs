@@ -53,7 +53,7 @@ namespace ZyGames.Framework.Data
         private static Timer[] _queueWatchTimers;
         private static SmartThreadPool _threadPools;
         private static int[] _isWatchWorking;
-        private const int sqlSyncPackSize = 999;
+        private const int sqlSyncPackSize = 101;
 
 
         static SqlStatementManager()

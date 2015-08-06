@@ -139,6 +139,7 @@ namespace ZyGames.Framework.Model
             OnUnNew();
             ResetChangePropertys();
             CompleteUpdate();
+            ExitModify();
         }
 
         /// <summary>

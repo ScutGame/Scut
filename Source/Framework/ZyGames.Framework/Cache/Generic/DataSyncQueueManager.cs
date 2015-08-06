@@ -148,7 +148,13 @@ namespace ZyGames.Framework.Cache.Generic
         /// 
         /// </summary>
         public static long ExecuteFailCount;
-
+        /// <summary>
+        /// 
+        /// </summary>
+        public static void SetWriteToDbState(bool enable)
+        {
+            _enableWriteToDb = enable;
+        }
         /// <summary>
         /// Is run completed.
         /// </summary>

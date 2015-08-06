@@ -71,11 +71,12 @@ namespace ZyGames.Framework.Cache.Generic
         /// <returns></returns>
         public CacheItemSet InitGroupContainer(string groupKey, int periodTime)
         {
+            bool isMutilKey = EntitySchemaSet.Get<T>().IsMutilKey;
             var lazy = new Lazy<CacheItemSet>(() =>
             {
                 BaseCollection itemCollection = IsReadonly
                     ? (BaseCollection)new ReadonlyCacheCollection()
-                    : new CacheCollection();
+                    : new CacheCollection(isMutilKey ? 0 : 1);
                 var itemSet = CreateItemSet(CacheType.Dictionary, periodTime);
                 itemSet.HasCollection = true;
                 itemSet.SetItem(itemCollection);

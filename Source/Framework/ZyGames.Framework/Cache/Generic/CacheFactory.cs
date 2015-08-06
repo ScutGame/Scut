@@ -458,7 +458,7 @@ namespace ZyGames.Framework.Cache.Generic
                         bool isReadonly = schema.AccessLevel == AccessLevel.ReadOnly;
                         BaseCollection itemCollection = isReadonly
                             ? (BaseCollection)new ReadonlyCacheCollection()
-                            : new CacheCollection();
+                            : new CacheCollection(schema.IsMutilKey ? 0 : 1);
                         var itemSet = new CacheItemSet(schema.CacheType, periodTime, isReadonly);
                         if (!isReadonly && _writePools.Setting != null)
                         {

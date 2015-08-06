@@ -247,12 +247,12 @@ namespace ZyGames.Framework.Event
             {
                 try
                 {
-                    Interlocked.Exchange(ref _modified, 1);
+                    DelayNotify();
                     updateHandle(this);
                 }
                 finally
                 {
-                    Interlocked.Exchange(ref _modified, 0);
+                    ExitModify();
                     Notify(this, CacheItemChangeType.Modify, PropertyName);
                 }
             }
@@ -303,8 +303,16 @@ namespace ZyGames.Framework.Event
         /// </summary>
         public override void TriggerNotify()
         {
-            Interlocked.Exchange(ref _modified, 0);
+            ExitModify();
             Notify(this, CacheItemChangeType.Modify, PropertyName);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        protected void ExitModify()
+        {
+            Interlocked.Exchange(ref _modified, 0);
         }
 
         /// <summary>

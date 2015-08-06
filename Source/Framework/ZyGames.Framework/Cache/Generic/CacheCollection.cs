@@ -40,11 +40,24 @@ namespace ZyGames.Framework.Cache.Generic
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="disableEvent">是否禁用事件</param>
+        /// <param name="disableEvent"></param>
         public CacheCollection(bool disableEvent = false)
+            : this(0, disableEvent)
+        {
+
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="capacity"></param>
+        /// <param name="disableEvent">是否禁用事件</param>
+        public CacheCollection(int capacity, bool disableEvent = false)
             : base(false, disableEvent)
         {
-            _cacheStruct = new ConcurrentDictionary<string, object>();
+            _cacheStruct = capacity > 0
+                ? new ConcurrentDictionary<string, object>(Environment.ProcessorCount, capacity)
+                : new ConcurrentDictionary<string, object>();
         }
         /// <summary>
         /// 
