@@ -85,6 +85,16 @@ namespace ZyGames.Framework.Cache.Generic
         /// <summary>
         /// 
         /// </summary>
+        /// <param name="rank"></param>
+        /// <returns></returns>
+        public bool Remove(T rank)
+        {
+            return DataContainer.RemoveRankByScore<T>(rank.Key, rank.Score, rank.Score);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
         /// <param name="key"></param>
         /// <param name="fromScore"></param>
         /// <param name="toScore"></param>
