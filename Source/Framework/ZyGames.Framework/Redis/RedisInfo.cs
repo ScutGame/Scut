@@ -40,6 +40,7 @@ namespace ZyGames.Framework.Redis
         /// </summary>
         public RedisInfo()
         {
+            ClientVersion = RedisStorageVersion.Hash;
             SlaveSet = new Dictionary<string, RedisInfo>();
         }
         /// <summary>

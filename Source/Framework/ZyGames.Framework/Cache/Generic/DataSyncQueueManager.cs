@@ -716,7 +716,7 @@ namespace ZyGames.Framework.Cache.Generic
                         SchemaTable schema;
                         if (EntitySchemaSet.TryGet(entityTypeName, out schema))
                         {
-                            hasMutilKey = RedisConnectionPool.RedisInfo.ClientVersion >= RedisStorageVersion.HashMutilKeyMap &&
+                            hasMutilKey = RedisConnectionPool.CurrRedisInfo.ClientVersion >= RedisStorageVersion.HashMutilKeyMap &&
                                 schema.EntityType.IsSubclassOf(typeof(BaseEntity)) &&
                                 schema.Keys.Length > 1;
                             isStoreInDb = schema.StorageType.HasFlag(StorageType.WriteOnlyDB) || schema.StorageType.HasFlag(StorageType.ReadWriteDB);

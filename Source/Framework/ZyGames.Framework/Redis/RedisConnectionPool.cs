@@ -78,11 +78,25 @@ namespace ZyGames.Framework.Redis
         private static ICacheSerializer _serializer;
         private static RedisPoolSetting _setting;
         private static ConcurrentDictionary<string, ObjectPoolWithExpire<RedisClient>> _poolCache;
+        private static RedisInfo _currRedisInfo;
 
         static RedisConnectionPool()
         {
             _poolCache = new ConcurrentDictionary<string, ObjectPoolWithExpire<RedisClient>>();
             _serializer = new ProtobufCacheSerializer();
+            ConfigManager.ConfigReloaded += OnConfigReload;
+        }
+
+        private static void OnConfigReload(object sender, ConfigReloadedEventArgs e)
+        {
+            try
+            {
+                InitRedisInfo();
+            }
+            catch (Exception ex)
+            {
+                TraceLog.WriteError("ConfigReload error:{0}", ex);
+            }
         }
 
         /// <summary>
@@ -111,7 +125,7 @@ namespace ZyGames.Framework.Redis
                 pool.Put();
             }
             _poolCache[key] = pool;
-            InitRedisInfo(setting.ClientVersion);
+            InitRedisInfo();
         }
 
         private static ObjectPoolWithExpire<RedisClient> GenrateObjectPool(RedisPoolSetting setting)
@@ -119,73 +133,81 @@ namespace ZyGames.Framework.Redis
             return new ObjectPoolWithExpire<RedisClient>(() => CreateRedisClient(setting), true, setting.PoolTimeOut, setting.MaxWritePoolSize / 10);
         }
 
-        private static void InitRedisInfo(RedisStorageVersion redisClientVersion)
+        private static void InitRedisInfo()
         {
+            RedisInfo redisInfo = null;
+
             ProcessTrans(RedisInfoKey, cli =>
             {
-                RedisInfo = cli.GetValue(RedisInfoKey).ParseJson<RedisInfo>() ?? new RedisInfo();
+                redisInfo = cli.GetValue(RedisInfoKey).ParseJson<RedisInfo>() ?? new RedisInfo();
                 string host = Dns.GetHostName();
                 string serverPath = MathUtils.RuntimePath;
                 string hashCode = MathUtils.ToHexMd5Hash(host + serverPath);
-
+                var section = ConfigManager.Configger.GetFirstOrAddConfig<RedisSection>();
                 var slaveName = ConfigManager.Configger.GetFirstOrAddConfig<MessageQueueSection>().SlaveMessageQueue;
                 var serializerType = _serializer is ProtobufCacheSerializer ? "Protobuf" : _serializer is JsonCacheSerializer ? "Json" : "";
 
-                if (string.IsNullOrEmpty(slaveName) && string.IsNullOrEmpty(RedisInfo.HashCode))
+                if (string.IsNullOrEmpty(slaveName) && string.IsNullOrEmpty(redisInfo.HashCode))
                 {
-                    RedisInfo.HashCode = hashCode;
-                    RedisInfo.ServerHost = host;
-                    RedisInfo.ServerPath = serverPath;
-                    RedisInfo.SerializerType = serializerType;
-                    RedisInfo.ClientVersion = redisClientVersion;
-                    RedisInfo.StarTime = MathUtils.Now;
+                    redisInfo.HashCode = hashCode;
+                    redisInfo.ServerHost = host;
+                    redisInfo.ServerPath = serverPath;
+                    redisInfo.SerializerType = serializerType;
+                    redisInfo.ClientVersion = section.ClientVersion;
+                    redisInfo.StarTime = MathUtils.Now;
+                    _currRedisInfo = redisInfo;
                 }
-                else if (string.IsNullOrEmpty(slaveName) && string.Equals(hashCode, RedisInfo.HashCode))
+                else if (string.IsNullOrEmpty(slaveName) && string.Equals(hashCode, redisInfo.HashCode))
                 {
-                    RedisInfo.ClientVersion = redisClientVersion;
-                    RedisInfo.SerializerType = serializerType;
-                    RedisInfo.StarTime = MathUtils.Now;
+                    redisInfo.ClientVersion = section.ClientVersion;
+                    redisInfo.SerializerType = serializerType;
+                    redisInfo.StarTime = MathUtils.Now;
+                    _currRedisInfo = redisInfo;
                 }
                 else if (!string.IsNullOrEmpty(slaveName))
                 {
                     RedisInfo slaveInfo;
                     //allow a slave server connect.
-                    if (!RedisInfo.SlaveSet.ContainsKey(slaveName))
+                    if (!redisInfo.SlaveSet.ContainsKey(slaveName))
                     {
                         slaveInfo = new RedisInfo();
                         slaveInfo.HashCode = hashCode;
                         slaveInfo.ServerHost = host;
                         slaveInfo.ServerPath = serverPath;
                         slaveInfo.SerializerType = serializerType;
-                        slaveInfo.ClientVersion = redisClientVersion;
+                        slaveInfo.ClientVersion = section.ClientVersion;
                         slaveInfo.StarTime = MathUtils.Now;
-                        RedisInfo.SlaveSet[slaveName] = slaveInfo;
+                        redisInfo.SlaveSet[slaveName] = slaveInfo;
                     }
-                    else if (string.Equals(hashCode, RedisInfo.SlaveSet[slaveName].HashCode))
+                    else if (string.Equals(hashCode, redisInfo.SlaveSet[slaveName].HashCode))
                     {
-                        slaveInfo = RedisInfo.SlaveSet[slaveName];
+                        slaveInfo = redisInfo.SlaveSet[slaveName];
                         slaveInfo.SerializerType = serializerType;
-                        slaveInfo.ClientVersion = redisClientVersion;
+                        slaveInfo.ClientVersion = section.ClientVersion;
                         slaveInfo.StarTime = MathUtils.Now;
                     }
                     else
                     {
                         throw new Exception(string.Format("The slave[{0}] game server is using Redis at host name \"{1}\" path {2}.",
-                           slaveName, RedisInfo.ServerHost, RedisInfo.ServerPath));
+                           slaveName, redisInfo.ServerHost, redisInfo.ServerPath));
                     }
+                    _currRedisInfo = slaveInfo;
                 }
                 else
                 {
-                    throw new Exception(string.Format("The game server is using Redis at host name \"{0}\" path {1}.", RedisInfo.ServerHost, RedisInfo.ServerPath));
+                    throw new Exception(string.Format("The game server is using Redis at host name \"{0}\" path {1}.", redisInfo.ServerHost, redisInfo.ServerPath));
                 }
                 return true;
-            }, trans => trans.QueueCommand(c => c.SetEntry(RedisInfoKey, MathUtils.ToJson(RedisInfo))));
+            }, trans => trans.QueueCommand(c => c.SetEntry(RedisInfoKey, MathUtils.ToJson(redisInfo))));
         }
 
         /// <summary>
         /// 
         /// </summary>
-        public static RedisInfo RedisInfo { get; set; }
+        public static RedisInfo CurrRedisInfo
+        {
+            get { return _currRedisInfo; }
+        }
 
         /// <summary>
         /// Gets default redis pool setting.
@@ -194,6 +216,8 @@ namespace ZyGames.Framework.Redis
         {
             get { return _setting; }
         }
+
+        
 
         /// <summary>
         /// SetNo
@@ -700,7 +724,7 @@ namespace ZyGames.Framework.Redis
         /// <returns></returns>
         public static IEnumerable<T> GetAllEntity<T>(IEnumerable<string> personalIds)
         {
-            return GetAllEntity<T>(personalIds, RedisInfo.ClientVersion >= RedisStorageVersion.HashMutilKeyMap);
+            return GetAllEntity<T>(personalIds, CurrRedisInfo.ClientVersion >= RedisStorageVersion.HashMutilKeyMap);
         }
 
         /// <summary>
@@ -837,11 +861,11 @@ namespace ZyGames.Framework.Redis
         /// <returns></returns>
         public static bool TryGetEntity<T>(string redisKey, SchemaTable table, out List<T> list) where T : ISqlEntity
         {
-            if (RedisInfo.ClientVersion < RedisStorageVersion.Hash)
+            if (CurrRedisInfo.ClientVersion < RedisStorageVersion.Hash)
             {
                 return TryGetOlbValue(redisKey, table, out list);
             }
-            return TryGetValue(redisKey, table, out list, RedisInfo.ClientVersion >= RedisStorageVersion.HashMutilKeyMap);
+            return TryGetValue(redisKey, table, out list, CurrRedisInfo.ClientVersion >= RedisStorageVersion.HashMutilKeyMap);
         }
         /// <summary>
         /// /
