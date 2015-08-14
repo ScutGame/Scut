@@ -664,16 +664,61 @@ namespace ZyGames.Framework.Cache.Generic
         /// </summary>
         /// <param name="key"></param>
         /// <param name="count"></param>
+        /// <returns></returns>
+        public bool TryGetRankCount(string key, out int count)
+        {
+            count = 0;
+            LoadingStatus loadStatus;
+            CacheList<T> cacheItems;
+            if (TryGetCacheItem(key, true, out cacheItems, out loadStatus))
+            {
+                count = cacheItems.Count;
+                return true;
+            }
+            return false;
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="key"></param>
+        /// <param name="match"></param>
+        /// <returns></returns>
+        public IEnumerable<int> GetRankNo<V>(string key, Predicate<V> match) where V : RankEntity, new()
+        {
+            LoadingStatus loadStatus;
+            CacheList<V> cacheItems;
+            if (!TryGetCacheItem(key, true, out cacheItems, out loadStatus))
+            {
+                throw new Exception(string.Format("Not key:{0} items", key));
+            }
+            int index = 0;
+            foreach (var cacheItem in cacheItems)
+            {
+                index++;
+                if (match(cacheItem))
+                {
+                    yield return index;
+                }
+            }
+            yield return -1;
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="key"></param>
+        /// <param name="count"></param>
         /// <param name="list"></param>
         /// <returns></returns>
-        public bool TryGetRangeRank(string key, int count, out List<T> list)
+        public bool TryGetRangeRank(string key, int? count, out IEnumerable<T> list)
         {
             list = null;
             LoadingStatus loadStatus;
             CacheList<T> cacheItems;
             if (TryGetCacheItem(key, true, out cacheItems, out loadStatus))
             {
-                list = count == -1 ? cacheItems.ToList() : cacheItems.Take(count).ToList();
+                list = !count.HasValue ? cacheItems : cacheItems.Take(count.Value);
                 return true;
             }
             return false;
@@ -694,15 +739,48 @@ namespace ZyGames.Framework.Cache.Generic
             }
             var schema = EntitySchemaSet.Get<V>();
             TransSendParam sendParam = new TransSendParam(key) { Schema = schema };
-            if (_cachePool.TrySetRankData(sendParam, dataList))
+            foreach (var item in dataList)
             {
-                foreach (var item in dataList)
-                {
-                    item.IsInCache = true;
-                    cacheItems.InsertSort(item, (x, y) => x.CompareTo(y));
-                }
+                item.IsInCache = true;
+                cacheItems.InsertSort(item, (x, y) => x.CompareTo(y));
             }
-            return false;
+            return _cachePool.TrySetRankData(sendParam, dataList);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <typeparam name="V"></typeparam>
+        /// <param name="key"></param>
+        /// <param name="item"></param>
+        public void RankSort<V>(string key, V item) where V : RankEntity, new()
+        {
+            LoadingStatus loadStatus;
+            CacheList<V> cacheItems;
+            if (!TryGetCacheItem(key, true, out cacheItems, out loadStatus))
+            {
+                return;
+            }
+            //score desc
+            cacheItems.MoveBySort(item, (x, y) => y.Score.CompareTo(x.Score));
+            _cachePool.TryUpdateRankEntity(key, cacheItems.ToArray());
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <typeparam name="V"></typeparam>
+        /// <param name="key"></param>
+        public void RankSort<V>(string key) where V : RankEntity, new()
+        {
+            LoadingStatus loadStatus;
+            CacheList<V> cacheItems;
+            if (!TryGetCacheItem(key, true, out cacheItems, out loadStatus))
+            {
+                return;
+            }
+            cacheItems.SortDesc(t => t.Score);
+            _cachePool.TryUpdateRankEntity(key, cacheItems.ToArray());
         }
         /// <summary>
         /// 
@@ -723,7 +801,13 @@ namespace ZyGames.Framework.Cache.Generic
             {
                 int index1 = cacheItems.BinarySearch(t1);
                 int index2 = cacheItems.BinarySearch(t2);
-                cacheItems.Exchange(index1, index2);
+                cacheItems.Exchange(index1, index2, (x, y) =>
+                {
+                    var a = x.Score;
+                    var b = y.Score;
+                    x.Score = b;
+                    y.Score = a;
+                });
                 return true;
             }
             return false;
@@ -735,7 +819,7 @@ namespace ZyGames.Framework.Cache.Generic
         /// <param name="fromScore"></param>
         /// <param name="toScore">-1: all</param>
         /// <returns></returns>
-        public bool RemoveRankByScore<V>(string key, double fromScore, double toScore) where V : RankEntity, new()
+        public bool RemoveRankByScore<V>(string key, double fromScore, double? toScore) where V : RankEntity, new()
         {
             LoadingStatus loadStatus;
             CacheList<V> cacheItems;
@@ -744,7 +828,7 @@ namespace ZyGames.Framework.Cache.Generic
                 return false;
             }
             List<V> removeList;
-            if (!cacheItems.RemoveAll(t => t.Score >= fromScore && (toScore == -1 || t.Score <= toScore), out removeList))
+            if (!cacheItems.RemoveAll(t => t.Score >= fromScore && (!toScore.HasValue || t.Score <= toScore.Value), out removeList))
             {
                 return true;
             }

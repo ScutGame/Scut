@@ -132,7 +132,13 @@ namespace ZyGames.Framework.Cache.Generic
         {
             get { return DataContainer.IsEmpty; }
         }
-
+        /// <summary>
+        /// 
+        /// </summary>
+        public int Count
+        {
+            get { return DataContainer.Count; }
+        }
         /// <summary>
         /// Get ItemSet array
         /// </summary>

@@ -200,7 +200,17 @@ namespace ZyGames.Framework.Cache.Generic.Pool
         {
             return RedisConnectionPool.TryExchangeRankEntity(key, t1, t2);
         }
-
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="key"></param>
+        /// <param name="dataList"></param>
+        /// <returns></returns>
+        public bool TryUpdateRankEntity<T>(string key, params T[] dataList) where T : RankEntity, new()
+        {
+            return RedisConnectionPool.TryUpdateRankEntity(key, dataList);
+        }
         /// <summary>
         /// 尝试接收数据
         /// </summary>

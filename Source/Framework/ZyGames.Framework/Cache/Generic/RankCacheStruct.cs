@@ -22,6 +22,8 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ****************************************************************************/
 
+using System;
+using System.Collections;
 using System.Linq;
 using System.Collections.Generic;
 using ZyGames.Framework.Common.Log;
@@ -47,6 +49,16 @@ namespace ZyGames.Framework.Cache.Generic
         }
 
         /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="item"></param>
+        /// <returns></returns>
+        public bool AddRank(T item)
+        {
+            return AddRank(item.Key, item);
+        }
+
+        /// <summary>
         /// Add rank
         /// </summary>
         public bool AddRank(string key, params T[] items)
@@ -55,19 +67,22 @@ namespace ZyGames.Framework.Cache.Generic
         }
 
         /// <summary>
-        /// Take rank items
+        /// 
         /// </summary>
         /// <param name="key"></param>
-        /// <param name="count"></param>
-        /// <returns></returns>
-        public List<T> TakeRank(string key, int count)
+        public void Sort(string key)
         {
-            List<T> list;
-            if (TryTakeRank(key, count, out list))
-            {
-                return list;
-            }
-            return new List<T>();
+            DataContainer.RankSort<T>(key);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="key"></param>
+        /// <param name="item"></param>
+        public void Sort(string key, T item)
+        {
+            DataContainer.RankSort<T>(key, item);
         }
 
         /// <summary>
@@ -97,21 +112,71 @@ namespace ZyGames.Framework.Cache.Generic
         /// </summary>
         /// <param name="key"></param>
         /// <param name="fromScore"></param>
-        /// <param name="toScore"></param>
+        /// <param name="toScore">-1: max</param>
         /// <returns></returns>
-        public bool RemoveRankByScore(string key, double fromScore, double toScore)
+        public bool RemoveRankByScore(string key, double fromScore, double? toScore)
         {
             return DataContainer.RemoveRankByScore<T>(key, fromScore, toScore);
         }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="key"></param>
+        /// <param name="count"></param>
+        /// <returns></returns>
+        public bool TryGetRankCount(string key, out int count)
+        {
+            return DataContainer.TryGetRankCount(key, out count);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="key"></param>
+        /// <param name="item"></param>
+        /// <returns></returns>
+        public int GetRankNo(string key, T item)
+        {
+            return GetRankNo(key, t => t.GetHashCode() == item.GetHashCode()).FirstOrDefault();
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="key"></param>
+        /// <param name="match"></param>
+        /// <returns></returns>
+        public IEnumerable<int> GetRankNo(string key, Predicate<T> match)
+        {
+            return DataContainer.GetRankNo<T>(key, match);
+        }
+
+        /// <summary>
+        /// Take rank items
+        /// </summary>
+        /// <param name="key"></param>
+        /// <param name="count">-1: get all</param>
+        /// <returns></returns>
+        public IEnumerable<T> TakeRank(string key, int? count = null)
+        {
+            IEnumerable<T> list;
+            if (TryTakeRank(key, count, out list))
+            {
+                return list;
+            }
+            return Enumerable.Empty<T>();
+        }
+
         /// <summary>
         /// 
         /// </summary>
         /// <param name="key"></param>
         /// <param name="list"></param>
         /// <returns></returns>
-        public bool TryTakeRank(string key, out List<T> list)
+        public bool TryTakeRank(string key, out IEnumerable<T> list)
         {
-            return TryTakeRank(key, -1, out list);
+            return TryTakeRank(key, null, out list);
         }
         /// <summary>
         /// 
@@ -120,7 +185,7 @@ namespace ZyGames.Framework.Cache.Generic
         /// <param name="count"></param>
         /// <param name="list"></param>
         /// <returns></returns>
-        public bool TryTakeRank(string key, int count, out List<T> list)
+        public bool TryTakeRank(string key, int? count, out IEnumerable<T> list)
         {
             return DataContainer.TryGetRangeRank(key, count, out list);
         }

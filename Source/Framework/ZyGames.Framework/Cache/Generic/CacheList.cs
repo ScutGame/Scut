@@ -121,18 +121,21 @@ namespace ZyGames.Framework.Cache.Generic
         /// </summary>
         /// <param name="index1"></param>
         /// <param name="index2"></param>
+        /// <param name="complate"></param>
         /// <returns></returns>
-        public bool Exchange(int index1, int index2)
+        public bool Exchange(int index1, int index2, Action<T, T> complate)
         {
             lock (_syncRoot)
             {
                 if (index1 < 0 || index2 < 0 || index1 >= _list.Count || index2 >= _list.Count) return false;
 
-                var item = _list[index1];
-                _list[index1] = _list[index2];
-                _list[index2] = item;
+                var item1 = _list[index1];
+                var item2 = _list[index2];
+                _list[index1] = item2;
+                _list[index2] = item1;
+                complate(item1, item2);
             }
-            return false;
+            return true;
         }
 
         /// <summary>
@@ -247,7 +250,7 @@ namespace ZyGames.Framework.Cache.Generic
             T[] copyList;
             lock (_syncRoot)
             {
-                copyList=_list.ToArray();
+                copyList = _list.ToArray();
                 _list.Clear();
             }
             Notify(this, CacheItemChangeType.Clear, PropertyName);
@@ -483,6 +486,78 @@ namespace ZyGames.Framework.Cache.Generic
         /// <summary>
         /// 
         /// </summary>
+        public void Sort()
+        {
+            lock (_syncRoot)
+            {
+                _list.Sort();
+            }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public void Sort(int index, int count, IComparer<T> comparer)
+        {
+            lock (_syncRoot)
+            {
+                _list.Sort(index, count, comparer);
+            }
+        }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="selector"></param>
+        public void SortAsc<TKey>(Func<T, TKey> selector)
+        {
+            lock (_syncRoot)
+            {
+                _list = _list.OrderBy(selector).ToList();
+            }
+        }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="selector"></param>
+        public void SortDesc<TKey>(Func<T, TKey> selector)
+        {
+            lock (_syncRoot)
+            {
+                _list = _list.OrderByDescending(selector).ToList();
+            }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="item"></param>
+        /// <param name="comparison"></param>
+        public void MoveBySort(T item, Comparison<T> comparison)
+        {
+            lock (_syncRoot)
+            {
+                int index = _list.FindIndex(t => Equals(t, item));
+                _list.RemoveAt(index);
+                _list.InsertSort(item, comparison);
+            }
+        }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="item"></param>
+        /// <param name="toIndex"></param>
+        public void Move(T item, int toIndex)
+        {
+            lock (_syncRoot)
+            {
+                int index = _list.FindIndex(t => Equals(t, item));
+                _list.RemoveAt(index);
+                _list.Insert(toIndex, item);
+            }
+        }
+        /// <summary>
+        /// 
+        /// </summary>
         /// <param name="match"></param>
         /// <returns></returns>
         public bool Exists(Predicate<T> match)
@@ -591,5 +666,6 @@ namespace ZyGames.Framework.Cache.Generic
             }
             base.Dispose(disposing);
         }
+
     }
 }
