@@ -364,7 +364,7 @@ namespace ContractTools.WebApp.Base
         {
             var command = _dbBaseProvider.CreateCommandStruct("Contract", CommandMode.Inquiry);
             command.Columns = "ID,Descption,ParentID,SlnID,Complated,AgreementID,VerId";
-            command.OrderBy = "SlnID ASC,ID ASC";
+            command.OrderBy = "SlnID ASC,Complated DESC,ID ASC";
             command.Filter = _dbBaseProvider.CreateCommandFilter();
             if (match != null)
             {
