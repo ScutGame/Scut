@@ -174,6 +174,11 @@ namespace ZyGames.Framework.Model
         public string NameFormat { get; set; }
 
         /// <summary>
+        /// 是否是内部使用的
+        /// </summary>
+        public bool IsInternal { get; internal set; }
+
+        /// <summary>
         /// 
         /// </summary>
         public bool IsMutilKey { get { return Keys != null && Keys.Length > 1; } }

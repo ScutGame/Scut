@@ -218,6 +218,7 @@ namespace ZyGames.Framework.Model
                     if (string.IsNullOrEmpty(schema.ConnectKey)
                         && type == typeof(EntityHistory))
                     {
+                        schema.IsInternal = true;
                         var dbPair = DbConnectionProvider.Find(DbLevel.Game);
                         if (dbPair.Value == null)
                         {

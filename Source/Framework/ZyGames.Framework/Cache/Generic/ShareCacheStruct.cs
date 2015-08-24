@@ -43,28 +43,66 @@ namespace ZyGames.Framework.Cache.Generic
         {
             foreach (var schemaTable in EntitySchemaSet.GetEnumerable())
             {
-                Type entityType = schemaTable.EntityType;
-                if (entityType.IsSubclassOf(typeof(ShareEntity)) && match(schemaTable))
+                if (schemaTable.EntityType.IsSubclassOf(typeof(ShareEntity)) &&
+                    !schemaTable.IsInternal &&
+                    match(schemaTable))
                 {
-                    Type cachType = typeof(ShareCacheStruct<>);
-                    string typeName = string.Format("{0}[[{1}, {2}]], {3}",
-                        cachType.FullName,
-                        entityType.FullName,
-                        entityType.Assembly.FullName,
-                        cachType.Assembly.FullName);
-                    Type type = Type.GetType(typeName, false, true);
-                    if (type == null) continue;
-                    if (isReLoad)
+                    CallMethod(schemaTable, obj =>
                     {
-                        ((dynamic)type.CreateInstance()).ReLoad();
-                    }
-                    else
-                    {
-                        ((dynamic)type.CreateInstance()).Load();
-                    }
+                        if (isReLoad)
+                        {
+                            obj.ReLoad();
+                        }
+                        else
+                        {
+                            obj.Load();
+                        }
+                    });
+                    
                 }
             }
         }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="match"></param>
+        /// <param name="hasChanged"></param>
+        public static void Update(Predicate<SchemaTable> match, bool hasChanged = false)
+        {
+            foreach (var schemaTable in EntitySchemaSet.GetEnumerable())
+            {
+                if (match(schemaTable))
+                {
+                    Update(schemaTable, hasChanged);
+                }
+            }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="schemaTable"></param>
+        /// <param name="hasChanged"></param>
+        public static void Update(SchemaTable schemaTable, bool hasChanged = false)
+        {
+            CallMethod(schemaTable, obj => obj.Update(hasChanged));
+        }
+
+        private static void CallMethod(SchemaTable schemaTable, Action<dynamic> func)
+        {
+            Type entityType = schemaTable.EntityType;
+            Type cachType = typeof(ShareCacheStruct<>);
+            string typeName = string.Format("{0}[[{1}, {2}]], {3}",
+                cachType.FullName,
+                entityType.FullName,
+                entityType.Assembly.FullName,
+                cachType.Assembly.FullName);
+            Type type = Type.GetType(typeName, false, true);
+            if (type == null) return;
+
+            func((dynamic)type.CreateInstance());
+        }
+
         /// <summary>
         /// 
         /// </summary>

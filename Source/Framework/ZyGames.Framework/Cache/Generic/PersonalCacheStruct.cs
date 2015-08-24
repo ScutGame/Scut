@@ -79,13 +79,46 @@ namespace ZyGames.Framework.Cache.Generic
                 }
             }
         }
-
         /// <summary>
         /// 
         /// </summary>
         /// <param name="personalId"></param>
         /// <param name="schemaTable"></param>
         public static void ReLoad(string personalId, SchemaTable schemaTable)
+        {
+            CallMethod(schemaTable, obj => obj.ReLoad(personalId));
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="personalId"></param>
+        /// <param name="match"></param>
+        /// <param name="hasChanged"></param>
+        public static void Update(string personalId, Predicate<SchemaTable> match, bool hasChanged = false)
+        {
+            personalId = AbstractEntity.EncodeKeyCode(personalId);
+            foreach (var schemaTable in EntitySchemaSet.GetEnumerable())
+            {
+                if (match(schemaTable))
+                {
+                    Update(personalId, schemaTable, hasChanged);
+                }
+            }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="personalId"></param>
+        /// <param name="schemaTable"></param>
+        /// <param name="hasChanged"></param>
+        public static void Update(string personalId, SchemaTable schemaTable, bool hasChanged = false)
+        {
+            CallMethod(schemaTable, obj => obj.Update(hasChanged, personalId));
+        }
+
+        private static void CallMethod(SchemaTable schemaTable, Action<dynamic> func)
         {
             Type cachType = typeof(PersonalCacheStruct<>);
             Type entityType = schemaTable.EntityType;
@@ -97,8 +130,9 @@ namespace ZyGames.Framework.Cache.Generic
             Type type = Type.GetType(typeName, false, true);
             if (type == null) return;
 
-            ((dynamic)type.CreateInstance()).ReLoad(personalId);
+            func((dynamic)type.CreateInstance());
         }
+
 
         /// <summary>
         /// 
