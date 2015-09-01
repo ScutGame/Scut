@@ -25,6 +25,7 @@ using System;
 using System.Reflection;
 using System.Threading;
 using ZyGames.Framework.Common.Log;
+using ZyGames.Framework.Common.Timing;
 using ZyGames.Framework.Script;
 
 namespace ZyGames.Framework.Game.Runtime

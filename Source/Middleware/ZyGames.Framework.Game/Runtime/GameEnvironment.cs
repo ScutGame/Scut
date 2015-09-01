@@ -315,6 +315,7 @@ namespace ZyGames.Framework.Game.Runtime
             {
                 await System.Threading.Tasks.Task.Delay(1000);
             }
+            Console.WriteLine("Waiting exit.");
         }
 
     }

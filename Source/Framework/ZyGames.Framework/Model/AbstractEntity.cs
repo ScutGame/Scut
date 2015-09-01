@@ -225,7 +225,6 @@ namespace ZyGames.Framework.Model
         /// <summary>
         /// 
         /// </summary>
-        [ProtoMember(100021)]
         protected bool _isNew;
         /// <summary>
         /// 
@@ -268,7 +267,6 @@ namespace ZyGames.Framework.Model
         /// 删除实体标记，将从源数据（DB、Redis）中删除
         /// </summary>
         [JsonIgnore]
-        [ProtoMember(100023)]
         public bool IsDelete
         {
             get

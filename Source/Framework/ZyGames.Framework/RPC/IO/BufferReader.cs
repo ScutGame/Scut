@@ -44,28 +44,28 @@ namespace ZyGames.Framework.RPC.IO
         /// <param name="stream"></param>
         public BufferReader(Stream stream)
         {
-            List<byte> data = new List<byte>();
-            int size = 0;
-            var buffer = new byte[1024];
-            using (var reader = new BinaryReader(stream))
+            using (var reader = new MemoryStream())
             {
+                byte[] buffer = new byte[1024];
+                int count;
                 while (true)
                 {
-                    if (reader.PeekChar() > -1)
+                    try
+                    {
+                        count = stream.Read(buffer, 0, buffer.Length);
+                    }
+                    catch (Exception ex)
                     {
                         break;
                     }
-                    size = reader.Read(buffer, 0, buffer.Length);
-                    if (size == 0)
+                    if (count == 0)
                     {
                         break;
                     }
-                    byte[] temp = new byte[size];
-                    Buffer.BlockCopy(buffer, 0, temp, 0, size);
-                    data.AddRange(temp);
+                    reader.Write(buffer, 0, count);
                 }
+                _buffer = reader.ToArray();
             }
-            _buffer = data.ToArray();
             _offset = 0;
             _length = _buffer.Length;
         }

@@ -217,7 +217,7 @@ namespace ZyGames.Framework.Redis
             get { return _setting; }
         }
 
-        
+
 
         /// <summary>
         /// SetNo
@@ -343,7 +343,7 @@ namespace ZyGames.Framework.Redis
         /// <param name="func"></param>
         /// <param name="pipelineAction"></param>
         /// <param name="setting"></param>
-        public static void ProcessPipeline(Action<RedisClient> func, Action<IRedisPipeline> pipelineAction, RedisPoolSetting setting = null)
+        public static long ProcessPipeline(Action<RedisClient> func, Func<IRedisPipeline, long> pipelineAction, RedisPoolSetting setting = null)
         {
             var client = setting == null ? GetClient() : GetOrAddPool(setting);
             try
@@ -354,7 +354,7 @@ namespace ZyGames.Framework.Redis
                 }
                 using (var p = client.CreatePipeline())
                 {
-                    pipelineAction(p);
+                    return pipelineAction(p);
                 }
             }
             finally
@@ -367,9 +367,9 @@ namespace ZyGames.Framework.Redis
         /// 
         /// </summary>
         /// <param name="pipelineActions"></param>
-        public static void ProcessPipeline(params Action<RedisClient>[] pipelineActions)
+        public static IEnumerable<long> ProcessPipeline(params Func<RedisClient, long>[] pipelineActions)
         {
-            ProcessPipeline(null, null, pipelineActions);
+            return ProcessPipeline(null, null, pipelineActions);
         }
 
         /// <summary>
@@ -377,9 +377,9 @@ namespace ZyGames.Framework.Redis
         /// </summary>
         /// <param name="action"></param>
         /// <param name="pipelineActions"></param>
-        public static void ProcessPipeline(Action<RedisClient> action, params Action<RedisClient>[] pipelineActions)
+        public static IEnumerable<long> ProcessPipeline(Action<RedisClient> action, params Func<RedisClient, long>[] pipelineActions)
         {
-            ProcessPipeline(action, null, pipelineActions);
+            return ProcessPipeline(action, null, pipelineActions);
         }
 
         /// <summary>
@@ -388,7 +388,7 @@ namespace ZyGames.Framework.Redis
         /// <param name="action"></param>
         /// <param name="pipelineActions"></param>
         /// <param name="setting"></param>
-        public static void ProcessPipeline(Action<RedisClient> action, RedisPoolSetting setting, params  Action<RedisClient>[] pipelineActions)
+        public static IEnumerable<long> ProcessPipeline(Action<RedisClient> action, RedisPoolSetting setting, params  Func<RedisClient, long>[] pipelineActions)
         {
             var client = setting == null ? GetClient() : GetOrAddPool(setting);
             try
@@ -399,26 +399,29 @@ namespace ZyGames.Framework.Redis
                 }
                 if (pipelineActions.Length > 0)
                 {
-                    ProcessPipeline(client, pipelineActions);
+                    return ProcessPipeline(client, pipelineActions);
                 }
             }
             finally
             {
                 PuttPool(client);
             }
+            return Enumerable.Empty<long>();
         }
 
-        private static void ProcessPipeline(RedisClient client, Action<RedisClient>[] pipelineActions)
+        private static IEnumerable<long> ProcessPipeline(RedisClient client, Func<RedisClient, long>[] pipelineActions)
         {
+            var result = new List<long>();
             using (var pipeline = client.CreatePipeline())
             {
                 foreach (var pipelineFunc in pipelineActions)
                 {
-                    Action<RedisClient> func = pipelineFunc;
-                    pipeline.QueueCommand(c => func((RedisClient)c));
+                    Func<RedisClient, long> func = pipelineFunc;
+                    pipeline.QueueCommand(c => func((RedisClient)c), result.Add);
                 }
                 pipeline.Flush();
             }
+            return result;
         }
 
 
@@ -685,7 +688,7 @@ namespace ZyGames.Framework.Redis
         /// <param name="expireSecond">0 is del</param>
         public static void SetExpire(string[] keys, string[] values, int expireSecond)
         {
-            var funcList = new Action<RedisClient>[keys.Length];
+            var funcList = new Func<RedisClient, long>[keys.Length];
             for (int i = 0; i < keys.Length; i++)
             {
                 string key = keys[i];
@@ -696,7 +699,11 @@ namespace ZyGames.Framework.Redis
                 }
                 else
                 {
-                    funcList[i] = c => c.Set(key, value, expireSecond);
+                    funcList[i] = c =>
+                    {
+                        c.Set(key, value, expireSecond);
+                        return 1;
+                    };
                 }
             }
             ProcessPipeline(funcList);
@@ -1172,16 +1179,20 @@ namespace ZyGames.Framework.Redis
             var setId = string.Format("{0}:{1}", GetRedisEntityKeyName(typeof(T)), key);
             var score1 = t1.Score;
             var score2 = t2.Score;
-            ProcessPipeline(new Action<RedisClient>[]
+            var buffers = new byte[][]
+            {   
+                _serializer.Serialize(t1),
+                 _serializer.Serialize(t2)
+            };
+            return ProcessPipeline(new Func<RedisClient, long>[]
             {
-                c => c.ZAdd(setId, score1, _serializer.Serialize(t2)),
-                c => c.ZAdd(setId, score2, _serializer.Serialize(t1))
-            });
-            return true;
+                c => c.ZAdd(setId, score1,buffers[1]),
+                c => c.ZAdd(setId, score2, buffers[0])
+            }).Any(t => t > -1);
         }
 
         /// <summary>
-        /// 
+        /// Only update score, can't update entity object.
         /// </summary>
         /// <param name="key"></param>
         /// <param name="dataList"></param>
@@ -1191,22 +1202,22 @@ namespace ZyGames.Framework.Redis
             if (dataList.Length == 0) return false;
 
             var setId = string.Format("{0}:{1}", GetRedisEntityKeyName(typeof(T)), key);
-            var pipelineActions = new Action<RedisClient>[dataList.Length];
-            for (int i = 0; i < pipelineActions.Length; i++)
+            var pipelineActions = new List<Func<RedisClient, long>>();
+            foreach (var data in dataList)
             {
-                var entity = dataList[i] as RankEntity;
+                var entity = data as RankEntity;
                 if (entity == null) continue;
+                var buffer = _serializer.Serialize(entity);
                 if (entity.IsDelete)
                 {
-                    pipelineActions[i] = c => c.ZRem(setId, _serializer.Serialize(entity));
+                    pipelineActions.Add(c => c.ZRem(setId, buffer));
                 }
                 else
                 {
-                    pipelineActions[i] = c => c.ZAdd(setId, entity.Score, _serializer.Serialize(entity));
+                    pipelineActions.Add(c => c.ZAdd(setId, entity.Score, buffer));//return 0 when it exit
                 }
             }
-            ProcessPipeline(pipelineActions);
-            return true;
+            return ProcessPipeline(pipelineActions.ToArray()).Any(t => t > -1);
         }
 
         /// <summary>
@@ -1243,8 +1254,7 @@ namespace ZyGames.Framework.Redis
                         values.Add(_serializer.Serialize(entity));
                     }
 
-                    UpdateEntity(typeName, keys.ToArray(), values.ToArray(), removeKeys.ToArray());
-                    return true;
+                    return UpdateEntity(typeName, keys.ToArray(), values.ToArray(), removeKeys.ToArray());
                 }
                 catch (Exception ex)
                 {

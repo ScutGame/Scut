@@ -57,6 +57,8 @@ namespace ZyGames.Framework.Common.Timing
             _timer = new Thread(OnProcess);
             _timer.Name = "#TimeListener";
             _timer.Priority = ThreadPriority.Highest;
+            //set background run, can be exited while main thread exit.
+            _timer.IsBackground = true;
             _timer.Start();
         }
 

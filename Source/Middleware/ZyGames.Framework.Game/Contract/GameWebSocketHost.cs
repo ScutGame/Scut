@@ -337,6 +337,7 @@ namespace ZyGames.Framework.Game.Contract
         /// </summary>
         public override void Stop()
         {
+            base.Stop();
             socketListener.Dispose();
             OnServiceStop();
             try
@@ -344,7 +345,6 @@ namespace ZyGames.Framework.Game.Contract
                 EntitySyncManger.Dispose();
             }
             catch { }
-            base.Stop();
         }
 
         private async System.Threading.Tasks.Task ProcessPackage(RequestPackage package, GameSession session)

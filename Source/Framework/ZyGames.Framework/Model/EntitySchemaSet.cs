@@ -54,7 +54,7 @@ namespace ZyGames.Framework.Model
         private static DictionaryExtend<string, SchemaTable> SchemaSet = new DictionaryExtend<string, SchemaTable>();
         private static ConcurrentQueue<SchemaTable> _dynamicTables = new ConcurrentQueue<SchemaTable>();
         private static CacheListener _tableListener = new CacheListener("__EntitySchemaSet_CheckDynamicTable", 60 * 60, OnCheckDynamicTable);//间隔1小时
-        private static Assembly _entityAssembly;
+        internal static Assembly _entityAssembly;
 
         /// <summary>
         /// 实体的程序集

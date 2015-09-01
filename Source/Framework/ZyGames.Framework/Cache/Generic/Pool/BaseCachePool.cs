@@ -309,7 +309,7 @@ namespace ZyGames.Framework.Cache.Generic.Pool
         /// <param name="redisKey"></param>
         /// <param name="dataList"></param>
         /// <returns></returns>
-        public bool TryLoadHistory<T>(string redisKey, out List<T> dataList)
+        public bool TryLoadHistory<T>(string redisKey, out List<T> dataList) where T : ISqlEntity
         {
             string[] entityAndKeys = (redisKey ?? "").Split('_');
             var entityKey = entityAndKeys.Length > 1 ? entityAndKeys[1] : null;
@@ -366,8 +366,16 @@ namespace ZyGames.Framework.Cache.Generic.Pool
                             valueBytes[i] = entityHistory.Value;
                             dataList.Add((T)_serializer.Deserialize(entityHistory.Value, typeof(T)));
                         }
-                        //从DB备份中恢复到Redis
-                        RedisConnectionPool.Process(client => client.HMSet(entityNameKey, keyBytes, valueBytes));
+                        //从DB备份中恢复到Redis, 多个Key时也要更新
+                        var entitys = dataList.ToArray();
+                        RedisConnectionPool.Process(client =>
+                        {
+                            client.HMSet(entityNameKey, keyBytes, valueBytes);
+                            if (entitySchema.Keys.Length > 1)
+                            {
+                                RedisConnectionPool.UpdateFromMutilKeyMap<T>(client, entityKey, entitys);
+                            }
+                        });
                         result = true;
                     }
                 }

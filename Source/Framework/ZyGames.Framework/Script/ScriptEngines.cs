@@ -30,6 +30,7 @@ using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Web;
+using System.Web.UI.WebControls;
 using Microsoft.Scripting;
 using Microsoft.Scripting.Hosting;
 using ZyGames.Framework.Common;
@@ -157,51 +158,75 @@ namespace ZyGames.Framework.Script
         private static ScriptRuntimeScope InitScriptRuntimeScope()
         {
             //star compile
-            Interlocked.Exchange(ref _isCompiling, 1);
-            try
+            if (Interlocked.Exchange(ref _isCompiling, 1) == 0)
             {
-                string runtimePath = MathUtils.RuntimePath ?? MathUtils.RuntimeBinPath;
-                AppDomain.CurrentDomain.AppendPrivatePath(ScriptCompiler.ScriptPath);
-                bool isFirstRun = _runtimeDomain == null;
-                if (!isFirstRun && _settupInfo.ModelChangedBefore != null)
+                ScriptRuntimeDomain runtimeDomain = null;
+                try
                 {
-                    _settupInfo.ModelChangedBefore(_runtimeDomain.Scope.ModelAssembly);
+                    string runtimePath = MathUtils.RuntimePath ?? MathUtils.RuntimeBinPath;
+                    AppDomain.CurrentDomain.AppendPrivatePath(ScriptCompiler.ScriptPath);
+                    runtimeDomain = new ScriptRuntimeDomain(typeof(ScriptRuntimeDomain).Name, new[] { _settupInfo.RuntimePrivateBinPath, ScriptCompiler.ScriptPath });
+                    foreach (var assemblyName in _settupInfo.ReferencedAssemblyNames)
+                    {
+                        //排除System的dll
+                        if (string.IsNullOrEmpty(assemblyName) ||
+                            !Path.IsPathRooted(assemblyName)) continue;
+                        string key = Path.GetFileNameWithoutExtension(assemblyName);
+                        runtimeDomain.LoadAssembly(key, assemblyName);
+                    }
+                    var scope = runtimeDomain.CreateScope(_settupInfo);
+                    //ignore error
+                    if (scope == null || scope.ModelAssembly == null) return scope;
+                    
+                    //update befor
+                    bool isFirstRun = _runtimeDomain == null;
+                    if (!isFirstRun && _settupInfo.ModelChangedBefore != null)
+                    {
+                        _settupInfo.ModelChangedBefore(_runtimeDomain.Scope.ModelAssembly);
+                    }
+                    runtimeDomain.MainInstance = runtimeDomain.Scope.Execute(_settupInfo.ScriptMainProgram, _settupInfo.ScriptMainTypeName) as IMainScript;
+                    _runtimeDomain = runtimeDomain;
+                    EntitySchemaSet._entityAssembly = scope.ModelAssembly;
+                    //update after
+                    if (!isFirstRun && _settupInfo.ModelChangedAfter != null)
+                    {
+                        _settupInfo.ModelChangedAfter(scope.ModelAssembly);
+                    }
+                    else if (scope.ModelAssembly != null)
+                    {
+                        ProtoBufUtils.LoadProtobufType(scope.ModelAssembly);
+                        EntitySchemaSet.LoadAssembly(scope.ModelAssembly);
+                    }
+                    PrintCompiledMessage();
+                    //replace runtime 
+                    if (!isFirstRun && runtimeDomain.MainInstance != null)
+                    {
+                        runtimeDomain.MainInstance.ReStart();
+                    }
+                    return scope;
                 }
-
-                _runtimeDomain = new ScriptRuntimeDomain(typeof(ScriptRuntimeDomain).Name, new[] { _settupInfo.RuntimePrivateBinPath, ScriptCompiler.ScriptPath });
-
-                foreach (var assemblyName in _settupInfo.ReferencedAssemblyNames)
+                finally
                 {
-                    //排除System的dll
-                    if (string.IsNullOrEmpty(assemblyName) ||
-                       !Path.IsPathRooted(assemblyName)) continue;
-                    string key = Path.GetFileNameWithoutExtension(assemblyName);
-                    _runtimeDomain.LoadAssembly(key, assemblyName);
+                    Interlocked.Exchange(ref _isCompiling, 0);
                 }
-
-                var scope = _runtimeDomain.CreateScope(_settupInfo);
-                if (scope == null) return scope;
-                PrintCompiledMessage();
-                if (!isFirstRun && _settupInfo.ModelChangedAfter != null)
-                {
-                    _settupInfo.ModelChangedAfter(scope.ModelAssembly);
-                }
-                else if (scope.ModelAssembly != null)
-                {
-                    ProtoBufUtils.LoadProtobufType(scope.ModelAssembly);
-                    EntitySchemaSet.LoadAssembly(scope.ModelAssembly);
-                }
-                return scope;
             }
-            finally
+            else
             {
-                Interlocked.Exchange(ref _isCompiling, 0);
+                TraceLog.WriteLine("{1} {0} has not compiled in other thread.", "model", DateTime.Now.ToString("HH:mm:ss"));
             }
+            return null;
         }
 
-        private static void PrintCompiledMessage(string message = "script")
+        private static void PrintCompiledMessage(string message = "script", string assemblyName = "")
         {
-            TraceLog.WriteLine("{1} {0} compiled successfully.", message, DateTime.Now.ToString("HH:mm:ss"));
+            if (!string.IsNullOrEmpty(assemblyName))
+            {
+                TraceLog.WriteLine("{1} {0} compiled successfully, the assemblyName:{2}.", message, DateTime.Now.ToString("HH:mm:ss"), assemblyName);
+            }
+            else
+            {
+                TraceLog.WriteLine("{1} {0} compiled successfully.", message, DateTime.Now.ToString("HH:mm:ss"));
+            }
         }
 
         private static void DoWatcherChanged(object state)
@@ -258,34 +283,34 @@ namespace ZyGames.Framework.Script
                     {
                         case ".cs":
                             //star compile
-                            try
+                            if (hasModelFile)
                             {
-                                Interlocked.Exchange(ref _isCompiling, 1);
-                                if (hasModelFile)
+                                TraceLog.WriteLine("{1} {0} compile start...", "model script", DateTime.Now.ToString("HH:mm:ss"));
+                                var scope = InitScriptRuntimeScope();
+                                PrintCompiledMessage("model script", scope != null && scope.ModelAssembly != null ? scope.ModelAssembly.FullName : "null");
+                                isLoop = false;
+                            }
+                            else
+                            {
+                                if (Interlocked.Exchange(ref _isCompiling, 1) == 0)
                                 {
-                                    TraceLog.WriteLine("{1} {0} compile start...", "model script", DateTime.Now.ToString("HH:mm:ss"));
-                                    InitScriptRuntimeScope();
-                                    PrintCompiledMessage("model script");
-                                    //init script main
-                                    _runtimeDomain.MainInstance = Execute(_settupInfo.ScriptMainProgram, _settupInfo.ScriptMainTypeName);
-                                    if (_runtimeDomain.MainInstance != null)
+                                    try
                                     {
-                                        _runtimeDomain.MainInstance.ReStart();
+                                        TraceLog.WriteLine("{1} {0} compile start...", "csharp script", DateTime.Now.ToString("HH:mm:ss"));
+                                        _runtimeDomain.Scope.InitCsharp();
+                                        PrintCompiledMessage("csharp script");
                                     }
-                                    isLoop = false;
+                                    finally
+                                    {
+                                        Interlocked.Exchange(ref _isCompiling, 0);
+                                    }
                                 }
                                 else
                                 {
-                                    TraceLog.WriteLine("{1} {0} compile start...", "csharp script", DateTime.Now.ToString("HH:mm:ss"));
-                                    _runtimeDomain.Scope.InitCsharp();
-
-                                    PrintCompiledMessage("csharp script");
+                                    TraceLog.WriteLine("{1} {0} has not compiled in other thread.", "csharp script", DateTime.Now.ToString("HH:mm:ss"));
                                 }
                             }
-                            finally
-                            {
-                                Interlocked.Exchange(ref _isCompiling, 0);
-                            }
+
                             break;
                         case ".py":
                             _runtimeDomain.Scope.InitPython(group.ToArray());
@@ -448,11 +473,11 @@ namespace ZyGames.Framework.Script
         /// <returns></returns>
         public static IMainScript GetCurrentMainScript()
         {
-            if (_runtimeDomain != null)
+            if (_runtimeDomain == null || _runtimeDomain.MainInstance == null)
             {
-                return _runtimeDomain.MainInstance;
+                throw new Exception("Not found main script instance, becouse of script has be compiled fail.");
             }
-            return null;
+            return _runtimeDomain.MainInstance;
         }
 
         /// <summary>

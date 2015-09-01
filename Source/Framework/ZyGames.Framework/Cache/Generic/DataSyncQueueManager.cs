@@ -945,16 +945,21 @@ namespace ZyGames.Framework.Cache.Generic
                     sqlList = GenerateSqlFrom(sqlSender, client, keys, values);
                 }, p =>
                 {
-                    if (sqlList == null) return;
+                    if (sqlList == null) return 0;
                     var groupSqlList = sqlList.GroupBy(t => t.Key);
                     bool hasPost = false;
+                    long result = 0;
                     foreach (var g in groupSqlList)
                     {
                         var pairs = g.Select(t => t.Value).ToList();
-                        p.QueueCommand(c => ((RedisClient)c).ZAdd(g.Key, pairs));
+                        p.QueueCommand(c => ((RedisClient)c).ZAdd(g.Key, pairs), r => result += r);
                         hasPost = true;
                     }
-                    if (hasPost) p.Flush();
+                    if (hasPost)
+                    {
+                        p.Flush();
+                    }
+                    return result;
                 });
             }
             catch (Exception ex)

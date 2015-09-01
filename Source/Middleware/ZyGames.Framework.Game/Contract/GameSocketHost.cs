@@ -508,14 +508,15 @@ namespace ZyGames.Framework.Game.Contract
         /// </summary>
         public override void Stop()
         {
+            base.Stop();
             if (EnableHttp)
             {
                 httpListener.Stop();
             }
             socketListener.Dispose();
-            OnServiceStop();
             try
             {
+                OnServiceStop();
                 //threadPool.Dispose();
                 EntitySyncManger.Dispose();
                 //threadPool = null;
@@ -523,7 +524,6 @@ namespace ZyGames.Framework.Game.Contract
             catch
             {
             }
-            base.Stop();
         }
 
 
