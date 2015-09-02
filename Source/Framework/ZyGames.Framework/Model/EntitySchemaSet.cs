@@ -834,8 +834,10 @@ namespace ZyGames.Framework.Model
                     if (
                         //对象序列化类型
                         (field.IsSerialized &&
-                           (field.DbType == ColumnDbType.Varchar && (dbColumn.Type != typeof(string) || (field.ColumnLength > 0 && dbColumn.Length != field.ColumnLength))) ||
-                           (field.DbType != ColumnDbType.Varchar && (dbColumn.Type != typeof(string) || dbColumn.DbType.StartsWith("varchar", true)))
+                           (
+                           (field.DbType == ColumnDbType.Varchar && (dbColumn.Type != typeof(string) || (field.ColumnLength > 0 && dbColumn.Length != field.ColumnLength)) ) ||
+                           (field.DbType != ColumnDbType.Varchar && (dbColumn.Type != typeof(string) || dbColumn.DbType.StartsWith("varchar", true)) )
+                           )
                         ) ||
                         //特殊值类型
                         (dbColumn.Type == typeof(decimal) && field.ColumnScale > 0 && dbColumn.Scale != field.ColumnScale) ||
