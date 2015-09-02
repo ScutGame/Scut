@@ -25,6 +25,7 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
+using System.Linq;
 using System.Text;
 using ZyGames.Framework.Common;
 using ZyGames.Framework.Common.Log;
@@ -165,7 +166,20 @@ namespace ZyGames.Framework.Data.Sql
             if (SqlHelper.ExecuteScalar(ConnectionString, CommandType.Text, commandText).ToInt() > 0)
             {
                 var list = new List<DbColumn>();
-                commandText = string.Format("select c.name as ColumnName, t.name as ColumnType, c.scale, c.length,c.isnullable from syscolumns c join systypes t on c.xtype=t.xtype where t.name <> 'sysname' and c.id=object_id('{0}') order by colorder ASC", tableName);
+                commandText = string.Format(@"
+select 
+  c.name as ColumnName, 
+  (select top 1 name from systypes where xtype=c.xtype) as ColumnType, 
+  isnull(c.scale,0) as scale, 
+  c.length,
+  c.isnullable,
+  isnull((select top 1 k.keyno from sysobjects o, sysindexkeys k, sysindexes i
+    where o.xtype='PK' and o.parent_obj=c.id and k.id=c.id and k.colid=c.colid and i.id=c.id and o.name=i.name and k.indid=i.indid),0) as keyno,
+  isnull((select top 1 1 from sysobjects where xtype = 'U' and columnproperty(c.id, c.name, 'IsIdentity') = 1 and id=c.id),0) as auto_increment
+from syscolumns c 
+where c.id=object_id('{0}')
+order by colorder ASC
+", tableName);
 
                 using (var dataReader = SqlHelper.ExecuteReader(ConnectionString, CommandType.Text, commandText))
                 {
@@ -176,6 +190,9 @@ namespace ZyGames.Framework.Data.Sql
                         column.DbType = dataReader[1].ToNotNullString();
                         column.Scale = dataReader[2].ToInt();
                         column.Length = dataReader[3].ToLong();
+                        column.Isnullable = dataReader[4].ToBool();
+                        column.KeyNo = dataReader[5].ToInt();
+                        column.HaveIncrement = dataReader["auto_increment"].ToBool();
                         column.Type = ConvertToObjectType(ConvertToDbType(column.DbType));
                         list.Add(column);
                     }
@@ -569,8 +586,12 @@ namespace ZyGames.Framework.Data.Sql
                 if (keyColumns.Count > 0)
                 {
                     string[] keyArray = new string[keyColumns.Count];
-                    command.AppendFormat("ALTER TABLE {0} DROP CONSTRAINT PK_{1};", dbTableName, tableName);
-                    command.AppendLine();
+                    if (keyColumns.Any(t => t.KeyNo > 0))
+                    {
+                        //check haved key in db table
+                        command.AppendFormat("ALTER TABLE {0} DROP CONSTRAINT PK_{1};", dbTableName, tableName);
+                        command.AppendLine();
+                    }
                     int i = 0;
                     foreach (var keyColumn in keyColumns)
                     {

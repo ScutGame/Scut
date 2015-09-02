@@ -24,6 +24,7 @@ THE SOFTWARE.
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Linq;
 using System.Text;
 using ZyGames.Framework.Common;
 using MySql.Data.MySqlClient;
@@ -157,7 +158,7 @@ namespace ZyGames.Framework.Data.MySql
             if (dr != null && !dr[0].Equals(DBNull.Value))
             {
                 var list = new List<DbColumn>();
-                commandText = string.Format("SELECT Column_Name AS ColumnName,Data_Type AS ColumnType, NUMERIC_SCALE AS scale, CHARACTER_MAXIMUM_LENGTH AS Length FROM information_schema.`columns` WHERE `TABLE_SCHEMA`='{0}' AND `TABLE_NAME`='{1}'", ConnectionSetting.DatabaseName, tableName);
+                commandText = string.Format("SELECT Column_Name AS ColumnName,Data_Type AS ColumnType, NUMERIC_SCALE AS scale, CHARACTER_MAXIMUM_LENGTH AS Length, IS_NULLABLE, COLUMN_KEY, COLUMN_DEFAULT, EXTRA FROM information_schema.`columns` WHERE `TABLE_SCHEMA`='{0}' AND `TABLE_NAME`='{1}'", ConnectionSetting.DatabaseName, tableName);
 
                 using (var dataReader = MySqlHelper.ExecuteReader(ConnectionString, commandText))
                 {
@@ -168,8 +169,10 @@ namespace ZyGames.Framework.Data.MySql
                         column.DbType = dataReader[1].ToNotNullString();
                         column.Scale = dataReader[2].ToInt();
                         column.Length = dataReader[3].ToLong();
+                        column.Isnullable = dataReader[4].ToNotNullString().ToUpper() == "YES";
+                        column.KeyNo = dataReader[5].ToNotNullString().ToUpper() == "PRI" ? 1 : 0;
+                        column.HaveIncrement = dataReader["EXTRA"].ToNotNullString().ToLower().Contains("auto_increment");
                         column.Type = ConvertToObjectType(ConvertToDbType(column.DbType));
-
                         list.Add(column);
                     }
                 }
@@ -553,8 +556,12 @@ namespace ZyGames.Framework.Data.MySql
                 if (keyColumns.Count > 0)
                 {
                     string[] keyArray = new string[keyColumns.Count];
-                    command.AppendFormat("ALTER TABLE {0} DROP PRIMARY KEY;", dbTableName);
-                    command.AppendLine();
+                    if (keyColumns.Any(t => t.KeyNo > 0))
+                    {
+                        //check haved key in db table
+                        command.AppendFormat("ALTER TABLE {0} DROP PRIMARY KEY;", dbTableName);
+                        command.AppendLine();
+                    }
                     int i = 0;
                     foreach (var keyColumn in keyColumns)
                     {

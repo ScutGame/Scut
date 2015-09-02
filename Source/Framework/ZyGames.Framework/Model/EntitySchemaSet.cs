@@ -835,8 +835,8 @@ namespace ZyGames.Framework.Model
                         //对象序列化类型
                         (field.IsSerialized &&
                            (
-                           (field.DbType == ColumnDbType.Varchar && (dbColumn.Type != typeof(string) || (field.ColumnLength > 0 && dbColumn.Length != field.ColumnLength)) ) ||
-                           (field.DbType != ColumnDbType.Varchar && (dbColumn.Type != typeof(string) || dbColumn.DbType.StartsWith("varchar", true)) )
+                           (field.DbType == ColumnDbType.Varchar && (dbColumn.Type != typeof(string) || (field.ColumnLength > 0 && dbColumn.Length != field.ColumnLength))) ||
+                           (field.DbType != ColumnDbType.Varchar && (dbColumn.Type != typeof(string) || dbColumn.DbType.StartsWith("varchar", true)))
                            )
                         ) ||
                         //特殊值类型
@@ -845,6 +845,7 @@ namespace ZyGames.Framework.Model
                         (fieldType == typeof(ushort) && dbColumn.Type != typeof(short)) ||
                         (fieldType == typeof(uint) && dbColumn.Type != typeof(int)) ||
                         (fieldType == typeof(ulong) && dbColumn.Type != typeof(long)) ||
+                        (fieldType == typeof(string) && field.ColumnLength > 0 && dbColumn.Length != field.ColumnLength) ||
                         //非对象类型
                         (!field.IsSerialized &&
                             !fieldType.IsEnum &&
@@ -855,7 +856,9 @@ namespace ZyGames.Framework.Model
                             fieldType != typeof(uint) &&
                             fieldType != typeof(ulong) &&
                             dbColumn.Type != fieldType
-                            )
+                            ) ||
+                        //check key
+                        ((field.IsKey && dbColumn.KeyNo == 0) || (!field.IsKey && dbColumn.KeyNo > 0))
                         )
                     {
                         dbColumn.Type = fieldType;
