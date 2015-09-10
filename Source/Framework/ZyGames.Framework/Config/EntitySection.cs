@@ -40,7 +40,7 @@ namespace ZyGames.Framework.Config
         public EntitySection()
         {
             LogTableNameFormat = ConfigUtils.GetSetting("Log.TableName.Format", "log_$date{0}");
-            LogPriorBuildMonth = ConfigUtils.GetSetting("Log.PriorBuild.Month", 3);
+            LogPriorBuildMonth = ConfigUtils.GetSetting("Log.PriorBuild.Month", 2);
             EnableModifyTimeField = ConfigUtils.GetSetting("Schema.EnableModifyTimeField", false);
         }
 

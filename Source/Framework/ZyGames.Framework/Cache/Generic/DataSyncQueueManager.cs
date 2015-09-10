@@ -978,12 +978,14 @@ namespace ZyGames.Framework.Cache.Generic
         /// <returns></returns>
         private static IEnumerable<KeyValuePair<string, KeyValuePair<byte[], long>>> GenerateSqlFrom(SqlDataSender sender, RedisClient client, byte[][] keys, byte[][] values)
         {
+            var entityKeyList = new List<string>();
             var typeKeyValuePairs = new List<KeyValuePair<string, byte[][]>>();
             for (int i = 0; i < keys.Length; i++)
             {
                 byte[] keyBytes = keys[i];
                 byte[] headBytes = values[i];
                 string entityTypeKey = RedisConnectionPool.ToStringKey(keyBytes);
+                entityKeyList.Add(entityTypeKey);
                 string[] entityKeys = entityTypeKey.Split(',')[0].Split('_');
                 string typeName = entityKeys[0];
                 byte[] entityKeyBytes = RedisConnectionPool.ToByteKey(entityKeys[1]);
@@ -1066,7 +1068,7 @@ namespace ZyGames.Framework.Cache.Generic
                 }
                 catch (Exception er)
                 {
-                    TraceLog.WriteError("FindEntityFromRedis {0} error:{1}", typeName, er);
+                    TraceLog.WriteError("FindEntityFromRedis {0} keys:{1}\r\nerror:{1}", typeName, string.Join(",", entityKeyList), er);
                     var errorKeys = g.Select(p => p.Value[1]).ToArray();
                     var errorValues = g.Select(p => p.Value[2]).ToArray();
                     client.HMSet(SqlSyncWaitErrirQueueKey, errorKeys, errorValues);
