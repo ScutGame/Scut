@@ -14,6 +14,23 @@ also provide ScutSDK(eg. for Cocos2d-x) which make communications between
 server and client very easy.
 
 
+## Documentations
+
+* Wiki: [https://github.com/ScutGame/Scut/wiki](https://github.com/ScutGame/Scut/wiki)
+* Online API: [http://scutgame.com/doc/](http://scutgame.com/doc/)
+
+
+## Resource
+
+* HomePage: http://www.scutgame.com
+
+* Github: https://github.com/scutgame/Scut.git
+
+* Oschina: https://git.oschina.net/scutgame/Scut.git
+
+* QQ Group: 138266675
+
+
 ## Git for developers
 
     $ git clone git://github.com/ScutGame/Scut.git
@@ -105,22 +122,6 @@ Language:
 
 
 old version [more](http://scutgame.com/log).
-
-## Documentations
-
-* Wiki: [https://github.com/ScutGame/Scut/wiki](https://github.com/ScutGame/Scut/wiki)
-* Online API: [http://scutgame.com/doc/](http://scutgame.com/doc/)
-
-
-## Resource
-
-HomePage: http://www.scutgame.com
-
-Github: https://github.com/scutgame/Scut.git
-
-Oschina: https://git.oschina.net/scutgame/Scut.git
-
-QQ Group: 138266675
 
 
 ## License
