@@ -31,7 +31,8 @@ namespace GameServer
     {
         static void Main(string[] args)
         {
-           new ConsoleRuntimeHost().Start();
+            new ConsoleRuntimeHost().Start();
+            Console.WriteLine("exited.");
         }
     }
 }
