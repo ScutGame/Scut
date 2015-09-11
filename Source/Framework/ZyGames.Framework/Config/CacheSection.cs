@@ -73,7 +73,7 @@ namespace ZyGames.Framework.Config
         /// </summary>
         public int PersonalExpirePeriod { get; set; }
         /// <summary>
-        /// Personal cache expire period
+        /// cache expire period
         /// </summary>
         public int ShareExpirePeriod { get; set; }
 

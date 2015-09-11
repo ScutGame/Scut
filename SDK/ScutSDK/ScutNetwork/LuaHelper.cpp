@@ -29,7 +29,7 @@ using namespace ScutNetwork;
 using namespace cocos2d;
 LuaHelper::LuaHelper(void)
 {
-	m_pLuaState = CCLuaEngine::defaultEngine()->getLuaStack()->getLuaState();
+	m_pLuaState = LuaEngine::getInstance()->getLuaStack()->getLuaState();
 }
 
 LuaHelper::~LuaHelper(void)
@@ -170,7 +170,7 @@ bool ScutNetwork::LuaHelper::execFunc(const std::string & strFunc, AsyncInfo* pA
 {
 	if (m_pLuaState == NULL)
 	{
-		m_pLuaState = CCLuaEngine::defaultEngine()->getLuaStack()->getLuaState();
+		m_pLuaState = LuaEngine::getInstance()->getLuaStack()->getLuaState();
 	}
 	if (m_pLuaState == NULL)
 	{

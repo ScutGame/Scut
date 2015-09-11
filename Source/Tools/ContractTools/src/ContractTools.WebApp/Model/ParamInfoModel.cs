@@ -52,7 +52,7 @@ namespace ContractTools.WebApp.Model
             set;
         }
         /// <summary>
-        /// 
+        /// 1:Request; 2:Response
         /// </summary>
         public int ParamType
         {

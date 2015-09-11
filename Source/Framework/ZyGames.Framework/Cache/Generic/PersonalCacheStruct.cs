@@ -23,11 +23,13 @@ THE SOFTWARE.
 ****************************************************************************/
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using ZyGames.Framework.Common;
 using ZyGames.Framework.Common.Log;
 using ZyGames.Framework.Data;
 using ZyGames.Framework.Model;
 using ZyGames.Framework.Net;
+using ZyGames.Framework.Redis;
 
 namespace ZyGames.Framework.Cache.Generic
 {
@@ -36,6 +38,171 @@ namespace ZyGames.Framework.Cache.Generic
     /// </summary>
     public static class PersonalCacheStruct
     {
+        /// <summary>
+        /// Get entity from redis, but not surported mutil key of entity.
+        /// </summary>
+        /// <param name="personalId"></param>
+        /// <param name="types"></param>
+        /// <returns></returns>
+        public static object[] Load(string personalId, params Type[] types)
+        {
+            personalId = AbstractEntity.EncodeKeyCode(personalId);
+            var param = types.Where(t => !CacheFactory.ContainEntityKey(t, personalId)).ToArray();
+            if (param.Length == 0) return null;
+
+            var result = RedisConnectionPool.GetAllEntity(personalId, param);
+            foreach (var t in result)
+            {
+                var entity = t as AbstractEntity;
+                if (entity == null) continue;
+                CacheItemSet itemSet;
+                if (CacheFactory.AddOrUpdateEntity(entity, out itemSet))
+                {
+                    itemSet.OnLoadSuccess();
+                }
+            }
+            return result;
+        }
+
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public static void ReLoad(string personalId, Predicate<SchemaTable> match)
+        {
+            personalId = AbstractEntity.EncodeKeyCode(personalId);
+            foreach (var schemaTable in EntitySchemaSet.GetEnumerable())
+            {
+                if (match(schemaTable))
+                {
+                    ReLoad(personalId, schemaTable);
+                }
+            }
+        }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="personalId"></param>
+        /// <param name="schemaTable"></param>
+        public static void ReLoad(string personalId, SchemaTable schemaTable)
+        {
+            CallMethod(schemaTable, obj => obj.ReLoad(personalId));
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="personalId"></param>
+        /// <param name="match"></param>
+        /// <param name="hasChanged"></param>
+        public static void Update(string personalId, Predicate<SchemaTable> match, bool hasChanged = false)
+        {
+            personalId = AbstractEntity.EncodeKeyCode(personalId);
+            foreach (var schemaTable in EntitySchemaSet.GetEnumerable())
+            {
+                if (match(schemaTable))
+                {
+                    Update(personalId, schemaTable, hasChanged);
+                }
+            }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="personalId"></param>
+        /// <param name="schemaTable"></param>
+        /// <param name="hasChanged"></param>
+        public static void Update(string personalId, SchemaTable schemaTable, bool hasChanged = false)
+        {
+            CallMethod(schemaTable, obj => obj.Update(hasChanged, personalId));
+        }
+
+        private static void CallMethod(SchemaTable schemaTable, Action<dynamic> func)
+        {
+            Type cachType = typeof(PersonalCacheStruct<>);
+            Type entityType = schemaTable.EntityType;
+            string typeName = string.Format("{0}[[{1}, {2}]], {3}",
+                cachType.FullName,
+                entityType.FullName,
+                entityType.Assembly.FullName,
+                cachType.Assembly.FullName);
+            Type type = Type.GetType(typeName, false, true);
+            if (type == null) return;
+
+            func((dynamic)type.CreateInstance());
+        }
+
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="personalId"></param>
+        /// <param name="isAutoLoad"></param>
+        /// <returns></returns>
+        public static IEnumerable<T> TakeOrLoad<T>(string personalId, bool isAutoLoad = true) where T : BaseEntity, new()
+        {
+            return new PersonalCacheStruct<T>().TakeOrLoad(personalId, isAutoLoad);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="personalList"></param>
+        /// <param name="isAutoLoad"></param>
+        /// <returns></returns>
+        public static IEnumerable<T> TakeOrLoad<T>(IEnumerable<string> personalList, bool isAutoLoad = true) where T : BaseEntity, new()
+        {
+            return new PersonalCacheStruct<T>().TakeOrLoad(personalList, isAutoLoad);
+        }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <returns></returns>
+        public static IEnumerable<T> Take<T>() where T : BaseEntity, new()
+        {
+            return new PersonalCacheStruct<T>().Take();
+        }
+
+        /// <summary>
+        /// Take entity by keys from cache
+        /// </summary>
+        /// <param name="keys"></param>
+        /// <returns></returns>
+        public static T Take<T>(params object[] keys) where T : BaseEntity, new()
+        {
+            return new PersonalCacheStruct<T>().Take(keys);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="entityName"></param>
+        /// <returns></returns>
+        public static object GetCache(string entityName)
+        {
+            SchemaTable schema;
+            if (EntitySchemaSet.TryGet(entityName, out schema))
+            {
+                Type cachType = typeof(PersonalCacheStruct<>);
+                Type entityType = schema.EntityType;
+                string typeName = string.Format("{0}[[{1}, {2}]], {3}",
+                    cachType.FullName,
+                    entityType.FullName,
+                    entityType.Assembly.FullName,
+                    cachType.Assembly.FullName);
+                Type type = Type.GetType(typeName, false, true);
+                if (type != null)
+                {
+                    return type.CreateInstance();
+                }
+            }
+            return null;
+        }
+
         /// <summary>
         /// 
         /// </summary>
@@ -49,9 +216,10 @@ namespace ZyGames.Framework.Cache.Generic
         {
             var cache = new PersonalCacheStruct<T>();
             T result;
-            if (cache.TryFindKey(personalId, out result, keys) != LoadingStatus.Success)
+            LoadingStatus status;
+            if ((status = cache.TryFindKey(personalId, out result, keys)) != LoadingStatus.Success)
             {
-                throw new Exception(string.Format("Entity {0} load  personalId:{1} error", typeof(T).Name, personalId));
+                throw new Exception(string.Format("Entity {0} load  personalId:{1} error:{2}", typeof(T).Name, personalId, status));
             }
             if (result == default(T))
             {
@@ -59,6 +227,41 @@ namespace ZyGames.Framework.Cache.Generic
                 cache.Add(result);
             }
             return result;
+        }
+
+        public static bool AddRange(params BaseEntity[] enumerable)
+        {
+            return AddRange(true, enumerable);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="checkMutilKey">The entity need to reload when it has be mutil key</param>
+        /// <param name="enumerable"></param>
+        public static bool AddRange(bool checkMutilKey, params BaseEntity[] enumerable)
+        {
+            if (DataSyncQueueManager.SendSync(enumerable))
+            {
+                foreach (var t in enumerable)
+                {
+                    var schema = t.GetSchema();
+                    CacheItemSet itemSet;
+                    if (CacheFactory.AddOrUpdateEntity(t, out itemSet))
+                    {
+                        if (checkMutilKey && schema.Keys.Length > 1 && !itemSet.HasLoadSuccess)
+                        {
+                            ReLoad(t.PersonalId, schema);
+                        }
+                        else
+                        {
+                            itemSet.OnLoadSuccess();
+                        }
+                    }
+                }
+                return true;
+            }
+            return false;
         }
 
         /// <summary>
@@ -75,9 +278,10 @@ namespace ZyGames.Framework.Cache.Generic
         {
             var cache = new PersonalCacheStruct<T>();
             T result;
-            if (cache.TryFindKey(personalId, out result, keys) != LoadingStatus.Success)
+            LoadingStatus status;
+            if ((status = cache.TryFindKey(personalId, out result, keys)) != LoadingStatus.Success)
             {
-                throw new Exception(string.Format("Entity {0} load  personalId:{1} error", typeof(T).Name, personalId));
+                throw new Exception(string.Format("Entity {0} load  personalId:{1} error:{2}", typeof(T).Name, personalId, status));
             }
             if (!allowNull && result == null)
             {
@@ -86,7 +290,6 @@ namespace ZyGames.Framework.Cache.Generic
             return result;
         }
         #region Get
-
         /// <summary>
         /// 
         /// </summary>
@@ -196,7 +399,8 @@ namespace ZyGames.Framework.Cache.Generic
         /// <param name="t5"></param>
         /// <param name="t6"></param>
         /// <param name="allowNull"></param>
-        public static void Get<T1, T2, T3, T4, T5, T6>(string personalId, out T1 t1, out T2 t2, out T3 t3, out T4 t4, out T5 t5, out T6 t6, bool allowNull = false)
+        public static void Get<T1, T2, T3, T4, T5, T6>(string personalId, out T1 t1, out T2 t2, out T3 t3, out T4 t4,
+            out T5 t5, out T6 t6, bool allowNull = false)
             where T1 : BaseEntity, new()
             where T2 : BaseEntity, new()
             where T3 : BaseEntity, new()
@@ -211,6 +415,7 @@ namespace ZyGames.Framework.Cache.Generic
             t5 = Get<T5>(personalId, allowNull);
             t6 = Get<T6>(personalId, allowNull);
         }
+
         #endregion
     }
 
@@ -233,8 +438,21 @@ namespace ZyGames.Framework.Cache.Generic
         /// <returns></returns>
         public bool HasChange(string personalId)
         {
+            personalId = AbstractEntity.EncodeKeyCode(personalId);
             return HasChangeCache(personalId);
         }
+
+        /// <summary>
+        /// Contain key of memory.
+        /// </summary>
+        /// <param name="personalId"></param>
+        /// <returns></returns>
+        public bool ContainKey(string personalId)
+        {
+            personalId = AbstractEntity.EncodeKeyCode(personalId);
+            return ContainGroupKey(personalId);
+        }
+
 
         /// <summary>
         /// 是否存在数据
@@ -259,9 +477,10 @@ namespace ZyGames.Framework.Cache.Generic
             LoadingStatus loadStatus;
             BaseCollection collection;
             data = default(T);
+            personalId = AbstractEntity.EncodeKeyCode(personalId);
             if (TryGetGroup(personalId, out collection, out loadStatus))
             {
-                string key = AbstractEntity.CreateKeyCode(keys);
+                string key = keys.Length > 0 ? AbstractEntity.CreateKeyCode(keys) : personalId;
                 if (!collection.TryGetValue(key, out data))
                 {
                     //修正旧版本无personalId参数调用
@@ -289,17 +508,47 @@ namespace ZyGames.Framework.Cache.Generic
         }
 
         /// <summary>
-        /// 取子类的Key,不需要personalId,不加载数据
+        /// Take entity from cache
+        /// </summary>
+        /// <returns></returns>
+        public IEnumerable<T> Take()
+        {
+            return DataContainer.ToGroupEnumerable();
+        }
+
+        /// <summary>
+        /// Take entity by keys from cache
         /// </summary>
         /// <param name="keys"></param>
         /// <returns></returns>
-        public T TakeSubKey(params object[] keys)
+        public T Take(params object[] keys)
         {
             string key = AbstractEntity.CreateKeyCode(keys);
             return DataContainer.TakeEntityFromKey(key);
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="personalId"></param>
+        /// <param name="isAutoLoad"></param>
+        /// <returns></returns>
+        public IEnumerable<T> TakeOrLoad(string personalId, bool isAutoLoad = true)
+        {
+            personalId = AbstractEntity.EncodeKeyCode(personalId);
+            return DataContainer.TakeOrLoadGroup(personalId, isAutoLoad);
+        }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="personalList"></param>
+        /// <param name="isAutoLoad"></param>
+        /// <returns></returns>
+        public IEnumerable<T> TakeOrLoad(IEnumerable<string> personalList, bool isAutoLoad = true)
+        {
+            return DataContainer.TakeOrLoadGroup(personalList.Select(AbstractEntity.EncodeKeyCode), isAutoLoad);
+        }
         /// <summary>
         /// 
         /// </summary>
@@ -325,6 +574,7 @@ namespace ZyGames.Framework.Cache.Generic
             LoadingStatus loadStatus;
             T t = default(T);
             BaseCollection collection;
+            personalId = AbstractEntity.EncodeKeyCode(personalId);
             if (TryGetGroup(personalId, out collection, out loadStatus))
             {
                 collection.Foreach<T>((key, value) =>
@@ -390,6 +640,7 @@ namespace ZyGames.Framework.Cache.Generic
             LoadingStatus loadStatus;
             List<T> tempList = new List<T>();
             BaseCollection collection;
+            personalId = AbstractEntity.EncodeKeyCode(personalId);
             if (TryGetGroup(personalId, out collection, out loadStatus))
             {
                 collection.Foreach<T>((key, value) =>
@@ -456,6 +707,7 @@ namespace ZyGames.Framework.Cache.Generic
         {
             LoadingStatus loadStatus;
             BaseCollection collection;
+            personalId = AbstractEntity.EncodeKeyCode(personalId);
             if (TryGetGroup(personalId, out collection, out loadStatus))
             {
                 return collection;
@@ -470,9 +722,10 @@ namespace ZyGames.Framework.Cache.Generic
         /// <returns></returns>
         public bool AutoLoad(string personalId)
         {
+            personalId = AbstractEntity.EncodeKeyCode(personalId);
             if (!IsExistData(personalId))
             {
-                return TryLoadItem(personalId);
+                return TryLoadItem(personalId, false);
             }
             return true;
         }
@@ -481,7 +734,8 @@ namespace ZyGames.Framework.Cache.Generic
         /// 从Redis加载所有缓存
         /// </summary>
         /// <param name="match"></param>
-        public void LoadFrom(Predicate<T> match)
+        /// <param name="isReplace"></param>
+        public void LoadFrom(Predicate<T> match, bool isReplace = false)
         {
             string redisKey = CreateRedisKey();
             TransReceiveParam receiveParam = new TransReceiveParam(redisKey);
@@ -490,7 +744,36 @@ namespace ZyGames.Framework.Cache.Generic
             var filter = new DbDataFilter(maxCount);
             receiveParam.DbFilter = filter;
             //receiveParam.Capacity = maxCount;
-            LoadFrom(receiveParam, match);
+            LoadFrom(receiveParam, match, isReplace);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="enumerable"></param>
+        /// <param name="period"></param>
+        /// <param name="checkMutilKey">The entity need to reload when it has be mutil key</param>
+        /// <returns></returns>
+        public bool AddRange(IEnumerable<T> enumerable, int period = 0, bool checkMutilKey = true)
+        {
+            if (!Update(enumerable))
+            {
+                return false;
+            }
+            foreach (var t in enumerable)
+            {
+                string key = t.GetKeyCode();
+                int periodTime = 0;
+                if (TryAddGroup(t.PersonalId, key, t, periodTime, true))
+                {
+                    if (checkMutilKey)
+                    {
+                        CheckMutilKeyAndLoad(t.PersonalId);
+                    }
+                    SetLoadSuccess(t.PersonalId);
+                }
+            }
+            return true;
         }
 
         /// <summary>
@@ -507,7 +790,13 @@ namespace ZyGames.Framework.Cache.Generic
             }
             string key = t.GetKeyCode();
             int periodTime = 0;
-            return TryAddGroup(t.PersonalId, key, t, periodTime);
+            if (Update(t) && TryAddGroup(t.PersonalId, key, t, periodTime, true))
+            {
+                CheckMutilKeyAndLoad(t.PersonalId);
+                SetLoadSuccess(t.PersonalId);
+                return true;
+            }
+            return false;
         }
         /// <summary>
         /// add or update
@@ -523,8 +812,57 @@ namespace ZyGames.Framework.Cache.Generic
             }
             string key = t.GetKeyCode();
             int periodTime = 0;
-            return AddOrUpdateGroup(t.PersonalId, key, t, periodTime);
+            if (Update(t) && AddOrUpdateGroup(t.PersonalId, key, t, periodTime, true))
+            {
+                CheckMutilKeyAndLoad(t.PersonalId);
+                SetLoadSuccess(t.PersonalId);
+                return true;
+            }
+            return false;
         }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="enumerable"></param>
+        /// <param name="period"></param>
+        /// <returns></returns>
+        public bool AddOrUpdate(IEnumerable<T> enumerable, int period = 0)
+        {
+            if (!Update(enumerable))
+            {
+                return false;
+            }
+            foreach (var t in enumerable)
+            {
+                string key = t.GetKeyCode();
+                int periodTime = 0;
+                if (AddOrUpdateGroup(t.PersonalId, key, t, periodTime, true))
+                {
+                    CheckMutilKeyAndLoad(t.PersonalId);
+                    SetLoadSuccess(t.PersonalId);
+                    continue;
+                }
+            }
+            return true;
+        }
+
+
+        /// <summary>
+        /// 是否有多个键且未加载成功状态
+        /// </summary>
+        /// <param name="personalId"></param>
+        private void CheckMutilKeyAndLoad(string personalId)
+        {
+            CacheItemSet itemSet;
+            var schema = EntitySchemaSet.Get<T>();
+            if (schema.Keys.Length > 1 &&
+                DataContainer.TryGetCacheItem(personalId, out itemSet) &&
+               !itemSet.HasLoadSuccess)
+            {
+                TryLoadItem(personalId, true);
+            }
+        }
+
 
         /// <summary>
         /// 更新自已的数据
@@ -532,37 +870,41 @@ namespace ZyGames.Framework.Cache.Generic
         /// <param name="personalId"></param>
         public void UpdateSelf(string personalId)
         {
+            personalId = AbstractEntity.EncodeKeyCode(personalId);
             UpdateGroup(true, personalId);
         }
         /// <summary>
         /// 
         /// </summary>
         /// <returns></returns>
-        protected override bool LoadFactory()
+        protected override bool LoadFactory(bool isReplace)
         {
             return true;
         }
+
         /// <summary>
         /// 
         /// </summary>
         /// <param name="key"></param>
+        /// <param name="isReplace"></param>
         /// <returns></returns>
-        protected override bool LoadItemFactory(string key)
+        protected override bool LoadItemFactory(string key, bool isReplace)
         {
             //Model实体设置检查
             if ("10000".Equals(key))
             {
                 TraceLog.WriteError("The {0} entity's attr cacheType is share.", DataContainer.RootKey);
             }
-            return ProcessLoadParam(key);
+            return ProcessLoadParam(key, isReplace);
         }
 
         /// <summary>
         /// 处理加载数据参数
         /// </summary>
         /// <param name="personalId"></param>
+        /// <param name="isReplace"></param>
         /// <returns></returns>
-        protected bool ProcessLoadParam(string personalId)
+        protected bool ProcessLoadParam(string personalId, bool isReplace)
         {
             string redisKey = CreateRedisKey(personalId);
             TransReceiveParam receiveParam = new TransReceiveParam(redisKey);
@@ -588,16 +930,18 @@ namespace ZyGames.Framework.Cache.Generic
                 }
                 receiveParam.DbFilter = filter;
             }
-            return TryLoadCache(personalId, receiveParam, periodTime);
+            return TryLoadCache(personalId, receiveParam, periodTime, false);
         }
 
         /// <summary>
         /// 更新所有的数据
         /// </summary>
         /// <param name="isChange"></param>
-        public override void Update(bool isChange)
+        /// <param name="personalId"></param>
+        public override bool Update(bool isChange, string personalId = null)
         {
-            UpdateGroup(isChange);
+            personalId = AbstractEntity.EncodeKeyCode(personalId);
+            return UpdateGroup(isChange, personalId);
         }
         /// <summary>
         /// The value has be removed from the cache
@@ -624,8 +968,7 @@ namespace ZyGames.Framework.Cache.Generic
             {
                 entity.OnDelete();
                 TransSendParam sendParam = new TransSendParam() { IsChange = true };
-                DoSend(new[] { new KeyValuePair<string, T>(personalId, value) }, sendParam);
-                return true;
+                return DoSend(new[] { new KeyValuePair<string, T>(personalId, value) }, sendParam);
             });
         }
 
@@ -638,6 +981,7 @@ namespace ZyGames.Framework.Cache.Generic
         {
             LoadingStatus loadStatus;
             BaseCollection enityGroup;
+            personalId = AbstractEntity.EncodeKeyCode(personalId);
             return TryGetGroup(personalId, out enityGroup, out loadStatus);
         }
 

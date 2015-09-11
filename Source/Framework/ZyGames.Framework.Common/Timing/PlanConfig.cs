@@ -51,44 +51,81 @@ namespace ZyGames.Framework.Common.Timing
     public delegate void PlanCallback(PlanConfig planConfig);
 
     /// <summary>
-    /// 计划配置信息
+    /// Plan config
     /// </summary>
     public class PlanConfig
     {
         /// <summary>
-        /// 
+        /// Only run once
         /// </summary>
+        /// <param name="callback"></param>
+        /// <param name="name"></param>
+        /// <param name="beginTime">equal this time, format:"2015/01/01 09:00:00", or "09:00:00"  is today time</param>
+        /// <param name="target"></param>
         /// <returns></returns>
-        public static PlanConfig OncePlan(PlanCallback callback, string name, string beginTime)
+        public static PlanConfig OncePlan(PlanCallback callback, string name, string beginTime, object target = null)
         {
-            return CreatePlan(callback, name, PlanCycle.Once, beginTime);
+            return CreatePlan(callback, name, PlanCycle.Once, beginTime, null, false, 0, target);
         }
 
         /// <summary>
-        /// 
+        /// Every minute run
         /// </summary>
+        /// <param name="callback"></param>
+        /// <param name="name"></param>
+        /// <param name="beginTime">more than or equal this time, format: "2015/01/01 09:00:00", or "09:00:00" is today time</param>
+        /// <param name="endTime">less than this time, format: "2015/01/02 00:00:00", or "00:00:00" or "null" is tomorrow time</param>
+        /// <param name="secondInterval">interval run times</param>
+        /// <param name="target"></param>
         /// <returns></returns>
-        public static PlanConfig EveryMinutePlan(PlanCallback callback, string name, string beginTime, string endTime, int secondInterval = 60)
+        public static PlanConfig EveryMinutePlan(PlanCallback callback, string name, string beginTime, string endTime, int secondInterval = 60, object target = null)
         {
-            return CreatePlan(callback, name, PlanCycle.Day, beginTime, endTime, true, secondInterval);
+            return CreatePlan(callback, name, PlanCycle.Day, beginTime, endTime, true, secondInterval, target);
         }
 
         /// <summary>
-        /// 
+        /// Every day run
         /// </summary>
+        /// <param name="callback"></param>
+        /// <param name="name"></param>
+        /// <param name="beginTime">more than or equal this time, format: "2015/01/01 09:00:00", or "09:00:00" is today time</param>
+        /// <param name="target"></param>
         /// <returns></returns>
-        public static PlanConfig EveryDayPlan(PlanCallback callback, string name, string beginTime)
+        public static PlanConfig EveryDayPlan(PlanCallback callback, string name, string beginTime, object target = null)
         {
-            return CreatePlan(callback, name, PlanCycle.Day, beginTime, "23:59:59", true, (int)new TimeSpan(1, 0, 0, 0).TotalSeconds);
+            return CreatePlan(callback, name, PlanCycle.Day, beginTime, null, true, (int)new TimeSpan(1, 0, 0, 0).TotalSeconds, target);
         }
 
         /// <summary>
-        /// 
+        /// Every week run
         /// </summary>
+        /// <param name="callback"></param>
+        /// <param name="name"></param>
+        /// <param name="week">DayOfWeek</param>
+        /// <param name="beginTime">more than or equal this time, format: "2015/01/01 09:00:00", or "09:00:00" is today time</param>
+        /// <param name="target"></param>
         /// <returns></returns>
-        public static PlanConfig EveryWeekPlan(PlanCallback callback, string name, DayOfWeek week, string beginTime)
+        public static PlanConfig EveryWeekPlan(PlanCallback callback, string name, DayOfWeek week, string beginTime, object target = null)
         {
-            var plan = CreatePlan(callback, name, PlanCycle.Week, beginTime);
+            var plan = CreatePlan(callback, name, PlanCycle.Week, beginTime, null, false, 0, target);
+            plan.PlanWeek = week;
+            return plan;
+        }
+
+        /// <summary>
+        /// Every week run
+        /// </summary>
+        /// <param name="callback"></param>
+        /// <param name="name"></param>
+        /// <param name="week">DayOfWeek</param>
+        /// <param name="beginTime">more than or equal this time, format: "2015/01/01 09:00:00", or "09:00:00" is today time</param>
+        /// <param name="endTime">less than this time, format: "2015/01/02 00:00:00", or "00:00:00" or "null" is tomorrow time</param>
+        /// <param name="secondInterval">interval run times</param>
+        /// <param name="target"></param>
+        /// <returns></returns>
+        public static PlanConfig EveryWeekPlan(PlanCallback callback, string name, DayOfWeek week, string beginTime, string endTime, int secondInterval = 60, object target = null)
+        {
+            var plan = CreatePlan(callback, name, PlanCycle.Week, beginTime, endTime, true, secondInterval, target);
             plan.PlanWeek = week;
             return plan;
         }
@@ -96,15 +133,16 @@ namespace ZyGames.Framework.Common.Timing
         /// <summary>
         /// 
         /// </summary>
+        /// <param name="callback"></param>
+        /// <param name="name"></param>
+        /// <param name="planCycle">PlanCycle</param>
+        /// <param name="beginTime">more than or equal this time, format: "2015/01/01 09:00:00", or "09:00:00" is today time</param>
+        /// <param name="endTime">less than this time, format: "2015/01/02 00:00:00", or "00:00:00" or "null" is tomorrow time</param>
+        /// <param name="isCycle">is cycle run</param>
+        /// <param name="secondInterval">interval run times</param>
+        /// <param name="target"></param>
         /// <returns></returns>
-        public static PlanConfig EveryWeekPlan(PlanCallback callback, string name, DayOfWeek week, string beginTime, string endTime, int secondInterval = 60)
-        {
-            var plan = CreatePlan(callback, name, PlanCycle.Week, beginTime, endTime, true, secondInterval);
-            plan.PlanWeek = week;
-            return plan;
-        }
-
-        private static PlanConfig CreatePlan(PlanCallback callback, string name, PlanCycle planCycle, string beginTime, string endTime = "", bool isCycle = false, int secondInterval = 0)
+        private static PlanConfig CreatePlan(PlanCallback callback, string name, PlanCycle planCycle, string beginTime, string endTime, bool isCycle, int secondInterval, object target)
         {
             return new PlanConfig()
             {
@@ -112,18 +150,18 @@ namespace ZyGames.Framework.Common.Timing
                 Name = name,
                 PlanCycle = planCycle,
                 BeginTime = beginTime,
-                EndTime = endTime,
+                EndTime = endTime ?? string.Empty,
                 IsCycle = isCycle,
-                SecondInterval = secondInterval
+                SecondInterval = secondInterval,
+                Target = target
             };
         }
 
         class PlanState
         {
-            public double OffsetSecond { get; set; }
             public DateTime StartDate { get; set; }
             public DateTime StopDate { get; set; }
-            public DateTime PreDate { get; private set; }
+            public DateTime PreExcuteDate { get; private set; }
 
             /// <summary>
             /// 是否过期,过期的计划将被移除定时执行任务
@@ -136,26 +174,28 @@ namespace ZyGames.Framework.Common.Timing
 
             public void Reset(PlanConfig config)
             {
+                PreExcuteDate = DateTime.MinValue;
                 StartDate = (string.IsNullOrEmpty(config.BeginTime) ? "00:00:00" : config.BeginTime).ToDateTime();
-                StopDate = config.EndTime.ToDateTime(DateTime.MinValue);
+                StopDate = string.IsNullOrEmpty(config.EndTime) || "00:00:00".Equals(config.EndTime) ? DateTime.Now.Date.AddDays(1) : config.EndTime.ToDateTime(DateTime.MinValue);
                 IsEnd = false;
             }
 
             public bool IsTriggerStop(DateTime currDate)
             {
-                if (StopDate > DateTime.MinValue && currDate >= StopDate)
+                if (StopDate > DateTime.MinValue && currDate > StopDate)
                 {
                     IsEnd = true;
+                    return true;
                 }
                 return false;
             }
 
             public bool IsTriggerStart(DateTime currDate)
             {
-                if (currDate >= StartDate && currDate < StartDate.AddSeconds(OffsetSecond))
+                if (currDate >= StartDate && currDate < StartDate.AddMilliseconds(TimeListener.OffsetMillisecond))
                 {
-                    PreDate = currDate;
-                    IsEnd = true;
+                    PreExcuteDate = StartDate;
+                    IsEnd = false;
                     return true;
                 }
                 return false;
@@ -169,31 +209,24 @@ namespace ZyGames.Framework.Common.Timing
                 }
 
                 bool result = false;
-                var excuteDate = PreDate == DateTime.MinValue ? StartDate : PreDate.AddSeconds(secondInterval);
+                var excuteDate = PreExcuteDate == DateTime.MinValue ? StartDate : PreExcuteDate.AddSeconds(secondInterval);
                 var nextExcuteDate = excuteDate.AddSeconds(secondInterval);
-                if (currDate < PreDate || currDate >= nextExcuteDate)
+                if (currDate < PreExcuteDate || currDate >= nextExcuteDate)
                 {
                     //修正当前时间位置
                     var ts = StopDate - StartDate;
                     var numberTimes = (int)ts.TotalSeconds / secondInterval;
                     int times = FindIntervalTimes(currDate, 0, numberTimes, secondInterval);
-                    PreDate = StartDate.AddSeconds(secondInterval * (times - 1));
+                    PreExcuteDate = StartDate.AddSeconds(secondInterval * (times - 1));
 
-                    excuteDate = PreDate.AddSeconds(secondInterval);
+                    excuteDate = PreExcuteDate.AddSeconds(secondInterval);
                     nextExcuteDate = excuteDate.AddSeconds(secondInterval);
                 }
                 //Trace.WriteLine(string.Format("timing pre:{0}, cur:{1}, next:{2}", PreDate, currDate, excuteDate));
-                if (PreDate <= currDate && currDate < excuteDate)
+                if (excuteDate <= currDate && currDate < nextExcuteDate)
                 {
-                    //时间还没有到
-                }
-                else if (excuteDate <= currDate && currDate < nextExcuteDate)
-                {
-                    PreDate = excuteDate;
-                    result = currDate < excuteDate.AddSeconds(OffsetSecond);//整点处理
-                }
-                else
-                {
+                    PreExcuteDate = excuteDate;
+                    result = currDate < excuteDate.AddMilliseconds(TimeListener.OffsetMillisecond);//整点处理
                 }
                 return result;
             }
@@ -229,6 +262,8 @@ namespace ZyGames.Framework.Common.Timing
         }
 
         private PlanState _planState = new PlanState();
+        internal int _isExcuting;
+
 
         private PlanConfig()
         {
@@ -236,71 +271,89 @@ namespace ZyGames.Framework.Common.Timing
         }
 
         /// <summary>
+        /// Gets plan is excuting num.
+        /// </summary>
+        public int ExcutingNum { get { return _isExcuting; } }
+        /// <summary>
         /// 
         /// </summary>
-        public DayOfWeek PlanWeek { get; set; }
+        internal DayOfWeek PlanWeek { get; private set; }
 
         /// <summary>
         /// 
         /// </summary>
-        public string BeginTime { get; set; }
+        internal string BeginTime { get; private set; }
         /// <summary>
         /// 
         /// </summary>
-        public string EndTime { get; set; }
+        internal string EndTime { get; private set; }
         /// <summary>
         /// 
         /// </summary>
-        public PlanCycle PlanCycle { get; set; }
+        internal PlanCycle PlanCycle { get; private set; }
 
         /// <summary>
-        /// 名称
+        /// Gets plan name
         /// </summary>
-        public string Name { get; set; }
+        public string Name { get; private set; }
         /// <summary>
         /// 回调委托
         /// </summary>
-        public PlanCallback Callback { get; set; }
+        internal PlanCallback Callback { get; private set; }
 
         /// <summary>
-        /// 
+        /// Gets or sets target
         /// </summary>
         public object Target { get; set; }
 
         /// <summary>
         /// 是否循环（每天）
         /// </summary>
-        public bool IsCycle { get; set; }
+        internal bool IsCycle { get; private set; }
         /// <summary>
         /// 间隔秒，0:为单次
         /// </summary>
-        public int SecondInterval { get; set; }
+        internal int SecondInterval { get; private set; }
 
         /// <summary>
-        /// Expired time
+        /// Gets or sets expired time
         /// </summary>
         public DateTime ExpiredTime { get; set; }
 
         /// <summary>
-        /// 
+        /// Gets expired exit run.
         /// </summary>
         public bool IsExpired { get { return _planState.IsExpired; } }
 
         /// <summary>
-        /// 
+        /// Gets today is end run
         /// </summary>
         public bool IsEnd { get { return _planState.IsEnd; } }
 
         /// <summary>
-        /// 
+        /// Gets pre excute time
         /// </summary>
-        public DateTime PreviousExecuteTime { get { return _planState.PreDate; } }
+        public DateTime PreviousExecuteTime { get { return _planState.PreExcuteDate; } }
+        /// <summary>
+        /// Gets next excute time
+        /// </summary>
+        public DateTime NexExcutetDate
+        {
+            get
+            {
+                return _planState.IsExpired ? DateTime.MinValue : _planState.PreExcuteDate == DateTime.MinValue
+                    ? _planState.StartDate
+                    : _planState.IsEnd
+                        ? _planState.StartDate.AddDays(1)
+                        : _planState.PreExcuteDate.AddSeconds(SecondInterval);
+            }
+        }
 
         /// <summary>
         /// 自动开始
         /// </summary>
         /// <returns></returns>
-        public bool AutoStart(DateTime currDate)
+        internal bool AutoStart(DateTime currDate)
         {
             if (!DateTime.Now.Date.Equals(_planState.StartDate.Date))
             {
@@ -341,12 +394,5 @@ namespace ZyGames.Framework.Common.Timing
 
         }
 
-        /// <summary>
-        /// 设置误差间隔
-        /// </summary>
-        public void SetDiffInterval(double secondInterval)
-        {
-            _planState.OffsetSecond = secondInterval;
-        }
     }
 }

@@ -67,7 +67,8 @@ namespace ZyGames.Framework.Common.Serialization
         /// <returns></returns>
         public override string ToString()
         {
-            return Value.ToString();
+            var val = Value;
+            return val == null ? null : val.ToString();
         }
 
         /// <summary>
@@ -79,7 +80,7 @@ namespace ZyGames.Framework.Common.Serialization
             get
             {
                 if (_isnullValue.HasValue)
-                    return null;
+                    return _isnullValue.Value;
                 if (_byteValue.HasValue)
                     return _byteValue.Value;
                 if (_boolValue.HasValue)
@@ -163,7 +164,7 @@ namespace ZyGames.Framework.Common.Serialization
                 else
                 {
                     string type = value.GetType().Name;
-                    throw new NotImplementedException("Unexpected Type:" + type + " for value:" + value);
+                    throw new NotImplementedException("Unexpected Type:\"" + type + "\" of value:\"" + value + "\" on ProtoObject.");
                 }
             }
         }

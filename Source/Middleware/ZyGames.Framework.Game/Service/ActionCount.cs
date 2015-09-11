@@ -22,6 +22,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ****************************************************************************/
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 
 namespace ZyGames.Framework.Game.Service
@@ -31,7 +32,6 @@ namespace ZyGames.Framework.Game.Service
     /// </summary>
     public static class ActionCount
     {
-        private static readonly object LockObj = new object();
         /// <summary>
         /// 当前日期
         /// </summary>
@@ -39,7 +39,7 @@ namespace ZyGames.Framework.Game.Service
         /// <summary>
         /// 当日目前各接口访问情况统计
         /// </summary>
-        private static Dictionary<int, ActionLog> dicActionInfo;
+        private static ConcurrentDictionary<int, ActionLog> dicActionInfo;
 
         /// <summary>
         /// 接口访问次数加1
@@ -50,26 +50,18 @@ namespace ZyGames.Framework.Game.Service
         {
             if (dicActionInfo == null)
             {
-                lock (LockObj)
+                if (dicActionInfo == null)
                 {
-                    if (dicActionInfo == null)
-                    {
-                        curDate = DateTime.Now.Date;
-                        dicActionInfo = new Dictionary<int, ActionLog>();
-                    }
+                    curDate = DateTime.Now.Date;
+                    dicActionInfo = new ConcurrentDictionary<int, ActionLog>();
                 }
             }
 
             if (!dicActionInfo.ContainsKey(actionId))
             {
-                lock (LockObj)
-                {
-                    if (!dicActionInfo.ContainsKey(actionId))
-                    {
-                        ActionLog tmpLog = new ActionLog(actionId, curDate);
-                        dicActionInfo.Add(actionId, tmpLog);
-                    }
-                }
+                ActionLog tmpLog = new ActionLog(actionId, curDate);
+                dicActionInfo.TryAdd(actionId, tmpLog);
+
             }
 
             dicActionInfo[actionId].Visitor(aStat);
@@ -77,15 +69,12 @@ namespace ZyGames.Framework.Game.Service
             if (curDate != DateTime.Now.Date)
             {
                 //已经进入第二天，全部写入DB，并初始化数据
-                lock (dicActionInfo)
+                DateTime newDate = DateTime.Now.Date;
+                foreach (KeyValuePair<int, ActionLog> item in dicActionInfo)
                 {
-                    DateTime newDate = DateTime.Now.Date;
-                    foreach (KeyValuePair<int, ActionLog> item in dicActionInfo)
-                    {
-                        item.Value.InsertDB(newDate);
-                    }
-                    curDate = newDate;
+                    item.Value.InsertDB(newDate);
                 }
+                curDate = newDate;
             }
         }
     }

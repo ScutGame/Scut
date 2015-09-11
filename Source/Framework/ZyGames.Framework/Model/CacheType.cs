@@ -41,6 +41,10 @@ namespace ZyGames.Framework.Model
         /// </summary>
         Dictionary,
         /// <summary>
+        /// List of rank.
+        /// </summary>
+        Rank,
+        /// <summary>
         /// 队列方式
         /// </summary>
         Queue

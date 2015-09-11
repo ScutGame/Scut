@@ -38,32 +38,7 @@ namespace ZyGames.Framework.Game.Pay
         static ConfigManger()
         {
             _dbBaseProvider = DbConnectionProvider.CreateDbProvider(ConnectKey);
-            if (_dbBaseProvider == null)
-            {
-                //todo is expired format
-                /*
-                string providerType = ConfigUtils.GetSetting("PayDB_ProviderType");
-                string connectionFormat = ConfigUtils.GetSetting("PayDB_ConnectionString");
-                string dataSource = string.Empty;
-                string userInfo = string.Empty;
-                try
-                {
-                    dataSource = ConfigUtils.GetSetting("PayDB_Server");
-                    userInfo = ConfigUtils.GetSetting("PayDB_Acount");
-                    if (!string.IsNullOrEmpty(userInfo))
-                    {
-                        userInfo = CryptoHelper.DES_Decrypt(userInfo, GameEnvironment.Setting.ProductDesEnKey);
-                    }
-                }
-                catch (Exception) { }
-                string connectionString = "";
-                if (!string.IsNullOrEmpty(dataSource) && !string.IsNullOrEmpty(userInfo))
-                {
-                    connectionString = string.Format(connectionFormat, dataSource, userInfo);
-                }
-                _dbBaseProvider = DbConnectionProvider.CreateDbProvider(ConnectKey, providerType, connectionString);
-                */
-            }
+           
         }
 
         public static DbBaseProvider Provider

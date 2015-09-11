@@ -86,7 +86,7 @@ namespace ZyGames.Framework.RPC.Service
         public void Close()
         {
             _client.Close();
-            Connected = true;
+            Connected = false;
         }
 
         /// <summary>

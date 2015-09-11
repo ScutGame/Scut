@@ -32,6 +32,8 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyTitle("SCUTServer for .NET Framework 4.0")]
 #elif NET4_5_1
 [assembly: AssemblyTitle("SCUTServer for .NET Framework 4.5.1")]
+#elif NET4_6
+[assembly: AssemblyTitle("SCUTServer for .NET Framework 4.6")]
 #else
 [assembly: AssemblyTitle("SCUTServer")]
 #endif

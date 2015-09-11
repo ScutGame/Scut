@@ -64,6 +64,10 @@ namespace ZyGames.Framework.RPC.Http
         ConfigurationDictionary _configValues;
         Timer log_timer;
         readonly int _accepts;
+        /// <summary>
+        /// Get cdn address
+        /// </summary>
+        public HttpCDNAddress HttpCdnAddress { get; set; }
 
         /// <summary>
         /// Creates an asynchronous HTTP host.
@@ -80,6 +84,7 @@ namespace ZyGames.Framework.RPC.Http
             // Multiply by number of cores:
             _accepts = accepts * Environment.ProcessorCount;
             log_timer = new Timer(WriteLog, null, 300000, 300000);
+            HttpCdnAddress = new HttpCDNAddress();
         }
 
         class HostContext : IHttpAsyncHostHandlerContext
@@ -216,20 +221,54 @@ namespace ZyGames.Framework.RPC.Http
             m_2000s = Interlocked.Exchange(ref _2000s, 0);
             m_5000s = Interlocked.Exchange(ref _5000s, 0);
             m_up = Interlocked.Exchange(ref _up, 0);
-            TraceLog.ReleaseWriteDebug("Http request timeout(ms) 20:{0}  50:{1}  100:{2}  200:{3}  500:{4}  1000:{5}  2000:{6}  5000:{7}  up:{8}", m_20s, m_50s, m_100s, m_200s, m_500s, m_1000s, m_2000s, m_5000s, m_up);
+            bool hasTimeout = m_20s > 0 || m_50s > 0 || m_100s > 0 ||
+                              m_200s > 0 || m_500s > 0 || m_1000s > 0 ||
+                              m_2000s > 0 || m_5000s > 0 || m_up > 0;
+            if (hasTimeout)
+            {
+                TraceLog.ReleaseWriteDebug("Http request timeout(ms) <=20:{0}, <=50:{1}, <=100:{2}, <=200:{3}, <=500:{4}, <=1000:{5}, <=2000:{6}, <=5000:{7}, >5000:{8}", m_20s, m_50s, m_100s, m_200s, m_500s, m_1000s, m_2000s, m_5000s, m_up);
+            }
         }
 
         static async Task ProcessListenerContext(HttpListenerContext listenerContext, HttpAsyncHost host)
         {
+            Stopwatch sw = Stopwatch.StartNew();
+            string rawUrl = string.Empty;
+            string userHostAddress = string.Empty;
+            long actionTime = 0;
+            string identity = string.Empty;
             try
             {
+                rawUrl = listenerContext.Request.RawUrl;
+                userHostAddress = host.HttpCdnAddress.GetUserHostAddress(listenerContext.Request.RemoteEndPoint, key => listenerContext.Request.Headers[key]);
                 // Get the response action to take:
-                Stopwatch sw = Stopwatch.StartNew();
-                var requestContext = new HttpRequestContext(host._hostContext, listenerContext.Request, listenerContext.User);
+                var requestContext = new HttpRequestContext(host._hostContext, listenerContext.Request, listenerContext.User, userHostAddress);
                 var action = await host._handler.Execute(requestContext);
+                actionTime = sw.ElapsedMilliseconds;
+                if (action != null)
+                {
+                    identity = action.Identity;
+                    // Take the action and await its completion:
+                    var responseContext = new HttpRequestResponseContext(requestContext, listenerContext.Response);
+                    var task = action.Execute(responseContext);
+                    if (task != null) await task;
+                }
+                // Close the response and send it to the client:
+                listenerContext.Response.Close();
                 sw.Stop();
-
-                if (sw.ElapsedMilliseconds <= 20) Interlocked.Increment(ref _20s);
+            }
+            catch (Exception ex)
+            {
+                TraceLog.WriteError("Http ProcessListenerContext {0}\r\nUrl:{1}\r\nHost:{2}, User:{3}", ex, rawUrl, userHostAddress, identity);
+            }
+            finally
+            {
+                if (sw.ElapsedMilliseconds >= 5)
+                {
+                    TraceLog.Write("Http request action time:{0}ms, total:{1}ms.\r\nRawUrl:{2}\r\nHost:{3}, User:{4}", actionTime, sw.ElapsedMilliseconds, rawUrl, userHostAddress, identity);
+                }
+                if (sw.ElapsedMilliseconds == 0) { }
+                else if (sw.ElapsedMilliseconds <= 20) Interlocked.Increment(ref _20s);
                 else if (sw.ElapsedMilliseconds <= 50) Interlocked.Increment(ref _50s);
                 else if (sw.ElapsedMilliseconds <= 100) Interlocked.Increment(ref _100s);
                 else if (sw.ElapsedMilliseconds <= 200) Interlocked.Increment(ref _200s);
@@ -239,26 +278,10 @@ namespace ZyGames.Framework.RPC.Http
                 else if (sw.ElapsedMilliseconds <= 5000) Interlocked.Increment(ref _5000s);
                 else
                 {
-                    TraceLog.WriteError("Http request [{0}] timeout {1}ms", listenerContext.Request.RawUrl, sw.ElapsedMilliseconds);
+                    TraceLog.WriteError("Http request action timeout:{0}ms, total:{1}ms.\r\nRawUrl:{2}\r\nHost:{3}, User:{4}", actionTime, sw.ElapsedMilliseconds, rawUrl, userHostAddress, identity);
                     Interlocked.Increment(ref _up);
                 }
-                if (action != null)
-                {
-                    // Take the action and await its completion:
-                    var responseContext = new HttpRequestResponseContext(requestContext, listenerContext.Response);
-                    var task = action.Execute(responseContext);
-                    if (task != null) await task;
-                }
 
-                // Close the response and send it to the client:
-                listenerContext.Response.Close();
-            }
-            catch (HttpListenerException)
-            {
-            }
-            catch (Exception ex)
-            {
-                TraceLog.WriteError("Http ProcessListenerContext {0}", ex);
             }
         }
     }

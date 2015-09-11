@@ -45,6 +45,8 @@ namespace ZyGames.Framework.Common.Locking
             public Timer ExpireTimer { get; set; }
             public DateTime AccessTime { get; set; }
 
+            public object Target { get; set; }
+
             public void Dispose()
             {
                 if (ExpireTimer != null)
@@ -108,7 +110,7 @@ namespace ZyGames.Framework.Common.Locking
         /// <param name="key"></param>
         public void Add(long key)
         {
-            Create(key);
+            GetOrCreate(key);
         }
         /// <summary>
         /// 
@@ -118,8 +120,28 @@ namespace ZyGames.Framework.Common.Locking
         /// <returns></returns>
         public bool TryEnter(long key, int timeout)
         {
-            ExpireItem lockItem = GetOrAddLockItem(key);
+            ExpireItem lockItem = GetOrCreate(key);
             return Monitor.TryEnter(lockItem, timeout);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="key"></param>
+        /// <param name="timeout"></param>
+        /// <param name="wait">wait get lock object</param>
+        /// <param name="enter">enter lock object</param>
+        /// <returns></returns>
+        public bool TryEnter(long key, int timeout, object wait, out object enter)
+        {
+            ExpireItem lockItem = GetOrCreate(key);
+            enter = lockItem.Target;
+            if (Monitor.TryEnter(lockItem, timeout))
+            {
+                lockItem.Target = wait;
+                return true;
+            }
+            return false;
         }
 
         /// <summary>
@@ -127,8 +149,8 @@ namespace ZyGames.Framework.Common.Locking
         /// </summary>
         public void Enter(long key)
         {
-            ExpireItem lockItem = GetOrAddLockItem(key);
-            if (lockItem != null) Monitor.Enter(lockItem);
+            ExpireItem lockItem = GetOrCreate(key);
+            Monitor.Enter(lockItem);
         }
 
         /// <summary>
@@ -137,63 +159,33 @@ namespace ZyGames.Framework.Common.Locking
         /// <param name="key"></param>
         public void Exit(long key)
         {
-            ExpireItem lockItem = GetLockItem(key);
-            if (lockItem != null) Monitor.Exit(lockItem);
+            ExpireItem lockItem = GetOrCreate(key);
+            Monitor.Exit(lockItem);
         }
 
-        private ExpireItem GetLockItem(long key)
-        {
-            ExpireItem item = null;
-            lock (syncRoot)
-            {
-                if (_lockPool.ContainsKey(key))
-                {
-                    item = _lockPool[key];
-                }
-            }
-            return item;
-        }
-
-
-        private ExpireItem GetOrAddLockItem(long key)
-        {
-            ExpireItem item;
-            if (!_lockPool.ContainsKey(key))
-            {
-                item = Create(key);
-            }
-            else
-            {
-                lock (syncRoot)
-                {
-                    item = _lockPool[key];
-                }
-            }
-            if (item.ExpireTimer != null)
-            {
-                item.AccessTime = MathUtils.Now;
-            }
-            return item;
-        }
-
-        private ExpireItem Create(long key)
+        private ExpireItem GetOrCreate(long key)
         {
             lock (syncRoot)
             {
+                ExpireItem child;
                 if (!_lockPool.ContainsKey(key))
                 {
-                    var child = new ExpireItem();
+                    child = new ExpireItem();
+                    child.Key = key;
+                    child.AccessTime = DateTime.Now;
                     if (_expireTime > 0 && _checkTime > 0)
                     {
                         int dueTime = 100 + (_lockPool.Count % 100); //Random start
-                        child.Key = key;
                         child.ExpireTimer = new Timer(RemoveItem, child, dueTime, _checkTime);
-                        child.AccessTime = DateTime.Now;
                     }
                     _lockPool[key] = child;
-                    return child;
                 }
-                return _lockPool[key];
+                else
+                {
+                    child = _lockPool[key];
+                    child.AccessTime = MathUtils.Now;
+                }
+                return child;
             }
         }
 

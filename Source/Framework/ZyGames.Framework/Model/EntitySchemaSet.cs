@@ -54,7 +54,7 @@ namespace ZyGames.Framework.Model
         private static DictionaryExtend<string, SchemaTable> SchemaSet = new DictionaryExtend<string, SchemaTable>();
         private static ConcurrentQueue<SchemaTable> _dynamicTables = new ConcurrentQueue<SchemaTable>();
         private static CacheListener _tableListener = new CacheListener("__EntitySchemaSet_CheckDynamicTable", 60 * 60, OnCheckDynamicTable);//间隔1小时
-        private static Assembly _entityAssembly;
+        internal static Assembly _entityAssembly;
 
         /// <summary>
         /// 实体的程序集
@@ -84,6 +84,7 @@ namespace ZyGames.Framework.Model
         {
             try
             {
+                DateTime date = DateTime.Now;
                 int logPriorBuildMonth = GetEntitySection().LogPriorBuildMonth;
                 var tableTypes = _dynamicTables.ToList();
                 foreach (var schema in tableTypes)
@@ -97,7 +98,7 @@ namespace ZyGames.Framework.Model
                     int count = logPriorBuildMonth > 1 ? logPriorBuildMonth : 2;
                     for (int i = 0; i < count; i++)
                     {
-                        tableName = schema.GetTableName(i);
+                        tableName = schema.GetTableName(date, i);
 
                         DbColumn[] columns;
                         if (!dbprovider.CheckTable(tableName, out columns))
@@ -135,7 +136,7 @@ namespace ZyGames.Framework.Model
         /// 生成存储在Redis的Key
         /// </summary>
         /// <returns></returns>
-        public static string GenerateRedisKey<T>(string personalKey) where T : AbstractEntity
+        public static string GenerateRedisKey<T>(string personalKey) where T : ISqlEntity
         {
             return GenerateRedisKey(typeof(T), personalKey);
         }
@@ -176,9 +177,15 @@ namespace ZyGames.Framework.Model
         /// 
         /// </summary>
         /// <param name="type"></param>
-        public static SchemaTable InitSchema(Type type)
+        /// <param name="isReset"></param>
+        public static SchemaTable InitSchema(Type type, bool isReset = false)
         {
-            SchemaTable schema = new SchemaTable();
+            SchemaTable schema;
+            if (!isReset && TryGet(type, out schema))
+            {
+                return schema;
+            }
+            schema = new SchemaTable();
             try
             {
                 schema.IsEntitySync = type.GetCustomAttributes(typeof(EntitySyncAttribute), false).Length > 0;
@@ -211,6 +218,7 @@ namespace ZyGames.Framework.Model
                     if (string.IsNullOrEmpty(schema.ConnectKey)
                         && type == typeof(EntityHistory))
                     {
+                        schema.IsInternal = true;
                         var dbPair = DbConnectionProvider.Find(DbLevel.Game);
                         if (dbPair.Value == null)
                         {
@@ -522,6 +530,7 @@ namespace ZyGames.Framework.Model
                     //column.DbType = ColumnDbType.Varchar;
                 }
                 schema.Columns.TryAdd(column.Name, column);
+                if (column.IsSerialized) schema.HasObjectColumns = true;
                 if (column.IsKey)
                 {
                     keySet.Add(column.Name);
@@ -728,6 +737,15 @@ namespace ZyGames.Framework.Model
             return SchemaSet.TryGetValue(typeName, out schema);
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        public static IEnumerable<SchemaTable> GetEnumerable()
+        {
+            return SchemaSet.Select(pair => pair.Value);
+        }
+
 
         private static T FindAttribute<T>(object[] attrList) where T : Attribute, new()
         {
@@ -750,7 +768,7 @@ namespace ZyGames.Framework.Model
         /// <param name="schema"></param>
         private static void CheckTableSchema(SchemaTable schema)
         {
-            string tableName = schema.GetTableName();
+            string tableName = schema.GetTableName(DateTime.Now);
             try
             {
                 if (DbConnectionProvider.Count == 0)
@@ -792,7 +810,7 @@ namespace ZyGames.Framework.Model
             {
                 var field = keypair.Value;
                 string name = field.Name;
-                var dbColumn = Array.Find(columns, p => string.Equals(p.Name, name, StringComparison.CurrentCultureIgnoreCase));
+                var dbColumn = Array.Find(columns, p => MathUtils.IsEquals(p.Name, name, true));
                 if (dbColumn == null)
                 {
                     dbColumn = new DbColumn();
@@ -816,8 +834,10 @@ namespace ZyGames.Framework.Model
                     if (
                         //对象序列化类型
                         (field.IsSerialized &&
+                           (
                            (field.DbType == ColumnDbType.Varchar && (dbColumn.Type != typeof(string) || (field.ColumnLength > 0 && dbColumn.Length != field.ColumnLength))) ||
                            (field.DbType != ColumnDbType.Varchar && (dbColumn.Type != typeof(string) || dbColumn.DbType.StartsWith("varchar", true)))
+                           )
                         ) ||
                         //特殊值类型
                         (dbColumn.Type == typeof(decimal) && field.ColumnScale > 0 && dbColumn.Scale != field.ColumnScale) ||
@@ -825,6 +845,7 @@ namespace ZyGames.Framework.Model
                         (fieldType == typeof(ushort) && dbColumn.Type != typeof(short)) ||
                         (fieldType == typeof(uint) && dbColumn.Type != typeof(int)) ||
                         (fieldType == typeof(ulong) && dbColumn.Type != typeof(long)) ||
+                        (fieldType == typeof(string) && field.ColumnLength > 0 && dbColumn.Length != field.ColumnLength) ||
                         //非对象类型
                         (!field.IsSerialized &&
                             !fieldType.IsEnum &&
@@ -835,7 +856,9 @@ namespace ZyGames.Framework.Model
                             fieldType != typeof(uint) &&
                             fieldType != typeof(ulong) &&
                             dbColumn.Type != fieldType
-                            )
+                            ) ||
+                        //check key
+                        ((field.IsKey && dbColumn.KeyNo == 0) || (!field.IsKey && dbColumn.KeyNo > 0))
                         )
                     {
                         dbColumn.Type = fieldType;

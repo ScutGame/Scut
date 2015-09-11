@@ -102,5 +102,14 @@ namespace ZyGames.Framework.Model
         {
             ResetState();
         }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        public virtual DateTime GetCreateTime()
+        {
+            return DateTime.Now;
+        }
+
     }
 }

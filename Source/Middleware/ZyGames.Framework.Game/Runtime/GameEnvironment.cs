@@ -267,13 +267,15 @@ namespace ZyGames.Framework.Game.Runtime
             try
             {
                 TypeAccessor.Init();
+                RedisConnectionPool.Initialize(_setting.Serializer);
+                DbConnectionProvider.Initialize();
                 ProtoBufUtils.Initialize();
                 ProtoBufUtils.LoadProtobufType(assembly);
                 EntitySchemaSet.Init();
                 EntitySchemaSet.LoadAssembly(assembly);
+                EntitySchemaSet.InitSchema(typeof (SensitiveWord));
                 Language.Reset();
                 CacheFactory.ResetCache();
-                SensitiveWordService.Init();
                 TraceLog.ReleaseWrite("Update Model script success.");
                 IsRunning = true;
             }
@@ -313,6 +315,7 @@ namespace ZyGames.Framework.Game.Runtime
             {
                 await System.Threading.Tasks.Task.Delay(1000);
             }
+            Console.WriteLine("Waiting exit.");
         }
 
     }

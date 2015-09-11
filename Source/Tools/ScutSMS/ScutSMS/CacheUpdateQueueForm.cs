@@ -271,7 +271,7 @@ namespace Scut.SMS
                             ? key.Split('|')[0]
                             : key.Split('_')[0];
 
-                        using (IDataSender sender = DataSyncManager.GetRedisSender(redisKey))
+                        using (IDataSender sender = DataSyncManager.GetRedisSender(schema, redisKey))
                         {
                             sender.Send(entity);
 

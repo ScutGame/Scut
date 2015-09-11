@@ -54,7 +54,7 @@ namespace ZyGames.Framework.Common.Build
             {
                 bool hasBuild = false;
                 FilePattern = (FilePattern ?? "*.dll");
-                if (!FilePattern.EndsWith(".dll", StringComparison.CurrentCultureIgnoreCase))
+                if (!FilePattern.ToLower().EndsWith(".dll", StringComparison.Ordinal))
                 {
                     FilePattern = FilePattern + ".dll";
                 }

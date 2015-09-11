@@ -30,17 +30,13 @@ namespace ZyGames.Framework.Model
     public enum LoadingStatus
     {
         /// <summary>
-        /// 手动增加到内存的
+        /// 未同步库的状态，包括新增的
         /// </summary>
         None= 0,
         /// <summary>
         /// 成功
         /// </summary>
         Success,
-        /// <summary>
-        /// 被移除
-        /// </summary>
-        Remove,
         /// <summary>
         /// 加载出错
         /// </summary>

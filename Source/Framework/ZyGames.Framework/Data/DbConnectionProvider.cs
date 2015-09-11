@@ -29,6 +29,7 @@ using System.Configuration;
 using ZyGames.Framework.Common;
 using ZyGames.Framework.Common.Configuration;
 using ZyGames.Framework.Common.Log;
+using ZyGames.Framework.Data.MySql;
 using ZyGames.Framework.Data.Sql;
 using ZyGames.Framework.Model;
 
@@ -110,11 +111,11 @@ namespace ZyGames.Framework.Data
         /// <returns></returns>
         public static DbBaseProvider CreateDbProvider(string connectKey)
         {
-            DbBaseProvider dbBaseProvider = null;
             if (string.IsNullOrEmpty(connectKey))
             {
-                return dbBaseProvider;
+                return null;
             }
+            DbBaseProvider dbBaseProvider;
             if (dbProviders.TryGetValue(connectKey, out dbBaseProvider))
             {
                 return dbBaseProvider;
@@ -136,6 +137,10 @@ namespace ZyGames.Framework.Data
             else
             {
                 var section = ConfigurationManager.ConnectionStrings[connectKey];
+                if (section == null)
+                {
+                    return null;
+                }
                 try
                 {
                     dbBaseProvider = CreateDbProvider(section.Name, section.ProviderName, section.ConnectionString);
@@ -183,40 +188,27 @@ namespace ZyGames.Framework.Data
 
         private static DbBaseProvider CreateDbProvider(ConnectionSetting setting)
         {
-            Type type = TryGetProviderType(setting.ProviderTypeName);
-            if (type == null)
-            {
-                type = typeof(SqlDataProvider);
-            }
+            Type type = TryGetProviderType(setting.ProviderTypeName) ?? typeof(SqlDataProvider);
             return type.CreateInstance<DbBaseProvider>(setting);
         }
 
         private static Type TryGetProviderType(string providerTypeName)
         {
+            if (string.IsNullOrEmpty(providerTypeName)) return null;
+
             Type type;
-            if (!string.IsNullOrEmpty(providerTypeName))
+            Type temp;
+            if ((temp = typeof(MySqlDataProvider)).Name.IsEquals(providerTypeName, true))
             {
-                if (providerTypeName.IndexOf(",") != -1)
-                {
-                    type = Type.GetType(providerTypeName);
-                }
-                else
-                {
-                    string typeName = string.Empty;
-                    if (providerTypeName.StartsWith("mysql", StringComparison.CurrentCultureIgnoreCase))
-                    {
-                        typeName = string.Format("ZyGames.Framework.Data.MySql.{0},ZyGames.Framework", providerTypeName);
-                    }
-                    else
-                    {
-                        typeName = string.Format("ZyGames.Framework.Data.Sql.{0},ZyGames.Framework", providerTypeName);
-                    }
-                    type = Type.GetType(typeName, false, true);
-                }
+                type = temp;
+            }
+            else if ((temp = typeof(SqlDataProvider)).Name.IsEquals(providerTypeName, true))
+            {
+                type = temp;
             }
             else
             {
-                type = typeof(SqlDataProvider);
+                throw new NotSupportedException("Not support \"" + providerTypeName + "\" db provider");
             }
             return type;
         }

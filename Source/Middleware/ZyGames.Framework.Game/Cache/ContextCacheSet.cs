@@ -34,7 +34,7 @@ namespace ZyGames.Framework.Game.Cache
     public class ContextCacheSet<T> : BaseDisposable where T : CacheItem, new()
     {
         private string _cacheKey;
-        private IDataContainer<T> _container;
+        private EntityContainer<T> _container;
 		/// <summary>
 		/// Initializes a new instance of the class.
 		/// </summary>

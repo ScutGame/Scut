@@ -69,7 +69,7 @@ namespace ContractTools.WebApp.Base
                     {
                         //�Զ���¼
                     }
-                    if (fieldType == FieldType.Record)
+                    if (fieldType == FieldType.Record || fieldType == FieldType.SigleRecord)
                     {
                         loopDepth++;
                         recordQueue.Add(record);
@@ -77,7 +77,7 @@ namespace ContractTools.WebApp.Base
                 }
                 else if (fieldType != FieldType.End)
                 {
-                    if (fieldType == FieldType.Record)
+                    if (fieldType == FieldType.Record || fieldType == FieldType.SigleRecord)
                     {
                         loopDepth++;
                     }
@@ -159,7 +159,7 @@ namespace ContractTools.WebApp.Base
                                     }
                                     columnNum++;
                                 }
-                                if (fieldType == FieldType.Record)
+                                if (fieldType == FieldType.Record || fieldType == FieldType.SigleRecord)
                                 {
                                     loopDepth++;
                                     recordQueue.Add(record);
@@ -167,7 +167,7 @@ namespace ContractTools.WebApp.Base
                             }
                             else if (fieldType != FieldType.End)
                             {
-                                if (fieldType == FieldType.Record)
+                                if (fieldType == FieldType.Record || fieldType == FieldType.SigleRecord)
                                 {
                                     loopDepth++;
                                 }

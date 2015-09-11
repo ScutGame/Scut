@@ -988,6 +988,9 @@ namespace Scut.SMS
         private const string HistoryTable = "Temp_EntityHistory";
         public bool TryMoveKeyToDb(ConnectionString setting, IEnumerable<string> keys, out int success)
         {
+            success = 0;
+            return false;
+            //结构调用， 不使用；
             int num = 0;
             if (!setting.HasConfig())
             {

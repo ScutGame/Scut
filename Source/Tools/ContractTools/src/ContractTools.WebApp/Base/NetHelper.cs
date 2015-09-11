@@ -142,6 +142,8 @@ namespace ContractTools.WebApp.Base
                     break;
                 case FieldType.Record:
                     break;
+                case FieldType.SigleRecord:
+                    break;
                 case FieldType.End:
                     break;
                 case FieldType.Void:

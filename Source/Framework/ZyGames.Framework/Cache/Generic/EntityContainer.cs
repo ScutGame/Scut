@@ -24,12 +24,15 @@ THE SOFTWARE.
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using ProtoBuf;
 using ZyGames.Framework.Cache.Generic.Pool;
 using ZyGames.Framework.Common;
+using ZyGames.Framework.Common.Log;
 using ZyGames.Framework.Event;
 using ZyGames.Framework.Model;
 using ZyGames.Framework.Net;
+using ZyGames.Framework.Redis;
 
 namespace ZyGames.Framework.Cache.Generic
 {
@@ -37,16 +40,16 @@ namespace ZyGames.Framework.Cache.Generic
     /// 缓存容器操作类,负责数据加载管理
     /// </summary>
     [ProtoContract, Serializable]
-    internal class EntityContainer<T> : BaseDisposable, IDataContainer<T>
+    public class EntityContainer<T> : BaseDisposable
         where T : IItemChangeEvent, IDataExpired, new()
     {
         private string _containerKey;
         private BaseCachePool _cachePool;
-        private readonly Func<bool> _loadFactory;
-        private readonly Func<string, bool> _loadItemFactory;
+        private readonly Func<bool, bool> _loadFactory;
+        private readonly Func<string, bool, bool> _loadItemFactory;
         private CacheContainer _container;
 
-        internal EntityContainer(BaseCachePool cachePool, Func<bool> loadFactory, Func<string, bool> loadItemFactory)
+        internal EntityContainer(BaseCachePool cachePool, Func<bool, bool> loadFactory, Func<string, bool, bool> loadItemFactory)
         {
             _cachePool = cachePool;
             _loadFactory = loadFactory;
@@ -59,6 +62,30 @@ namespace ZyGames.Framework.Cache.Generic
             }
         }
 
+        #region Init
+        /// <summary>
+        /// 初始化容器
+        /// </summary>
+        /// <param name="groupKey"></param>
+        /// <param name="periodTime"></param>
+        /// <returns></returns>
+        public CacheItemSet InitGroupContainer(string groupKey, int periodTime)
+        {
+            bool isMutilKey = EntitySchemaSet.Get<T>().IsMutilKey;
+            var lazy = new Lazy<CacheItemSet>(() =>
+            {
+                BaseCollection itemCollection = IsReadonly
+                    ? (BaseCollection)new ReadonlyCacheCollection()
+                    : new CacheCollection(isMutilKey ? 0 : 1);
+                var itemSet = CreateItemSet(CacheType.Dictionary, periodTime);
+                itemSet.HasCollection = true;
+                itemSet.SetItem(itemCollection);
+                return itemSet;
+            });
+
+            return Container.GetOrAdd(groupKey, name => lazy.Value);
+        }
+
         /// <summary>
         /// 分配内存
         /// </summary>
@@ -66,18 +93,27 @@ namespace ZyGames.Framework.Cache.Generic
         {
             _cachePool.InitContainer(_containerKey);
         }
+        #endregion
 
+        #region Property
+        /// <summary>
+        /// 
+        /// </summary>
         public bool IsReadonly
         {
             get;
             set;
         }
-
+        /// <summary>
+        /// 
+        /// </summary>
         public string RootKey
         {
             get { return _containerKey; }
         }
-
+        /// <summary>
+        /// 
+        /// </summary>
         public int Count
         {
             get
@@ -85,7 +121,9 @@ namespace ZyGames.Framework.Cache.Generic
                 return _container.Collection.Count;
             }
         }
-
+        /// <summary>
+        /// 
+        /// </summary>
         public bool IsEmpty
         {
             get
@@ -93,12 +131,16 @@ namespace ZyGames.Framework.Cache.Generic
                 return _container.Collection.IsEmpty;
             }
         }
-
+        /// <summary>
+        /// 
+        /// </summary>
         public LoadingStatus LoadStatus
         {
             get { return _container.LoadingStatus; }
         }
-
+        /// <summary>
+        /// 
+        /// </summary>
         public CacheItemSet[] ChildrenItem
         {
             get
@@ -127,7 +169,9 @@ namespace ZyGames.Framework.Cache.Generic
                 throw new Exception(string.Format("CacheContainer \"{0}\" is not created.", _containerKey));
             }
         }
+        #endregion
 
+        #region Contains
         private void CheckLoad()
         {
             //兼容调用AutoLoad方法时加载的部分数据
@@ -147,13 +191,79 @@ namespace ZyGames.Framework.Cache.Generic
             return _cachePool.CheckChanged(_containerKey, key);
         }
 
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="key"></param>
+        /// <returns></returns>
+        public bool ContainGroupKey(string key)
+        {
+            CacheItemSet itemSet;
+            if (Container.TryGetValue(key, out itemSet) && itemSet.HasLoadSuccess)
+            {
+                return itemSet.LoadingStatus == LoadingStatus.Success;
+            }
+            return false;
+        }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="match"></param>
+        /// <returns></returns>
+        public bool IsExistEntity(Predicate<T> match)
+        {
+            if (match == null)
+            {
+                throw new ArgumentNullException("match");
+            }
+            CheckLoad();
+            bool result = false;
+            Container.Foreach<CacheItemSet>((key, itemSet) =>
+            {
+                T entity = (T)itemSet.GetItem();
+                if (match(entity))
+                {
+                    result = true;
+                    return false;
+                }
+                return true;
+            });
+            return result;
+        }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="match"></param>
+        /// <returns></returns>
+        public bool IsExistGroup(Predicate<T> match)
+        {
+            if (match == null)
+            {
+                throw new ArgumentNullException("match");
+            }
+            CheckLoad();
+            bool result = false;
+            Container.Foreach<CacheItemSet>((key, itemSet) =>
+            {
+                BaseCollection enityGroup = (BaseCollection)itemSet.GetItem();
+                if (enityGroup.IsExist(match))
+                {
+                    result = true;
+                    return false;
+                }
+                return true;
+            });
+            return result;
+        }
+
         /// <summary>
         /// 
         /// </summary>
         /// <param name="key"></param>
         /// <param name="itemSet"></param>
         /// <returns></returns>
-        public bool TryGetCache(string key, out CacheItemSet itemSet)
+        public bool TryGetCacheItem(string key, out CacheItemSet itemSet)
         {
             if (Container.TryGetValue(key, out itemSet))
             {
@@ -162,6 +272,10 @@ namespace ZyGames.Framework.Cache.Generic
             return false;
         }
 
+
+        #endregion
+
+        #region Foreach
         /// <summary>
         /// 遍历实体
         /// </summary>
@@ -178,23 +292,6 @@ namespace ZyGames.Framework.Cache.Generic
                 T entity = (T)itemSet.GetItem();
                 return func(key, entity);
             });
-        }
-
-        public T TakeEntityFromKey(string key)
-        {
-            T value = default(T);
-            string entityKey = key;
-            Container.Foreach<CacheItemSet>((k, itemSet) =>
-            {
-                BaseCollection enityGroup = (BaseCollection)itemSet.GetItem();
-                if (enityGroup.ContainsKey(entityKey))
-                {
-                    value = enityGroup[entityKey] as T;
-                    return false;
-                }
-                return true;
-            });
-            return value;
         }
 
         /// <summary>
@@ -233,7 +330,10 @@ namespace ZyGames.Framework.Cache.Generic
                 return true;
             });
         }
-
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
         public List<KeyValuePair<string, CacheItemSet>> ToList()
         {
 
@@ -244,162 +344,100 @@ namespace ZyGames.Framework.Cache.Generic
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="match"></param>
         /// <returns></returns>
-        public bool IsExistEntity(Predicate<T> match)
+        public IEnumerable<T> ToEntityEnumerable(bool isLoad = false)
         {
-            if (match == null)
-            {
-                throw new ArgumentNullException("match");
-            }
-            CheckLoad();
-            bool result = false;
-            Container.Foreach<CacheItemSet>((key, itemSet) =>
-            {
-                T entity = (T)itemSet.GetItem();
-                if (match(entity))
-                {
-                    result = true;
-                    return false;
-                }
-                return true;
-            });
-            return result;
+            if (isLoad) CheckLoad();
+            return Container.GetEnumerable().Select(pari => pari.Value).OfType<CacheItemSet>().Select(itemSet => (T)itemSet.GetItem());
         }
 
-        public bool IsExistGroup(Predicate<T> match)
-        {
-            if (match == null)
-            {
-                throw new ArgumentNullException("match");
-            }
-            CheckLoad();
-            bool result = false;
-            Container.Foreach<CacheItemSet>((key, itemSet) =>
-            {
-                BaseCollection enityGroup = (BaseCollection)itemSet.GetItem();
-                if (enityGroup.IsExist(match))
-                {
-                    result = true;
-                    return false;
-                }
-                return true;
-            });
-            return result;
-        }
         /// <summary>
-        /// 重新加载数据
+        /// 
         /// </summary>
         /// <returns></returns>
-        public LoadingStatus ReLoad()
+        public IEnumerable<T> ToGroupEnumerable()
         {
-            if (_container != null && _loadFactory != null)
+            CheckLoad();
+            foreach (var pair in Container.GetEnumerable())
             {
-                //修正刷新缓存中已删除的数据问题
-                if (_container.IsEmpty)
-                {
-                    Initialize();
-                }
-                else
-                {
-                    _container.Collection.Clear();
-                }
-                _container.OnLoadFactory(_loadFactory, true);
+                var itemSet = pair.Value as CacheItemSet;
+                if (itemSet == null) continue;
+                var enityGroup = (BaseCollection)itemSet.GetItem();
 
-                return _container.LoadingStatus;
+                foreach (var @enum in enityGroup.GetEnumerable())
+                {
+                    yield return @enum.Value as T;
+                }
             }
-            return LoadingStatus.None;
         }
+        #endregion
 
+        #region Entity
         /// <summary>
-        /// 加载数据
-        /// </summary>
-        public LoadingStatus Load()
-        {
-            if (_container != null && _loadFactory != null)
-            {
-                if (_container.IsEmpty)
-                {
-                    Initialize();
-                }
-                if (_container.LoadingStatus != LoadingStatus.None)
-                {
-                    //ReLoad时需要清除掉之前的
-                    _container.Collection.Clear();
-                }
-                _container.OnLoadFactory(_loadFactory, false);
-                return _container.LoadingStatus;
-            }
-            return LoadingStatus.None;
-        }
-
-        /// <summary>
-        /// 加载指定Key数据
+        /// 
         /// </summary>
         /// <param name="key"></param>
         /// <returns></returns>
-        public bool LoadItem(string key)
+        public T TakeEntityFromKey(string key)
         {
-            if (string.IsNullOrEmpty(key))
+            T value = default(T);
+            foreach (var pair in Container.GetEnumerable())
             {
-                throw new ArgumentNullException("key");
-            }
-            lock (key)
-            {
-                CacheItemSet itemSet;
-                bool isExist = Container.TryGetValue(key, out itemSet);
-                if (isExist && !itemSet.HasLoadError)
+                var itemSet = pair.Value as CacheItemSet;
+                if (itemSet == null) continue;
+                var enityGroup = (BaseCollection)itemSet.GetItem();
+
+                if (enityGroup.TryGetValue(key, out value))
                 {
-                    return true;
-                }
-                if (_loadItemFactory != null)
-                {
-                    return _loadItemFactory(key);
+                    break;
                 }
             }
-            return false;
+            //string entityKey = key;
+            //Container.Foreach<CacheItemSet>((k, itemSet) =>
+            //{
+            //    BaseCollection enityGroup = (BaseCollection)itemSet.GetItem();
+            //    if (enityGroup.ContainsKey(entityKey))
+            //    {
+            //        value = enityGroup[entityKey] as T;
+            //        return false;
+            //    }
+            //    return true;
+            //});
+            return value;
         }
 
-        public List<V> LoadFrom<V>(TransReceiveParam receiveParam) where V : AbstractEntity, new()
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="keys"></param>
+        /// <param name="isAutoLoad"></param>
+        /// <returns></returns>
+        public IEnumerable<T> TakeOrLoadGroup(IEnumerable<string> keys, bool isAutoLoad)
         {
-            List<V> dataList = null;
-            if (_container != null && _loadFactory != null)
-            {
-                if (_container.IsEmpty)
-                {
-                    Initialize();
-                }
-                if (_container.LoadingStatus != LoadingStatus.None)
-                {
-                    //ReLoad时需要清除掉之前的
-                    _container.Collection.Clear();
-                }
-                _container.OnLoadFactory(() =>
-                {
-                    if (_cachePool.TryReceiveData(receiveParam, out dataList))
-                    {
-                        return true;
-                    }
-                    return false;
-                }, true);
-
-            }
-            return dataList;
+            return GetMutilCacheItem(keys, isAutoLoad);
         }
 
         /// <summary>
         /// 
         /// </summary>
         /// <param name="key"></param>
+        /// <param name="isAutoLoad"></param>
         /// <returns></returns>
-        public bool ReLoadItem(string key)
+        public IEnumerable<T> TakeOrLoadGroup(string key, bool isAutoLoad)
         {
-            CacheItemSet itemSet;
-            if (Container.TryGetValue(key, out itemSet))
+            BaseCollection enityGroup;
+            LoadingStatus loadStatus;
+            if (TryGetCacheItem(key, isAutoLoad, out enityGroup, out loadStatus))
             {
-                itemSet.SetRemoveStatus();
+                foreach (var @enum in enityGroup.GetEnumerable())
+                {
+                    yield return @enum.Value as T;
+                }
             }
-            return LoadItem(key);
+            else
+            {
+                throw new Exception(string.Format("Load {0}.{1} fail.", _containerKey, key));
+            }
         }
 
         /// <summary>
@@ -413,16 +451,32 @@ namespace ZyGames.Framework.Cache.Generic
             LoadingStatus loadStatus;
             return TryGetCacheItem(entityKey, true, out entityData, out loadStatus);
         }
+
         /// <summary>
         /// 
         /// </summary>
         /// <param name="entityKey"></param>
         /// <param name="entityData"></param>
         /// <param name="periodTime"></param>
+        /// <param name="isLoad"></param>
         /// <returns></returns>
-        public bool AddOrUpdateEntity(string entityKey, T entityData, int periodTime)
+        public bool AddOrUpdateEntity(string entityKey, T entityData, int periodTime, bool isLoad = false)
         {
             CacheItemSet itemSet;
+            return AddOrUpdateEntity(entityKey, entityData, periodTime, out itemSet, isLoad);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="entityKey"></param>
+        /// <param name="entityData"></param>
+        /// <param name="periodTime"></param>
+        /// <param name="itemSet"></param>
+        /// <param name="isLoad"></param>
+        /// <returns></returns>
+        public bool AddOrUpdateEntity(string entityKey, T entityData, int periodTime, out  CacheItemSet itemSet, bool isLoad = false)
+        {
             if (!Container.TryGetValue(entityKey, out itemSet))
             {
                 itemSet = CreateItemSet(CacheType.Entity, periodTime);
@@ -433,23 +487,15 @@ namespace ZyGames.Framework.Cache.Generic
                 }
             }
             CheckEventBind(entityData as AbstractEntity);
-            entityData.IsInCache = true;
-            entityData.TriggerNotify();
             itemSet.SetItem(entityData);
-            itemSet.OnLoadSuccess();
+            if (!isLoad)
+            {
+                entityData.TriggerNotify();
+            }
+            entityData.IsInCache = true;
             return true;
         }
 
-
-        private CacheItemSet CreateItemSet(CacheType cacheType, int periodTime)
-        {
-            CacheItemSet itemSet = new CacheItemSet(cacheType, periodTime, IsReadonly);
-            if (!IsReadonly && _cachePool.Setting != null)
-            {
-                itemSet.OnChangedNotify += _cachePool.Setting.OnChangedNotify;
-            }
-            return itemSet;
-        }
 
         /// <summary>
         /// 
@@ -457,22 +503,28 @@ namespace ZyGames.Framework.Cache.Generic
         /// <param name="entityKey"></param>
         /// <param name="entityData"></param>
         /// <param name="periodTime"></param>
+        /// <param name="itemSet"></param>
+        /// <param name="isLoad"></param>
         /// <returns></returns>
-        public bool TryAddEntity(string entityKey, T entityData, int periodTime)
+        public bool TryAddEntity(string entityKey, T entityData, int periodTime, out  CacheItemSet itemSet, bool isLoad = false)
         {
-            var itemSet = CreateItemSet(CacheType.Entity, periodTime);
+            itemSet = CreateItemSet(CacheType.Entity, periodTime);
             itemSet.SetItem(entityData);
             if (Container.TryAdd(entityKey, itemSet))
             {
                 CheckEventBind(entityData as AbstractEntity);
+                if (!isLoad)
+                {
+                    entityData.TriggerNotify();
+                }
                 entityData.IsInCache = true;
-                entityData.TriggerNotify();
-                itemSet.OnLoadSuccess();
                 return true;
             }
             return false;
         }
+        #endregion
 
+        #region Personal
         /// <summary>
         /// 分组集合模型
         /// </summary>
@@ -491,8 +543,9 @@ namespace ZyGames.Framework.Cache.Generic
         /// <param name="key"></param>
         /// <param name="entityData"></param>
         /// <param name="periodTime"></param>
+        /// <param name="isLoad"></param>
         /// <returns></returns>
-        public bool AddOrUpdateGroup(string groupKey, string key, T entityData, int periodTime)
+        public bool AddOrUpdateGroup(string groupKey, string key, T entityData, int periodTime, bool isLoad = false)
         {
             bool result = false;
             CacheItemSet itemSet = InitGroupContainer(groupKey, periodTime);
@@ -504,19 +557,16 @@ namespace ZyGames.Framework.Cache.Generic
                 {
                     var temp = entityData as AbstractEntity;
                     CheckEventBind(temp);
-                    entityData.IsInCache = true;
-                    if (temp != null && (temp.IsNew || temp.HasChanged))
+                    if (!isLoad)
                     {
                         entityData.TriggerNotify();
                     }
-                    if (itemSet.LoadingStatus == LoadingStatus.None)
-                    {
-                        itemSet.OnLoadSuccess();
-                    }
+                    entityData.IsInCache = true;
                 }
             }
             return result;
         }
+
         /// <summary>
         /// 
         /// </summary>
@@ -524,8 +574,9 @@ namespace ZyGames.Framework.Cache.Generic
         /// <param name="key"></param>
         /// <param name="entityData"></param>
         /// <param name="periodTime"></param>
+        /// <param name="isLoad"></param>
         /// <returns></returns>
-        public bool TryAddGroup(string groupKey, string key, T entityData, int periodTime)
+        public bool TryAddGroup(string groupKey, string key, T entityData, int periodTime, bool isLoad = false)
         {
             CacheItemSet itemSet = InitGroupContainer(groupKey, periodTime);
             if (itemSet != null)
@@ -533,37 +584,37 @@ namespace ZyGames.Framework.Cache.Generic
                 if (!Equals(entityData, default(T)) && ((BaseCollection)itemSet.GetItem()).TryAdd(key, entityData))
                 {
                     CheckEventBind(entityData as AbstractEntity);
+                    if (!isLoad)
+                    {
+                        entityData.TriggerNotify();
+                    }
                     entityData.IsInCache = true;
-                    entityData.TriggerNotify();
-                    itemSet.OnLoadSuccess();
                     return true;
                 }
             }
             return false;
         }
-
         /// <summary>
-        /// 初始化容器
+        /// 
         /// </summary>
-        /// <param name="groupKey"></param>
-        /// <param name="periodTime"></param>
+        /// <param name="key"></param>
+        /// <param name="list"></param>
         /// <returns></returns>
-        public CacheItemSet InitGroupContainer(string groupKey, int periodTime)
+        public bool TryTakeGroup(string key, out T[] list)
         {
-            var lazy = new Lazy<CacheItemSet>(() =>
+            list = default(T[]);
+            CacheItemSet itemSet;
+            if (Container.TryGetValue(key, out itemSet) && itemSet.HasLoadSuccess)
             {
-                BaseCollection itemCollection = IsReadonly
-                    ? (BaseCollection)new ReadonlyCacheCollection()
-                    : new CacheCollection();
-                var itemSet = CreateItemSet(CacheType.Dictionary, periodTime);
-                itemSet.HasCollection = true;
-                itemSet.SetItem(itemCollection);
-                return itemSet;
-            });
-
-            return Container.GetOrAdd(groupKey, name => lazy.Value);
+                BaseCollection enityGroup = (BaseCollection)itemSet.GetItem();
+                list = enityGroup.Values.Cast<T>().ToArray();
+                return true;
+            }
+            return false;
         }
+        #endregion
 
+        #region Queue
         /// <summary>
         /// 队列模型
         /// </summary>
@@ -597,14 +648,496 @@ namespace ZyGames.Framework.Cache.Generic
             var itemSet = Container.GetOrAdd(groupKey, name => lazy.Value);
             if (itemSet != null)
             {
-                entityData.IsInCache = true;
                 //队列不存Redis,不触发事件
                 ((CacheQueue<T>)itemSet.GetItem()).Enqueue(entityData);
+                entityData.IsInCache = true;
+                return true;
+            }
+            return false;
+        }
+        #endregion
+
+        #region Rank
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="key"></param>
+        /// <param name="count"></param>
+        /// <returns></returns>
+        public bool TryGetRankCount(string key, out int count)
+        {
+            count = 0;
+            LoadingStatus loadStatus;
+            CacheList<T> cacheItems;
+            if (TryGetCacheItem(key, true, out cacheItems, out loadStatus))
+            {
+                count = cacheItems.Count;
                 return true;
             }
             return false;
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="key"></param>
+        /// <param name="match"></param>
+        /// <returns></returns>
+        public IEnumerable<int> GetRankNo<V>(string key, Predicate<V> match) where V : RankEntity, new()
+        {
+            LoadingStatus loadStatus;
+            CacheList<V> cacheItems;
+            if (!TryGetCacheItem(key, true, out cacheItems, out loadStatus))
+            {
+                throw new Exception(string.Format("Not key:{0} items", key));
+            }
+            int index = 0;
+            foreach (var cacheItem in cacheItems)
+            {
+                index++;
+                if (match(cacheItem))
+                {
+                    yield return index;
+                }
+            }
+            yield return -1;
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="key"></param>
+        /// <param name="count"></param>
+        /// <param name="list"></param>
+        /// <returns></returns>
+        public bool TryGetRangeRank(string key, int? count, out IEnumerable<T> list)
+        {
+            list = null;
+            LoadingStatus loadStatus;
+            CacheList<T> cacheItems;
+            if (TryGetCacheItem(key, true, out cacheItems, out loadStatus))
+            {
+                list = !count.HasValue ? cacheItems : cacheItems.Take(count.Value);
+                return true;
+            }
+            return false;
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="key"></param>
+        /// <param name="dataList"></param>
+        public bool SetRangeRank<V>(string key, params V[] dataList) where V : RankEntity, new()
+        {
+            LoadingStatus loadStatus;
+            CacheList<V> cacheItems;
+            if (!TryGetCacheItem(key, true, out cacheItems, out loadStatus))
+            {
+                return false;
+            }
+            var schema = EntitySchemaSet.Get<V>();
+            TransSendParam sendParam = new TransSendParam(key) { Schema = schema };
+            foreach (var item in dataList)
+            {
+                item.IsInCache = true;
+                cacheItems.InsertSort(item, (x, y) => x.CompareTo(y));
+            }
+            return _cachePool.TrySetRankData(sendParam, dataList);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <typeparam name="V"></typeparam>
+        /// <param name="key"></param>
+        /// <param name="item"></param>
+        public void RankSort<V>(string key, V item) where V : RankEntity, new()
+        {
+            LoadingStatus loadStatus;
+            CacheList<V> cacheItems;
+            if (!TryGetCacheItem(key, true, out cacheItems, out loadStatus))
+            {
+                return;
+            }
+            //score desc
+            cacheItems.MoveBySort(item, (x, y) => y.Score.CompareTo(x.Score));
+            _cachePool.TryUpdateRankEntity(key, cacheItems.ToArray());
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <typeparam name="V"></typeparam>
+        /// <param name="key"></param>
+        public void RankSort<V>(string key) where V : RankEntity, new()
+        {
+            LoadingStatus loadStatus;
+            CacheList<V> cacheItems;
+            if (!TryGetCacheItem(key, true, out cacheItems, out loadStatus))
+            {
+                return;
+            }
+            cacheItems.SortDesc(t => t.Score);
+            _cachePool.TryUpdateRankEntity(key, cacheItems.ToArray());
+        }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="key"></param>
+        /// <param name="t1"></param>
+        /// <param name="t2"></param>
+        /// <returns></returns>
+        public bool TryExchangeRank<V>(string key, V t1, V t2) where V : RankEntity, new()
+        {
+            LoadingStatus loadStatus;
+            CacheList<V> cacheItems;
+            if (!TryGetCacheItem(key, true, out cacheItems, out loadStatus))
+            {
+                return false;
+            }
+            if (_cachePool.TryExchangeRankData(key, t1, t2))
+            {
+                int index1 = cacheItems.BinarySearch(t1);
+                int index2 = cacheItems.BinarySearch(t2);
+                cacheItems.Exchange(index1, index2, (x, y) =>
+                {
+                    var a = x.Score;
+                    var b = y.Score;
+                    x.Score = b;
+                    y.Score = a;
+                });
+                return true;
+            }
+            return false;
+        }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="key"></param>
+        /// <param name="fromScore"></param>
+        /// <param name="toScore">-1: all</param>
+        /// <returns></returns>
+        public bool RemoveRankByScore<V>(string key, double fromScore, double? toScore) where V : RankEntity, new()
+        {
+            LoadingStatus loadStatus;
+            CacheList<V> cacheItems;
+            if (!TryGetCacheItem(key, true, out cacheItems, out loadStatus))
+            {
+                return false;
+            }
+            List<V> removeList;
+            if (!cacheItems.RemoveAll(t => t.Score >= fromScore && (!toScore.HasValue || t.Score <= toScore.Value), out removeList))
+            {
+                return true;
+            }
+            foreach (var entity in removeList)
+            {
+                entity.IsInCache = false;
+                entity.IsExpired = true;
+                entity.OnDelete();
+            }
+            var schema = EntitySchemaSet.Get<V>();
+            TransSendParam sendParam = new TransSendParam(key) { Schema = schema };
+            return _cachePool.TrySetRankData(sendParam, removeList.ToArray());
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="key"></param>
+        /// <param name="dataList"></param>
+        /// <param name="periodTime"></param>
+        /// <param name="isLoad"></param>
+        /// <param name="isReplace"></param>
+        /// <returns></returns>
+        internal bool TryLoadRangeRank<V>(string key, IEnumerable<V> dataList, int periodTime = 0, bool isLoad = false, bool isReplace = false) where V : RankEntity, new()
+        {
+            CacheItemSet itemSet;
+            if (!TryGetOrAddRank(key, out itemSet, periodTime)) return false;
+            var cacheItems = (CacheList<V>)itemSet.GetItem();
+            if (isReplace && cacheItems.Count > 0)
+            {
+                cacheItems.Clear();
+            }
+            foreach (var item in dataList)
+            {
+                item.IsInCache = true;
+                cacheItems.InsertSort(item, (x, y) => x.CompareTo(y));
+            }
+            if (isLoad) itemSet.OnLoadSuccess();
+            return true;
+        }
+
+        internal bool TryGetOrAddRank(string key, out CacheItemSet itemSet, int periodTime = 0)
+        {
+            if (!Container.TryGetValue(key, out itemSet))
+            {
+                itemSet = new CacheItemSet(CacheType.Rank, periodTime, IsReadonly);
+                itemSet.SetItem(new CacheList<T>());
+                if (!Container.TryAdd(key, itemSet))
+                {
+                    return false;
+                }
+            }
+            return true;
+        }
+
+
+        #endregion
+
+        #region Load
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <typeparam name="V"></typeparam>
+        /// <param name="receiveParam"></param>
+        /// <param name="dataList"></param>
+        /// <returns></returns>
+        public bool TryReceiveData<V>(TransReceiveParam receiveParam, out List<V> dataList) where V : AbstractEntity, new()
+        {
+            return _cachePool.TryReceiveData(receiveParam, out dataList);
+        }
+
+        /// <summary>
+        /// 尝试从DB中恢复数据
+        /// </summary>
+        /// <typeparam name="V"></typeparam>
+        /// <param name="receiveParam"></param>
+        /// <param name="dataList"></param>
+        /// <returns></returns>
+        public bool TryRecoverFromDb<V>(TransReceiveParam receiveParam, out List<V> dataList) where V : AbstractEntity, new()
+        {
+            return _cachePool.TryLoadFromDb(receiveParam, out dataList);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <typeparam name="V"></typeparam>
+        /// <param name="redisKey"></param>
+        /// <param name="dataList"></param>
+        /// <returns></returns>
+        public bool TryLoadHistory<V>(string redisKey, out List<V> dataList) where V : AbstractEntity, new()
+        {
+            return _cachePool.TryLoadHistory(redisKey, out dataList);
+        }
+
+
+        /// <summary>
+        /// 重新加载数据
+        /// </summary>
+        /// <returns></returns>
+        public LoadingStatus ReLoad()
+        {
+            if (_container != null && _loadFactory != null)
+            {
+                //修正刷新缓存中已删除的数据问题
+                if (_container.IsEmpty)
+                {
+                    Initialize();
+                }
+                else
+                {
+                    _container.Collection.Clear();
+                    _container.ResetStatus();
+                }
+                _container.OnLoadFactory(_loadFactory, true);
+
+                return _container.LoadingStatus;
+            }
+            return LoadingStatus.None;
+        }
+
+        /// <summary>
+        /// 加载数据
+        /// </summary>
+        public LoadingStatus Load()
+        {
+            if (_container != null && _loadFactory != null)
+            {
+                if (_container.IsEmpty)
+                {
+                    Initialize();
+                }
+                if (_container.LoadingStatus != LoadingStatus.None)
+                {
+                    //如果是新增加的不能清除
+                    _container.Collection.Clear();
+                    _container.ResetStatus();
+                }
+                _container.OnLoadFactory(_loadFactory, false);
+                return _container.LoadingStatus;
+            }
+            return LoadingStatus.None;
+        }
+
+        /// <summary>
+        /// 加载指定Key数据
+        /// </summary>
+        /// <param name="key"></param>
+        /// <param name="isReplace"></param>
+        /// <returns></returns>
+        public bool LoadItem(string key, bool isReplace)
+        {
+            if (string.IsNullOrEmpty(key))
+            {
+                throw new ArgumentNullException("key");
+            }
+
+            CacheItemSet itemSet;
+            bool isExist = Container.TryGetValue(key, out itemSet);
+            if (isExist && itemSet.HasLoadSuccess)
+            {
+                //已同步成功，不需再次加载
+                return true;
+            }
+
+            if (_loadItemFactory != null)
+            {
+                return _loadItemFactory(key, isReplace);
+            }
+            return false;
+
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <typeparam name="V"></typeparam>
+        /// <param name="receiveParam"></param>
+        /// <returns></returns>
+        public List<V> LoadFrom<V>(TransReceiveParam receiveParam) where V : AbstractEntity, new()
+        {
+            List<V> dataList = null;
+            if (_container != null && _loadFactory != null)
+            {
+                if (_container.IsEmpty)
+                {
+                    Initialize();
+                }
+                if (_container.LoadingStatus != LoadingStatus.None)
+                {
+                    //新增的数据不能清除掉
+                    _container.Collection.Clear();
+                    _container.ResetStatus();
+                }
+                _container.OnLoadFactory((r) =>
+                {
+                    if (_cachePool.TryReceiveData(receiveParam, out dataList))
+                    {
+                        return true;
+                    }
+                    return false;
+                }, true);
+
+            }
+            return dataList;
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="key"></param>
+        /// <returns></returns>
+        public bool ReLoadItem(string key)
+        {
+            CacheItemSet itemSet;
+            if (Container.TryGetValue(key, out itemSet))
+            {
+                itemSet.ResetStatus();
+            }
+            return LoadItem(key, true);
+        }
+
+        #endregion
+
+        #region SendTo
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <typeparam name="V"></typeparam>
+        /// <param name="dataList"></param>
+        /// <param name="sendParam"></param>
+        public void SendData<V>(V[] dataList, TransSendParam sendParam) where V : AbstractEntity, new()
+        {
+
+            _cachePool.SendData(dataList, sendParam);
+        }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <typeparam name="V"></typeparam>
+        /// <param name="dataList"></param>
+        /// <returns></returns>
+        public bool SendSync<V>(IEnumerable<V> dataList) where V : AbstractEntity, new()
+        {
+            return DataSyncQueueManager.SendSync(dataList);
+        }
+        #endregion
+
+        #region GetChanged
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="changeKey"></param>
+        /// <param name="isChange"></param>
+        /// <returns></returns>
+        protected List<KeyValuePair<string, CacheItemSet>> GetChangeList(string changeKey, bool isChange)
+        {
+
+            return _cachePool.GetChangeList<KeyValuePair<string, CacheItemSet>>(_containerKey, changeKey, isChange);
+        }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="changeKey"></param>
+        /// <param name="isChange"></param>
+        /// <returns></returns>
+        public List<KeyValuePair<string, T>> GetChangeEntity(string changeKey, bool isChange)
+        {
+            List<KeyValuePair<string, CacheItemSet>> changeList = GetChangeList(changeKey, isChange);
+            return changeList.Select(pair =>
+            {
+                T entity = (T)pair.Value.ItemData;
+                return new KeyValuePair<string, T>(pair.Key, entity);
+            }).ToList();
+        }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="changeKey"></param>
+        /// <param name="isChange"></param>
+        /// <returns></returns>
+        public List<KeyValuePair<string, T>> GetChangeGroup(string changeKey, bool isChange)
+        {
+            List<KeyValuePair<string, CacheItemSet>> changeList = GetChangeList(changeKey, isChange);
+            return (from pair in changeList
+                    let itemList = (BaseCollection)pair.Value.ItemData
+                    let itemArray = itemList.ToList<T>()
+                    from itemPair in itemArray
+                    select new KeyValuePair<string, T>(pair.Key, itemPair.Value)).ToList();
+        }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="changeKey"></param>
+        /// <param name="isChange"></param>
+        /// <returns></returns>
+        public List<KeyValuePair<string, T>> GetChangeQueue(string changeKey, bool isChange)
+        {
+            List<KeyValuePair<string, CacheItemSet>> changeList = GetChangeList(changeKey, isChange);
+            return (from pair in changeList
+                    let itemList = (CacheQueue<T>)pair.Value.ItemData
+                    let itemArray = itemList.ToArray()
+                    from item in itemArray
+                    select new KeyValuePair<string, T>(pair.Key, item)).ToList();
+        }
+
+        #endregion
+
+        #region Remove
         /// <summary>
         /// Remove entity from the cache, if use loaded from Redis
         /// </summary>
@@ -617,23 +1150,18 @@ namespace ZyGames.Framework.Cache.Generic
             CacheItemSet itemSet;
             if (Container.TryRemove(groupKey, out itemSet))
             {
-                bool result = true;
-                if (callback != null)
+                var entity = itemSet.ItemData as IItemChangeEvent;
+                if (entity != null)
                 {
-                    result = callback(itemSet);
+                    entity.IsInCache = false;
+                    entity.IsExpired = true;
                 }
-                if (result)
+                if (callback != null && callback(itemSet))
                 {
-                    var entity = itemSet.ItemData as IItemChangeEvent;
-                    if (entity != null)
-                    {
-                        entity.IsInCache = false;
-                        entity.IsExpired = true;
-                    }
-                    itemSet.SetRemoveStatus();
+                    itemSet.ResetStatus();
                     itemSet.Dispose();
+                    return true;
                 }
-                return result;
             }
             return false;
         }
@@ -655,23 +1183,18 @@ namespace ZyGames.Framework.Cache.Generic
                 var items = (BaseCollection)itemSet.GetItem();
                 if (items.TryRemove(key, out entityData))
                 {
-                    bool result = true;
-                    if (callback != null)
-                    {
-                        result = callback(entityData);
-                    }
-                    if (result)
+                    entityData.IsInCache = false;
+                    entityData.IsExpired = true;
+                    if (callback != null && callback(entityData))
                     {
                         //Not trigger event notify
-                        entityData.IsInCache = false;
-                        entityData.IsExpired = true;
                         entityData.Dispose();
                     }
-                    return result;
+                    return true;
                 }
                 if (items.Count == 0 && Container.TryRemove(groupKey, out itemSet))
                 {
-                    itemSet.SetRemoveStatus();
+                    itemSet.ResetStatus();
                     itemSet.Dispose();
                 }
             }
@@ -687,69 +1210,19 @@ namespace ZyGames.Framework.Cache.Generic
             CacheContainer container;
             if (_cachePool.TryRemove(_containerKey, out container, callback))
             {
-                container.SetRemoveStatus();
+                container.Collection.Clear();
+                container.ResetStatus();
                 return true;
             }
             return false;
         }
+        #endregion
 
-        public bool TryReceiveData<V>(TransReceiveParam receiveParam, out List<V> dataList) where V : AbstractEntity, new()
-        {
-            return _cachePool.TryReceiveData(receiveParam, out dataList);
-        }
-
-        public bool TryLoadHistory<V>(string redisKey, out List<V> dataList) where V : AbstractEntity, new()
-        {
-            return _cachePool.TryLoadHistory(redisKey, out dataList);
-        }
-
-        public void SendData<V>(V[] dataList, TransSendParam sendParam) where V : AbstractEntity, new()
-        {
-
-            _cachePool.SendData(dataList, sendParam);
-        }
-
-        protected List<KeyValuePair<string, CacheItemSet>> GetChangeList(string changeKey, bool isChange)
-        {
-
-            return _cachePool.GetChangeList<KeyValuePair<string, CacheItemSet>>(_containerKey, changeKey, isChange);
-        }
-
-        public List<KeyValuePair<string, T>> GetChangeEntity(string changeKey, bool isChange)
-        {
-
-            List<KeyValuePair<string, CacheItemSet>> changeList = GetChangeList(changeKey, isChange);
-            return changeList.Select(pair =>
-            {
-                T entity = (T)pair.Value.ItemData;
-                return new KeyValuePair<string, T>(pair.Key, entity);
-            }).ToList();
-        }
-
-        public List<KeyValuePair<string, T>> GetChangeGroup(string changeKey, bool isChange)
-        {
-
-            List<KeyValuePair<string, CacheItemSet>> changeList = GetChangeList(changeKey, isChange);
-            return (from pair in changeList
-                    let itemList = (BaseCollection)pair.Value.ItemData
-                    let itemArray = itemList.ToList<T>()
-                    from itemPair in itemArray
-                    where itemPair.Value.HasChanged
-                    select new KeyValuePair<string, T>(pair.Key, itemPair.Value)).ToList();
-        }
-
-        public List<KeyValuePair<string, T>> GetChangeQueue(string changeKey, bool isChange)
-        {
-
-            List<KeyValuePair<string, CacheItemSet>> changeList = GetChangeList(changeKey, isChange);
-            return (from pair in changeList
-                    let itemList = (CacheQueue<T>)pair.Value.ItemData
-                    let itemArray = itemList.ToArray()
-                    from item in itemArray
-                    where item.HasChanged
-                    select new KeyValuePair<string, T>(pair.Key, item)).ToList();
-        }
-
+        #region event
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="key"></param>
         public void UnChangeNotify(string key)
         {
             CacheItemSet itemSet;
@@ -771,30 +1244,9 @@ namespace ZyGames.Framework.Cache.Generic
                 }
             }
         }
+        #endregion
 
-        /// <summary>
-        /// 尝试从DB中恢复数据
-        /// </summary>
-        /// <typeparam name="V"></typeparam>
-        /// <param name="receiveParam"></param>
-        /// <param name="dataList"></param>
-        /// <returns></returns>
-        public bool TryRecoverFromDb<V>(TransReceiveParam receiveParam, out List<V> dataList) where V : AbstractEntity, new()
-        {
-            return _cachePool.TryLoadFromDb(receiveParam, out dataList);
-        }
-
-        protected override void Dispose(bool disposing)
-        {
-            if (disposing)
-            {
-                _containerKey = null;
-                _cachePool = null;
-                _container = null;
-            }
-            base.Dispose(disposing);
-        }
-
+        #region private
         /// <summary>
         /// 尝试取缓存项，若不存在则自动加载
         /// </summary>
@@ -814,26 +1266,95 @@ namespace ZyGames.Framework.Cache.Generic
             }
             //处理分组方法加载，在内存中存在且加载不出错时，才不需要重读
             CacheItemSet itemSet;
-            if (Container.TryGetValue(groupKey, out itemSet) && !itemSet.HasLoadError)
+            if (Container.TryGetValue(groupKey, out itemSet) && itemSet.HasLoadSuccess)
             {
                 itemData = (TValue)itemSet.GetItem();
                 loadStatus = itemSet.LoadingStatus;
                 return true;
             }
-            if (isAutoLoad && LoadItem(groupKey))
+            if (isAutoLoad && LoadItem(groupKey, false))
             {
-                if (Container.TryGetValue(groupKey, out itemSet) && !itemSet.HasLoadError)
+                if (Container.TryGetValue(groupKey, out itemSet) && itemSet.HasLoadSuccess)
                 {
                     loadStatus = itemSet.LoadingStatus;
                     itemData = (TValue)itemSet.GetItem();
                     return true;
                 }
             }
+            //fail
             if (Container.TryGetValue(groupKey, out itemSet))
             {
                 loadStatus = itemSet.LoadingStatus;
             }
             return false;
+        }
+
+        private IEnumerable<T> GetMutilCacheItem(IEnumerable<string> keys, bool isAutoLoad)
+        {
+            CheckLoad();
+            //保证返回顺序
+            var result = new List<T>();
+            var loadKey = new List<string>();
+            var indexList = new Queue<int>();
+            foreach (var key in keys)
+            {
+                CacheItemSet itemSet;
+                if (isAutoLoad && Container.TryGetValue(key, out itemSet) && itemSet.HasLoadSuccess)
+                {
+                    var itemData = itemSet.GetItem();
+                    var collection = itemData as BaseCollection;
+                    if (collection == null)
+                    {
+                        result.Add((T)itemData);
+                    }
+                    else
+                    {
+                        result.AddRange(collection.Select(pair => (T)pair.Value));
+                    }
+                }
+                else
+                {
+                    loadKey.Add(key);
+                    indexList.Enqueue(result.Count);
+                    result.Add(null);
+                }
+            }
+            if (loadKey.Count == 0)
+            {
+                return result;
+            }
+            var enumratable = RedisConnectionPool.GetAllEntity<T>(loadKey);
+            foreach (var t in enumratable)
+            {
+                var entity = t as AbstractEntity;
+                if (entity == null) continue;
+                CacheItemSet itemSet;
+                if (CacheFactory.AddOrUpdateEntity(entity, out itemSet))
+                {
+                    itemSet.OnLoadSuccess();
+                }
+                int index = indexList.Count > 0 ? indexList.Dequeue() : -1;
+                if (index == -1)
+                {
+                    result.Add(t);
+                }
+                else
+                {
+                    result[index] = t;
+                }
+            }
+            return result;
+        }
+
+
+        private CacheItemSet CreateItemSet(CacheType cacheType, int periodTime)
+        {
+            CacheItemSet itemSet = new CacheItemSet(cacheType, periodTime, IsReadonly);
+            if (!IsReadonly && _cachePool.Setting != null)
+            {
+                itemSet.OnChangedNotify += _cachePool.Setting.OnChangedNotify;
+            }
+            return itemSet;
         }
 
         /// <summary>
@@ -843,18 +1364,38 @@ namespace ZyGames.Framework.Cache.Generic
         private void CheckEventBind(AbstractEntity data)
         {
             if (data == null || data.IsReadOnly) return;
+            var schema = data.GetSchema();
+            if (!schema.HasObjectColumns) return;
 
-            var columns = data.GetSchema().GetObjectColumns();
+            var columns = schema.GetObjectColumns();
             foreach (var column in columns)
             {
                 var temp = data.GetPropertyValue(column.Name) as IItemChangeEvent;
                 if (temp != null && temp.ItemEvent.Parent == null)
                 {
-                    temp.IsInCache = true;
                     temp.PropertyName = column.Name;
                     data.AddChildrenListener(temp);
+                    temp.IsInCache = true;
                 }
             }
         }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="disposing"></param>
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                _containerKey = null;
+                _cachePool = null;
+                _container = null;
+            }
+            base.Dispose(disposing);
+        }
+        #endregion
+
+
     }
 }

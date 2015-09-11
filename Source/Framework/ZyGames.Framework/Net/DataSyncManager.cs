@@ -70,6 +70,12 @@ namespace ZyGames.Framework.Net
             return new SqlDataReceiver(schema, filter).TryReceive(setFunc, out dataList);
         }
 
+        public static bool SendSql<T>(IEnumerable<T> dataList, bool isChange = false, bool synchronous = false)
+            where T : ISqlEntity
+        {
+            return SendSql(dataList, isChange, null, null, synchronous);
+        }
+
         /// <summary>
         /// 
         /// </summary>
@@ -93,11 +99,12 @@ namespace ZyGames.Framework.Net
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="redisKey"></param>
+        /// <param name="schema"></param>
+        /// <param name="key"></param>
         /// <returns></returns>
-        public static IDataSender GetRedisSender(string redisKey)
+        public static IDataSender GetRedisSender(SchemaTable schema, string key)
         {
-            return new RedisDataSender();
+            return new RedisDataSender(new TransSendParam(key) { Schema = schema });
         }
         /// <summary>
         /// 

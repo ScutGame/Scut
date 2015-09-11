@@ -64,6 +64,30 @@ namespace ZyGames.Framework.RPC.IO
         /// </summary>
         /// <param name="data"></param>
         /// <returns></returns>
+        public static Byte[] GetBytes(byte[] data)
+        {
+            return GetBytes(data, 0, data.Length);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="data"></param>
+        /// <param name="pos"></param>
+        /// <param name="count"></param>
+        /// <returns></returns>
+        static public Byte[] GetBytes(byte[] data, int pos, int count)
+        {
+            var buffer = new byte[count];
+            Buffer.BlockCopy(data, pos, buffer, 0, count);
+            return buffer;
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="data"></param>
+        /// <returns></returns>
         static public Byte[] GetBytes(Int16 data)
         {
             return BitConverter.GetBytes(data);

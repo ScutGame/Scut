@@ -583,7 +583,7 @@ namespace ZyGames.Framework.Game.Service
         /// <param name="value"></param>
         protected static void WriteDateTime(BaseGameResponse response, DateTime value)
         {
-            long ts = (value.ToDateTime() - MathUtils.UnixEpochDateTime).TotalSeconds.ToLong();
+            long ts = (value.ToUniversalTime() - MathUtils.UnixEpochDateTime).TotalSeconds.ToLong();
             byte[] outputStream = BitConverter.GetBytes(ts);
             response.Write(outputStream);
         }

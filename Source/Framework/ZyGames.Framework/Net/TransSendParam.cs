@@ -21,6 +21,9 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ****************************************************************************/
+
+using ZyGames.Framework.Model;
+
 namespace ZyGames.Framework.Net
 {
     /// <summary>
@@ -36,28 +39,26 @@ namespace ZyGames.Framework.Net
 
         ///<summary>
         ///</summary>
-        ///<param name="redisKey"></param>
-        public TransSendParam(string redisKey)
+        ///<param name="key"></param>
+        public TransSendParam(string key)
         {
-            RedisKey = redisKey;
+            Key = key;
         }
 
         ///<summary>
+        /// 
         ///</summary>
-        public bool OnlyRedis { get; set; }
+        public SchemaTable Schema { get; set; }
 
         ///<summary>
+        /// 
         ///</summary>
-        public string RedisKey { get; set; }
+        public string Key { get; set; }
 
         /// <summary>
         /// 更新到库中是全部列，还是改变的列
         /// </summary>
         public bool IsChange { get; set; }
-
-        ///<summary>
-        ///</summary>
-        public string ConnectKey { get; set; }
 
     }
 }

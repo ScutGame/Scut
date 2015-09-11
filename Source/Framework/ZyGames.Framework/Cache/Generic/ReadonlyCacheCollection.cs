@@ -326,6 +326,15 @@ namespace ZyGames.Framework.Cache.Generic
         /// 
         /// </summary>
         /// <returns></returns>
+        public override IEnumerable<KeyValuePair<string, object>> GetEnumerable()
+        {
+            return _cacheStruct;
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
         public override IEnumerator<KeyValuePair<string, object>> GetEnumerator()
         {
             return _cacheStruct.GetEnumerator();

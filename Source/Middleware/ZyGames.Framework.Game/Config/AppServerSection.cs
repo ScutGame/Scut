@@ -43,7 +43,7 @@ namespace ZyGames.Framework.Game.Config
             ProductCode = ConfigUtils.GetSetting("Product.Code", 1);
             ProductName = ConfigUtils.GetSetting("Product.Name", "Game");
             ProductServerId = ConfigUtils.GetSetting("Product.ServerId", 1);
-            UserLoginDecodeKey = ConfigUtils.GetSetting("Product.ClientDesDeKey", "n7=7=7dk");
+            UserLoginDecodeKey = ConfigUtils.GetSetting("Product.ClientDesDeKey", "");
 
             PublishType = ConfigUtils.GetSetting("PublishType", "Release");
             ActionTimeOut = ConfigUtils.GetSetting("ActionTimeOut", 500);

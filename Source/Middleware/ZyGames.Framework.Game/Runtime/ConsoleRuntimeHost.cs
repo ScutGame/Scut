@@ -53,12 +53,13 @@ namespace ZyGames.Framework.Game.Runtime
         {
             ConsoleColor currentForeColor = Console.ForegroundColor;
             SetColor(ConsoleColor.DarkYellow);
+            OnInit();
+            SetColor(currentForeColor);
             if (!OnStart())
             {
                 RunWait().Wait();
                 return;
             }
-            SetColor(currentForeColor);
             Run();
             if (!IsStoped)
             {

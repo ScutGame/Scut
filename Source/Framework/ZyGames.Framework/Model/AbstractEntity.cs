@@ -52,22 +52,27 @@ namespace ZyGames.Framework.Model
         /// <summary>
         /// 存储改变的属性集合
         /// </summary>
-        private readonly ConcurrentQueue<string> _changePropertys = new ConcurrentQueue<string>();
+        private ConcurrentQueue<string> _changePropertys = new ConcurrentQueue<string>();
         /// <summary>
         /// 等待更新属性
         /// </summary>
         private readonly HashSet<string> _waitUpdateList = new HashSet<string>();
 
+        [NonSerialized]
+        private SchemaTable _schema;
+        [NonSerialized]
         private ObjectAccessor _typeAccessor;
 
         /// <summary>
-        /// 
+        /// Conver '-' char
         /// </summary>
         /// <param name="keyCode"></param>
         /// <returns></returns>
         public static string EncodeKeyCode(string keyCode)
         {
-            return keyCode.Replace(KeyCodeJoinChar.ToString(), "%45")
+            return (keyCode ?? "")
+                .Replace("%", "%25")
+                .Replace(KeyCodeJoinChar.ToString(), "%45")
                 .Replace("_", "%46")
                 .Replace("|", "%7C");
         }
@@ -79,7 +84,9 @@ namespace ZyGames.Framework.Model
         /// <returns></returns>
         public static string DecodeKeyCode(string keyCode)
         {
-            return keyCode.Replace("%45", KeyCodeJoinChar.ToString())
+            return (keyCode ?? "")
+                .Replace("%25", "%")
+                .Replace("%45", KeyCodeJoinChar.ToString())
                 .Replace("%46", "_")
                 .Replace("%7C", "|");
         }
@@ -109,10 +116,9 @@ namespace ZyGames.Framework.Model
         {
             _isNew = true;
             IsInCache = false;
-            SchemaTable schema;
-            if (EntitySchemaSet.TryGet(GetType(), out schema))
+            if (EntitySchemaSet.TryGet(GetType(), out _schema))
             {
-                _isReadOnly = schema.AccessLevel == AccessLevel.ReadOnly;
+                _isReadOnly = _schema.AccessLevel == AccessLevel.ReadOnly;
             }
         }
 
@@ -129,9 +135,11 @@ namespace ZyGames.Framework.Model
         /// </summary>
         public void ResetState()
         {
+            _hasChanged = false;
             OnUnNew();
-            DequeueChangePropertys();
+            ResetChangePropertys();
             CompleteUpdate();
+            ExitModify();
         }
 
         /// <summary>
@@ -140,8 +148,14 @@ namespace ZyGames.Framework.Model
         public void Reset()
         {
             ResetState();
-            var e = new CacheItemEventArgs { ChangeType = CacheItemChangeType.UnChange };
-            UnChangeNotify(this, e);
+        }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        public virtual DateTime GetCreateTime()
+        {
+            return DateTime.Now;
         }
 
         private ObjectAccessor GetAccessor()
@@ -166,8 +180,8 @@ namespace ZyGames.Framework.Model
         public void SetValueAfter()
         {
             ResetChangePropertys();
-            IsInCache = true;
             OnUnNew();
+            IsInCache = true;
         }
 
         #region property
@@ -211,7 +225,6 @@ namespace ZyGames.Framework.Model
         /// <summary>
         /// 
         /// </summary>
-        [ProtoMember(100021)]
         protected bool _isNew;
         /// <summary>
         /// 
@@ -254,7 +267,6 @@ namespace ZyGames.Framework.Model
         /// 删除实体标记，将从源数据（DB、Redis）中删除
         /// </summary>
         [JsonIgnore]
-        [ProtoMember(100023)]
         public bool IsDelete
         {
             get
@@ -290,11 +302,11 @@ namespace ZyGames.Framework.Model
             get
             {
                 int id = GetIdentityId();
-                if (id <= 0)
+                if (id == 0)
                 {
-                    TraceLog.WriteError("The {0} property \"PersonalId\" is empty.", GetType().FullName);
+                    TraceLog.WriteError("The {0} property \"PersonalId\" is empty.", _schema.EntityType.FullName);
                 }
-                return id.ToString();
+                return EncodeKeyCode(id.ToString());
             }
         }
 
@@ -305,9 +317,9 @@ namespace ZyGames.Framework.Model
         public DateTime TempTimeModify { get; set; }
 
         /// <summary>
-        /// 
+        /// expire time
         /// </summary>
-        [JsonIgnore]
+        [ProtoMember(100026)]
         public DateTime ExpiredTime { get; set; }
 
         #endregion
@@ -335,6 +347,7 @@ namespace ZyGames.Framework.Model
             if (_isReadOnly || CheckChnage()) return;
             //modify resean: not notify to ItemSet object.
             //eventArgs.Source = sender;
+            _hasChanged = true;
             AddChangePropertys(eventArgs.PropertyName);
             //base.Notify(this, eventArgs);
             PutToChangeKeys(this);
@@ -349,6 +362,7 @@ namespace ZyGames.Framework.Model
         {
             if (_isReadOnly || CheckChnage()) return;
             //eventArgs.Source = sender;
+            _hasChanged = true;
             AddChangePropertys(eventArgs.PropertyName);
             //更改子类事件触发者
             //base.NotifyByChildren(this, eventArgs);
@@ -357,13 +371,14 @@ namespace ZyGames.Framework.Model
 
         private bool CheckChnage()
         {
+            //不在内存时不触发事件
             if (!IsInCache)
             {
                 return true;
             }
             if (IsExpired)
             {
-                TraceLog.WriteError("Not found entity {0} key {1}, it is disposed.\r\n{2}", GetSchema().EntityName, GetKeyCode(), TraceLog.GetStackTrace());
+                TraceLog.WriteError("Not found entity {0} key {1} in cache, it is expired.\r\n{2}", GetSchema().EntityName, GetKeyCode(), TraceLog.GetStackTrace());
                 return true;
             }
             return false;
@@ -437,7 +452,7 @@ namespace ZyGames.Framework.Model
                 }
                 catch
                 {
-                    TraceLog.WriteError("The {0} get property:{1}\r\n{2}", GetType().Name, property, ex);
+                    TraceLog.WriteError("The {0} get property:{1}\r\n{2}", _schema.EntityName, property, ex);
                     return null;
                 }
             }
@@ -462,7 +477,7 @@ namespace ZyGames.Framework.Model
                 }
                 catch
                 {
-                    TraceLog.WriteError("The {0} set property:{1} value:{2}\r\n{3}", GetType().Name, property, value, ex);
+                    TraceLog.WriteError("The {0} set property:{1} value:{2}\r\n{3}", _schema.EntityName, property, value, ex);
                 }
             }
         }
@@ -503,21 +518,17 @@ namespace ZyGames.Framework.Model
         public string GetKeyCode()
         {
             string value = KeyValue;
-            SchemaTable entitySchema;
-            if (EntitySchemaSet.TryGet(GetType(), out entitySchema))
+            foreach (string key in _schema.Keys)
             {
-                foreach (string key in entitySchema.Keys)
+                if (value.Length > 0)
                 {
-                    if (value.Length > 0)
-                    {
-                        value += KeyCodeJoinChar;
-                    }
-                    value += EncodeKeyCode(GetPropertyValue(key).ToNotNullString());
+                    value += KeyCodeJoinChar;
                 }
-                if (string.IsNullOrEmpty(value))
-                {
-                    TraceLog.WriteError("Entity {0} primary key is empty.", entitySchema.EntityName);
-                }
+                value += EncodeKeyCode(GetPropertyValue(key).ToNotNullString());
+            }
+            if (string.IsNullOrEmpty(value))
+            {
+                TraceLog.WriteError("Entity {0} primary key is empty.", _schema.EntityName);
             }
 
             return value;
@@ -529,18 +540,7 @@ namespace ZyGames.Framework.Model
         /// <returns>返回值会为Null</returns>
         public SchemaTable GetSchema()
         {
-            SchemaTable schemaTable;
-            Type type = GetType();
-            if (!EntitySchemaSet.TryGet(type, out schemaTable))
-            {
-                //若实体架构信息为空，则重新加载架构信息
-                EntitySchemaSet.InitSchema(type);
-                if (!EntitySchemaSet.TryGet(type, out schemaTable))
-                {
-                    TraceLog.WriteError("Class:{0} scheam is not setting.", type.FullName);
-                }
-            }
-            return schemaTable;
+            return _schema;
         }
 
         /// <summary>
@@ -593,10 +593,10 @@ namespace ZyGames.Framework.Model
                 {
                     val.DisableChildNotify();
                 }
-                val.IsInCache = true;
                 AddChildrenListener(val);
             }
             Notify(this, CacheItemChangeType.Modify, propertyName);
+            if (val != null) val.IsInCache = true;
         }
 
         /// <summary>
@@ -618,7 +618,7 @@ namespace ZyGames.Framework.Model
                 }
                 catch
                 {
-                    throw new Exception("Get property:" + GetType().Name + "." + propertyName, ex);
+                    throw new Exception("Get property:" + _schema.EntityName + "." + propertyName, ex);
                 }
             }
             if (val != null)
@@ -628,10 +628,10 @@ namespace ZyGames.Framework.Model
                 {
                     val.DisableChildNotify();
                 }
-                val.IsInCache = true;
                 AddChildrenListener(val);
             }
             Notify(this, CacheItemChangeType.Modify, propertyName);
+            if (val != null) val.IsInCache = true;
         }
 
         private void AddChangePropertys(string propertyName)
@@ -646,12 +646,11 @@ namespace ZyGames.Framework.Model
         /// <summary>
         /// 重置改变的字段属性
         /// </summary>
-        private void ResetChangePropertys()
+        internal void ResetChangePropertys()
         {
-            while (_changePropertys.Count > 0)
+            string r;
+            while (_changePropertys.TryDequeue(out r))
             {
-                string column;
-                _changePropertys.TryDequeue(out column);
             }
         }
 
@@ -728,8 +727,8 @@ namespace ZyGames.Framework.Model
                 {
                     temp.DisableChildNotify();
                 }
-                temp.IsInCache = true;
                 AddChildrenListener(temp);
+                temp.IsInCache = true;
                 return temp;
             }
             throw new Exception(string.Format("Conver column:\"{0}\" object to \"{1}\" error.", propertyName, typeof(T).FullName));

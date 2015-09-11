@@ -36,7 +36,7 @@ namespace ZyGames.Framework.Cache.Generic
     /// </summary>
     /// <typeparam name="T"></typeparam>
     [ProtoContract, Serializable]
-    public class CacheList<T> : EntityChangeEvent, IDataExpired, IList<T>
+    public class CacheList<T> : EntityChangeEvent, IDataExpired, IList<T>, IReadOnlyList<T>
     {
         private readonly object _syncRoot = new object();
         private List<T> _list;
@@ -102,6 +102,42 @@ namespace ZyGames.Framework.Cache.Generic
         {
             RemoveAt(index);
         }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="t"></param>
+        /// <returns></returns>
+        public int BinarySearch(T t)
+        {
+            lock (_syncRoot)
+            {
+                return _list.BinarySearch(t);
+            }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="index1"></param>
+        /// <param name="index2"></param>
+        /// <param name="complate"></param>
+        /// <returns></returns>
+        public bool Exchange(int index1, int index2, Action<T, T> complate)
+        {
+            lock (_syncRoot)
+            {
+                if (index1 < 0 || index2 < 0 || index1 >= _list.Count || index2 >= _list.Count) return false;
+
+                var item1 = _list[index1];
+                var item2 = _list[index2];
+                _list[index1] = item2;
+                _list[index2] = item1;
+                complate(item1, item2);
+            }
+            return true;
+        }
+
         /// <summary>
         /// 
         /// </summary>
@@ -155,7 +191,7 @@ namespace ZyGames.Framework.Cache.Generic
         /// 
         /// </summary>
         /// <param name="collection"></param>
-        public void AddRange(IList<T> collection)
+        public void AddRange(IEnumerable<T> collection)
         {
             lock (_syncRoot)
             {
@@ -211,12 +247,14 @@ namespace ZyGames.Framework.Cache.Generic
         /// </summary>
         public void Clear()
         {
+            T[] copyList;
             lock (_syncRoot)
             {
+                copyList = _list.ToArray();
                 _list.Clear();
             }
             Notify(this, CacheItemChangeType.Clear, PropertyName);
-            ClearChildrenEvent();
+            ClearChildrenEvent(copyList);
         }
 
         /// <summary>
@@ -357,30 +395,42 @@ namespace ZyGames.Framework.Cache.Generic
         /// <returns></returns>
         public int RemoveAll(Predicate<T> match)
         {
+            List<T> removeList;
+            RemoveAll(match, out removeList);
+            return removeList.Count;
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="match"></param>
+        /// <param name="removeList"></param>
+        /// <returns></returns>
+        public bool RemoveAll(Predicate<T> match, out List<T> removeList)
+        {
             List<T> list = null;
             lock (_syncRoot)
             {
                 list = _list.ToList();
             }
-
-            var tempList = list.FindAll(match);
-            int count = 0;
+            removeList = new List<T>();
             lock (_syncRoot)
             {
-                foreach (var item in tempList)
+                foreach (var item in list)
                 {
-                    if (_list.Remove(item))
+                    if (match(item) && _list.Remove(item))
                     {
-                        count++;
+                        removeList.Add(item);
                         RemoveChildrenListener(item);
                     }
                 }
             }
-            if (count > 0)
+            if (removeList.Count > 0)
             {
                 Notify(this, CacheItemChangeType.RemoveAll, PropertyName);
+                return true;
             }
-            return count;
+            return false;
         }
 
         /// <summary>
@@ -433,6 +483,78 @@ namespace ZyGames.Framework.Cache.Generic
             Notify(item, CacheItemChangeType.Add, PropertyName);
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        public void Sort()
+        {
+            lock (_syncRoot)
+            {
+                _list.Sort();
+            }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public void Sort(int index, int count, IComparer<T> comparer)
+        {
+            lock (_syncRoot)
+            {
+                _list.Sort(index, count, comparer);
+            }
+        }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="selector"></param>
+        public void SortAsc<TKey>(Func<T, TKey> selector)
+        {
+            lock (_syncRoot)
+            {
+                _list = _list.OrderBy(selector).ToList();
+            }
+        }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="selector"></param>
+        public void SortDesc<TKey>(Func<T, TKey> selector)
+        {
+            lock (_syncRoot)
+            {
+                _list = _list.OrderByDescending(selector).ToList();
+            }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="item"></param>
+        /// <param name="comparison"></param>
+        public void MoveBySort(T item, Comparison<T> comparison)
+        {
+            lock (_syncRoot)
+            {
+                int index = _list.FindIndex(t => Equals(t, item));
+                _list.RemoveAt(index);
+                _list.InsertSort(item, comparison);
+            }
+        }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="item"></param>
+        /// <param name="toIndex"></param>
+        public void Move(T item, int toIndex)
+        {
+            lock (_syncRoot)
+            {
+                int index = _list.FindIndex(t => Equals(t, item));
+                _list.RemoveAt(index);
+                _list.Insert(toIndex, item);
+            }
+        }
         /// <summary>
         /// 
         /// </summary>
@@ -544,5 +666,6 @@ namespace ZyGames.Framework.Cache.Generic
             }
             base.Dispose(disposing);
         }
+
     }
 }

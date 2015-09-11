@@ -53,7 +53,7 @@ namespace ZyGames.Framework.Data
         private static Timer[] _queueWatchTimers;
         private static SmartThreadPool _threadPools;
         private static int[] _isWatchWorking;
-        private const int sqlSyncPackSize = 999;
+        private const int sqlSyncPackSize = 101;
 
 
         static SqlStatementManager()
@@ -207,7 +207,7 @@ namespace ZyGames.Framework.Data
         /// <returns></returns>
         internal static string GetSqlQueueKey(int identityId)
         {
-            int index = identityId % _queueWatchTimers.Length;
+            int index = Math.Abs(identityId) % _queueWatchTimers.Length;
             string queueKey = string.Format("{0}{1}{2}",
                 SlaveMessageQueue,
                 SqlSyncQueueKey,
@@ -294,7 +294,7 @@ namespace ZyGames.Framework.Data
                     }
                     catch (Exception e)
                     {
-                        TraceLog.WriteSqlError("Error:{0}\r\nSql>>\r\n{1}", e, statement != null ? statement.CommandText : "");
+                        TraceLog.WriteSqlError("Error:{0}\r\nSql>>\r\n{1}", e, statement != null ? statement.ToString() : "");
                         PutError(buffer);
                         if (!hasClear && dbProvider != null)
                         {

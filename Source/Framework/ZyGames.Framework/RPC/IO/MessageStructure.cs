@@ -57,6 +57,7 @@ namespace ZyGames.Framework.RPC.IO
 
         static MessageStructure()
         {
+            EnableGzip = true;
             EnableGzipMinByte = 10240;
         }
 
@@ -106,7 +107,6 @@ namespace ZyGames.Framework.RPC.IO
         /// </summary>
         public MessageStructure()
         {
-            EnableGzip = true;
             _msBuffers = new MemoryStream();
             //_buffersQueue = new ConcurrentQueue<byte>();
         }
@@ -117,7 +117,6 @@ namespace ZyGames.Framework.RPC.IO
         /// <param name="buffer"></param>
         public MessageStructure(IEnumerable<byte> buffer)
         {
-            EnableGzip = true;
             _msBuffers = new MemoryStream(buffer.ToArray());
             //_buffersQueue = new ConcurrentQueue<byte>(buffer);
         }
@@ -268,13 +267,13 @@ namespace ZyGames.Framework.RPC.IO
             return _encoding.GetString(bytes);
         }
         /// <summary>
-        /// Read DateTime
+        /// Read DateTime, use UTC time
         /// </summary>
         /// <returns></returns>
         public DateTime ReadDateTime()
         {
             long time = ReadLong();
-            return MathUtils.UnixEpochDateTime + TimeSpan.FromSeconds(time);
+            return MathUtils.ToTimeFromUnixEpoch(TimeSpan.FromSeconds(time)).ToLocalTime();
         }
         /// <summary>
         /// Read object of Protobuf serialize.
@@ -1086,7 +1085,7 @@ namespace ZyGames.Framework.RPC.IO
                     }
                     else if (item is DateTime)
                     {
-                        long ts = (item.ToDateTime() - MathUtils.UnixEpochDateTime).TotalSeconds.ToLong();
+                        long ts = (item.ToDateTime().ToUniversalTime() - MathUtils.UnixEpochDateTime).TotalSeconds.ToLong();
                         WriteByte(ts);
                     }
                     else if (item is MessageStructure)

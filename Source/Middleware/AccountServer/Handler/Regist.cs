@@ -39,11 +39,8 @@ namespace AccountServer.Handler
             {
                 throw new HandlerException(StateCode.Error, StateDescription.PasswordOrPassError);
             }
-            if (data.Pwd.Length > 32)
-            {
-                data.Pwd = DecodePassword(data.Pwd);
-            }
-            int userId = SnsManager.QuickRegisterPassport(data.Pid, data.Pwd);
+            data.Pwd = DecodePassword(data.Pwd);
+            int userId = SnsManager.QuickRegisterPassport(data.Pid, data.Pwd, data.IMEI, data.IsCustom);
             if (userId <= 0)
             {
                 throw new HandlerException(StateCode.Error, StateDescription.RegistError);

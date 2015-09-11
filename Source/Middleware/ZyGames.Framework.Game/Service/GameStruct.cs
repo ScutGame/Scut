@@ -354,7 +354,7 @@ namespace ZyGames.Framework.Game.Service
             var time = (iVisitEndTime - iVisitBeginTime).TotalMilliseconds;
             if (actionTimeOut > 0 && time > actionTimeOut)
             {
-                TraceLog.WriteWarn("Action-{2} Uid:{3} access timeout {0}/{1}ms.", time, actionTimeOut, actionId, Current.UserId);
+                TraceLog.ReleaseWriteDebug("Process action-{2} Uid:{3} access timeout {0}/{1}ms.\r\nUrl:{4}", time, actionTimeOut, actionId, Current.UserId, actionGetter.ToString());
             }
         }
 
@@ -513,7 +513,7 @@ namespace ZyGames.Framework.Game.Service
         /// <param name="error"></param>
         protected void SaveLog(String message, Exception error)
         {
-            TraceLog.WriteError("Action{0}{1} error:{2}.\r\n{3}", actionId, message, error, actionGetter.ToParamString());
+            TraceLog.WriteError("Action{0}{1} error:{2}.\r\n{3}", actionId, message, error, actionGetter.ToString());
         }
 
         /// <summary>

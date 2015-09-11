@@ -51,37 +51,58 @@ namespace ZyGames.Framework.Common.Log
         public static string GetStackTrace()
         {
             StackTrace st = new StackTrace(true);
-            string stackIndent = "";
+            string stackIndent = "  ";
             StringBuilder builder = new StringBuilder();
-            for (int i = 0; i < st.FrameCount; i++)
+            int count = st.FrameCount;
+            for (int i = 1; i < count; i++)
             {
                 StackFrame sf = st.GetFrame(i);
                 //得到错误的方法
                 var method = sf.GetMethod();
-                builder.AppendFormat(stackIndent + "Method: {0}\r\n", method);
-                //得到错误的文件名
-                builder.AppendFormat(stackIndent + "File: {0}\r\n", sf.GetFileName());
-                //得到文件错误的行号
-                builder.AppendFormat(stackIndent + "Line: {0}\r\n", sf.GetFileLineNumber());
-                stackIndent += "++";
+                string className = method.DeclaringType != null ? method.DeclaringType.FullName : "Unknow type";
+                string fileName = sf.GetFileName();
+                builder.AppendFormat("{0} at {1}.{2}", stackIndent, className, method);
+                if (!string.IsNullOrEmpty(fileName))
+                {
+                    builder.AppendFormat(" file {0}:line {1}", fileName, sf.GetFileLineNumber());
+                }
+                builder.AppendLine();
             }
 
             return builder.ToString();
         }
 
         /// <summary>
-        /// 只在编译器的DEBUG下输出到Debug目录
+        /// 
         /// </summary>
         /// <param name="message"></param>
         /// <param name="args"></param>
         public static void Write(string message, params object[] args)
+        {
+            Write(message, false, args);
+        }
+
+        /// <summary>
+        /// 只在编译器的DEBUG下输出到Debug目录
+        /// </summary>
+        /// <param name="message"></param>
+        /// <param name="includStackTrace"></param>
+        /// <param name="args"></param>
+        public static void Write(string message, bool includStackTrace, params object[] args)
         {
             string str = message;
             if (args.Length > 0)
             {
                 str = string.Format("Trace>>" + message, args);
             }
-            LogHelper.WriteDebug(str);
+            if (includStackTrace)
+            {
+                LogHelper.WriteDebug(str + "\r\n" + GetStackTrace());
+            }
+            else
+            {
+                LogHelper.WriteDebug(str);
+            }
         }
 
         /// <summary>

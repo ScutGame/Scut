@@ -170,7 +170,27 @@ namespace ZyGames.Framework.Script
             }
             return base.InvokeMenthod(scriptCode, typeName, typeArgs, method, methodArgs);
         }
-
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="fileName"></param>
+        /// <returns></returns>
+        public override bool VerifyScriptHashCode(string fileName)
+        {
+            string ext = Path.GetExtension(fileName);
+            if (string.Compare(ext, ".py", StringComparison.OrdinalIgnoreCase) != 0)
+            {
+                return base.VerifyScriptHashCode(fileName);
+            }
+            string scriptCode = GetScriptCode(fileName);
+            if (File.Exists(fileName) && _pythonCodeCache.ContainsKey(scriptCode))
+            {
+                var old = _pythonCodeCache[scriptCode];
+                string source = Decode(File.ReadAllText(fileName), ext);
+                return old.HashCode == CryptoHelper.ToMd5Hash(source);
+            }
+            return false;
+        }
         /// <summary>
         /// 
         /// </summary>
@@ -232,7 +252,7 @@ namespace ZyGames.Framework.Script
         {
             foreach (var fileName in fileNames)
             {
-                var scriptFile = LoadScript(fileName, true);
+                var scriptFile = LoadScript(fileName);
                 CompilePython(scriptFile);
             }
         }
@@ -264,21 +284,11 @@ namespace ZyGames.Framework.Script
         /// 
         /// </summary>
         /// <param name="fileName"></param>
-        /// <param name="isReLoad"></param>
         /// <returns></returns>
-        private PythonFileInfo LoadScript(string fileName, bool isReLoad = false)
+        private PythonFileInfo LoadScript(string fileName)
         {
             PythonFileInfo scriptFileInfo = null;
             string scriptCode = GetScriptCode(fileName);
-            if (!isReLoad && _pythonCodeCache.ContainsKey(scriptCode))
-            {
-                var old = _pythonCodeCache[scriptCode];
-                if (!File.Exists(fileName) ||
-                    old.HashCode == GetFileHashCode(fileName))
-                {
-                    return old;
-                }
-            }
             scriptFileInfo = CreateScriptFile(fileName);
             if (scriptFileInfo != null)
             {
@@ -289,15 +299,11 @@ namespace ZyGames.Framework.Script
 
         private PythonFileInfo CreateScriptFile(string fileName)
         {
-            FileInfo fi = new FileInfo(fileName);
-            if (fi.Extension == ".py")
+            string ext = Path.GetExtension(fileName);
+            if (string.Compare(ext, ".py", StringComparison.OrdinalIgnoreCase) == 0)
             {
                 string fileCode = GetScriptCode(fileName);
-                string source = "";
-                using (var sr = fi.OpenText())
-                {
-                    source = Decode(sr.ReadToEnd(), fi.Extension);
-                }
+                string source = Decode(File.ReadAllText(fileName), ext);
                 return new PythonFileInfo(fileCode, fileName)
                 {
                     Source = source,

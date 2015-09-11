@@ -26,19 +26,24 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using ProtoBuf;
+using ZyGames.Framework.Game.Contract;
 
 namespace ZyGames.Framework.Game.Context
 {
     /// <summary>
     /// IUser
     /// </summary>
+    [ProtoContract]
+    [ProtoInclude(100, typeof(SessionUser))]
     public interface IUser
     {
         /// <summary>
         /// user's token
         /// </summary>
+        [ProtoMember(1)]
         string Token { get; set; }
- 
+
         /// <summary>
         /// is online
         /// </summary>
@@ -48,7 +53,7 @@ namespace ZyGames.Framework.Game.Context
         /// get userid
         /// </summary>
         /// <returns></returns>
-       int GetUserId();
+        int GetUserId();
         /// <summary>
         /// get passport
         /// </summary>

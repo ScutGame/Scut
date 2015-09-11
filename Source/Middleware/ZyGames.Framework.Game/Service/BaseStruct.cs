@@ -133,12 +133,13 @@ namespace ZyGames.Framework.Game.Service
         /// 
         /// </summary>
         /// <param name="response"></param>
+        /// <param name="errorTarget"></param>
         /// <param name="isWriteInfo"></param>
-        public void WriteLockTimeoutAction(BaseGameResponse response, bool isWriteInfo = true)
+        public void WriteLockTimeoutAction(BaseGameResponse response, object errorTarget, bool isWriteInfo = true)
         {
             ErrorCode = Language.Instance.LockTimeoutCode;
-            if (isWriteInfo && !IsRealse) ErrorInfo = Language.Instance.ServerBusy;
-            TraceLog.WriteError("Action-{0} Uid:{1} locked timeout.", actionId, Current.UserId);
+            if (isWriteInfo && !IsRealse) ErrorInfo = Language.Instance.RequestTimeout;
+            TraceLog.WriteError("Request action-{0} locked timeout.\r\nlocked target:{1}\r\nUrl:{2}", actionId, errorTarget, actionGetter.ToString());
             WriteErrorAction(response);
         }
 
@@ -287,7 +288,7 @@ namespace ZyGames.Framework.Game.Service
         /// </summary>
         protected virtual void RefleshSt()
         {
-            St = MathUtils.DiffDate(MathUtils.UnixEpochDateTime).TotalSeconds.ToCeilingInt().ToString();
+            St = MathUtils.UnixEpochTimeSpan.TotalSeconds.ToCeilingInt().ToString();
         }
 
         /// <summary>
@@ -336,6 +337,7 @@ namespace ZyGames.Framework.Game.Service
         {
             try
             {
+                if (string.IsNullOrEmpty(password)) return password;
                 return new DESAlgorithmNew().DecodePwd(password, GameEnvironment.Setting.ClientDesDeKey);
             }
             catch (Exception ex)

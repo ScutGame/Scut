@@ -40,29 +40,32 @@ namespace ZyGames.Framework.Cache.Generic
         where T : MemoryEntity, new()
     {
 
-        static MemoryCacheStruct()
-        {
-        }
-
-
         private CacheContainer _container;
         private string containerKey;
 
         /// <summary>
         /// 
         /// </summary>
-        public MemoryCacheStruct()
+        /// <param name="isLoad"></param>
+        public MemoryCacheStruct(bool isLoad = true)
         {
             containerKey = typeof(T).FullName;
             _container = CacheFactory.MemoryCache.InitContainer(containerKey);
-            Initialize();
+            if (isLoad) Initialize(false);
         }
 
-        private void Initialize()
+        private void Initialize(bool isReload)
         {
-            _container.OnLoadFactory(InitCache, false);
+            _container.OnLoadFactory(InitCache, isReload);
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        public void Reload()
+        {
+            Initialize(true);
+        }
         /// <summary>
         /// 
         /// </summary>
@@ -179,15 +182,23 @@ namespace ZyGames.Framework.Cache.Generic
         {
             return _container.Collection.Find(match);
         }
+
         /// <summary>
         /// Inits the cache.
         /// </summary>
         /// <returns><c>true</c>, if cache was inited, <c>false</c> otherwise.</returns>
+        protected virtual bool InitCache(bool isReplace)
+        {
+            return InitCache();
+        }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
         protected virtual bool InitCache()
         {
             return true;
         }
-
         /// <summary>
         /// 
         /// </summary>

@@ -159,7 +159,7 @@ namespace ZyGames.Framework.Game.Sns
             RegType = RegType.Other;
         }
         /// <summary>
-        /// 修改：伍张发
+        /// 
         /// </summary>
         /// <param name="sPassportId"></param>
         /// <param name="passportPwd"></param>
@@ -169,7 +169,7 @@ namespace ZyGames.Framework.Game.Sns
             _PassportId = sPassportId.ToUpper();
             _PassportPwd = passportPwd;
             _imei = imei;
-            RegType = string.IsNullOrEmpty(imei) ? RegType.Normal : RegType.Guest;
+            RegType = RegType.Guest;
             RetailID = SysetmRetailID;
         }
 
@@ -195,85 +195,47 @@ namespace ZyGames.Framework.Game.Sns
             {
                 if (snsUser.PwdType == PwdType.MD5)
                 {
-                    if (password.Length != 32)
-                    {
-                        //判断是否已经MD5加密
-                        password = PasswordEncryptMd5(_PassportPwd);
-                    }
+                    //判断是否已经MD5加密
+                    password = PasswordEncryptMd5(_PassportPwd);
                 }
                 return snsUser.PassportId == _PassportId &&
-                    snsUser.Password == password &&
-                    snsUser.IMEI == _imei;
+                    snsUser.Password == password;
             }
 
             return snsUser.RetailID == RetailID &&
                    snsUser.RetailUser == RetailUser;
         }
-        
-        /// <summary>
-        /// 获取用户类型
-        /// </summary>
-        /// <returns></returns>
-        public RegType GetUserType()
-        {
-            var command = ConnectManager.Provider.CreateCommandStruct("SnsUserInfo", CommandMode.Inquiry);
-            command.OrderBy = "USERID ASC";
-            command.Columns = "PassportId,PassportPwd,RegType";
-            command.Filter = ConnectManager.Provider.CreateCommandFilter();
-            command.Filter.Condition = command.Filter.FormatExpression("PassportId");
-            command.Filter.AddParam("PassportId", PassportId);
-            command.Parser();
 
-            using (var aReader = ConnectManager.Provider.ExecuteReader(CommandType.Text, command.Sql, command.Parameters))
-            {
-                if (aReader.Read())
-                {
-                    return (RegType)Enum.ToObject(typeof(RegType), Convert.ToInt32(aReader["RegType"]));
-                }
-            }
-            return 0;
-        }
         /// <summary>
         /// 是否有绑定DeviceID
         /// </summary>
         /// <returns></returns>
-        public static SnsCenterUser GetUserByDeviceId(string imei)
+        public SnsUser GetUserByDeviceId(string imei)
         {
-            if (string.IsNullOrEmpty(imei) || imei.StartsWith("00:00:00:00:00:"))
+            SnsUser snsUser = new SnsUser();
+            if (string.IsNullOrEmpty(imei))
             {
-                imei = Guid.NewGuid().ToString("N");
+                return snsUser;
             }
-
-            var command = ConnectManager.Provider.CreateCommandStruct("SnsUserInfo", CommandMode.Inquiry);
-            command.OrderBy = "USERID ASC";
-            command.Columns = "PassportId,PassportPwd,PwdType,RegType";
-            command.Filter = ConnectManager.Provider.CreateCommandFilter();
-            command.Filter.Condition = command.Filter.FormatExpression("DeviceID");
-            command.Filter.AddParam("DeviceID", imei);
-            command.Parser();
-
-            using (var aReader = ConnectManager.Provider.ExecuteReader(CommandType.Text, command.Sql, command.Parameters))
+            SetUserInfo(f =>
             {
-                if (aReader.Read())
-                {
-                    string password = Convert.ToString(aReader["PassportPwd"]);
-                    SnsCenterUser user = new SnsCenterUser(Convert.ToString(aReader["PassportId"]), password, imei);
-                    user.RegType = (RegType)Enum.ToObject(typeof(RegType), Convert.ToInt32(aReader["RegType"]));
-                    return user;
-                }
-            }
-            return null;
+                f.Condition = string.Format("RegType = 1 AND {0}", f.FormatExpression("DeviceID")); //Guest
+                f.AddParam("DeviceID", imei);
+            }, snsUser);
+            return snsUser;
         }
+
         /// <summary>
         /// Inserts the sns user.
         /// </summary>
         /// <returns>The sns user.</returns>
         /// <param name="paramNames">Parameter names.</param>
         /// <param name="paramValues">Parameter values.</param>
-        public int InsertSnsUser(string[] paramNames, string[] paramValues)
+        /// <param name="isCustom"></param>
+        public int InsertSnsUser(string[] paramNames, string[] paramValues, bool isCustom)
         {
             SnsPassport oSnsPassportLog = new SnsPassport();
-            if (!oSnsPassportLog.VerifyRegPassportId(_PassportId))
+            if (!isCustom && !oSnsPassportLog.VerifyRegPassportId(_PassportId))
             {
                 return 0;
             }
@@ -302,7 +264,7 @@ namespace ZyGames.Framework.Game.Sns
 
             try
             {
-                if (!oSnsPassportLog.SetPassportReg(_PassportId))
+                if (!isCustom && !oSnsPassportLog.SetPassportReg(_PassportId))
                 {
                     throw new Exception("Set passport  State.Reg fail.");
                 }
@@ -325,16 +287,18 @@ namespace ZyGames.Framework.Game.Sns
         /// 向社区中心添加用户
         /// </summary>
         /// <returns></returns>
-        public int InsertSnsUser()
+        public int InsertSnsUser(bool isCustom)
         {
-            return InsertSnsUser(new string[0], new string[0]);
+            return InsertSnsUser(new string[0], new string[0], isCustom);
         }
 
         /// <summary>
         /// 修改密码
         /// </summary>
+        /// <param name="userId"></param>
+        /// <param name="isReset">只重置密码</param>
         /// <returns></returns>
-        public int ChangePass(string userId)
+        public int ChangePass(string userId, bool isReset = false)
         {
             try
             {
@@ -343,9 +307,11 @@ namespace ZyGames.Framework.Game.Sns
 
                 var command = ConnectManager.Provider.CreateCommandStruct("SnsUserInfo", CommandMode.Modify);
                 command.AddParameter("passportpwd", password);
-                command.AddParameter("RegType", (int)RegType.Normal);
-                command.AddParameter("DeviceID", "");
-                command.AddParameter("PwdType", (int)PwdType.MD5);
+                if (!isReset)
+                {
+                    command.AddParameter("RegType", (int)RegType.Normal);
+                    command.AddParameter("PwdType", (int)PwdType.MD5);
+                }
 
                 command.Filter = ConnectManager.Provider.CreateCommandFilter();
 
@@ -370,7 +336,7 @@ namespace ZyGames.Framework.Game.Sns
                 return 0;
             }
         }
-       
+
 
         internal int ChangeUserInfo(string pid, SnsUser snsuser)
         {
@@ -521,13 +487,7 @@ namespace ZyGames.Framework.Game.Sns
                     snsUser.ActiveDate = ToDate(Convert.ToString(aReader["ActiveDate"]));
                     snsUser.WeixinCode = Convert.ToString(aReader["WeixinCode"]);
                     snsUser.PwdType = (PwdType)Enum.ToObject(typeof(PwdType), Convert.ToInt32(aReader["PwdType"]));
-                    RegType regType = (RegType)Enum.ToObject(typeof(RegType), Convert.ToInt32(aReader["RegType"]));
-                    if (regType == RegType.Other && regType != RegType.Other)
-                    {
-                        //渠道登陆的用户允许更换包登陆
-                        regType = string.IsNullOrEmpty(snsUser.IMEI) ? RegType.Normal : regType;
-                    }
-                    snsUser.RegType = regType;
+                    snsUser.RegType = (RegType)Enum.ToObject(typeof(RegType), Convert.ToInt32(aReader["RegType"]));
                 }
             }
         }

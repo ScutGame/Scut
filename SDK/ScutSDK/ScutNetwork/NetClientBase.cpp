@@ -23,7 +23,7 @@ THE SOFTWARE.
 ****************************************************************************/
 #include <string.h>
 #include "HttpClient.h"
-#include <curl/curl.h>
+#include "curl/curl.h"
 #include "INetStatusNotify.h"
 #include <vector>
 #include "ZipUtils.h"

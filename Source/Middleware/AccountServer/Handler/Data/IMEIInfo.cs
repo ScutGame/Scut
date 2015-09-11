@@ -31,5 +31,7 @@ namespace AccountServer.Handler.Data
     public class IMEIInfo
     {
         public string IMEI { get; set; }
+
+        public bool IsNew { get; set; }
     }
 }

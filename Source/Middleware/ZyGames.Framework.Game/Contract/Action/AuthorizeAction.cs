@@ -97,8 +97,8 @@ namespace ZyGames.Framework.Game.Contract.Action
                 long time;
                 if (long.TryParse(st, out time))
                 {
-                    var ts = MathUtils.Now - MathUtils.UnixEpochDateTime.AddSeconds(time);
-                    return maxInterval == TimeSpan.Zero || (ts > minInterval && ts < maxInterval);
+                    return maxInterval == TimeSpan.Zero ||
+                        (time > MathUtils.UnixEpochTimeSpan.Add(minInterval).TotalSeconds && time < MathUtils.UnixEpochTimeSpan.Add(maxInterval).TotalSeconds);
                 }
             }
             return true;

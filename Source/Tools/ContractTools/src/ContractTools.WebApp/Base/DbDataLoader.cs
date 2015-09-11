@@ -314,6 +314,16 @@ namespace ContractTools.WebApp.Base
                 f.AddParam("SlnID", slnId);
             });
         }
+        public static List<ContractModel> GetContract(int slnId, string filter)
+        {
+            return GetContract(f =>
+            {
+                f.Condition = string.Format("({0} OR {1}) AND ", f.FormatExpression("ID", "LIKE", "filter"), f.FormatExpression("Descption", "LIKE", "filter"));
+                f.AddParam("filter", "%" + filter + "%");
+                f.Condition += f.FormatExpression("SlnID");
+                f.AddParam("SlnID", slnId);
+            });
+        }
 
         public static ContractModel GetContract(int slnId, int contractId, int versionId)
         {
@@ -354,7 +364,7 @@ namespace ContractTools.WebApp.Base
         {
             var command = _dbBaseProvider.CreateCommandStruct("Contract", CommandMode.Inquiry);
             command.Columns = "ID,Descption,ParentID,SlnID,Complated,AgreementID,VerId";
-            command.OrderBy = "SlnID ASC,ID ASC";
+            command.OrderBy = "SlnID ASC,Complated DESC,ID ASC";
             command.Filter = _dbBaseProvider.CreateCommandFilter();
             if (match != null)
             {
@@ -488,7 +498,7 @@ namespace ContractTools.WebApp.Base
             command.AddParameter("FieldType", model.FieldType);
             command.AddParameter("Descption", model.Descption);
             command.AddParameter("FieldValue", model.FieldValue);
-            
+
             command.AddParameter("Required", model.Required);
             command.AddParameter("Remark", model.Remark);
             if (model.SortID > -1)
@@ -515,7 +525,12 @@ namespace ContractTools.WebApp.Base
         {
             var command = _dbBaseProvider.CreateCommandStruct("ParamInfo", CommandMode.Delete);
             command.Filter = _dbBaseProvider.CreateCommandFilter();
-            if (model.SlnID > 0 && model.ContractID > 0)
+            if (model.ID > 0)
+            {
+                command.Filter.Condition = _dbBaseProvider.FormatFilterParam("ID");
+                command.Filter.AddParam("ID", model.ID);
+            }
+            else if (model.SlnID > 0 && model.ContractID > 0)
             {
                 command.Filter.Condition = string.Format("{0} AND {1}",
                     _dbBaseProvider.FormatFilterParam("ContractID"),
@@ -525,8 +540,7 @@ namespace ContractTools.WebApp.Base
             }
             else
             {
-                command.Filter.Condition = _dbBaseProvider.FormatFilterParam("ID");
-                command.Filter.AddParam("ID", model.ID);
+                throw new ArgumentException("参数异常");
             }
             command.Parser();
             _dbBaseProvider.ExecuteQuery(CommandType.Text, command.Sql, command.Parameters);
@@ -568,7 +582,7 @@ namespace ContractTools.WebApp.Base
                 f.AddParam("SlnID", slnId);
             });
 
-          return  TemplateHelper.InitParamDepth(result);
+            return TemplateHelper.InitParamDepth(result);
         }
 
         public static List<ParamInfoModel> GetParamInfo(Action<CommandFilter> match)

@@ -51,7 +51,6 @@ namespace ZyGames.Framework.Cache.Generic
         /// <param name="periodTime"></param>
         /// <param name="isReadOnly"></param>
         public CacheItemSet(CacheType cacheItemType, int periodTime, bool isReadOnly)
-        //: base(isReadOnly)
         {
             LoadingStatus = LoadingStatus.None;
             _cacheItemType = cacheItemType;
@@ -82,14 +81,6 @@ namespace ZyGames.Framework.Cache.Generic
         {
             get { return LoadingStatus == LoadingStatus.Success; }
         }
-        /// <summary>
-        /// 加载异常
-        /// </summary>
-        public bool HasLoadError
-        {
-            get { return LoadingStatus == LoadingStatus.Error; }
-        }
-
         /// <summary>
         /// 
         /// </summary>
@@ -126,9 +117,12 @@ namespace ZyGames.Framework.Cache.Generic
         {
             get
             {
-                return _itemData == null;
+                if (_itemData == null) return true;
+                var data = _itemData as BaseCollection;
+                return data != null && data.Count == 0;
             }
         }
+
         /// <summary>
         /// 获取缓存项对象,不刷新缓存项生命时间
         /// </summary>
@@ -260,7 +254,7 @@ namespace ZyGames.Framework.Cache.Generic
 
 
         /// <summary>
-        /// 加载成功
+        /// 加载成功,只在加载成功后设置
         /// </summary>
         internal void OnLoadSuccess()
         {
@@ -276,11 +270,11 @@ namespace ZyGames.Framework.Cache.Generic
         }
 
         /// <summary>
-        /// 
+        /// 重置初始状态
         /// </summary>
-        internal void SetRemoveStatus()
+        internal void ResetStatus()
         {
-            LoadingStatus = LoadingStatus.Remove;
+            LoadingStatus = LoadingStatus.None;
         }
 
         /// <summary>
@@ -308,21 +302,48 @@ namespace ZyGames.Framework.Cache.Generic
             Dispose(true);
         }
 
+        internal bool HasItemChanged
+        {
+            get
+            {
+                var t = (_itemData as AbstractEntity);
+                return t != null && t.HasChanged;
+            }
+        }
 
-        internal void ProcessExpired(string key)
+        /// <summary>
+        /// 是否能处理过期
+        /// </summary>
+        /// <param name="key"></param>
+        /// <returns></returns>
+        internal bool TryProcessExpired(string key)
         {
             if (_itemData is AbstractEntity)
             {
-                ((AbstractEntity) _itemData).IsExpired = true;
+                var t = ((AbstractEntity)_itemData);
+                if (t.HasChanged) return false;
+
+                t.IsInCache = false;
+                t.IsExpired = true;
             }
             else if (_itemData is BaseCollection)
             {
+                bool hasChanged = false;
                 ((BaseCollection)_itemData).Foreach<AbstractEntity>((k, t) =>
                 {
+                    if (t.HasChanged)
+                    {
+                        hasChanged = t.HasChanged;
+                        return false;
+                    }
+                    t.IsInCache = false;
                     t.IsExpired = true;
-                     return true;
-                 });
+                    return true;
+                });
+
+                if (hasChanged) return false;
             }
+            return true;
         }
     }
 }

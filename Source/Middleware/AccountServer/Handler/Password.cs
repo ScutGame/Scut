@@ -31,7 +31,7 @@ namespace AccountServer.Handler
     /// <summary>
     /// Change password
     /// </summary>
-    public class Password : BaseHandler,IHandler<PassportInfo>
+    public class Password : BaseHandler, IHandler<PassportInfo>
     {
         public ResponseData Excute(PassportInfo data)
         {
@@ -39,10 +39,7 @@ namespace AccountServer.Handler
             {
                 throw new HandlerException(StateCode.Error, StateDescription.PasswordOrPassError);
             }
-            if (data.Password.Length > 32)
-            {
-                data.Password = DecodePassword(data.Password);
-            }
+            data.Password = DecodePassword(data.Password);
             int result = SnsManager.ChangePass(data.PassportId, data.Password);
             if (result <= 0)
             {

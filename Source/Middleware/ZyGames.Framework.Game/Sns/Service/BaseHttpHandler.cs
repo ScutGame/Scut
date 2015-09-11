@@ -23,6 +23,7 @@ THE SOFTWARE.
 ****************************************************************************/
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Text;
 using System.Web;
 using ZyGames.Framework.Common.Log;
@@ -44,45 +45,23 @@ namespace ZyGames.Framework.Game.Sns.Service
             ResponseType = ResponseType.Json;
             ResponseFormater = new JsonResponseFormater();
             var body = new ResponseBody();
-            try
-            {
-                string param;
-                if (CheckSign(context.Request, out param))
-                {
-                    HandlerData handlerData;
-                    if (TryUrlQueryParse(param, out handlerData))
-                    {
-                        body.Handler = handlerData.Name;
-                        body.Data = HandlerManager.Excute(handlerData);
-                    }
-                    else
-                    {
-                        body.StateCode = StateCode.NoHandler;
-                        body.StateDescription = string.Format("Not found \"{0}\" handler.", param);
-                    }
-                }
-                else
-                {
-                    body.StateCode = StateCode.SignError;
-                    body.StateDescription = "Sign error.";
-                }
-            }
-            catch (HandlerException handlerError)
-            {
-                body.StateCode = handlerError.StateCode;
-                body.StateDescription = handlerError.Message;
-                TraceLog.WriteError("Request handle error:{0}", handlerError);
-            }
-            catch (Exception error)
-            {
-                body.StateCode = StateCode.Error;
-                body.StateDescription = "Process request fail.";
-                TraceLog.WriteError("Request handle error:{0}", error);
-            }
+            OnRequest(context, body);
             ProcessResponse(context.Response, body);
         }
 
-        private void ProcessResponse(HttpResponse httpResponse, ResponseBody body)
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="context"></param>
+        /// <param name="body"></param>
+        protected abstract void OnRequest(HttpContext context, ResponseBody body);
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="httpResponse"></param>
+        /// <param name="body"></param>
+        protected void ProcessResponse(HttpResponse httpResponse, ResponseBody body)
         {
             try
             {
@@ -113,17 +92,20 @@ namespace ZyGames.Framework.Game.Sns.Service
         {
             get { return false; }
         }
-
-        private void SetResponseHead(HttpResponse httpResponse)
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="httpResponse"></param>
+        protected void SetResponseHead(HttpResponse httpResponse)
         {
-            httpResponse.ContentType = "text/plain";
+            httpResponse.ContentType = "text/plain; charset=utf8";
             switch (ResponseType)
             {
                 case ResponseType.Json:
-                    httpResponse.ContentType = "application/json";
+                    httpResponse.ContentType = "application/json; charset=utf8";
                     break;
                 default:
-                    throw new ArgumentOutOfRangeException();
+                    break;
             }
         }
         /// <summary>
@@ -144,7 +126,13 @@ namespace ZyGames.Framework.Game.Sns.Service
             return String.Compare(sign, mysign, StringComparison.OrdinalIgnoreCase) == 0;
         }
 
-        private bool TryUrlQueryParse(string query, out HandlerData handlerData)
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="query"></param>
+        /// <param name="handlerData"></param>
+        /// <returns></returns>
+        protected bool TryUrlQueryParse(string query, out HandlerData handlerData)
         {
             handlerData = new HandlerData();
             handlerData.Params = new Dictionary<string, string>(StringComparer.InvariantCultureIgnoreCase);
@@ -154,7 +142,7 @@ namespace ZyGames.Framework.Game.Sns.Service
                 var paris = keyValue.Split('=');
                 if (paris.Length != 2) continue;
                 string name = paris[0];
-                string value = paris[1];
+                string value = HttpUtility.UrlDecode(paris[1]);
                 if (string.IsNullOrEmpty(name)) continue;
 
                 if (string.Compare("Handler", name, StringComparison.OrdinalIgnoreCase) == 0)

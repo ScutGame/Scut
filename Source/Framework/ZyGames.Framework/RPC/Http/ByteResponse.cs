@@ -37,14 +37,16 @@ namespace ZyGames.Framework.RPC.Http
     public class ByteResponse : StatusResponse, IHttpResponseAction
     {
         readonly byte[] data;
+
         /// <summary>
         /// 
         /// </summary>
         /// <param name="statusCode"></param>
         /// <param name="statusDescription"></param>
         /// <param name="value"></param>
-        public ByteResponse(int statusCode, string statusDescription, byte[] value)
-            : base(statusCode, statusDescription)
+        /// <param name="identity"></param>
+        public ByteResponse(int statusCode, string statusDescription, byte[] value, string identity = null)
+            : base(statusCode, statusDescription, identity)
         {
             data = value;
         }
