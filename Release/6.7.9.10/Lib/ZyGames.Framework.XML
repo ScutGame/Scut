@@ -27,7 +27,19 @@
             <param name="personalKey"></param>
             <returns></returns>
         </member>
-        <member name="M:ZyGames.Framework.Cache.Generic.BaseCacheStruct`1.GetNextNo">
+        <member name="M:ZyGames.Framework.Cache.Generic.BaseCacheStruct`1.SetNextNo(System.Int64)">
+            <summary>
+            设置实体的编号
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:ZyGames.Framework.Cache.Generic.BaseCacheStruct`1.SetNoAddCount(System.UInt32)">
+            <summary>
+            
+            </summary>
+            <param name="num">add num</param>
+        </member>
+        <member name="M:ZyGames.Framework.Cache.Generic.BaseCacheStruct`1.GetNextNo(System.Boolean)">
             <summary>
             获取实体的下个编号
             </summary>
@@ -53,6 +65,21 @@
             获取实体数据架构信息
             </summary>
             <returns>返回有Null值</returns>
+        </member>
+        <member name="M:ZyGames.Framework.Cache.Generic.BaseCacheStruct`1.ContainGroupKey(System.String)">
+            <summary>
+            
+            </summary>
+            <param name="personalId"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ZyGames.Framework.Cache.Generic.BaseCacheStruct`1.TryTakeGroup(System.String,`0[]@)">
+            <summary>
+            
+            </summary>
+            <param name="personalId"></param>
+            <param name="list"></param>
+            <returns></returns>
         </member>
         <member name="M:ZyGames.Framework.Cache.Generic.BaseCacheStruct`1.ForeachEntity(System.Func{System.String,`0,System.Boolean})">
             <summary>
@@ -91,7 +118,7 @@
             <param name="queue"></param>
             <returns></returns>
         </member>
-        <member name="M:ZyGames.Framework.Cache.Generic.BaseCacheStruct`1.TryAddGroup(System.String,System.String,`0,System.Int32)">
+        <member name="M:ZyGames.Framework.Cache.Generic.BaseCacheStruct`1.TryAddGroup(System.String,System.String,`0,System.Int32,System.Boolean)">
             <summary>
             
             </summary>
@@ -99,9 +126,10 @@
             <param name="key"></param>
             <param name="t"></param>
             <param name="periodTime"></param>
+            <param name="isLoad"></param>
             <returns></returns>
         </member>
-        <member name="M:ZyGames.Framework.Cache.Generic.BaseCacheStruct`1.AddOrUpdateGroup(System.String,System.String,`0,System.Int32)">
+        <member name="M:ZyGames.Framework.Cache.Generic.BaseCacheStruct`1.AddOrUpdateGroup(System.String,System.String,`0,System.Int32,System.Boolean)">
             <summary>
             
             </summary>
@@ -109,33 +137,36 @@
             <param name="key"></param>
             <param name="t"></param>
             <param name="periodTime"></param>
+            <param name="isLoad"></param>
             <returns></returns>
         </member>
-        <member name="M:ZyGames.Framework.Cache.Generic.BaseCacheStruct`1.TryAddEntity(System.String,`0,System.Int32)">
+        <member name="M:ZyGames.Framework.Cache.Generic.BaseCacheStruct`1.TryAddEntity(System.String,`0,System.Int32,System.Boolean)">
             <summary>
             
             </summary>
             <param name="key"></param>
             <param name="t"></param>
             <param name="periodTime"></param>
+            <param name="isLoad"></param>
             <returns></returns>
         </member>
-        <member name="M:ZyGames.Framework.Cache.Generic.BaseCacheStruct`1.AddOrUpdateEntity(System.String,`0,System.Int32)">
+        <member name="M:ZyGames.Framework.Cache.Generic.BaseCacheStruct`1.AddOrUpdateEntity(System.String,`0,System.Int32,System.Boolean)">
             <summary>
             
             </summary>
             <param name="key"></param>
             <param name="t"></param>
             <param name="periodTime"></param>
+            <param name="isLoad"></param>
             <returns></returns>
         </member>
-        <member name="M:ZyGames.Framework.Cache.Generic.BaseCacheStruct`1.LoadFactory">
+        <member name="M:ZyGames.Framework.Cache.Generic.BaseCacheStruct`1.LoadFactory(System.Boolean)">
             <summary>
             加载数据工厂
             </summary>
             <returns></returns>
         </member>
-        <member name="M:ZyGames.Framework.Cache.Generic.BaseCacheStruct`1.LoadItemFactory(System.String)">
+        <member name="M:ZyGames.Framework.Cache.Generic.BaseCacheStruct`1.LoadItemFactory(System.String,System.Boolean)">
             <summary>
             加载子项数据工厂
             </summary>
@@ -154,44 +185,55 @@
             <param name="match"></param>
             <returns></returns>
         </member>
-        <member name="M:ZyGames.Framework.Cache.Generic.BaseCacheStruct`1.TryLoadCache(System.String,ZyGames.Framework.Net.DbDataFilter,System.Int32)">
+        <member name="M:ZyGames.Framework.Cache.Generic.BaseCacheStruct`1.TryLoadCache(System.String,ZyGames.Framework.Net.DbDataFilter,System.Int32,System.Boolean)">
             <summary>
             加载数据
             </summary>
             <param name="groupKey"></param>
             <param name="dataFilter"></param>
             <param name="periodTime"></param>
+            <param name="isReplace"></param>
             <returns></returns>
         </member>
-        <member name="M:ZyGames.Framework.Cache.Generic.BaseCacheStruct`1.TryLoadCache(ZyGames.Framework.Net.TransReceiveParam,System.Int32)">
+        <member name="M:ZyGames.Framework.Cache.Generic.BaseCacheStruct`1.TryLoadCache(ZyGames.Framework.Net.TransReceiveParam,System.Int32,System.Boolean)">
             <summary>
             加载Enity数据
             </summary>
             <param name="receiveParam"></param>
             <param name="periodTime"></param>
+            <param name="isReplace"></param>
             <returns></returns>
         </member>
-        <member name="M:ZyGames.Framework.Cache.Generic.BaseCacheStruct`1.TryLoadCache(System.String,ZyGames.Framework.Net.TransReceiveParam,System.Int32)">
+        <member name="M:ZyGames.Framework.Cache.Generic.BaseCacheStruct`1.TryLoadCache(System.String,ZyGames.Framework.Net.TransReceiveParam,System.Int32,System.Boolean)">
             <summary>
             加载数据
             </summary>
             <param name="groupKey"></param>
             <param name="receiveParam"></param>
             <param name="periodTime">缓存的生命周期，单位秒</param>
+            <param name="isReplace"></param>
             <returns></returns>
         </member>
-        <member name="M:ZyGames.Framework.Cache.Generic.BaseCacheStruct`1.LoadFrom(ZyGames.Framework.Net.TransReceiveParam,System.Predicate{`0})">
+        <member name="M:ZyGames.Framework.Cache.Generic.BaseCacheStruct`1.LoadFrom(ZyGames.Framework.Net.TransReceiveParam,System.Predicate{`0},System.Boolean)">
             <summary>
             
             </summary>
             <param name="receiveParam"></param>
             <param name="match"></param>
+            <param name="isReplace"></param>
         </member>
-        <member name="M:ZyGames.Framework.Cache.Generic.BaseCacheStruct`1.TryLoadItem(System.String)">
+        <member name="M:ZyGames.Framework.Cache.Generic.BaseCacheStruct`1.SetLoadSuccess(System.String)">
+            <summary>
+            
+            </summary>
+            <param name="key"></param>
+        </member>
+        <member name="M:ZyGames.Framework.Cache.Generic.BaseCacheStruct`1.TryLoadItem(System.String,System.Boolean)">
             <summary>
             加载指定Key数据
             </summary>
             <param name="groupKey"></param>
+            <param name="isReplace"></param>
             <returns></returns>
         </member>
         <member name="M:ZyGames.Framework.Cache.Generic.BaseCacheStruct`1.ReLoad(System.String)">
@@ -211,12 +253,13 @@
             <param name="groupKey"></param>
             <param name="periodTime"></param>
         </member>
-        <member name="M:ZyGames.Framework.Cache.Generic.BaseCacheStruct`1.InitCache(System.Collections.Generic.List{`0},System.Int32)">
+        <member name="M:ZyGames.Framework.Cache.Generic.BaseCacheStruct`1.InitCache(System.Collections.Generic.List{`0},System.Int32,System.Boolean)">
             <summary>
             
             </summary>
             <param name="dataList"></param>
             <param name="periodTime"></param>
+            <param name="isReplace">Whether to replace the entity in cache</param>
             <returns></returns>
         </member>
         <member name="M:ZyGames.Framework.Cache.Generic.BaseCacheStruct`1.TryRemove(System.String,System.String,System.Func{`0,System.Boolean})">
@@ -241,11 +284,24 @@
             更新改变的数据到库中
             </summary>
         </member>
-        <member name="M:ZyGames.Framework.Cache.Generic.BaseCacheStruct`1.Update(System.Boolean)">
+        <member name="M:ZyGames.Framework.Cache.Generic.BaseCacheStruct`1.Update(`0)">
+            <summary>
+            Sync save to redis
+            </summary>
+            <param name="entity"></param>
+        </member>
+        <member name="M:ZyGames.Framework.Cache.Generic.BaseCacheStruct`1.Update(System.Collections.Generic.IEnumerable{`0})">
+            <summary>
+            Sync save to redis
+            </summary>
+            <param name="entityList"></param>
+        </member>
+        <member name="M:ZyGames.Framework.Cache.Generic.BaseCacheStruct`1.Update(System.Boolean,System.String)">
             <summary>
             
             </summary>
             <param name="isChange">更新到库中是全部数据还是改变的数据</param>
+            <param name="personalId"></param>
         </member>
         <member name="M:ZyGames.Framework.Cache.Generic.BaseCacheStruct`1.UpdateEntity(System.Boolean,System.String)">
             <summary>
@@ -296,6 +352,11 @@
         <member name="P:ZyGames.Framework.Cache.Generic.BaseCacheStruct`1.IsEmpty">
             <summary>
             是否空
+            </summary>
+        </member>
+        <member name="P:ZyGames.Framework.Cache.Generic.BaseCacheStruct`1.Count">
+            <summary>
+            
             </summary>
         </member>
         <member name="P:ZyGames.Framework.Cache.Generic.BaseCacheStruct`1.ChildrenItem">
@@ -490,6 +551,12 @@
             <param name="match"></param>
             <returns></returns>
         </member>
+        <member name="M:ZyGames.Framework.Cache.Generic.BaseCollection.GetEnumerable">
+            <summary>
+            
+            </summary>
+            <returns></returns>
+        </member>
         <member name="M:ZyGames.Framework.Cache.Generic.BaseCollection.GetEnumerator">
             <summary>
             
@@ -555,6 +622,13 @@
             <summary>
             
             </summary>
+            <param name="disableEvent"></param>
+        </member>
+        <member name="M:ZyGames.Framework.Cache.Generic.CacheCollection.#ctor(System.Int32,System.Boolean)">
+            <summary>
+            
+            </summary>
+            <param name="capacity"></param>
             <param name="disableEvent">是否禁用事件</param>
         </member>
         <member name="M:ZyGames.Framework.Cache.Generic.CacheCollection.TryGetValue(System.String,System.Object@)">
@@ -704,6 +778,12 @@
             <param name="func"></param>
             <param name="groupKey"></param>
         </member>
+        <member name="M:ZyGames.Framework.Cache.Generic.CacheCollection.GetEnumerable">
+            <summary>
+            
+            </summary>
+            <returns></returns>
+        </member>
         <member name="M:ZyGames.Framework.Cache.Generic.CacheCollection.GetEnumerator">
             <summary>
             
@@ -759,12 +839,7 @@
             释放
             </summary>
         </member>
-        <member name="M:ZyGames.Framework.Cache.Generic.CacheContainer.SetRemoveStatus">
-            <summary>
-            设置移除状态
-            </summary>
-        </member>
-        <member name="M:ZyGames.Framework.Cache.Generic.CacheContainer.OnLoadFactory(System.Func{System.Boolean},System.Boolean)">
+        <member name="M:ZyGames.Framework.Cache.Generic.CacheContainer.OnLoadFactory(System.Func{System.Boolean,System.Boolean},System.Boolean)">
             <summary>
             执行加载数据工厂
             </summary>
@@ -887,8 +962,15 @@
         </member>
         <member name="M:ZyGames.Framework.Event.IItemChangeEvent.Clone">
             <summary>
-            Only copy property
+            Depth copy property and field of object.
             </summary>
+            <returns></returns>
+        </member>
+        <member name="M:ZyGames.Framework.Event.IItemChangeEvent.Clone``1">
+            <summary>
+            Depth copy property and field of object.
+            </summary>
+            <typeparam name="T"></typeparam>
             <returns></returns>
         </member>
         <member name="P:ZyGames.Framework.Event.IItemChangeEvent.IsExpired">
@@ -941,7 +1023,7 @@
             设置禁用事件绑定
             </summary>
         </member>
-        <member name="M:ZyGames.Framework.Event.EntityChangeEvent.ClearChildrenEvent">
+        <member name="M:ZyGames.Framework.Event.EntityChangeEvent.ClearChildrenEvent``1(System.Collections.Generic.IEnumerable{``0})">
             <summary>
             清除子类事件句柄
             </summary>
@@ -997,6 +1079,11 @@
         <member name="M:ZyGames.Framework.Event.EntityChangeEvent.TriggerNotify">
             <summary>
             触发通知
+            </summary>
+        </member>
+        <member name="M:ZyGames.Framework.Event.EntityChangeEvent.ExitModify">
+            <summary>
+            
             </summary>
         </member>
         <member name="M:ZyGames.Framework.Event.EntityChangeEvent.NotifyByModify">
@@ -1287,6 +1374,14 @@
             <param name="keys"></param>
             <returns></returns>
         </member>
+        <member name="M:ZyGames.Framework.Cache.Generic.CacheFactory.ContainEntityKey(System.Type,System.String)">
+            <summary>
+            
+            </summary>
+            <param name="type"></param>
+            <param name="key"></param>
+            <returns></returns>
+        </member>
         <member name="M:ZyGames.Framework.Cache.Generic.CacheFactory.GetPersonalEntity(System.String)">
             <summary>
             通过Redis键从缓存中获取实体对象
@@ -1302,27 +1397,53 @@
             <param name="itemSet"></param>
             <returns></returns>
         </member>
-        <member name="M:ZyGames.Framework.Cache.Generic.CacheFactory.AddOrUpdateEntity(System.String,ZyGames.Framework.Model.AbstractEntity)">
+        <member name="M:ZyGames.Framework.Cache.Generic.CacheFactory.AddOrUpdateEntity(ZyGames.Framework.Model.AbstractEntity,ZyGames.Framework.Cache.Generic.CacheItemSet@,System.Int32)">
+            <summary>
+            
+            </summary>
+            <param name="entity"></param>
+            <param name="itemSet"></param>
+            <param name="periodTime"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ZyGames.Framework.Cache.Generic.CacheFactory.AddOrUpdateEntity(System.String,ZyGames.Framework.Model.AbstractEntity,System.Int32)">
             <summary>
             
             </summary>
             <param name="redisKey"></param>
             <param name="entity"></param>
+            <param name="periodTime"></param>
             <returns></returns>
         </member>
-        <member name="M:ZyGames.Framework.Cache.Generic.CacheFactory.TryGetCacheItem(System.String,System.Collections.Generic.KeyValuePair{System.String,ZyGames.Framework.Cache.Generic.CacheItemSet}@)">
+        <member name="M:ZyGames.Framework.Cache.Generic.CacheFactory.AddOrUpdateEntity(System.String,ZyGames.Framework.Model.AbstractEntity,ZyGames.Framework.Cache.Generic.CacheItemSet@,System.Int32)">
+            <summary>
+            
+            </summary>
+            <param name="redisKey"></param>
+            <param name="entity"></param>
+            <param name="itemSet"></param>
+            <param name="periodTime"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ZyGames.Framework.Cache.Generic.CacheFactory.TryGetCacheItem(System.String,System.Collections.Generic.KeyValuePair{System.String,ZyGames.Framework.Cache.Generic.CacheItemSet}@,System.Int32)">
             <summary>
             
             </summary>
             <param name="redisKey"></param>
             <param name="itemPair">key:entity's key, value:</param>
+            <param name="periodTime"></param>
             <returns></returns>
         </member>
-        <member name="M:ZyGames.Framework.Cache.Generic.CacheFactory.RemoveToDatabase(System.String[])">
+        <member name="M:ZyGames.Framework.Cache.Generic.CacheFactory.RemoveToDatabase(System.Collections.Generic.KeyValuePair{System.Type,System.Collections.Generic.IList{System.String}}[])">
             <summary>
-            从Redis内存移除，并保存到数据库
+            从Redis内存移除，并保存到数据库,
             </summary>
-            <param name="keys"></param>
+            <param name="match">实体类型, 实体Key列表</param>
+        </member>
+        <member name="M:ZyGames.Framework.Cache.Generic.CacheFactory.TestDisposeCache">
+            <summary>
+            
+            </summary>
         </member>
         <member name="M:ZyGames.Framework.Cache.Generic.CacheFactory.StartListener">
             <summary>
@@ -1346,7 +1467,7 @@
             <typeparam name="T"></typeparam>
             <returns></returns>
         </member>
-        <member name="M:ZyGames.Framework.Cache.Generic.CacheFactory.GetOrCreate``1(System.Boolean,System.Func{System.Boolean},System.Func{System.String,System.Boolean})">
+        <member name="M:ZyGames.Framework.Cache.Generic.CacheFactory.GetOrCreate``1(System.Boolean,System.Func{System.Boolean,System.Boolean},System.Func{System.String,System.Boolean,System.Boolean})">
             <summary>
             获取缓存容器对象，不存在则创建空容器对象
             </summary>
@@ -1453,7 +1574,7 @@
         </member>
         <member name="M:ZyGames.Framework.Cache.Generic.CacheItemSet.OnLoadSuccess">
             <summary>
-            加载成功
+            加载成功,只在加载成功后设置
             </summary>
         </member>
         <member name="M:ZyGames.Framework.Cache.Generic.CacheItemSet.OnLoadError">
@@ -1461,9 +1582,9 @@
             加载失败
             </summary>
         </member>
-        <member name="M:ZyGames.Framework.Cache.Generic.CacheItemSet.SetRemoveStatus">
+        <member name="M:ZyGames.Framework.Cache.Generic.CacheItemSet.ResetStatus">
             <summary>
-            
+            重置初始状态
             </summary>
         </member>
         <member name="M:ZyGames.Framework.Cache.Generic.CacheItemSet.Dispose(System.Boolean)">
@@ -1477,14 +1598,16 @@
             
             </summary>
         </member>
+        <member name="M:ZyGames.Framework.Cache.Generic.CacheItemSet.TryProcessExpired(System.String)">
+            <summary>
+            是否能处理过期
+            </summary>
+            <param name="key"></param>
+            <returns></returns>
+        </member>
         <member name="P:ZyGames.Framework.Cache.Generic.CacheItemSet.HasLoadSuccess">
             <summary>
             是否数据已加载成功
-            </summary>
-        </member>
-        <member name="P:ZyGames.Framework.Cache.Generic.CacheItemSet.HasLoadError">
-            <summary>
-            加载异常
             </summary>
         </member>
         <member name="P:ZyGames.Framework.Cache.Generic.CacheItemSet.LoadingStatus">
@@ -1565,13 +1688,29 @@
             </summary>
             <param name="changeEvent"></param>
         </member>
+        <member name="M:ZyGames.Framework.Cache.Generic.CacheList`1.BinarySearch(`0)">
+            <summary>
+            
+            </summary>
+            <param name="t"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ZyGames.Framework.Cache.Generic.CacheList`1.Exchange(System.Int32,System.Int32,System.Action{`0,`0})">
+            <summary>
+            
+            </summary>
+            <param name="index1"></param>
+            <param name="index2"></param>
+            <param name="complate"></param>
+            <returns></returns>
+        </member>
         <member name="M:ZyGames.Framework.Cache.Generic.CacheList`1.GetEnumerator">
             <summary>
             
             </summary>
             <returns></returns>
         </member>
-        <member name="M:ZyGames.Framework.Cache.Generic.CacheList`1.AddRange(System.Collections.Generic.IList{`0})">
+        <member name="M:ZyGames.Framework.Cache.Generic.CacheList`1.AddRange(System.Collections.Generic.IEnumerable{`0})">
             <summary>
             
             </summary>
@@ -1661,6 +1800,14 @@
             <param name="match"></param>
             <returns></returns>
         </member>
+        <member name="M:ZyGames.Framework.Cache.Generic.CacheList`1.RemoveAll(System.Predicate{`0},System.Collections.Generic.List{`0}@)">
+            <summary>
+            
+            </summary>
+            <param name="match"></param>
+            <param name="removeList"></param>
+            <returns></returns>
+        </member>
         <member name="M:ZyGames.Framework.Cache.Generic.CacheList`1.RemoveExpired(System.String)">
             <summary>
             
@@ -1674,6 +1821,42 @@
             </summary>
             <param name="item"></param>
             <param name="comparison"></param>
+        </member>
+        <member name="M:ZyGames.Framework.Cache.Generic.CacheList`1.Sort">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:ZyGames.Framework.Cache.Generic.CacheList`1.Sort(System.Int32,System.Int32,System.Collections.Generic.IComparer{`0})">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:ZyGames.Framework.Cache.Generic.CacheList`1.SortAsc``1(System.Func{`0,``0})">
+            <summary>
+            
+            </summary>
+            <param name="selector"></param>
+        </member>
+        <member name="M:ZyGames.Framework.Cache.Generic.CacheList`1.SortDesc``1(System.Func{`0,``0})">
+            <summary>
+            
+            </summary>
+            <param name="selector"></param>
+        </member>
+        <member name="M:ZyGames.Framework.Cache.Generic.CacheList`1.MoveBySort(`0,System.Comparison{`0})">
+            <summary>
+            
+            </summary>
+            <param name="item"></param>
+            <param name="comparison"></param>
+        </member>
+        <member name="M:ZyGames.Framework.Cache.Generic.CacheList`1.Move(`0,System.Int32)">
+            <summary>
+            
+            </summary>
+            <param name="item"></param>
+            <param name="toIndex"></param>
         </member>
         <member name="M:ZyGames.Framework.Cache.Generic.CacheList`1.Exists(System.Predicate{`0})">
             <summary>
@@ -2024,6 +2207,11 @@
             
             </summary>
         </member>
+        <member name="M:ZyGames.Framework.Cache.Generic.DataSyncQueueManager.SetWriteToDbState(System.Boolean)">
+            <summary>
+            
+            </summary>
+        </member>
         <member name="F:ZyGames.Framework.Cache.Generic.DataSyncQueueManager.ExecuteCount">
             <summary>
             
@@ -2091,7 +2279,13 @@
             </summary>
             <param name="state"></param>
         </member>
-        <member name="M:ZyGames.Framework.Cache.Generic.DataSyncQueueManager.DoProcessRedisSyncQueue(System.String,System.Byte[][],System.Byte[][])">
+        <member name="M:ZyGames.Framework.Cache.Generic.DataSyncQueueManager.SendSync(System.Collections.Generic.IEnumerable{ZyGames.Framework.Model.AbstractEntity})">
+            <summary>
+            以同步的方式更新Entity
+            </summary>
+            <param name="entityList"></param>
+        </member>
+        <member name="M:ZyGames.Framework.Cache.Generic.DataSyncQueueManager.ProcessRedisSyncQueue(System.String,System.Byte[][],System.Byte[][])">
             <summary>
             Process synchronized queue of redis
             </summary>
@@ -2122,6 +2316,11 @@
             <param name="keys"></param>
             <param name="values"></param>
             <returns></returns>
+        </member>
+        <member name="P:ZyGames.Framework.Cache.Generic.DataSyncQueueManager.SyncQueueCount">
+            <summary>
+            Write redis sync queue count
+            </summary>
         </member>
         <member name="P:ZyGames.Framework.Cache.Generic.DataSyncQueueManager.RedisSyncQueueKey">
             <summary>
@@ -2159,266 +2358,13 @@
             缓存容器操作类,负责数据加载管理
             </summary>
         </member>
-        <member name="T:ZyGames.Framework.Cache.Generic.IDataContainer`1">
-            <summary>
-            缓存数据容器
-            </summary>
-            <typeparam name="T">实体类型</typeparam>
-        </member>
-        <member name="M:ZyGames.Framework.Cache.Generic.IDataContainer`1.HasChange(System.String)">
-            <summary>
-            数据是否改变
-            </summary>
-        </member>
-        <member name="M:ZyGames.Framework.Cache.Generic.IDataContainer`1.TryGetCache(System.String,ZyGames.Framework.Cache.Generic.CacheItemSet@)">
-            <summary>
-            
-            </summary>
-            <param name="key"></param>
-            <param name="itemSet"></param>
-            <returns></returns>
-        </member>
-        <member name="M:ZyGames.Framework.Cache.Generic.IDataContainer`1.TakeEntityFromKey(System.String)">
-            <summary>
-            遍历取
-            </summary>
-        </member>
-        <member name="M:ZyGames.Framework.Cache.Generic.IDataContainer`1.ForeachEntity(System.Func{System.String,`0,System.Boolean})">
-            <summary>
-            遍历实体
-            </summary>
-            <param name="func">遍历项委托方法，返回值为:false结束遍历</param>
-        </member>
-        <member name="M:ZyGames.Framework.Cache.Generic.IDataContainer`1.ForeachGroup(System.Func{System.String,System.String,`0,System.Boolean})">
-            <summary>
-            遍历
-            </summary>
-            <param name="func">遍历项委托方法，第一个参数为分组Key,第二个为实体Key，返回值为:false结束遍历</param>
-        </member>
-        <member name="M:ZyGames.Framework.Cache.Generic.IDataContainer`1.ForeachQueue(System.Func{System.String,`0,System.Boolean})">
-            <summary>
-            
-            </summary>
-            <param name="func"></param>
-        </member>
-        <member name="M:ZyGames.Framework.Cache.Generic.IDataContainer`1.ToList">
-            <summary>
-            取数据以List方式
-            </summary>
-        </member>
-        <member name="M:ZyGames.Framework.Cache.Generic.IDataContainer`1.IsExistEntity(System.Predicate{`0})">
-            <summary>
-            判断条件是否存在数据
-            </summary>
-            <param name="match"></param>
-            <returns></returns>
-        </member>
-        <member name="M:ZyGames.Framework.Cache.Generic.IDataContainer`1.IsExistGroup(System.Predicate{`0})">
-            <summary>
-            
-            </summary>
-            <param name="match"></param>
-            <returns></returns>
-        </member>
-        <member name="M:ZyGames.Framework.Cache.Generic.IDataContainer`1.ReLoad">
-            <summary>
-            重新加载全部数据
-            </summary>
-        </member>
-        <member name="M:ZyGames.Framework.Cache.Generic.IDataContainer`1.Load">
-            <summary>
-            加载全部数据
-            </summary>
-        </member>
-        <member name="M:ZyGames.Framework.Cache.Generic.IDataContainer`1.LoadFrom``1(ZyGames.Framework.Net.TransReceiveParam)">
-            <summary>
-            
-            </summary>
-        </member>
-        <member name="M:ZyGames.Framework.Cache.Generic.IDataContainer`1.LoadItem(System.String)">
-            <summary>
-            加载指定Key数据
-            </summary>
-        </member>
-        <member name="M:ZyGames.Framework.Cache.Generic.IDataContainer`1.ReLoadItem(System.String)">
-            <summary>
-            重新加载指定Key数据
-            </summary>
-        </member>
-        <member name="M:ZyGames.Framework.Cache.Generic.IDataContainer`1.TryGetEntity(System.String,`0@)">
-            <summary>
-            尝试取实体
-            </summary>
-            <param name="key"></param>
-            <param name="entityData"></param>
-            <returns></returns>
-        </member>
-        <member name="M:ZyGames.Framework.Cache.Generic.IDataContainer`1.TryAddEntity(System.String,`0,System.Int32)">
-            <summary>
-            尝试增加实体
-            </summary>
-        </member>
-        <member name="M:ZyGames.Framework.Cache.Generic.IDataContainer`1.AddOrUpdateEntity(System.String,`0,System.Int32)">
-            <summary>
-            
-            </summary>
-            <param name="entityKey"></param>
-            <param name="entityData"></param>
-            <param name="periodTime"></param>
-        </member>
-        <member name="M:ZyGames.Framework.Cache.Generic.IDataContainer`1.TryGetGroup(System.String,ZyGames.Framework.Cache.Generic.BaseCollection@,ZyGames.Framework.Model.LoadingStatus@)">
-            <summary>
-            尝试取实体分组
-            </summary>
-        </member>
-        <member name="M:ZyGames.Framework.Cache.Generic.IDataContainer`1.AddOrUpdateGroup(System.String,System.String,`0,System.Int32)">
-            <summary>
-            
-            </summary>
-            <param name="groupKey"></param>
-            <param name="key"></param>
-            <param name="entityData"></param>
-            <param name="periodTime"></param>
-        </member>
-        <member name="M:ZyGames.Framework.Cache.Generic.IDataContainer`1.TryAddGroup(System.String,System.String,`0,System.Int32)">
-            <summary>
-            尝试增加实体分组
-            </summary>
-        </member>
-        <member name="M:ZyGames.Framework.Cache.Generic.IDataContainer`1.InitGroupContainer(System.String,System.Int32)">
+        <member name="M:ZyGames.Framework.Cache.Generic.EntityContainer`1.InitGroupContainer(System.String,System.Int32)">
             <summary>
             初始化容器
             </summary>
             <param name="groupKey"></param>
             <param name="periodTime"></param>
             <returns></returns>
-        </member>
-        <member name="M:ZyGames.Framework.Cache.Generic.IDataContainer`1.TryGetQueue(System.String,ZyGames.Framework.Cache.Generic.CacheQueue{`0}@)">
-            <summary>
-            尝试取实体队列
-            </summary>
-        </member>
-        <member name="M:ZyGames.Framework.Cache.Generic.IDataContainer`1.TryAddQueue(System.String,`0,System.Int32,System.Func{System.String,ZyGames.Framework.Cache.Generic.CacheQueue{`0},System.Boolean})">
-            <summary>
-            尝试增加实体队列
-            </summary>
-        </member>
-        <member name="M:ZyGames.Framework.Cache.Generic.IDataContainer`1.TryRemove(System.String,System.Func{ZyGames.Framework.Cache.Generic.CacheItemSet,System.Boolean})">
-            <summary>
-            尝试移除
-            </summary>
-            <param name="groupKey"></param>
-            <param name="callback">移除成功回调</param>
-            <returns></returns>
-        </member>
-        <member name="M:ZyGames.Framework.Cache.Generic.IDataContainer`1.TryRemove(System.String,System.String,System.Func{`0,System.Boolean})">
-            <summary>
-            尝试移除
-            </summary>
-            <param name="groupKey"></param>
-            <param name="key"></param>
-            <param name="callback">移除成功回调</param>
-            <returns></returns>
-        </member>
-        <member name="M:ZyGames.Framework.Cache.Generic.IDataContainer`1.TryRemove(System.Func{ZyGames.Framework.Cache.Generic.CacheContainer,System.Boolean})">
-            <summary>
-            尝试移除
-            </summary>
-            <param name="callback">移除成功回调</param>
-            <returns></returns>
-        </member>
-        <member name="M:ZyGames.Framework.Cache.Generic.IDataContainer`1.TryReceiveData``1(ZyGames.Framework.Net.TransReceiveParam,System.Collections.Generic.List{``0}@)">
-            <summary>
-            尝试加载接收数据
-            </summary>
-            <typeparam name="V">实体类型</typeparam>
-            <param name="receiveParam">接收转发器参数</param>
-            <param name="dataList"></param>
-            <returns></returns>
-        </member>
-        <member name="M:ZyGames.Framework.Cache.Generic.IDataContainer`1.TryLoadHistory``1(System.String,System.Collections.Generic.List{``0}@)">
-            <summary>
-            尝试从Redis历史记录数中检索
-            </summary>
-            <typeparam name="V">实体类型</typeparam>
-            <param name="redisKey">redis Key</param>
-            <param name="dataList"></param>
-            <returns></returns>
-        </member>
-        <member name="M:ZyGames.Framework.Cache.Generic.IDataContainer`1.SendData``1(``0[],ZyGames.Framework.Net.TransSendParam)">
-            <summary>
-            传送数据
-            </summary>
-            <typeparam name="V">实体类型</typeparam>
-            <param name="dataList"></param>
-            <param name="sendParam">输送转发器参数</param>
-        </member>
-        <member name="M:ZyGames.Framework.Cache.Generic.IDataContainer`1.GetChangeEntity(System.String,System.Boolean)">
-            <summary>
-            获取变更的实体数据
-            </summary>
-            <param name="changeKey"></param>
-            <param name="isChange"></param>
-            <returns></returns>
-        </member>
-        <member name="M:ZyGames.Framework.Cache.Generic.IDataContainer`1.GetChangeGroup(System.String,System.Boolean)">
-            <summary>
-            获取变更的分组数据
-            </summary>
-            <param name="changeKey"></param>
-            <param name="isChange"></param>
-            <returns></returns>
-        </member>
-        <member name="M:ZyGames.Framework.Cache.Generic.IDataContainer`1.GetChangeQueue(System.String,System.Boolean)">
-            <summary>
-            获取变更的队列数据
-            </summary>
-            <param name="changeKey"></param>
-            <param name="isChange">更新到库中是全部数据还是改变的数据</param>
-            <returns></returns>
-        </member>
-        <member name="M:ZyGames.Framework.Cache.Generic.IDataContainer`1.UnChangeNotify(System.String)">
-            <summary>
-            触发UnChange事件数据通知
-            </summary>
-            <param name="key">Group键</param>
-        </member>
-        <member name="M:ZyGames.Framework.Cache.Generic.IDataContainer`1.TryRecoverFromDb``1(ZyGames.Framework.Net.TransReceiveParam,System.Collections.Generic.List{``0}@)">
-            <summary>
-            尝试从DB中恢复数据
-            </summary>
-            <param name="receiveParam"></param>
-            <param name="dataList"></param>
-        </member>
-        <member name="P:ZyGames.Framework.Cache.Generic.IDataContainer`1.IsReadonly">
-            <summary>
-            是否只读容器
-            </summary>
-        </member>
-        <member name="P:ZyGames.Framework.Cache.Generic.IDataContainer`1.RootKey">
-            <summary>
-            缓存池的键，缓存的根部
-            </summary>
-        </member>
-        <member name="P:ZyGames.Framework.Cache.Generic.IDataContainer`1.Count">
-            <summary>
-            缓存数量
-            </summary>
-        </member>
-        <member name="P:ZyGames.Framework.Cache.Generic.IDataContainer`1.IsEmpty">
-            <summary>
-            容器是否为空
-            </summary>
-        </member>
-        <member name="P:ZyGames.Framework.Cache.Generic.IDataContainer`1.LoadStatus">
-            <summary>
-            
-            </summary>
-        </member>
-        <member name="P:ZyGames.Framework.Cache.Generic.IDataContainer`1.ChildrenItem">
-            <summary>
-            
-            </summary>
         </member>
         <member name="M:ZyGames.Framework.Cache.Generic.EntityContainer`1.Initialize">
             <summary>
@@ -2432,7 +2378,28 @@
             <param name="key">实体Key</param>
             <returns></returns>
         </member>
-        <member name="M:ZyGames.Framework.Cache.Generic.EntityContainer`1.TryGetCache(System.String,ZyGames.Framework.Cache.Generic.CacheItemSet@)">
+        <member name="M:ZyGames.Framework.Cache.Generic.EntityContainer`1.ContainGroupKey(System.String)">
+            <summary>
+            
+            </summary>
+            <param name="key"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ZyGames.Framework.Cache.Generic.EntityContainer`1.IsExistEntity(System.Predicate{`0})">
+            <summary>
+            
+            </summary>
+            <param name="match"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ZyGames.Framework.Cache.Generic.EntityContainer`1.IsExistGroup(System.Predicate{`0})">
+            <summary>
+            
+            </summary>
+            <param name="match"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ZyGames.Framework.Cache.Generic.EntityContainer`1.TryGetCacheItem(System.String,ZyGames.Framework.Cache.Generic.CacheItemSet@)">
             <summary>
             
             </summary>
@@ -2458,36 +2425,45 @@
             </summary>
             <param name="func"></param>
         </member>
-        <member name="M:ZyGames.Framework.Cache.Generic.EntityContainer`1.IsExistEntity(System.Predicate{`0})">
+        <member name="M:ZyGames.Framework.Cache.Generic.EntityContainer`1.ToList">
             <summary>
             
             </summary>
-            <param name="match"></param>
             <returns></returns>
         </member>
-        <member name="M:ZyGames.Framework.Cache.Generic.EntityContainer`1.ReLoad">
+        <member name="M:ZyGames.Framework.Cache.Generic.EntityContainer`1.ToEntityEnumerable(System.Boolean)">
             <summary>
-            重新加载数据
+            
             </summary>
             <returns></returns>
         </member>
-        <member name="M:ZyGames.Framework.Cache.Generic.EntityContainer`1.Load">
+        <member name="M:ZyGames.Framework.Cache.Generic.EntityContainer`1.ToGroupEnumerable">
             <summary>
-            加载数据
+            
             </summary>
-        </member>
-        <member name="M:ZyGames.Framework.Cache.Generic.EntityContainer`1.LoadItem(System.String)">
-            <summary>
-            加载指定Key数据
-            </summary>
-            <param name="key"></param>
             <returns></returns>
         </member>
-        <member name="M:ZyGames.Framework.Cache.Generic.EntityContainer`1.ReLoadItem(System.String)">
+        <member name="M:ZyGames.Framework.Cache.Generic.EntityContainer`1.TakeEntityFromKey(System.String)">
             <summary>
             
             </summary>
             <param name="key"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ZyGames.Framework.Cache.Generic.EntityContainer`1.TakeOrLoadGroup(System.Collections.Generic.IEnumerable{System.String},System.Boolean)">
+            <summary>
+            
+            </summary>
+            <param name="keys"></param>
+            <param name="isAutoLoad"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ZyGames.Framework.Cache.Generic.EntityContainer`1.TakeOrLoadGroup(System.String,System.Boolean)">
+            <summary>
+            
+            </summary>
+            <param name="key"></param>
+            <param name="isAutoLoad"></param>
             <returns></returns>
         </member>
         <member name="M:ZyGames.Framework.Cache.Generic.EntityContainer`1.TryGetEntity(System.String,`0@)">
@@ -2498,22 +2474,36 @@
             <param name="entityData"></param>
             <returns></returns>
         </member>
-        <member name="M:ZyGames.Framework.Cache.Generic.EntityContainer`1.AddOrUpdateEntity(System.String,`0,System.Int32)">
+        <member name="M:ZyGames.Framework.Cache.Generic.EntityContainer`1.AddOrUpdateEntity(System.String,`0,System.Int32,System.Boolean)">
             <summary>
             
             </summary>
             <param name="entityKey"></param>
             <param name="entityData"></param>
             <param name="periodTime"></param>
+            <param name="isLoad"></param>
             <returns></returns>
         </member>
-        <member name="M:ZyGames.Framework.Cache.Generic.EntityContainer`1.TryAddEntity(System.String,`0,System.Int32)">
+        <member name="M:ZyGames.Framework.Cache.Generic.EntityContainer`1.AddOrUpdateEntity(System.String,`0,System.Int32,ZyGames.Framework.Cache.Generic.CacheItemSet@,System.Boolean)">
             <summary>
             
             </summary>
             <param name="entityKey"></param>
             <param name="entityData"></param>
             <param name="periodTime"></param>
+            <param name="itemSet"></param>
+            <param name="isLoad"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ZyGames.Framework.Cache.Generic.EntityContainer`1.TryAddEntity(System.String,`0,System.Int32,ZyGames.Framework.Cache.Generic.CacheItemSet@,System.Boolean)">
+            <summary>
+            
+            </summary>
+            <param name="entityKey"></param>
+            <param name="entityData"></param>
+            <param name="periodTime"></param>
+            <param name="itemSet"></param>
+            <param name="isLoad"></param>
             <returns></returns>
         </member>
         <member name="M:ZyGames.Framework.Cache.Generic.EntityContainer`1.TryGetGroup(System.String,ZyGames.Framework.Cache.Generic.BaseCollection@,ZyGames.Framework.Model.LoadingStatus@)">
@@ -2525,7 +2515,7 @@
             <param name="loadStatus"></param>
             <returns></returns>
         </member>
-        <member name="M:ZyGames.Framework.Cache.Generic.EntityContainer`1.AddOrUpdateGroup(System.String,System.String,`0,System.Int32)">
+        <member name="M:ZyGames.Framework.Cache.Generic.EntityContainer`1.AddOrUpdateGroup(System.String,System.String,`0,System.Int32,System.Boolean)">
             <summary>
             
             </summary>
@@ -2533,9 +2523,10 @@
             <param name="key"></param>
             <param name="entityData"></param>
             <param name="periodTime"></param>
+            <param name="isLoad"></param>
             <returns></returns>
         </member>
-        <member name="M:ZyGames.Framework.Cache.Generic.EntityContainer`1.TryAddGroup(System.String,System.String,`0,System.Int32)">
+        <member name="M:ZyGames.Framework.Cache.Generic.EntityContainer`1.TryAddGroup(System.String,System.String,`0,System.Int32,System.Boolean)">
             <summary>
             
             </summary>
@@ -2543,14 +2534,15 @@
             <param name="key"></param>
             <param name="entityData"></param>
             <param name="periodTime"></param>
+            <param name="isLoad"></param>
             <returns></returns>
         </member>
-        <member name="M:ZyGames.Framework.Cache.Generic.EntityContainer`1.InitGroupContainer(System.String,System.Int32)">
+        <member name="M:ZyGames.Framework.Cache.Generic.EntityContainer`1.TryTakeGroup(System.String,`0[]@)">
             <summary>
-            初始化容器
+            
             </summary>
-            <param name="groupKey"></param>
-            <param name="periodTime"></param>
+            <param name="key"></param>
+            <param name="list"></param>
             <returns></returns>
         </member>
         <member name="M:ZyGames.Framework.Cache.Generic.EntityContainer`1.TryGetQueue(System.String,ZyGames.Framework.Cache.Generic.CacheQueue{`0}@)">
@@ -2569,6 +2561,191 @@
             <param name="entityData"></param>
             <param name="periodTime"></param>
             <param name="expiredHandle"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ZyGames.Framework.Cache.Generic.EntityContainer`1.TryGetRankCount(System.String,System.Int32@)">
+            <summary>
+            
+            </summary>
+            <param name="key"></param>
+            <param name="count"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ZyGames.Framework.Cache.Generic.EntityContainer`1.GetRankNo``1(System.String,System.Predicate{``0})">
+            <summary>
+            
+            </summary>
+            <param name="key"></param>
+            <param name="match"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ZyGames.Framework.Cache.Generic.EntityContainer`1.TryGetRangeRank(System.String,System.Nullable{System.Int32},System.Collections.Generic.IEnumerable{`0}@)">
+            <summary>
+            
+            </summary>
+            <param name="key"></param>
+            <param name="count"></param>
+            <param name="list"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ZyGames.Framework.Cache.Generic.EntityContainer`1.SetRangeRank``1(System.String,``0[])">
+            <summary>
+            
+            </summary>
+            <param name="key"></param>
+            <param name="dataList"></param>
+        </member>
+        <member name="M:ZyGames.Framework.Cache.Generic.EntityContainer`1.RankSort``1(System.String,``0)">
+            <summary>
+            
+            </summary>
+            <typeparam name="V"></typeparam>
+            <param name="key"></param>
+            <param name="item"></param>
+        </member>
+        <member name="M:ZyGames.Framework.Cache.Generic.EntityContainer`1.RankSort``1(System.String)">
+            <summary>
+            
+            </summary>
+            <typeparam name="V"></typeparam>
+            <param name="key"></param>
+        </member>
+        <member name="M:ZyGames.Framework.Cache.Generic.EntityContainer`1.TryExchangeRank``1(System.String,``0,``0)">
+            <summary>
+            
+            </summary>
+            <param name="key"></param>
+            <param name="t1"></param>
+            <param name="t2"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ZyGames.Framework.Cache.Generic.EntityContainer`1.RemoveRankByScore``1(System.String,System.Double,System.Nullable{System.Double})">
+            <summary>
+            
+            </summary>
+            <param name="key"></param>
+            <param name="fromScore"></param>
+            <param name="toScore">-1: all</param>
+            <returns></returns>
+        </member>
+        <member name="M:ZyGames.Framework.Cache.Generic.EntityContainer`1.TryLoadRangeRank``1(System.String,System.Collections.Generic.IEnumerable{``0},System.Int32,System.Boolean,System.Boolean)">
+            <summary>
+            
+            </summary>
+            <param name="key"></param>
+            <param name="dataList"></param>
+            <param name="periodTime"></param>
+            <param name="isLoad"></param>
+            <param name="isReplace"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ZyGames.Framework.Cache.Generic.EntityContainer`1.TryReceiveData``1(ZyGames.Framework.Net.TransReceiveParam,System.Collections.Generic.List{``0}@)">
+            <summary>
+            
+            </summary>
+            <typeparam name="V"></typeparam>
+            <param name="receiveParam"></param>
+            <param name="dataList"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ZyGames.Framework.Cache.Generic.EntityContainer`1.TryRecoverFromDb``1(ZyGames.Framework.Net.TransReceiveParam,System.Collections.Generic.List{``0}@)">
+            <summary>
+            尝试从DB中恢复数据
+            </summary>
+            <typeparam name="V"></typeparam>
+            <param name="receiveParam"></param>
+            <param name="dataList"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ZyGames.Framework.Cache.Generic.EntityContainer`1.TryLoadHistory``1(System.String,System.Collections.Generic.List{``0}@)">
+            <summary>
+            
+            </summary>
+            <typeparam name="V"></typeparam>
+            <param name="redisKey"></param>
+            <param name="dataList"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ZyGames.Framework.Cache.Generic.EntityContainer`1.ReLoad">
+            <summary>
+            重新加载数据
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:ZyGames.Framework.Cache.Generic.EntityContainer`1.Load">
+            <summary>
+            加载数据
+            </summary>
+        </member>
+        <member name="M:ZyGames.Framework.Cache.Generic.EntityContainer`1.LoadItem(System.String,System.Boolean)">
+            <summary>
+            加载指定Key数据
+            </summary>
+            <param name="key"></param>
+            <param name="isReplace"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ZyGames.Framework.Cache.Generic.EntityContainer`1.LoadFrom``1(ZyGames.Framework.Net.TransReceiveParam)">
+            <summary>
+            
+            </summary>
+            <typeparam name="V"></typeparam>
+            <param name="receiveParam"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ZyGames.Framework.Cache.Generic.EntityContainer`1.ReLoadItem(System.String)">
+            <summary>
+            
+            </summary>
+            <param name="key"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ZyGames.Framework.Cache.Generic.EntityContainer`1.SendData``1(``0[],ZyGames.Framework.Net.TransSendParam)">
+            <summary>
+            
+            </summary>
+            <typeparam name="V"></typeparam>
+            <param name="dataList"></param>
+            <param name="sendParam"></param>
+        </member>
+        <member name="M:ZyGames.Framework.Cache.Generic.EntityContainer`1.SendSync``1(System.Collections.Generic.IEnumerable{``0})">
+            <summary>
+            
+            </summary>
+            <typeparam name="V"></typeparam>
+            <param name="dataList"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ZyGames.Framework.Cache.Generic.EntityContainer`1.GetChangeList(System.String,System.Boolean)">
+            <summary>
+            
+            </summary>
+            <param name="changeKey"></param>
+            <param name="isChange"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ZyGames.Framework.Cache.Generic.EntityContainer`1.GetChangeEntity(System.String,System.Boolean)">
+            <summary>
+            
+            </summary>
+            <param name="changeKey"></param>
+            <param name="isChange"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ZyGames.Framework.Cache.Generic.EntityContainer`1.GetChangeGroup(System.String,System.Boolean)">
+            <summary>
+            
+            </summary>
+            <param name="changeKey"></param>
+            <param name="isChange"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ZyGames.Framework.Cache.Generic.EntityContainer`1.GetChangeQueue(System.String,System.Boolean)">
+            <summary>
+            
+            </summary>
+            <param name="changeKey"></param>
+            <param name="isChange"></param>
             <returns></returns>
         </member>
         <member name="M:ZyGames.Framework.Cache.Generic.EntityContainer`1.TryRemove(System.String,System.Func{ZyGames.Framework.Cache.Generic.CacheItemSet,System.Boolean})">
@@ -2595,14 +2772,11 @@
             <param name="callback"></param>
             <returns></returns>
         </member>
-        <member name="M:ZyGames.Framework.Cache.Generic.EntityContainer`1.TryRecoverFromDb``1(ZyGames.Framework.Net.TransReceiveParam,System.Collections.Generic.List{``0}@)">
+        <member name="M:ZyGames.Framework.Cache.Generic.EntityContainer`1.UnChangeNotify(System.String)">
             <summary>
-            尝试从DB中恢复数据
+            
             </summary>
-            <typeparam name="V"></typeparam>
-            <param name="receiveParam"></param>
-            <param name="dataList"></param>
-            <returns></returns>
+            <param name="key"></param>
         </member>
         <member name="M:ZyGames.Framework.Cache.Generic.EntityContainer`1.TryGetCacheItem``1(System.String,System.Boolean,``0@,ZyGames.Framework.Model.LoadingStatus@)">
             <summary>
@@ -2620,12 +2794,54 @@
             </summary>
             <param name="data"></param>
         </member>
+        <member name="M:ZyGames.Framework.Cache.Generic.EntityContainer`1.Dispose(System.Boolean)">
+            <summary>
+            
+            </summary>
+            <param name="disposing"></param>
+        </member>
+        <member name="P:ZyGames.Framework.Cache.Generic.EntityContainer`1.IsReadonly">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:ZyGames.Framework.Cache.Generic.EntityContainer`1.RootKey">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:ZyGames.Framework.Cache.Generic.EntityContainer`1.Count">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:ZyGames.Framework.Cache.Generic.EntityContainer`1.IsEmpty">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:ZyGames.Framework.Cache.Generic.EntityContainer`1.LoadStatus">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:ZyGames.Framework.Cache.Generic.EntityContainer`1.ChildrenItem">
+            <summary>
+            
+            </summary>
+        </member>
         <member name="T:ZyGames.Framework.Cache.Generic.MemoryCacheStruct`1">
             <summary>
             内存中一定时间存在的实体，不存储数据库
             </summary>
         </member>
-        <member name="M:ZyGames.Framework.Cache.Generic.MemoryCacheStruct`1.#ctor">
+        <member name="M:ZyGames.Framework.Cache.Generic.MemoryCacheStruct`1.#ctor(System.Boolean)">
+            <summary>
+            
+            </summary>
+            <param name="isLoad"></param>
+        </member>
+        <member name="M:ZyGames.Framework.Cache.Generic.MemoryCacheStruct`1.Reload">
             <summary>
             
             </summary>
@@ -2688,11 +2904,17 @@
             <param name="match"></param>
             <returns></returns>
         </member>
-        <member name="M:ZyGames.Framework.Cache.Generic.MemoryCacheStruct`1.InitCache">
+        <member name="M:ZyGames.Framework.Cache.Generic.MemoryCacheStruct`1.InitCache(System.Boolean)">
             <summary>
             Inits the cache.
             </summary>
             <returns><c>true</c>, if cache was inited, <c>false</c> otherwise.</returns>
+        </member>
+        <member name="M:ZyGames.Framework.Cache.Generic.MemoryCacheStruct`1.InitCache">
+            <summary>
+            
+            </summary>
+            <returns></returns>
         </member>
         <member name="M:ZyGames.Framework.Cache.Generic.MemoryCacheStruct`1.GetPropertyValue(`0,ZyGames.Framework.Model.SchemaColumn)">
             <summary>
@@ -2769,6 +2991,81 @@
             私有的缓存模型
             </summary>
         </member>
+        <member name="M:ZyGames.Framework.Cache.Generic.PersonalCacheStruct.Load(System.String,System.Type[])">
+            <summary>
+            Get entity from redis, but not surported mutil key of entity.
+            </summary>
+            <param name="personalId"></param>
+            <param name="types"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ZyGames.Framework.Cache.Generic.PersonalCacheStruct.ReLoad(System.String,System.Predicate{ZyGames.Framework.Model.SchemaTable})">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:ZyGames.Framework.Cache.Generic.PersonalCacheStruct.ReLoad(System.String,ZyGames.Framework.Model.SchemaTable)">
+            <summary>
+            
+            </summary>
+            <param name="personalId"></param>
+            <param name="schemaTable"></param>
+        </member>
+        <member name="M:ZyGames.Framework.Cache.Generic.PersonalCacheStruct.Update(System.String,System.Predicate{ZyGames.Framework.Model.SchemaTable},System.Boolean)">
+            <summary>
+            
+            </summary>
+            <param name="personalId"></param>
+            <param name="match"></param>
+            <param name="hasChanged"></param>
+        </member>
+        <member name="M:ZyGames.Framework.Cache.Generic.PersonalCacheStruct.Update(System.String,ZyGames.Framework.Model.SchemaTable,System.Boolean)">
+            <summary>
+            
+            </summary>
+            <param name="personalId"></param>
+            <param name="schemaTable"></param>
+            <param name="hasChanged"></param>
+        </member>
+        <member name="M:ZyGames.Framework.Cache.Generic.PersonalCacheStruct.TakeOrLoad``1(System.String,System.Boolean)">
+            <summary>
+            
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="personalId"></param>
+            <param name="isAutoLoad"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ZyGames.Framework.Cache.Generic.PersonalCacheStruct.TakeOrLoad``1(System.Collections.Generic.IEnumerable{System.String},System.Boolean)">
+            <summary>
+            
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="personalList"></param>
+            <param name="isAutoLoad"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ZyGames.Framework.Cache.Generic.PersonalCacheStruct.Take``1">
+            <summary>
+            
+            </summary>
+            <typeparam name="T"></typeparam>
+            <returns></returns>
+        </member>
+        <member name="M:ZyGames.Framework.Cache.Generic.PersonalCacheStruct.Take``1(System.Object[])">
+            <summary>
+            Take entity by keys from cache
+            </summary>
+            <param name="keys"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ZyGames.Framework.Cache.Generic.PersonalCacheStruct.GetCache(System.String)">
+            <summary>
+            
+            </summary>
+            <param name="entityName"></param>
+            <returns></returns>
+        </member>
         <member name="M:ZyGames.Framework.Cache.Generic.PersonalCacheStruct.GetOrAdd``1(System.String,System.Lazy{``0},System.Object[])">
             <summary>
             
@@ -2779,6 +3076,13 @@
             <param name="keys"></param>
             <exception cref="T:System.Exception"></exception>
             <returns></returns>
+        </member>
+        <member name="M:ZyGames.Framework.Cache.Generic.PersonalCacheStruct.AddRange(System.Boolean,ZyGames.Framework.Model.BaseEntity[])">
+            <summary>
+            
+            </summary>
+            <param name="checkMutilKey">The entity need to reload when it has be mutil key</param>
+            <param name="enumerable"></param>
         </member>
         <member name="M:ZyGames.Framework.Cache.Generic.PersonalCacheStruct.Get``1(System.String,System.Boolean,System.Object[])">
             <summary>
@@ -2884,6 +3188,13 @@
             <param name="personalId"></param>
             <returns></returns>
         </member>
+        <member name="M:ZyGames.Framework.Cache.Generic.PersonalCacheStruct`1.ContainKey(System.String)">
+            <summary>
+            Contain key of memory.
+            </summary>
+            <param name="personalId"></param>
+            <returns></returns>
+        </member>
         <member name="M:ZyGames.Framework.Cache.Generic.PersonalCacheStruct`1.IsExistKey(System.String,System.Object[])">
             <summary>
             是否存在数据
@@ -2909,11 +3220,33 @@
             <param name="keys"></param>
             <returns></returns>
         </member>
-        <member name="M:ZyGames.Framework.Cache.Generic.PersonalCacheStruct`1.TakeSubKey(System.Object[])">
+        <member name="M:ZyGames.Framework.Cache.Generic.PersonalCacheStruct`1.Take">
             <summary>
-            取子类的Key,不需要personalId,不加载数据
+            Take entity from cache
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:ZyGames.Framework.Cache.Generic.PersonalCacheStruct`1.Take(System.Object[])">
+            <summary>
+            Take entity by keys from cache
             </summary>
             <param name="keys"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ZyGames.Framework.Cache.Generic.PersonalCacheStruct`1.TakeOrLoad(System.String,System.Boolean)">
+            <summary>
+            
+            </summary>
+            <param name="personalId"></param>
+            <param name="isAutoLoad"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ZyGames.Framework.Cache.Generic.PersonalCacheStruct`1.TakeOrLoad(System.Collections.Generic.IEnumerable{System.String},System.Boolean)">
+            <summary>
+            
+            </summary>
+            <param name="personalList"></param>
+            <param name="isAutoLoad"></param>
             <returns></returns>
         </member>
         <member name="M:ZyGames.Framework.Cache.Generic.PersonalCacheStruct`1.Find(System.String,System.Predicate{`0})">
@@ -3003,11 +3336,21 @@
             <param name="personalId">私有分组ID</param>
             <returns></returns>
         </member>
-        <member name="M:ZyGames.Framework.Cache.Generic.PersonalCacheStruct`1.LoadFrom(System.Predicate{`0})">
+        <member name="M:ZyGames.Framework.Cache.Generic.PersonalCacheStruct`1.LoadFrom(System.Predicate{`0},System.Boolean)">
             <summary>
             从Redis加载所有缓存
             </summary>
             <param name="match"></param>
+            <param name="isReplace"></param>
+        </member>
+        <member name="M:ZyGames.Framework.Cache.Generic.PersonalCacheStruct`1.AddRange(System.Collections.Generic.IEnumerable{`0},System.Int32,System.Boolean)">
+            <summary>
+            
+            </summary>
+            <param name="enumerable"></param>
+            <param name="period"></param>
+            <param name="checkMutilKey">The entity need to reload when it has be mutil key</param>
+            <returns></returns>
         </member>
         <member name="M:ZyGames.Framework.Cache.Generic.PersonalCacheStruct`1.Add(`0,System.Int32)">
             <summary>
@@ -3025,37 +3368,54 @@
             <param name="period"></param>
             <returns></returns>
         </member>
+        <member name="M:ZyGames.Framework.Cache.Generic.PersonalCacheStruct`1.AddOrUpdate(System.Collections.Generic.IEnumerable{`0},System.Int32)">
+            <summary>
+            
+            </summary>
+            <param name="enumerable"></param>
+            <param name="period"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ZyGames.Framework.Cache.Generic.PersonalCacheStruct`1.CheckMutilKeyAndLoad(System.String)">
+            <summary>
+            是否有多个键且未加载成功状态
+            </summary>
+            <param name="personalId"></param>
+        </member>
         <member name="M:ZyGames.Framework.Cache.Generic.PersonalCacheStruct`1.UpdateSelf(System.String)">
             <summary>
             更新自已的数据
             </summary>
             <param name="personalId"></param>
         </member>
-        <member name="M:ZyGames.Framework.Cache.Generic.PersonalCacheStruct`1.LoadFactory">
+        <member name="M:ZyGames.Framework.Cache.Generic.PersonalCacheStruct`1.LoadFactory(System.Boolean)">
             <summary>
             
             </summary>
             <returns></returns>
         </member>
-        <member name="M:ZyGames.Framework.Cache.Generic.PersonalCacheStruct`1.LoadItemFactory(System.String)">
+        <member name="M:ZyGames.Framework.Cache.Generic.PersonalCacheStruct`1.LoadItemFactory(System.String,System.Boolean)">
             <summary>
             
             </summary>
             <param name="key"></param>
+            <param name="isReplace"></param>
             <returns></returns>
         </member>
-        <member name="M:ZyGames.Framework.Cache.Generic.PersonalCacheStruct`1.ProcessLoadParam(System.String)">
+        <member name="M:ZyGames.Framework.Cache.Generic.PersonalCacheStruct`1.ProcessLoadParam(System.String,System.Boolean)">
             <summary>
             处理加载数据参数
             </summary>
             <param name="personalId"></param>
+            <param name="isReplace"></param>
             <returns></returns>
         </member>
-        <member name="M:ZyGames.Framework.Cache.Generic.PersonalCacheStruct`1.Update(System.Boolean)">
+        <member name="M:ZyGames.Framework.Cache.Generic.PersonalCacheStruct`1.Update(System.Boolean,System.String)">
             <summary>
             更新所有的数据
             </summary>
             <param name="isChange"></param>
+            <param name="personalId"></param>
         </member>
         <member name="M:ZyGames.Framework.Cache.Generic.PersonalCacheStruct`1.RemoveCache(`0)">
             <summary>
@@ -3192,6 +3552,34 @@
             <summary>
             
             </summary>
+            <returns></returns>
+        </member>
+        <member name="M:ZyGames.Framework.Cache.Generic.Pool.BaseCachePool.TrySetRankData``1(ZyGames.Framework.Net.TransSendParam,``0[])">
+            <summary>
+            
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="sendParam"></param>
+            <param name="dataList"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ZyGames.Framework.Cache.Generic.Pool.BaseCachePool.TryExchangeRankData``1(System.String,``0,``0)">
+            <summary>
+            
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="key"></param>
+            <param name="t1"></param>
+            <param name="t2"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ZyGames.Framework.Cache.Generic.Pool.BaseCachePool.TryUpdateRankEntity``1(System.String,``0[])">
+            <summary>
+            
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="key"></param>
+            <param name="dataList"></param>
             <returns></returns>
         </member>
         <member name="M:ZyGames.Framework.Cache.Generic.Pool.BaseCachePool.TryReceiveData``1(ZyGames.Framework.Net.TransReceiveParam,System.Collections.Generic.List{``0}@)">
@@ -3431,6 +3819,12 @@
             <param name="func"></param>
             <param name="groupKey"></param>
         </member>
+        <member name="M:ZyGames.Framework.Cache.Generic.ReadonlyCacheCollection.GetEnumerable">
+            <summary>
+            
+            </summary>
+            <returns></returns>
+        </member>
         <member name="M:ZyGames.Framework.Cache.Generic.ReadonlyCacheCollection.GetEnumerator">
             <summary>
             
@@ -3470,10 +3864,187 @@
             
             </summary>
         </member>
+        <member name="T:ZyGames.Framework.Cache.Generic.RankCacheStruct`1">
+            <summary>
+            Rank cache
+            </summary>
+        </member>
+        <member name="M:ZyGames.Framework.Cache.Generic.RankCacheStruct`1.LoadFactory(System.Boolean)">
+            <summary>
+            
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:ZyGames.Framework.Cache.Generic.RankCacheStruct`1.AddRank(`0)">
+            <summary>
+            
+            </summary>
+            <param name="item"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ZyGames.Framework.Cache.Generic.RankCacheStruct`1.AddRank(System.String,`0[])">
+            <summary>
+            Add rank
+            </summary>
+        </member>
+        <member name="M:ZyGames.Framework.Cache.Generic.RankCacheStruct`1.Sort(System.String)">
+            <summary>
+            
+            </summary>
+            <param name="key"></param>
+        </member>
+        <member name="M:ZyGames.Framework.Cache.Generic.RankCacheStruct`1.Sort(System.String,`0)">
+            <summary>
+            
+            </summary>
+            <param name="key"></param>
+            <param name="item"></param>
+        </member>
+        <member name="M:ZyGames.Framework.Cache.Generic.RankCacheStruct`1.ExchangeRank(System.String,`0,`0)">
+            <summary>
+            Exchange rank
+            </summary>
+            <param name="key"></param>
+            <param name="t1"></param>
+            <param name="t2"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ZyGames.Framework.Cache.Generic.RankCacheStruct`1.Remove(`0)">
+            <summary>
+            
+            </summary>
+            <param name="rank"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ZyGames.Framework.Cache.Generic.RankCacheStruct`1.RemoveRankByScore(System.String,System.Double,System.Nullable{System.Double})">
+            <summary>
+            
+            </summary>
+            <param name="key"></param>
+            <param name="fromScore"></param>
+            <param name="toScore">-1: max</param>
+            <returns></returns>
+        </member>
+        <member name="M:ZyGames.Framework.Cache.Generic.RankCacheStruct`1.TryGetRankCount(System.String,System.Int32@)">
+            <summary>
+            
+            </summary>
+            <param name="key"></param>
+            <param name="count"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ZyGames.Framework.Cache.Generic.RankCacheStruct`1.GetRankNo(System.String,`0)">
+            <summary>
+            
+            </summary>
+            <param name="key"></param>
+            <param name="item"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ZyGames.Framework.Cache.Generic.RankCacheStruct`1.GetRankNo(System.String,System.Predicate{`0})">
+            <summary>
+            
+            </summary>
+            <param name="key"></param>
+            <param name="match"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ZyGames.Framework.Cache.Generic.RankCacheStruct`1.TakeRank(System.String,System.Nullable{System.Int32})">
+            <summary>
+            Take rank items
+            </summary>
+            <param name="key"></param>
+            <param name="count">-1: get all</param>
+            <returns></returns>
+        </member>
+        <member name="M:ZyGames.Framework.Cache.Generic.RankCacheStruct`1.TryTakeRank(System.String,System.Collections.Generic.IEnumerable{`0}@)">
+            <summary>
+            
+            </summary>
+            <param name="key"></param>
+            <param name="list"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ZyGames.Framework.Cache.Generic.RankCacheStruct`1.TryTakeRank(System.String,System.Nullable{System.Int32},System.Collections.Generic.IEnumerable{`0}@)">
+            <summary>
+            
+            </summary>
+            <param name="key"></param>
+            <param name="count"></param>
+            <param name="list"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ZyGames.Framework.Cache.Generic.RankCacheStruct`1.LoadItemFactory(System.String,System.Boolean)">
+            <summary>
+            
+            </summary>
+            <param name="key"></param>
+            <param name="isReplace"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ZyGames.Framework.Cache.Generic.RankCacheStruct`1.InitCache(System.Collections.Generic.List{`0},System.Int32,System.Boolean)">
+            <summary>
+            
+            </summary>
+            <param name="dataList"></param>
+            <param name="periodTime"></param>
+            <param name="isReplace"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ZyGames.Framework.Cache.Generic.RankCacheStruct`1.TryLoadRankCache(System.String,ZyGames.Framework.Net.TransReceiveParam,System.Int32,System.Boolean)">
+            <summary>
+            
+            </summary>
+            <param name="key"></param>
+            <param name="receiveParam"></param>
+            <param name="periodTime"></param>
+            <param name="isReplace"></param>
+            <returns></returns>
+        </member>
         <member name="T:ZyGames.Framework.Cache.Generic.ShareCacheStruct">
             <summary>
             共享的缓存模型
             </summary>
+        </member>
+        <member name="M:ZyGames.Framework.Cache.Generic.ShareCacheStruct.LoadAll(System.Predicate{ZyGames.Framework.Model.SchemaTable},System.Boolean)">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:ZyGames.Framework.Cache.Generic.ShareCacheStruct.Update(System.Predicate{ZyGames.Framework.Model.SchemaTable},System.Boolean)">
+            <summary>
+            
+            </summary>
+            <param name="match"></param>
+            <param name="hasChanged"></param>
+        </member>
+        <member name="M:ZyGames.Framework.Cache.Generic.ShareCacheStruct.Update(ZyGames.Framework.Model.SchemaTable,System.Boolean)">
+            <summary>
+            
+            </summary>
+            <param name="schemaTable"></param>
+            <param name="hasChanged"></param>
+        </member>
+        <member name="M:ZyGames.Framework.Cache.Generic.ShareCacheStruct.Take``1">
+            <summary>
+            
+            </summary>
+            <typeparam name="T"></typeparam>
+            <returns></returns>
+        </member>
+        <member name="M:ZyGames.Framework.Cache.Generic.ShareCacheStruct.TakeOrLoad``1">
+            <summary>
+            
+            </summary>
+            <typeparam name="T"></typeparam>
+            <returns></returns>
+        </member>
+        <member name="M:ZyGames.Framework.Cache.Generic.ShareCacheStruct.GetCache(System.String)">
+            <summary>
+            
+            </summary>
+            <param name="entityName"></param>
+            <returns></returns>
         </member>
         <member name="M:ZyGames.Framework.Cache.Generic.ShareCacheStruct.GetOrAdd``1(System.Object,System.Lazy{``0})">
             <summary>
@@ -3492,6 +4063,24 @@
             <param name="keys"></param>
             <param name="createFactory"></param>
             <exception cref="T:System.Exception"></exception>
+            <returns></returns>
+        </member>
+        <member name="M:ZyGames.Framework.Cache.Generic.ShareCacheStruct.AddRange(System.Collections.Generic.IEnumerable{ZyGames.Framework.Model.ShareEntity},System.Int32)">
+            <summary>
+            
+            </summary>
+            <param name="enumerable"></param>
+            <param name="period"></param>
+        </member>
+        <member name="M:ZyGames.Framework.Cache.Generic.ShareCacheStruct.GetValue``2(System.Object,System.Func{``0,``1},``1)">
+            <summary>
+            
+            </summary>
+            <typeparam name="T"></typeparam>
+            <typeparam name="V"></typeparam>
+            <param name="key"></param>
+            <param name="getFunc"></param>
+            <param name="default"></param>
             <returns></returns>
         </member>
         <member name="M:ZyGames.Framework.Cache.Generic.ShareCacheStruct.Get``1(System.Object,System.Boolean)">
@@ -3619,6 +4208,11 @@
             <param name="match"></param>
             <returns></returns>
         </member>
+        <member name="M:ZyGames.Framework.Cache.Generic.ShareCacheStruct`1.Load">
+            <summary>
+            
+            </summary>
+        </member>
         <member name="M:ZyGames.Framework.Cache.Generic.ShareCacheStruct`1.FindAll(System.Boolean)">
             <summary>
             查找所有匹配数据
@@ -3632,6 +4226,18 @@
             </summary>
             <param name="match"></param>
             <param name="isSort"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ZyGames.Framework.Cache.Generic.ShareCacheStruct`1.Take">
+            <summary>
+            
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:ZyGames.Framework.Cache.Generic.ShareCacheStruct`1.TakeOrLoad">
+            <summary>
+            
+            </summary>
             <returns></returns>
         </member>
         <member name="M:ZyGames.Framework.Cache.Generic.ShareCacheStruct`1.HasChange(System.String)">
@@ -3655,17 +4261,34 @@
             <param name="filter"></param>
             <returns></returns>
         </member>
-        <member name="M:ZyGames.Framework.Cache.Generic.ShareCacheStruct`1.Update(System.Boolean)">
+        <member name="M:ZyGames.Framework.Cache.Generic.ShareCacheStruct`1.Update(System.Boolean,System.String)">
             <summary>
             更新所有的数据
             </summary>
             <param name="isChange"></param>
+            <param name="changeKey"></param>
         </member>
         <member name="M:ZyGames.Framework.Cache.Generic.ShareCacheStruct`1.Add(`0,System.Int32)">
             <summary>
             增加
             </summary>
             <param name="t"></param>
+            <param name="period"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ZyGames.Framework.Cache.Generic.ShareCacheStruct`1.AddRange(System.Collections.Generic.IEnumerable{`0},System.Int32)">
+            <summary>
+            
+            </summary>
+            <param name="enumerable"></param>
+            <param name="period"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ZyGames.Framework.Cache.Generic.ShareCacheStruct`1.AddOrUpdate(System.Collections.Generic.IEnumerable{`0},System.Int32)">
+            <summary>
+            
+            </summary>
+            <param name="enumerable"></param>
             <param name="period"></param>
             <returns></returns>
         </member>
@@ -3691,25 +4314,27 @@
             <param name="value"></param>
             <returns></returns>
         </member>
-        <member name="M:ZyGames.Framework.Cache.Generic.ShareCacheStruct`1.LoadFactory">
+        <member name="M:ZyGames.Framework.Cache.Generic.ShareCacheStruct`1.LoadFactory(System.Boolean)">
             <summary>
             
             </summary>
             <returns></returns>
         </member>
-        <member name="M:ZyGames.Framework.Cache.Generic.ShareCacheStruct`1.LoadItemFactory(System.String)">
+        <member name="M:ZyGames.Framework.Cache.Generic.ShareCacheStruct`1.LoadItemFactory(System.String,System.Boolean)">
             <summary>
             
             </summary>
             <param name="key"></param>
+            <param name="isReplace"></param>
             <returns></returns>
         </member>
-        <member name="M:ZyGames.Framework.Cache.Generic.ShareCacheStruct`1.InitCache(System.Collections.Generic.List{`0},System.Int32)">
+        <member name="M:ZyGames.Framework.Cache.Generic.ShareCacheStruct`1.InitCache(System.Collections.Generic.List{`0},System.Int32,System.Boolean)">
             <summary>
             
             </summary>
             <param name="dataList"></param>
             <param name="periodTime"></param>
+            <param name="isReplace"></param>
             <returns></returns>
         </member>
         <member name="P:ZyGames.Framework.Cache.Generic.ShareCacheStruct`1.LoadingStatus">
@@ -4217,7 +4842,7 @@
         </member>
         <member name="P:ZyGames.Framework.Config.RedisSection.PoolTimeOut">
             <summary>
-            PoolTimeOut(ms), default 2000ms
+            Pool timeout release time(s), default 300s
             </summary>
         </member>
         <member name="P:ZyGames.Framework.Config.RedisSection.DbIndex">
@@ -4337,7 +4962,7 @@
         </member>
         <member name="P:ZyGames.Framework.Config.CacheSection.ShareExpirePeriod">
             <summary>
-            Personal cache expire period
+            cache expire period
             </summary>
         </member>
         <member name="T:ZyGames.Framework.Data.CommandFilter">
@@ -4431,7 +5056,16 @@
             </summary>
             <param name="tableName"></param>
             <param name="editType"></param>
+            <param name="columns"></param>
+        </member>
+        <member name="M:ZyGames.Framework.Data.CommandStruct.#ctor(System.String,ZyGames.Framework.Data.CommandMode,ZyGames.Framework.Data.CommandFilter,System.String)">
+            <summary>
+            
+            </summary>
+            <param name="tableName"></param>
+            <param name="editType"></param>
             <param name="columns">Inquiry table columns</param>
+            <param name="filter"></param>
         </member>
         <member name="M:ZyGames.Framework.Data.CommandStruct.AddKey(System.Data.IDataParameter)">
             <summary>
@@ -5034,7 +5668,12 @@
         </member>
         <member name="P:ZyGames.Framework.Data.DbColumn.IsKey">
             <summary>
-            是否是主键
+            Sets key is true in Entity field
+            </summary>
+        </member>
+        <member name="P:ZyGames.Framework.Data.DbColumn.KeyNo">
+            <summary>
+            Get Db table have key no
             </summary>
         </member>
         <member name="P:ZyGames.Framework.Data.DbColumn.IsUnique">
@@ -5081,6 +5720,11 @@
         <member name="P:ZyGames.Framework.Data.DbColumn.IdentityNo">
             <summary>
             自增开始编号
+            </summary>
+        </member>
+        <member name="P:ZyGames.Framework.Data.DbColumn.HaveIncrement">
+            <summary>
+            DB是否有自增编号
             </summary>
         </member>
         <member name="P:ZyGames.Framework.Data.DbColumn.DbType">
@@ -5573,6 +6217,12 @@
             <summary>
             init
             </summary>
+        </member>
+        <member name="M:ZyGames.Framework.Data.SqlStatement.ToString">
+            <summary>
+            
+            </summary>
+            <returns></returns>
         </member>
         <member name="P:ZyGames.Framework.Data.SqlStatement.IdentityID">
             <summary>
@@ -6643,6 +7293,11 @@
             reset data and trigger unchanged event.
             </summary>
         </member>
+        <member name="M:ZyGames.Framework.Model.ISqlEntity.GetCreateTime">
+            <summary>
+            Get table name of log
+            </summary>
+        </member>
         <member name="P:ZyGames.Framework.Model.ISqlEntity.PersonalId">
             <summary>
             
@@ -6675,7 +7330,7 @@
         </member>
         <member name="M:ZyGames.Framework.Model.AbstractEntity.EncodeKeyCode(System.String)">
             <summary>
-            
+            Conver '-' char
             </summary>
             <param name="keyCode"></param>
             <returns></returns>
@@ -6718,6 +7373,12 @@
             <summary>
             重置状态
             </summary>
+        </member>
+        <member name="M:ZyGames.Framework.Model.AbstractEntity.GetCreateTime">
+            <summary>
+            
+            </summary>
+            <returns></returns>
         </member>
         <member name="M:ZyGames.Framework.Model.AbstractEntity.SetValueBefore">
             <summary>
@@ -6970,7 +7631,7 @@
         </member>
         <member name="P:ZyGames.Framework.Model.AbstractEntity.ExpiredTime">
             <summary>
-            
+            expire time
             </summary>
         </member>
         <member name="P:ZyGames.Framework.Model.AbstractEntity.Item(System.String)">
@@ -7052,6 +7713,11 @@
         <member name="F:ZyGames.Framework.Model.CacheType.Dictionary">
             <summary>
             Personal结构
+            </summary>
+        </member>
+        <member name="F:ZyGames.Framework.Model.CacheType.Rank">
+            <summary>
+            List of rank.
             </summary>
         </member>
         <member name="F:ZyGames.Framework.Model.CacheType.Queue">
@@ -7285,7 +7951,7 @@
         </member>
         <member name="P:ZyGames.Framework.Model.EntityHistory.Value">
             <summary>
-            The bytes data for hash(key/value).
+            The bytes data for hash(value).
             </summary>
         </member>
         <member name="T:ZyGames.Framework.Model.EntitySchemaSet">
@@ -7323,11 +7989,12 @@
             </summary>
             <param name="assembly"></param>
         </member>
-        <member name="M:ZyGames.Framework.Model.EntitySchemaSet.InitSchema(System.Type)">
+        <member name="M:ZyGames.Framework.Model.EntitySchemaSet.InitSchema(System.Type,System.Boolean)">
             <summary>
             
             </summary>
             <param name="type"></param>
+            <param name="isReset"></param>
         </member>
         <member name="M:ZyGames.Framework.Model.EntitySchemaSet.ExportSync(System.String)">
             <summary>
@@ -7430,6 +8097,12 @@
             </summary>
             <param name="typeName"></param>
             <param name="schema"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ZyGames.Framework.Model.EntitySchemaSet.GetEnumerable">
+            <summary>
+            
+            </summary>
             <returns></returns>
         </member>
         <member name="M:ZyGames.Framework.Model.EntitySchemaSet.CheckTableSchema(ZyGames.Framework.Model.SchemaTable)">
@@ -7614,17 +8287,12 @@
         </member>
         <member name="F:ZyGames.Framework.Model.LoadingStatus.None">
             <summary>
-            手动增加到内存的
+            未同步库的状态，包括新增的
             </summary>
         </member>
         <member name="F:ZyGames.Framework.Model.LoadingStatus.Success">
             <summary>
             成功
-            </summary>
-        </member>
-        <member name="F:ZyGames.Framework.Model.LoadingStatus.Remove">
-            <summary>
-            被移除
             </summary>
         </member>
         <member name="F:ZyGames.Framework.Model.LoadingStatus.Error">
@@ -7692,6 +8360,12 @@
             
             </summary>
         </member>
+        <member name="M:ZyGames.Framework.Model.MemoryEntity.GetCreateTime">
+            <summary>
+            
+            </summary>
+            <returns></returns>
+        </member>
         <member name="P:ZyGames.Framework.Model.MemoryEntity.PersonalId">
             <summary>
             
@@ -7700,6 +8374,53 @@
         <member name="P:ZyGames.Framework.Model.MemoryEntity.IsDelete">
             <summary>
             
+            </summary>
+        </member>
+        <member name="T:ZyGames.Framework.Model.RankEntity">
+            <summary>
+            Rank entity
+            </summary>
+        </member>
+        <member name="M:ZyGames.Framework.Model.RankEntity.#ctor">
+            <summary>
+            init
+            </summary>
+        </member>
+        <member name="M:ZyGames.Framework.Model.RankEntity.GetIdentityId">
+            <summary>
+            
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:ZyGames.Framework.Model.RankEntity.CompareTo(ZyGames.Framework.Model.RankEntity)">
+            <summary>
+            from hight to low
+            </summary>
+            <param name="other"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ZyGames.Framework.Model.RankEntity.Notify(System.Object,ZyGames.Framework.Event.CacheItemEventArgs)">
+            <summary>
+            当前对象(包括继承)的属性触发通知事件
+            </summary>
+            <param name="sender">触发事件源</param>
+            <param name="eventArgs"></param>
+        </member>
+        <member name="M:ZyGames.Framework.Model.RankEntity.NotifyByChildren(System.Object,ZyGames.Framework.Event.CacheItemEventArgs)">
+            <summary>
+            
+            </summary>
+            <param name="sender">由IContainer对象触发</param>
+            <param name="eventArgs"></param>
+        </member>
+        <member name="P:ZyGames.Framework.Model.RankEntity.Key">
+            <summary>
+            Gets key of rank
+            </summary>
+        </member>
+        <member name="P:ZyGames.Framework.Model.RankEntity.Score">
+            <summary>
+            Get score of rank no, from hight to low
             </summary>
         </member>
         <member name="T:ZyGames.Framework.Model.SchemaColumn">
@@ -7908,10 +8629,11 @@
             </summary>
             <returns></returns>
         </member>
-        <member name="M:ZyGames.Framework.Model.SchemaTable.GetTableName(System.Int32)">
+        <member name="M:ZyGames.Framework.Model.SchemaTable.GetTableName(System.DateTime,System.Int32)">
             <summary>
             获取动态的表名
             </summary>
+            <param name="date"></param>
             <param name="increase">使用表达式时的日期增量,默认当天</param>
             <returns></returns>
         </member>
@@ -7983,6 +8705,16 @@
         <member name="P:ZyGames.Framework.Model.SchemaTable.NameFormat">
             <summary>
             表名的格式:$date[yyyyMMdd] or $week
+            </summary>
+        </member>
+        <member name="P:ZyGames.Framework.Model.SchemaTable.IsInternal">
+            <summary>
+            是否是内部使用的
+            </summary>
+        </member>
+        <member name="P:ZyGames.Framework.Model.SchemaTable.IsMutilKey">
+            <summary>
+            
             </summary>
         </member>
         <member name="P:ZyGames.Framework.Model.SchemaTable.Keys">
@@ -8069,11 +8801,12 @@
             <param name="synchronous">is sync data to db</param>
             <returns></returns>
         </member>
-        <member name="M:ZyGames.Framework.Net.DataSyncManager.GetRedisSender(System.String)">
+        <member name="M:ZyGames.Framework.Net.DataSyncManager.GetRedisSender(ZyGames.Framework.Model.SchemaTable,System.String)">
             <summary>
             
             </summary>
-            <param name="redisKey"></param>
+            <param name="schema"></param>
+            <param name="key"></param>
             <returns></returns>
         </member>
         <member name="M:ZyGames.Framework.Net.DataSyncManager.GetRedisGetter(ZyGames.Framework.Model.SchemaTable,System.String)">
@@ -8132,7 +8865,12 @@
         </member>
         <member name="P:ZyGames.Framework.Net.DbDataFilter.Parameters">
             <summary>
-            获取或设置参数
+            获取或设置参数, 数据名不需要@前缀
+            </summary>
+        </member>
+        <member name="P:ZyGames.Framework.Net.DbDataFilter.CreateTime">
+            <summary>
+            动态表名指定的日期
             </summary>
         </member>
         <member name="T:ZyGames.Framework.Net.DbTransponder">
@@ -8352,23 +9090,21 @@
         <member name="M:ZyGames.Framework.Net.TransSendParam.#ctor(System.String)">
             <summary>
             </summary>
-            <param name="redisKey"></param>
+            <param name="key"></param>
         </member>
-        <member name="P:ZyGames.Framework.Net.TransSendParam.OnlyRedis">
+        <member name="P:ZyGames.Framework.Net.TransSendParam.Schema">
             <summary>
+             
             </summary>
         </member>
-        <member name="P:ZyGames.Framework.Net.TransSendParam.RedisKey">
+        <member name="P:ZyGames.Framework.Net.TransSendParam.Key">
             <summary>
+             
             </summary>
         </member>
         <member name="P:ZyGames.Framework.Net.TransSendParam.IsChange">
             <summary>
             更新到库中是全部列，还是改变的列
-            </summary>
-        </member>
-        <member name="P:ZyGames.Framework.Net.TransSendParam.ConnectKey">
-            <summary>
             </summary>
         </member>
         <member name="T:ZyGames.Framework.Plugin.PythonScript.PythonContext">
@@ -8851,6 +9587,26 @@
             </summary>
             <param name="baseCase"></param>
         </member>
+        <member name="T:ZyGames.Framework.Redis.RedisStorageVersion">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="F:ZyGames.Framework.Redis.RedisStorageVersion.Default">
+            <summary>
+            first version
+            </summary>
+        </member>
+        <member name="F:ZyGames.Framework.Redis.RedisStorageVersion.Hash">
+            <summary>
+            Entity use hash storage version.
+            </summary>
+        </member>
+        <member name="F:ZyGames.Framework.Redis.RedisStorageVersion.HashMutilKeyMap">
+            <summary>
+            Entity use hash storage and mutil key use map find version.
+            </summary>
+        </member>
         <member name="T:ZyGames.Framework.Redis.RedisConnectionPool">
             <summary>
             连接池管理
@@ -8887,12 +9643,21 @@
             <param name="value"></param>
             <returns></returns>
         </member>
-        <member name="M:ZyGames.Framework.Redis.RedisConnectionPool.GetNextNo(System.String,System.UInt32)">
+        <member name="M:ZyGames.Framework.Redis.RedisConnectionPool.GetNextNo(System.String,System.UInt32,System.Boolean)">
             <summary>
             GetNo
             </summary>
             <param name="key"></param>
             <param name="increaseNum">increase num,defalut 1</param>
+            <param name="isLock"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ZyGames.Framework.Redis.RedisConnectionPool.SetNoTo(System.String,System.UInt32)">
+            <summary>
+            
+            </summary>
+            <param name="key"></param>
+            <param name="value"></param>
             <returns></returns>
         </member>
         <member name="M:ZyGames.Framework.Redis.RedisConnectionPool.ProcessTrans(System.String,System.Func{ServiceStack.Redis.RedisClient,System.Boolean},System.Action{ServiceStack.Redis.IRedisTransaction})">
@@ -8924,22 +9689,67 @@
             <param name="errorFunc"></param>
             <returns></returns>
         </member>
-        <member name="M:ZyGames.Framework.Redis.RedisConnectionPool.Process(System.Action{ServiceStack.Redis.RedisClient})">
+        <member name="M:ZyGames.Framework.Redis.RedisConnectionPool.ProcessPipeline(System.Action{ServiceStack.Redis.RedisClient},System.Func{ServiceStack.Redis.Pipeline.IRedisPipeline,System.Int64},ZyGames.Framework.Redis.RedisPoolSetting)">
+            <summary>
+            
+            </summary>
+            <param name="func"></param>
+            <param name="pipelineAction"></param>
+            <param name="setting"></param>
+        </member>
+        <member name="M:ZyGames.Framework.Redis.RedisConnectionPool.ProcessPipeline(System.Func{ServiceStack.Redis.RedisClient,System.Int64}[])">
+            <summary>
+            
+            </summary>
+            <param name="pipelineActions"></param>
+        </member>
+        <member name="M:ZyGames.Framework.Redis.RedisConnectionPool.ProcessPipeline(System.Action{ServiceStack.Redis.RedisClient},System.Func{ServiceStack.Redis.RedisClient,System.Int64}[])">
+            <summary>
+            
+            </summary>
+            <param name="action"></param>
+            <param name="pipelineActions"></param>
+        </member>
+        <member name="M:ZyGames.Framework.Redis.RedisConnectionPool.ProcessPipeline(System.Action{ServiceStack.Redis.RedisClient},ZyGames.Framework.Redis.RedisPoolSetting,System.Func{ServiceStack.Redis.RedisClient,System.Int64}[])">
+            <summary>
+            
+            </summary>
+            <param name="action"></param>
+            <param name="pipelineActions"></param>
+            <param name="setting"></param>
+        </member>
+        <member name="M:ZyGames.Framework.Redis.RedisConnectionPool.ProcessPipeline(System.Action{ServiceStack.Redis.Pipeline.IRedisPipeline},ZyGames.Framework.Redis.RedisPoolSetting)">
+            <summary>
+            
+            </summary>
+            <param name="func"></param>
+            <param name="setting"></param>
+        </member>
+        <member name="M:ZyGames.Framework.Redis.RedisConnectionPool.Process(System.Action{ServiceStack.Redis.RedisClient},ZyGames.Framework.Redis.RedisPoolSetting)">
             <summary>
             Process delegate
             </summary>
             <param name="func"></param>
+            <param name="setting"></param>
         </member>
-        <member name="M:ZyGames.Framework.Redis.RedisConnectionPool.ProcessReadOnly(System.Action{ServiceStack.Redis.RedisClient})">
+        <member name="M:ZyGames.Framework.Redis.RedisConnectionPool.ProcessReadOnly(System.Action{ServiceStack.Redis.RedisClient},ZyGames.Framework.Redis.RedisPoolSetting)">
             <summary>
             Process ReadOnly delegate
             </summary>
             <param name="func"></param>
+            <param name="setting"></param>
         </member>
         <member name="M:ZyGames.Framework.Redis.RedisConnectionPool.CheckConnect">
             <summary>
+            
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:ZyGames.Framework.Redis.RedisConnectionPool.CheckConnect(ZyGames.Framework.Redis.RedisPoolSetting)">
+            <summary>
             check connect to redis.
             </summary>
+            <param name="setting"></param>
             <returns></returns>
         </member>
         <member name="M:ZyGames.Framework.Redis.RedisConnectionPool.Ping(System.String)">
@@ -8966,6 +9776,76 @@
             </summary>
             <param name="client"></param>
         </member>
+        <member name="M:ZyGames.Framework.Redis.RedisConnectionPool.GetPool(System.String)">
+            <summary>
+            
+            </summary>
+            <param name="host"></param>
+            <returns>has null</returns>
+        </member>
+        <member name="M:ZyGames.Framework.Redis.RedisConnectionPool.GetOrAddPool(ZyGames.Framework.Redis.RedisPoolSetting)">
+            <summary>
+            
+            </summary>
+            <param name="setting"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ZyGames.Framework.Redis.RedisConnectionPool.GenratePoolKey(System.String,System.Int32)">
+            <summary>
+            
+            </summary>
+            <param name="host"></param>
+            <param name="port"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ZyGames.Framework.Redis.RedisConnectionPool.GenratePoolKey(System.String)">
+            <summary>
+            
+            </summary>
+            <param name="host"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ZyGames.Framework.Redis.RedisConnectionPool.SetExpire(System.String,System.String,System.Int32)">
+            <summary>
+            
+            </summary>
+            <param name="key"></param>
+            <param name="value"></param>
+            <param name="expireSecond"></param>
+        </member>
+        <member name="M:ZyGames.Framework.Redis.RedisConnectionPool.SetExpire(System.String[],System.String[],System.Int32)">
+            <summary>
+            
+            </summary>
+            <param name="keys"></param>
+            <param name="values"></param>
+            <param name="expireSecond">0 is del</param>
+        </member>
+        <member name="M:ZyGames.Framework.Redis.RedisConnectionPool.GetAllEntity``1(System.Collections.Generic.IEnumerable{System.String})">
+            <summary>
+            
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="personalIds"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ZyGames.Framework.Redis.RedisConnectionPool.GetAllEntity``1(System.Collections.Generic.IEnumerable{System.String},System.Boolean)">
+            <summary>
+            
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="personalIds"></param>
+            <param name="hasMutilKeyIndexs"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ZyGames.Framework.Redis.RedisConnectionPool.GetAllEntity(System.String,System.Type[])">
+            <summary>
+            Get mutil entity instance from redis, but not surported mutil key of entity.
+            </summary>
+            <param name="personalId"></param>
+            <param name="entityTypes"></param>
+            <returns></returns>
+        </member>
         <member name="M:ZyGames.Framework.Redis.RedisConnectionPool.TryGetEntity``1(System.String,ZyGames.Framework.Model.SchemaTable,System.Collections.Generic.List{``0}@)">
             <summary>
             Try get entity
@@ -8974,6 +9854,50 @@
             <param name="redisKey"></param>
             <param name="table"></param>
             <param name="list"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ZyGames.Framework.Redis.RedisConnectionPool.TryGetValue``1(System.String,ZyGames.Framework.Model.SchemaTable,System.Collections.Generic.List{``0}@,System.Boolean)">
+            <summary>
+            /
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="redisKey"></param>
+            <param name="table"></param>
+            <param name="list"></param>
+            <param name="hasMutilKeyIndexs">has mutil key map index</param>
+            <returns></returns>
+        </member>
+        <member name="M:ZyGames.Framework.Redis.RedisConnectionPool.GetValuesFromMutilKey(ServiceStack.Redis.RedisClient,System.String,System.Collections.Generic.IEnumerable{System.Byte[]})">
+            <summary>
+            old storage modle.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:ZyGames.Framework.Redis.RedisConnectionPool.UpdateFromMutilKeyMap``1(ServiceStack.Redis.RedisClient,System.String,``0[])">
+            <summary>
+            update key map
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="client"></param>
+            <param name="personalId"></param>
+            <param name="entitys"></param>
+        </member>
+        <member name="M:ZyGames.Framework.Redis.RedisConnectionPool.TryExchangeRankEntity``1(System.String,``0,``0)">
+            <summary>
+            The object of T isn't changed.
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="key"></param>
+            <param name="t1"></param>
+            <param name="t2"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ZyGames.Framework.Redis.RedisConnectionPool.TryUpdateRankEntity``1(System.String,``0[])">
+            <summary>
+            Only update score, can't update entity object.
+            </summary>
+            <param name="key"></param>
+            <param name="dataList"></param>
             <returns></returns>
         </member>
         <member name="M:ZyGames.Framework.Redis.RedisConnectionPool.TryUpdateEntity(System.Collections.Generic.IEnumerable{ZyGames.Framework.Model.ISqlEntity})">
@@ -9001,6 +9925,13 @@
             <param name="dataList"></param>
             <returns></returns>
         </member>
+        <member name="M:ZyGames.Framework.Redis.RedisConnectionPool.GetRedisEntityKeyName(System.Type)">
+            <summary>
+            
+            </summary>
+            <param name="type"></param>
+            <returns></returns>
+        </member>
         <member name="M:ZyGames.Framework.Redis.RedisConnectionPool.GetRedisEntityKeyName(System.String)">
             <summary>
             Get key name of store redis entity 
@@ -9022,14 +9953,14 @@
             <param name="key"></param>
             <returns></returns>
         </member>
-        <member name="P:ZyGames.Framework.Redis.RedisConnectionPool.RedisInfo">
+        <member name="P:ZyGames.Framework.Redis.RedisConnectionPool.CurrRedisInfo">
             <summary>
             
             </summary>
         </member>
         <member name="P:ZyGames.Framework.Redis.RedisConnectionPool.Setting">
             <summary>
-            
+            Gets default redis pool setting.
             </summary>
         </member>
         <member name="P:ZyGames.Framework.Redis.RedisConnectionPool.PoolCount">
@@ -9154,6 +10085,11 @@
             <param name="context">The current connection's request/response context.</param>
             <returns>A task which represents an asynchronous operation to await or null if a synchronous operation already completed.</returns>
         </member>
+        <member name="P:ZyGames.Framework.RPC.Http.IHttpResponseAction.Identity">
+            <summary>
+            User identity
+            </summary>
+        </member>
         <member name="F:ZyGames.Framework.RPC.Http.StatusResponse.statusCode">
             <summary>
             
@@ -9164,12 +10100,13 @@
             
             </summary>
         </member>
-        <member name="M:ZyGames.Framework.RPC.Http.StatusResponse.#ctor(System.Int32,System.String)">
+        <member name="M:ZyGames.Framework.RPC.Http.StatusResponse.#ctor(System.Int32,System.String,System.String)">
             <summary>
             
             </summary>
             <param name="statusCode"></param>
             <param name="statusDescription"></param>
+            <param name="identity"></param>
         </member>
         <member name="M:ZyGames.Framework.RPC.Http.StatusResponse.SetStatus(ZyGames.Framework.RPC.Http.IHttpRequestResponseContext)">
             <summary>
@@ -9184,13 +10121,19 @@
             <param name="context"></param>
             <returns></returns>
         </member>
-        <member name="M:ZyGames.Framework.RPC.Http.ByteResponse.#ctor(System.Int32,System.String,System.Byte[])">
+        <member name="P:ZyGames.Framework.RPC.Http.StatusResponse.Identity">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:ZyGames.Framework.RPC.Http.ByteResponse.#ctor(System.Int32,System.String,System.Byte[],System.String)">
             <summary>
             
             </summary>
             <param name="statusCode"></param>
             <param name="statusDescription"></param>
             <param name="value"></param>
+            <param name="identity"></param>
         </member>
         <member name="M:ZyGames.Framework.RPC.Http.ByteResponse.SetCookie(ZyGames.Framework.RPC.Http.IHttpRequestResponseContext)">
             <summary>
@@ -9387,6 +10330,11 @@
             <param name="uriPrefixes"></param>
             <returns></returns>
         </member>
+        <member name="P:ZyGames.Framework.RPC.Http.HttpAsyncHost.HttpCdnAddress">
+            <summary>
+            Get cdn address
+            </summary>
+        </member>
         <member name="P:ZyGames.Framework.RPC.Http.HttpAsyncHost.Error">
             <summary>
             listen error.
@@ -9410,6 +10358,29 @@
         <member name="P:ZyGames.Framework.RPC.Http.IHttpAsyncHostHandlerContext.Handler">
             <summary>
             
+            </summary>
+        </member>
+        <member name="T:ZyGames.Framework.RPC.Http.HttpCDNAddress">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:ZyGames.Framework.RPC.Http.HttpCDNAddress.#ctor(System.String[])">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:ZyGames.Framework.RPC.Http.HttpCDNAddress.GetUserHostAddress(System.Net.IPEndPoint,System.Func{System.String,System.String})">
+            <summary>
+            
+            </summary>
+            <param name="endPoint"></param>
+            <param name="headGetter"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ZyGames.Framework.RPC.Http.HttpCDNAddress.GetUserHostAddress(System.String,System.Func{System.String,System.String})">
+            <summary>
+            Get address
             </summary>
         </member>
         <member name="T:ZyGames.Framework.RPC.Http.HttpRequestContext">
@@ -9437,13 +10408,19 @@
             
             </summary>
         </member>
-        <member name="M:ZyGames.Framework.RPC.Http.HttpRequestContext.#ctor(ZyGames.Framework.RPC.Http.IHttpAsyncHostHandlerContext,System.Net.HttpListenerRequest,System.Security.Principal.IPrincipal)">
+        <member name="P:ZyGames.Framework.RPC.Http.IHttpRequestContext.UserHostAddress">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:ZyGames.Framework.RPC.Http.HttpRequestContext.#ctor(ZyGames.Framework.RPC.Http.IHttpAsyncHostHandlerContext,System.Net.HttpListenerRequest,System.Security.Principal.IPrincipal,System.String)">
             <summary>
             
             </summary>
             <param name="hostContext"></param>
             <param name="request"></param>
             <param name="user"></param>
+            <param name="userHostAddress"></param>
         </member>
         <member name="P:ZyGames.Framework.RPC.Http.HttpRequestContext.HostContext">
             <summary>
@@ -9456,6 +10433,11 @@
             </summary>
         </member>
         <member name="P:ZyGames.Framework.RPC.Http.HttpRequestContext.User">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:ZyGames.Framework.RPC.Http.HttpRequestContext.UserHostAddress">
             <summary>
             
             </summary>
@@ -9663,16 +10645,22 @@
             <param name="context"></param>
             <returns></returns>
         </member>
+        <member name="P:ZyGames.Framework.RPC.Http.JsonRootResponse.Identity">
+            <summary>
+            
+            </summary>
+        </member>
         <member name="T:ZyGames.Framework.RPC.Http.RedirectResponse">
             <summary>
             Provides a 302 redirect response to the given url.
             </summary>
         </member>
-        <member name="M:ZyGames.Framework.RPC.Http.RedirectResponse.#ctor(System.String)">
+        <member name="M:ZyGames.Framework.RPC.Http.RedirectResponse.#ctor(System.String,System.String)">
             <summary>
             
             </summary>
             <param name="url"></param>
+            <param name="identity"></param>
         </member>
         <member name="M:ZyGames.Framework.RPC.Http.RedirectResponse.Execute(ZyGames.Framework.RPC.Http.IHttpRequestResponseContext)">
             <summary>
@@ -9682,6 +10670,11 @@
             <returns></returns>
         </member>
         <member name="P:ZyGames.Framework.RPC.Http.RedirectResponse.Url">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:ZyGames.Framework.RPC.Http.RedirectResponse.Identity">
             <summary>
             
             </summary>
@@ -10084,6 +11077,22 @@
             <param name="args"></param>
             <returns></returns>
         </member>
+        <member name="M:ZyGames.Framework.RPC.IO.BufferUtils.GetBytes(System.Byte[])">
+            <summary>
+            
+            </summary>
+            <param name="data"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ZyGames.Framework.RPC.IO.BufferUtils.GetBytes(System.Byte[],System.Int32,System.Int32)">
+            <summary>
+            
+            </summary>
+            <param name="data"></param>
+            <param name="pos"></param>
+            <param name="count"></param>
+            <returns></returns>
+        </member>
         <member name="M:ZyGames.Framework.RPC.IO.BufferUtils.GetBytes(System.Int16)">
             <summary>
             
@@ -10420,7 +11429,7 @@
         </member>
         <member name="M:ZyGames.Framework.RPC.IO.MessageStructure.ReadDateTime">
             <summary>
-            Read DateTime
+            Read DateTime, use UTC time
             </summary>
             <returns></returns>
         </member>
@@ -12047,6 +13056,26 @@
             <param name="remainingBytesToProcess"></param>
             <returns></returns>
         </member>
+        <member name="M:ZyGames.Framework.RPC.Sockets.MessageHandler.TryReadMeaage(ZyGames.Framework.RPC.Sockets.DataToken,System.Byte[],System.Collections.Generic.List{ZyGames.Framework.RPC.Sockets.DataMeaage}@)">
+            <summary>
+            
+            </summary>
+            <param name="dataToken"></param>
+            <param name="buffer"></param>
+            <param name="messageList"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ZyGames.Framework.RPC.Sockets.MessageHandler.BuildMessagePack(ZyGames.Framework.RPC.Sockets.ExSocket,System.SByte,System.Byte[],System.Int32,System.Int32)">
+            <summary>
+            
+            </summary>
+            <param name="exSocket"></param>
+            <param name="opCode"></param>
+            <param name="data"></param>
+            <param name="offset"></param>
+            <param name="count"></param>
+            <returns></returns>
+        </member>
         <member name="M:ZyGames.Framework.RPC.Sockets.MessageHandler.CloseMessage(ZyGames.Framework.RPC.Sockets.ExSocket,System.SByte,System.String)">
             <summary>
             
@@ -12054,6 +13083,13 @@
             <param name="exSocket"></param>
             <param name="opCode"></param>
             <param name="reason"></param>
+        </member>
+        <member name="M:ZyGames.Framework.RPC.Sockets.MessageHandler.IsValidCloseCode(System.Int32)">
+            <summary>
+            
+            </summary>
+            <param name="code"></param>
+            <returns></returns>
         </member>
         <member name="T:ZyGames.Framework.RPC.Sockets.OpCode">
             <summary>
@@ -12231,6 +13267,31 @@
             
             </summary>
         </member>
+        <member name="T:ZyGames.Framework.RPC.Sockets.SummaryStatus">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="F:ZyGames.Framework.RPC.Sockets.SummaryStatus.TotalConnectCount">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="F:ZyGames.Framework.RPC.Sockets.SummaryStatus.CurrentConnectCount">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="F:ZyGames.Framework.RPC.Sockets.SummaryStatus.RejectedConnectCount">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="F:ZyGames.Framework.RPC.Sockets.SummaryStatus.CloseConnectCount">
+            <summary>
+            
+            </summary>
+        </member>
         <member name="T:ZyGames.Framework.RPC.Sockets.SocketListener">
             <summary>
             Socket listener.
@@ -12372,6 +13433,11 @@
             </summary>
         </member>
         <member name="E:ZyGames.Framework.RPC.Sockets.SocketListener.OnClosedStatus">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:ZyGames.Framework.RPC.Sockets.SocketListener.Status">
             <summary>
             
             </summary>
@@ -13496,6 +14562,12 @@
             <param name="method">方法名</param>
             <param name="methodArgs">方法参数</param>
         </member>
+        <member name="M:ZyGames.Framework.Script.ScriptBaseScope.VerifyScriptHashCode(System.String)">
+            <summary>
+            Verify script file's md5 hash code.
+            </summary>
+            <returns></returns>
+        </member>
         <member name="M:ZyGames.Framework.Script.ScriptBaseScope.Decode(System.String,System.String)">
             <summary>
             脚本解码
@@ -13598,6 +14670,13 @@
             <param name="methodArgs"></param>
             <returns></returns>
         </member>
+        <member name="M:ZyGames.Framework.Script.LuaRuntimeScope.VerifyScriptHashCode(System.String)">
+            <summary>
+            
+            </summary>
+            <param name="fileName"></param>
+            <returns></returns>
+        </member>
         <member name="M:ZyGames.Framework.Script.LuaRuntimeScope.ExecuteLua(System.String,System.Object[])">
             <summary>
             
@@ -13661,6 +14740,13 @@
             <param name="methodArgs"></param>
             <returns></returns>
         </member>
+        <member name="M:ZyGames.Framework.Script.PythonRuntimeScope.VerifyScriptHashCode(System.String)">
+            <summary>
+            
+            </summary>
+            <param name="fileName"></param>
+            <returns></returns>
+        </member>
         <member name="M:ZyGames.Framework.Script.PythonRuntimeScope.ExecutePython(System.String)">
             <summary>
             
@@ -13683,12 +14769,11 @@
             </summary>
             <param name="fileNames"></param>
         </member>
-        <member name="M:ZyGames.Framework.Script.PythonRuntimeScope.LoadScript(System.String,System.Boolean)">
+        <member name="M:ZyGames.Framework.Script.PythonRuntimeScope.LoadScript(System.String)">
             <summary>
             
             </summary>
             <param name="fileName"></param>
-            <param name="isReLoad"></param>
             <returns></returns>
         </member>
         <member name="F:ZyGames.Framework.Script.CSharpRuntimeScope.ScriptVerionId">
@@ -13794,6 +14879,13 @@
             <param name="args"></param>
             <returns></returns>
         </member>
+        <member name="M:ZyGames.Framework.Script.CSharpRuntimeScope.VerifyScriptHashCode(System.String)">
+            <summary>
+            
+            </summary>
+            <param name="fileName"></param>
+            <returns></returns>
+        </member>
         <member name="M:ZyGames.Framework.Script.CSharpRuntimeScope.InitCsharp">
             <summary>
             Init csharp script.
@@ -13803,6 +14895,12 @@
             <summary>
             
             </summary>
+        </member>
+        <member name="M:ZyGames.Framework.Script.CSharpRuntimeScope.LoadScriptAssemblyInfo(System.String)">
+            <summary>
+            
+            </summary>
+            <param name="scriptPath"></param>
         </member>
         <member name="M:ZyGames.Framework.Script.CSharpRuntimeScope.CreateScriptFile(System.String)">
             <summary>
@@ -14221,12 +15319,6 @@
             <param name="privateBinPaths"></param>
             <returns></returns>
         </member>
-        <member name="M:ZyGames.Framework.Script.ScriptRuntimeDomain.InitDomainContext">
-            <summary>
-            
-            </summary>
-            <returns></returns>
-        </member>
         <member name="M:ZyGames.Framework.Script.ScriptRuntimeDomain.CreateScope(ZyGames.Framework.Script.ScriptSettupInfo)">
             <summary>
             
@@ -14238,11 +15330,6 @@
             </summary>
         </member>
         <member name="M:ZyGames.Framework.Script.ScriptRuntimeDomain.Dispose">
-            <summary>
-            
-            </summary>
-        </member>
-        <member name="P:ZyGames.Framework.Script.ScriptRuntimeDomain.DomainContext">
             <summary>
             
             </summary>

@@ -94,17 +94,14 @@ Language:
 
 ## Update Log
 
-### Version: 6.7.9.8 (2015-4-24) R1
+### Version: 6.7.9.10 (2015-9-11) R1
 
-* Modify 6.7.9.7 bug.
-
-
-### Version: 6.7.9.7 (2015-4-9) RC
-
-* Modify framework bug.
-* Modify framework API method.
-* Modify 'Model' of script can debug problems.
-* Add surport for distributed login server
+* Add more key & type loading entity to cache.
+* Add rank entity of list model use to cache.
+* Fixed entity can not be async saved when entity is expiring.
+* Fixed socket can not accept connect bug.
+* Fixed machine-name & app path limit when mutil server connect to the Redis.
+* Fixed account server support use custom name regist.
 
 
 old version [more](http://scutgame.com/log).
