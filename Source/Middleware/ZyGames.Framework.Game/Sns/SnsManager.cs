@@ -97,7 +97,8 @@ namespace ZyGames.Framework.Game.Sns
                 if (isNew || !imeiMap.TryGetValue(imei, out passportExpired))
                 {
                     passportId = new SnsPassport().GetRegPassport();
-                    imeiMap[passportId] = new PassportExpired(passportId);
+                    if(!string.IsNullOrEmpty(imei))
+                        imeiMap[imei] = new PassportExpired(passportId);
                 }
                 else
                 {
