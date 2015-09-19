@@ -40,7 +40,7 @@ namespace AccountServer.Handler
                 throw new HandlerException(StateCode.Error, StateDescription.PasswordOrPassError);
             }
             data.Pwd = DecodePassword(data.Pwd);
-            int userId = SnsManager.QuickRegisterPassport(data.Pid, data.Pwd, data.IMEI, data.IsCustom);
+            int userId = SnsManager.QuickRegisterPassport(data.Pid, data.Pwd, data.DeviceID, data.IsCustom);
             if (userId <= 0)
             {
                 throw new HandlerException(StateCode.Error, StateDescription.RegistError);

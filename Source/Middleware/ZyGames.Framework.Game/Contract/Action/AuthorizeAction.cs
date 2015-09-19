@@ -135,17 +135,14 @@ namespace ZyGames.Framework.Game.Contract.Action
                 case LoginStatus.Timeout:
                     ErrorCode = Language.Instance.TimeoutCode;
                     ErrorInfo = Language.Instance.AcountNoLogin;
-                    result = false;
                     break;
                 case LoginStatus.Logined:
                     ErrorCode = Language.Instance.DuplicateCode;
                     ErrorInfo = Language.Instance.AcountLogined;
-                    result = false;
                     break;
                 case LoginStatus.Exit:
                     ErrorCode = Language.Instance.KickedOutCode;
                     ErrorInfo = Language.Instance.AcountIsLocked;
-                    result = false;
                     break;
                 case LoginStatus.Success:
                     result = true;
@@ -155,7 +152,7 @@ namespace ZyGames.Framework.Game.Contract.Action
             }
             if (CheckUserIsLocked(user))
             {
-                ErrorCode = Language.Instance.TimeoutCode;
+                ErrorCode = Language.Instance.KickedOutCode;
                 ErrorInfo = Language.Instance.AcountIsLocked;
                 result = false;
             }

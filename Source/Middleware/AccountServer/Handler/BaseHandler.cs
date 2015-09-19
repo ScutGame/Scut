@@ -50,7 +50,7 @@ namespace AccountServer.Handler
         {
             try
             {
-                return new DESAlgorithmNew().EncodePwd(password, HandlerManager.ClientDesDeKey);
+                return new DESAlgorithmNew().EncodePwd(password ?? "", HandlerManager.ClientDesDeKey);
             }
             catch (Exception ex)
             {
@@ -64,7 +64,7 @@ namespace AccountServer.Handler
         {
             try
             {
-                return new DESAlgorithmNew().DecodePwd(password, HandlerManager.ClientDesDeKey);
+                return new DESAlgorithmNew().DecodePwd(password ?? "", HandlerManager.ClientDesDeKey);
             }
             catch (Exception ex)
             {

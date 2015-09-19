@@ -67,5 +67,10 @@ namespace ZyGames.Framework.Model
         /// Get table name of log
         /// </summary>
         DateTime GetCreateTime();
+
+        /// <summary>
+        /// 
+        /// </summary>
+        DateTime TempTimeModify { get; set; }
     }
 }

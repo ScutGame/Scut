@@ -22,11 +22,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ****************************************************************************/
 using System;
-using System.Diagnostics;
-using System.Text;
 using ZyGames.Framework.Common;
-using ZyGames.Framework.Common.Log;
-using ZyGames.Framework.Common.Security;
 using ZyGames.Framework.Common.Timing;
 using ZyGames.Framework.Game.Context;
 using ZyGames.Framework.Game.Lang;
@@ -95,10 +91,6 @@ namespace ZyGames.Framework.Game.Contract.Action
         /// </summary>
         protected int GameType;
         /// <summary>
-        /// The login proxy.
-        /// </summary>
-        protected readonly LoginProxy LoginProxy;
-        /// <summary>
         /// Gets or sets the guide identifier.
         /// </summary>
         /// <value>The guide identifier.</value>
@@ -115,7 +107,6 @@ namespace ZyGames.Framework.Game.Contract.Action
         protected LoginAction(short actionId, ActionGetter httpGet)
             : base(actionId, httpGet)
         {
-            LoginProxy = new LoginProxy(httpGet);
         }
         /// <summary>
         /// 创建返回协议内容输出栈
@@ -173,7 +164,7 @@ namespace ZyGames.Framework.Game.Contract.Action
         /// <returns></returns>
         protected virtual ILogin CreateLogin()
         {
-            return LoginProxy.GetLogin();
+            return LoginProxy.GetLogin(actionGetter, RetailID);
         }
         /// <summary>
         /// 子类实现Action处理

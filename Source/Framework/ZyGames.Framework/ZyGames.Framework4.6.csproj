@@ -1,0 +1,292 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{94DEAEB2-A690-4296-9EFC-8614C6B35636}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>ZyGames.Framework</RootNamespace>
+    <AssemblyName>ZyGames.Framework</AssemblyName>
+    <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\</OutputPath>
+    <DefineConstants>TRACE;DEBUG;NET4_6</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <DocumentationFile>bin\ZyGames.Framework.xml</DocumentationFile>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\</OutputPath>
+    <DefineConstants>TRACE;NET4_6</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <DocumentationFile>bin\ZyGames.Framework.xml</DocumentationFile>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="ICSharpCode.SharpZipLib">
+      <HintPath>..\Lib\ICSharpCode.SharpZipLib.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Dynamic, Version=1.1.0.20, Culture=neutral, PublicKeyToken=7f709c5b713576e1, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Lib\Microsoft.Dynamic.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Scripting, Version=1.1.0.20, Culture=neutral, PublicKeyToken=7f709c5b713576e1, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Lib\Microsoft.Scripting.dll</HintPath>
+    </Reference>
+    <Reference Include="Mono.Cecil">
+      <HintPath>..\Lib\Mono.Cecil.dll</HintPath>
+    </Reference>
+    <Reference Include="MySql.Data, Version=6.7.4.0, Culture=neutral, PublicKeyToken=c5687fc88969c44d, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Lib\MySql.Data.dll</HintPath>
+    </Reference>
+    <Reference Include="Newtonsoft.Json, Version=4.5.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Lib\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="NLog">
+      <HintPath>..\Lib\NLog.dll</HintPath>
+    </Reference>
+    <Reference Include="protobuf-net">
+      <HintPath>..\Lib\protobuf-net.dll</HintPath>
+    </Reference>
+    <Reference Include="ServiceStack.Common">
+      <HintPath>..\Lib\ServiceStack.Common.dll</HintPath>
+    </Reference>
+    <Reference Include="ServiceStack.Redis">
+      <HintPath>..\Lib\ServiceStack.Redis.dll</HintPath>
+    </Reference>
+    <Reference Include="ServiceStack.Text">
+      <HintPath>..\Lib\ServiceStack.Text.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Configuration" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Web" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="..\Solution Items\GlobalAssemblyInfo.cs">
+      <Link>GlobalAssemblyInfo.cs</Link>
+    </Compile>
+    <Compile Include="Cache\Generic\BaseCacheStruct.cs" />
+    <Compile Include="Cache\Generic\BaseCollection.cs" />
+    <Compile Include="Cache\Generic\CacheCollection.cs" />
+    <Compile Include="Cache\Generic\CacheContainer.cs" />
+    <Compile Include="Cache\Generic\CacheDictionary.cs" />
+    <Compile Include="Cache\Generic\CacheFactory.cs" />
+    <Compile Include="Cache\Generic\CacheItem.cs" />
+    <Compile Include="Cache\Generic\CacheItemSet.cs" />
+    <Compile Include="Cache\Generic\CacheList.cs" />
+    <Compile Include="Cache\Generic\CachePeriod.cs" />
+    <Compile Include="Cache\Generic\CacheQueue.cs" />
+    <Compile Include="Cache\Generic\CacheSetting.cs" />
+    <Compile Include="Cache\Generic\DataSyncQueueManager.cs" />
+    <Compile Include="Cache\Generic\DefaultCacheStruct.cs" />
+    <Compile Include="Cache\Generic\EntityContainer.cs" />
+    <Compile Include="Cache\Generic\IDataContainer.cs" />
+    <Compile Include="Cache\Generic\IDataExpired.cs" />
+    <Compile Include="Cache\Generic\MemoryCacheStruct.cs" />
+    <Compile Include="Cache\Generic\PersonalCacheStruct.cs" />
+    <Compile Include="Cache\Generic\Pool\BaseCachePool.cs" />
+    <Compile Include="Cache\Generic\Pool\CachePool.cs" />
+    <Compile Include="Cache\Generic\RankCacheStruct.cs" />
+    <Compile Include="Cache\Generic\ReadonlyCacheCollection.cs" />
+    <Compile Include="Cache\Generic\ShareCacheStruct.cs" />
+    <Compile Include="Collection\Generic\DictionaryExtend.cs" />
+    <Compile Include="Collection\Generic\GroupList.cs" />
+    <Compile Include="Collection\Generic\HashtableExtend.cs" />
+    <Compile Include="Collection\Generic\ListExtend.cs" />
+    <Compile Include="Config\CacheSection.cs" />
+    <Compile Include="Config\EntitySection.cs" />
+    <Compile Include="Config\MessageQueueSection.cs" />
+    <Compile Include="Config\RedisSection.cs" />
+    <Compile Include="Config\ScriptSection.cs" />
+    <Compile Include="Data\CommandFilter.cs" />
+    <Compile Include="Data\CommandMode.cs" />
+    <Compile Include="Data\CommandStruct.cs" />
+    <Compile Include="Data\ConnectionSetting.cs" />
+    <Compile Include="Data\DbBaseProvider.cs" />
+    <Compile Include="Data\DbColumn.cs" />
+    <Compile Include="Data\DbConnectionProvider.cs" />
+    <Compile Include="Data\MySql\MySqlCommandFilter.cs" />
+    <Compile Include="Data\MySql\MySqlCommandStruct.cs" />
+    <Compile Include="Data\MySql\MySqlDataProvider.cs" />
+    <Compile Include="Data\MySql\MySqlParamHelper.cs" />
+    <Compile Include="Data\SqlParam.cs" />
+    <Compile Include="Data\SqlStatement.cs" />
+    <Compile Include="Data\SqlStatementManager.cs" />
+    <Compile Include="Data\Sql\SqlDataProvider.cs" />
+    <Compile Include="Data\Sql\SqlHelper.cs" />
+    <Compile Include="Data\Sql\SqlHelperParameterCache.cs" />
+    <Compile Include="Data\Sql\SqlParamHelper.cs" />
+    <Compile Include="Event\CacheItemChangeEvent.cs" />
+    <Compile Include="Event\EntityChangeEvent.cs" />
+    <Compile Include="Event\IItemChangeEvent.cs" />
+    <Compile Include="Model\AbstractEntity.cs" />
+    <Compile Include="Model\AccessLevel.cs" />
+    <Compile Include="Model\BaseEntity.cs" />
+    <Compile Include="Model\CacheType.cs" />
+    <Compile Include="Model\ColumnDbType.cs" />
+    <Compile Include="Model\EntityFieldAttribute.cs" />
+    <Compile Include="Model\EntityFieldExtendAttribute.cs" />
+    <Compile Include="Model\EntityHistory.cs" />
+    <Compile Include="Model\EntitySchemaSet.cs" />
+    <Compile Include="Model\EntitySyncAttribute.cs" />
+    <Compile Include="Model\EntityTableAttribute.cs" />
+    <Compile Include="Model\ISqlEntity.cs" />
+    <Compile Include="Model\LoadingStatus.cs" />
+    <Compile Include="Model\LogEntity.cs" />
+    <Compile Include="Model\MemoryEntity.cs" />
+    <Compile Include="Model\RankEntity.cs" />
+    <Compile Include="Model\SchemaColumn.cs" />
+    <Compile Include="Model\SchemaTable.cs" />
+    <Compile Include="Model\ShareEntity.cs" />
+    <Compile Include="Net\DataSyncManager.cs" />
+    <Compile Include="Net\DataSyncType.cs" />
+    <Compile Include="Net\DbDataFilter.cs" />
+    <Compile Include="Net\DbTransponder.cs" />
+    <Compile Include="Net\IDataReceiver.cs" />
+    <Compile Include="Net\IDataSender.cs" />
+    <Compile Include="Net\ITransponder.cs" />
+    <Compile Include="Net\Parameters.cs" />
+    <Compile Include="Net\RedisTransponder.cs" />
+    <Compile Include="Net\Redis\RedisDataGetter.cs" />
+    <Compile Include="Net\Redis\RedisDataSender.cs" />
+    <Compile Include="Net\Sql\SqlDataReceiver.cs" />
+    <Compile Include="Net\Sql\SqlDataSender.cs" />
+    <Compile Include="Net\TransReceiveParam.cs" />
+    <Compile Include="Net\TransSendParam.cs" />
+    <Compile Include="Plugin\PythonScript\PythonContext.cs" />
+    <Compile Include="Plugin\PythonScript\PythonParam.cs" />
+    <Compile Include="Plugin\PythonScript\PythonScriptHost.cs" />
+    <Compile Include="Plugin\PythonScript\PythonUtils.cs" />
+    <Compile Include="Plugin\Test\BaseCase.cs" />
+    <Compile Include="Plugin\Test\CaseEventArgs.cs" />
+    <Compile Include="Plugin\Test\CaseManager.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Redis\RedisConnectionPool.cs" />
+    <Compile Include="Redis\RedisInfo.cs" />
+    <Compile Include="Redis\RedisPoolSetting.cs" />
+    <Compile Include="RPC\Http\ByteResponse.cs" />
+    <Compile Include="RPC\Http\ConfigurationDictionary.cs" />
+    <Compile Include="RPC\Http\ContentResponse.cs" />
+    <Compile Include="RPC\Http\Extensions.cs" />
+    <Compile Include="RPC\Http\HttpAsyncHost.cs" />
+    <Compile Include="RPC\Http\HttpCDNAddress.cs" />
+    <Compile Include="RPC\Http\HttpRequestContext.cs" />
+    <Compile Include="RPC\Http\HttpRequestResponseContext.cs" />
+    <Compile Include="RPC\Http\IConfigurationTrait.cs" />
+    <Compile Include="RPC\Http\IHttpAsyncHandler.cs" />
+    <Compile Include="RPC\Http\IHttpAsyncHost.cs" />
+    <Compile Include="RPC\Http\IHttpAsyncHostHandlerContext.cs" />
+    <Compile Include="RPC\Http\IHttpRequestContext.cs" />
+    <Compile Include="RPC\Http\IHttpRequestResponseContext.cs" />
+    <Compile Include="RPC\Http\IHttpResponseAction.cs" />
+    <Compile Include="RPC\Http\IInitializationTrait.cs" />
+    <Compile Include="RPC\Http\Json.cs" />
+    <Compile Include="RPC\Http\JsonResponse.cs" />
+    <Compile Include="RPC\Http\JsonResultException.cs" />
+    <Compile Include="RPC\Http\JsonRootResponse.cs" />
+    <Compile Include="RPC\Http\RedirectResponse.cs" />
+    <Compile Include="RPC\Http\RestfulLink.cs" />
+    <Compile Include="RPC\Http\SHA1InputStream.cs" />
+    <Compile Include="RPC\Http\SHA1OutputStream.cs" />
+    <Compile Include="RPC\Http\SHA1TextReader.cs" />
+    <Compile Include="RPC\Http\StatusResponse.cs" />
+    <Compile Include="RPC\Http\TeeTextReader.cs" />
+    <Compile Include="RPC\Http\UTF8Encoding.cs" />
+    <Compile Include="RPC\IO\BufferReader.cs" />
+    <Compile Include="RPC\IO\BufferUtils.cs" />
+    <Compile Include="RPC\IO\ConnectType.cs" />
+    <Compile Include="RPC\IO\GzipUtils.cs" />
+    <Compile Include="RPC\IO\MessageHead.cs" />
+    <Compile Include="RPC\IO\MessageStructure.cs" />
+    <Compile Include="RPC\IO\PacketData.cs" />
+    <Compile Include="RPC\IO\PacketHead.cs" />
+    <Compile Include="RPC\IO\PacketMsgType.cs" />
+    <Compile Include="RPC\IO\ParamGeter.cs" />
+    <Compile Include="RPC\IO\Receiver.cs" />
+    <Compile Include="RPC\IO\RequestParam.cs" />
+    <Compile Include="RPC\IO\Sender.cs" />
+    <Compile Include="RPC\IO\SignUtils.cs" />
+    <Compile Include="RPC\Service\HttpRemoteClient.cs" />
+    <Compile Include="RPC\Service\RemoteClient.cs" />
+    <Compile Include="RPC\Service\SocketRemoteClient.cs" />
+    <Compile Include="RPC\Sockets\BaseMessageProcessor.cs" />
+    <Compile Include="RPC\Sockets\BufferManager.cs" />
+    <Compile Include="RPC\Sockets\ClientSocket.cs" />
+    <Compile Include="RPC\Sockets\ClientSocketSettings.cs" />
+    <Compile Include="RPC\Sockets\ConnectionEventArgs.cs" />
+    <Compile Include="RPC\Sockets\DataMeaage.cs" />
+    <Compile Include="RPC\Sockets\DataToken.cs" />
+    <Compile Include="RPC\Sockets\ExSocket.cs" />
+    <Compile Include="RPC\Sockets\ISocket.cs" />
+    <Compile Include="RPC\Sockets\MessageHandler.cs" />
+    <Compile Include="RPC\Sockets\OpCode.cs" />
+    <Compile Include="RPC\Sockets\RequestHandler.cs" />
+    <Compile Include="RPC\Sockets\SocketAsyncResult.cs" />
+    <Compile Include="RPC\Sockets\SocketListener.cs" />
+    <Compile Include="RPC\Sockets\SocketSettings.cs" />
+    <Compile Include="RPC\Sockets\ThreadSafeStack.cs" />
+    <Compile Include="RPC\Sockets\WebSocket\BaseHandshakeProcessor.cs" />
+    <Compile Include="RPC\Sockets\WebSocket\ClientWebSocket.cs" />
+    <Compile Include="RPC\Sockets\WebSocket\CloseStatusCode.cs" />
+    <Compile Include="RPC\Sockets\WebSocket\DataSegmentFrame.cs" />
+    <Compile Include="RPC\Sockets\WebSocket\HandshakeData.cs" />
+    <Compile Include="RPC\Sockets\WebSocket\HandshakeHeadKeys.cs" />
+    <Compile Include="RPC\Sockets\WebSocket\Hybi00HandshakeProcessor.cs" />
+    <Compile Include="RPC\Sockets\WebSocket\Hybi00MessageProcessor.cs" />
+    <Compile Include="RPC\Sockets\WebSocket\Hybi10CloseStatusCode.cs" />
+    <Compile Include="RPC\Sockets\WebSocket\Hybi10HandshakeProcessor.cs" />
+    <Compile Include="RPC\Sockets\WebSocket\Hybi10MessageProcessor.cs" />
+    <Compile Include="RPC\Sockets\WebSocket\MessageHeadFrame.cs" />
+    <Compile Include="RPC\Sockets\WebSocket\Rfc6455CloseStatusCode.cs" />
+    <Compile Include="RPC\Sockets\WebSocket\Rfc6455HandshakeProcessor.cs" />
+    <Compile Include="RPC\Sockets\WebSocket\Rfc6455MessageProcessor.cs" />
+    <Compile Include="RPC\Sockets\WebSocket\WebSocketRequestHandler.cs" />
+    <Compile Include="Script\CSharpFileInfo.cs" />
+    <Compile Include="Script\CSharpRuntimeScope.cs" />
+    <Compile Include="Script\IMainScript.cs" />
+    <Compile Include="Script\LuaMethodAttribute.cs" />
+    <Compile Include="Script\LuaRuntimeScope.cs" />
+    <Compile Include="Script\PythonFileInfo.cs" />
+    <Compile Include="Script\PythonRuntimeScope.cs" />
+    <Compile Include="Script\ScriptCompiler.cs" />
+    <Compile Include="Script\ScriptDomainContext.cs" />
+    <Compile Include="Script\ScriptEngines.cs" />
+    <Compile Include="Script\ScriptFileInfo.cs" />
+    <Compile Include="Script\ScriptRuntimeDomain.cs" />
+    <Compile Include="Script\ScriptRuntimeScope.cs" />
+    <Compile Include="Script\ScriptSettupInfo.cs" />
+    <Compile Include="SyncThreading\SyncHelper.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\ZyGames.Framework.Common\ZyGames.Framework.Common4.6.csproj">
+      <Project>{804086eb-a0cb-46d1-ad08-0c0af2340105}</Project>
+      <Name>ZyGames.Framework.Common4.6</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>
