@@ -37,11 +37,19 @@ namespace ZyGames.Framework.RPC.Http
         /// <summary>
         /// 
         /// </summary>
+        public string Identity { get; private set; }
+
+        /// <summary>
+        /// 
+        /// </summary>
         /// <param name="url"></param>
-        public RedirectResponse(string url)
+        /// <param name="identity"></param>
+        public RedirectResponse(string url, string identity = null)
         {
             this.Url = url;
+            Identity = identity;
         }
+
         /// <summary>
         /// 
         /// </summary>

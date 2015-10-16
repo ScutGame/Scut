@@ -247,6 +247,7 @@ namespace ZyGames.Framework.Game.Contract
             {
                 GameSession.Recover(session, e.Socket.HashCode, e.Socket, socketListener);
             }
+            session.InitSocket(e.Socket, socketListener);
             return session;
         }
 
@@ -269,7 +270,7 @@ namespace ZyGames.Framework.Game.Contract
         {
 
         }
-  
+
         /// <summary>
         /// 
         /// </summary>
@@ -327,6 +328,7 @@ namespace ZyGames.Framework.Game.Contract
         public override void Start(string[] args)
         {
             socketListener.StartListen();
+            TraceLog.WriteLine("{0} WebSocket service {1}:{2} is started.", DateTime.Now.ToString("HH:mm:ss"), _setting.GameIpAddress, _setting.GamePort);
             base.Start(args);
         }
 
@@ -335,6 +337,7 @@ namespace ZyGames.Framework.Game.Contract
         /// </summary>
         public override void Stop()
         {
+            base.Stop();
             socketListener.Dispose();
             OnServiceStop();
             try
@@ -342,7 +345,6 @@ namespace ZyGames.Framework.Game.Contract
                 EntitySyncManger.Dispose();
             }
             catch { }
-            base.Stop();
         }
 
         private async System.Threading.Tasks.Task ProcessPackage(RequestPackage package, GameSession session)

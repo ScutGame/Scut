@@ -26,31 +26,59 @@ using AccountServer.Handler.Data;
 using AccountServer.Lang;
 using ZyGames.Framework.Game.Sns;
 using ZyGames.Framework.Game.Sns.Service;
-
+using ZyGames.Framework.Common.Timing;
 namespace AccountServer.Handler
 {
     /// <summary>
     /// User login
     /// </summary>
-    public class Login : BaseHandler,IHandler<LoginInfo>
+    public class Login : BaseHandler, IHandler<LoginInfo>
     {
         public ResponseData Excute(LoginInfo data)
         {
-            if (string.IsNullOrEmpty(data.Pwd) || data.Pwd.Length < 5)
+            int userId;
+            var passportId = string.Empty;
+            if( !string.IsNullOrEmpty(data.RetailUser) && !string.IsNullOrEmpty(data.RetailToken))
             {
-                throw new HandlerException(StateCode.Error, StateDescription.PassworkLengthError);
+                ILogin login = LoginProxy.GetLogin(data.RetailID, data);
+                login.Password = DecodePassword(login.Password);
+                var watch = RunTimeWatch.StartNew("Request login server");
+                try
+                {
+                    if (login.CheckLogin())
+                    {
+                        watch.Check("GetResponse");
+                        userId = int.Parse(login.UserID);
+                        passportId = login.PassportID;
+                    }
+                    else
+                    {
+                        //DoLoginFail();
+                        throw new HandlerException(StateCode.Error, StateDescription.PassworkError);
+                    }
+                }
+                finally
+                {
+                    watch.Flush(true, 100);
+                }
             }
-            if (data.Pwd.Length > 32)
+            else
             {
+                if (string.IsNullOrEmpty(data.Pwd) || data.Pwd.Length < 5)
+                {
+                    throw new HandlerException(StateCode.Error, StateDescription.PassworkLengthError);
+                }
                 data.Pwd = DecodePassword(data.Pwd);
+                //快速登录
+                userId = SnsManager.LoginByDevice(data.Pid, data.Pwd, data.DeviceID, data.IsCustom);
+                if (userId <= 0)
+                {
+                    throw new HandlerException(StateCode.PassworkError, StateDescription.PassworkError);
+                }
+                passportId = data.Pid;
             }
-            //快速登录
-            var userId = SnsManager.LoginByDevice(data.Pid, data.Pwd, data.IMEI);
-            if (userId <= 0)
-            {
-                throw new HandlerException(StateCode.PassworkError, StateDescription.PassworkError);
-            }
-            return AuthorizeLogin(userId, data.Pid);
+
+            return AuthorizeLogin(userId, passportId);
         }
 
     }

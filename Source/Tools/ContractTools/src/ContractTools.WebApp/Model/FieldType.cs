@@ -47,7 +47,8 @@ namespace ContractTools.WebApp.Model
         DateTime,
         UInt,
         UShort,
-        ULong
+        ULong,
+        SigleRecord
 
     }
 }

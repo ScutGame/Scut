@@ -20,6 +20,15 @@ namespace ContractTools.WebApp
             {
                 Bind();
             }
+            else
+            {
+                var target = Request["__EVENTTARGET"];
+                if ("btnSerach".Equals(target))
+                {
+                    var argument = Request["txtSearch"];
+                    btnSerach_Click(argument);
+                }
+            }
         }
 
         #region param
@@ -447,7 +456,7 @@ namespace ContractTools.WebApp
                 SetCookies(string.Empty, ddlSolution.Text);
                 int slnId = ddlSolution.Text.ToInt();
                 BindEnumInfo(slnId);
-                int verId = BindVersion(slnId, VerID);
+                int verId = BindVersion(slnId, 0);
                 int agreementId = BindAgreement(slnId, AgreementID);
                 int contractId = BindContract(slnId, verId, agreementId, 0);
                 BindResult(slnId, verId, contractId);
@@ -588,7 +597,9 @@ namespace ContractTools.WebApp
 
                         if (paramInfo != null)
                         {
-                            if (paramInfo.FieldType == FieldType.Record || paramInfo.FieldType == FieldType.End)
+                            if (paramInfo.FieldType == FieldType.Record ||
+                                paramInfo.FieldType == FieldType.SigleRecord ||
+                                paramInfo.FieldType == FieldType.End)
                             {
                                 e.Row.Font.Bold = true;
                             }
@@ -693,7 +704,7 @@ namespace ContractTools.WebApp
             int currID = Convert.ToInt32(args[0]);
             int fieldType = Convert.ToInt32(args[1]);
             int currSortID = Convert.ToInt32(args[2]);
-            if (fieldType == (int)FieldType.Record || fieldType == (int)FieldType.End)
+            if (fieldType == (int)FieldType.Record || fieldType == (int)FieldType.SigleRecord || fieldType == (int)FieldType.End)
             {
                 return;
             }
@@ -712,7 +723,7 @@ namespace ContractTools.WebApp
                 keyList.Add(keyId);
 
                 var input = row.FindControl("LabFieldType") as Label;
-                if (input != null && input.Text == FieldType.Record.ToString())
+                if (input != null && (input.Text == FieldType.Record.ToString() || input.Text == FieldType.SigleRecord.ToString()))
                 {
                     var t = row.FindControl("txtSortID") as Label;
                     sortID = t != null ? t.Text.ToInt() : rowIndex + 1;
@@ -738,7 +749,7 @@ namespace ContractTools.WebApp
             int currID = Convert.ToInt32(args[0]);
             int fieldType = Convert.ToInt32(args[1]);
             int currSortID = Convert.ToInt32(args[2]);
-            if (fieldType == (int)FieldType.Record || fieldType == (int)FieldType.End)
+            if (fieldType == (int)FieldType.Record || fieldType == (int)FieldType.SigleRecord || fieldType == (int)FieldType.End)
             {
                 return;
             }
@@ -858,6 +869,31 @@ namespace ContractTools.WebApp
             }
         }
 
+        protected void btnSerach_Click(string argument)
+        {
+            try
+            {
+                int slnId = ddlSolution.Text.ToInt();
+                int verId = ddVersion.Text.ToInt();
+                int contractId = ddContract.Text.ToInt();
+                var list = DbDataLoader.GetContract(slnId, argument);
+                ddContract.DataSource = list;
+                ddContract.DataTextField = "Uname";
+                ddContract.DataValueField = "ID";
+                ddContract.DataBind();
+                if (list.Count > 0)
+                {
+                    contractId = list[0].ID;
+                }
+                BindResult(slnId, verId, contractId);
+
+            }
+            catch (Exception ex)
+            {
+                TraceLog.WriteError("OnSolutionChanged {0}", ex);
+            }
+        }
+
         protected void btnParamAdd_Click(object sender, EventArgs e)
         {
             try
@@ -912,6 +948,35 @@ namespace ContractTools.WebApp
             catch (Exception ex)
             {
                 TraceLog.WriteError("Default ParamAdd error:{0}", ex);
+            }
+        }
+
+
+        protected void btnParamRemove_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                int sortFrom = ddParamCopyFrom.Text.ToInt();
+                int sortTo = ddParamCopyTo.Text.ToInt();
+                if (sortFrom > sortTo) return;
+
+                int slnId = ddlSolution.Text.ToInt();
+                int verId = ddVersion.Text.ToInt();
+                int contractId = ddContract.Text.ToInt();
+                int paramType = ddParamType.Text.ToInt();
+
+                var paramList = DbDataLoader.GetParamInfo(slnId, contractId, paramType, verId);
+                var removeList = paramList.FindAll(t => t.SortID >= sortFrom && t.SortID <= sortTo);
+
+                foreach (var param in removeList)
+                {
+                    DbDataLoader.Delete(param);
+                }
+                BindGrid(slnId, verId, contractId);
+            }
+            catch (Exception ex)
+            {
+                TraceLog.WriteError("Default Param Remove error:{0}", ex);
             }
         }
 

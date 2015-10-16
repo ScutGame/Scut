@@ -25,6 +25,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
+using ZyGames.Framework.Common;
 using ZyGames.Framework.Common.Security;
 
 namespace ZyGames.Framework.Script
@@ -128,6 +129,12 @@ namespace ZyGames.Framework.Script
         public abstract bool InvokeMenthod(string scriptCode, string typeName, Object[] typeArgs, string method, params Object[] methodArgs);
 
         /// <summary>
+        /// Verify script file's md5 hash code.
+        /// </summary>
+        /// <returns></returns>
+        public abstract bool VerifyScriptHashCode(string fileName);
+
+        /// <summary>
         /// 脚本解码
         /// </summary>
         /// <param name="source">脚本文件</param>
@@ -148,6 +155,7 @@ namespace ZyGames.Framework.Script
             return CryptoHelper.ToFileMd5Hash(fileName);
         }
 
+
         /// <summary>
         /// filename or typeName,return relative to "Script" path
         /// </summary>
@@ -162,7 +170,7 @@ namespace ZyGames.Framework.Script
             for (int i = 0; i < arr.Length; i++)
             {
                 string str = arr[i];
-                if (issame && _rootPathArr.Length > i && string.Equals(str, _rootPathArr[i], StringComparison.CurrentCultureIgnoreCase))
+                if (issame && _rootPathArr.Length > i && MathUtils.IsEquals(str, _rootPathArr[i], true))
                 {
                     continue;
                 }

@@ -23,8 +23,11 @@ THE SOFTWARE.
 ****************************************************************************/
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Web;
+using AccountServer.Lang;
+using ZyGames.Framework.Common.Log;
 using ZyGames.Framework.Game.Sns.Service;
 
 namespace AccountServer
@@ -34,6 +37,49 @@ namespace AccountServer
     /// </summary>
     public class Default : BaseHttpHandler
     {
-
+        protected override void OnRequest(HttpContext context, ResponseBody body)
+        {
+            var watch = Stopwatch.StartNew();
+            try
+            {
+                string param;
+                if (CheckSign(context.Request, out param))
+                {
+                    HandlerData handlerData;
+                    if (TryUrlQueryParse(param, out handlerData))
+                    {
+                        body.Handler = handlerData.Name;
+                        body.Data = HandlerManager.Excute(handlerData);
+                    }
+                    else
+                    {
+                        body.StateCode = StateCode.NoHandler;
+                        body.StateDescription = StateDescription.NoHandler;
+                    }
+                }
+                else
+                {
+                    body.StateCode = StateCode.SignError;
+                    body.StateDescription = StateDescription.SignError;//"Sign error.";
+                }
+            }
+            catch (HandlerException handlerError)
+            {
+                body.StateCode = handlerError.StateCode;
+                body.StateDescription = handlerError.Message;
+                TraceLog.WriteError("Request handle error:{0}", handlerError);
+            }
+            catch (Exception error)
+            {
+                body.StateCode = StateCode.Error;
+                body.StateDescription = StateDescription.Error;// "Process request fail.";
+                TraceLog.WriteError("Request handle error:{0}", error);
+            }
+            var ms = watch.ElapsedMilliseconds;
+            if (ms > 20)
+            {
+                TraceLog.Write("Request timeout:{0}ms", ms);
+            }
+        }
     }
 }

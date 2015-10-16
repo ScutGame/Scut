@@ -74,7 +74,7 @@ namespace ZyGames.Framework.Game.Sns
             }
             else
             {
-                TraceLog.ReleaseWrite("The sdkChannelV2 Danle section is null.");
+                TraceLog.ReleaseWrite("The sdkChannelV2 MeiZu section is null.");
             }
         }
         /// <summary>

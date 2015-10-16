@@ -98,27 +98,30 @@ namespace ZyGames.Framework.Game.Contract
                 {
                     return;
                 }
-                try
+                using (var ms = new MessageStructure(e.Data))
                 {
-                    using (var ms = new MessageStructure(e.Data))
+                    var head = ms.ReadHeadGzip();
+                    if (head != null)
                     {
-                        var head = ms.ReadHeadGzip();
-                        if (head != null)
+                        var package = proxy.Find(head.MsgId);
+                        if (package != null)
                         {
-                            var package = proxy.Find(head.MsgId);
-                            if (package != null)
-                            {
-                                package.Message = ms.ReadBuffer();
-                                proxy.Remove(head.MsgId);
-                                package.OnCallback();
-                                return;
-                            }
+                            package.ErrorCode = head.ErrorCode;
+                            package.ErrorInfo = head.ErrorInfo;
+                            package.Message = ms.ReadBuffer();
+                            proxy.Remove(head.MsgId);
+                            package.OnCallback();
+                        }
+                        else
+                        {
+                            proxy.OnPushedHandle(e);
                         }
                     }
+                    else
+                    {
+                        proxy.OnErrorHandle(e);
+                    }
                 }
-                catch (Exception)
-                { }
-                proxy.OnPushedHandle(e);
             }
             catch (Exception ex)
             {
@@ -143,10 +146,20 @@ namespace ZyGames.Framework.Game.Contract
                         var package = proxy.Find(head.MsgId);
                         if (package != null)
                         {
+                            package.ErrorCode = head.ErrorCode;
+                            package.ErrorInfo = head.ErrorInfo;
                             package.Message = ms.ReadBuffer();
                             proxy.Remove(head.MsgId);
                             package.OnCallback();
                         }
+                        else
+                        {
+                            proxy.OnPushedHandle(e);
+                        }
+                    }
+                    else
+                    {
+                        proxy.OnErrorHandle(e);
                     }
                 }
             }
@@ -164,9 +177,20 @@ namespace ZyGames.Framework.Game.Contract
         private string _proxySessionId = "";
         private DictionaryExtend<int, RemotePackage> _packagePools;
         /// <summary>
-        /// 
+        /// Server push to data callback
         /// </summary>
         public event RemoteCallback PushedHandle;
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public event RemoteCallback ErrorHandle;
+
+        private void OnErrorHandle(RemoteEventArgs e)
+        {
+            RemoteCallback handler = ErrorHandle;
+            if (handler != null) handler(this, e);
+        }
 
         private void OnPushedHandle(RemoteEventArgs e)
         {

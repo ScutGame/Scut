@@ -23,6 +23,7 @@ THE SOFTWARE.
 ****************************************************************************/
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using ZyGames.Framework.Common;
 using ZyGames.Framework.Common.Log;
 using ZyGames.Framework.Model;
@@ -35,6 +36,119 @@ namespace ZyGames.Framework.Cache.Generic
     /// </summary>
     public static class ShareCacheStruct
     {
+        /// <summary>
+        /// 
+        /// </summary>
+        public static void LoadAll(Predicate<SchemaTable> match, bool isReLoad = false)
+        {
+            foreach (var schemaTable in EntitySchemaSet.GetEnumerable())
+            {
+                if (schemaTable.EntityType.IsSubclassOf(typeof(ShareEntity)) &&
+                    !schemaTable.IsInternal &&
+                    match(schemaTable))
+                {
+                    CallMethod(schemaTable, obj =>
+                    {
+                        if (isReLoad)
+                        {
+                            obj.ReLoad();
+                        }
+                        else
+                        {
+                            obj.Load();
+                        }
+                    });
+                    
+                }
+            }
+        }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="match"></param>
+        /// <param name="hasChanged"></param>
+        public static void Update(Predicate<SchemaTable> match, bool hasChanged = false)
+        {
+            foreach (var schemaTable in EntitySchemaSet.GetEnumerable())
+            {
+                if (match(schemaTable))
+                {
+                    Update(schemaTable, hasChanged);
+                }
+            }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="schemaTable"></param>
+        /// <param name="hasChanged"></param>
+        public static void Update(SchemaTable schemaTable, bool hasChanged = false)
+        {
+            CallMethod(schemaTable, obj => obj.Update(hasChanged));
+        }
+
+        private static void CallMethod(SchemaTable schemaTable, Action<dynamic> func)
+        {
+            Type entityType = schemaTable.EntityType;
+            Type cachType = typeof(ShareCacheStruct<>);
+            string typeName = string.Format("{0}[[{1}, {2}]], {3}",
+                cachType.FullName,
+                entityType.FullName,
+                entityType.Assembly.FullName,
+                cachType.Assembly.FullName);
+            Type type = Type.GetType(typeName, false, true);
+            if (type == null) return;
+
+            func((dynamic)type.CreateInstance());
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <returns></returns>
+        public static IEnumerable<T> Take<T>() where T : ShareEntity, new()
+        {
+            return new ShareCacheStruct<T>().Take();
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <returns></returns>
+        public static IEnumerable<T> TakeOrLoad<T>() where T : ShareEntity, new()
+        {
+            return new ShareCacheStruct<T>().TakeOrLoad();
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="entityName"></param>
+        /// <returns></returns>
+        public static object GetCache(string entityName)
+        {
+            SchemaTable schema;
+            if (EntitySchemaSet.TryGet(entityName, out schema))
+            {
+                Type cachType = typeof(ShareCacheStruct<>);
+                Type entityType = schema.EntityType;
+                string typeName = string.Format("{0}[[{1}, {2}]], {3}",
+                    cachType.FullName,
+                    entityType.FullName,
+                    entityType.Assembly.FullName,
+                    cachType.Assembly.FullName);
+                Type type = Type.GetType(typeName, false, true);
+                if (type != null)
+                {
+                    return type.CreateInstance();
+                }
+            }
+            return null;
+        }
+
         /// <summary>
         /// 
         /// </summary>
@@ -69,6 +183,42 @@ namespace ZyGames.Framework.Cache.Generic
                 cache.Add(result);
             }
             return result;
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="enumerable"></param>
+        /// <param name="period"></param>
+        public static bool AddRange(IEnumerable<ShareEntity> enumerable, int period = 0)
+        {
+            if (DataSyncQueueManager.SendSync(enumerable))
+            {
+                foreach (var t in enumerable)
+                {
+                    CacheItemSet itemSet;
+                    if (CacheFactory.AddOrUpdateEntity(t, out itemSet, period))
+                    {
+                        itemSet.OnLoadSuccess();
+                    }
+                }
+                return true;
+            }
+            return false;
+        }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <typeparam name="V"></typeparam>
+        /// <param name="key"></param>
+        /// <param name="getFunc"></param>
+        /// <param name="default"></param>
+        /// <returns></returns>
+        public static V GetValue<T, V>(object key, Func<T, V> getFunc, V @default) where T : ShareEntity, new()
+        {
+            T t = Get<T>(key, true);
+            return Equals(t, null) ? @default : getFunc(t);
         }
 
         /// <summary>
@@ -300,6 +450,13 @@ namespace ZyGames.Framework.Cache.Generic
             });
             return t;
         }
+        /// <summary>
+        /// 
+        /// </summary>
+        public void Load()
+        {
+            DataContainer.Load();
+        }
 
         /// <summary>
         /// 查找所有匹配数据
@@ -333,6 +490,24 @@ namespace ZyGames.Framework.Cache.Generic
                 return list.QuickSort();
             }
             return list;
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        public IEnumerable<T> Take()
+        {
+            return DataContainer.ToEntityEnumerable(false);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        public IEnumerable<T> TakeOrLoad()
+        {
+            return DataContainer.ToEntityEnumerable(true);
         }
 
         /// <summary>
@@ -376,7 +551,7 @@ namespace ZyGames.Framework.Cache.Generic
             receiveParam.Schema = SchemaTable();
             receiveParam.DbFilter = filter;
             int periodTime = receiveParam.Schema == null ? 0 : receiveParam.Schema.PeriodTime;
-            return TryLoadCache(receiveParam, periodTime);
+            return TryLoadCache(receiveParam, periodTime, false);
         }
 
         private bool IsExistData()
@@ -388,9 +563,10 @@ namespace ZyGames.Framework.Cache.Generic
         /// 更新所有的数据
         /// </summary>
         /// <param name="isChange"></param>
-        public override void Update(bool isChange)
+        /// <param name="changeKey"></param>
+        public override bool Update(bool isChange, string changeKey = null)
         {
-            UpdateEntity(isChange);
+            return UpdateEntity(isChange, changeKey);
         }
 
         /// <summary>
@@ -404,7 +580,64 @@ namespace ZyGames.Framework.Cache.Generic
             string key = t.GetKeyCode();
             SchemaTable schemaTable = SchemaTable();
             int periodTime = schemaTable == null ? 0 : schemaTable.PeriodTime;
-            return TryAddEntity(key, t, periodTime);
+            if (Update(t) && TryAddEntity(key, t, periodTime, true))
+            {
+                SetLoadSuccess(key);
+                return true;
+            }
+            return false;
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="enumerable"></param>
+        /// <param name="period"></param>
+        /// <returns></returns>
+        public bool AddRange(IEnumerable<T> enumerable, int period = 0)
+        {
+            if (!Update(enumerable))
+            {
+                return false;
+            }
+            foreach (var t in enumerable)
+            {
+                string key = t.GetKeyCode();
+                SchemaTable schemaTable = SchemaTable();
+                int periodTime = schemaTable == null ? 0 : schemaTable.PeriodTime;
+                if (TryAddEntity(key, t, periodTime, true))
+                {
+                    SetLoadSuccess(key);
+                    continue;
+                }
+            }
+            return true;
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="enumerable"></param>
+        /// <param name="period"></param>
+        /// <returns></returns>
+        public bool AddOrUpdate(IEnumerable<T> enumerable, int period = 0)
+        {
+            if (!Update(enumerable))
+            {
+                return false;
+            }
+            foreach (var t in enumerable)
+            {
+                string key = t.GetKeyCode();
+                SchemaTable schemaTable = SchemaTable();
+                int periodTime = schemaTable == null ? 0 : schemaTable.PeriodTime;
+                if (AddOrUpdateEntity(key, t, periodTime, true))
+                {
+                    SetLoadSuccess(key);
+                    continue;
+                }
+            }
+            return true;
         }
 
         /// <summary>
@@ -418,7 +651,12 @@ namespace ZyGames.Framework.Cache.Generic
             string key = t.GetKeyCode();
             SchemaTable schemaTable = SchemaTable();
             int periodTime = schemaTable == null ? 0 : schemaTable.PeriodTime;
-            return AddOrUpdateEntity(key, t, periodTime);
+            if (Update(t) && AddOrUpdateEntity(key, t, periodTime, true))
+            {
+                SetLoadSuccess(key);
+                return true;
+            }
+            return false;
         }
 
         /// <summary>
@@ -443,15 +681,14 @@ namespace ZyGames.Framework.Cache.Generic
             {
                 value.OnDelete();
                 TransSendParam sendParam = new TransSendParam() { IsChange = true };
-                DoSend(new[] { new KeyValuePair<string, T>(key, value) }, sendParam);
-                return true;
+                return DoSend(new[] { new KeyValuePair<string, T>(key, value) }, sendParam);
             });
         }
         /// <summary>
         /// 
         /// </summary>
         /// <returns></returns>
-        protected override bool LoadFactory()
+        protected override bool LoadFactory(bool isReplace)
         {
             int capacity = 0;
             SchemaTable schemaTable;
@@ -466,8 +703,9 @@ namespace ZyGames.Framework.Cache.Generic
         /// 
         /// </summary>
         /// <param name="key"></param>
+        /// <param name="isReplace"></param>
         /// <returns></returns>
-        protected override bool LoadItemFactory(string key)
+        protected override bool LoadItemFactory(string key, bool isReplace)
         {
             //string redisKey = CreateRedisKey(key);
             //var schema = SchemaTable();
@@ -493,21 +731,37 @@ namespace ZyGames.Framework.Cache.Generic
         /// </summary>
         /// <param name="dataList"></param>
         /// <param name="periodTime"></param>
+        /// <param name="isReplace"></param>
         /// <returns></returns>
-        protected override bool InitCache(List<T> dataList, int periodTime)
+        protected override bool InitCache(List<T> dataList, int periodTime, bool isReplace)
         {
             foreach (var data in dataList)
             {
                 if (data == null) continue;
                 data.Reset();
                 string key = data.GetKeyCode();
-                bool result = AddOrUpdateEntity(key, data, periodTime);
+                CacheItemSet itemSet;
+                bool result = true;
+                if (isReplace)
+                {
+                    result = DataContainer.AddOrUpdateEntity(key, data, periodTime, out itemSet, true);
+                }
+                else if (!DataContainer.TryAddEntity(key, data, periodTime, out itemSet, true))
+                {
+                    //gets itemSet in cache
+                    DataContainer.TryGetCacheItem(key, out itemSet);
+                }
                 if (!result)
                 {
                     TraceLog.WriteError("Load data:\"{0}\" tryadd key:\"{1}\" error.", DataContainer.RootKey, key);
                     return false;
                 }
-                DataContainer.UnChangeNotify(key);
+                if (itemSet != null)
+                {
+                    itemSet.OnLoadSuccess();
+                }
+                //reason:load entity is no changed.
+                //DataContainer.UnChangeNotify(key);
             }
             return true;
         }

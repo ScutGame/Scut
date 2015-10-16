@@ -44,7 +44,7 @@ namespace ZyGames.Framework.Config
             EnableWriteToDb = ConfigUtils.GetSetting("Cache.enable.writetoDb", true);
             DataSyncQueueNum = ConfigUtils.GetSetting("DataSyncQueueNum", 2);
             SqlWaitSyncQueueNum = ConfigUtils.GetSetting("SqlWaitSyncQueueNum", 2);
-            SqlSyncInterval = ConfigUtils.GetSetting("Game.Cache.UpdateDbInterval", 300 * 1000);
+            SqlSyncInterval = ConfigUtils.GetSetting("Game.Cache.UpdateDbInterval", 60000);//1 min
             SqlSyncQueueNum = ConfigUtils.GetSetting("SqlSyncQueueNum", 2);
         }
 

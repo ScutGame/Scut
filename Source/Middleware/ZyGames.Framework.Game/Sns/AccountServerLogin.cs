@@ -103,17 +103,26 @@ namespace ZyGames.Framework.Game.Sns
         /// <summary>
         /// 
         /// </summary>
+        public StateCode State { get; set; }
+
+        /// <summary>
+        /// 
+        /// </summary>
         /// <returns></returns>
         public virtual string GetRegPassport()
         {
             var query = new Dictionary<string, string>();
             query["Handler"] = "Passport";
             query["IMEI"] = _imei;
-            var task = Send(HttpUtils.BuildPostParams(query), _timeout);
-            if (task.Wait(_timeout))
+            string queryString = HttpUtils.BuildPostParams(query);
+            using (var response = Send(queryString, _timeout))
             {
-                var responseStream = (task.Result).GetResponseStream();
-                if (responseStream == null) return null;
+                var responseStream = response.GetResponseStream();
+                if (responseStream == null)
+                {
+                    TraceLog.Write("Response stream is null.\r\nUrl:{0}/?{1}", _url, queryString);
+                    return null;
+                }
                 using (var sr = new StreamReader(responseStream, Encoding.UTF8))
                 {
                     string json = sr.ReadToEnd();
@@ -143,39 +152,47 @@ namespace ZyGames.Framework.Game.Sns
             query["Handler"] = "Validate";
             query["Token"] = Token;
             string queryString = HttpUtils.BuildPostParams(query);
-            var task = Send(queryString, _timeout);
-            if (task.Wait(_timeout))
+            queryString = AppendSign(queryString);
+            string json;
+            using (var response = Send(queryString, _timeout))
             {
-                var responseStream = (task.Result).GetResponseStream();
-                if (responseStream == null) return false;
-                using (var sr = new StreamReader(responseStream, Encoding.UTF8))
+                var responseStream = response.GetResponseStream();
+                if (responseStream == null)
                 {
-                    string json = sr.ReadToEnd();
-                    var body = JsonUtils.Deserialize<ResponseBody<LoginToken>>(json);
-                    if (body == null)
-                    {
-                        return false;
-                    }
-
-                    if (body.StateCode == StateCode.OK)
-                    {
-                        var token = body.Data as LoginToken;
-                        if (token != null)
-                        {
-                            PassportID = token.PassportId;
-                            UserID = token.UserId.ToString();
-                            return true;
-                        }
-                    }
-                    if (body.StateCode == StateCode.TokenExpired || body.StateCode == StateCode.NoToken)
-                    {
-                        throw new HandlerException(body.StateCode, body.StateDescription);
-                    }
-                    TraceLog.WriteError("AccountServer login error:{0}", json);
+                    TraceLog.Write("Response stream is null.\r\nUrl:{0}/?{1}", _url, queryString);
                     return false;
                 }
+                using (var sr = new StreamReader(responseStream, Encoding.UTF8))
+                {
+                    json = sr.ReadToEnd();
+                    responseStream.Close();
+                }
             }
-            TraceLog.WriteError("AccountServer login timeout error:{0}", _url + "?" + queryString);
+            var body = JsonUtils.Deserialize<ResponseBody<LoginToken>>(json);
+            if (body == null)
+            {
+                TraceLog.Write("Response stream convert to json error.Json:{0}\r\nUrl:{1}/?{2}", json, _url, queryString);
+                State = StateCode.ParseError;
+                return false;
+            }
+
+            State = body.StateCode;
+            if (body.StateCode == StateCode.OK)
+            {
+                var token = body.Data as LoginToken;
+                if (token != null)
+                {
+                    PassportID = token.PassportId;
+                    UserID = token.UserId.ToString();
+                    return true;
+                }
+            }
+            if (body.StateCode == StateCode.TokenExpired || body.StateCode == StateCode.NoToken)
+            {
+                TraceLog.Write("AccountServer login fail, StateCode:{0}-{1}", body.StateCode, body.StateDescription);
+                throw new HandlerException(body.StateCode, body.StateDescription);
+            }
+            TraceLog.WriteError("AccountServer login error:{0}", json);
             return false;
         }
 
@@ -183,12 +200,11 @@ namespace ZyGames.Framework.Game.Sns
         /// 
         /// </summary>
         /// <returns></returns>
-        protected virtual Task<WebResponse> Send(string query, int timeout = 3000, bool isPost = false)
+        protected virtual WebResponse Send(string query, int timeout = 3000, bool isPost = false)
         {
-            string queryString = AppendSign(query);
             return isPost
-                ? HttpUtils.PostAsync(_url, queryString, timeout, null, Encoding.UTF8, ContentType, null)
-                : HttpUtils.GetAsync(string.Format("{0}/?{1}", _url, queryString), ContentType, timeout, null, null);
+                ? HttpUtils.Post(_url, query, timeout, null, Encoding.UTF8, ContentType, null)
+                : HttpUtils.Get(string.Format("{0}/?{1}", _url, query), ContentType, timeout, null, null);
 
         }
         /// <summary>
@@ -196,7 +212,7 @@ namespace ZyGames.Framework.Game.Sns
         /// </summary>
         /// <param name="query"></param>
         /// <returns></returns>
-        protected virtual string AppendSign(string query)
+        protected string AppendSign(string query)
         {
             string signKey = GameEnvironment.Setting != null ? GameEnvironment.Setting.ProductSignKey : "";
             if (string.IsNullOrEmpty(signKey))

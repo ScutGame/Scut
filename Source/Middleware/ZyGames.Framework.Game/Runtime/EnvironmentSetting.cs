@@ -53,11 +53,16 @@ namespace ZyGames.Framework.Game.Runtime
 
         static EnvironmentSetting()
         {
+            bool result;
             try
             {
-                ConfigManager.Intialize("appServerConfigger");
+                result = ConfigManager.Intialize("appServerConfigger");
             }
             catch (Exception)
+            {
+                result = false;
+            }
+            if (!result)
             {
                 try
                 {
@@ -178,7 +183,7 @@ namespace ZyGames.Framework.Game.Runtime
         {
             get
             {
-                var section =ConfigManager.Configger.GetFirstOrAddConfig<RedisSection>();
+                var section = ConfigManager.Configger.GetFirstOrAddConfig<RedisSection>();
                 return section.Host;
             }
         }

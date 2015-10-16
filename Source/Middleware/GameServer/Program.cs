@@ -22,6 +22,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ****************************************************************************/
 
+using System;
 using ZyGames.Framework.Game.Runtime;
 
 namespace GameServer
@@ -30,7 +31,8 @@ namespace GameServer
     {
         static void Main(string[] args)
         {
-           new ConsoleRuntimeHost().Start();
+            new ConsoleRuntimeHost().Start();
+            Console.WriteLine("exited.");
         }
     }
 }

@@ -91,10 +91,9 @@ namespace ZyGames.Framework.Common.Configuration
         /// 
         /// </summary>
         /// <param name="sectionName"></param>
-        /// <exception cref="ArgumentException"></exception>
         /// <exception cref="Exception"></exception>
         /// <returns></returns>
-        public static void Intialize(string sectionName)
+        public static bool Intialize(string sectionName)
         {
             lock (syncRoot)
             {
@@ -105,11 +104,9 @@ namespace ZyGames.Framework.Common.Configuration
                     instance.Install();
                     _configgerSet.Add(instance);
                     _configger = instance;
+                    return true;
                 }
-                else
-                {
-                    throw new ArgumentException("Not found section node.", "sectionName");
-                }
+                return false;
             }
         }
 

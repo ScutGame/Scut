@@ -28,9 +28,15 @@ namespace AccountServer.Handler.Data
         public int MobileType { get; set; }
         public string Pid { get; set; }
         public string Pwd { get; set; }
-        public string IMEI { get; set; }
+        public string DeviceID { get; set; }
         public int ScreenX { get; set; }
         public int ScreenY { get; set; }
         public string RetailID { get; set; }
+        public string RetailUser { get; set; }
+        public string RetailToken { get; set; }
+        /// <summary>
+        /// use custom passport
+        /// </summary>
+        public bool IsCustom { get; set; }
     }
 }

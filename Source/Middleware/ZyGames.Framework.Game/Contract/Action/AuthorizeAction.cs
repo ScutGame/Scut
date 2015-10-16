@@ -97,8 +97,8 @@ namespace ZyGames.Framework.Game.Contract.Action
                 long time;
                 if (long.TryParse(st, out time))
                 {
-                    var ts = MathUtils.Now - MathUtils.UnixEpochDateTime.AddSeconds(time);
-                    return maxInterval == TimeSpan.Zero || (ts > minInterval && ts < maxInterval);
+                    return maxInterval == TimeSpan.Zero ||
+                        (time > MathUtils.UnixEpochTimeSpan.Add(minInterval).TotalSeconds && time < MathUtils.UnixEpochTimeSpan.Add(maxInterval).TotalSeconds);
                 }
             }
             return true;
@@ -135,17 +135,14 @@ namespace ZyGames.Framework.Game.Contract.Action
                 case LoginStatus.Timeout:
                     ErrorCode = Language.Instance.TimeoutCode;
                     ErrorInfo = Language.Instance.AcountNoLogin;
-                    result = false;
                     break;
                 case LoginStatus.Logined:
                     ErrorCode = Language.Instance.DuplicateCode;
                     ErrorInfo = Language.Instance.AcountLogined;
-                    result = false;
                     break;
                 case LoginStatus.Exit:
                     ErrorCode = Language.Instance.KickedOutCode;
                     ErrorInfo = Language.Instance.AcountIsLocked;
-                    result = false;
                     break;
                 case LoginStatus.Success:
                     result = true;
@@ -155,7 +152,7 @@ namespace ZyGames.Framework.Game.Contract.Action
             }
             if (CheckUserIsLocked(user))
             {
-                ErrorCode = Language.Instance.TimeoutCode;
+                ErrorCode = Language.Instance.KickedOutCode;
                 ErrorInfo = Language.Instance.AcountIsLocked;
                 result = false;
             }

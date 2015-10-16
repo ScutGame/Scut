@@ -46,6 +46,6 @@ namespace ZyGames.Framework.Net
         /// <typeparam name="T"></typeparam>
         /// <param name="dataList"></param>
         /// <param name="sendParam"></param>
-        void SendData<T>(T[] dataList, TransSendParam sendParam) where T : AbstractEntity, new();
+        bool SendData<T>(T[] dataList, TransSendParam sendParam) where T : AbstractEntity, new();
     }
 }

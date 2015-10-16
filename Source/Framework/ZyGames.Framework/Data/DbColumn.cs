@@ -43,9 +43,14 @@ namespace ZyGames.Framework.Data
         /// </summary>
         public int Id { get; set; }
         /// <summary>
-        /// 是否是主键
+        /// Sets key is true in Entity field
         /// </summary>
         public bool IsKey { get; set; }
+
+        /// <summary>
+        /// Get Db table have key no
+        /// </summary>
+        public int KeyNo { get; set; }
         /// <summary>
         /// 
         /// </summary>
@@ -88,6 +93,10 @@ namespace ZyGames.Framework.Data
         public int IdentityNo { get; set; }
 
         /// <summary>
+        /// DB是否有自增编号
+        /// </summary>
+        public bool HaveIncrement { get; set; }
+        /// <summary>
         /// Db映射类型
         /// </summary>
         public string DbType
@@ -95,5 +104,6 @@ namespace ZyGames.Framework.Data
             get;
             set;
         }
+
     }
 }

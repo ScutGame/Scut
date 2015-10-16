@@ -23,6 +23,7 @@ THE SOFTWARE.
 ****************************************************************************/
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Web;
@@ -129,13 +130,13 @@ namespace ZyGames.Framework.Game.Contract
                 else
                 {
                     errorInfo = Language.Instance.SignError;
-                    TraceLog.WriteError("Action request {3} error:{2},rl:{0},param:{1}", isRL, actionGetter.ToParamString(), errorInfo, tempName);
+                    TraceLog.WriteError("Action request {3} error:{2},rl:{0},param:{1}", isRL, actionGetter.ToString(), errorInfo, tempName);
                 }
             }
             catch (Exception ex)
             {
                 errorInfo = Language.Instance.ServerBusy;
-                TraceLog.WriteError("Action request {0} error:{1}\r\nparam:{2}", tempName, ex, actionGetter.ToParamString());
+                TraceLog.WriteError("Action request {0} error:{1}\r\nparam:{2}", tempName, ex, actionGetter.ToString());
             }
             response.WriteError(actionGetter, Language.Instance.ErrorCode, errorInfo);
         }
@@ -174,13 +175,13 @@ namespace ZyGames.Framework.Game.Contract
                 else
                 {
                     errorInfo = Language.Instance.SignError;
-                    TraceLog.WriteError("Action request error:{2},rl:{0},param:{1}", isRl, actionGetter.ToParamString(), errorInfo);
+                    TraceLog.WriteError("Action request error:{2},rl:{0},param:{1}", isRl, actionGetter.ToString(), errorInfo);
                 }
             }
             catch (Exception ex)
             {
                 errorInfo = Language.Instance.ServerBusy;
-                TraceLog.WriteError("Action request error:{0}\r\nparam:{1}", ex, actionGetter.ToParamString());
+                TraceLog.WriteError("Action request error:{0}\r\nparam:{1}", ex, actionGetter.ToString());
             }
             response.WriteError(actionGetter, Language.Instance.ErrorCode, errorInfo);
         }
@@ -208,6 +209,7 @@ namespace ZyGames.Framework.Game.Contract
         /// <param name="session"></param>
         /// <param name="parameters"></param>
         /// <param name="opCode"></param>
+        /// <param name="message"></param>
         /// <returns></returns>
         public static RequestPackage GetResponsePackage(int actionId, GameSession session, Parameters parameters, sbyte opCode, object message)
         {
@@ -263,7 +265,8 @@ namespace ZyGames.Framework.Game.Contract
             response.WriteErrorCallback += actionDispatcher.ResponseError;
             baseStruct.SetPush();
             baseStruct.DoInit();
-            if (actionGetter.Session.EnterLock(actionId))
+            object errorTarget;
+            if (actionGetter.Session.EnterLock(actionId, actionGetter.ToString(), out errorTarget))
             {
                 try
                 {
@@ -286,7 +289,7 @@ namespace ZyGames.Framework.Game.Contract
             }
             else
             {
-                baseStruct.WriteLockTimeoutAction(response, false);
+                baseStruct.WriteLockTimeoutAction(response, errorTarget, false);
             }
             return response.ReadByte();
         }
@@ -301,7 +304,8 @@ namespace ZyGames.Framework.Game.Contract
         {
             int actionId = actionGetter.GetActionId();
             baseStruct.DoInit();
-            if (actionGetter.Session.EnterLock(actionId))
+            object errorTarget;
+            if (actionGetter.Session.EnterLock(actionId, actionGetter.ToString(), out errorTarget))
             {
                 try
                 {
@@ -324,7 +328,7 @@ namespace ZyGames.Framework.Game.Contract
             }
             else
             {
-                baseStruct.WriteLockTimeoutAction(response);
+                baseStruct.WriteLockTimeoutAction(response, errorTarget);
             }
         }
 

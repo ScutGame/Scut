@@ -134,15 +134,17 @@ namespace ZyGames.Framework.Common.Serialization
         {
             return (T)Deserialize(data, typeof(T));
         }
+
         /// <summary>
         /// 使用protobuf反序列化二进制数组为对象
         /// </summary>
         /// <param name="data">二进字节数据</param>
         /// <param name="type">反序列化的类型.</param>
+        /// <param name="isGzip"></param>
         /// <returns></returns>
-        public static object Deserialize(Byte[] data, Type type)
+        public static object Deserialize(Byte[] data, Type type, bool isGzip = true)
         {
-            return DeserializeAutoGZip(data, type);
+            return DeserializeAutoGZip(data, type, isGzip);
         }
 
         /// <summary>
@@ -199,11 +201,16 @@ namespace ZyGames.Framework.Common.Serialization
         /// </summary>
         /// <param name="data"></param>
         /// <param name="type"></param>
+        /// <param name="isGzip"></param>
         /// <returns></returns>
-        internal static object DeserializeAutoGZip(Byte[] data, Type type)
+        internal static object DeserializeAutoGZip(Byte[] data, Type type, bool isGzip)
         {
             try
             {
+                if (!isGzip)
+                {
+                    return typeModel.Deserialize(new MemoryStream(data), null, type);
+                }
                 using (MemoryStream stream = new MemoryStream())
                 {
                 Start:
@@ -271,7 +278,7 @@ namespace ZyGames.Framework.Common.Serialization
                             var parentMetaType = typeModel[myEntity.BaseType];
                             if (parentMetaType != null && typeMemberTags.ContainsKey(myEntity.BaseType))
                             {
-                                var parentMemberTag = typeMemberTags[myEntity.BaseType]+1;
+                                var parentMemberTag = typeMemberTags[myEntity.BaseType] + 1;
                                 parentMetaType.AddSubType(parentMemberTag, myEntity);
                                 typeMemberTags[myEntity.BaseType] = parentMemberTag;
                             }

@@ -24,6 +24,7 @@ THE SOFTWARE.
 
 using System;
 using ZyGames.Framework.Common.Log;
+using ZyGames.Framework.Common.Timing;
 using ZyGames.Framework.Game.Context;
 using ZyGames.Framework.Game.Lang;
 using ZyGames.Framework.Game.Runtime;
@@ -61,7 +62,7 @@ namespace ZyGames.Framework.Game.Contract
             ActionGetter actionGetter = null;
             try
             {
-                httpresponse.WriteErrorCallback += new ScutActionDispatcher().ResponseError;
+                httpresponse.WriteErrorCallback += GameEnvironment.Setting.ActionDispatcher.ResponseError;
 
                 RequestPackage p = package as RequestPackage;
                 actionGetter = param as ActionGetter;
@@ -92,11 +93,19 @@ namespace ZyGames.Framework.Game.Contract
         }
 
         /// <summary>
+        /// Raises the service stop event.
+        /// </summary>
+        protected virtual void OnServiceStop()
+        {
+        }
+
+        /// <summary>
         /// 
         /// </summary>
         public virtual void Stop()
         {
             GameEnvironment.IsRunning = false;
+
         }
         /// <summary>
         /// 
@@ -119,7 +128,7 @@ namespace ZyGames.Framework.Game.Contract
         /// <param name="response"></param>
         protected void DoAction(ActionGetter actionGetter, BaseGameResponse response)
         {
-            if (GameEnvironment.IsRunning)
+            if (GameEnvironment.IsRunning && !ScriptEngines.IsCompiling)
             {
                 OnRequested(actionGetter, response);
                 ActionFactory.Request(actionGetter, response);
@@ -272,7 +281,7 @@ namespace ZyGames.Framework.Game.Contract
         /// <param name="session"></param>
         protected virtual void OnDisconnected(GameSession session)
         {
-            
+
         }
     }
 }

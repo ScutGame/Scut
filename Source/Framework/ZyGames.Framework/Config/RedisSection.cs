@@ -25,7 +25,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using ZyGames.Framework.Common;
 using ZyGames.Framework.Common.Configuration;
+using ZyGames.Framework.Redis;
 
 namespace ZyGames.Framework.Config
 {
@@ -43,10 +45,10 @@ namespace ZyGames.Framework.Config
             MaxWritePoolSize = ConfigUtils.GetSetting("Redis.MaxWritePoolSize", 100);
             MaxReadPoolSize = ConfigUtils.GetSetting("Redis.MaxReadPoolSize", 100);
             ConnectTimeout = ConfigUtils.GetSetting("Redis.ConnectTimeout", 0);
-            PoolTimeOut = ConfigUtils.GetSetting("Redis.PoolTimeOut", 0);
+            PoolTimeOut = ConfigUtils.GetSetting("Redis.PoolTimeOut", 300);
             DbIndex = ConfigUtils.GetSetting("Redis.Db", 0);
             ReadOnlyHost = ConfigUtils.GetSetting("Redis.ReadHost", Host);
-            ClientVersion = ConfigUtils.GetSetting("Redis.ClientVersion", 5);
+            ClientVersion = ConfigUtils.GetSetting("Redis.ClientVersion", (int)RedisStorageVersion.Hash).ToEnum<RedisStorageVersion>();
         }
 
         /// <summary>
@@ -70,7 +72,7 @@ namespace ZyGames.Framework.Config
         /// </summary>
         public int ConnectTimeout { get; set; }
         /// <summary>
-        /// PoolTimeOut(ms), default 2000ms
+        /// Pool timeout release time(s), default 300s
         /// </summary>
         public int PoolTimeOut { get; set; }
         /// <summary>
@@ -81,6 +83,6 @@ namespace ZyGames.Framework.Config
         /// <summary>
         /// ver: 0 is old versin
         /// </summary>
-        public int ClientVersion { get; set; }
+        public RedisStorageVersion ClientVersion { get; set; }
     }
 }

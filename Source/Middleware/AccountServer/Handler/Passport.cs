@@ -22,6 +22,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ****************************************************************************/
 using AccountServer.Handler.Data;
+using AccountServer.Lang;
 using ZyGames.Framework.Game.Sns;
 using ZyGames.Framework.Game.Sns.Service;
 
@@ -30,11 +31,15 @@ namespace AccountServer.Handler
     /// <summary>
     /// Generate passport
     /// </summary>
-    public class Passport : IHandler<IMEIInfo>
+    public class Passport : BaseHandler, IHandler<IMEIInfo>
     {
         public ResponseData Excute(IMEIInfo data)
         {
-            string[] userList = SnsManager.GetRegPassport(data.IMEI);
+            if (string.IsNullOrEmpty(data.IMEI))
+            {
+                throw new HandlerException(StateCode.Error, StateDescription.IMEINullError);
+            }
+            string[] userList = SnsManager.GetRegPassport(data.IMEI, data.IsNew, EncodePassword);
             return new PassportInfo() { PassportId = userList[0], Password = userList[1] };
         }
     }

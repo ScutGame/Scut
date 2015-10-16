@@ -169,7 +169,7 @@ namespace ZyGames.Framework.Common.Log
             HttpContext current = HttpContext.Current;
             try
             {
-                stringBuilder.AppendFormat("Time:{0}-{1}\r\n", DateTime.Now, info);
+                stringBuilder.AppendFormat("Time:{0}-{1}\r\n", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss:fff"), info);
                 if (current != null)
                 {
                     HttpRequest request = null;

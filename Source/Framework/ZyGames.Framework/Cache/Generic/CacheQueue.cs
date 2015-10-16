@@ -35,7 +35,7 @@ namespace ZyGames.Framework.Cache.Generic
     /// </summary>
     /// <typeparam name="T"></typeparam>
     [ProtoContract, Serializable]
-    public class CacheQueue<T> : EntityChangeEvent, ICollection<T>, IDataExpired, IDisposable
+    public class CacheQueue<T> : EntityChangeEvent, ICollection<T>, IReadOnlyCollection<T>, IDataExpired, IDisposable
     {
         private ConcurrentQueue<T> _cacheStruct;
         private bool _isReadOnly;

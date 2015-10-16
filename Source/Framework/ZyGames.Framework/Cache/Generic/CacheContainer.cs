@@ -39,10 +39,10 @@ namespace ZyGames.Framework.Cache.Generic
 
         internal CacheContainer(bool isReadOnly)
         {
-            LoadingStatus = LoadingStatus.None;
             _collection = isReadOnly
                 ? (BaseCollection)new ReadonlyCacheCollection()
                 : new CacheCollection(true);
+            LoadingStatus = LoadingStatus.None;
         }
 
         /// <summary>
@@ -111,19 +111,13 @@ namespace ZyGames.Framework.Cache.Generic
             base.Dispose(disposing);
         }
 
-        /// <summary>
-        /// 设置移除状态
-        /// </summary>
-        internal void SetRemoveStatus()
+        internal void ResetStatus()
         {
             if (_collection == null)
             {
                 return;
             }
-            lock (_collection)
-            {
-                LoadingStatus = LoadingStatus.Remove;
-            }
+            LoadingStatus = LoadingStatus.None;
         }
 
         /// <summary>
@@ -132,22 +126,19 @@ namespace ZyGames.Framework.Cache.Generic
         /// <param name="loadFactory"></param>
         /// <param name="isReload">是否重新加载</param>
         /// <exception cref="NullReferenceException"></exception>
-        internal void OnLoadFactory(Func<bool> loadFactory, bool isReload)
+        internal void OnLoadFactory(Func<bool, bool> loadFactory, bool isReload)
         {
             if (_collection == null)
             {
                 TraceLog.WriteError("LoadFactory loaded fail,collection is null");
                 return;
             }
-            lock (_collection)
+            //重新加载或未加载成功时，执行加载数据工厂
+            if (isReload || !HasLoadSuccess)
             {
-                //重新加载或未加载成功时，执行加载数据工厂
-                if (isReload || !HasLoadSuccess)
+                if (loadFactory != null)
                 {
-                    if (loadFactory != null && loadFactory())
-                    {
-                        LoadingStatus = LoadingStatus.Success;
-                    }
+                    LoadingStatus = loadFactory(isReload) ? LoadingStatus.Success : LoadingStatus.Error;
                 }
             }
         }

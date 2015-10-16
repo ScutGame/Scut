@@ -45,13 +45,25 @@ namespace ZyGames.Framework.Data
         /// </summary>
         /// <param name="tableName"></param>
         /// <param name="editType"></param>
-        /// <param name="columns">Inquiry table columns</param>
+        /// <param name="columns"></param>
         public CommandStruct(string tableName, CommandMode editType, string columns = "")
+            : this(tableName, editType, new CommandFilter(), columns)
+        {
+
+        }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="tableName"></param>
+        /// <param name="editType"></param>
+        /// <param name="columns">Inquiry table columns</param>
+        /// <param name="filter"></param>
+        public CommandStruct(string tableName, CommandMode editType, CommandFilter filter, string columns = "")
         {
             TableName = tableName;
             EntityType = editType;
             Columns = columns;
-            Filter = new CommandFilter();
+            Filter = filter;
             Parameters = new IDataParameter[0];
             CommandType = CommandType.Text;
         }
@@ -558,7 +570,7 @@ namespace ZyGames.Framework.Data
             if (updateFieldNames.Count == 0)
             {
                 //add key field
-                updateFieldNames.Add(updateKeyExpress); 
+                updateFieldNames.Add(updateKeyExpress);
             }
 
             Sql = FormatUpdateInsertSql(

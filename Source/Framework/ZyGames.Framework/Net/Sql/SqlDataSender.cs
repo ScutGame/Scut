@@ -134,7 +134,7 @@ namespace ZyGames.Framework.Net.Sql
                 {
                     if (entity.HasChangePropertys)
                     {
-                        entity.DequeueChangePropertys();
+                        entity.ResetChangePropertys();
                     }
                     columns = schemaTable.GetColumnNames();
                 }
@@ -193,7 +193,7 @@ namespace ZyGames.Framework.Net.Sql
                 TraceLog.WriteError("Class:{0} is not change column.", data.GetType().FullName);
                 return null;
             }
-            string tableName = schemaTable.GetTableName();
+            string tableName = schemaTable.GetTableName(data.GetCreateTime());
             if (data.IsDelete)
             {
                 command = dbProvider.CreateCommandStruct(tableName, CommandMode.Delete);

@@ -199,7 +199,12 @@ namespace ZyGames.Framework.Script
                     string errStr = string.Format("Compile assembly:{0} error:", assemblyName);
                     foreach (CompilerError err in cr.Errors)
                     {
-                        errStr += "\r\nFile:" + err.FileName + ", Line:" + err.Line + "\r\nMessage:" + err.ErrorText;
+                        errStr += string.Format("{0}[{1}] File:{2}, Line:{3}{0}Message:{4}",
+                            Environment.NewLine,
+                            err.IsWarning ? "Warning" : "Error",
+                            err.FileName,
+                            err.Line,
+                            err.ErrorText);
                     }
 
                     TraceLog.WriteError(errStr);

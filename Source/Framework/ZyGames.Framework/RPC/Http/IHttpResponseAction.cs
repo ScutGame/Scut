@@ -31,6 +31,11 @@ namespace ZyGames.Framework.RPC.Http
     public interface IHttpResponseAction
     {
         /// <summary>
+        /// User identity
+        /// </summary>
+        string Identity { get;}
+
+        /// <summary>
         /// Execute the intended response action against the Response.
         /// </summary>
         /// <param name="context">The current connection's request/response context.</param>

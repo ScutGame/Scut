@@ -24,6 +24,7 @@ THE SOFTWARE.
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 using System.Text;
@@ -61,7 +62,7 @@ namespace ZyGames.Framework.Game.Sns.Service
         private static Dictionary<string, Type> handlerTypes;
         private static ConcurrentDictionary<string, UserToken> userTokenCache = new ConcurrentDictionary<string, UserToken>();
         private static ConcurrentDictionary<int, string> userHashCache = new ConcurrentDictionary<int, string>();
-        private static bool RedisConnected = false;
+        private static bool RedisConnected;
 
         static HandlerManager()
         {
@@ -79,7 +80,7 @@ namespace ZyGames.Framework.Game.Sns.Service
         /// <param name="assembly"></param>
         public static void Init(Assembly assembly)
         {
-            var htype = Type.GetType("ZyGames.Framework.Game.Sns.Service.IHandler`1", false, true);
+            var htype = typeof (IHandler<>);
             var types = assembly.GetTypes();
             foreach (var type in types)
             {
@@ -113,17 +114,34 @@ namespace ZyGames.Framework.Game.Sns.Service
             string redisKey = string.Format("{0}@{1}", AccountServerToken, key);
             if (!string.IsNullOrEmpty(RedisHost) && RedisConnected)
             {
-                //use redis cache.
-                RedisConnectionPool.Process(client =>
+                try
                 {
-                    string oldToken = client.Get<string>(userKey);
-                    if (!string.IsNullOrEmpty(oldToken))
+                    string script = @"
+local redisKey = KEYS[1]
+local userKey = KEYS[2]
+local key = KEYS[3]
+local timeout = ARGV[1]
+local val = ARGV[2]
+local oldToken = redis.call('Get', userKey)
+if oldToken and oldToken ~= nil then
+    local k =  '__AccountToken@'..oldToken
+    redis.call('del', k)
+end
+redis.call('Set', redisKey, val, 'EX', timeout)
+redis.call('Set', userKey, key, 'EX', timeout)
+return 0
+";
+                    //use redis cache.
+                    RedisConnectionPool.Process(client =>
                     {
-                        client.Remove(string.Format("{0}@{1}", AccountServerToken, oldToken));
-                    }
-                    client.Set(redisKey, userToken, userToken.ExpireTime);
-                    client.Set(userKey, key, userToken.ExpireTime);
-                });
+                        int timeout = (int)(userToken.ExpireTime - DateTime.Now).TotalSeconds;
+                        client.ExecLuaAsInt(script, new[] { redisKey, userKey, key }, new[] { timeout.ToString(), MathUtils.ToJson(userToken) });
+                    });
+                }
+                catch (Exception ex)
+                {
+                    TraceLog.WriteError("Save token errror:{0}", ex);
+                }
                 return;
             }
             if (HttpContext.Current != null && HttpContext.Current.Cache != null)
@@ -156,22 +174,24 @@ namespace ZyGames.Framework.Game.Sns.Service
         public static UserToken GetUserToken(string key)
         {
             UserToken userToken = null;
+            string redisKey = string.Format("{0}@{1}", AccountServerToken, key);
             if (!string.IsNullOrEmpty(RedisHost) && RedisConnected)
             {
                 //use redis cache.
                 RedisConnectionPool.Process(client =>
                 {
-                    userToken = client.Get<UserToken>(string.Format("{0}@{1}", AccountServerToken, key));
+                    var val = client.Get(redisKey);
+                    userToken = val == null || val.Length == 0 ? new UserToken() : MathUtils.ParseJson<UserToken>(Encoding.UTF8.GetString(val));
                 });
                 return userToken;
             }
             if (HttpContext.Current != null && HttpContext.Current.Cache != null)
             {
-                userToken = (UserToken)HttpContext.Current.Cache[key];
+                userToken = (UserToken)HttpContext.Current.Cache[redisKey];
             }
-            if (Equals(userToken, null) && userTokenCache.ContainsKey(key))
+            if (Equals(userToken, null) && userTokenCache.ContainsKey(redisKey))
             {
-                userToken = (UserToken)userTokenCache[key];
+                userToken = (UserToken)userTokenCache[redisKey];
             }
             return userToken;
         }
@@ -203,7 +223,16 @@ namespace ZyGames.Framework.Game.Sns.Service
             {
                 if (paramValues.ContainsKey(prop.Name) && (prop.PropertyType.IsValueType || typeof(string) == prop.PropertyType))
                 {
-                    var value = Convert.ChangeType(paramValues[prop.Name], prop.PropertyType);
+                    object value;
+                    var val = paramValues[prop.Name];
+                    if (prop.PropertyType == typeof(bool))
+                    {
+                        value = val.ToBool();
+                    }
+                    else
+                    {
+                        value = Convert.ChangeType(val, prop.PropertyType);
+                    }
                     prop.SetValue(obj, value, null);
                 }
             }

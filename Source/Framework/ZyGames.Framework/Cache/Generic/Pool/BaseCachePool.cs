@@ -178,6 +178,40 @@ namespace ZyGames.Framework.Cache.Generic.Pool
         public abstract bool IsEmpty { get; }
 
         /// <summary>
+        /// 
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="sendParam"></param>
+        /// <param name="dataList"></param>
+        /// <returns></returns>
+        public bool TrySetRankData<T>(TransSendParam sendParam, params T[] dataList) where T : RankEntity, new()
+        {
+            return _redisTransponder.SendData(dataList, sendParam);
+        }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="key"></param>
+        /// <param name="t1"></param>
+        /// <param name="t2"></param>
+        /// <returns></returns>
+        public bool TryExchangeRankData<T>(string key, T t1, T t2) where T : RankEntity, new()
+        {
+            return RedisConnectionPool.TryExchangeRankEntity(key, t1, t2);
+        }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="key"></param>
+        /// <param name="dataList"></param>
+        /// <returns></returns>
+        public bool TryUpdateRankEntity<T>(string key, params T[] dataList) where T : RankEntity, new()
+        {
+            return RedisConnectionPool.TryUpdateRankEntity(key, dataList);
+        }
+        /// <summary>
         /// 尝试接收数据
         /// </summary>
         /// <typeparam name="T"></typeparam>
@@ -186,6 +220,8 @@ namespace ZyGames.Framework.Cache.Generic.Pool
         /// <returns>return null is load error</returns>
         public bool TryReceiveData<T>(TransReceiveParam receiveParam, out List<T> dataList) where T : AbstractEntity, new()
         {
+            //todo:Trace
+            //var watch = RunTimeWatch.StartNew("Cache load " + receiveParam.RedisKey);
             dataList = null;
             bool hasDbConnect = DbConnectionProvider.CreateDbProvider(receiveParam.Schema) != null;
             var schema = receiveParam.Schema;
@@ -197,7 +233,6 @@ namespace ZyGames.Framework.Cache.Generic.Pool
                 dataList = new List<T>();
                 return true;
             }
-
             //配置库不放到Redis，尝试从DB加载
             if (schema.StorageType.HasFlag(StorageType.ReadOnlyDB) ||
                  schema.StorageType.HasFlag(StorageType.ReadWriteDB))
@@ -207,33 +242,42 @@ namespace ZyGames.Framework.Cache.Generic.Pool
                     dataList = new List<T>();
                     return true;
                 }
-                var result = _dbTransponder.TryReceiveData(receiveParam, out dataList);
-                TraceLog.ReleaseWriteDebug("The readonly-data:{0} has been loaded {1}", receiveParam.RedisKey, dataList.Count);
-                return result;
+                if (_dbTransponder.TryReceiveData(receiveParam, out dataList))
+                {
+                    //TraceLog.ReleaseWriteDebug("The readonly-data:{0} has been loaded {1}", receiveParam.RedisKey, dataList.Count);
+                    return true;
+                }
+                TraceLog.WriteError("The data:{0} loaded  from db fail.\r\n{1}", receiveParam.RedisKey, TraceLog.GetStackTrace());
+                return false;
             }
 
             if (schema.StorageType.HasFlag(StorageType.ReadOnlyRedis) ||
                 schema.StorageType.HasFlag(StorageType.ReadWriteRedis))
             {
+                //watch.Check("init");
                 if (!string.IsNullOrEmpty(receiveParam.RedisKey) &&
                     _redisTransponder.TryReceiveData(receiveParam, out dataList))
                 {
+                    //watch.Check("loaded");
                     if (dataList.Count > 0)
                     {
-                        TraceLog.ReleaseWriteDebug("The data:{0} has been loaded {1}", receiveParam.RedisKey, dataList.Count);
+                        //watch.Flush(true);
+                        //TraceLog.ReleaseWriteDebug("The data:{0} has been loaded {1}", receiveParam.RedisKey, dataList.Count);
                         return true;
                     }
                     //从Redis历史记录表中加载
                     if (hasDbConnect && Setting != null && Setting.IsStorageToDb)
                     {
                         var result = TryLoadHistory(receiveParam.RedisKey, out dataList);
-                        TraceLog.ReleaseWriteDebug("The data:{0} has been loaded {1} from history.", receiveParam.RedisKey, dataList.Count);
+                        TraceLog.Write("The data:{0} has been loaded {1} from history.", receiveParam.RedisKey, dataList.Count);
                         return result;
                     }
+                    //watch.Flush(true);
                     dataList = new List<T>();
                     return true;
                 }
                 //read faild from redis.
+                TraceLog.WriteError("The data:{0} loaded  from redis fail.\r\n{1}", receiveParam.RedisKey, TraceLog.GetStackTrace());
                 return false;
             }
             return true;
@@ -265,9 +309,12 @@ namespace ZyGames.Framework.Cache.Generic.Pool
         /// <param name="redisKey"></param>
         /// <param name="dataList"></param>
         /// <returns></returns>
-        public bool TryLoadHistory<T>(string redisKey, out List<T> dataList)
+        public bool TryLoadHistory<T>(string redisKey, out List<T> dataList) where T : ISqlEntity
         {
-            string entityNameKey = RedisConnectionPool.GetRedisEntityKeyName(redisKey);
+            string[] entityAndKeys = (redisKey ?? "").Split('_');
+            var entityKey = entityAndKeys.Length > 1 ? entityAndKeys[1] : null;
+            string entityNameKey = RedisConnectionPool.GetRedisEntityKeyName(entityAndKeys[0]);
+
             bool result = false;
             dataList = null;
             SchemaTable schemaTable;
@@ -287,29 +334,49 @@ namespace ZyGames.Framework.Cache.Generic.Pool
                     int maxCount = receiveParam.Schema.Capacity;
                     var filter = new DbDataFilter(maxCount);
                     string key = schemaTable.Keys[0];
-                    filter.Condition = provider.FormatFilterParam(key);
-                    filter.Parameters.Add(key, entityNameKey);
+                    var entitySchema = EntitySchemaSet.Get(entityAndKeys[0]);
+
+                    if (entitySchema != null && entitySchema.Keys.Length == 1)
+                    {
+                        filter.Condition = provider.FormatFilterParam(key);
+                        filter.Parameters.Add(key, string.Format("{0}_{1}", entityNameKey, entityKey));
+                    }
+                    else
+                    {
+                        filter.Condition = provider.FormatFilterParam(key, "LIKE");
+                        filter.Parameters.Add(key, string.Format("{0}_%{1}%", entityNameKey, entityKey));
+                    }
                     receiveParam.DbFilter = filter;
 
                     List<EntityHistory> historyList;
                     if (_dbTransponder.TryReceiveData(receiveParam, out historyList))
                     {
-                        EntityHistory history = historyList.Count > 0 ? historyList[0] : null;
-                        if (history != null && history.Value != null && history.Value.Length > 0)
-                        {
-                            //从DB备份中取使用protobuf
-                            byte[][] bufferBytes = ProtoBufUtils.Deserialize<byte[][]>(history.Value);
-                            byte[][] keys = bufferBytes.Where((b, index) => index % 2 == 0).ToArray();
-                            byte[][] values = bufferBytes.Where((b, index) => index % 2 == 1).ToArray();
-                            RedisConnectionPool.Process(client => client.HMSet(entityNameKey, keys, values));
-                            dataList = values.Select(value => (T)_serializer.Deserialize(value, typeof(T))).ToList();
-                            result = true;
-                        }
-                        else
+                        if (historyList.Count == 0)
                         {
                             dataList = new List<T>();
-                            result = true;
+                            return true;
                         }
+                        dataList = new List<T>();
+                        var keyBytes = new byte[historyList.Count][];
+                        var valueBytes = new byte[historyList.Count][];
+                        for (int i = 0; i < keyBytes.Length; i++)
+                        {
+                            var entityHistory = historyList[i];
+                            keyBytes[i] = RedisConnectionPool.ToByteKey(entityHistory.Key.Split('_')[1]);
+                            valueBytes[i] = entityHistory.Value;
+                            dataList.Add((T)_serializer.Deserialize(entityHistory.Value, typeof(T)));
+                        }
+                        //从DB备份中恢复到Redis, 多个Key时也要更新
+                        var entitys = dataList.ToArray();
+                        RedisConnectionPool.Process(client =>
+                        {
+                            client.HMSet(entityNameKey, keyBytes, valueBytes);
+                            if (entitySchema.Keys.Length > 1)
+                            {
+                                RedisConnectionPool.UpdateFromMutilKeyMap<T>(client, entityKey, entitys);
+                            }
+                        });
+                        result = true;
                     }
                 }
                 catch (Exception ex)
@@ -419,31 +486,75 @@ namespace ZyGames.Framework.Cache.Generic.Pool
         {
 
             KeyValuePair<string, CacheContainer>[] containerList = ToArray();
+            var entityKeyDict = new Dictionary<string, bool>();
             foreach (var containerPair in containerList)
             {
                 var itemSetList = containerPair.Value.Collection.ToList<CacheItemSet>();
                 foreach (var itemPair in itemSetList)
                 {
-                    if (itemPair.Value.HasChanged || !itemPair.Value.IsPeriod)
+                    CacheItemSet itemSet = itemPair.Value;
+                    if (itemSet.ItemType == CacheType.Entity)
                     {
-                        //clear sub item is expired.
-                        itemPair.Value.RemoveExpired(itemPair.Key);
+                        //所有对象都过期才删除
+                        if (entityKeyDict.ContainsKey(containerPair.Key))
+                        {
+                            entityKeyDict[containerPair.Key] = entityKeyDict[containerPair.Key] &&
+                                                               (!itemSet.HasChanged && itemSet.IsPeriod &&
+                                                                !itemSet.HasItemChanged);
+                        }
+                        else
+                        {
+                            entityKeyDict[containerPair.Key] = (!itemSet.HasChanged && itemSet.IsPeriod &&
+                                                               !itemSet.HasItemChanged);
+                        }
                         continue;
                     }
-                    CacheItemSet itemSet;
-                    if (containerPair.Value.Collection.TryRemove(itemPair.Key, out itemSet))
+                    if (itemSet.HasChanged || !itemSet.IsPeriod)
                     {
-                        TraceLog.ReleaseWrite("Cache item:{0} key:{1} expired has been removed.",
-                            containerPair.Key,
-                            itemPair.Key);
-                        itemSet.ProcessExpired(itemPair.Key);
-                        itemSet.SetRemoveStatus();
+                        //clear sub item is expired.
+                        itemSet.RemoveExpired(itemPair.Key);
+                        continue;
+                    }
+                    if (!itemSet.TryProcessExpired(itemPair.Key))
+                    {
+                        continue;
+                    }
+                    TraceLog.ReleaseWrite("Cache item:{0} key:{1} expired has been removed.", containerPair.Key, itemPair.Key);
+                    object temp;
+                    if (containerPair.Value.Collection.TryRemove(itemPair.Key, out temp))
+                    {
+                        itemSet.ResetStatus();
                         itemSet.Dispose();
                     }
                 }
                 if (containerPair.Value.Collection.Count == 0)
                 {
-                    containerPair.Value.SetRemoveStatus();
+                    containerPair.Value.ResetStatus();
+                }
+            }
+            //处理共享缓存
+            foreach (var pair in entityKeyDict)
+            {
+                //排除不过期的
+                if (!pair.Value) continue;
+
+                CacheContainer container;
+                if (TryRemove(pair.Key, out container, t => true))
+                {
+                    var itemSetList = container.Collection.ToList<CacheItemSet>();
+                    TraceLog.ReleaseWrite("Cache shard entity:{0} expired has been removed, count:{1}.", pair.Key, itemSetList.Count());
+                    foreach (var itemPair in itemSetList)
+                    {
+                        CacheItemSet itemSet = itemPair.Value;
+                        object temp;
+                        if (container.Collection.TryRemove(itemPair.Key, out temp))
+                        {
+                            itemSet.ResetStatus();
+                            itemSet.Dispose();
+                        }
+                    }
+                    container.ResetStatus();
+                    container.Dispose();
                 }
             }
         }

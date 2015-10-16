@@ -93,11 +93,6 @@ namespace GameServer.Model
             get { return false; }
         }
 
-        public override DateTime OnlineDate
-        {
-            get;
-            set;
-        }
     }
 
 }

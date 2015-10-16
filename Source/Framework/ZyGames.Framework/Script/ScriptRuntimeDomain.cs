@@ -22,6 +22,8 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ****************************************************************************/
 using System;
+using System.Reflection;
+using ZyGames.Framework.Common;
 using ZyGames.Framework.Common.Log;
 
 namespace ZyGames.Framework.Script
@@ -50,15 +52,18 @@ namespace ZyGames.Framework.Script
             setup.CachePath = setup.ApplicationBase;
             setup.ShadowCopyFiles = "true";
             setup.ShadowCopyDirectories = setup.ApplicationBase;
-            _currDomain = AppDomain.CreateDomain(name, null, setup);
+            InitDomain(name, setup);
         }
 
-        /// <summary>
-        /// 
-        /// </summary>
-        public ScriptDomainContext DomainContext
+        private void InitDomain(string name, AppDomainSetup setup)
         {
-            get { return _context; }
+#if STATIC
+
+#else
+            _currDomain = AppDomain.CreateDomain(name, null, setup);
+            var type = typeof(ScriptDomainContext);
+            _context = (ScriptDomainContext)_currDomain.CreateInstanceFromAndUnwrap(type.Assembly.GetName().CodeBase, type.FullName);
+#endif
         }
 
         /// <summary>
@@ -82,20 +87,26 @@ namespace ZyGames.Framework.Script
         /// <summary>
         /// 
         /// </summary>
-        public string PrivateBinPath
+        internal string PrivateBinPath
         {
             get { return _currDomain.SetupInformation.PrivateBinPath; }
         }
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <returns></returns>
-        public ScriptDomainContext InitDomainContext()
+        internal void LoadAssembly(string key, string assemblyName)
         {
-            var type = typeof(ScriptDomainContext);
-            _context = (ScriptDomainContext)_currDomain.CreateInstanceFromAndUnwrap(type.Assembly.GetName().CodeBase, type.FullName);
-            return _context;
+#if STATIC
+            Assembly.LoadFrom(assemblyName);
+#else
+            _context.LoadAssembly(key, assemblyName);
+#endif
+        }
+        private ScriptRuntimeScope CreateRuntimeScope(ScriptSettupInfo settupInfo, string amsKey, Type type)
+        {
+#if STATIC
+            return type.CreateInstance<ScriptRuntimeScope>(settupInfo);
+#else
+            return _context.GetInstance(amsKey, type.FullName, settupInfo) as ScriptRuntimeScope;
+#endif
         }
 
         /// <summary>
@@ -105,13 +116,14 @@ namespace ZyGames.Framework.Script
         {
             var type = typeof(ScriptRuntimeScope);
             string amsKey = type.Assembly.GetName().Name;
-            _scope = _context.GetInstance(amsKey, type.FullName, settupInfo) as ScriptRuntimeScope;
+            _scope = CreateRuntimeScope(settupInfo, amsKey, type);
             if (_scope != null)
             {
                 _scope.Init();
             }
             return _scope;
         }
+
 
         /// <summary>
         /// 
@@ -120,7 +132,10 @@ namespace ZyGames.Framework.Script
         {
             try
             {
-                AppDomain.Unload(_currDomain);
+                if (_currDomain != null)
+                {
+                    AppDomain.Unload(_currDomain);
+                }
             }
             catch (Exception ex)
             {
@@ -140,5 +155,6 @@ namespace ZyGames.Framework.Script
             _context = null;
             GC.SuppressFinalize(this);
         }
+
     }
 }

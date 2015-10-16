@@ -34,25 +34,25 @@ namespace ZyGames.Framework.Game.Sns
     /// </summary>
     public class Login36you : AbstractLogin
     {
-		/// <summary>
-		/// Initializes a new instance of the <see cref="ZyGames.Framework.Game.Sns.Login36you"/> class.
-		/// </summary>
-		/// <param name="passportID">Passport I.</param>
-		/// <param name="password">Password.</param>
-		/// <param name="deviceID">Device I.</param>
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ZyGames.Framework.Game.Sns.Login36you"/> class.
+        /// </summary>
+        /// <param name="passportID">Passport I.</param>
+        /// <param name="password">Password.</param>
+        /// <param name="deviceID">Device I.</param>
         public Login36you(string passportID, string password, string deviceID)
         {
             this.PassportID = passportID;
             this.DeviceID = deviceID;
             Password = password;
         }
-		/// <summary>
-		/// 注册通行证
-		/// </summary>
-		/// <returns></returns>
+        /// <summary>
+        /// 注册通行证
+        /// </summary>
+        /// <returns></returns>
         public override string GetRegPassport()
         {
-            string[] userList = SnsManager.GetRegPassport(DeviceID);
+            string[] userList = SnsManager.GetRegPassport(DeviceID, false);
             if (userList.Length == 2)
             {
                 PassportID = userList[0];
@@ -60,18 +60,19 @@ namespace ZyGames.Framework.Game.Sns
             }
             return PassportID;
         }
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <returns></returns>
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
         public override bool CheckLogin()
         {
             //快速登录
-            UserID = SnsManager.LoginByDevice(PassportID, Password, DeviceID).ToString();
+            RegType regType;
+            UserID = SnsManager.LoginByDevice(PassportID, Password, DeviceID, out regType).ToString();
 
             if (!string.IsNullOrEmpty(UserID) && UserID != "0")
             {
-                UserType = SnsManager.GetUserType(PassportID);
+                UserType = (int) regType;
                 if (string.IsNullOrEmpty(SessionID))
                 {
                     SessionID = GetSessionId();

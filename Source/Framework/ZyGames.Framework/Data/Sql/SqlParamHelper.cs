@@ -220,7 +220,7 @@ namespace ZyGames.Framework.Data.Sql
         /// <returns></returns>
         public static string FormatName(string name)
         {
-            if (name.StartsWith("[") || name.IndexOf("(") != -1)
+            if (name.StartsWith("[") || name.Contains("("))
             {
                 return name;
             }

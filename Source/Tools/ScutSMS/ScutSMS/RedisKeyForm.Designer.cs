@@ -41,6 +41,9 @@
             this.waitPanel = new System.Windows.Forms.Panel();
             this.lblWait = new System.Windows.Forms.Label();
             this.keyDataGridView = new System.Windows.Forms.DataGridView();
+            this.KeyId = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Identity = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Key = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.txtKey = new System.Windows.Forms.TextBox();
             this.topPanel = new System.Windows.Forms.Panel();
             this.ckFindOrReplace = new System.Windows.Forms.CheckBox();
@@ -49,9 +52,6 @@
             this.label3 = new System.Windows.Forms.Label();
             this.txtReplace = new System.Windows.Forms.TextBox();
             this.label2 = new System.Windows.Forms.Label();
-            this.KeyId = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Identity = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Key = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.panel1.SuspendLayout();
             this.middlePanel.SuspendLayout();
             this.waitPanel.SuspendLayout();
@@ -130,12 +130,14 @@
             // btnMoveToDb
             // 
             this.btnMoveToDb.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnMoveToDb.Enabled = false;
             this.btnMoveToDb.Location = new System.Drawing.Point(308, 10);
             this.btnMoveToDb.Name = "btnMoveToDb";
             this.btnMoveToDb.Size = new System.Drawing.Size(75, 23);
             this.btnMoveToDb.TabIndex = 0;
             this.btnMoveToDb.Text = "Move to db";
             this.btnMoveToDb.UseVisualStyleBackColor = true;
+            this.btnMoveToDb.Visible = false;
             this.btnMoveToDb.Click += new System.EventHandler(this.btnMoveToDb_Click);
             // 
             // btnSearch
@@ -207,6 +209,30 @@
             this.keyDataGridView.Size = new System.Drawing.Size(666, 318);
             this.keyDataGridView.TabIndex = 0;
             this.keyDataGridView.CellContentDoubleClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.keyDataGridView_CellContentDoubleClick);
+            // 
+            // KeyId
+            // 
+            this.KeyId.DataPropertyName = "Id";
+            this.KeyId.HeaderText = "";
+            this.KeyId.Name = "KeyId";
+            this.KeyId.ReadOnly = true;
+            this.KeyId.Width = 35;
+            // 
+            // Identity
+            // 
+            this.Identity.DataPropertyName = "Identity";
+            this.Identity.HeaderText = "Identity";
+            this.Identity.Name = "Identity";
+            this.Identity.ReadOnly = true;
+            this.Identity.Width = 60;
+            // 
+            // Key
+            // 
+            this.Key.DataPropertyName = "Key";
+            this.Key.HeaderText = "Key Name";
+            this.Key.Name = "Key";
+            this.Key.ReadOnly = true;
+            this.Key.Width = 500;
             // 
             // txtKey
             // 
@@ -285,30 +311,6 @@
             this.label2.Size = new System.Drawing.Size(59, 12);
             this.label2.TabIndex = 4;
             this.label2.Text = "Find Key:";
-            // 
-            // KeyId
-            // 
-            this.KeyId.DataPropertyName = "Id";
-            this.KeyId.HeaderText = "";
-            this.KeyId.Name = "KeyId";
-            this.KeyId.ReadOnly = true;
-            this.KeyId.Width = 35;
-            // 
-            // Identity
-            // 
-            this.Identity.DataPropertyName = "Identity";
-            this.Identity.HeaderText = "Identity";
-            this.Identity.Name = "Identity";
-            this.Identity.ReadOnly = true;
-            this.Identity.Width = 60;
-            // 
-            // Key
-            // 
-            this.Key.DataPropertyName = "Key";
-            this.Key.HeaderText = "Key Name";
-            this.Key.Name = "Key";
-            this.Key.ReadOnly = true;
-            this.Key.Width = 500;
             // 
             // RedisKeyForm
             // 

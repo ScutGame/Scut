@@ -131,9 +131,10 @@ namespace ZyGames.Framework.Common.Build
                     SymbolReaderProvider = readerProvider,
                     ReadSymbols = debug
                 });
-                var types = ass.MainModule.Types.Where(p => !p.IsEnum).ToList();
-                foreach (TypeDefinition type in types)
+
+                foreach (TypeDefinition type in ass.MainModule.GetTypes())
                 {
+                    if (type.IsEnum) continue;
                     setSuccess = ProcessEntityType(type, setSuccess, currentPath);
                 }
                 if (setSuccess)
@@ -184,9 +185,9 @@ namespace ZyGames.Framework.Common.Build
             {
                 resolver.AddSearchDirectory(currentPath);
             }
-            var types = ass.MainModule.Types.Where(p => !p.IsEnum).ToList();
-            foreach (TypeDefinition type in types)
+            foreach (TypeDefinition type in ass.MainModule.GetTypes())
             {
+                if (type.IsEnum) continue;
                 setSuccess = ProcessEntityType(type, setSuccess, currentPath);
             }
             //modify reason: no model.
@@ -268,7 +269,7 @@ namespace ZyGames.Framework.Common.Build
                     return;
                 }
                 var field = type.Fields.FirstOrDefault(p => p.Name.StartsWith("<" + propName + ">") ||
-                    p.Name.Equals("_" + propName, StringComparison.CurrentCultureIgnoreCase));
+                    p.Name.IsEquals("_" + propName, true));
                 if (field == null)
                 {
                     return;
@@ -279,10 +280,6 @@ namespace ZyGames.Framework.Common.Build
                 }
                 MethodReference notifyMethod = type.Module.Import(method);
                 var paramType = setMethod.Parameters[0].ParameterType;
-                //bool isIgnore = paramType.Name == "DateTime" || paramType.Name == "Boolean";
-                //var fieldRefType = Type.GetType("System.Object&");
-                //var fieldType = Type.GetType("System.Object");
-                //var exchangeMethod = type.Module.Import(typeof(Interlocked).GetMethod("Exchange", new Type[] { fieldRefType, fieldType }));
                 ILProcessor worker = setMethod.Body.GetILProcessor();
                 Instruction ins = setMethod.Body.Instructions[setMethod.Body.Instructions.Count - 1];
                 var equalsMethod = type.Module.Import(typeof(Object).GetMethod("Equals", new Type[] { typeof(object), typeof(object) }));
@@ -348,7 +345,7 @@ namespace ZyGames.Framework.Common.Build
             TypeDefinition typeDefinition = null;
 
             string fileName = Path.Combine(currentPath, type.Scope.Name);
-            if (!fileName.EndsWith(".dll", StringComparison.CurrentCultureIgnoreCase))
+            if (!fileName.ToLower().EndsWith(".dll", StringComparison.Ordinal))
             {
                 fileName += ".dll";
             }
@@ -378,7 +375,7 @@ namespace ZyGames.Framework.Common.Build
             if (typeDefinition != null)
             {
                 typeDefinition = typeDefinition.Resolve();
-                if (string.Equals(typeDefinition.Name, name, StringComparison.CurrentCultureIgnoreCase))
+                if (MathUtils.IsEquals(typeDefinition.Name, name, true))
                 {
                     return typeDefinition;
                 }

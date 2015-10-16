@@ -66,12 +66,6 @@
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
-    <Reference Include="ZyGames.Framework">
-      <HintPath>..\..\Framework\ZyGames.Framework\bin\Release\ZyGames.Framework.dll</HintPath>
-    </Reference>
-    <Reference Include="ZyGames.Framework.Common">
-      <HintPath>..\..\Framework\ZyGames.Framework\bin\Release\ZyGames.Framework.Common.dll</HintPath>
-    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="..\Solution Items\GlobalAssemblyInfo.cs">
@@ -107,9 +101,17 @@
     </None>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\Framework\ZyGames.Framework.Common\ZyGames.Framework.Common4.5.csproj">
+      <Project>{e87a5049-85a1-436b-a5ed-2bc0a4e45bdb}</Project>
+      <Name>ZyGames.Framework.Common4.5</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Framework\ZyGames.Framework\ZyGames.Framework4.5.csproj">
+      <Project>{416e2e00-4064-4d7a-87a2-a649ff120274}</Project>
+      <Name>ZyGames.Framework4.5</Name>
+    </ProjectReference>
     <ProjectReference Include="..\ZyGames.Framework.Game\ZyGames.Framework.Game4.5.csproj">
       <Project>{DE7024B7-7168-4262-A250-6A21B932EC3B}</Project>
-      <Name>ZyGames.Framework.Game</Name>
+      <Name>ZyGames.Framework.Game4.5</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup />

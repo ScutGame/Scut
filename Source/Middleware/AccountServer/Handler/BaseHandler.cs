@@ -46,11 +46,25 @@ namespace AccountServer.Handler
             return sessionId;
         }
 
+        protected string EncodePassword(string password)
+        {
+            try
+            {
+                return new DESAlgorithmNew().EncodePwd(password ?? "", HandlerManager.ClientDesDeKey);
+            }
+            catch (Exception ex)
+            {
+                TraceLog.WriteError("Encode password:\"{0}\" error:{1}", password, ex);
+            }
+            return password;
+        }
+
+
         protected string DecodePassword(string password)
         {
             try
             {
-                return new DESAlgorithmNew().DecodePwd(password, HandlerManager.ClientDesDeKey);
+                return new DESAlgorithmNew().DecodePwd(password ?? "", HandlerManager.ClientDesDeKey);
             }
             catch (Exception ex)
             {

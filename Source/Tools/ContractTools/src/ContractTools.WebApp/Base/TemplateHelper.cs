@@ -377,10 +377,11 @@ namespace ContractTools.WebApp.Base
             StringBuilder strTemp = new StringBuilder();
             int[] indexList = new int[forVarChars.Length];
 
+            ArrayList RecordFieldList = new ArrayList(); 
             foreach (var paramInfo in paramList)
             {
                 FieldType fieldType = paramInfo.FieldType;
-                if (fieldType.Equals(FieldType.Record))
+                if (fieldType.Equals(FieldType.Record) || fieldType.Equals(FieldType.SigleRecord))
                 {
                     int recordIndex = 0;
                     if (depth < indexList.Length)
@@ -418,6 +419,7 @@ namespace ContractTools.WebApp.Base
                     strTemp.AppendLine();
 
                     currTableVar = subRecordVar;
+                    RecordFieldList.Add(paramInfo.Field.Length > 0 ? paramInfo.Field : string.Format("Children_{0}", recordIndex));
                     depth++;
                 }
                 else if (fieldType.Equals(FieldType.End))
@@ -446,20 +448,22 @@ namespace ContractTools.WebApp.Base
                     strTemp.AppendLine();
 
                     string tempTableVar = subTableVar;
-
+                    
+                    indexList[depth] = 0;//子层级编号重置
                     depth--;
+                    string RecordField = RecordFieldList[depth] as string;
                     if (depth > 0)
                     {
                         subNumVar = subNumVar.Substring(0, subNumVar.LastIndexOf('_'));
                         subTableVar = subTableVar.Substring(0, subTableVar.LastIndexOf('_'));
                         subRecordVar = subRecordVar.Substring(0, subRecordVar.LastIndexOf('_'));
                     }
-                    int recordIndex = depth < indexList.Length ? indexList[depth] : 0;
+                    //int recordIndex = depth < indexList.Length ? indexList[depth] : 0;
                     currTableVar = depth > 0 ? subRecordVar : "DataTable";
-                    strTemp.AppendFormat("{0}{1}.Children{2} = {3}",
+                    strTemp.AppendFormat("{0}{1}.{2} = {3}",
                         currIndent,
                         currTableVar,
-                        "_" + recordIndex,
+                        RecordField,
                         tempTableVar);
                     strTemp.AppendLine();
                 }
@@ -527,11 +531,11 @@ namespace ContractTools.WebApp.Base
             StringBuilder strTemp = new StringBuilder();
             int[] indexList = new int[forVarChars.Length];
             char enumVar = forVarChars[depth];
-
+            ArrayList RecordFieldList = new ArrayList(); 
             foreach (var paramInfo in paramList)
             {
                 FieldType fieldType = paramInfo.FieldType;
-                if (fieldType.Equals(FieldType.Record))
+                if (fieldType.Equals(FieldType.Record) || fieldType.Equals(FieldType.SigleRecord))
                 {
                     if (depth < indexList.Length)
                     {
@@ -565,6 +569,7 @@ namespace ContractTools.WebApp.Base
                     strTemp.AppendLine();
 
                     currTableVar = subRecordVar;
+                    RecordFieldList.Add(paramInfo.Field.Length > 0 ? paramInfo.Field : string.Format("Children_{0}", recordIndex));
                     depth++;
                 }
                 else if (fieldType.Equals(FieldType.End))
@@ -577,6 +582,7 @@ namespace ContractTools.WebApp.Base
                     strTemp.AppendLine();
 
                     depth--;
+                    string RecordField = RecordFieldList[depth] as string;
                     currIndent = GetSpaceIndent(depth + indent, preIndent);
                     strTemp.AppendFormat("{0}", currIndent);
                     strTemp.AppendLine("}");
@@ -590,10 +596,10 @@ namespace ContractTools.WebApp.Base
                         subRecordVar = subRecordVar.Substring(0, subRecordVar.LastIndexOf('_'));
                     }
                     currTableVar = depth > 0 ? subTableVar : "actionResult";
-                    strTemp.AppendFormat("{0}{1}[\"Children{2}\"] = {3};",
+                    strTemp.AppendFormat("{0}{1}[\"{2}\"] = {3};",
                         currIndent,
                         currTableVar,
-                        "_" + recordIndex,
+                        RecordField,
                         tempTableVar);
                     strTemp.AppendLine();
                 }
@@ -702,7 +708,9 @@ namespace ContractTools.WebApp.Base
                             foreach (var paramInfo in paramList)
                             {
                                 FieldType fieldType = paramInfo.FieldType;
-                                if (FieldType.Record.Equals(fieldType) || FieldType.End.Equals(fieldType))
+                                if (FieldType.Record.Equals(fieldType) || 
+                                    FieldType.SigleRecord.Equals(fieldType) ||
+                                    FieldType.End.Equals(fieldType))
                                 {
                                     continue;
 
@@ -760,7 +768,7 @@ namespace ContractTools.WebApp.Base
             {
                 FieldType fieldType = paramInfo.FieldType;
                 string fieldValue = ToMemberVarName(paramInfo.Field);
-                if (fieldType.Equals(FieldType.Record))
+                if (fieldType.Equals(FieldType.Record) || fieldType.Equals(FieldType.SigleRecord))
                 {
                     if (depth < indexList.Length)
                     {
@@ -771,7 +779,7 @@ namespace ContractTools.WebApp.Base
                     listVar = listVar + "_" + recordIndex;
                     depth++;
                     builder.Append(currIndent);
-                    builder.AppendFormat("{0}.{1} = {2}", currentVar, listVar, "None");
+                    builder.AppendFormat("{0}.{1} = {2}", currentVar, (fieldValue.Length > 0 ? paramInfo.Field : listVar), "None");
                     builder.Append(Environment.NewLine);
                 }
                 else if (fieldType.Equals(FieldType.End))
@@ -943,7 +951,7 @@ namespace ContractTools.WebApp.Base
             {
                 FieldType fieldType = paramInfo.FieldType;
                 string fieldValue = paramInfo.Field;
-                if (fieldType.Equals(FieldType.Record))
+                if (fieldType.Equals(FieldType.Record) || fieldType.Equals(FieldType.SigleRecord))
                 {
                     if (depth < indexList.Length)
                     {
@@ -958,14 +966,16 @@ namespace ContractTools.WebApp.Base
                         itemVar = itemVar + recordIndex;
                         enumVar = enumVar + "_" + recordIndex;
                     }
+                    //RecordFieldList.Add(fieldValue.Length > 0 ? paramInfo.Field : string.Format("Children_{0}", recordIndex));
                     listVar = listVar + "_" + recordIndex;
+                    string varString = (fieldValue.Length > 0 ? paramInfo.Field : listVar);
                     depth++;
                     string currIndent = GetSpaceIndent(depth, 0);
                     strTemp.Append(currIndent);
-                    strTemp.AppendFormat("{0}.PushIntoStack(len(actionResult.{1}))", preItemVar, listVar);
+                    strTemp.AppendFormat("{0}.PushIntoStack(len(actionResult.{1}))", preItemVar, varString);
                     strTemp.AppendLine();
                     strTemp.Append(currIndent);
-                    strTemp.AppendFormat("for {0} in actionResult.{1}:", enumVar, listVar);
+                    strTemp.AppendFormat("for {0} in actionResult.{1}:", enumVar, varString);
                     strTemp.AppendLine();
                     strTemp.Append(GetSpaceIndent(depth + 1, 0));
                     strTemp.AppendFormat("{0} = DataStruct()", itemVar);
@@ -1149,7 +1159,7 @@ namespace ContractTools.WebApp.Base
             {
                 FieldType fieldType = paramInfo.FieldType;
                 string fieldValue = paramInfo.Field;
-                if (fieldType.Equals(FieldType.Record))
+                if (fieldType.Equals(FieldType.Record) || fieldType.Equals(FieldType.SigleRecord))
                 {
                     if (depth < indexList.Length)
                     {
@@ -1165,14 +1175,15 @@ namespace ContractTools.WebApp.Base
                         enumVar = enumVar + "_" + recordIndex;
                     }
                     listVar = listVar + "_" + recordIndex;
+                    string varString = (fieldValue.Length > 0 ? paramInfo.Field : listVar);
                     depth++;
                     string currIndent = GetSpaceIndent(depth, 0);
                     strTemp.AppendLine();
                     strTemp.Append(currIndent);
-                    strTemp.AppendFormat("PushLenIntoStack({0}, actionResult.{1})", preItemVar, listVar);
+                    strTemp.AppendFormat("PushLenIntoStack({0}, actionResult.{1})", preItemVar, varString);
                     strTemp.AppendLine();
                     strTemp.Append(currIndent);
-                    strTemp.AppendFormat("local len = {0}.{1}.Count", preItemVar, listVar);
+                    strTemp.AppendFormat("local len = {0}.{1}.Count", preItemVar, varString);
                     strTemp.AppendLine();
                     strTemp.Append(currIndent);
                     strTemp.AppendFormat("for {0}=1, len, 1 do", enumVar);
@@ -1286,16 +1297,20 @@ namespace ContractTools.WebApp.Base
 
                     var classList = new List<StringBuilder>();
                     var classStack = new Stack<StringBuilder>();
+                    StringBuilder respPacketBuilder = new StringBuilder();
+                    BuildClassCode(respPacketBuilder, GetSpaceIndent(2, 0), "Main Body", "ResponsePacket");
+                    respPacketBuilder.Append(GetSpaceIndent(1, 0));
                     StringBuilder memberBuilder = new StringBuilder();
 
                     foreach (var paramInfo in list)
                     {
+                        #region item
                         string descp = paramInfo.Descption + paramInfo.Remark;
-                        string spaceString = GetSpaceIndent(2, depth);
+                        string spaceString = GetSpaceIndent(2, depth + 1);
                         FieldType fieldType = paramInfo.FieldType;
                         if (fieldType == FieldType.Void) continue;
 
-                        if (FieldType.Record.Equals(fieldType))
+                        if (FieldType.Record.Equals(fieldType) || FieldType.SigleRecord.Equals(fieldType))
                         {
                             if (depth < indexList.Length)
                             {
@@ -1316,7 +1331,7 @@ namespace ContractTools.WebApp.Base
                             }
                             else
                             {
-                                BuildMemberCodeByList(memberBuilder, spaceString, className, descp, memberName);
+                                BuildMemberCodeByList(respPacketBuilder, spaceString, className, descp, memberName, true);
                             }
                             var classBuilder = new StringBuilder();
                             BuildClassCode(classBuilder, GetSpaceIndent(2, 0), descp, className);
@@ -1343,23 +1358,46 @@ namespace ContractTools.WebApp.Base
                             BuildMemberCode(classMemberBuilder, GetSpaceIndent(2, 1), paramInfo, true);
                             continue;
                         }
+                        //放到主结构体
+                        if (paramInfo.ParamType == 2)
+                        {
+                            BuildMemberCode(respPacketBuilder, spaceString, paramInfo, true);
+                        }
+                        else
+                        {
+                            BuildMemberCode(memberBuilder, GetSpaceIndent(2, depth), paramInfo);
+                        }
 
-                        BuildMemberCode(memberBuilder, spaceString, paramInfo);
+                        #endregion
                     }
-
+                    string space = GetSpaceIndent(2, 0);
                     fieldBuilder.AppendLine();
-                    fieldBuilder.Append(GetSpaceIndent(2, 0));
+                    fieldBuilder.Append(space);
                     fieldBuilder.AppendLine("#region class object");
                     foreach (var builder in classList)
                     {
                         fieldBuilder.Append(builder);
                         fieldBuilder.AppendLine();
                     }
-                    fieldBuilder.Append(GetSpaceIndent(2, 0));
+                    fieldBuilder.Append(respPacketBuilder);
+                    fieldBuilder.AppendLine();
+                    fieldBuilder.Append(space);
+                    fieldBuilder.AppendLine("}");
+                    fieldBuilder.Append(space);
                     fieldBuilder.AppendLine("#endregion");
                     fieldBuilder.AppendLine();
-                    fieldBuilder.Append(GetSpaceIndent(2, 0));
+                    fieldBuilder.Append(space);
+                    fieldBuilder.AppendLine("/// <summary>");
+                    fieldBuilder.Append(space);
+                    fieldBuilder.AppendLine("/// 响应数据包");
+                    fieldBuilder.Append(space);
+                    fieldBuilder.AppendLine("/// </summary>");
+                    fieldBuilder.Append(space);
+                    fieldBuilder.AppendFormat("private ResponsePacket _packet = new ResponsePacket();");
+                    fieldBuilder.AppendLine();
+                    fieldBuilder.Append(space);
                     fieldBuilder.Append(memberBuilder);
+                    fieldBuilder.Append(space);
                 }
                 content = content.Replace(exp, fieldBuilder.ToString());
 
@@ -1569,13 +1607,14 @@ namespace ContractTools.WebApp.Base
             string itemVar = "dsItem";
             string enumVar = "item";
             string listVar = "_dsItemList";
+            string parentVar = "_packet";
             int recordIndex = 0;
             int[] indexList = new int[forVarChars.Length];
 
             foreach (var paramInfo in paramList)
             {
                 FieldType fieldType = paramInfo.FieldType;
-                if (fieldType.Equals(FieldType.Record))
+                if (fieldType.Equals(FieldType.Record) || fieldType.Equals(FieldType.SigleRecord))
                 {
                     if (depth < indexList.Length)
                     {
@@ -1593,6 +1632,10 @@ namespace ContractTools.WebApp.Base
                     }
                     listVar = listVar + "_" + recordIndex;
                     string memberName = string.IsNullOrEmpty(paramInfo.Field) ? listVar : paramInfo.Field + "List";
+                    if (depth == 0)
+                    {
+                        memberName = string.Format("{0}.{1}", parentVar, memberName);
+                    }
                     string currIndent = GetSpaceIndent(indent + depth, 2);
                     strTemp.Append(currIndent);
                     strTemp.AppendFormat("{0}.PushIntoStack({1}{2}.Count);", currentVar, parentEnumVar, memberName);
@@ -1647,10 +1690,11 @@ namespace ContractTools.WebApp.Base
                 }
                 else
                 {
+                    string memberName = string.Format("{0}.{1}", depth > 0 ? enumVar : parentVar, paramInfo.Field);
                     string currIndent = GetSpaceIndent(indent + depth, 2);
                     strTemp.Append(currIndent);
                     strTemp.AppendFormat("{0}.PushIntoStack({1}", depth == 0 ? currentVar : itemVar, FormatFieldType(fieldType));
-                    strTemp.Append(depth > 0 ? enumVar + "." + paramInfo.Field : ToMemberVarName(paramInfo.Field));
+                    strTemp.Append(memberName);
                     strTemp.Append(");");
                     strTemp.AppendLine();
                 }
@@ -1679,7 +1723,8 @@ namespace ContractTools.WebApp.Base
                 FieldType fieldType = paramInfo.FieldType;
                 int paramType = paramInfo.ParamType;
                 bool required = paramInfo.Required;
-                if (FieldType.Record.Equals(fieldType) ||
+                if (FieldType.Record.Equals(fieldType) || 
+                    FieldType.SigleRecord.Equals(fieldType) ||
                     FieldType.End.Equals(fieldType) ||
                     paramType != 1 ||
                     !required)
@@ -1706,7 +1751,7 @@ namespace ContractTools.WebApp.Base
 
                 paramInfo.Depth = depth;
                 FieldType fieldType = paramInfo.FieldType;
-                if (fieldType.Equals(FieldType.Record))
+                if (fieldType.Equals(FieldType.Record) || fieldType.Equals(FieldType.SigleRecord))
                 {
                     paramInfo.Depth = depth;
                     depth++;

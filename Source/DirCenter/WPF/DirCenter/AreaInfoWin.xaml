@@ -1,0 +1,149 @@
+﻿<Window x:Class="DirCenter.AreaInfoWin"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="分区信息" Height="353" Width="430" Icon="scut.ico">
+    <Grid>
+        <Label Content="分区id" HorizontalAlignment="Left" Margin="23,10,0,0" VerticalAlignment="Top"/>
+        <Label Content="分区名称" HorizontalAlignment="Left" Margin="198,10,0,0" VerticalAlignment="Top"/>
+        <Label Content="货币名称" HorizontalAlignment="Left" Margin="10,41,0,0" VerticalAlignment="Top"/>
+        <Label Content="兑换比率" HorizontalAlignment="Left" Margin="198,41,0,0" VerticalAlignment="Top"/>
+        <Label Content="货币简称" HorizontalAlignment="Left" Margin="10,72,0,0" VerticalAlignment="Top"/>
+        <Label Content="开启状态" HorizontalAlignment="Left" Margin="198,72,0,0" VerticalAlignment="Top" RenderTransformOrigin="3.776,-0.462"/>
+        <Label Content="支付参数（可选）" HorizontalAlignment="Left" Margin="17,162,0,0" VerticalAlignment="Top"/>
+        <Label Content="代理服务器（可选）" HorizontalAlignment="Left" Margin="10,193,0,0" VerticalAlignment="Top"/>
+        <Label Content="代理服务器端口" HorizontalAlignment="Left" Margin="10,219,0,0" VerticalAlignment="Top"/>
+        <TextBox HorizontalAlignment="Left" Height="23" Margin="73,10,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="120" Name="IDEdit">
+            <TextBox.Resources>
+                <VisualBrush x:Key="HelpBrush" TileMode="None" Opacity="0.3" Stretch="None" AlignmentX="Left">
+                    <VisualBrush.Visual>
+                        <TextBlock FontStyle="Italic" Text="数字"/>
+                    </VisualBrush.Visual>
+                </VisualBrush>
+            </TextBox.Resources>
+            <TextBox.Style>
+                <Style TargetType="TextBox">
+                    <Style.Triggers>
+                        <Trigger Property="Text" Value="{x:Null}">
+                            <Setter Property="Background" Value="{StaticResource HelpBrush}"/>
+                        </Trigger>
+                        <Trigger Property="Text" Value="">
+                            <Setter Property="Background" Value="{StaticResource HelpBrush}"/>
+                        </Trigger>
+                    </Style.Triggers>
+                </Style>
+            </TextBox.Style>
+        </TextBox>
+        <TextBox HorizontalAlignment="Left" Height="23" Margin="256,10,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="153" Name="NameEdit">
+            <TextBox.Resources>
+                <VisualBrush x:Key="HelpBrush" TileMode="None" Opacity="0.3" Stretch="None" AlignmentX="Left">
+                    <VisualBrush.Visual>
+                        <TextBlock FontStyle="Italic" Text="一区"/>
+                    </VisualBrush.Visual>
+                </VisualBrush>
+            </TextBox.Resources>
+            <TextBox.Style>
+                <Style TargetType="TextBox">
+                    <Style.Triggers>
+                        <Trigger Property="Text" Value="{x:Null}">
+                            <Setter Property="Background" Value="{StaticResource HelpBrush}"/>
+                        </Trigger>
+                        <Trigger Property="Text" Value="">
+                            <Setter Property="Background" Value="{StaticResource HelpBrush}"/>
+                        </Trigger>
+                    </Style.Triggers>
+                </Style>
+            </TextBox.Style>
+        </TextBox>
+        <TextBox HorizontalAlignment="Left" Height="23" Margin="73,43,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="120" Name="CurrencyEdit">
+            <TextBox.Resources>
+                <VisualBrush x:Key="HelpBrush" TileMode="None" Opacity="0.3" Stretch="None" AlignmentX="Left">
+                    <VisualBrush.Visual>
+                        <TextBlock FontStyle="Italic" Text="元宝"/>
+                    </VisualBrush.Visual>
+                </VisualBrush>
+            </TextBox.Resources>
+            <TextBox.Style>
+                <Style TargetType="TextBox">
+                    <Style.Triggers>
+                        <Trigger Property="Text" Value="{x:Null}">
+                            <Setter Property="Background" Value="{StaticResource HelpBrush}"/>
+                        </Trigger>
+                        <Trigger Property="Text" Value="">
+                            <Setter Property="Background" Value="{StaticResource HelpBrush}"/>
+                        </Trigger>
+                    </Style.Triggers>
+                </Style>
+            </TextBox.Style>
+        </TextBox>
+        <TextBox HorizontalAlignment="Left" Height="23" Margin="256,43,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="153" Name="MultipleEdit">
+            <TextBox.Resources>
+                <VisualBrush x:Key="HelpBrush" TileMode="None" Opacity="0.3" Stretch="None" AlignmentX="Left">
+                    <VisualBrush.Visual>
+                        <TextBlock FontStyle="Italic" Text="10.00"/>
+                    </VisualBrush.Visual>
+                </VisualBrush>
+            </TextBox.Resources>
+            <TextBox.Style>
+                <Style TargetType="TextBox">
+                    <Style.Triggers>
+                        <Trigger Property="Text" Value="{x:Null}">
+                            <Setter Property="Background" Value="{StaticResource HelpBrush}"/>
+                        </Trigger>
+                        <Trigger Property="Text" Value="">
+                            <Setter Property="Background" Value="{StaticResource HelpBrush}"/>
+                        </Trigger>
+                    </Style.Triggers>
+                </Style>
+            </TextBox.Style>
+        </TextBox>
+        <TextBox HorizontalAlignment="Left" Height="23" Margin="73,75,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="120" Name="ShortCurrencyEdit">
+            <TextBox.Resources>
+                <VisualBrush x:Key="HelpBrush" TileMode="None" Opacity="0.3" Stretch="None" AlignmentX="Left">
+                    <VisualBrush.Visual>
+                        <TextBlock FontStyle="Italic" Text="YB"/>
+                    </VisualBrush.Visual>
+                </VisualBrush>
+            </TextBox.Resources>
+            <TextBox.Style>
+                <Style TargetType="TextBox">
+                    <Style.Triggers>
+                        <Trigger Property="Text" Value="{x:Null}">
+                            <Setter Property="Background" Value="{StaticResource HelpBrush}"/>
+                        </Trigger>
+                        <Trigger Property="Text" Value="">
+                            <Setter Property="Background" Value="{StaticResource HelpBrush}"/>
+                        </Trigger>
+                    </Style.Triggers>
+                </Style>
+            </TextBox.Style>
+        </TextBox>
+        <ComboBox HorizontalAlignment="Left" Margin="256,72,0,0" VerticalAlignment="Top" Width="153" Name="EnabledBox" Height="26">
+            <ComboBoxItem Content="开启" HorizontalAlignment="Left" Width="143" IsSelected="True"/>
+            <ComboBoxItem Content="关闭" HorizontalAlignment="Left" Width="143"/>
+        </ComboBox>
+        <TextBox HorizontalAlignment="Left" Height="23" Margin="128,165,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="281" Name="PayEdit"/>
+        <TextBox HorizontalAlignment="Left" Height="23" Margin="128,193,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="281" Name="ProxyEdit">
+            <TextBox.Resources>
+                <VisualBrush x:Key="HelpBrush" TileMode="None" Opacity="0.3" Stretch="None" AlignmentX="Left">
+                    <VisualBrush.Visual>
+                        <TextBlock FontStyle="Italic" Text="IP地址"/>
+                    </VisualBrush.Visual>
+                </VisualBrush>
+            </TextBox.Resources>
+            <TextBox.Style>
+                <Style TargetType="TextBox">
+                    <Style.Triggers>
+                        <Trigger Property="Text" Value="{x:Null}">
+                            <Setter Property="Background" Value="{StaticResource HelpBrush}"/>
+                        </Trigger>
+                        <Trigger Property="Text" Value="">
+                            <Setter Property="Background" Value="{StaticResource HelpBrush}"/>
+                        </Trigger>
+                    </Style.Triggers>
+                </Style>
+            </TextBox.Style>
+        </TextBox>
+        <TextBox HorizontalAlignment="Left" Height="23" Margin="128,219,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="281" Name="ProtEdit"/>
+        <Button Content="保存并更新" HorizontalAlignment="Left" Margin="325,273,0,0" VerticalAlignment="Top" Width="84" Height="40" Click="Button_Click" Name="SaveBut"/>
+    </Grid>
+</Window>

@@ -25,7 +25,7 @@ using System;
 using System.Reflection;
 using ZyGames.Framework.Common.Log;
 using ZyGames.Framework.Game.Sns.Service;
-
+using ZyGames.Framework.Game.Configuration;
 namespace AccountServer
 {
     public class Global : System.Web.HttpApplication
@@ -36,6 +36,7 @@ namespace AccountServer
             try
             {
                 HandlerManager.Init(Assembly.GetExecutingAssembly());
+                ZyGameBaseConfigManager.Intialize();
             }
             catch (Exception ex)
             {

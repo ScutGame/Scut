@@ -40,6 +40,7 @@ namespace ZyGames.Framework.Redis
         /// </summary>
         public RedisInfo()
         {
+            ClientVersion = RedisStorageVersion.Hash;
             SlaveSet = new Dictionary<string, RedisInfo>();
         }
         /// <summary>
@@ -50,7 +51,7 @@ namespace ZyGames.Framework.Redis
         /// <summary>
         /// Redis client version
         /// </summary>
-        public int ClientVersion { get; set; }
+        public RedisStorageVersion ClientVersion { get; set; }
 
         /// <summary>
         /// 

@@ -1,0 +1,138 @@
+﻿<Window x:Class="DirCenter.ServerInfoWin"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:wfi ="clr-namespace:System.Windows.Forms.Integration;assembly=WindowsFormsIntegration"
+        xmlns:wf ="clr-namespace:System.Windows.Forms;assembly=System.Windows.Forms"
+        Title="分区信息设置" Height="353" Width="452" Icon="scut.ico">
+    <Grid>
+        <Label Content="服务器id" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top"/>
+        <Label Content="服务器名称" HorizontalAlignment="Left" Margin="203,10,0,0" VerticalAlignment="Top"/>
+        <Label Content="是否开服" HorizontalAlignment="Left" Margin="10,41,0,0" VerticalAlignment="Top"/>
+        <Label Content="合服转向id" HorizontalAlignment="Left" Margin="203,43,0,0" VerticalAlignment="Top"/>
+        <Label Content="排序权重" HorizontalAlignment="Left" Margin="203,72,0,0" VerticalAlignment="Top"/>
+        <Label Content="服务状态" HorizontalAlignment="Left" Margin="10,74,0,0" VerticalAlignment="Top"/>
+        <Label Content="外网游访问地址" HorizontalAlignment="Left" Margin="10,198,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.511,1.769"/>
+        <Label Content="内网服务器地址" HorizontalAlignment="Left" Margin="10,224,0,0" VerticalAlignment="Top"/>
+        <TextBox HorizontalAlignment="Left" Height="23" Margin="73,10,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="120" Name="IDEdit">
+            <TextBox.Resources>
+                <VisualBrush x:Key="HelpBrush" TileMode="None" Opacity="0.3" Stretch="None" AlignmentX="Left">
+                    <VisualBrush.Visual>
+                        <TextBlock FontStyle="Italic" Text="1"/>
+                    </VisualBrush.Visual>
+                </VisualBrush>
+            </TextBox.Resources>
+            <TextBox.Style>
+                <Style TargetType="{x:Type TextBox}">
+                    <Style.Triggers>
+                        <Trigger Property="Text" Value="{x:Null}">
+                            <Setter Property="Background" Value="{StaticResource HelpBrush}"/>
+                        </Trigger>
+                        <Trigger Property="Text" Value="">
+                            <Setter Property="Background" Value="{StaticResource HelpBrush}"/>
+                        </Trigger>
+                    </Style.Triggers>
+                </Style>
+            </TextBox.Style>
+        </TextBox>
+        <TextBox HorizontalAlignment="Left" Height="23" Margin="278,10,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="153" Name="NameEdit">
+            <TextBox.Resources>
+                <VisualBrush x:Key="HelpBrush" TileMode="None" Opacity="0.3" Stretch="None" AlignmentX="Left">
+                    <VisualBrush.Visual>
+                        <TextBlock FontStyle="Italic" Text="传奇再现"/>
+                    </VisualBrush.Visual>
+                </VisualBrush>
+            </TextBox.Resources>
+            <TextBox.Style>
+                <Style TargetType="{x:Type TextBox}">
+                    <Style.Triggers>
+                        <Trigger Property="Text" Value="{x:Null}">
+                            <Setter Property="Background" Value="{StaticResource HelpBrush}"/>
+                        </Trigger>
+                        <Trigger Property="Text" Value="">
+                            <Setter Property="Background" Value="{StaticResource HelpBrush}"/>
+                        </Trigger>
+                    </Style.Triggers>
+                </Style>
+            </TextBox.Style>
+        </TextBox>
+        <ComboBox HorizontalAlignment="Left" Margin="73,76,0,0" VerticalAlignment="Top" Width="120" Name="Status">
+            <ComboBoxItem Content="维护停服" HorizontalAlignment="Left" Width="118" IsSelected="True"/>
+            <ComboBoxItem Content="顺畅" HorizontalAlignment="Left" Width="118"/>
+            <ComboBoxItem Content="推荐" HorizontalAlignment="Left" Width="118"/>
+            <ComboBoxItem Content="拥挤" HorizontalAlignment="Left" Width="118"/>
+        </ComboBox>
+        <TextBox HorizontalAlignment="Left" Height="23" Margin="278,44,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="153" Name="TargetId">
+            <TextBox.Resources>
+                <VisualBrush x:Key="HelpBrush" TileMode="None" Opacity="0.3" Stretch="None" AlignmentX="Left">
+                    <VisualBrush.Visual>
+                        <TextBlock FontStyle="Italic" Text="可选"/>
+                    </VisualBrush.Visual>
+                </VisualBrush>
+            </TextBox.Resources>
+            <TextBox.Style>
+                <Style TargetType="{x:Type TextBox}">
+                    <Style.Triggers>
+                        <Trigger Property="Text" Value="{x:Null}">
+                            <Setter Property="Background" Value="{StaticResource HelpBrush}"/>
+                        </Trigger>
+                        <Trigger Property="Text" Value="">
+                            <Setter Property="Background" Value="{StaticResource HelpBrush}"/>
+                        </Trigger>
+                    </Style.Triggers>
+                </Style>
+            </TextBox.Style>
+        </TextBox>
+        <ComboBox HorizontalAlignment="Left" Margin="73,45,0,0" VerticalAlignment="Top" Width="120" Name="EnabledBox">
+            <ComboBoxItem Content="否" HorizontalAlignment="Left" Width="118"/>
+            <ComboBoxItem Content="是" HorizontalAlignment="Left" Width="118" IsSelected="True"/>
+        </ComboBox>
+        <TextBox HorizontalAlignment="Left" Height="23" Margin="278,74,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="153" Name="Weight">
+            <TextBox.Resources>
+                <VisualBrush x:Key="HelpBrush" TileMode="None" Opacity="0.3" Stretch="None" AlignmentX="Left">
+                    <VisualBrush.Visual>
+                        <TextBlock FontStyle="Italic" Text="1"/>
+                    </VisualBrush.Visual>
+                </VisualBrush>
+            </TextBox.Resources>
+            <TextBox.Style>
+                <Style TargetType="{x:Type TextBox}">
+                    <Style.Triggers>
+                        <Trigger Property="Text" Value="{x:Null}">
+                            <Setter Property="Background" Value="{StaticResource HelpBrush}"/>
+                        </Trigger>
+                        <Trigger Property="Text" Value="">
+                            <Setter Property="Background" Value="{StaticResource HelpBrush}"/>
+                        </Trigger>
+                    </Style.Triggers>
+                </Style>
+            </TextBox.Style>
+        </TextBox>
+        <TextBox HorizontalAlignment="Left" Height="23" Margin="111,199,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="298" Name="BaseUrl"/>
+        <TextBox HorizontalAlignment="Left" Height="23" Margin="111,227,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="298" Name="IntranetAddress">
+            <TextBox.Resources>
+                <VisualBrush x:Key="HelpBrush" TileMode="None" Opacity="0.3" Stretch="None" AlignmentX="Left">
+                    <VisualBrush.Visual>
+                        <TextBlock FontStyle="Italic" Text="IP地址"/>
+                    </VisualBrush.Visual>
+                </VisualBrush>
+            </TextBox.Resources>
+            <TextBox.Style>
+                <Style TargetType="{x:Type TextBox}">
+                    <Style.Triggers>
+                        <Trigger Property="Text" Value="{x:Null}">
+                            <Setter Property="Background" Value="{StaticResource HelpBrush}"/>
+                        </Trigger>
+                        <Trigger Property="Text" Value="">
+                            <Setter Property="Background" Value="{StaticResource HelpBrush}"/>
+                        </Trigger>
+                    </Style.Triggers>
+                </Style>
+            </TextBox.Style>
+        </TextBox>
+        <Button Content="保存" HorizontalAlignment="Left" Margin="325,273,0,0" VerticalAlignment="Top" Width="84" Height="40" Name="SaveBut" Click="SaveBut_Click"/>
+        <Label Content="开服时间" HorizontalAlignment="Left" Margin="31,167,0,0" VerticalAlignment="Top"/>
+        <wfi:WindowsFormsHost Margin="111,163,169,129" >
+            <wf:DateTimePicker x:Name="tpStartDate" Format="Custom" CustomFormat="yyyy-MM-dd HH:mm:ss" ShowUpDown="True" />
+        </wfi:WindowsFormsHost>
+    </Grid>
+</Window>

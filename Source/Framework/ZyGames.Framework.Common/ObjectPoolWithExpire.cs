@@ -93,7 +93,7 @@ namespace ZyGames.Framework.Common
 
             this.factory = factory;
             this.expireTime = expireTime;
-            this.minPoolSize = minPoolSize;
+            this.minPoolSize = minPoolSize <= 0 ? 5 : minPoolSize;
             pool = new HashSet<PoolItem>();
             if (enableExpire)
             {
@@ -171,12 +171,12 @@ namespace ZyGames.Framework.Common
         /// <returns></returns>
         public T Get()
         {
-            bool needSleep = false;
-            lock (syncRoot)
-            {
-                if (pool.Count == 0) needSleep = true;
-            }
-            if (needSleep) Thread.Sleep(10);
+            //bool needSleep = false;
+            //lock (syncRoot)
+            //{
+            //    if (pool.Count == 0) needSleep = true;
+            //}
+            //if (needSleep) Thread.Sleep(10);
             lock (syncRoot)
             {
                 if (pool.Count == 0) return factory();
@@ -184,6 +184,23 @@ namespace ZyGames.Framework.Common
                 pool.Remove(result);
                 return result.Item;
             }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        public T Create()
+        {
+            return factory();
+        }
+        /// <summary>
+        /// Use default factory create.
+        /// </summary>
+        public void Put()
+        {
+            T item = factory();
+            Put(item);
         }
 
         /// <summary>
@@ -197,6 +214,7 @@ namespace ZyGames.Framework.Common
                 pool.Add(new PoolItem { Item = item, AccessTime = MathUtils.Now });
             }
         }
+
         /// <summary>
         /// 
         /// </summary>

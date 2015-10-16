@@ -1,0 +1,17 @@
+﻿<Window
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" mc:Ignorable="d" x:Class="DirCenter.MainWindow"
+        Title="分区管理器登陆" Height="330.623" Width="494.723" ResizeMode="CanMinimize" Icon="scut.ico">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition/>
+        </Grid.ColumnDefinitions>
+        <Button Content="进入" HorizontalAlignment="Left" Margin="176,222,0,0" VerticalAlignment="Top" Width="120" Height="40" Click="Button_Click"/>
+        <Label Content="author : typ77 email : typ77@qq.com" HorizontalAlignment="Left" Margin="256,267,0,0" VerticalAlignment="Top"/>
+        <Label Content="version : 1.0 alpha" HorizontalAlignment="Left" Margin="7,267,0,0" VerticalAlignment="Top"/>
+        <Image Margin="164,10,157,227" Source="logo.jpg" Stretch="Fill"/>
+        <Label Content="分区服务器地址：" HorizontalAlignment="Left" Margin="190,126,0,0" VerticalAlignment="Top"/>
+        <TextBox HorizontalAlignment="Left" Height="26" Margin="35,157,0,0" TextWrapping="Wrap" Text="http://dir.scutgame.com" VerticalAlignment="Top" Width="417" Name="URL"/>
+    </Grid>
+</Window>

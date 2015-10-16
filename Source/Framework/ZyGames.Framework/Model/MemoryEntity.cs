@@ -43,6 +43,12 @@ namespace ZyGames.Framework.Model
         }
 
         /// <summary>
+        /// entity modify time.
+        /// </summary>
+        [ProtoMember(100025)]
+        public DateTime TempTimeModify { get; set; }
+
+        /// <summary>
         /// 
         /// </summary>
         protected override void InitializeChangeEvent()
@@ -102,5 +108,14 @@ namespace ZyGames.Framework.Model
         {
             ResetState();
         }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        public virtual DateTime GetCreateTime()
+        {
+            return DateTime.Now;
+        }
+
     }
 }
