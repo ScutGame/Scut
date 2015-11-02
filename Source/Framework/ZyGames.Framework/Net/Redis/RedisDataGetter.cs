@@ -41,7 +41,7 @@ namespace ZyGames.Framework.Net.Redis
 
         #region IDataReceiver 成员
 
-        public bool TryReceive<T>(out List<T> dataList) where T : AbstractEntity, new()
+        public bool TryReceive<T>(out List<T> dataList) where T : ISqlEntity, new()
         {
             return RedisConnectionPool.TryGetEntity(_redisKey, _table, out dataList);
         }

@@ -69,6 +69,19 @@ namespace ZyGames.Framework.Net
         {
             return new SqlDataReceiver(schema, filter).TryReceive(setFunc, out dataList);
         }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="schema"></param>
+        /// <param name="filter"></param>
+        /// <param name="dataList"></param>
+        /// <returns></returns>
+        public static bool TryReceiveSql<T>(SchemaTable schema, DbDataFilter filter, out List<T> dataList)
+            where T : ISqlEntity, new()
+        {
+            return new SqlDataReceiver(schema, filter).TryReceive(out dataList);
+        }
 
         public static bool SendSql<T>(IEnumerable<T> dataList, bool isChange = false, bool synchronous = false)
             where T : ISqlEntity

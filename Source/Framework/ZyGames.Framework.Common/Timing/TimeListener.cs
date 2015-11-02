@@ -82,7 +82,7 @@ namespace ZyGames.Framework.Common.Timing
         /// <param name="msInterval"></param>
         public static void SetTimer(int msInterval)
         {
-            Interlocked.Exchange(ref _msInterval, msInterval);
+            Interlocked.Exchange(ref _msInterval, msInterval > 0 ? msInterval : _msInterval);
         }
 
         /// <summary>
@@ -135,6 +135,17 @@ namespace ZyGames.Framework.Common.Timing
                 _listenerQueue.RemoveAll(match);
             }
             return true;
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public static void Clear()
+        {
+            lock (asyncRoot)
+            {
+                _listenerQueue.Clear();
+            }
         }
 
         private static void TimerCallback(object state)

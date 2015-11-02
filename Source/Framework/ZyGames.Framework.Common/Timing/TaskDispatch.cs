@@ -85,6 +85,13 @@ namespace ZyGames.Framework.Common.Timing
             taskList.Add(task);
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        public void Clear()
+        {
+            taskList.Clear();
+        }
 
         private void ThreadProcess(object state)
         {

@@ -157,7 +157,7 @@ namespace ZyGames.Framework.Game.Runtime
             }
             catch (Exception ex)
             {
-                TraceLog.WriteError("OnStop error:{1}", ex);
+                TraceLog.WriteError("OnStop error:{0}", ex);
             }
         }
 

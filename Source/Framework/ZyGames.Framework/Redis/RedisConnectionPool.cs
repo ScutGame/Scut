@@ -773,12 +773,12 @@ namespace ZyGames.Framework.Redis
                 {
                     return valueBytes.Where(t => t != null).Select(t => (T)_serializer.Deserialize(t, typeof(T)));
                 }
-                return null;
+                return Enumerable.Empty<T>();
             }
             finally
             {
                 watch.Check("deserialize");
-                watch.Flush(true, 100);
+                watch.Flush(true, 200);
             }
         }
 
@@ -852,7 +852,7 @@ namespace ZyGames.Framework.Redis
             }
             finally
             {
-                watch.Flush(true, 100);
+                watch.Flush(true, 200);
             }
             return null;
         }
@@ -967,7 +967,7 @@ namespace ZyGames.Framework.Redis
             finally
             {
                 watch.Check("deserialize");
-                watch.Flush(true, 100);
+                watch.Flush(true, 200);
             }
             return false;
         }

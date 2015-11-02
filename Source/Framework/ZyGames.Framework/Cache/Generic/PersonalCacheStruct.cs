@@ -934,6 +934,24 @@ namespace ZyGames.Framework.Cache.Generic
         }
 
         /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="dataList"></param>
+        /// <param name="isReplace"></param>
+        public void InitData(List<T> dataList, bool isReplace = true)
+        {
+            var st = SchemaTable();
+            int periodTime = st == null ? 0 : st.PeriodTime;
+            foreach (var pair in dataList.GroupBy(t => t.PersonalId))
+            {
+                CacheItemSet itemSet = InitContainer(pair.Key, periodTime);
+                InitCache(pair.ToList(), periodTime, isReplace);
+                itemSet.OnLoadSuccess();
+            }
+
+        }
+
+        /// <summary>
         /// 更新所有的数据
         /// </summary>
         /// <param name="isChange"></param>

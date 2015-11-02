@@ -239,7 +239,10 @@ namespace ZyGames.Framework.Game.Contract
                 }
             });
             string sessionId = session.SessionId;
-            var response = new ByteResponse(statusCode, "OK", result, session.UserId.ToString());
+            var response = new ByteResponse(statusCode, "OK", result, session.UserId.ToString())
+            {
+                RequestParams = package.OriginalParam
+            };
             response.CookieHandle += ctx =>
             {
                 var cookie = ctx.Request.Cookies["sid"];

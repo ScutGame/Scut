@@ -707,6 +707,25 @@ namespace ZyGames.Framework.Cache.Generic
         /// <summary>
         /// 
         /// </summary>
+        /// <typeparam name="V"></typeparam>
+        /// <param name="key"></param>
+        /// <param name="item"></param>
+        /// <returns></returns>
+        public int GetRankNo<V>(string key, V item) where V : RankEntity, new()
+        {
+            LoadingStatus loadStatus;
+            CacheList<V> cacheItems;
+            if (!TryGetCacheItem(key, true, out cacheItems, out loadStatus))
+            {
+                throw new Exception(string.Format("Not key:{0} items", key));
+            }
+            int index = cacheItems.IndexOf(item);
+            return index > 0 ? index + 1 : -1;
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
         /// <param name="key"></param>
         /// <param name="count"></param>
         /// <param name="list"></param>

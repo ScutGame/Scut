@@ -188,7 +188,11 @@ namespace ZyGames.Framework.Game.Runtime
                 TraceLog.WriteError(error);
                 return;
             }
+            TraceLog.WriteLine("{0} Redis server connect successfully.", DateTime.Now.ToString("HH:mm:ss"));
+
             DbConnectionProvider.Initialize();
+            TraceLog.WriteLine("{0} DB server connect successfully.", DateTime.Now.ToString("HH:mm:ss"));
+
             EntitySchemaSet.CacheGlobalPeriod = _setting.CacheGlobalPeriod;
             EntitySchemaSet.CacheUserPeriod = _setting.CacheUserPeriod;
             if (_setting.EntityAssembly != null)

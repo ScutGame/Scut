@@ -149,6 +149,7 @@ namespace ZyGames.Framework.Script
                 options.GenerateExecutable = false;
                 options.GenerateInMemory = isInMemory;
                 options.IncludeDebugInformation = isDebug;
+                options.CompilerOptions = "/checked";
                 //if (!string.IsNullOrEmpty(assemblyName))
                 //{
                 //    options.OutputAssembly = assemblyName.EndsWith(".dll") ? assemblyName : assemblyName + ".dll";

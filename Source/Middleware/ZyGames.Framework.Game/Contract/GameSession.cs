@@ -543,13 +543,13 @@ namespace ZyGames.Framework.Game.Contract
         /// <summary>
         /// 获得锁
         /// </summary>
-        public bool EnterLock(int actionId, object agr1, out object arg2)
+        public bool EnterLock(int actionId, object agr1, out object arg2, out long waitTimeOutNum)
         {
 #if LOCK_TEST
             arg2 = null;
             return true;
 #else
-            return _monitorLock.TryEnter(actionId, RequestTimeout, agr1, out arg2);
+            return _monitorLock.TryEnter(actionId, RequestTimeout, agr1, out arg2, out waitTimeOutNum);
 #endif
         }
         /// <summary>

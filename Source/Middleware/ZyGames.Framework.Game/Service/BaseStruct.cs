@@ -134,12 +134,23 @@ namespace ZyGames.Framework.Game.Service
         /// </summary>
         /// <param name="response"></param>
         /// <param name="errorTarget"></param>
+        /// <param name="waitTimeOutNum"></param>
         /// <param name="isWriteInfo"></param>
-        public void WriteLockTimeoutAction(BaseGameResponse response, object errorTarget, bool isWriteInfo = true)
+        public void WriteLockTimeoutAction(BaseGameResponse response, object errorTarget, long waitTimeOutNum, bool isWriteInfo = true)
         {
             ErrorCode = Language.Instance.LockTimeoutCode;
-            if (isWriteInfo && !IsRealse) ErrorInfo = Language.Instance.RequestTimeout;
-            TraceLog.WriteError("Request action-{0} locked timeout.\r\nlocked target:{1}\r\nUrl:{2}", actionId, errorTarget, actionGetter.ToString());
+            if (isWriteInfo && !IsRealse)
+            {
+                ErrorInfo = Language.Instance.RequestTimeout;
+                TraceLog.WriteError("Request action-{0} locked timeout[{3}].\r\nLocked target:{1}\r\nUrl:{2}",
+                    actionId, errorTarget, actionGetter.ToString(), waitTimeOutNum);
+            }
+            else
+            {
+                TraceLog.WriteDebug("Request action-{0} locked timeout[{3}].\r\nLocked target:{1}\r\nUrl:{2}",
+                    actionId, errorTarget, actionGetter.ToString(), waitTimeOutNum);
+            }
+
             WriteErrorAction(response);
         }
 

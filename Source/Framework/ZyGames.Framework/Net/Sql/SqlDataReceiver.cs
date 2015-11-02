@@ -56,15 +56,21 @@ namespace ZyGames.Framework.Net.Sql
         /// <typeparam name="T"></typeparam>
         /// <param name="dataList"></param>
         /// <returns></returns>
-        public bool TryReceive<T>(out List<T> dataList) where T : AbstractEntity, new()
+        public bool TryReceive<T>(out List<T> dataList) where T : ISqlEntity, new()
         {
-            return TryReceive((t, c, v) =>
+            return TryReceive<T>(SetPropertyFunc, out dataList);
+        }
+
+        private void SetPropertyFunc<T>(T entity, SchemaColumn column, object fieldValue) where T : new()
+        {
+            var t = entity as AbstractEntity;
+            if (t != null)
             {
                 t.Init();
                 t.SetValueBefore();
-                SetEntityValue(t, c, v);
+                SetEntityValue(t, column, fieldValue);
                 t.SetValueAfter();
-            }, out dataList);
+            }
         }
 
         public bool TryReceive<T>(EntityPropertySetFunc<T> setFunc, out List<T> dataList) where T : new()

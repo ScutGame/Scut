@@ -426,7 +426,7 @@ namespace ZyGames.Framework.Cache.Generic
             }
             finally
             {
-                watch.Flush(true, 20);
+                watch.Flush(true, 200);
             }
             TraceLog.WriteError("Try load cache data:{0} error.", typeof(T).FullName);
             return false;

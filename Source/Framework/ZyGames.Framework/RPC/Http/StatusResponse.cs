@@ -69,6 +69,11 @@ namespace ZyGames.Framework.RPC.Http
         /// <summary>
         /// 
         /// </summary>
+        public string RequestParams { get; set; }
+
+        /// <summary>
+        /// 
+        /// </summary>
         /// <param name="context"></param>
         /// <returns></returns>
         public abstract Task Execute(IHttpRequestResponseContext context);

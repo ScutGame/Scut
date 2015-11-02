@@ -208,7 +208,7 @@ namespace ZyGames.Framework.Game.Lang
         /// <summary>
         /// 请求超时
         /// </summary>
-        public string RequestTimeout = "Request timeout.";
+        public string RequestTimeout = "Request too often, please rest.";
         /// <summary>
         /// 您输入的账号或密码不正确
         /// </summary>

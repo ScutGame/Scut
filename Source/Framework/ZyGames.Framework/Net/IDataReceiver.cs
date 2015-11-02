@@ -45,6 +45,6 @@ namespace ZyGames.Framework.Net
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <returns></returns>
-        bool TryReceive<T>(out List<T> dataList) where T : AbstractEntity, new();
+        bool TryReceive<T>(out List<T> dataList) where T : ISqlEntity, new();
     }
 }

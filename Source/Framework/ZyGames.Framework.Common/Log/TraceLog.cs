@@ -73,7 +73,7 @@ namespace ZyGames.Framework.Common.Log
         }
 
         /// <summary>
-        /// 
+        /// Write to debug
         /// </summary>
         /// <param name="message"></param>
         /// <param name="args"></param>
@@ -103,6 +103,16 @@ namespace ZyGames.Framework.Common.Log
             {
                 LogHelper.WriteDebug(str);
             }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="message"></param>
+        /// <param name="args"></param>
+        public static void WriteDebug(string message, params object[] args)
+        {
+            Write(message, false, args);
         }
 
         /// <summary>
@@ -162,6 +172,21 @@ namespace ZyGames.Framework.Common.Log
                 str = string.Format("Trace>>" + message, args);
             }
             LogHelper.WriteComplement(str);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="message"></param>
+        /// <param name="args"></param>
+        public static void WriteFatal(string message, params object[] args)
+        {
+            string str = message;
+            if (args.Length > 0)
+            {
+                str = string.Format("Trace>>" + message, args);
+            }
+            LogHelper.WriteFatal(str);
         }
 
         /// <summary>
@@ -231,12 +256,7 @@ namespace ZyGames.Framework.Common.Log
         /// <param name="args"></param>
         public static void ReleaseWriteFatal(string message, params object[] args)
         {
-            string str = message;
-            if (args.Length > 0)
-            {
-                str = string.Format("Trace>>" + message, args);
-            }
-            LogHelper.WriteFatal(str);
+            WriteFatal(message, args);
         }
 
         /// <summary>

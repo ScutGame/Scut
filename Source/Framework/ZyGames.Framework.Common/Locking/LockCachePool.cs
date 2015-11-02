@@ -45,6 +45,8 @@ namespace ZyGames.Framework.Common.Locking
             public Timer ExpireTimer { get; set; }
             public DateTime AccessTime { get; set; }
 
+            internal long WaitTimeoutNum;
+
             public object Target { get; set; }
 
             public void Dispose()
@@ -68,6 +70,7 @@ namespace ZyGames.Framework.Common.Locking
         /// </summary>
         public LockCachePool()
         {
+            WaitTimeoutMaxNum = 3;
         }
 
         /// <summary>
@@ -81,6 +84,10 @@ namespace ZyGames.Framework.Common.Locking
             _expireTime = expireTime;
             _checkTime = checkTime;
         }
+        /// <summary>
+        /// 
+        /// </summary>
+        public int WaitTimeoutMaxNum { get; set; }
 
         /// <summary>
         /// 
@@ -100,6 +107,11 @@ namespace ZyGames.Framework.Common.Locking
         {
             lock (syncRoot)
             {
+                foreach (var pair in _lockPool)
+                {
+                    var lockItem = pair.Value;
+                    DoExit(lockItem);
+                }
                 _lockPool.Clear();
             }
         }
@@ -112,16 +124,26 @@ namespace ZyGames.Framework.Common.Locking
         {
             GetOrCreate(key);
         }
+
         /// <summary>
         /// 
         /// </summary>
         /// <param name="key"></param>
         /// <param name="timeout"></param>
+        /// <param name="waitTimeOutNum"></param>
         /// <returns></returns>
-        public bool TryEnter(long key, int timeout)
+        public bool TryEnter(long key, int timeout, out long waitTimeOutNum)
         {
             ExpireItem lockItem = GetOrCreate(key);
-            return Monitor.TryEnter(lockItem, timeout);
+            waitTimeOutNum = lockItem.WaitTimeoutNum;
+            if (WaitTimeoutMaxNum > 0 && lockItem.WaitTimeoutNum > WaitTimeoutMaxNum) return false;
+
+            if (Monitor.TryEnter(lockItem, timeout))
+            {
+                return true;
+            }
+            Interlocked.Increment(ref lockItem.WaitTimeoutNum);
+            return false;
         }
 
         /// <summary>
@@ -131,16 +153,21 @@ namespace ZyGames.Framework.Common.Locking
         /// <param name="timeout"></param>
         /// <param name="wait">wait get lock object</param>
         /// <param name="enter">enter lock object</param>
+        /// <param name="waitTimeOutNum"></param>
         /// <returns></returns>
-        public bool TryEnter(long key, int timeout, object wait, out object enter)
+        public bool TryEnter(long key, int timeout, object wait, out object enter, out long waitTimeOutNum)
         {
             ExpireItem lockItem = GetOrCreate(key);
             enter = lockItem.Target;
+            waitTimeOutNum = lockItem.WaitTimeoutNum;
+            if (WaitTimeoutMaxNum > 0 && lockItem.WaitTimeoutNum > WaitTimeoutMaxNum) return false;
+
             if (Monitor.TryEnter(lockItem, timeout))
             {
                 lockItem.Target = wait;
                 return true;
             }
+            Interlocked.Increment(ref lockItem.WaitTimeoutNum);
             return false;
         }
 
@@ -159,8 +186,20 @@ namespace ZyGames.Framework.Common.Locking
         /// <param name="key"></param>
         public void Exit(long key)
         {
-            ExpireItem lockItem = GetOrCreate(key);
-            Monitor.Exit(lockItem);
+            ExpireItem lockItem;
+            if (_lockPool.TryGetValue(key, out lockItem))
+            {
+                DoExit(lockItem);
+            }
+        }
+
+        private void DoExit(ExpireItem lockItem)
+        {
+            if (lockItem != null && Monitor.IsEntered(lockItem))
+            {
+                Monitor.Exit(lockItem);
+            }
+            if (lockItem != null) Interlocked.Exchange(ref lockItem.WaitTimeoutNum, 0);
         }
 
         private ExpireItem GetOrCreate(long key)
@@ -201,11 +240,7 @@ namespace ZyGames.Framework.Common.Locking
                     {
                         _lockPool.Remove(expireItem.Key);
                     }
-
-                    if (Monitor.IsEntered(expireItem))
-                    {
-                        Monitor.Exit(expireItem);
-                    }
+                    DoExit(expireItem);
                     expireItem.Dispose();
                 }
             }
