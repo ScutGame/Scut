@@ -4,37 +4,35 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{416E2E00-4064-4D7A-87A2-A649FF120274}</ProjectGuid>
+    <ProjectGuid>{94DEAEB2-A690-4296-9EFC-8614C6B35636}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>ZyGames.Framework</RootNamespace>
     <AssemblyName>ZyGames.Framework</AssemblyName>
-    <TargetFrameworkVersion>v4.5.1</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
-    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
     <OutputPath>bin\</OutputPath>
-    <DefineConstants>TRACE;DEBUG;NET4_5_1</DefineConstants>
+    <DefineConstants>TRACE;DEBUG;NET4_6</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <DocumentationFile>bin\ZyGames.Framework.XML</DocumentationFile>
+    <DocumentationFile>bin\ZyGames.Framework.xml</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\</OutputPath>
-    <DefineConstants>TRACE;NET4_5_1</DefineConstants>
+    <DefineConstants>TRACE;NET4_6</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <DocumentationFile>bin\ZyGames.Framework.XML</DocumentationFile>
+    <DocumentationFile>bin\ZyGames.Framework.xml</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="ICSharpCode.SharpZipLib, Version=0.86.0.518, Culture=neutral, PublicKeyToken=1b03e6acf1164f73, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
+    <Reference Include="ICSharpCode.SharpZipLib">
       <HintPath>..\Lib\ICSharpCode.SharpZipLib.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.Dynamic, Version=1.1.0.20, Culture=neutral, PublicKeyToken=7f709c5b713576e1, processorArchitecture=MSIL">
@@ -45,8 +43,7 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\Lib\Microsoft.Scripting.dll</HintPath>
     </Reference>
-    <Reference Include="Mono.Cecil, Version=0.9.5.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
+    <Reference Include="Mono.Cecil">
       <HintPath>..\Lib\Mono.Cecil.dll</HintPath>
     </Reference>
     <Reference Include="MySql.Data, Version=6.7.4.0, Culture=neutral, PublicKeyToken=c5687fc88969c44d, processorArchitecture=MSIL">
@@ -57,24 +54,19 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\Lib\Newtonsoft.Json.dll</HintPath>
     </Reference>
-    <Reference Include="NLog, Version=2.0.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
+    <Reference Include="NLog">
       <HintPath>..\Lib\NLog.dll</HintPath>
     </Reference>
-    <Reference Include="protobuf-net, Version=2.0.0.668, Culture=neutral, PublicKeyToken=257b51d87d2e4d67, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
+    <Reference Include="protobuf-net">
       <HintPath>..\Lib\protobuf-net.dll</HintPath>
     </Reference>
-    <Reference Include="ServiceStack.Common, Version=3.7.3.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
+    <Reference Include="ServiceStack.Common">
       <HintPath>..\Lib\ServiceStack.Common.dll</HintPath>
     </Reference>
-    <Reference Include="ServiceStack.Redis, Version=3.7.4.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
+    <Reference Include="ServiceStack.Redis">
       <HintPath>..\Lib\ServiceStack.Redis.dll</HintPath>
     </Reference>
-    <Reference Include="ServiceStack.Text, Version=3.6.9.2502, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
+    <Reference Include="ServiceStack.Text">
       <HintPath>..\Lib\ServiceStack.Text.dll</HintPath>
     </Reference>
     <Reference Include="System" />
@@ -106,24 +98,24 @@
     <Compile Include="Cache\Generic\DataSyncQueueManager.cs" />
     <Compile Include="Cache\Generic\DefaultCacheStruct.cs" />
     <Compile Include="Cache\Generic\EntityContainer.cs" />
+    <Compile Include="Cache\Generic\IDataContainer.cs" />
     <Compile Include="Cache\Generic\IDataExpired.cs" />
     <Compile Include="Cache\Generic\MemoryCacheStruct.cs" />
     <Compile Include="Cache\Generic\PersonalCacheStruct.cs" />
     <Compile Include="Cache\Generic\Pool\BaseCachePool.cs" />
     <Compile Include="Cache\Generic\Pool\CachePool.cs" />
-    <Compile Include="Cache\Generic\ReadonlyCacheCollection.cs" />
     <Compile Include="Cache\Generic\RankCacheStruct.cs" />
+    <Compile Include="Cache\Generic\ReadonlyCacheCollection.cs" />
     <Compile Include="Cache\Generic\ShareCacheStruct.cs" />
     <Compile Include="Collection\Generic\DictionaryExtend.cs" />
     <Compile Include="Collection\Generic\GroupList.cs" />
     <Compile Include="Collection\Generic\HashtableExtend.cs" />
     <Compile Include="Collection\Generic\ListExtend.cs" />
-    <Compile Include="Config\ProfileSection.cs" />
-    <Compile Include="Config\ScriptSection.cs" />
-    <Compile Include="Config\RedisSection.cs" />
+    <Compile Include="Config\CacheSection.cs" />
     <Compile Include="Config\EntitySection.cs" />
     <Compile Include="Config\MessageQueueSection.cs" />
-    <Compile Include="Config\CacheSection.cs" />
+    <Compile Include="Config\RedisSection.cs" />
+    <Compile Include="Config\ScriptSection.cs" />
     <Compile Include="Data\CommandFilter.cs" />
     <Compile Include="Data\CommandMode.cs" />
     <Compile Include="Data\CommandStruct.cs" />
@@ -186,11 +178,6 @@
     <Compile Include="Plugin\Test\BaseCase.cs" />
     <Compile Include="Plugin\Test\CaseEventArgs.cs" />
     <Compile Include="Plugin\Test\CaseManager.cs" />
-    <Compile Include="Profile\CollectTime.cs" />
-    <Compile Include="Profile\EntityProfileCollection.cs" />
-    <Compile Include="Profile\ProfileLog.cs" />
-    <Compile Include="Profile\ProfileManager.cs" />
-    <Compile Include="Profile\ProfileSummary.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Redis\RedisConnectionPool.cs" />
     <Compile Include="Redis\RedisInfo.cs" />
@@ -237,9 +224,10 @@
     <Compile Include="RPC\IO\RequestParam.cs" />
     <Compile Include="RPC\IO\Sender.cs" />
     <Compile Include="RPC\IO\SignUtils.cs" />
-    <Compile Include="RPC\Service\SocketRemoteClient.cs" />
     <Compile Include="RPC\Service\HttpRemoteClient.cs" />
     <Compile Include="RPC\Service\RemoteClient.cs" />
+    <Compile Include="RPC\Service\SocketRemoteClient.cs" />
+    <Compile Include="RPC\Sockets\BaseMessageProcessor.cs" />
     <Compile Include="RPC\Sockets\BufferManager.cs" />
     <Compile Include="RPC\Sockets\ClientSocket.cs" />
     <Compile Include="RPC\Sockets\ClientSocketSettings.cs" />
@@ -257,30 +245,29 @@
     <Compile Include="RPC\Sockets\ThreadSafeStack.cs" />
     <Compile Include="RPC\Sockets\WebSocket\BaseHandshakeProcessor.cs" />
     <Compile Include="RPC\Sockets\WebSocket\ClientWebSocket.cs" />
-    <Compile Include="RPC\Sockets\WebSocket\DataSegmentFrame.cs" />
-    <Compile Include="RPC\Sockets\WebSocket\Rfc6455CloseStatusCode.cs" />
-    <Compile Include="RPC\Sockets\WebSocket\Hybi10CloseStatusCode.cs" />
     <Compile Include="RPC\Sockets\WebSocket\CloseStatusCode.cs" />
+    <Compile Include="RPC\Sockets\WebSocket\DataSegmentFrame.cs" />
+    <Compile Include="RPC\Sockets\WebSocket\HandshakeData.cs" />
+    <Compile Include="RPC\Sockets\WebSocket\HandshakeHeadKeys.cs" />
+    <Compile Include="RPC\Sockets\WebSocket\Hybi00HandshakeProcessor.cs" />
+    <Compile Include="RPC\Sockets\WebSocket\Hybi00MessageProcessor.cs" />
+    <Compile Include="RPC\Sockets\WebSocket\Hybi10CloseStatusCode.cs" />
+    <Compile Include="RPC\Sockets\WebSocket\Hybi10HandshakeProcessor.cs" />
+    <Compile Include="RPC\Sockets\WebSocket\Hybi10MessageProcessor.cs" />
     <Compile Include="RPC\Sockets\WebSocket\MessageHeadFrame.cs" />
+    <Compile Include="RPC\Sockets\WebSocket\Rfc6455CloseStatusCode.cs" />
     <Compile Include="RPC\Sockets\WebSocket\Rfc6455HandshakeProcessor.cs" />
     <Compile Include="RPC\Sockets\WebSocket\Rfc6455MessageProcessor.cs" />
     <Compile Include="RPC\Sockets\WebSocket\WebSocketRequestHandler.cs" />
-    <Compile Include="RPC\Sockets\BaseMessageProcessor.cs" />
-    <Compile Include="RPC\Sockets\WebSocket\Hybi00HandshakeProcessor.cs" />
-    <Compile Include="RPC\Sockets\WebSocket\Hybi00MessageProcessor.cs" />
-    <Compile Include="RPC\Sockets\WebSocket\Hybi10HandshakeProcessor.cs" />
-    <Compile Include="RPC\Sockets\WebSocket\Hybi10MessageProcessor.cs" />
-    <Compile Include="RPC\Sockets\WebSocket\HandshakeData.cs" />
-    <Compile Include="RPC\Sockets\WebSocket\HandshakeHeadKeys.cs" />
     <Compile Include="Script\CSharpFileInfo.cs" />
     <Compile Include="Script\CSharpRuntimeScope.cs" />
+    <Compile Include="Script\IMainScript.cs" />
     <Compile Include="Script\LuaMethodAttribute.cs" />
     <Compile Include="Script\LuaRuntimeScope.cs" />
-    <Compile Include="Script\PythonRuntimeScope.cs" />
-    <Compile Include="Script\ScriptDomainContext.cs" />
-    <Compile Include="Script\IMainScript.cs" />
     <Compile Include="Script\PythonFileInfo.cs" />
+    <Compile Include="Script\PythonRuntimeScope.cs" />
     <Compile Include="Script\ScriptCompiler.cs" />
+    <Compile Include="Script\ScriptDomainContext.cs" />
     <Compile Include="Script\ScriptEngines.cs" />
     <Compile Include="Script\ScriptFileInfo.cs" />
     <Compile Include="Script\ScriptRuntimeDomain.cs" />
@@ -289,12 +276,11 @@
     <Compile Include="SyncThreading\SyncHelper.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\ZyGames.Framework.Common\ZyGames.Framework.Common4.5.csproj">
-      <Project>{e87a5049-85a1-436b-a5ed-2bc0a4e45bdb}</Project>
-      <Name>ZyGames.Framework.Common4.5</Name>
+    <ProjectReference Include="..\ZyGames.Framework.Common\ZyGames.Framework.Common4.6.csproj">
+      <Project>{804086eb-a0cb-46d1-ad08-0c0af2340105}</Project>
+      <Name>ZyGames.Framework.Common4.6</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

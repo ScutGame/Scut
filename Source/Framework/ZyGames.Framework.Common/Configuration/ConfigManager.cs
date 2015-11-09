@@ -90,7 +90,25 @@ namespace ZyGames.Framework.Common.Configuration
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="sectionName"></param>
+        /// <returns></returns>
+        public static bool Intialize()
+        {
+            var configger = GetConfigger<DefaultDataConfigger>();
+            var er = ConfigurationManager.ConnectionStrings.GetEnumerator();
+            while (er.MoveNext())
+            {
+                var connSetting = er.Current as ConnectionStringSettings;
+                if (connSetting == null) continue;
+
+                configger.Add(new ConnectionSection(connSetting.Name, connSetting.ProviderName, connSetting.ConnectionString));
+            }
+            return true;
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sectionName">custom cection node name</param>
         /// <exception cref="Exception"></exception>
         /// <returns></returns>
         public static bool Intialize(string sectionName)

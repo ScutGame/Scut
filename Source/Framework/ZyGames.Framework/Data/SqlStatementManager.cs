@@ -50,6 +50,10 @@ namespace ZyGames.Framework.Data
         /// 同步到数据库的Sql出错队列，格式同SqlSyncQueueKey
         /// </summary>
         public static readonly string SqlSyncErrorQueueKey = "__QUEUE_SQL_SYNC_ERROR";
+        /// <summary>
+        /// 
+        /// </summary>
+        public static readonly string SqlSyncConnErrorQueueKey = "__QUEUE_SQL_SYNC_CONN_ERROR";
         private static Timer[] _queueWatchTimers;
         private static SmartThreadPool _threadPools;
         private static int[] _isWatchWorking;
@@ -59,7 +63,7 @@ namespace ZyGames.Framework.Data
         static SqlStatementManager()
         {
         }
-        
+
         private static MessageQueueSection GetSection()
         {
             return ConfigManager.Configger.GetFirstOrAddConfig<MessageQueueSection>();
@@ -169,7 +173,11 @@ namespace ZyGames.Framework.Data
                 }
                 string key = GetSqlQueueKey(statement.IdentityID);
                 byte[] value = ProtoBufUtils.Serialize(statement);
-                RedisConnectionPool.Process(client => client.ZAdd(key, DateTime.Now.Ticks, value));
+                RedisConnectionPool.Process(client =>
+                {
+                    client.ZAdd(key, DateTime.Now.Ticks, value);
+                    //todo: PostSql sqlCount
+                });
                 result = true;
             }
             catch (Exception ex)
@@ -184,13 +192,14 @@ namespace ZyGames.Framework.Data
         /// put error sql
         /// </summary>
         /// <param name="value"></param>
+        /// <param name="key"></param>
         /// <returns></returns>
-        private static bool PutError(byte[] value)
+        private static bool PutError(byte[] value, string key = null)
         {
             bool result = false;
             try
             {
-                RedisConnectionPool.Process(client => client.ZAdd(SlaveMessageQueue + SqlSyncErrorQueueKey, DateTime.Now.Ticks, value));
+                RedisConnectionPool.Process(client => client.ZAdd(SlaveMessageQueue + (string.IsNullOrEmpty(key) ? SqlSyncErrorQueueKey : key), DateTime.Now.Ticks, value));
                 result = true;
             }
             catch (Exception ex)
@@ -285,22 +294,50 @@ namespace ZyGames.Framework.Data
                 {
                     DbBaseProvider dbProvider = null;
                     SqlStatement statement = null;
+                    int result = 0;
                     try
                     {
                         statement = ProtoBufUtils.Deserialize<SqlStatement>(buffer);
-                        dbProvider = DbConnectionProvider.CreateDbProvider("", statement.ProviderType, statement.ConnectionString);
+                        dbProvider = DbConnectionProvider.CreateDbProvider("", statement.ProviderType,
+                            statement.ConnectionString);
                         var paramList = ToSqlParameter(dbProvider, statement.Params);
-                        dbProvider.ExecuteQuery(statement.CommandType, statement.CommandText, paramList);
+                        result = dbProvider.ExecuteQuery(statement.CommandType, statement.CommandText, paramList);
+                    }
+                    catch (DbConnectionException connError)
+                    {
+                        TraceLog.WriteSqlError("SqlSync Error:{0}\r\nSql>>\r\n{1}", connError,
+                            statement != null ? statement.ToString() : "");
+                        if (dbProvider != null)
+                        {
+                            //modify error: 40 - Could not open a connection to SQL Server
+                            dbProvider.ClearAllPools();
+
+                            //resend
+                            var paramList = ToSqlParameter(dbProvider, statement.Params);
+                            result = dbProvider.ExecuteQuery(statement.CommandType, statement.CommandText, paramList);
+                        }
+                        else
+                        {
+                            PutError(buffer, SqlSyncConnErrorQueueKey);
+                        }
                     }
                     catch (Exception e)
                     {
-                        TraceLog.WriteSqlError("Error:{0}\r\nSql>>\r\n{1}", e, statement != null ? statement.ToString() : "");
+                        TraceLog.WriteSqlError("SqlSync Error:{0}\r\nSql>>\r\n{1}", e,
+                            statement != null ? statement.ToString() : "");
                         PutError(buffer);
                         if (!hasClear && dbProvider != null)
                         {
                             //modify error: 40 - Could not open a connection to SQL Server
                             hasClear = true;
                             dbProvider.ClearAllPools();
+                        }
+                    }
+                    finally
+                    {
+                        if (result > 0)
+                        {
+                            //todo: ProcessSql
                         }
                     }
                 }

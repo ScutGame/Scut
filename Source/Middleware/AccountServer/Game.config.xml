@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<GameConfig>
+  <!--渠道登录处理提供类配置-->
+  <login>
+    <add id="0001" type="Login91sdk" args="RetailID,RetailUser,RetailToken" />
+    <add id="0036" type="LoginUC" args="RetailID,RetailToken,MobileType" />
+    <!--<add id="0037" type="LoginDanLe" args="RetailID,RetailUser,Pwd,Pid" />-->
+    <add id="0037" type="LoginDanLeV2" args="RetailID,RetailUser,RetailToken" />
+    <add id="0021" type="Login360_V2" args="RetailID,RetailUser,Pid,RetailToken"/>
+    <add id="0070" type="LoginMIUI" args="RetailID,RetailUser,RetailToken"/>
+    <add id="0116" type="LoginPP" args="RetailID,RetailUser,RetailToken" />
+    <add id="0017" type="LoginMMY" args="RetailID,RetailUser,RetailToken" />
+    <add id="9999" type="LoginAnySdk" args="RetailID,RetailUser,RetailToken,Pid" />
+    <add id="0034" type="LoginMeiZu" args="RetailID,RetailUser,RetailToken" />
+    <add id="0025" type="LoginND" args="RetailID,RetailUser" />
+  </login>
+
+  <!--渠道商提供的Sdk配置-->
+  <sdkChannel>
+    <channel91>
+      <channel name="0001" appId="11" appKey=""/>
+      <channel name="0001" appId="12" appKey=""/>
+    </channel91>
+    <channelUC>
+      <channel name="android" cpId="1" apiKey="" gameId="123" serverId="1"/>
+      <channel name="ios" cpId="1" apiKey="" gameId="123" serverId="1"/>
+    </channelUC>
+    <channelDanle>
+      <channel name="0037" appId="12" appKey=""/>
+      <channel name="0037" appId="12" appKey=""/>
+    </channelDanle>
+    <channel10086>
+      <channel name="0112" appId="" appKey=""/>
+    </channel10086>
+    <channel360>
+      <channel name="0021" appId="" appKey="" appSecret=""/>
+    </channel360>
+    <channelMIUI>
+      <channel name="0070" appId="" appKey="" />
+    </channelMIUI>
+    <channelMeiZu>
+    <channel name="0034" appId="" appKey="" />
+    </channelMeiZu>
+    <channelAnySDK url="http://oauth.anysdk.com/api/User/LoginOauth/"/>
+    <channelND>
+      <channel name="0025" appId="" appKey="" />
+    </channelND>
+  </sdkChannel>
+</GameConfig>

@@ -175,6 +175,11 @@ namespace ZyGames.Framework.RPC.Sockets
         public ConnectState ReadyState { get { return connectState; } }
 
         /// <summary>
+        /// Whether to receive data sync
+        /// </summary>
+        public bool IsSyncReceived { get; set; }
+
+        /// <summary>
         /// connected.
         /// </summary>
         public bool Connected { get; set; }
@@ -320,7 +325,10 @@ namespace ZyGames.Framework.RPC.Sockets
             this.receiveEventArg.UserToken = receiveDataToken;
             this.receiveEventArg.AcceptSocket = acceptSocket;
             this.receiveEventArg.Completed += new EventHandler<SocketAsyncEventArgs>(IO_Completed);
-            DataReceived += OnReceived;
+            if (IsSyncReceived)
+            {
+                DataReceived += OnReceived;
+            }
             requestHandler.Bind(this);
         }
 

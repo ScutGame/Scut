@@ -374,7 +374,7 @@ namespace ZyGames.Framework.Cache.Generic
         /// <returns></returns>
         protected bool TryLoadCache(TransReceiveParam receiveParam, int periodTime, bool isReplace)
         {
-            //todo: trace
+            //todo: trace TryLoadCache
             var watch = RunTimeWatch.StartNew(string.Format("Try load cache data:{0}", receiveParam.Schema.EntityType.FullName));
             try
             {
@@ -408,7 +408,7 @@ namespace ZyGames.Framework.Cache.Generic
         /// <returns></returns>
         protected bool TryLoadCache(string groupKey, TransReceiveParam receiveParam, int periodTime, bool isReplace)
         {
-            //todo: trace
+            //todo: trace TryLoadCache
             var watch = RunTimeWatch.StartNew(string.Format("Try load cache data:{0}-{1}", receiveParam.Schema.EntityType.FullName, groupKey));
             try
             {

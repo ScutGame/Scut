@@ -29,7 +29,7 @@ using System.Collections.Generic;
 namespace ZyGames.Framework.Collection.Generic
 {
     /// <summary>
-    /// 扩展线程安全字典
+    /// Thread safe of extend dictionary 
     /// </summary>
     [Serializable]
     public class DictionaryExtend<TKey, TValue> : IDictionary<TKey, TValue>
@@ -168,6 +168,17 @@ namespace ZyGames.Framework.Collection.Generic
         public bool TryUpdate(TKey key, TValue newValue, TValue oldValue)
         {
             return _cacheStruct.TryUpdate(key, newValue, oldValue);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="key"></param>
+        /// <param name="factory"></param>
+        /// <returns></returns>
+        public TValue GetOrAdd(TKey key, Func<TKey,TValue> factory )
+        {
+            return _cacheStruct.GetOrAdd(key, factory);
         }
         /// <summary>
         /// 

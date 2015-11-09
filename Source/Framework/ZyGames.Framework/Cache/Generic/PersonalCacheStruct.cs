@@ -228,7 +228,11 @@ namespace ZyGames.Framework.Cache.Generic
             }
             return result;
         }
-
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="enumerable"></param>
+        /// <returns></returns>
         public static bool AddRange(params BaseEntity[] enumerable)
         {
             return AddRange(true, enumerable);

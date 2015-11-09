@@ -27,6 +27,32 @@ using System.Data;
 
 namespace ZyGames.Framework.Data
 {
+    /// <summary>
+    /// DB connection exception
+    /// </summary>
+    public class DbConnectionException : Exception
+    {
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="message"></param>
+        public DbConnectionException(string message)
+            : base(message)
+        {
+
+        }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="message"></param>
+        /// <param name="error"></param>
+        public DbConnectionException(string message, Exception error)
+            : base(message, error)
+        {
+
+        }
+
+    }
 
     internal static class DataParameterExtend
     {
@@ -121,8 +147,28 @@ namespace ZyGames.Framework.Data
         /// <param name="commandType"></param>
         /// <param name="commandText"></param>
         /// <param name="parameters"></param>
+        /// <exception cref="DbConnectionException"></exception>
         /// <returns></returns>
         public abstract int ExecuteQuery(CommandType commandType, string commandText, params IDataParameter[] parameters);
+
+        /// <summary>
+        /// 执行Sql语句
+        /// </summary>
+        /// <param name="command"></param>
+        /// <returns></returns>
+        public int ExecuteQuery(CommandStruct command)
+        {
+            command.Parser();
+            return ExecuteQuery(command.CommandType, command.Sql, command.Parameters);
+        }
+
+        /// <summary>
+        /// 执行Sql语句
+        /// </summary>
+        /// <param name="commands"></param>
+        /// <returns></returns>
+        public abstract IEnumerable<int> ExecuteQuery(IEnumerable<CommandStruct> commands);
+
         /// <summary>
         /// 写入消息队列
         /// </summary>
@@ -132,7 +178,7 @@ namespace ZyGames.Framework.Data
         /// <param name="parameters"></param>
         /// <returns></returns>
         public abstract int ExecuteNonQuery(int identityId, CommandType commandType, string commandText, params IDataParameter[] parameters);
-        
+
         /// <summary>
         /// 生成Sql命令对象
         /// </summary>

@@ -743,7 +743,7 @@ namespace ZyGames.Framework.Redis
         /// <returns></returns>
         public static IEnumerable<T> GetAllEntity<T>(IEnumerable<string> personalIds, bool hasMutilKeyIndexs)
         {
-            //todo: trace
+            //todo: trace GetAllEntity
             SchemaTable table = EntitySchemaSet.Get<T>();
             var watch = RunTimeWatch.StartNew("Get redis data of " + table.EntityName);
             try
@@ -790,7 +790,7 @@ namespace ZyGames.Framework.Redis
         /// <returns></returns>
         public static object[] GetAllEntity(string personalId, params  Type[] entityTypes)
         {
-            //todo: trace
+            //todo: trace GetAllEntity
             var watch = RunTimeWatch.StartNew("Get redis data of persionalId:" + personalId);
             if (entityTypes.Length == 0) return null;
 
@@ -885,7 +885,7 @@ namespace ZyGames.Framework.Redis
         /// <returns></returns>
         private static bool TryGetValue<T>(string redisKey, SchemaTable table, out List<T> list, bool hasMutilKeyIndexs) where T : ISqlEntity
         {
-            //todo: trace
+            //todo: trace TryGetValue
             var watch = RunTimeWatch.StartNew("Redis TryGetEntity " + redisKey);
             try
             {
