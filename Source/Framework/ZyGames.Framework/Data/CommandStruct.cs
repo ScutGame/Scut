@@ -343,7 +343,7 @@ namespace ZyGames.Framework.Data
         /// <returns></returns>
         protected virtual bool IgnoreIncreaseField(string field)
         {
-            return !_increaseFields.Contains(field);
+            return _increaseFields.Contains(field);
         }
 
 
