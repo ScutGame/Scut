@@ -254,10 +254,8 @@ namespace ZyGames.Framework.Net.Sql
                         object value = getFunc(data, schemaColumn);
                         IDataParameter parameter = CreateParameter(dbProvider, paramName, schemaColumn.DbType, value);
                         command.Filter.AddParam(parameter);
-                        if (!schemaColumn.IsIdentity)
-                        {
-                            command.AddKey(CreateParameter(dbProvider, keyName, schemaColumn.DbType, value));
-                        }
+                        //主键且自增列更新时，MSSQL与MySql处理不同，MySql需要有主键列
+                        command.AddKey(CreateParameter(dbProvider, keyName, schemaColumn.DbType, value), schemaColumn.IsIdentity);
                     }
                 }
                 catch (Exception ex)

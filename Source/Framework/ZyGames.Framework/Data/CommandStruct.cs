@@ -39,6 +39,7 @@ namespace ZyGames.Framework.Data
         private List<string> _expressList = new List<string>();
         private Dictionary<string, IDataParameter> _parameter = new Dictionary<string, IDataParameter>();
         private Dictionary<string, IDataParameter> _keyList = new Dictionary<string, IDataParameter>();
+        protected HashSet<string> _increaseFields = new HashSet<string>();
 
         /// <summary>
         /// 
@@ -147,7 +148,8 @@ namespace ZyGames.Framework.Data
         /// 
         /// </summary>
         /// <param name="parameter"></param>
-        public void AddKey(IDataParameter parameter)
+        /// <param name="isIdentity">key is auto increase</param>
+        public void AddKey(IDataParameter parameter, bool isIdentity)
         {
             if (parameter == null)
             {
@@ -162,6 +164,7 @@ namespace ZyGames.Framework.Data
             {
                 _keyList.Add(paramKey, parameter);
             }
+            if (isIdentity) _increaseFields.Add(paramKey);
         }
         /// <summary>
         /// 
@@ -333,6 +336,16 @@ namespace ZyGames.Framework.Data
             AddParameter(SqlParamHelper.MakeInParam(field, (SqlDbType)sqlDbType, size, value));
         }
 
+        /// <summary>
+        /// MSSQL插入需要排除自增列
+        /// </summary>
+        /// <param name="field"></param>
+        /// <returns></returns>
+        protected virtual bool IgnoreIncreaseField(string field)
+        {
+            return !_increaseFields.Contains(field);
+        }
+
 
         /// <summary>
         /// 添加参数
@@ -464,7 +477,9 @@ namespace ZyGames.Framework.Data
             {
                 string fieldName = FormatName(field);
                 string parmName = _keyList.ContainsKey(field) ? _keyList[field].ParameterName : string.Empty;
-                if (!string.IsNullOrEmpty(parmName) && !insertFieldNames.Contains(fieldName))
+                if (!string.IsNullOrEmpty(parmName) &&
+                    !IgnoreIncreaseField(field) &&
+                    !insertFieldNames.Contains(fieldName))
                 {
                     insertFieldNames.Add(fieldName);
                     insertParamNames.Add(parmName);
@@ -496,6 +511,7 @@ namespace ZyGames.Framework.Data
                     ReturnIdentity ? ";SELECT @@IDENTITY;" : "");
         }
 
+     
         /// <summary>
         /// 
         /// </summary>
@@ -511,7 +527,9 @@ namespace ZyGames.Framework.Data
             {
                 string fieldName = FormatName(field);
                 string paramName = _keyList.ContainsKey(field) ? _keyList[field].ParameterName : string.Empty;
-                if (!string.IsNullOrEmpty(paramName) && !insertFieldNames.Contains(fieldName))
+                if (!string.IsNullOrEmpty(paramName) &&
+                    !IgnoreIncreaseField(field) &&
+                    !insertFieldNames.Contains(fieldName))
                 {
                     insertFieldNames.Add(fieldName);
                     insertParamNames.Add(paramName);
@@ -527,7 +545,7 @@ namespace ZyGames.Framework.Data
             {
                 string fieldName = FormatName(field);
                 string paramName = _fieldList.ContainsKey(field) ? _fieldList[field].ParameterName : string.Empty;
-                //修改原因：如果是Key，则排除
+                //修改原因：如果是Key，已经处理过了需要排除
                 if (!string.IsNullOrEmpty(paramName) && !_keyList.ContainsKey(field))
                 {
                     insertFieldNames.Add(fieldName);
@@ -625,7 +643,7 @@ INSERT INTO {0}({3})VALUES({4})",
             foreach (string field in _fieldList.Keys)
             {
                 string fieldName = FormatName(field);
-                //修改原因：如果是Key，则排除
+                //修改原因：如果是Key，不允许更新需发排除
                 if (!_keyList.ContainsKey(field))
                 {
                     updateFieldNames.Add(string.Format("{0} = {1}", fieldName, _fieldList[field].ParameterName));

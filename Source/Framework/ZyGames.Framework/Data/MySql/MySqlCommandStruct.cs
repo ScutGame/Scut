@@ -111,6 +111,16 @@ namespace ZyGames.Framework.Data.MySql
         }
 
         /// <summary>
+        /// MySql更新不能排除自增的列
+        /// </summary>
+        /// <param name="field"></param>
+        /// <returns></returns>
+        protected override bool IgnoreIncreaseField(string field)
+        {
+            return false;
+        }
+
+        /// <summary>
         /// Formats the update insert sql.
         /// </summary>
         /// <returns>The update insert sql.</returns>
