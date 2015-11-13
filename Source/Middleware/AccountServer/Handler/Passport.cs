@@ -35,10 +35,11 @@ namespace AccountServer.Handler
     {
         public ResponseData Excute(IMEIInfo data)
         {
-            if (string.IsNullOrEmpty(data.IMEI))
-            {
-                throw new HandlerException(StateCode.Error, StateDescription.IMEINullError);
-            }
+            //fixed allow null for imei
+            //if (string.IsNullOrEmpty(data.IMEI))
+            //{
+            //    throw new HandlerException(StateCode.Error, StateDescription.IMEINullError);
+            //}
             string[] userList = SnsManager.GetRegPassport(data.IMEI, data.IsNew, EncodePassword);
             return new PassportInfo() { PassportId = userList[0], Password = userList[1] };
         }

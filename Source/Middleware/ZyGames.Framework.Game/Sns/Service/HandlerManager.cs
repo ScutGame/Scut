@@ -24,7 +24,6 @@ THE SOFTWARE.
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 using System.Text;
@@ -80,7 +79,7 @@ namespace ZyGames.Framework.Game.Sns.Service
         /// <param name="assembly"></param>
         public static void Init(Assembly assembly)
         {
-            var htype = typeof (IHandler<>);
+            var htype = typeof(IHandler<>);
             var types = assembly.GetTypes();
             foreach (var type in types)
             {
@@ -166,15 +165,35 @@ return 0
                 userTokenCache[key] = userToken;
             }
         }
+
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="key"></param>
+        /// <param name="token"></param>
+        /// <param name="redisHost"></param>
+        /// <param name="redisDb"></param>
         /// <returns></returns>
-        public static UserToken GetUserToken(string key)
+        public static UserToken GetUserToken(string token, string redisHost, int redisDb)
         {
             UserToken userToken = null;
-            string redisKey = string.Format("{0}@{1}", AccountServerToken, key);
+            string redisKey = string.Format("{0}@{1}", AccountServerToken, token);
+            RedisConnectionPool.Process(client =>
+            {
+                var val = client.Get(redisKey);
+                userToken = val == null || val.Length == 0 ? new UserToken() : MathUtils.ParseJson<UserToken>(Encoding.UTF8.GetString(val));
+            }, new RedisPoolSetting() { Host = redisHost, DbIndex = redisDb });
+            return userToken;
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="token"></param>
+        /// <returns></returns>
+        public static UserToken GetUserToken(string token)
+        {
+            UserToken userToken = null;
+            string redisKey = string.Format("{0}@{1}", AccountServerToken, token);
             if (!string.IsNullOrEmpty(RedisHost) && RedisConnected)
             {
                 //use redis cache.

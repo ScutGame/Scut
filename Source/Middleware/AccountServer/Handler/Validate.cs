@@ -48,7 +48,8 @@ namespace AccountServer.Handler
             {
                 Token = userToken.Token,
                 UserId = userToken.UserId,
-                PassportId = userToken.PassportId
+                PassportId = userToken.PassportId,
+                UserType = userToken.UserType
             };
         }
     }

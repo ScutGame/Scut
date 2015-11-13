@@ -78,14 +78,16 @@ namespace AccountServer.Handler
         /// </summary>
         /// <param name="userId"></param>
         /// <param name="passportId"></param>
+        /// <param name="userType"></param>
         /// <returns></returns>
-        protected ResponseData AuthorizeLogin(int userId, string passportId)
+        protected ResponseData AuthorizeLogin(int userId, string passportId, int userType)
         {
             UserToken userToken = new UserToken()
             {
                 Token = GenrateToken(),
                 UserId = userId,
                 PassportId = passportId,
+                UserType =  userType,
                 ExpireTime = DateTime.Now.AddDays(1)
             };
             HandlerManager.SaveToken(userToken.Token, userToken);
@@ -93,7 +95,8 @@ namespace AccountServer.Handler
             {
                 Token = userToken.Token,
                 UserId = userToken.UserId,
-                PassportId = userToken.PassportId
+                PassportId = userToken.PassportId,
+                UserType = userType
             };
         }
     }
