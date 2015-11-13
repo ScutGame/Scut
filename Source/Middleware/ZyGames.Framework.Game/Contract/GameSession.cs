@@ -123,7 +123,7 @@ namespace ZyGames.Framework.Game.Contract
                         int userId = user.GetUserId();
                         GameSession oldsession;
                         Guid sid;
-                        if (_userHash.TryGetValue(userId, out sid) && 
+                        if (_userHash.TryGetValue(userId, out sid) &&
                             sid != session.KeyCode &&
                             (oldsession = Get(sid)) != null)
                         {
@@ -219,6 +219,16 @@ namespace ZyGames.Framework.Game.Contract
         /// <summary>
         /// 
         /// </summary>
+        /// <param name="session"></param>
+        public static void ClearSession(GameSession session)
+        {
+            if (session == null) return;
+            session.Reset();
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
         public static void ClearSession(Predicate<GameSession> match)
         {
             foreach (var pair in _globalSession)
@@ -227,7 +237,7 @@ namespace ZyGames.Framework.Game.Contract
                 if (session == null) continue;
                 if (match(session))
                 {
-                    session.Reset();
+                    ClearSession(session);
                 }
             }
         }

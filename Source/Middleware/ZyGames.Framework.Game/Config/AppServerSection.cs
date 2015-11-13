@@ -44,6 +44,12 @@ namespace ZyGames.Framework.Game.Config
             ProductName = ConfigUtils.GetSetting("Product.Name", "Game");
             ProductServerId = ConfigUtils.GetSetting("Product.ServerId", 1);
             UserLoginDecodeKey = ConfigUtils.GetSetting("Product.ClientDesDeKey", "");
+            ClientVersion = new Version(1, 0, 0);
+            Version ver;
+            if (Version.TryParse(ConfigUtils.GetSetting("Product.ClientVersion", "1.0.0"), out ver))
+            {
+                ClientVersion = ver;
+            }
 
             PublishType = ConfigUtils.GetSetting("PublishType", "Release");
             ActionTimeOut = ConfigUtils.GetSetting("ActionTimeOut", 500);
@@ -79,7 +85,10 @@ namespace ZyGames.Framework.Game.Config
         /// </summary>
         public int ProductServerId { get; set; }
 
-
+        /// <summary>
+        /// Client ver
+        /// </summary>
+        public Version ClientVersion { get; set; }
 
         /// <summary>
         /// user login decode password key.
@@ -132,7 +141,7 @@ namespace ZyGames.Framework.Game.Config
         /// 
         /// </summary>
         public string AccountServerUrl { get; set; }
-        
+
 
     }
 }
