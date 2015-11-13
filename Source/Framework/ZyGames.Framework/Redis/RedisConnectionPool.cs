@@ -118,7 +118,7 @@ namespace ZyGames.Framework.Redis
             _setting = setting;
             _serializer = serializer;
             //init pool
-            string key = GenratePoolKey(setting.Host);
+            string key = GenratePoolKey(setting.Host, setting.DbIndex);
             var pool = GenrateObjectPool(setting);
             for (int i = 0; i < pool.MinPoolSize; i++)
             {
@@ -579,7 +579,7 @@ namespace ZyGames.Framework.Redis
         /// <param name="client"></param>
         public static void PuttPool(RedisClient client)
         {
-            var key = GenratePoolKey(client.Host, client.Port);
+            var key = GenratePoolKey(client.Host, client.Port, client.Db);
             ObjectPoolWithExpire<RedisClient> pool;
             if (_poolCache.TryGetValue(key, out pool))
             {
@@ -599,11 +599,12 @@ namespace ZyGames.Framework.Redis
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="host"></param>
+        /// <param name="hostString"></param>
+        /// <param name="db"></param>
         /// <returns>has null</returns>
-        public static RedisClient GetPool(string host)
+        public static RedisClient GetPool(string hostString, long db = 0)
         {
-            var key = GenratePoolKey(host);
+            var key = GenratePoolKey(hostString, db);
             ObjectPoolWithExpire<RedisClient> pool;
             if (_poolCache.TryGetValue(key, out pool))
             {
@@ -618,7 +619,7 @@ namespace ZyGames.Framework.Redis
         /// <returns></returns>
         public static RedisClient GetOrAddPool(RedisPoolSetting setting)
         {
-            var key = GenratePoolKey(setting.Host);
+            var key = GenratePoolKey(setting.Host, setting.DbIndex);
             var lazy = new Lazy<ObjectPoolWithExpire<RedisClient>>(() => GenrateObjectPool(setting));
             ObjectPoolWithExpire<RedisClient> pool = _poolCache.GetOrAdd(key, k => lazy.Value);
             return pool.Get();
@@ -629,25 +630,27 @@ namespace ZyGames.Framework.Redis
         /// </summary>
         /// <param name="host"></param>
         /// <param name="port"></param>
+        /// <param name="db"></param>
         /// <returns></returns>
-        public static string GenratePoolKey(string host, int port)
+        private static string GenratePoolKey(string host, int port, long db)
         {
-            return string.Format("{0}:{1}", host, port);
+            return string.Format("{0}:{1}#{2}", host, port, db);
         }
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="host"></param>
+        /// <param name="hostString"></param>
+        /// <param name="db"></param>
         /// <returns></returns>
-        public static string GenratePoolKey(string host)
+        private static string GenratePoolKey(string hostString, long db)
         {
-            string[] hostParts = host.Split('@', ':');
+            string[] hostParts = hostString.Split('@', ':');
             var key = hostParts.Length == 3
                 ? string.Format("{0}:{1}", hostParts[1], hostParts[2])
                 : hostParts.Length == 2
                     ? string.Format("{0}:{1}", hostParts[0], hostParts[1])
                     : string.Format("{0}:{1}", hostParts[0], 6379);
-            return key;
+            return string.Format("{0}#{1}", key, db);
         }
 
         private static RedisClient CreateRedisClient(RedisPoolSetting setting)

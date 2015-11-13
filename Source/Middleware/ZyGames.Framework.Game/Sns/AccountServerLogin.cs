@@ -73,15 +73,15 @@ namespace ZyGames.Framework.Game.Sns
         /// <summary>
         /// 
         /// </summary>
-        public string PassportID { get; private set; }
+        public string PassportID { get; protected set; }
         /// <summary>
         /// 
         /// </summary>
-        public string UserID { get; private set; }
+        public string UserID { get; protected set; }
         /// <summary>
         /// 
         /// </summary>
-        public int UserType { get; private set; }
+        public int UserType { get; protected set; }
         /// <summary>
         /// 
         /// </summary>
@@ -89,7 +89,7 @@ namespace ZyGames.Framework.Game.Sns
         /// <summary>
         /// 
         /// </summary>
-        public string SessionID { get; private set; }
+        public string SessionID { get; protected set; }
         /// <summary>
         /// 
         /// </summary>
@@ -259,6 +259,9 @@ namespace ZyGames.Framework.Game.Sns
             {
                 return false;
             }
+            PassportID = userToken.PassportId;
+            UserID = userToken.UserId.ToString();
+            UserType = userToken.UserType;
             return true;
         }
     }
