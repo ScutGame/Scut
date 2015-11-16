@@ -230,7 +230,7 @@ namespace ZyGames.Framework.Redis
             long increment = 0;
             Process(client =>
             {
-                var num = client.IncrementValue(key);
+                var num = client.Get<long>(key);
                 if (value > 0 && num < value)
                 {
                     increment = client.Increment(key, (value - num).ToUInt32());
