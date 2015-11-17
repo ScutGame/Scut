@@ -620,7 +620,7 @@ namespace ContractTools.WebApp.Base
                             strTemp.Append(" = reader.getInt();");
                             break;
                         case FieldType.Short:
-                            strTemp.Append(" = reader.getWORD();");
+                            strTemp.Append(" = reader.getShort();");
                             break;
                         case FieldType.Password:
                         case FieldType.String:
