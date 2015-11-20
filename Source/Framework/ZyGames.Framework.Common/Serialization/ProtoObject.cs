@@ -110,7 +110,7 @@ namespace ZyGames.Framework.Common.Serialization
             get
             {
                 if (_isnullValue.HasValue)
-                    return _isnullValue.Value;
+                    return null;
                 if (_byteValue.HasValue)
                     return _byteValue.Value;
                 if (_boolValue.HasValue)

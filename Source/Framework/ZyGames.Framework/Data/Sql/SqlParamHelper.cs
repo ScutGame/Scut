@@ -136,6 +136,10 @@ namespace ZyGames.Framework.Data.Sql
             }
             else if (value is Double)
             {
+                return SqlDbType.Real;
+            }
+            else if (value is float)
+            {
                 return SqlDbType.Float;
             }
             else if (value is Int32)

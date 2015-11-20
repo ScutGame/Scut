@@ -39,7 +39,7 @@ namespace ZyGames.Framework.RPC.Sockets
         private Socket socket;
         private IPEndPoint remoteEndPoint;
         private ConcurrentQueue<SocketAsyncResult> sendQueue;
-        private readonly object isInSending = new object();
+        private int isInSending;
         internal DateTime LastAccessTime;
 
         /// <summary>
@@ -138,14 +138,11 @@ namespace ZyGames.Framework.RPC.Sockets
         }
         internal bool TrySetSendFlag()
         {
-            return Monitor.TryEnter(isInSending);
+            return Interlocked.CompareExchange(ref isInSending, 1, 0) == 0;
         }
         internal void ResetSendFlag()
         {
-            if (Monitor.IsEntered(isInSending))
-            {
-                Monitor.Exit(isInSending);
-            }
+            Interlocked.Exchange(ref isInSending, 0);
         }
     }
 }

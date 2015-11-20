@@ -126,6 +126,10 @@ namespace ZyGames.Framework.Data.MySql
             }
             else if (value is Double)
             {
+                return MySqlDbType.Double;
+            }
+            else if (value is float)
+            {
                 return MySqlDbType.Float;
             }
             else if (value is Int32)
@@ -134,20 +138,20 @@ namespace ZyGames.Framework.Data.MySql
             }
             else if (value is short)
             {
-                return MySqlDbType.Int24;
+                return MySqlDbType.Int16;
             }
             else if (value is Byte)
             {
-                return MySqlDbType.Int16;
+                return MySqlDbType.Byte;
             }
             else if (value is Enum)
             {
                 return MySqlDbType.Int32;
             }
-            //else if (value is Guid)
-            //{
-            //    return MySqlDbType.Guid;
-            //}
+            else if (value is Guid)
+            {
+                return MySqlDbType.Guid;
+            }
             return MySqlDbType.VarChar;
         }
 
