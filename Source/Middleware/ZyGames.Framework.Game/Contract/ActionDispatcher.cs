@@ -25,6 +25,7 @@ using System;
 using System.Net;
 using System.Text;
 using System.Web;
+using ZyGames.Framework.Common;
 using ZyGames.Framework.Game.Service;
 using ZyGames.Framework.RPC.IO;
 using ZyGames.Framework.RPC.Sockets;
@@ -206,8 +207,13 @@ namespace ZyGames.Framework.Game.Contract
         public virtual void ResponseError(BaseGameResponse response, ActionGetter actionGetter, int errorCode, string errorInfo)
         {
             string st = actionGetter.GetSt();
+            ProtocolVersion prtcl = actionGetter.GetPtcl();
             MessageHead head = new MessageHead(actionGetter.GetMsgId(), actionGetter.GetActionId(), st, errorCode, errorInfo);
             MessageStructure sb = new MessageStructure();
+            if (prtcl >= ProtocolVersion.ExtendHead)
+            {
+                sb.PushIntoStack(0); //不输出扩展头属性
+            }
             sb.WriteBuffer(head);
             response.BinaryWrite(sb.PopBuffer());
         }
@@ -237,10 +243,12 @@ namespace ZyGames.Framework.Game.Contract
             packageReader.TryGetParam("uid", out userId);
             string sessionId;
             string proxyId;
+            int ptcl;
             packageReader.TryGetParam("sid", out sessionId);
             packageReader.TryGetParam("proxyId", out proxyId);
+            packageReader.TryGetParam("ptcl", out ptcl);
 
-            package = new RequestPackage(msgid, sessionId, actionid, userId)
+            package = new RequestPackage(msgid, sessionId, actionid, userId, ptcl.ToEnum<ProtocolVersion>())
             {
                 ProxySid = proxySid,
                 ProxyId = proxyId,

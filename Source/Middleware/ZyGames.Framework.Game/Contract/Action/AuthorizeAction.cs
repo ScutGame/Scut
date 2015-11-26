@@ -199,14 +199,16 @@ namespace ZyGames.Framework.Game.Contract.Action
             user = null;
             if (Current != null)
             {
+                if (Current.IsReplaced)
+                {
+                    return LoginStatus.Logined;
+                }
                 user = Current.User;
                 return Current.IsAuthorized
                     ? LoginStatus.Success
                     : Current.IsTimeout
                         ? LoginStatus.Timeout
-                        : string.IsNullOrEmpty(Current.OldSessionId)
-                            ? LoginStatus.NoLogin
-                            : LoginStatus.Logined;
+                        : LoginStatus.NoLogin;
             }
             return LoginStatus.NoLogin;
         }

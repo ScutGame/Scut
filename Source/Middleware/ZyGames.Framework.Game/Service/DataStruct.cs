@@ -45,6 +45,10 @@ namespace ZyGames.Framework.Game.Service
         /// </summary>
         protected ArrayList arrayList = new ArrayList();
         /// <summary>
+        /// 
+        /// </summary>
+        protected DataStruct _propertyStruct;
+        /// <summary>
         /// 临时记录holddata长度
         /// </summary>
         protected int htInfoHoldData = 0;
@@ -68,6 +72,15 @@ namespace ZyGames.Framework.Game.Service
             }
         }
 
+        /// <summary>
+        /// 是否为空
+        /// </summary>
+        public bool IsEmpty
+        {
+            get { return arrayList.Count == 0; }
+        }
+
+        #region Push stack
         /// <summary>
         /// long类型
         /// </summary>
@@ -249,6 +262,16 @@ namespace ZyGames.Framework.Game.Service
                 }
             }
             PushIntoStackObj(obj, -1);
+        }
+        #endregion
+
+        /// <summary>
+        /// 增加头部属性
+        /// </summary>
+        /// <param name="propertyStruct"></param>
+        internal void PushHeadProperty(DataStruct propertyStruct)
+        {
+            _propertyStruct = propertyStruct;
         }
 
         /// <summary>
@@ -447,14 +470,26 @@ namespace ZyGames.Framework.Game.Service
         /// </summary>
         protected void WriteHead(BaseGameResponse response, int aAction, int errorCode, string errorInfo, int msgId, string st)
         {
-            PushIntoStackObj(errorCode, 0);
-            PushIntoStackObj(msgId, 1);
-            //结果String
-            PushIntoStackObj(errorInfo, 2);
-            PushIntoStackObj(aAction, 3);
-            //St
-            PushIntoStackObj(st, 4);
-            WriteActionNum(response);
+            PushIntoStackObj(errorCode, 0);//int errorCode
+            PushIntoStackObj(msgId, 1);//int msgid
+            PushIntoStackObj(errorInfo, 2); //string info
+            PushIntoStackObj(aAction, 3); //int actionId
+            PushIntoStackObj(st, 4); //int St timespan
+            //extent head
+            if (_propertyStruct != null)
+            {
+                if (_propertyStruct.IsEmpty)
+                {
+                    PushIntoStackObj(0, 5);
+                }
+                else
+                {
+                    PushIntoStackObj(1, 5); //int property head length=1
+                    PushIntoStackObj(_propertyStruct, 6);
+                }
+            }
+
+            WriteActionNum(response); //total package length
             InternalWriteAction(response);
         }
 
@@ -466,6 +501,8 @@ namespace ZyGames.Framework.Game.Service
             int iActionNum = GetContentLen();
             WriteInt(response, iActionNum);
         }
+
+        #region Write stream
         /// <summary>
         /// 写入字节流
         /// </summary>
@@ -600,6 +637,7 @@ namespace ZyGames.Framework.Game.Service
             //m_Response.OutputStream.Write(outputStream, 0, outputStream.Length);
             response.Write(outputStream);
         }
+        #endregion
 
         #region //计算输出对象长度
         /// <summary>

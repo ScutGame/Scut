@@ -288,9 +288,9 @@ order by colorder ASC
                 case SqlDbType.Decimal:
                     return typeof(Decimal);
                 case SqlDbType.Real:
-                    return typeof(Double);
+                    return typeof(float);
                 case SqlDbType.Float:
-                    return typeof(Single);
+                    return typeof(Double);
                 case SqlDbType.Image:
                     return typeof(Object);
                 case SqlDbType.Int:

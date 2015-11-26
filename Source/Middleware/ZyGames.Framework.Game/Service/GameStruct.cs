@@ -192,6 +192,8 @@ namespace ZyGames.Framework.Game.Service
         {
             this.actionId = aActionId;
         }
+
+        #region Data struct
         /// <summary>
         /// 
         /// </summary>
@@ -312,6 +314,38 @@ namespace ZyGames.Framework.Game.Service
             dataStruct.PushIntoStack(obj);
         }
 
+        #endregion
+
+        /// <summary>
+        /// 增加头部属性
+        /// </summary>
+        /// <param name="propertyStruct"></param>
+        private void PushHeadProperty(DataStruct propertyStruct)
+        {
+            dataStruct.PushHeadProperty(propertyStruct);
+        }
+        /// <summary>
+        /// 启用扩展头属性
+        /// </summary>
+        protected void WriteHeadProperty()
+        {
+            //通过客户端提交协议版本，判断是否客户端支持扩展头属性
+            if (actionGetter.GetPtcl() >= ProtocolVersion.ExtendHead)
+            {
+                var propertyStruct = BuildHeadProperty();
+                PushHeadProperty(propertyStruct);
+            }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        protected virtual DataStruct BuildHeadProperty()
+        {
+            return new DataStruct();
+        }
+
+
         /// <summary>
         /// 输出当前协议返回
         /// </summary>
@@ -417,6 +451,7 @@ namespace ZyGames.Framework.Game.Service
         {
             if (!IsNotRespond)
             {
+                WriteHeadProperty();
                 BuildPacket();
             }
             WriteAction(response);

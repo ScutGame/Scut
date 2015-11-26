@@ -116,15 +116,15 @@ namespace ZyGames.Framework.Data.MySql
             {
                 return MySqlDbType.LongBlob;
             }
-            else if (value is long)
+            else if (value is long || value is ulong)
             {
                 return MySqlDbType.Int64;
             }
-            else if (value is Decimal)
+            else if (value is decimal)
             {
                 return MySqlDbType.Decimal;
             }
-            else if (value is Double)
+            else if (value is double)
             {
                 return MySqlDbType.Double;
             }
@@ -132,15 +132,15 @@ namespace ZyGames.Framework.Data.MySql
             {
                 return MySqlDbType.Float;
             }
-            else if (value is Int32)
+            else if (value is int || value is uint)
             {
                 return MySqlDbType.Int32;
             }
-            else if (value is short)
+            else if (value is short || value is ushort)
             {
                 return MySqlDbType.Int16;
             }
-            else if (value is Byte)
+            else if (value is byte)
             {
                 return MySqlDbType.Byte;
             }

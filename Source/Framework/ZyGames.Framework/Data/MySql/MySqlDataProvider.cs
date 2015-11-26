@@ -311,7 +311,7 @@ namespace ZyGames.Framework.Data.MySql
                 case MySqlDbType.Double:
                     return typeof(Double);
                 case MySqlDbType.Float:
-                    return typeof(Single);
+                    return typeof(float);
                 case MySqlDbType.LongBlob:
                     return typeof(Object);
                 case MySqlDbType.Int32:
@@ -450,7 +450,7 @@ namespace ZyGames.Framework.Data.MySql
             {
                 return "Int";
             }
-            if (type.Equals(typeof(Single)))
+            if (type.Equals(typeof(Single)) || type.Equals(typeof(float)))
             {
                 return "Float";
             }

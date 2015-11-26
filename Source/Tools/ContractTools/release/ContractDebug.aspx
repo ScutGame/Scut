@@ -57,6 +57,20 @@
                         <asp:TextBox ID="txtSt" runat="server" Width="99%" Text="" OnTextChanged="OnRefresh" AutoPostBack="True"></asp:TextBox></td>
                 </tr>
                 <tr>
+                    <td style="text-align: right;"><span>协议版本:</span></td>
+                    <td>
+                      <asp:DropDownList ID="txtPrtl" runat="server" Width="99%" OnSelectedIndexChanged="OnRefresh">
+                          <asp:ListItem Value="1" Selected="True">1.1</asp:ListItem>
+                          <asp:ListItem Value="0">1.0</asp:ListItem>
+                      </asp:DropDownList>    
+                    </td>
+                </tr>
+                 <tr>
+                    <td style="text-align: right; vertical-align: top;"><span>扩展头属性协议:</span></td>
+                    <td>
+                        <asp:DropDownList ID="ddHeadProperty" runat="server" Width="99%"></asp:DropDownList></td>
+                </tr>
+                <tr>
                     <td style="text-align: right; vertical-align: top;"><span>Post参数:</span></td>
                     <td>
                         <asp:TextBox ID="txtPostParam" runat="server" TextMode="MultiLine" ReadOnly="True" Height="50px" Width="99%" Wrap="true"></asp:TextBox></td>

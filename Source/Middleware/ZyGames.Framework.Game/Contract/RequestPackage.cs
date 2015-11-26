@@ -25,6 +25,7 @@ using System;
 using System.Collections.Generic;
 using Newtonsoft.Json;
 using ProtoBuf;
+using ZyGames.Framework.Game.Service;
 
 namespace ZyGames.Framework.Game.Contract
 {
@@ -44,13 +45,14 @@ namespace ZyGames.Framework.Game.Contract
         /// <summary>
         /// init
         /// </summary>
-        public RequestPackage(int msgId, string sessionId, int actionId, int userId)
+        public RequestPackage(int msgId, string sessionId, int actionId, int userId, ProtocolVersion ptcl = ProtocolVersion.Default)
         {
             MsgId = msgId;
             SessionId = sessionId;
             ProxySid = Guid.Empty;
             ActionId = actionId;
             UserId = userId;
+            Ptcl = ptcl;
         }
 
         /// <summary>
@@ -122,6 +124,11 @@ namespace ZyGames.Framework.Game.Contract
         /// </summary>
         [ProtoMember(11)]
         public sbyte OpCode { get; set; }
+
+        /// <summary>
+        /// 通讯协议版本，0: default, 1: use head extend for sync property to client
+        /// </summary>
+        public ProtocolVersion Ptcl { get; set; }
 
         /// <summary>
         /// sigin use

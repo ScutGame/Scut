@@ -91,6 +91,12 @@ namespace ZyGames.Framework.Game.Contract
         public TimeSpan OnlineInterval { get; set; }
 
         /// <summary>
+        /// 被替换掉
+        /// </summary>
+        [ProtoMember(6)]
+        public bool IsReplaced { get; set; }
+
+        /// <summary>
         /// 
         /// </summary>
         /// <returns></returns>
@@ -112,6 +118,14 @@ namespace ZyGames.Framework.Game.Contract
         public void RefleshOnlineDate()
         {
             OnlineDate = DateTime.Now;
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public void SetExpired(DateTime time)
+        {
+            OnlineDate = time;
         }
     }
 }

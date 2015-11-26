@@ -486,39 +486,36 @@ namespace ZyGames.Framework.RPC.Sockets
             }
         }
 
-        private void TryDequeueAndPostSend(ExSocket socket, SocketAsyncEventArgs ioEventArgs)
+        private void TryDequeueAndPostSend(ExSocket socket, byte[] data, SocketAsyncResult asyncResult)
         {
-            bool isOwner = ioEventArgs == null;
-            SocketAsyncResult result;
-            if (socket.TryDequeue(out result))
+            SocketAsyncEventArgs ioEventArgs = ioEventArgsPool.Pop();
+            ioEventArgs.AcceptSocket = socket.WorkSocket;
+            DataToken dataToken = (DataToken)ioEventArgs.UserToken;
+            dataToken.Socket = socket;
+            dataToken.AsyncResult = asyncResult;
+            dataToken.byteArrayForMessage = data;
+            dataToken.messageLength = data.Length;
+            TryDequeueAndPostSend(ioEventArgs);
+        }
+
+        private void TryDequeueAndPostSend(SocketAsyncEventArgs ioEventArgs)
+        {
+            if (ioEventArgs == null)
             {
-                if (ioEventArgs == null)
-                {
-                    ioEventArgs = ioEventArgsPool.Pop();
-                    ioEventArgs.AcceptSocket = socket.WorkSocket;
-                }
-                DataToken dataToken = (DataToken)ioEventArgs.UserToken;
-                dataToken.Socket = socket;
-                dataToken.AsyncResult = result;
-                dataToken.byteArrayForMessage = result.Data;
-                dataToken.messageLength = result.Data.Length;
-                try
-                {
-                    PostSend(ioEventArgs);
-                }
-                catch (Exception ex)
-                {
-                    dataToken.ResultCallback(ResultCode.Error, ex);
-                    if (isOwner)
-                        ReleaseIOEventArgs(ioEventArgs);
-                    socket.ResetSendFlag();
-                }
+                return;
             }
-            else
+
+            DataToken dataToken = (DataToken)ioEventArgs.UserToken;
+            try
             {
+                PostSend(ioEventArgs);
+            }
+            catch (Exception ex)
+            {
+                dataToken.ResultCallback(ResultCode.Error, ex);
                 ReleaseIOEventArgs(ioEventArgs);
-                socket.ResetSendFlag();
             }
+
         }
 
         /// <summary>
@@ -598,19 +595,17 @@ namespace ZyGames.Framework.RPC.Sockets
         /// <param name="callback"></param>
         internal protected override async Task<bool> SendAsync(ExSocket socket, byte[] buffer, Action<SocketAsyncResult> callback)
         {
-            socket.Enqueue(buffer, callback);
             return await Task.Run(() =>
             {
-                if (socket.TrySetSendFlag())
+                lock (socket)
                 {
                     try
                     {
-                        TryDequeueAndPostSend(socket, null);
+                        TryDequeueAndPostSend(socket, buffer, new SocketAsyncResult() { ResultCallback = callback });
                         return true;
                     }
                     catch (Exception ex)
                     {
-                        socket.ResetSendFlag();
                         TraceLog.WriteError("SendAsync {0} error:{1}", socket.RemoteEndPoint, ex);
                     }
                 }
@@ -653,21 +648,12 @@ namespace ZyGames.Framework.RPC.Sockets
                 {
                     dataToken.ResultCallback(ResultCode.Success);
                     dataToken.Reset(true);
-                    try
-                    {
-                        TryDequeueAndPostSend(dataToken.Socket, ioEventArgs);
-                    }
-                    catch
-                    {
-                        dataToken.Socket.ResetSendFlag();
-                        throw;
-                    }
+                    TryDequeueAndPostSend(ioEventArgs);
                 }
             }
             else
             {
                 dataToken.ResultCallback(ResultCode.Close);
-                dataToken.Socket.ResetSendFlag();
                 Closing(ioEventArgs);
             }
         }

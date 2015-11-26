@@ -76,6 +76,8 @@ namespace ZyGames.Framework.Game.Contract
     [ProtoContract]
     public class GameSession
     {
+        #region static member
+
         private static ConcurrentDictionary<Guid, GameSession> _globalSession;
         private static ConcurrentDictionary<int, Guid> _userHash;
         private static ConcurrentDictionary<string, Guid> _remoteHash;
@@ -128,13 +130,12 @@ namespace ZyGames.Framework.Game.Contract
                             (oldsession = Get(sid)) != null)
                         {
                             //防止先后问题
-                            if (oldsession.LastActivityTime < session.LastActivityTime)
+                            if (session.IsReplaced) continue;
+
+                            if (oldsession.IsReplaced || oldsession.LastActivityTime < session.LastActivityTime)
                             {
-                                session.UnBind();
-                                Expire(session, 0);
-                            }
-                            else
-                            {
+                                oldsession.UnBind();
+                                Expire(oldsession, 0);
                                 continue;
                             }
                         }
@@ -302,6 +303,15 @@ namespace ZyGames.Framework.Game.Contract
         {
             return OnCreate(keyCode, request);
         }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="keyCode"></param>
+        /// <returns></returns>
+        public static GameSession CreateNew(Guid keyCode)
+        {
+            return OnCreate(keyCode);
+        }
 
         /// <summary>
         /// Add session to cache
@@ -317,7 +327,11 @@ namespace ZyGames.Framework.Game.Contract
         private static GameSession OnCreate(Guid keyCode, params object[] args)
         {
             GameSession session;
-            if (args.Length == 1)
+            if (args.Length == 0)
+            {
+                session = new GameSession(keyCode, null);
+            }
+            else if (args.Length == 1)
             {
                 session = new GameSession(keyCode, args[0]);
             }
@@ -350,17 +364,19 @@ namespace ZyGames.Framework.Game.Contract
                 newSession != null &&
                 session != newSession)
             {
+
                 try
                 {
-                    session._exSocket.Close();
+                    if (session._exSocket != null) session._exSocket.Close();
                 }
-                catch
-                {
-                }
+                catch { }
                 //modify socket's keycod not found reason
-                socket.Reset(session.KeyCode);
-                session._exSocket = socket;
-                session.AppServer = appServer;
+                if (socket != null && appServer != null)
+                {
+                    socket.Reset(session.KeyCode);
+                    session._exSocket = socket;
+                    session.AppServer = appServer;
+                }
                 GameSession temp;
                 if (_globalSession.TryRemove(newSessionKey, out temp))
                 {
@@ -522,6 +538,8 @@ namespace ZyGames.Framework.Game.Contract
             return null;
         }
 
+        #endregion
+
         private string _remoteAddress;
         private int _isInSession;
         private ExSocket _exSocket;
@@ -591,162 +609,7 @@ namespace ZyGames.Framework.Game.Contract
             InitHttp(request);
         }
 
-        private GameSession(Guid sid, ExSocket exSocket, ISocket appServer)
-            : this(sid, null)
-        {
-            InitSocket(exSocket, appServer);
-        }
-
-        internal void InitSocket(ExSocket exSocket, ISocket appServer)
-        {
-            _exSocket = exSocket;
-            if (_exSocket != null) _remoteAddress = _exSocket.RemoteEndPoint.ToNotNullString();
-            AppServer = appServer;
-            if (User != null)
-            {
-                //update userid with sid.
-                _userHash[UserId] = KeyCode;
-            }
-        }
-
-        internal void InitHttp(object request)
-        {
-            if (User != null)
-            {
-                //update userid with sid.
-                _userHash[UserId] = KeyCode;
-            }
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        public void Refresh()
-        {
-            IsTimeout = false;
-            IsHeartbeatTimeout = false;
-            LastActivityTime = DateTime.Now;
-            if (User != null)
-            {
-                User.RefleshOnlineDate();
-            }
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="user"></param>
-        public void Bind(IUser user)
-        {
-            if (user == null) return;
-            int userId = user.GetUserId();
-            if (userId > 0)
-            {
-                //解除UserId与前一次的Session连接对象绑定
-                Guid sid;
-                if (_userHash.TryGetValue(userId, out sid) && sid != KeyCode)
-                {
-                    var session = Get(sid);
-                    if (session != null)
-                    {
-                        //防止先后问题
-                        if (session.LastActivityTime < this.LastActivityTime)
-                        {
-                            session.UnBind();
-                            Expire(session, 0);
-                        }
-                    }
-                }
-            }
-            _userHash[userId] = KeyCode;
-            User = user;
-            OnChangedSave(this);
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        public void UnBind()
-        {
-            User = null;
-            OldSessionId = SessionId;
-        }
-
-        /// <summary>
-        /// Is authorized.
-        /// </summary>
-        [JsonIgnore]
-        public bool IsAuthorized
-        {
-            get { return User != null && User.GetUserId() > 0; }
-        }
-
-        /// <summary>
-        /// Is proxy server session
-        /// </summary>
-        [JsonIgnore]
-        public bool IsProxyServer
-        {
-            get { return ProxySid != Guid.Empty && UserId == 0; }
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        [JsonIgnore]
-        public bool IsRemote
-        {
-            get { return !string.IsNullOrEmpty(ProxyId); }
-        }
-        /// <summary>
-        /// Close
-        /// </summary>
-        public void Close()
-        {
-            GameSession session;
-            if (_globalSession.TryGetValue(KeyCode, out session) && session._exSocket != null)
-            {
-                //设置Socket为Closed的状态, 并未将物理连接马上中断
-                session._exSocket.IsClosed = true;
-            }
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <returns>true:is expired</returns>
-        private bool CheckExpired()
-        {
-            return LastActivityTime < MathUtils.Now.AddSeconds(-Timeout);
-        }
-
-        private void Reset()
-        {
-            IsTimeout = true;
-            if (_exSocket != null)
-            {
-                try
-                {
-                    //设置Socket为Closed的状态, 并未将物理连接马上中断
-                    _exSocket.IsClosed = true;
-                    _exSocket.Close();
-                }
-                catch { }
-            }
-            Guid code;
-            if (_userHash.TryRemove(UserId, out code))
-            {
-                UnBind();
-            }
-
-            if (!string.IsNullOrEmpty(ProxyId)) _remoteHash.TryRemove(ProxyId, out code);
-            GameSession session;
-            if (_globalSession.TryRemove(KeyCode, out session))
-            {
-                session._monitorLock.Clear();
-            }
-        }
-
+        #region property
 
         /// <summary>
         /// Remote end address
@@ -768,8 +631,17 @@ namespace ZyGames.Framework.Game.Contract
         }
 
         /// <summary>
-        /// Old sessionid
+        /// 对象被踢出
         /// </summary>
+        [JsonIgnore]
+        public bool IsReplaced
+        {
+            get { return !string.IsNullOrEmpty(OldSessionId); }
+        }
+        /// <summary>
+        /// 标记此对象被踢出
+        /// </summary>
+        [ProtoMember(15)]
         public string OldSessionId { get; set; }
 
         /// <summary>
@@ -806,7 +678,7 @@ namespace ZyGames.Framework.Game.Contract
         /// 最后活动时间
         /// </summary>
         [ProtoMember(5)]
-        public DateTime LastActivityTime { get; internal set; }
+        public DateTime LastActivityTime { get; private set; }
 
         /// <summary>
         /// 是否会话超时
@@ -883,6 +755,189 @@ namespace ZyGames.Framework.Game.Contract
         public bool IsWebSocket
         {
             get { return _exSocket != null && _exSocket.IsWebSocket; }
+        }
+
+        #endregion
+
+        private GameSession(Guid sid, ExSocket exSocket, ISocket appServer)
+            : this(sid, null)
+        {
+            InitSocket(exSocket, appServer);
+        }
+
+        internal void InitSocket(ExSocket exSocket, ISocket appServer)
+        {
+            _exSocket = exSocket;
+            if (_exSocket != null) _remoteAddress = _exSocket.RemoteEndPoint.ToNotNullString();
+            AppServer = appServer;
+            if (User != null)
+            {
+                //update userid with sid.
+                _userHash[UserId] = KeyCode;
+            }
+        }
+
+        internal void InitHttp(object request)
+        {
+            if (User != null)
+            {
+                //update userid with sid.
+                _userHash[UserId] = KeyCode;
+            }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public void Refresh()
+        {
+            IsTimeout = false;
+            IsHeartbeatTimeout = false;
+            LastActivityTime = DateTime.Now;
+            if (User != null)
+            {
+                User.RefleshOnlineDate();
+            }
+        }
+
+        /// <summary>
+        /// 设置过期
+        /// </summary>
+        public void SetExpired()
+        {
+            LastActivityTime = MathUtils.UnixEpochDateTime;
+            if (User != null)
+            {
+                User.SetExpired(LastActivityTime);
+            }
+            Expire(this, 0);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="user"></param>
+        public void Bind(IUser user)
+        {
+            if (user == null) return;
+            int userId = user.GetUserId();
+            if (userId > 0)
+            {
+                //解除UserId与前一次的Session连接对象绑定
+                Guid sid;
+                if (_userHash.TryGetValue(userId, out sid) && sid != KeyCode)
+                {
+                    var session = Get(sid);
+                    if (session != null)
+                    {
+                        //防止先后问题
+                        if (session.IsReplaced || session.LastActivityTime < this.LastActivityTime)
+                        {
+                            session.ReplpaceSession();
+                            OnChangedSave(session); //保留被踢的状态
+                            session.UnBind();
+                        }
+                    }
+                }
+            }
+            _userHash[userId] = KeyCode;
+            User = user;
+            OnChangedSave(this);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public void UnBind()
+        {
+            User = null;
+        }
+
+        /// <summary>
+        /// 设置此对象被踢出
+        /// </summary>
+        private void ReplpaceSession()
+        {
+            OldSessionId = SessionId;
+            if (User != null)
+            {
+                User.IsReplaced = true;
+            }
+        }
+
+        /// <summary>
+        /// Is authorized.
+        /// </summary>
+        [JsonIgnore]
+        public bool IsAuthorized
+        {
+            get { return User != null && User.GetUserId() > 0; }
+        }
+
+        /// <summary>
+        /// Is proxy server session
+        /// </summary>
+        [JsonIgnore]
+        public bool IsProxyServer
+        {
+            get { return ProxySid != Guid.Empty && UserId == 0; }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        [JsonIgnore]
+        public bool IsRemote
+        {
+            get { return !string.IsNullOrEmpty(ProxyId); }
+        }
+        /// <summary>
+        /// Close
+        /// </summary>
+        public void Close()
+        {
+            GameSession session;
+            if (_globalSession.TryGetValue(KeyCode, out session) && session._exSocket != null)
+            {
+                //设置Socket为Closed的状态, 并未将物理连接马上中断
+                session._exSocket.IsClosed = true;
+            }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns>true:is expired</returns>
+        private bool CheckExpired()
+        {
+            return LastActivityTime < MathUtils.Now.AddSeconds(-Timeout);
+        }
+
+        private void Reset()
+        {
+            IsTimeout = true;
+            if (_exSocket != null)
+            {
+                try
+                {
+                    //设置Socket为Closed的状态, 并未将物理连接马上中断
+                    _exSocket.IsClosed = true;
+                    _exSocket.Close();
+                }
+                catch { }
+            }
+            Guid code;
+            if (_userHash.TryRemove(UserId, out code))
+            {
+                UnBind();
+            }
+
+            if (!string.IsNullOrEmpty(ProxyId)) _remoteHash.TryRemove(ProxyId, out code);
+            GameSession session;
+            if (_globalSession.TryRemove(KeyCode, out session))
+            {
+                session._monitorLock.Clear();
+            }
         }
 
         /// <summary>
