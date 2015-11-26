@@ -646,9 +646,9 @@ namespace ZyGames.Framework.RPC.Sockets
                 }
                 else
                 {
+                    //send success
                     dataToken.ResultCallback(ResultCode.Success);
-                    dataToken.Reset(true);
-                    TryDequeueAndPostSend(ioEventArgs);
+                    ReleaseIOEventArgs(ioEventArgs);
                 }
             }
             else
