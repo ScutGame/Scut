@@ -1277,7 +1277,7 @@ namespace ZyGames.Framework.Redis
         /// <returns></returns>
         private static bool UpdateEntity(string typeName, byte[][] keys, byte[][] values, params byte[][] removeKeys)
         {
-            if (keys.Length == 0 && removeKeys.Length > 0)
+            if (keys.Length == 0 && removeKeys.Length == 0)
             {
                 return false;
             }
