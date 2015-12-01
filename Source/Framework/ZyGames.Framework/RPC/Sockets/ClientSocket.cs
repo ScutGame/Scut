@@ -485,8 +485,12 @@ namespace ZyGames.Framework.RPC.Sockets
             {
                 return;
             }
-
             DataToken dataToken = (DataToken)ioEventArgs.UserToken;
+            if (dataToken == null)
+            {
+                return;
+            }
+
             try
             {
                 PostSend(ioEventArgs);
@@ -673,11 +677,11 @@ namespace ZyGames.Framework.RPC.Sockets
             }
             else
             {
-                this.sendEventArg.SetBuffer(dataToken.bufferOffset, this.clientSettings.BufferSize);
+                ioEventArgs.SetBuffer(dataToken.bufferOffset, this.clientSettings.BufferSize);
                 Buffer.BlockCopy(dataToken.byteArrayForMessage, dataToken.messageBytesDone, ioEventArgs.Buffer, dataToken.bufferOffset, this.clientSettings.BufferSize);
             }
 
-            bool willRaiseEvent = this.socketClient.SendAsync(this.sendEventArg);
+            bool willRaiseEvent = this.socketClient.SendAsync(ioEventArgs);
             if (!willRaiseEvent)
             {
                 ProcessSend(ioEventArgs);
@@ -699,7 +703,6 @@ namespace ZyGames.Framework.RPC.Sockets
                 {
                     dataToken.ResultCallback(ResultCode.Success);
                     dataToken.Reset(true);
-                    TryDequeueAndPostSend(ioEventArgs);
                 }
             }
             else
