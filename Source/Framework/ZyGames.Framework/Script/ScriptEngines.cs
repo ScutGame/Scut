@@ -198,7 +198,7 @@ namespace ZyGames.Framework.Script
                         _runtimeDomain.Dispose();
                     }
                     _runtimeDomain = runtimeDomain;
-                    EntitySchemaSet._entityAssembly = scope.ModelAssembly;
+                    EntitySchemaSet.EntityAssembly = scope.ModelAssembly;
                     //update after
                     if (!isFirstRun && _settupInfo.ModelChangedAfter != null && scope.ModelAssembly != null)
                     {

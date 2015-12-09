@@ -50,18 +50,31 @@ namespace ZyGames.Framework.Model
         {
             return ConfigManager.Configger.GetFirstOrAddConfig<EntitySection>();
         }
-
+        private static readonly object syncAssemblyRoot = new object();
         private static DictionaryExtend<string, SchemaTable> SchemaSet = new DictionaryExtend<string, SchemaTable>();
         private static ConcurrentQueue<SchemaTable> _dynamicTables = new ConcurrentQueue<SchemaTable>();
         private static CacheListener _tableListener = new CacheListener("__EntitySchemaSet_CheckDynamicTable", 60 * 60, OnCheckDynamicTable);//间隔1小时
-        internal static Assembly _entityAssembly;
+        private static Assembly _entityAssembly;
 
         /// <summary>
         /// 实体的程序集
         /// </summary>
         public static Assembly EntityAssembly
         {
-            get { return _entityAssembly; }
+            get
+            {
+                lock (syncAssemblyRoot)
+                {
+                    return _entityAssembly;
+                }
+            }
+            internal set
+            {
+                lock (syncAssemblyRoot)
+                {
+                    _entityAssembly = value;
+                }
+            }
         }
 
         /// <summary>
@@ -164,7 +177,7 @@ namespace ZyGames.Framework.Model
         {
             TraceLog.WriteLine("{0} Start checking table schema, please wait.", DateTime.Now.ToString("HH:mm:ss"));
 
-            _entityAssembly = assembly;
+            EntityAssembly = assembly;
             var types = assembly.GetTypes().Where(p => p.GetCustomAttributes(typeof(EntityTableAttribute), false).Count() > 0).ToList();
             foreach (var type in types)
             {

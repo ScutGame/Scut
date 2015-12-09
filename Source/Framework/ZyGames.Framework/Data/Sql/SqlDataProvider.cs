@@ -76,10 +76,11 @@ namespace ZyGames.Framework.Data.Sql
         /// 
         /// </summary>
         /// <param name="commandType"></param>
+        /// <param name="commandTimeout"></param>
         /// <param name="commandText"></param>
         /// <param name="parameters"></param>
         /// <returns></returns>
-        public override IDataReader ExecuteReader(CommandType commandType, string commandText, params IDataParameter[] parameters)
+        public override IDataReader ExecuteReader(CommandType commandType, int? commandTimeout, string commandText, params IDataParameter[] parameters)
         {
             SqlConnection conn = new SqlConnection(ConnectionString);
             try
@@ -91,41 +92,83 @@ namespace ZyGames.Framework.Data.Sql
                 throw new DbConnectionException(ex.Message, ex);
             }
             //internal close connection
-            return SqlHelper.ExecuteReader(conn, commandType, commandText, false, ConvertParam<SqlParameter>(parameters));
-
+            if (!commandTimeout.HasValue)
+            {
+                return SqlHelper.ExecuteReader(conn, commandType, commandText, false, ConvertParam<SqlParameter>(parameters));
+            }
+            using (var cmd = CreateSqlCommand(conn, null, commandTimeout, commandText))
+            {
+                return cmd.ExecuteReader(CommandBehavior.CloseConnection);
+            }
         }
+
         /// <summary>
         /// 
         /// </summary>
         /// <param name="commandType"></param>
+        /// <param name="commandTimeout"></param>
         /// <param name="commandText"></param>
         /// <param name="parameters"></param>
         /// <returns></returns>
-        public override object ExecuteScalar(CommandType commandType, string commandText, params IDataParameter[] parameters)
+        public override object ExecuteScalar(CommandType commandType, int? commandTimeout, string commandText, params IDataParameter[] parameters)
         {
             object result = null;
             OpenConnection(conn =>
             {
-                result = SqlHelper.ExecuteScalar(conn, commandType, commandText, ConvertParam<SqlParameter>(parameters));
+                if (!commandTimeout.HasValue)
+                {
+                    result = SqlHelper.ExecuteScalar(conn, commandType, commandText, ConvertParam<SqlParameter>(parameters));
+                    return;
+                }
+                using (var cmd = CreateSqlCommand(conn, null, commandTimeout, commandText))
+                {
+                    result = cmd.ExecuteScalar();
+                }
             });
             return result;
         }
+
         /// <summary>
         /// 
         /// </summary>
         /// <param name="commandType"></param>
+        /// <param name="commandTimeout"></param>
         /// <param name="commandText"></param>
         /// <param name="parameters"></param>
         /// <returns></returns>
-        public override int ExecuteQuery(CommandType commandType, string commandText, params IDataParameter[] parameters)
+        public override int ExecuteQuery(CommandType commandType, int? commandTimeout, string commandText, params IDataParameter[] parameters)
         {
             int result = 0;
             OpenConnection(conn =>
             {
-                result = SqlHelper.ExecuteNonQuery(conn, commandType, commandText, ConvertParam<SqlParameter>(parameters));
+                if (!commandTimeout.HasValue)
+                {
+                    result = SqlHelper.ExecuteNonQuery(conn, commandType, commandText, ConvertParam<SqlParameter>(parameters));
+                    return;
+                }
+                using (var cmd = CreateSqlCommand(conn, null, commandTimeout, commandText))
+                {
+                    result = cmd.ExecuteNonQuery();
+                }
             });
             return result;
         }
+
+
+        private static SqlCommand CreateSqlCommand(SqlConnection connection, SqlTransaction transaction, int? commandTimeout, string commandText)
+        {
+            SqlCommand cmd = new SqlCommand();
+            cmd.Connection = connection;
+            cmd.Transaction = transaction;
+            cmd.CommandText = commandText;
+            cmd.CommandType = CommandType.Text;
+            if (commandTimeout != null)
+            {
+                cmd.CommandTimeout = commandTimeout.Value;
+            }
+            return cmd;
+        }
+
 
         private void OpenConnection(Action<SqlConnection> action)
         {
@@ -173,13 +216,15 @@ namespace ZyGames.Framework.Data.Sql
         /// </summary>
         /// <param name="identityId"></param>
         /// <param name="commandType"></param>
+        /// <param name="tableName"></param>
         /// <param name="commandText"></param>
         /// <param name="parameters"></param>
         /// <returns></returns>
-        public override int ExecuteNonQuery(int identityId, CommandType commandType, string commandText, params IDataParameter[] parameters)
+        public override int ExecuteNonQuery(int identityId, CommandType commandType, string tableName, string commandText, params IDataParameter[] parameters)
         {
             SqlStatement statement = new SqlStatement();
             statement.IdentityID = identityId;
+            statement.Table = tableName;
             statement.ConnectionString = ConnectionString;
             statement.ProviderType = "SqlDataProvider";
             statement.CommandType = commandType;
@@ -198,6 +243,7 @@ namespace ZyGames.Framework.Data.Sql
             command.Parser();
             SqlStatement statement = new SqlStatement();
             statement.IdentityID = identityId;
+            statement.Table = command.TableName;
             statement.ConnectionString = ConnectionString;
             statement.ProviderType = "SqlDataProvider";
             statement.CommandType = command.CommandType;

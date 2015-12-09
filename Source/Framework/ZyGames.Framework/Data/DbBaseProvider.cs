@@ -128,28 +128,68 @@ namespace ZyGames.Framework.Data
         /// <summary>
         /// 执行Sql语句
         /// </summary>
+        /// <param name="command"></param>
+        /// <returns></returns>
+        public IDataReader ExecuteReader(CommandStruct command)
+        {
+            command.Parser();
+            return ExecuteReader(command.CommandType, command.Sql, command.Parameters);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
         /// <param name="commandType"></param>
         /// <param name="commandText"></param>
         /// <param name="parameters"></param>
         /// <returns></returns>
-        public abstract IDataReader ExecuteReader(CommandType commandType, string commandText, params IDataParameter[] parameters);
+        public IDataReader ExecuteReader(CommandType commandType, string commandText, params IDataParameter[] parameters)
+        {
+            return ExecuteReader(commandType, null, commandText, parameters);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="commandType"></param>
+        /// <param name="commandTimeout"></param>
+        /// <param name="commandText"></param>
+        /// <param name="parameters"></param>
+        /// <returns></returns>
+        public abstract IDataReader ExecuteReader(CommandType commandType, int? commandTimeout, string commandText, params IDataParameter[] parameters);
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="command"></param>
+        /// <returns></returns>
+        public object ExecuteScalar(CommandStruct command)
+        {
+            command.Parser();
+            return ExecuteScalar(command.CommandType, command.Sql, command.Parameters);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="commandType"></param>
+        /// <param name="commandText"></param>
+        /// <param name="parameters"></param>
+        /// <returns></returns>
+        public object ExecuteScalar(CommandType commandType, string commandText, params IDataParameter[] parameters)
+        {
+            return ExecuteScalar(commandType, null, commandText, parameters);
+        }
+
         /// <summary>
         /// 执行Sql语句，返回第一行第一列值
         /// </summary>
         /// <param name="commandType"></param>
+        /// <param name="commandTimeout"></param>
         /// <param name="commandText"></param>
         /// <param name="parameters"></param>
         /// <returns></returns>
-        public abstract object ExecuteScalar(CommandType commandType, string commandText, params IDataParameter[] parameters);
-        /// <summary>
-        /// 执行Sql语句
-        /// </summary>
-        /// <param name="commandType"></param>
-        /// <param name="commandText"></param>
-        /// <param name="parameters"></param>
-        /// <exception cref="DbConnectionException"></exception>
-        /// <returns></returns>
-        public abstract int ExecuteQuery(CommandType commandType, string commandText, params IDataParameter[] parameters);
+        public abstract object ExecuteScalar(CommandType commandType, int? commandTimeout, string commandText, params IDataParameter[] parameters);
 
         /// <summary>
         /// 执行Sql语句
@@ -170,6 +210,29 @@ namespace ZyGames.Framework.Data
         public abstract IEnumerable<int> ExecuteQuery(IEnumerable<CommandStruct> commands);
 
         /// <summary>
+        /// 执行Sql语句
+        /// </summary>
+        /// <param name="commandType"></param>
+        /// <param name="commandText"></param>
+        /// <param name="parameters"></param>
+        /// <exception cref="DbConnectionException"></exception>
+        /// <returns></returns>
+        public int ExecuteQuery(CommandType commandType, string commandText, params IDataParameter[] parameters)
+        {
+            return ExecuteQuery(commandType, null, commandText, parameters);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="commandType"></param>
+        /// <param name="commandTimeout"></param>
+        /// <param name="commandText"></param>
+        /// <param name="parameters"></param>
+        /// <returns></returns>
+        public abstract int ExecuteQuery(CommandType commandType, int? commandTimeout, string commandText, params IDataParameter[] parameters);
+
+        /// <summary>
         /// 写入消息队列
         /// </summary>
         /// <param name="identityId"></param>
@@ -177,7 +240,21 @@ namespace ZyGames.Framework.Data
         /// <param name="commandText"></param>
         /// <param name="parameters"></param>
         /// <returns></returns>
-        public abstract int ExecuteNonQuery(int identityId, CommandType commandType, string commandText, params IDataParameter[] parameters);
+        public int ExecuteNonQuery(int identityId, CommandType commandType, string commandText, params IDataParameter[] parameters)
+        {
+            return ExecuteNonQuery(identityId, commandType, null, commandText, parameters);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="identityId"></param>
+        /// <param name="commandType"></param>
+        /// <param name="tableName"></param>
+        /// <param name="commandText"></param>
+        /// <param name="parameters"></param>
+        /// <returns></returns>
+        public abstract int ExecuteNonQuery(int identityId, CommandType commandType, string tableName, string commandText, params IDataParameter[] parameters);
 
         /// <summary>
         /// 生成Sql命令对象

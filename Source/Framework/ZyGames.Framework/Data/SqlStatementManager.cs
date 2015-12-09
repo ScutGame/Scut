@@ -32,6 +32,7 @@ using ZyGames.Framework.Common.Log;
 using ZyGames.Framework.Common.Serialization;
 using ZyGames.Framework.Common.Threading;
 using ZyGames.Framework.Config;
+using ZyGames.Framework.Profile;
 using ZyGames.Framework.Redis;
 
 namespace ZyGames.Framework.Data
@@ -55,7 +56,7 @@ namespace ZyGames.Framework.Data
         /// </summary>
         public static readonly string SqlSyncConnErrorQueueKey = "__QUEUE_SQL_SYNC_CONN_ERROR";
         private static Timer[] _queueWatchTimers;
-        private static SmartThreadPool _threadPools;
+        //private static SmartThreadPool _threadPools;
         private static int[] _isWatchWorking;
         private const int sqlSyncPackSize = 101;
 
@@ -108,8 +109,8 @@ namespace ZyGames.Framework.Data
                 {
                     _queueWatchTimers[i] = new Timer(OnCheckSqlSyncQueue, i, 100, 100);
                 }
-                _threadPools = new SmartThreadPool(180 * 1000, 100, 5);
-                _threadPools.Start();
+                //_threadPools = new SmartThreadPool(180 * 1000, 100, 5);
+                //_threadPools.Start();
             }
         }
 
@@ -171,12 +172,13 @@ namespace ZyGames.Framework.Data
                 {
                     return false;
                 }
+                string tableName = statement.Table;
                 string key = GetSqlQueueKey(statement.IdentityID);
                 byte[] value = ProtoBufUtils.Serialize(statement);
                 RedisConnectionPool.Process(client =>
                 {
                     client.ZAdd(key, DateTime.Now.Ticks, value);
-                    //todo: PostSql sqlCount
+                    ProfileManager.PostSqlOfMessageQueueTimes(tableName, 1);
                 });
                 result = true;
             }
@@ -271,7 +273,7 @@ namespace ZyGames.Framework.Data
                         {
                             break;
                         }
-                        _threadPools.QueueWorkItem(DoProcessSqlSyncQueue, workingKey, bufferBytes);
+                       DoProcessSqlSyncQueue(workingKey, bufferBytes);
                     } while (true);
                 }
                 catch (Exception ex)
@@ -337,7 +339,11 @@ namespace ZyGames.Framework.Data
                     {
                         if (result > 0)
                         {
-                            //todo: ProcessSql
+                            ProfileManager.ProcessSqlOfMessageQueueTimes(statement != null ? statement.Table : null);
+                        }
+                        else
+                        {
+                            ProfileManager.ProcessFailSqlOfMessageQueueTimes(statement != null ? statement.Table : null, 1);
                         }
                     }
                 }

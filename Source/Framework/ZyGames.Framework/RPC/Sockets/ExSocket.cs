@@ -38,6 +38,8 @@ namespace ZyGames.Framework.RPC.Sockets
     {
         private Socket socket;
         private IPEndPoint remoteEndPoint;
+        private ConcurrentQueue<SocketAsyncResult> sendQueue;
+        private int isInSending;
         internal DateTime LastAccessTime;
 
         /// <summary>
@@ -47,6 +49,7 @@ namespace ZyGames.Framework.RPC.Sockets
         public ExSocket(Socket socket)
         {
             HashCode = Guid.NewGuid();
+            sendQueue = new ConcurrentQueue<SocketAsyncResult>();
             this.socket = socket;
             InitData();
         }
@@ -87,6 +90,11 @@ namespace ZyGames.Framework.RPC.Sockets
         /// </summary>
         /// <value>The remote end point.</value>
         public EndPoint RemoteEndPoint { get { return remoteEndPoint; } }
+        /// <summary>
+        /// Gets the length of the queue.
+        /// </summary>
+        /// <value>The length of the queue.</value>
+        public int QueueLength { get { return sendQueue.Count; } }
 
         /// <summary>
         /// Web socket handshake data
@@ -119,5 +127,31 @@ namespace ZyGames.Framework.RPC.Sockets
             WorkSocket.Close();
         }
 
+        internal bool DirectSendOrEnqueue(byte[] data, Action<SocketAsyncResult> callback)
+        {
+            lock (socket)
+            {
+                sendQueue.Enqueue(new SocketAsyncResult(data) { Socket = this, ResultCallback = callback });
+                return Interlocked.CompareExchange(ref isInSending, 1, 0) == 0;
+            }
+        }
+
+        internal bool TryDequeueOrReset(out SocketAsyncResult result)
+        {
+            lock(socket)
+            {
+                if (sendQueue.TryDequeue(out result)) return true;
+                else Interlocked.Exchange(ref isInSending, 0);
+                return false;
+            }
+        }
+        //internal bool TrySetSendFlag()
+        //{
+        //    return Interlocked.CompareExchange(ref isInSending, 1, 0) == 0;
+        //}
+        internal void ResetSendFlag()
+        {
+            Interlocked.Exchange(ref isInSending, 0);
+        }
     }
 }

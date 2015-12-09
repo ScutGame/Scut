@@ -157,10 +157,6 @@ namespace ZyGames.Framework.RPC.Service
         {
             try
             {
-                if (!Connected)
-                {
-                    return;
-                }
                 if (HeartPacket != null && HeartPacket.Length > 0)
                 {
                     Send(HeartPacket);

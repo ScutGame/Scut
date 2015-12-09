@@ -79,6 +79,12 @@ namespace ZyGames.Framework.Data
         public SqlParam[] Params { get; set; }
 
         /// <summary>
+        /// 表名
+        /// </summary>
+        [ProtoMember(7)]
+        public string Table { get; set; }
+
+        /// <summary>
         /// 
         /// </summary>
         /// <returns></returns>

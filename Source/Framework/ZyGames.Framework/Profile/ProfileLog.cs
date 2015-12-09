@@ -53,5 +53,14 @@ namespace ZyGames.Framework.Profile
             Interlocked.Increment(ref _total);
             Interlocked.Increment(ref _current);
         }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="count"></param>
+        public void Countor(int count)
+        {
+            Interlocked.Add(ref _total, count);
+            Interlocked.Add(ref _current, count);
+        }
     }
 }

@@ -74,7 +74,8 @@ namespace ZyGames.Framework.Profile
             "TotalAutoChanged","AutoChangedCount","AutoChangedPerSecond",
             "TotalPost","TotalPostObject","PostCount","PostObjectCount","PostPerSecond",
             "TotalProcess","TotalProcessObject","ProcessCount","ProcessObjectCount","ProcessPerSecond",
-            "NoProcessKey"
+            "NoProcessKey",
+            "TotalPostSql","TotalProcessSql","TotalFailSql","WaitSyncEntity","PostSql","ProcessSql","ProcessSqlPerSecond" //sql
         };
         private static StringBuilder _operateLog = new StringBuilder();
         private static readonly object rootSync = new object();
@@ -84,17 +85,25 @@ namespace ZyGames.Framework.Profile
         /// Enity object time of MQ IO, [key]: entity type name
         /// </summary>
         private static DictionaryExtend<string, EntityProfileCollection> _entityObjectCollection;
+        //收集每个对象更新的次数
+        private static DictionaryExtend<string, SqlProfileCollection> _sqlCollection;
 
         static ProfileManager()
         {
             _summary = new ProfileSummary();
             _entityObjectCollection = new DictionaryExtend<string, EntityProfileCollection>();
+            _sqlCollection = new DictionaryExtend<string, SqlProfileCollection>();
         }
 
         /// <summary>
         /// Moniter is running
         /// </summary>
         public static bool IsEnable { get { return GetSection().ProfileEnableCollect; } }
+
+        /// <summary>
+        /// Open trace log
+        /// </summary>
+        public static bool IsOpenWriteLog { get { return GetSection().ProfileEnableCollect; } }
         /// <summary>
         /// 
         /// </summary>
@@ -188,24 +197,44 @@ namespace ZyGames.Framework.Profile
             }
         }
 
-        private static void AppendOperateLog(string category, string typeName, OperateMode mode, string key)
+        /// <summary>
+        /// 收集Sql执行失败计数
+        /// </summary>
+        public static void ProcessFailSqlOfMessageQueueTimes(string tableName, int count)
         {
-            lock (rootSync)
-            {
-                //{Time:xxx type [operateMode] entityName keys:}
-                _operateLog.AppendFormat("Time:{0} {1} [{2}] {3} key:{4}",
-                    MathUtils.UnixEpochTimeSpan.TotalSeconds,
-                    category,
-                    (string.Join("|",
-                        new[]{(mode.HasFlag(OperateMode.Add) ? OperateMode.Add.ToString() : ""),
-                    (mode.HasFlag(OperateMode.Modify) ? OperateMode.Modify.ToString() : ""),
-                    (mode.HasFlag(OperateMode.Remove) ? OperateMode.Remove.ToString() : "")}.Where(t => !string.IsNullOrEmpty(t)))
-                    ),
-                    typeName,
-                    key
-                  );
-                _operateLog.AppendLine();
-            }
+            if (!IsEnable) return;
+            var obj = _sqlCollection.GetOrAdd(tableName ?? "unknow", t => new SqlProfileCollection());
+            Interlocked.Add(ref obj.TotalFailCount, count);
+        }
+
+        /// <summary>
+        /// 收集Sql提交计数
+        /// </summary>
+        public static void PostSqlOfMessageQueueTimes(string tableName, int count)
+        {
+            if (!IsEnable) return;
+            var obj = _sqlCollection.GetOrAdd(tableName ?? "unknow", t => new SqlProfileCollection());
+            obj.PostTimes.Countor(count);
+        }
+
+        /// <summary>
+        /// 收集Sql执行计数
+        /// </summary>
+        public static void ProcessSqlOfMessageQueueTimes(string tableName)
+        {
+            if (!IsEnable) return;
+            var obj = _sqlCollection.GetOrAdd(tableName ?? "unknow", t => new SqlProfileCollection());
+            obj.ProcessTimes.Countor();
+        }
+
+        /// <summary>
+        /// 收集Sql等待同步计数
+        /// </summary>
+        public static void WaitSyncSqlOfMessageQueueTimes(string tableName, int count)
+        {
+            if (!IsEnable) return;
+            var obj = _sqlCollection.GetOrAdd(tableName ?? "unknow", t => new SqlProfileCollection());
+            Interlocked.Add(ref obj.WaitSyncCount, count);
         }
 
         /// <summary>
@@ -254,18 +283,27 @@ namespace ZyGames.Framework.Profile
                 summary.ProcessMQ[entityName] = processMqSummary;
                 var noProcessKeys = obj.PopNoProcessKeys().ToList();
                 obj.TotalNoProcessObjectCount += noProcessKeys.Count;
-                summary.TotalNoProcess = obj.TotalNoProcessObjectCount;
+                summary.TotalNoProcess += obj.TotalNoProcessObjectCount;
                 if (noProcessKeys.Count > 0)
                 {
                     //Write error log
                     TraceLog.WriteError("Entity operation is not saved, \"{0}\" keys:{1}", entityName, string.Join(";", noProcessKeys));
                 }
             }
-
+            foreach (var pair in _sqlCollection)
+            {
+                var obj = pair.Value;
+                summary.PostSqlCount += obj.PostTimes.Reset();
+                summary.ProcessSqlCount += obj.ProcessTimes.Reset();
+                summary.TotalPostSqlCount += obj.PostTimes.Total;
+                summary.TotalProcessSqlCount += obj.ProcessTimes.Total;
+                summary.TotalProcessFailSqlCount += obj.TotalFailCount;
+            }
             WriteProfileSummaryLog(summary);
             return _summary = summary;
         }
 
+        #region private method
         private static void WriteToStorage()
         {
             //Only write file
@@ -333,6 +371,28 @@ namespace ZyGames.Framework.Profile
                      }
                  }).ToArray();
                 dbProvider.CreateTable(MessageQueueTableName, columns);
+            }
+        }
+
+        private static void AppendOperateLog(string category, string typeName, OperateMode mode, string key)
+        {
+            if (!IsOpenWriteLog) return;
+
+            lock (rootSync)
+            {
+                //{Time:xxx type [operateMode] entityName keys:}
+                _operateLog.AppendFormat("Time:{0} {1} [{2}] {3} key:{4}",
+                    MathUtils.UnixEpochTimeSpan.TotalSeconds,
+                    category,
+                    (string.Join("|",
+                        new[]{(mode.HasFlag(OperateMode.Add) ? OperateMode.Add.ToString() : ""),
+                    (mode.HasFlag(OperateMode.Modify) ? OperateMode.Modify.ToString() : ""),
+                    (mode.HasFlag(OperateMode.Remove) ? OperateMode.Remove.ToString() : "")}.Where(t => !string.IsNullOrEmpty(t)))
+                    ),
+                    typeName,
+                    key
+                  );
+                _operateLog.AppendLine();
             }
         }
 
@@ -424,16 +484,23 @@ namespace ZyGames.Framework.Profile
             return log.ToString().TrimEnd(',');
         }
 
+        #endregion
+
         private static IEnumerable<KeyValuePair<string, object>> GetDetailValues(ProfileSummary summary)
         {
             var changeAutoCount = summary.ChangeAutoMQ.Sum(t => t.Value.Count);
-            var changeAutoPerSecond = Math.Round(changeAutoCount / summary.IntervalSecond, ColumnScale);
+            var changeAutoPerSecond = Math.Round(changeAutoCount / summary.IntervalSecond, ColumnScale);//2位小数
             var postCount = summary.PostMQ.Sum(t => t.Value.Count);
             var postObjectCount = summary.PostMQ.Sum(t => t.Value.ObjectCount);
             var postPerSecond = Math.Round(postCount / summary.IntervalSecond, ColumnScale);
             var processCount = summary.ProcessMQ.Sum(t => t.Value.Count);
             var processObjectCount = summary.ProcessMQ.Sum(t => t.Value.ObjectCount);
             var processPerSecond = Math.Round(processCount / summary.IntervalSecond, ColumnScale);
+
+            //sql
+            var processSqlPerSecond = Math.Round(summary.ProcessSqlCount / summary.IntervalSecond, ColumnScale);
+
+
             return new[]
             {
                 new KeyValuePair<string, object>("Id", summary.Id), 
@@ -452,7 +519,18 @@ namespace ZyGames.Framework.Profile
                 new KeyValuePair<string, object>("ProcessObjectCount", processObjectCount), 
                 new KeyValuePair<string, object>("ProcessPerSecond", processPerSecond), 
                 new KeyValuePair<string, object>("NoProcessKey", summary.TotalNoProcess), 
+
+                //sql
+                new KeyValuePair<string, object>("TotalPostSql", summary.TotalPostSqlCount), 
+                new KeyValuePair<string, object>("TotalProcessSql", summary.TotalProcessSqlCount), 
+                new KeyValuePair<string, object>("TotalFailSql", summary.TotalProcessFailSqlCount), 
+                new KeyValuePair<string, object>("WaitSyncEntity", summary.WaitSyncEntityCount), 
+                new KeyValuePair<string, object>("PostSql", summary.PostSqlCount), 
+                new KeyValuePair<string, object>("ProcessSql", summary.ProcessSqlCount), 
+                new KeyValuePair<string, object>("ProcessSqlPerSecond", processSqlPerSecond), 
             };
+
         }
+
     }
 }

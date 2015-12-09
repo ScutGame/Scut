@@ -21,8 +21,8 @@ namespace ZyGames.Framework.Config
             ProfileEnableCollect = ConfigUtils.GetSetting("Profile.EnableCollect", false);
             ProfileCollectInterval = ConfigUtils.GetSetting("Profile.CollectInterval", 10);
             ProfileLogPath = ConfigUtils.GetSetting("Profile.LogPath", "");
+            IsOpenWriteLog = ConfigUtils.GetSetting("Profile.OpenWriteLog", false);
         }
-
 
         /// <summary>
         /// 
@@ -36,5 +36,11 @@ namespace ZyGames.Framework.Config
         /// 
         /// </summary>
         public string ProfileLogPath { get; set; }
+        /// <summary>
+        /// 
+        /// </summary>
+        public bool IsOpenWriteLog { get; set; }
+
+
     }
 }

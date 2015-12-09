@@ -62,10 +62,22 @@ namespace ZyGames.Framework.RPC.Sockets
         /// <summary>
         /// 
         /// </summary>
-        public SocketAsyncResult()
+        /// <param name="data"></param>
+        public SocketAsyncResult(byte[] data)
         {
             Result = ResultCode.Wait;
+            Data = data;
         }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public ExSocket Socket { get; set; }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public byte[] Data { get; private set; }
 
         /// <summary>
         /// 

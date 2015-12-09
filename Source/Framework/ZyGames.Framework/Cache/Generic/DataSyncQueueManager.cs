@@ -120,7 +120,7 @@ namespace ZyGames.Framework.Cache.Generic
         /// </summary>
         private static HashSet<string> _entityRemoteSet = new HashSet<string>();
 
-        private static SmartThreadPool _threadPools;
+        //private static SmartThreadPool _threadPools;
         /// <summary>
         /// 是否启用Redis队列
         /// </summary>
@@ -178,7 +178,7 @@ namespace ZyGames.Framework.Cache.Generic
             }
         }
 
-   
+
         /// <summary>
         /// Start
         /// </summary>
@@ -187,12 +187,12 @@ namespace ZyGames.Framework.Cache.Generic
         public static void Start(CacheSetting setting, ICacheSerializer serializer)
         {
             _serializer = serializer;
-            _threadPools = new SmartThreadPool(180 * 1000, 100, 5);
+            //_threadPools = new SmartThreadPool(180 * 1000, 100, 5);
             _entityQueueTimer = new Timer(OnEntitySyncQueue, null, 60, 100);
             MessageQueueSection section = GetSection();
             InitRedisQueue(section);
             InitSqlQueue(section);
-            _threadPools.Start();
+            //_threadPools.Start();
         }
 
         private static void InitRedisQueue(MessageQueueSection section)
@@ -321,8 +321,7 @@ namespace ZyGames.Framework.Cache.Generic
                         var pairs = g.Select(t => t.Value).ToList();
                         p.QueueCommand(client => ((RedisClient)client).ZAdd(g.Key, pairs), () =>
                         {//onSuccess
-
-                            //todo: PostSql sqlCount
+                            ProfileManager.PostSqlOfMessageQueueTimes(g.Key, sqlCount);
                         });
                         hasPost = true;
                     }
@@ -347,7 +346,7 @@ namespace ZyGames.Framework.Cache.Generic
                     var tempRemove = Interlocked.Exchange(ref _entityRemoteSet, new HashSet<string>());
                     var temp = Interlocked.Exchange(ref _entitySet, new HashSet<string>());
                     if (temp.Count == 0 || _queueWatchTimers == null) return;
-                    
+
                     RedisConnectionPool.ProcessPipeline(pipeline =>
                     {
                         bool hasPost = false;
@@ -555,7 +554,7 @@ namespace ZyGames.Framework.Cache.Generic
 
                     if (keys != null && keys.Length > 0)
                     {
-                        _threadPools.QueueWorkItem(DoProcessRedisSyncQueue, workingKey, keys, values);
+                        DoProcessRedisSyncQueue(workingKey, keys, values);
                     }
                 }
                 catch (Exception ex)
@@ -769,9 +768,10 @@ namespace ZyGames.Framework.Cache.Generic
                     {
                         var sqlWaitKeys = g.Select(p => p.Value[0]).ToArray();
                         var sqlWaitValues = g.Select(p => p.Value[1]).ToArray();
+                        int count = sqlWaitKeys.Length;
                         pipeline.QueueCommand(client => ((RedisClient)client).HMSet(g.Key, sqlWaitKeys, sqlWaitValues), () =>
                         {//onsuccess
-                            //todo: WaitSql
+                            ProfileManager.WaitSyncSqlOfMessageQueueTimes(null, count);
                         });
                         hasPost = true;
                     }
@@ -859,7 +859,7 @@ namespace ZyGames.Framework.Cache.Generic
                                 subValues = new byte[count][];
                                 Array.Copy(keys, pos, subKeys, 0, subKeys.Length);
                                 Array.Copy(values, pos, subValues, 0, subValues.Length);
-                                _threadPools.QueueWorkItem(DoProcessSqlWaitSyncQueue, workingKey, subKeys, subValues);
+                                DoProcessSqlWaitSyncQueue(workingKey, subKeys, subValues);
                                 pos += sqlWaitPackSize;
                             }
                         }
@@ -911,7 +911,7 @@ namespace ZyGames.Framework.Cache.Generic
                         p.QueueCommand(c => ((RedisClient)c).ZAdd(g.Key, pairs), r =>
                         {//onsuccess, 已经存在的返回值为0
                             result += r;
-                            //todo: PostSql sqlCount
+                            ProfileManager.PostSqlOfMessageQueueTimes(g.Key, sqlCount);
                         });
                         hasPost = true;
                     }
@@ -938,6 +938,12 @@ namespace ZyGames.Framework.Cache.Generic
         /// <returns></returns>
         private static IEnumerable<KeyValuePair<string, KeyValuePair<byte[], long>>> GenerateSqlFrom(SqlDataSender sender, RedisClient client, byte[][] keys, byte[][] values)
         {
+            string asmName = "";
+            var enitityAsm = EntitySchemaSet.EntityAssembly;
+            if (enitityAsm != null)
+            {
+                asmName = "," + enitityAsm.GetName().Name;
+            }
             var entityKeyList = new List<string>();
             var typeKeyValuePairs = new List<KeyValuePair<string, byte[][]>>();
             for (int i = 0; i < keys.Length; i++)
@@ -952,6 +958,7 @@ namespace ZyGames.Framework.Cache.Generic
                 typeKeyValuePairs.Add(new KeyValuePair<string, byte[][]>(typeName, new[] { entityKeyBytes, keyBytes, headBytes })
                 );
             }
+
             var sqlList = new List<KeyValuePair<string, KeyValuePair<byte[], long>>>();
             var typeGroup = typeKeyValuePairs.GroupBy(p => p.Key);
             foreach (var g in typeGroup)
@@ -960,12 +967,6 @@ namespace ZyGames.Framework.Cache.Generic
                 try
                 {
                     string entityParentKey = RedisConnectionPool.GetRedisEntityKeyName(typeName);
-                    string asmName = "";
-                    var enitityAsm = EntitySchemaSet.EntityAssembly;
-                    if (enitityAsm != null)
-                    {
-                        asmName = "," + enitityAsm.GetName().Name;
-                    }
                     string entityTypeName = RedisConnectionPool.DecodeTypeName(typeName);
                     Type type = Type.GetType(string.Format("{0}{1}", entityTypeName, asmName), false, true);
                     if (type == null)
@@ -1028,7 +1029,7 @@ namespace ZyGames.Framework.Cache.Generic
                 }
                 catch (Exception er)
                 {
-                    TraceLog.WriteError("FindEntityFromRedis {0} keys:{1}\r\nerror:{1}", typeName, string.Join(",", entityKeyList), er);
+                    TraceLog.WriteError("FindEntityFromRedis {0} keys:{1}\r\nError:{2}", typeName, entityKeyList.Count, er);
                     var errorKeys = g.Select(p => p.Value[1]).ToArray();
                     var errorValues = g.Select(p => p.Value[2]).ToArray();
                     client.HMSet(SqlSyncWaitErrirQueueKey, errorKeys, errorValues);

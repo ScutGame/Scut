@@ -45,6 +45,31 @@ namespace ZyGames.Framework.Profile
         /// 未被处理的计数
         /// </summary>
         public long TotalNoProcess { get; set; }
+
+        /// <summary>
+        /// 提交Sql命令总计数
+        /// </summary>
+        public long TotalPostSqlCount { get; set; }
+        /// <summary>
+        /// 处理Sql命令总计数
+        /// </summary>
+        public long TotalProcessSqlCount { get; set; }
+        /// <summary>
+        /// 处理Sql命令失败总计数
+        /// </summary>
+        public long TotalProcessFailSqlCount { get; set; }
+        /// <summary>
+        /// 同步等待Sql执行计数
+        /// </summary>
+        public long WaitSyncEntityCount { get; set; }
+        /// <summary>
+        /// 提交Sql命令数
+        /// </summary>
+        public long PostSqlCount { get; set; }
+        /// <summary>
+        /// 处理Sql命令数
+        /// </summary>
+        public long ProcessSqlCount { get; set; }
     }
 
     /// <summary>

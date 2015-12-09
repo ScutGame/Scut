@@ -77,10 +77,11 @@ namespace ZyGames.Framework.Data.MySql
         /// 
         /// </summary>
         /// <param name="commandType"></param>
+        /// <param name="commandTimeout"></param>
         /// <param name="commandText"></param>
         /// <param name="parameters"></param>
         /// <returns></returns>
-        public override IDataReader ExecuteReader(CommandType commandType, string commandText, params IDataParameter[] parameters)
+        public override IDataReader ExecuteReader(CommandType commandType, int? commandTimeout, string commandText, params IDataParameter[] parameters)
         {
             MySqlConnection conn = new MySqlConnection(ConnectionString);
             try
@@ -92,69 +93,101 @@ namespace ZyGames.Framework.Data.MySql
                 throw new DbConnectionException(ex.Message, ex);
             }
             //internal close connection
-            return ExecuteReader(conn, null, commandText, false, ConvertParam<MySqlParameter>(parameters));
+            return DoExecuteReader(conn, null, commandTimeout, commandText, false, ConvertParam<MySqlParameter>(parameters));
         }
+
 
         /// <summary>
         /// 
         /// </summary>
         /// <param name="commandType"></param>
+        /// <param name="commandTimeout"></param>
         /// <param name="commandText"></param>
         /// <param name="parameters"></param>
         /// <returns></returns>
-        public override object ExecuteScalar(CommandType commandType, string commandText, params IDataParameter[] parameters)
+        public override object ExecuteScalar(CommandType commandType, int? commandTimeout, string commandText, params IDataParameter[] parameters)
         {
             object result = null;
             OpenConnection(conn =>
             {
-                result = MySqlHelper.ExecuteScalar(conn, commandText, ConvertParam<MySqlParameter>(parameters));
-            });
-            return result;
-        }
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="commandType"></param>
-        /// <param name="commandText"></param>
-        /// <param name="parameters"></param>
-        /// <exception cref="DbConnectionException"></exception>
-        /// <returns></returns>
-        public override int ExecuteQuery(CommandType commandType, string commandText, params IDataParameter[] parameters)
-        {
-            int result = 0;
-            OpenConnection(conn =>
-            {
-                result = MySqlHelper.ExecuteNonQuery(conn, commandText, ConvertParam<MySqlParameter>(parameters));
+                if (!commandTimeout.HasValue)
+                {
+                    result = MySqlHelper.ExecuteScalar(conn, commandText, ConvertParam<MySqlParameter>(parameters));
+                    return;
+                }
+                using (var mySqlCommand = CreateMySqlCommand(conn, null, commandTimeout, commandText))
+                {
+                    result = mySqlCommand.ExecuteScalar();
+                }
             });
             return result;
         }
 
-        private IDataReader ExecuteReader(MySqlConnection connection, MySqlTransaction transaction, string commandText, bool externalConn, params MySqlParameter[] commandParameters)
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="commandType"></param>
+        /// <param name="commandTimeout"></param>
+        /// <param name="commandText"></param>
+        /// <param name="parameters"></param>
+        /// <exception cref="DbConnectionException"></exception>
+        /// <returns></returns>
+        public override int ExecuteQuery(CommandType commandType, int? commandTimeout, string commandText, params IDataParameter[] parameters)
         {
-            MySqlCommand mySqlCommand = new MySqlCommand();
-            mySqlCommand.Connection = connection;
-            mySqlCommand.Transaction = transaction;
-            mySqlCommand.CommandText = commandText;
-            mySqlCommand.CommandType = CommandType.Text;
-            if (commandParameters != null)
+            int result = 0;
+            OpenConnection(conn =>
             {
-                for (int i = 0; i < commandParameters.Length; i++)
+                if (!commandTimeout.HasValue)
                 {
-                    MySqlParameter value = commandParameters[i];
-                    mySqlCommand.Parameters.Add(value);
+                    result = MySqlHelper.ExecuteNonQuery(conn, commandText, ConvertParam<MySqlParameter>(parameters));
+                    return;
+                }
+                using (var mySqlCommand = CreateMySqlCommand(conn, null, commandTimeout, commandText))
+                {
+                    result = mySqlCommand.ExecuteNonQuery();
+                }
+            });
+            return result;
+        }
+
+        private IDataReader DoExecuteReader(MySqlConnection connection, MySqlTransaction transaction, int? commandTimeout, string commandText, bool externalConn, params MySqlParameter[] commandParameters)
+        {
+            MySqlDataReader result;
+            using (var mySqlCommand = CreateMySqlCommand(connection, null, commandTimeout, commandText))
+            {
+                if (commandParameters != null)
+                {
+                    for (int i = 0; i < commandParameters.Length; i++)
+                    {
+                        MySqlParameter value = commandParameters[i];
+                        mySqlCommand.Parameters.Add(value);
+                    }
+                }
+                if (externalConn)
+                {
+                    result = mySqlCommand.ExecuteReader();
+                }
+                else
+                {
+                    //it has closed while used end.
+                    result = mySqlCommand.ExecuteReader(CommandBehavior.CloseConnection);
                 }
             }
-            MySqlDataReader result;
-            if (externalConn)
-            {
-                result = mySqlCommand.ExecuteReader();
-            }
-            else
-            {
-                result = mySqlCommand.ExecuteReader(CommandBehavior.CloseConnection);
-            }
-            mySqlCommand.Parameters.Clear();
             return result;
+        }
+
+        private static MySqlCommand CreateMySqlCommand(MySqlConnection connection, MySqlTransaction transaction, int? commandTimeout, string commandText)
+        {
+            MySqlCommand cmd = new MySqlCommand();
+            cmd.Connection = connection;
+            cmd.Transaction = transaction;
+            cmd.CommandText = commandText;
+            cmd.CommandType = CommandType.Text;
+            if (commandTimeout != null)
+            {
+                cmd.CommandTimeout = commandTimeout.Value;
+            }
+            return cmd;
         }
 
 
@@ -203,13 +236,15 @@ namespace ZyGames.Framework.Data.MySql
         /// </summary>
         /// <param name="identityId"></param>
         /// <param name="commandType"></param>
+        /// <param name="tableName"></param>
         /// <param name="commandText"></param>
         /// <param name="parameters"></param>
         /// <returns></returns>
-        public override int ExecuteNonQuery(int identityId, CommandType commandType, string commandText, params IDataParameter[] parameters)
+        public override int ExecuteNonQuery(int identityId, CommandType commandType, string tableName, string commandText, params IDataParameter[] parameters)
         {
             SqlStatement statement = new SqlStatement();
             statement.IdentityID = identityId;
+            statement.Table = tableName;
             statement.ConnectionString = ConnectionString;
             statement.ProviderType = "MySqlDataProvider";
             statement.CommandType = commandType;
@@ -228,6 +263,7 @@ namespace ZyGames.Framework.Data.MySql
             command.Parser();
             SqlStatement statement = new SqlStatement();
             statement.IdentityID = identityId;
+            statement.Table = command.TableName;
             statement.ConnectionString = ConnectionString;
             statement.ProviderType = "MySqlDataProvider";
             statement.CommandType = command.CommandType;
