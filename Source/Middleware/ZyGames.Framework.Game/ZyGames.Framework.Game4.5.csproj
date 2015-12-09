@@ -194,6 +194,7 @@
     <Compile Include="Service\HttpGameResponse.cs" />
     <Compile Include="Service\JsonAction.cs" />
     <Compile Include="Service\LoginStatus.cs" />
+    <Compile Include="Service\ProtocolVersion.cs" />
     <Compile Include="Service\RemoteStruct.cs" />
     <Compile Include="Service\SocketGameResponse.cs" />
     <Compile Include="Sns\AbstractLogin.cs" />

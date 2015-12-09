@@ -398,7 +398,7 @@ namespace ZyGames.Framework.Game.Contract
                 session = GameSession.Get(user.GetUserId());
                 if (session == null)
                 {
-                    complateHandle(user, null, new SocketAsyncResult() { Result = ResultCode.Close });
+                    complateHandle(user, null, new SocketAsyncResult(null) { Result = ResultCode.Close });
                 }
                 sessionList.Add(session);
             }
@@ -457,7 +457,7 @@ namespace ZyGames.Framework.Game.Contract
                         {
                             if (complateHandle != null)
                             {
-                                complateHandle(temp, new SocketAsyncResult() { Result = ResultCode.Close });
+                                complateHandle(temp, new SocketAsyncResult(sendBuffer) { Result = ResultCode.Close });
                             }
                         }
                     }
@@ -465,7 +465,7 @@ namespace ZyGames.Framework.Game.Contract
                     {
                         if (complateHandle != null)
                         {
-                            complateHandle(temp, new SocketAsyncResult() { Result = ResultCode.Error, Error = ex });
+                            complateHandle(temp, new SocketAsyncResult(sendBuffer) { Result = ResultCode.Error, Error = ex });
                         }
                         TraceLog.WriteError("BroadcastAction  action:{0} userId:{1} error:{2}", actionId, session.UserId, ex);
                     }
@@ -553,7 +553,7 @@ namespace ZyGames.Framework.Game.Contract
                 {
                     if (complateHandle != null)
                     {
-                        complateHandle(temp, null, new SocketAsyncResult() { Result = ResultCode.Close });
+                        complateHandle(temp, null, new SocketAsyncResult(null) { Result = ResultCode.Close });
                     }
                 }
             }
@@ -591,7 +591,7 @@ namespace ZyGames.Framework.Game.Contract
                 {
                     if (complateHandle != null)
                     {
-                        complateHandle(temp, new SocketAsyncResult() { Result = ResultCode.Close });
+                        complateHandle(temp, new SocketAsyncResult(null) { Result = ResultCode.Close });
                     }
                 }
             }
@@ -628,7 +628,7 @@ namespace ZyGames.Framework.Game.Contract
                 {
                     if (complateHandle != null)
                     {
-                        complateHandle(temp, new SocketAsyncResult() { Result = ResultCode.Close });
+                        complateHandle(temp, new SocketAsyncResult(sendBuffer) { Result = ResultCode.Close });
                     }
                 }
             }
@@ -636,7 +636,7 @@ namespace ZyGames.Framework.Game.Contract
             {
                 if (complateHandle != null)
                 {
-                    complateHandle(temp, new SocketAsyncResult() { Result = ResultCode.Error, Error = ex });
+                    complateHandle(temp, new SocketAsyncResult(sendBuffer) { Result = ResultCode.Error, Error = ex });
                 }
                 TraceLog.WriteError("SendToClient action:{0} userId:{1} error:{2}", actionId, session.UserId, ex);
             }
