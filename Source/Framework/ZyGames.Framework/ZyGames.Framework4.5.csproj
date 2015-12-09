@@ -191,6 +191,7 @@
     <Compile Include="Profile\ProfileLog.cs" />
     <Compile Include="Profile\ProfileManager.cs" />
     <Compile Include="Profile\ProfileSummary.cs" />
+    <Compile Include="Profile\SqlProfileCollection.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Redis\RedisConnectionPool.cs" />
     <Compile Include="Redis\RedisInfo.cs" />
