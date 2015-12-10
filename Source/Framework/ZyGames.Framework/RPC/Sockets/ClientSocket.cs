@@ -775,6 +775,10 @@ namespace ZyGames.Framework.RPC.Sockets
                 DoClosed(e);
                 OnDisconnected(e);
                 if (exSocket != null) exSocket.Close();
+                sendEventArg.Dispose();
+                receiveEventArg.Dispose();
+                receiveWaitEvent.Dispose();
+                socketClient.Dispose();
             }
             catch (Exception ex)
             {

@@ -68,6 +68,7 @@ namespace ZyGames.Framework.RPC.Service
                 _cookies = new CookieCollection();
             };
             UserAgent = DefaultUserAgent;
+            LocalAddress = string.Empty;
         }
         /// <summary>
         /// 
@@ -99,16 +100,24 @@ namespace ZyGames.Framework.RPC.Service
         /// <param name="data"></param>
         public override async Task Send(byte[] data)
         {
-            var response = await GetResponse(data);
-            Stream stream = response.GetResponseStream();
-            RemoteEventArgs e = new RemoteEventArgs();
-            if (stream == null)
+            using (var response = await GetResponse(data))
             {
-                OnCallback(e);
-                return;
+                using (Stream stream = response.GetResponseStream())
+                {
+                    RemoteEventArgs e = new RemoteEventArgs();
+                    if (stream == null)
+                    {
+                        OnCallback(e);
+                        return;
+                    }
+                    e.Data = ReadStream(stream, _encoding);
+                    OnCallback(e);
+                }
             }
-            e.Data = ReadStream(stream, _encoding);
-            OnCallback(e);
+        }
+
+        public override void Close()
+        {
         }
 
         /// <summary>

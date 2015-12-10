@@ -72,6 +72,10 @@ namespace ZyGames.Framework.RPC.Service
         /// Is socket client
         /// </summary>
         public bool IsSocket { get; protected set; }
+        /// <summary>
+        /// 
+        /// </summary>
+        public string LocalAddress { get; protected set; }
 
         /// <summary>
         /// Send
@@ -84,6 +88,11 @@ namespace ZyGames.Framework.RPC.Service
         /// </summary>
         /// <param name="data"></param>
         public abstract Task Send(byte[] data);
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public abstract void Close();
 
         /// <summary>
         /// 
