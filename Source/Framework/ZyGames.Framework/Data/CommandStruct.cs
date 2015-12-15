@@ -147,6 +147,20 @@ namespace ZyGames.Framework.Data
         /// <summary>
         /// 
         /// </summary>
+        /// <param name="page"></param>
+        /// <param name="pageSize"></param>
+        public void SetPage(int page, int pageSize)
+        {
+            if (page < 1) throw new ArgumentOutOfRangeException("page");
+            if (pageSize < 1) throw new ArgumentOutOfRangeException("pageSize");
+
+            FromIndex = (page - 1) * pageSize;
+            ToIndex = page * pageSize;
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
         /// <param name="parameter"></param>
         /// <param name="isIdentity">key is auto increase</param>
         public void AddKey(IDataParameter parameter, bool isIdentity)
@@ -511,7 +525,7 @@ namespace ZyGames.Framework.Data
                     ReturnIdentity ? ";SELECT @@IDENTITY;" : "");
         }
 
-     
+
         /// <summary>
         /// 
         /// </summary>
