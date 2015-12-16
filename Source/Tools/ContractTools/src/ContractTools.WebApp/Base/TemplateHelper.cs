@@ -365,6 +365,7 @@ namespace ContractTools.WebApp.Base
 
         protected static string ReplaceClientLuaCallback(string content, List<ParamInfoModel> paramList, bool isQuick = false)
         {
+
             string field = "##Judge##";
             int depth = 0;
             int preIndent = 2;
@@ -377,7 +378,6 @@ namespace ContractTools.WebApp.Base
             StringBuilder strTemp = new StringBuilder();
             int[] indexList = new int[forVarChars.Length];
 
-            ArrayList RecordFieldList = new ArrayList(); 
             foreach (var paramInfo in paramList)
             {
                 FieldType fieldType = paramInfo.FieldType;
@@ -419,7 +419,6 @@ namespace ContractTools.WebApp.Base
                     strTemp.AppendLine();
 
                     currTableVar = subRecordVar;
-                    RecordFieldList.Add(paramInfo.Field.Length > 0 ? paramInfo.Field : string.Format("Children_{0}", recordIndex));
                     depth++;
                 }
                 else if (fieldType.Equals(FieldType.End))
@@ -448,22 +447,21 @@ namespace ContractTools.WebApp.Base
                     strTemp.AppendLine();
 
                     string tempTableVar = subTableVar;
-                    
+
                     indexList[depth] = 0;//子层级编号重置
                     depth--;
-                    string RecordField = RecordFieldList[depth] as string;
                     if (depth > 0)
                     {
                         subNumVar = subNumVar.Substring(0, subNumVar.LastIndexOf('_'));
                         subTableVar = subTableVar.Substring(0, subTableVar.LastIndexOf('_'));
                         subRecordVar = subRecordVar.Substring(0, subRecordVar.LastIndexOf('_'));
                     }
-                    //int recordIndex = depth < indexList.Length ? indexList[depth] : 0;
+                    int recordIndex = depth < indexList.Length ? indexList[depth] : 0;
                     currTableVar = depth > 0 ? subRecordVar : "DataTable";
-                    strTemp.AppendFormat("{0}{1}.{2} = {3}",
+                    strTemp.AppendFormat("{0}{1}.Children{2} = {3}",
                         currIndent,
                         currTableVar,
-                        RecordField,
+                        "_" + recordIndex,
                         tempTableVar);
                     strTemp.AppendLine();
                 }
@@ -531,7 +529,7 @@ namespace ContractTools.WebApp.Base
             StringBuilder strTemp = new StringBuilder();
             int[] indexList = new int[forVarChars.Length];
             char enumVar = forVarChars[depth];
-            ArrayList RecordFieldList = new ArrayList(); 
+            //ArrayList RecordFieldList = new ArrayList(); 
             foreach (var paramInfo in paramList)
             {
                 FieldType fieldType = paramInfo.FieldType;
@@ -569,7 +567,7 @@ namespace ContractTools.WebApp.Base
                     strTemp.AppendLine();
 
                     currTableVar = subRecordVar;
-                    RecordFieldList.Add(paramInfo.Field.Length > 0 ? paramInfo.Field : string.Format("Children_{0}", recordIndex));
+                    //RecordFieldList.Add(paramInfo.Field.Length > 0 ? paramInfo.Field : string.Format("Children_{0}", recordIndex));
                     depth++;
                 }
                 else if (fieldType.Equals(FieldType.End))
@@ -582,7 +580,7 @@ namespace ContractTools.WebApp.Base
                     strTemp.AppendLine();
 
                     depth--;
-                    string RecordField = RecordFieldList[depth] as string;
+                    //string RecordField = RecordFieldList[depth] as string;
                     currIndent = GetSpaceIndent(depth + indent, preIndent);
                     strTemp.AppendFormat("{0}", currIndent);
                     strTemp.AppendLine("}");
@@ -596,11 +594,11 @@ namespace ContractTools.WebApp.Base
                         subRecordVar = subRecordVar.Substring(0, subRecordVar.LastIndexOf('_'));
                     }
                     currTableVar = depth > 0 ? subTableVar : "actionResult";
-                    strTemp.AppendFormat("{0}{1}[\"{2}\"] = {3};",
-                        currIndent,
-                        currTableVar,
-                        RecordField,
-                        tempTableVar);
+                    strTemp.AppendFormat("{0}{1}[\"Children{2}\"] = {3};",
+                         currIndent,
+                         currTableVar,
+                         "_" + recordIndex,
+                         tempTableVar);
                     strTemp.AppendLine();
                 }
                 else if (fieldType.Equals(FieldType.Void))
@@ -1505,6 +1503,8 @@ namespace ContractTools.WebApp.Base
                     {
                         case FieldType.ULong:
                         case FieldType.Long:
+                            strTemp.Append("httpGet.GetLong(\"");
+                            break;
                         case FieldType.UInt:
                         case FieldType.Int:
                             strTemp.Append("httpGet.GetInt(\"");
