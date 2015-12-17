@@ -1,8 +1,8 @@
-Scut����˵��
+﻿Scut下载说明
 =================
 
-ʹ��TortoiseSVN����
+使用TortoiseSVN更新
 ----------------
-> ���ȫ����ַ��https://github.com/ScutGame/Scut.git
+> 检出全部地址：https://github.com/ScutGame/Scut.git
 
-> �����Ŀ¼��ַ��https://github.com/ScutGame/Scut.git/trunk/Source
+> 检出子目录地址：https://github.com/ScutGame/Scut.git/trunk/Source

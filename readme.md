@@ -1,6 +1,6 @@
 # README
 
-[![Build Status](http://scutgame.com/images/passing.png?branch=6.7.9.6)](http://scutgame.com/download/)
+[![Build Status](http://scutgame.com/images/passing.png?branch=6.7.9.11)](http://scutgame.com/download/)
 
 
 ## What's Scut?
@@ -111,14 +111,12 @@ Language:
 
 ## Update Log
 
-### Version: 6.7.9.10 (2015-9-11) R1
+### Version: 6.7.9.11 (2015-12-17) Beta
 
-* Add more key & type loading entity to cache.
-* Add rank entity of list model use to cache.
-* Fixed entity can not be async saved when entity is expiring.
-* Fixed socket can not accept connect bug.
-* Fixed machine-name & app path limit when mutil server connect to the Redis.
-* Fixed account server support use custom name regist.
+* Add Redis & DB sync queue profile log.
+* Fixed Sql command bug.
+* Fixed socket send bug.
+
 
 
 old version [more](http://scutgame.com/log).
