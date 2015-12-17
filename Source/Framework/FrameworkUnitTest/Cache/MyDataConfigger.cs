@@ -21,36 +21,34 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ****************************************************************************/
-namespace ZyGames.Framework.Game.Sns.Service
-{
-    /// <summary>
-    /// 
-    /// </summary>
-    public class LoginToken : ResponseData
-    {
-        /// <summary>
-        /// 
-        /// </summary>
-        public string Token { get; set; }
-        /// <summary>
-        /// 
-        /// </summary>
-        public string PassportId { get; set; }
-        /// <summary>
-        /// 
-        /// </summary>
-        public int UserId { get; set; }
+#define IS_MYSQ
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using ZyGames.Framework.Common.Configuration;
+using ZyGames.Framework.Config;
+using ZyGames.Framework.Redis;
 
-        /// <summary>
-        /// 
-        /// </summary>
-        public int UserType { get; set; }
-        /// <summary>
-        /// 
-        /// </summary>
-        public bool IsGuest
+
+namespace FrameworkUnitTest.Cache
+{
+    public class MyDataConfigger : DataConfigger
+    {
+        public const string DbKey = "Conn";
+        protected override void LoadConfigData()
         {
-            get { return UserType == (int) RegType.Guest; }
-    }
+            this.AddNodeData(new RedisSection() { DbIndex = 10, Host = "127.0.0.1:6379", ClientVersion = RedisStorageVersion.HashMutilKeyMap });
+            this.AddNodeData(new MessageQueueSection() { SqlSyncInterval = 1000 });
+            this.AddNodeData(new CacheSection() { IsStorageToDb = true });
+            this.AddNodeData(new EntitySection() { EnableModifyTimeField = true });
+
+#if IS_MYSQ
+            this.AddNodeData(new ConnectionSection(DbKey, "MySqlDataProvider", "Data Source=localhost;Database=FrameTestDB;Uid=root;Pwd=123456;"));
+#else
+                this.AddNodeData(new ConnectionSection(DbKey, "SqlDataProvider", "Data Source=localhost;Database=FrameTestDB;Uid=sa;Pwd=123;"));
+#endif
+        }
     }
 }

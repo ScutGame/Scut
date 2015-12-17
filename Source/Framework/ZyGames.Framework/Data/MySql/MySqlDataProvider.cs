@@ -87,7 +87,7 @@ namespace ZyGames.Framework.Data.MySql
             try
             {
                 conn.Open();
-            }
+        }
             catch (Exception ex)
             {
                 throw new DbConnectionException(ex.Message, ex);
@@ -114,7 +114,7 @@ namespace ZyGames.Framework.Data.MySql
                 {
                     result = MySqlHelper.ExecuteScalar(conn, commandText, ConvertParam<MySqlParameter>(parameters));
                     return;
-                }
+        }
                 using (var mySqlCommand = CreateMySqlCommand(conn, null, commandTimeout, commandText))
                 {
                     result = mySqlCommand.ExecuteScalar();
@@ -141,7 +141,7 @@ namespace ZyGames.Framework.Data.MySql
                 {
                     result = MySqlHelper.ExecuteNonQuery(conn, commandText, ConvertParam<MySqlParameter>(parameters));
                     return;
-                }
+        }
                 using (var mySqlCommand = CreateMySqlCommand(conn, null, commandTimeout, commandText))
                 {
                     result = mySqlCommand.ExecuteNonQuery();
@@ -315,9 +315,9 @@ namespace ZyGames.Framework.Data.MySql
                 }
                 result = true;
             });
-            columns = list.ToArray();
+                columns = list.ToArray();
             return result;
-        }
+            }
 
         private Type ConvertToObjectType(MySqlDbType toEnum)
         {
@@ -646,84 +646,84 @@ namespace ZyGames.Framework.Data.MySql
             StringBuilder command = new StringBuilder();
             OpenConnection(conn =>
             {
-                try
+            try
+            {
+                string dbTableName = FormatName(tableName);
+                command.AppendFormat("ALTER TABLE {0}", dbTableName);
+                command.AppendLine(" ADD COLUMN (");
+                List<string> keys;
+                List<string> uniques;
+                int identityNo;
+                bool hasColumn = CheckProcessColumns(command, columns, out keys, out uniques, out identityNo);
+                command.Append(");");
+                if (hasColumn)
                 {
-                    string dbTableName = FormatName(tableName);
-                    command.AppendFormat("ALTER TABLE {0}", dbTableName);
-                    command.AppendLine(" ADD COLUMN (");
-                    List<string> keys;
-                    List<string> uniques;
-                    int identityNo;
-                    bool hasColumn = CheckProcessColumns(command, columns, out keys, out uniques, out identityNo);
-                    command.Append(");");
-                    if (hasColumn)
-                    {
                         MySqlHelper.ExecuteNonQuery(conn, command.ToString());
-                        if (identityNo > 0)
-                        {
+                    if (identityNo > 0)
+                    {
                             MySqlHelper.ExecuteNonQuery(conn, string.Format("ALTER TABLE {0} AUTO_INCREMENT={1};", dbTableName, identityNo));
-                        }
                     }
+                }
 
-                    command.Clear();
-                    List<DbColumn> keyColumns = new List<DbColumn>();
-                    int index = 0;
-                    foreach (var dbColumn in columns)
+                command.Clear();
+                List<DbColumn> keyColumns = new List<DbColumn>();
+                int index = 0;
+                foreach (var dbColumn in columns)
+                {
+                    if (!dbColumn.IsModify)
                     {
-                        if (!dbColumn.IsModify)
-                        {
-                            continue;
-                        }
-                        if (dbColumn.IsKey)
-                        {
-                            keyColumns.Add(dbColumn);
-                            continue;
-                        }
-                        if (index > 0)
-                        {
-                            command.AppendLine("");
-                        }
-                        //ALTER TABLE `test`.`tb1`     CHANGE `Id4` `Id4t` BIGINT(20) NULL ;
-                        command.AppendFormat("ALTER TABLE {0} CHANGE {1} {1} {2} {3};",
-                                             dbTableName,
-                                             FormatName(dbColumn.Name),
-                                             ConvertToDbType(dbColumn.Type, dbColumn.DbType, dbColumn.Length, dbColumn.Scale, dbColumn.IsKey, dbColumn.Name),
-                                             dbColumn.Isnullable ? "" : " NOT NULL");
-                        index++;
+                        continue;
                     }
-                    //此处MySQL的处理主键方式不太一样
-                    if (keyColumns.Count > 0)
+                    if (dbColumn.IsKey)
                     {
-                        string[] keyArray = new string[keyColumns.Count];
+                        keyColumns.Add(dbColumn);
+                        continue;
+                    }
+                    if (index > 0)
+                    {
+                        command.AppendLine("");
+                    }
+                    //ALTER TABLE `test`.`tb1`     CHANGE `Id4` `Id4t` BIGINT(20) NULL ;
+                    command.AppendFormat("ALTER TABLE {0} CHANGE {1} {1} {2} {3};",
+                                         dbTableName,
+                                         FormatName(dbColumn.Name),
+                                         ConvertToDbType(dbColumn.Type, dbColumn.DbType, dbColumn.Length, dbColumn.Scale, dbColumn.IsKey, dbColumn.Name),
+                                         dbColumn.Isnullable ? "" : " NOT NULL");
+                    index++;
+                }
+                //此处MySQL的处理主键方式不太一样
+                if (keyColumns.Count > 0)
+                {
+                    string[] keyArray = new string[keyColumns.Count];
                         if (keyColumns.Any(t => t.KeyNo > 0))
                         {
                             //check haved key in db table
                             command.AppendFormat("ALTER TABLE {0} DROP PRIMARY KEY;", dbTableName);
                             command.AppendLine();
                         }
-                        int i = 0;
-                        foreach (var keyColumn in keyColumns)
-                        {
-                            keyArray[i] = FormatName(keyColumn.Name);
-                            command.AppendFormat("ALTER TABLE {0} CHANGE {1} {1} {2} not null;",
-                                                 dbTableName,
-                                                 FormatName(keyColumn.Name),
-                                                 ConvertToDbType(keyColumn.Type, keyColumn.DbType, keyColumn.Length, keyColumn.Scale, keyColumn.IsKey, keyColumn.Name));
-                            command.AppendLine();
-                            i++;
-                            index++;
-                        }
-                        command.AppendFormat("ALTER TABLE {0} ADD PRIMARY KEY ({1});", dbTableName, FormatQueryColumn(",", keyArray));
-                    }
-                    if (index > 0)
+                    int i = 0;
+                    foreach (var keyColumn in keyColumns)
                     {
-                        MySqlHelper.ExecuteNonQuery(conn, command.ToString());
+                        keyArray[i] = FormatName(keyColumn.Name);
+                        command.AppendFormat("ALTER TABLE {0} CHANGE {1} {1} {2} not null;",
+                                             dbTableName,
+                                             FormatName(keyColumn.Name),
+                                             ConvertToDbType(keyColumn.Type, keyColumn.DbType, keyColumn.Length, keyColumn.Scale, keyColumn.IsKey, keyColumn.Name));
+                        command.AppendLine();
+                        i++;
+                        index++;
                     }
+                    command.AppendFormat("ALTER TABLE {0} ADD PRIMARY KEY ({1});", dbTableName, FormatQueryColumn(",", keyArray));
                 }
-                catch (Exception ex)
+                if (index > 0)
                 {
-                    throw new Exception(string.Format("Execute sql error:{0}", command), ex);
+                        MySqlHelper.ExecuteNonQuery(conn, command.ToString());
                 }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(string.Format("Execute sql error:{0}", command), ex);
+            }
 
             });
         }

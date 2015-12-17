@@ -21,36 +21,41 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ****************************************************************************/
-namespace ZyGames.Framework.Game.Sns.Service
-{
-    /// <summary>
-    /// 
-    /// </summary>
-    public class LoginToken : ResponseData
-    {
-        /// <summary>
-        /// 
-        /// </summary>
-        public string Token { get; set; }
-        /// <summary>
-        /// 
-        /// </summary>
-        public string PassportId { get; set; }
-        /// <summary>
-        /// 
-        /// </summary>
-        public int UserId { get; set; }
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using ProtoBuf;
+using ZyGames.Framework.Common;
+using ZyGames.Framework.Event;
+using ZyGames.Framework.Model;
 
-        /// <summary>
-        /// 
-        /// </summary>
-        public int UserType { get; set; }
-        /// <summary>
-        /// 
-        /// </summary>
-        public bool IsGuest
+namespace FrameworkUnitTest.Cache.Model
+{
+    [Serializable]
+    [ProtoContract]
+    public class FriendsData : EntityChangeEvent
+    {
+        private int _num;
+
+        [ProtoMember(1)]
+        [Cloneable]
+        public long UserId { get; set; }
+
+        [ProtoMember(2)]
+        [Cloneable]
+        public int Num
         {
-            get { return UserType == (int) RegType.Guest; }
-    }
+            get { return _num; }
+            set
+            {
+                if (!object.Equals(_num, value))
+                {
+                    _num = value;
+                    base.BindAndNotify(_num);
+                }
+            }
+        }
     }
 }

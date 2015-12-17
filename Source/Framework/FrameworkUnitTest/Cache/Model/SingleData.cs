@@ -21,36 +21,30 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ****************************************************************************/
-namespace ZyGames.Framework.Game.Sns.Service
-{
-    /// <summary>
-    /// 
-    /// </summary>
-    public class LoginToken : ResponseData
-    {
-        /// <summary>
-        /// 
-        /// </summary>
-        public string Token { get; set; }
-        /// <summary>
-        /// 
-        /// </summary>
-        public string PassportId { get; set; }
-        /// <summary>
-        /// 
-        /// </summary>
-        public int UserId { get; set; }
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using ProtoBuf;
+using ZyGames.Framework.Common;
+using ZyGames.Framework.Model;
 
-        /// <summary>
-        /// 
-        /// </summary>
-        public int UserType { get; set; }
-        /// <summary>
-        /// 
-        /// </summary>
-        public bool IsGuest
+namespace FrameworkUnitTest.Cache.Model
+{
+
+    [Serializable, ProtoContract]
+    [EntityTable(CacheType.Entity, MyDataConfigger.DbKey)]
+    public class SingleData : ShareEntity
+    {
+        public SingleData()
+            : base(false)
         {
-            get { return UserType == (int) RegType.Guest; }
-    }
+        }
+
+        [ProtoMember(1)]
+        [EntityField(true)]
+        [Cloneable]
+        public int ChildId { get; set; }
     }
 }

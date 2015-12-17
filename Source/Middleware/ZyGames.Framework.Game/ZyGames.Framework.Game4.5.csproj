@@ -18,7 +18,6 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\</OutputPath>
     <OutputPath>bin\</OutputPath>
     <DefineConstants>TRACE;DEBUG;NET4_5_1</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
@@ -29,7 +28,6 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
-    <OutputPath>bin\Release\</OutputPath>
     <OutputPath>bin\</OutputPath>
     <DefineConstants>TRACE;NET4_5_1</DefineConstants>
     <ErrorReport>prompt</ErrorReport>

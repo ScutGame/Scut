@@ -12,6 +12,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ZyGames.Framework4.5", "ZyG
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ZyGames.Framework.Common4.5", "ZyGames.Framework.Common\ZyGames.Framework.Common4.5.csproj", "{E87A5049-85A1-436B-A5ED-2BC0A4E45BDB}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Test", "Test", "{329FA5C5-0C04-41C9-BBF0-1BF33C6E00A7}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FrameworkUnitTest", "FrameworkUnitTest\FrameworkUnitTest.csproj", "{B3EF761F-DC18-48E1-91D8-4B490BCC85AF}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -26,8 +30,15 @@ Global
 		{E87A5049-85A1-436B-A5ED-2BC0A4E45BDB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E87A5049-85A1-436B-A5ED-2BC0A4E45BDB}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E87A5049-85A1-436B-A5ED-2BC0A4E45BDB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B3EF761F-DC18-48E1-91D8-4B490BCC85AF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B3EF761F-DC18-48E1-91D8-4B490BCC85AF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B3EF761F-DC18-48E1-91D8-4B490BCC85AF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B3EF761F-DC18-48E1-91D8-4B490BCC85AF}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{B3EF761F-DC18-48E1-91D8-4B490BCC85AF} = {329FA5C5-0C04-41C9-BBF0-1BF33C6E00A7}
 	EndGlobalSection
 EndGlobal

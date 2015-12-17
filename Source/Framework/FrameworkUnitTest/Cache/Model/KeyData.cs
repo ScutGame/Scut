@@ -21,36 +21,52 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ****************************************************************************/
-namespace ZyGames.Framework.Game.Sns.Service
+using System;
+using ProtoBuf;
+using ZyGames.Framework.Model;
+
+namespace FrameworkUnitTest.Cache.Model
 {
-    /// <summary>
-    /// 
-    /// </summary>
-    public class LoginToken : ResponseData
+
+    [Serializable, ProtoContract]
+    [EntityTable(CacheType.Entity, MyDataConfigger.DbKey, StorageType = StorageType.ReadWriteRedis)]
+    public class KeyData : ShareEntity
     {
-        /// <summary>
-        /// 
-        /// </summary>
-        public string Token { get; set; }
-        /// <summary>
-        /// 
-        /// </summary>
-        public string PassportId { get; set; }
-        /// <summary>
-        /// 
-        /// </summary>
+        public KeyData()
+            : base(false)
+        {
+        }
+
+        [ProtoMember(1)]
+        [EntityField(true)]
+        public string Key { get;set;}
+
+        [ProtoMember(2)]
+        [EntityField]
+        public string Value { get; set; }
+    }
+
+    [Serializable, ProtoContract]
+    [EntityTable(CacheType.Dictionary, MyDataConfigger.DbKey, StorageType = StorageType.ReadWriteRedis)]
+    public class UserKeyData :BaseEntity
+    {
+
+        [ProtoMember(1)]
+        [EntityField(true)]
         public int UserId { get; set; }
 
-        /// <summary>
-        /// 
-        /// </summary>
-        public int UserType { get; set; }
-        /// <summary>
-        /// 
-        /// </summary>
-        public bool IsGuest
+        [ProtoMember(2)]
+        [EntityField(true)]
+        public string Key { get; set; }
+
+        [ProtoMember(3)]
+        [EntityField]
+        public string Value { get; set; }
+
+        protected override int GetIdentityId()
         {
-            get { return UserType == (int) RegType.Guest; }
+            return UserId;
+        }
     }
-    }
+
 }

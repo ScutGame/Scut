@@ -40,16 +40,32 @@ namespace ZyGames.Framework.Config
         /// 
         /// </summary>
         public RedisSection()
+            : this(true)
         {
-            Host = ConfigUtils.GetSetting("Redis.Host", "localhost");
-            MaxWritePoolSize = ConfigUtils.GetSetting("Redis.MaxWritePoolSize", 100);
-            MaxReadPoolSize = ConfigUtils.GetSetting("Redis.MaxReadPoolSize", 100);
-            ConnectTimeout = ConfigUtils.GetSetting("Redis.ConnectTimeout", 0);
-            PoolTimeOut = ConfigUtils.GetSetting("Redis.PoolTimeOut", 300);
-            DbIndex = ConfigUtils.GetSetting("Redis.Db", 0);
-            ReadOnlyHost = ConfigUtils.GetSetting("Redis.ReadHost", Host);
-            ClientVersion = ConfigUtils.GetSetting("Redis.ClientVersion", (int)RedisStorageVersion.Hash).ToEnum<RedisStorageVersion>();
         }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public RedisSection(bool useConfig)
+        {
+            if (useConfig)
+            {
+                Host = ConfigUtils.GetSetting("Redis.Host", "localhost");
+                MaxWritePoolSize = ConfigUtils.GetSetting("Redis.MaxWritePoolSize", 100);
+                MaxReadPoolSize = ConfigUtils.GetSetting("Redis.MaxReadPoolSize", 100);
+                ConnectTimeout = ConfigUtils.GetSetting("Redis.ConnectTimeout", 0);
+                PoolTimeOut = ConfigUtils.GetSetting("Redis.PoolTimeOut", 300);
+                DbIndex = ConfigUtils.GetSetting("Redis.Db", 0);
+                ReadOnlyHost = ConfigUtils.GetSetting("Redis.ReadHost", Host);
+                ClientVersion = ConfigUtils.GetSetting("Redis.ClientVersion", (int)RedisStorageVersion.Hash).ToEnum<RedisStorageVersion>();
+            }
+            else
+            {
+                ClientVersion = RedisStorageVersion.Hash;
+            }
+        }
+
 
         /// <summary>
         /// Host, format:password@ip:port
