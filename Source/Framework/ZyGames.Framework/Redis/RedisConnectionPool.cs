@@ -217,15 +217,38 @@ namespace ZyGames.Framework.Redis
             get { return _setting; }
         }
 
-
-
         /// <summary>
-        /// SetNo
+        /// 
         /// </summary>
         /// <param name="key"></param>
         /// <param name="value"></param>
         /// <returns></returns>
         public static long SetNo(string key, long value)
+        {
+            return SetNo(null, key, value);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="redisHost">format:password@ip:port#db</param>
+        /// <returns></returns>
+        public static RedisPoolSetting ParseSetting(string redisHost)
+        {
+            var keyVals = (redisHost ?? "").Split('#');
+            string host = keyVals.Length > 0 ? keyVals[0] : "";
+            int db = keyVals.Length > 1 ? keyVals[1].ToInt() : 0;
+            return new RedisPoolSetting(false) { Host = host, DbIndex = db };
+        }
+
+        /// <summary>
+        /// SetNo
+        /// </summary>
+        /// <param name="redisHost">format:password@ip:port#db</param>
+        /// <param name="key"></param>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        public static long SetNo(string redisHost, string key, long value)
         {
             long increment = 0;
             Process(client =>
@@ -239,7 +262,7 @@ namespace ZyGames.Framework.Redis
                 {
                     increment = num;
                 }
-            });
+            }, string.IsNullOrEmpty(redisHost) ? null : ParseSetting(redisHost));
             return increment;
         }
 
@@ -252,12 +275,25 @@ namespace ZyGames.Framework.Redis
         /// <returns></returns>
         public static long GetNextNo(string key, uint increaseNum = 1, bool isLock = false)
         {
+            return GetNextNo(null, key, increaseNum, isLock);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="redisHost"></param>
+        /// <param name="key"></param>
+        /// <param name="increaseNum"></param>
+        /// <param name="isLock"></param>
+        /// <returns></returns>
+        public static long GetNextNo(string redisHost, string key, uint increaseNum = 1, bool isLock = false)
+        {
             long result = 0;
             Process(client =>
             {
                 if (isLock) client.Watch(key);
                 result = client.Increment(key, increaseNum);
-            });
+            }, string.IsNullOrEmpty(redisHost) ? null : ParseSetting(redisHost));
             return result;
         }
 

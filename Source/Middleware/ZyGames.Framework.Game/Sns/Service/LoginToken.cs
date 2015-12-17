@@ -51,6 +51,6 @@ namespace ZyGames.Framework.Game.Sns.Service
         public bool IsGuest
         {
             get { return UserType == (int) RegType.Guest; }
-        }
+    }
     }
 }

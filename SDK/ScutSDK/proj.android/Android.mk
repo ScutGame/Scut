@@ -69,23 +69,22 @@ $(LOCAL_PATH)/../ScutDataLogic \
 $(LOCAL_PATH)/../ScutNetwork \
 $(LOCAL_PATH)/../ScutUtility \
 $(LOCAL_PATH)/../ScutUtility/android \
-$(LOCAL_PATH)/../../../cocos2d-x/scripting/lua/lua \
-$(LOCAL_PATH)/../../../cocos2d-x/scripting/lua/tolua \
-$(LOCAL_PATH)/../../../cocos2d-x/scripting/lua/cocos2dx_support \
-$(LOCAL_PATH)/../../../cocos2d-x/cocos2dx \
-$(LOCAL_PATH)/../../../cocos2d-x/cocos2dx/script_support \
-$(LOCAL_PATH)/../../../cocos2d-x/cocos2dx/layers_scenes_transitions_nodes \
-$(LOCAL_PATH)/../../../cocos2d-x/cocos2dx/include \
-$(LOCAL_PATH)/../../../cocos2d-x/cocos2dx/kazmath/include \
-$(LOCAL_PATH)/../../../cocos2d-x/cocos2dx/platform \
-$(LOCAL_PATH)/../../../cocos2d-x/cocos2dx/platform/android \
-$(LOCAL_PATH)/../../../cocos2d-x/cocos2dx/platform/android/jni \
-$(LOCAL_PATH)/../../../cocos2d-x/cocos2dx/support/image_support \
-$(LOCAL_PATH)/../../../cocos2d-x/cocos2dx/support/data_support \
-$(LOCAL_PATH)/../../../cocos2d-x/cocos2dx/platform/third_party/android \
-$(LOCAL_PATH)/../../../cocos2d-x/cocos2dx/platform/third_party/android/prebuilt/libcurl/include/curl \
-$(LOCAL_PATH)/../../../cocos2d-x/cocos2dx/platform/third_party/android/prebuilt/libcurl/include \
-$(LOCAL_PATH)/../../../cocos2d-x/cocos2dx/platform/third_party/android/iconv
+$(LOCAL_PATH)/../../cocos2d-x/external/lua/lua \
+$(LOCAL_PATH)/../../cocos2d-x/external/lua/tolua \
+$(LOCAL_PATH)/../../cocos2d-x/external/lua/luajit/include \
+$(LOCAL_PATH)/../../cocos2d-x/cocos \
+$(LOCAL_PATH)/../../cocos2d-x/cocos/2d \
+$(LOCAL_PATH)/../../cocos2d-x/cocos/base \
+$(LOCAL_PATH)/../../cocos2d-x/cocos/platform \
+$(LOCAL_PATH)/../../cocos2d-x/cocos/script_support \
+$(LOCAL_PATH)/../../cocos2d-x/cocos/layers_scenes_transitions_nodes \
+$(LOCAL_PATH)/../../cocos2d-x/cocos/include \
+$(LOCAL_PATH)/../../cocos2d-x/cocos/kazmath/include \
+$(LOCAL_PATH)/../../cocos2d-x/cocos/scripting/lua-bindings/manual \
+$(LOCAL_PATH)/../../cocos2d-x/cocos/platform/android \
+$(LOCAL_PATH)/../../cocos2d-x/cocos/platform/android/jni \
+$(LOCAL_PATH)/../../cocos2d-x/external/curl/include/android/curl \
+$(LOCAL_PATH)/../../cocos2d-x/external/curl/include/android \
 
 LOCAL_LDLIBS := -llog
 

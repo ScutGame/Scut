@@ -86,7 +86,7 @@ const char* CPackageUnzipHandler::getUpdateConfigPath()
 {
 	if (m_strConfigPath.empty())
 	{
-		m_strConfigPath = cocos2d::CCFileUtils::sharedFileUtils()->getWritablePath();///data/data/apkname/
+		m_strConfigPath = cocos2d::CCFileUtils::getInstance()->getWritablePath();///data/data/apkname/
 		if (!ScutDataLogic::CFileHelper::isDirExists(m_strConfigPath.c_str()))
 		{
 			ScutDataLogic::CFileHelper::createDirs(m_strConfigPath.c_str());

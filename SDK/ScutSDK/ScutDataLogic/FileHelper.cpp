@@ -127,7 +127,7 @@ namespace ScutDataLogic
 		{
 			strDirPath += FILE_SEP;
 
-			float fScale = cocos2d::CCDirector::sharedDirector()->getContentScaleFactor();
+			float fScale = cocos2d::Director::getInstance()->getContentScaleFactor();
 			if (fScale > 1 || !(s_width == 480 && s_height == 320 || s_height == 320&& s_width == 480 || s_width
 					< 480 && s_height <480))
 			{

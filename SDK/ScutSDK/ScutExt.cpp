@@ -104,8 +104,8 @@ void ScutExt::Init(const std::string& resRootDir)
 
 	sInstance = new ScutExt();
 
-	CCLuaEngine* pEngine = CCLuaEngine::defaultEngine();
-	CCLuaStack *pStack = pEngine->getLuaStack();
+	LuaEngine* pEngine = LuaEngine::getInstance();
+	LuaStack *pStack = pEngine->getLuaStack();
 	lua_State *tolua_s = pStack->getLuaState();
 
 	// register CCLuaLoadChunksFromZip
@@ -151,7 +151,7 @@ bool ScutExt::ExcuteBackHandler()
 {
 	if (m_strBackHandler.size() > 0)
 	{
-		return CCScriptEngineManager::sharedManager()->getScriptEngine()->executeGlobalFunction(m_strBackHandler.c_str());
+		return ScriptEngineManager::getInstance()->getScriptEngine()->executeGlobalFunction(m_strBackHandler.c_str());
 	}
 
 	return false;
@@ -209,25 +209,25 @@ const char* ScutExt::GetSocketErrorHandler()
 
 void ScutExt::PauseDirector()
 {
-	CCDirector::sharedDirector()->pause();
+	CCDirector::getInstance()->pause();
 	if (m_strPauseHandler.size() > 0)
 	{
-		CCScriptEngineManager::sharedManager()->getScriptEngine()->executeGlobalFunction(m_strPauseHandler.c_str());
+		ScriptEngineManager::getInstance()->getScriptEngine()->executeGlobalFunction(m_strPauseHandler.c_str());
 	}
 }
 
 void ScutExt::ResumeDirector()
 {
-	CCDirector::sharedDirector()->resume();
+	CCDirector::getInstance()->resume();
 	if (m_strResumeHandler.size() > 0)
 	{
-		CCScriptEngineManager::sharedManager()->getScriptEngine()->executeGlobalFunction(m_strResumeHandler.c_str());
+		ScriptEngineManager::getInstance()->getScriptEngine()->executeGlobalFunction(m_strResumeHandler.c_str());
 	}
 }
 
 void ScutExt::EndDirector()
 {
-	CCDirector::sharedDirector()->end();
+	CCDirector::getInstance()->end();
 }
 
 int nderror_handler(lua_State* L)
@@ -281,8 +281,8 @@ extern "C" int Scutlua_pcall(lua_State *L, int nargs, int nresults)
 
 bool ScutExt::pushfunc(const std::string & strFunc)
 {
-	CCLuaEngine* pEngine = CCLuaEngine::defaultEngine();
-	CCLuaStack *pStack = pEngine->getLuaStack();
+	LuaEngine* pEngine = LuaEngine::getInstance();
+	LuaStack *pStack = pEngine->getLuaStack();
 	lua_State *tolua_s = pStack->getLuaState();
 
 	size_t found = strFunc.find('.');
@@ -314,7 +314,7 @@ bool ScutExt::pushfunc(const std::string & strFunc)
 	{
 		lua_settop( tolua_s, 0 );
 		std::string msg = "(CCLuaScriptModule): "+strFunc +" name does not represent a Lua function"+"\n";
-		CCLog("%s  %d", msg.c_str(), __LINE__);
+		CCLOG("%s  %d", msg.c_str(), __LINE__);
 		return false;
 	}
 	return true;
@@ -322,8 +322,8 @@ bool ScutExt::pushfunc(const std::string & strFunc)
 
 void ScutExt::executeLogEvent( std::string& func, std::string& errlog )
 {
-	CCLuaEngine* pEngine = CCLuaEngine::defaultEngine();
-	CCLuaStack *pStack = pEngine->getLuaStack();
+	LuaEngine* pEngine = LuaEngine::getInstance();
+	LuaStack *pStack = pEngine->getLuaStack();
 	lua_State *tolua_s = pStack->getLuaState();
 
 	if(!pushfunc(func))
@@ -335,7 +335,7 @@ void ScutExt::executeLogEvent( std::string& func, std::string& errlog )
 
 	if (lua_pcall(tolua_s, 1, 0, 0) != 0)
 	{
-		CCLog("[LUA ERROR] %s", lua_tostring(tolua_s, - 1));
+		CCLOG("[LUA ERROR] %s", lua_tostring(tolua_s, - 1));
 		lua_pop(tolua_s, 1); // clean error message
 		return;
 	}

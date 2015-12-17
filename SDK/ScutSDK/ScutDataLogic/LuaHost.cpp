@@ -37,7 +37,7 @@ LuaHost::LuaHost(void)
 //  	luaL_openlibs(m_pLuaState);
 // 	AddLuaLoader(cocos2dx_lua_loader);
 
-	m_pLuaState = CCLuaEngine::defaultEngine()->getLuaStack()->getLuaState();
+	m_pLuaState = LuaEngine::getInstance()->getLuaStack()->getLuaState();
 }
 
 LuaHost::~LuaHost(void)
