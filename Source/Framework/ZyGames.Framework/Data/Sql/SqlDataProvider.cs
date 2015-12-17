@@ -76,47 +76,155 @@ namespace ZyGames.Framework.Data.Sql
         /// 
         /// </summary>
         /// <param name="commandType"></param>
+        /// <param name="commandTimeout"></param>
         /// <param name="commandText"></param>
         /// <param name="parameters"></param>
         /// <returns></returns>
-        public override IDataReader ExecuteReader(CommandType commandType, string commandText, params IDataParameter[] parameters)
+        public override IDataReader ExecuteReader(CommandType commandType, int? commandTimeout, string commandText, params IDataParameter[] parameters)
         {
-            return SqlHelper.ExecuteReader(ConnectionString, commandType, commandText, ConvertParam<SqlParameter>(parameters));
+            SqlConnection conn = new SqlConnection(ConnectionString);
+            try
+            {
+                conn.Open();
+            }
+            catch (Exception ex)
+            {
+                throw new DbConnectionException(ex.Message, ex);
+            }
+            //internal close connection
+            if (!commandTimeout.HasValue)
+            {
+                return SqlHelper.ExecuteReader(conn, commandType, commandText, false, ConvertParam<SqlParameter>(parameters));
+            }
+            using (var cmd = CreateSqlCommand(conn, null, commandTimeout, commandText))
+            {
+                return cmd.ExecuteReader(CommandBehavior.CloseConnection);
+            }
         }
+
         /// <summary>
         /// 
         /// </summary>
         /// <param name="commandType"></param>
+        /// <param name="commandTimeout"></param>
         /// <param name="commandText"></param>
         /// <param name="parameters"></param>
         /// <returns></returns>
-        public override object ExecuteScalar(CommandType commandType, string commandText, params IDataParameter[] parameters)
+        public override object ExecuteScalar(CommandType commandType, int? commandTimeout, string commandText, params IDataParameter[] parameters)
         {
-            return SqlHelper.ExecuteScalar(ConnectionString, commandType, commandText, ConvertParam<SqlParameter>(parameters));
+            object result = null;
+            OpenConnection(conn =>
+            {
+                if (!commandTimeout.HasValue)
+                {
+                    result = SqlHelper.ExecuteScalar(conn, commandType, commandText, ConvertParam<SqlParameter>(parameters));
+                    return;
+                }
+                using (var cmd = CreateSqlCommand(conn, null, commandTimeout, commandText))
+                {
+                    result = cmd.ExecuteScalar();
+                }
+            });
+            return result;
         }
+
         /// <summary>
         /// 
         /// </summary>
         /// <param name="commandType"></param>
+        /// <param name="commandTimeout"></param>
         /// <param name="commandText"></param>
         /// <param name="parameters"></param>
         /// <returns></returns>
-        public override int ExecuteQuery(CommandType commandType, string commandText, params IDataParameter[] parameters)
+        public override int ExecuteQuery(CommandType commandType, int? commandTimeout, string commandText, params IDataParameter[] parameters)
         {
-            return SqlHelper.ExecuteNonQuery(ConnectionString, commandType, commandText, ConvertParam<SqlParameter>(parameters));
+            int result = 0;
+            OpenConnection(conn =>
+            {
+                if (!commandTimeout.HasValue)
+                {
+                    result = SqlHelper.ExecuteNonQuery(conn, commandType, commandText, ConvertParam<SqlParameter>(parameters));
+                    return;
+                }
+                using (var cmd = CreateSqlCommand(conn, null, commandTimeout, commandText))
+                {
+                    result = cmd.ExecuteNonQuery();
+                }
+            });
+            return result;
         }
+
+
+        private static SqlCommand CreateSqlCommand(SqlConnection connection, SqlTransaction transaction, int? commandTimeout, string commandText)
+        {
+            SqlCommand cmd = new SqlCommand();
+            cmd.Connection = connection;
+            cmd.Transaction = transaction;
+            cmd.CommandText = commandText;
+            cmd.CommandType = CommandType.Text;
+            if (commandTimeout != null)
+            {
+                cmd.CommandTimeout = commandTimeout.Value;
+            }
+            return cmd;
+        }
+
+
+        private void OpenConnection(Action<SqlConnection> action)
+        {
+            using (SqlConnection conn = new SqlConnection(ConnectionString))
+            {
+                try
+                {
+                    conn.Open();
+                }
+                catch (Exception ex)
+                {
+                    throw new DbConnectionException(ex.Message, ex);
+                }
+                action(conn);
+            }
+        }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="commands"></param>
+        /// <returns></returns>
+        public override IEnumerable<int> ExecuteQuery(IEnumerable<CommandStruct> commands)
+        {
+            using (SqlConnection conn = new SqlConnection(ConnectionString))
+            {
+                try
+                {
+                    conn.Open();
+                }
+                catch (Exception ex)
+                {
+                    throw new DbConnectionException(ex.Message, ex);
+                }
+                foreach (var command in commands)
+                {
+                    command.Parser();
+                    yield return SqlHelper.ExecuteNonQuery(conn, command.CommandType, command.Sql, ConvertParam<SqlParameter>(command.Parameters));
+                }
+            }
+
+        }
+
         /// <summary>
         /// 
         /// </summary>
         /// <param name="identityId"></param>
         /// <param name="commandType"></param>
+        /// <param name="tableName"></param>
         /// <param name="commandText"></param>
         /// <param name="parameters"></param>
         /// <returns></returns>
-        public override int ExecuteNonQuery(int identityId, CommandType commandType, string commandText, params IDataParameter[] parameters)
+        public override int ExecuteNonQuery(int identityId, CommandType commandType, string tableName, string commandText, params IDataParameter[] parameters)
         {
             SqlStatement statement = new SqlStatement();
             statement.IdentityID = identityId;
+            statement.Table = tableName;
             statement.ConnectionString = ConnectionString;
             statement.ProviderType = "SqlDataProvider";
             statement.CommandType = commandType;
@@ -135,6 +243,7 @@ namespace ZyGames.Framework.Data.Sql
             command.Parser();
             SqlStatement statement = new SqlStatement();
             statement.IdentityID = identityId;
+            statement.Table = command.TableName;
             statement.ConnectionString = ConnectionString;
             statement.ProviderType = "SqlDataProvider";
             statement.CommandType = command.CommandType;
@@ -161,12 +270,14 @@ namespace ZyGames.Framework.Data.Sql
         /// <returns></returns>
         public override bool CheckTable(string tableName, out DbColumn[] columns)
         {
-            columns = null;
-            string commandText = string.Format("SELECT count(*) FROM sys.objects WHERE object_id = OBJECT_ID(N'{0}') AND type in (N'U')", tableName);
-            if (SqlHelper.ExecuteScalar(ConnectionString, CommandType.Text, commandText).ToInt() > 0)
+            bool result = false;
+            var list = new List<DbColumn>();
+            OpenConnection(conn =>
             {
-                var list = new List<DbColumn>();
-                commandText = string.Format(@"
+                string commandText = string.Format("SELECT count(*) FROM sys.objects WHERE object_id = OBJECT_ID(N'{0}') AND type in (N'U')", tableName);
+                if (SqlHelper.ExecuteScalar(conn, CommandType.Text, commandText).ToInt() > 0)
+                {
+                    commandText = string.Format(@"
 select 
   c.name as ColumnName, 
   (select top 1 name from systypes where xtype=c.xtype) as ColumnType, 
@@ -181,26 +292,27 @@ where c.id=object_id('{0}')
 order by colorder ASC
 ", tableName);
 
-                using (var dataReader = SqlHelper.ExecuteReader(ConnectionString, CommandType.Text, commandText))
-                {
-                    while (dataReader.Read())
+                    using (var dataReader = SqlHelper.ExecuteReader(conn, CommandType.Text, commandText))
                     {
-                        var column = new DbColumn();
-                        column.Name = dataReader[0].ToNotNullString();
-                        column.DbType = dataReader[1].ToNotNullString();
-                        column.Scale = dataReader[2].ToInt();
-                        column.Length = dataReader[3].ToLong();
-                        column.Isnullable = dataReader[4].ToBool();
-                        column.KeyNo = dataReader[5].ToInt();
-                        column.HaveIncrement = dataReader["auto_increment"].ToBool();
-                        column.Type = ConvertToObjectType(ConvertToDbType(column.DbType));
-                        list.Add(column);
+                        while (dataReader.Read())
+                        {
+                            var column = new DbColumn();
+                            column.Name = dataReader[0].ToNotNullString();
+                            column.DbType = dataReader[1].ToNotNullString();
+                            column.Scale = dataReader[2].ToInt();
+                            column.Length = dataReader[3].ToLong();
+                            column.Isnullable = dataReader[4].ToBool();
+                            column.KeyNo = dataReader[5].ToInt();
+                            column.HaveIncrement = dataReader["auto_increment"].ToBool();
+                            column.Type = ConvertToObjectType(ConvertToDbType(column.DbType));
+                            list.Add(column);
+                        }
                     }
+                    result = true;
                 }
-                columns = list.ToArray();
-                return true;
-            }
-            return false;
+            });
+            columns = list.ToArray();
+            return result;
         }
 
         private Type ConvertToObjectType(SqlDbType toEnum)
@@ -222,9 +334,9 @@ order by colorder ASC
                 case SqlDbType.Decimal:
                     return typeof(Decimal);
                 case SqlDbType.Real:
-                    return typeof(Double);
+                    return typeof(float);
                 case SqlDbType.Float:
-                    return typeof(Single);
+                    return typeof(Double);
                 case SqlDbType.Image:
                     return typeof(Object);
                 case SqlDbType.Int:
@@ -459,7 +571,7 @@ order by colorder ASC
                 command.AppendLine(")");
                 if (hasColumn)
                 {
-                    SqlHelper.ExecuteNonQuery(ConnectionString, CommandType.Text, command.ToString());
+                    ExecuteQuery(CommandType.Text, command.ToString());
                 }
             }
             catch (Exception ex)
@@ -490,7 +602,7 @@ order by colorder ASC
                         FormatQueryColumn(",", columns)
                         );
                 }
-                SqlHelper.ExecuteNonQuery(ConnectionString, CommandType.Text, command.ToString());
+                ExecuteQuery(CommandType.Text, command.ToString());
 
             }
             catch (Exception ex)
@@ -543,81 +655,84 @@ order by colorder ASC
         public override void CreateColumn(string tableName, DbColumn[] columns)
         {
             StringBuilder command = new StringBuilder();
-            try
+            OpenConnection(conn =>
             {
-                string dbTableName = FormatName(tableName);
-                command.AppendFormat("Alter Table {0}", dbTableName);
-                command.AppendLine(" Add");
-                List<string> keys;
-                List<string> uniques;
-                bool hasColumn = CheckProcessColumns(command, columns, out keys, out uniques);
-                command.Append(";");
-                if (hasColumn)
+                try
                 {
-                    SqlHelper.ExecuteNonQuery(ConnectionString, CommandType.Text, command.ToString());
-                }
-
-                command.Clear();
-                List<DbColumn> keyColumns = new List<DbColumn>();
-                int index = 0;
-                foreach (var dbColumn in columns)
-                {
-                    if (!dbColumn.IsModify)
+                    string dbTableName = FormatName(tableName);
+                    command.AppendFormat("Alter Table {0}", dbTableName);
+                    command.AppendLine(" Add");
+                    List<string> keys;
+                    List<string> uniques;
+                    bool hasColumn = CheckProcessColumns(command, columns, out keys, out uniques);
+                    command.Append(";");
+                    if (hasColumn)
                     {
-                        continue;
+                        SqlHelper.ExecuteNonQuery(conn, CommandType.Text, command.ToString());
                     }
-                    if (dbColumn.IsKey)
+
+                    command.Clear();
+                    List<DbColumn> keyColumns = new List<DbColumn>();
+                    int index = 0;
+                    foreach (var dbColumn in columns)
                     {
-                        keyColumns.Add(dbColumn);
-                        continue;
+                        if (!dbColumn.IsModify)
+                        {
+                            continue;
+                        }
+                        if (dbColumn.IsKey)
+                        {
+                            keyColumns.Add(dbColumn);
+                            continue;
+                        }
+                        if (index > 0)
+                        {
+                            command.AppendLine("");
+                        }
+                        command.AppendFormat("Alter Table {0} ALTER COLUMN {1} {2}{3}{4};",
+                                             dbTableName,
+                                             FormatName(dbColumn.Name),
+                                             ConvertToDbType(dbColumn.Type, dbColumn.DbType, dbColumn.Length, dbColumn.Scale, dbColumn.IsKey),
+                                             dbColumn.Isnullable ? "" : " not null",
+                                             (dbColumn.IsIdentity ? dbColumn.IdentityNo > 0 ? string.Format(" IDENTITY({0},1)", dbColumn.IdentityNo) : " IDENTITY(1,1)" : ""));
+                        index++;
+                    }
+                    if (keyColumns.Count > 0)
+                    {
+                        string[] keyArray = new string[keyColumns.Count];
+                        if (keyColumns.Any(t => t.KeyNo > 0))
+                        {
+                            //check haved key in db table
+                            command.AppendFormat("ALTER TABLE {0} DROP CONSTRAINT PK_{1};", dbTableName, tableName);
+                            command.AppendLine();
+                        }
+                        int i = 0;
+                        foreach (var keyColumn in keyColumns)
+                        {
+                            keyArray[i] = FormatName(keyColumn.Name);
+                            command.AppendFormat("Alter Table {0} ALTER COLUMN {1} {2} not null;",
+                                                 dbTableName,
+                                                 FormatName(keyColumn.Name),
+                                                 ConvertToDbType(keyColumn.Type, keyColumn.DbType, keyColumn.Length, keyColumn.Scale, keyColumn.IsKey));
+                            command.AppendLine();
+                            i++;
+                            index++;
+                        }
+                        command.AppendFormat("ALTER TABLE {0} ADD CONSTRAINT PK_{1} PRIMARY KEY({2});",
+                            dbTableName,
+                            tableName,
+                            FormatQueryColumn(",", keyArray));
                     }
                     if (index > 0)
                     {
-                        command.AppendLine("");
+                        SqlHelper.ExecuteNonQuery(conn, CommandType.Text, command.ToString());
                     }
-                    command.AppendFormat("Alter Table {0} ALTER COLUMN {1} {2}{3}{4};",
-                                         dbTableName,
-                                         FormatName(dbColumn.Name),
-                                         ConvertToDbType(dbColumn.Type, dbColumn.DbType, dbColumn.Length, dbColumn.Scale, dbColumn.IsKey),
-                                         dbColumn.Isnullable ? "" : " not null",
-                                         (dbColumn.IsIdentity ? dbColumn.IdentityNo > 0 ? string.Format(" IDENTITY({0},1)", dbColumn.IdentityNo) : " IDENTITY(1,1)" : ""));
-                    index++;
                 }
-                if (keyColumns.Count > 0)
+                catch (Exception ex)
                 {
-                    string[] keyArray = new string[keyColumns.Count];
-                    if (keyColumns.Any(t => t.KeyNo > 0))
-                    {
-                        //check haved key in db table
-                        command.AppendFormat("ALTER TABLE {0} DROP CONSTRAINT PK_{1};", dbTableName, tableName);
-                        command.AppendLine();
-                    }
-                    int i = 0;
-                    foreach (var keyColumn in keyColumns)
-                    {
-                        keyArray[i] = FormatName(keyColumn.Name);
-                        command.AppendFormat("Alter Table {0} ALTER COLUMN {1} {2} not null;",
-                                             dbTableName,
-                                             FormatName(keyColumn.Name),
-                                             ConvertToDbType(keyColumn.Type, keyColumn.DbType, keyColumn.Length, keyColumn.Scale, keyColumn.IsKey));
-                        command.AppendLine();
-                        i++;
-                        index++;
-                    }
-                    command.AppendFormat("ALTER TABLE {0} ADD CONSTRAINT PK_{1} PRIMARY KEY({2});",
-                        dbTableName,
-                        tableName,
-                        FormatQueryColumn(",", keyArray));
+                    throw new Exception(string.Format("Execute sql error:{0}", command), ex);
                 }
-                if (index > 0)
-                {
-                    SqlHelper.ExecuteNonQuery(ConnectionString, CommandType.Text, command.ToString());
-                }
-            }
-            catch (Exception ex)
-            {
-                throw new Exception(string.Format("Execute sql error:{0}", command), ex);
-            }
+            });
         }
 
         /// <summary>

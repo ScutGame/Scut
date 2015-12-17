@@ -37,6 +37,7 @@ using ZyGames.Framework.Common;
 using ZyGames.Framework.Common.Configuration;
 using ZyGames.Framework.Common.Log;
 using ZyGames.Framework.Common.Serialization;
+using ZyGames.Framework.Common.Timing;
 using ZyGames.Framework.Model;
 
 namespace ZyGames.Framework.Script
@@ -175,20 +176,31 @@ namespace ZyGames.Framework.Script
                         runtimeDomain.LoadAssembly(key, assemblyName);
                     }
                     var scope = runtimeDomain.CreateScope(_settupInfo);
-                    //ignore error
-                    if (scope == null || scope.ModelAssembly == null) return scope;
-                    
+                    //ignore error, allow model is empty.
+                    if (scope == null)
+                    {
+                        if (_runtimeDomain == null) _runtimeDomain = runtimeDomain;
+                        return scope;
+                    }
+
                     //update befor
                     bool isFirstRun = _runtimeDomain == null;
                     if (!isFirstRun && _settupInfo.ModelChangedBefore != null)
                     {
-                        _settupInfo.ModelChangedBefore(_runtimeDomain.Scope.ModelAssembly);
+                        if (_runtimeDomain.Scope.ModelAssembly != null) _settupInfo.ModelChangedBefore(_runtimeDomain.Scope.ModelAssembly);
+                        TimeListener.Clear();
+                        if (_runtimeDomain.MainInstance != null) _runtimeDomain.MainInstance.Stop();
                     }
                     runtimeDomain.MainInstance = runtimeDomain.Scope.Execute(_settupInfo.ScriptMainProgram, _settupInfo.ScriptMainTypeName) as IMainScript;
+                    if (_runtimeDomain != null)
+                    {
+                        //unload pre-domain
+                        _runtimeDomain.Dispose();
+                    }
                     _runtimeDomain = runtimeDomain;
-                    EntitySchemaSet._entityAssembly = scope.ModelAssembly;
+                    EntitySchemaSet.EntityAssembly = scope.ModelAssembly;
                     //update after
-                    if (!isFirstRun && _settupInfo.ModelChangedAfter != null)
+                    if (!isFirstRun && _settupInfo.ModelChangedAfter != null && scope.ModelAssembly != null)
                     {
                         _settupInfo.ModelChangedAfter(scope.ModelAssembly);
                     }
@@ -434,13 +446,14 @@ namespace ZyGames.Framework.Script
                 return false;
             }
             _settupInfo.IsCancelRunning = false;
-            string scriptCode = _settupInfo.ScriptMainProgram;
-            _runtimeDomain.MainInstance = Execute(scriptCode, _settupInfo.ScriptMainTypeName);
+            //string scriptCode = _settupInfo.ScriptMainProgram;
+            //_runtimeDomain.MainInstance = Execute(scriptCode, _settupInfo.ScriptMainTypeName);
             if (_runtimeDomain.MainInstance != null)
             {
                 ((dynamic)_runtimeDomain.MainInstance).Start(args);
                 return true;
             }
+            TraceLog.WriteLine("Error>>Main script instance is not init.");
             return false;
         }
 

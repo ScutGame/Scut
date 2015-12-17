@@ -94,6 +94,10 @@ namespace ZyGames.Framework.Game.Contract
                     string address = host.StartsWith("http", StringComparison.InvariantCultureIgnoreCase)
                         ? host
                         : "http://" + host;
+                    if (listenUrls.Count == 0)
+                    {
+                        listenUrls.Add(string.Format("{0}:{1}/", address, port));//add default page
+                    }
                     listenUrls.Add(string.Format("{0}:{1}/{2}/", address, port, httpName));
                 }
             }
@@ -239,7 +243,10 @@ namespace ZyGames.Framework.Game.Contract
                 }
             });
             string sessionId = session.SessionId;
-            var response = new ByteResponse(statusCode, "OK", result, session.UserId.ToString());
+            var response = new ByteResponse(statusCode, "OK", result, session.UserId.ToString())
+            {
+                RequestParams = package.OriginalParam
+            };
             response.CookieHandle += ctx =>
             {
                 var cookie = ctx.Request.Cookies["sid"];

@@ -127,19 +127,28 @@ namespace ZyGames.Framework.RPC.Sockets
             WorkSocket.Close();
         }
 
-        internal void Enqueue(byte[] data, Action<SocketAsyncResult> callback)
+        internal bool DirectSendOrEnqueue(byte[] data, Action<SocketAsyncResult> callback)
         {
-            sendQueue.Enqueue(new SocketAsyncResult(data) { Socket = this, ResultCallback = callback });
+            lock (socket)
+            {
+                sendQueue.Enqueue(new SocketAsyncResult(data) { Socket = this, ResultCallback = callback });
+                return Interlocked.CompareExchange(ref isInSending, 1, 0) == 0;
+            }
         }
 
-        internal bool TryDequeue(out SocketAsyncResult result)
+        internal bool TryDequeueOrReset(out SocketAsyncResult result)
         {
-            return sendQueue.TryDequeue(out result);
+            lock(socket)
+            {
+                if (sendQueue.TryDequeue(out result)) return true;
+                else Interlocked.Exchange(ref isInSending, 0);
+                return false;
+            }
         }
-        internal bool TrySetSendFlag()
-        {
-            return Interlocked.CompareExchange(ref isInSending, 1, 0) == 0;
-        }
+        //internal bool TrySetSendFlag()
+        //{
+        //    return Interlocked.CompareExchange(ref isInSending, 1, 0) == 0;
+        //}
         internal void ResetSendFlag()
         {
             Interlocked.Exchange(ref isInSending, 0);

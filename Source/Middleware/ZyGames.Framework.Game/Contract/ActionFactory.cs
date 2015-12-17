@@ -266,7 +266,8 @@ namespace ZyGames.Framework.Game.Contract
             baseStruct.SetPush();
             baseStruct.DoInit();
             object errorTarget;
-            if (actionGetter.Session.EnterLock(actionId, actionGetter.ToString(), out errorTarget))
+            long waitTimeOutNum;
+            if (actionGetter.Session.EnterLock(actionId, actionGetter.ToString(), out errorTarget, out waitTimeOutNum))
             {
                 try
                 {
@@ -289,7 +290,7 @@ namespace ZyGames.Framework.Game.Contract
             }
             else
             {
-                baseStruct.WriteLockTimeoutAction(response, errorTarget, false);
+                baseStruct.WriteLockTimeoutAction(response, errorTarget, waitTimeOutNum, false);
             }
             return response.ReadByte();
         }
@@ -305,7 +306,8 @@ namespace ZyGames.Framework.Game.Contract
             int actionId = actionGetter.GetActionId();
             baseStruct.DoInit();
             object errorTarget;
-            if (actionGetter.Session.EnterLock(actionId, actionGetter.ToString(), out errorTarget))
+            long waitTimeOutNum;
+            if (actionGetter.Session.EnterLock(actionId, actionGetter.ToString(), out errorTarget, out waitTimeOutNum))
             {
                 try
                 {
@@ -328,7 +330,8 @@ namespace ZyGames.Framework.Game.Contract
             }
             else
             {
-                baseStruct.WriteLockTimeoutAction(response, errorTarget);
+                //小于3次超时不显示提示
+                baseStruct.WriteLockTimeoutAction(response, errorTarget, waitTimeOutNum, waitTimeOutNum > 3);
             }
         }
 

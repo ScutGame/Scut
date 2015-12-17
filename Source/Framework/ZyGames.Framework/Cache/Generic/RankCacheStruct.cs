@@ -26,6 +26,7 @@ using System;
 using System.Collections;
 using System.Linq;
 using System.Collections.Generic;
+using Mono.Cecil;
 using ZyGames.Framework.Common.Log;
 using ZyGames.Framework.Common.Timing;
 using ZyGames.Framework.Model;
@@ -138,7 +139,7 @@ namespace ZyGames.Framework.Cache.Generic
         /// <returns></returns>
         public int GetRankNo(string key, T item)
         {
-            return GetRankNo(key, t => t.GetHashCode() == item.GetHashCode()).FirstOrDefault();
+            return DataContainer.GetRankNo(key, item);
         }
 
         /// <summary>
@@ -168,6 +169,22 @@ namespace ZyGames.Framework.Cache.Generic
             return Enumerable.Empty<T>();
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="key"></param>
+        /// <param name="fromScore"></param>
+        /// <param name="toScore"></param>
+        /// <returns></returns>
+        public IEnumerable<T> TakeRankByScore(string key, int fromScore, int toScore)
+        {
+            IEnumerable<T> list;
+            if (TryTakeRank(key, null, out list))
+            {
+                return list.Where(t => t.Score >= fromScore && (toScore == -1 || t.Score < toScore));
+            }
+            return Enumerable.Empty<T>();
+        }
         /// <summary>
         /// 
         /// </summary>
@@ -249,7 +266,7 @@ namespace ZyGames.Framework.Cache.Generic
         /// <returns></returns>
         protected bool TryLoadRankCache(string key, TransReceiveParam receiveParam, int periodTime, bool isReplace)
         {
-            //todo: trace
+            //todo: trace TryLoadRankCache
             var watch = RunTimeWatch.StartNew(string.Format("Try load rank cache:{0}-{1}", receiveParam.Schema.EntityType.FullName, key));
             try
             {
@@ -267,7 +284,7 @@ namespace ZyGames.Framework.Cache.Generic
             }
             finally
             {
-                watch.Flush(true, 20);
+                watch.Flush(true, 200);
             }
             TraceLog.WriteError("Try load cache data:{0} error.", typeof(T).FullName);
             return false;

@@ -36,9 +36,9 @@ namespace ZyGames.Framework.Redis
         /// <summary>
         /// 
         /// </summary>
-        public RedisPoolSetting()
+        public RedisPoolSetting(bool useConfig = true)
         {
-            _redisSection = ConfigManager.Configger.GetFirstOrAddConfig<RedisSection>();
+            _redisSection = useConfig ? ConfigManager.Configger.GetFirstOrAddConfig<RedisSection>() : new RedisSection();
         }
 
         /// <summary>

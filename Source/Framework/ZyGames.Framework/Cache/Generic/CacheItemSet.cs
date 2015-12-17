@@ -137,69 +137,6 @@ namespace ZyGames.Framework.Cache.Generic
         public void SetItem(IDataExpired itemData)
         {
             _itemData = itemData;
-            //if (!_isReadOnly)
-            //{
-            //    BindEvent(_itemData);
-            //    Notify(itemData, CacheItemChangeType.Modify, PropertyName);
-            //}
-        }
-        #region event
-        /*
-        /// <summary>
-        /// 
-        /// </summary>
-        private void BindEvent(object obj)
-        {
-            AddChildrenListener(obj);
-        }
-
-        /// <summary>
-        /// 当前对象(包括继承)的属性触发通知事件
-        /// </summary>
-        /// <param name="sender">触发事件源</param>
-        /// <param name="eventArgs"></param>
-        protected override void Notify(object sender, CacheItemEventArgs eventArgs)
-        {
-            //IItemChangeEvent val = sender as IItemChangeEvent;
-            //if (val != null && !val.HasChanged)
-            //{
-            //    return;
-            //}
-            _hasChanged = true;
-            PutToChangeKeys(sender as AbstractEntity);
-            DoChangedNotify(sender as AbstractEntity, eventArgs);
-        }
-
-        /// <summary>
-        /// 当前对象中的属性包含的子类触发通知事件,通知到此层为根
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="eventArgs"></param>
-        protected override void NotifyByChildren(object sender, CacheItemEventArgs eventArgs)
-        {
-            _hasChanged = true;
-            PutToChangeKeys(sender as AbstractEntity);
-            DoChangedNotify(sender as AbstractEntity, eventArgs);
-        }
-
-        private void DoChangedNotify(AbstractEntity sender, CacheItemEventArgs eventArgs)
-        {
-            if (OnChangedNotify != null)
-            {
-                OnChangedNotify(sender, eventArgs);
-            }
-        }
-
-        internal void SetUnChange()
-        {
-            _hasChanged = false;
-        }
-        */
-        #endregion
-
-        private void PutToChangeKeys(AbstractEntity entity)
-        {
-            DataSyncQueueManager.Send(entity);
         }
 
         /// <summary>

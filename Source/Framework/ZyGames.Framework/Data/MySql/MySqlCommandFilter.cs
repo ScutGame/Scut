@@ -22,6 +22,8 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ****************************************************************************/
 
+using System;
+
 namespace ZyGames.Framework.Data.MySql
 {
     /// <summary>
@@ -55,6 +57,24 @@ namespace ZyGames.Framework.Data.MySql
         public override string FormatExpression(string fieldName, string compareChar = "", string paramName = "")
         {
             return MySqlParamHelper.FormatFilterParam(fieldName, compareChar, paramName);
+        }
+
+        public override string FormatExpressionByIn(string fieldName, params object[] values)
+        {
+            if (values.Length == 0)
+            {
+                throw new ArgumentException("values len:0");
+            }
+
+            var paramNames = new string[values.Length];
+            for (int i = 0; i < paramNames.Length; i++)
+            {
+                var paramName = MySqlParamHelper.FormatParamName(fieldName + (i + 1));
+                paramNames[i] = paramName;
+                AddParam(MySqlParamHelper.MakeInParam(paramName, values[i]));
+            }
+            return string.Format("{0} IN ({1})", MySqlParamHelper.FormatName(fieldName), string.Join(",", paramNames));
+
         }
     }
 }

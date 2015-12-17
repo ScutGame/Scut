@@ -228,7 +228,11 @@ namespace ZyGames.Framework.Cache.Generic
             }
             return result;
         }
-
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="enumerable"></param>
+        /// <returns></returns>
         public static bool AddRange(params BaseEntity[] enumerable)
         {
             return AddRange(true, enumerable);
@@ -931,6 +935,24 @@ namespace ZyGames.Framework.Cache.Generic
                 receiveParam.DbFilter = filter;
             }
             return TryLoadCache(personalId, receiveParam, periodTime, false);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="dataList"></param>
+        /// <param name="isReplace"></param>
+        public void InitData(List<T> dataList, bool isReplace = true)
+        {
+            var st = SchemaTable();
+            int periodTime = st == null ? 0 : st.PeriodTime;
+            foreach (var pair in dataList.GroupBy(t => t.PersonalId))
+            {
+                CacheItemSet itemSet = InitContainer(pair.Key, periodTime);
+                InitCache(pair.ToList(), periodTime, isReplace);
+                itemSet.OnLoadSuccess();
+            }
+
         }
 
         /// <summary>

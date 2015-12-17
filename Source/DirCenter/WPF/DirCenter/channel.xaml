@@ -1,0 +1,27 @@
+﻿<Window x:Class="DirCenter.channel"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="渠道管理" Height="289" Width="342" Icon="scut.ico">
+    <Grid>
+        <ListView HorizontalAlignment="Left" Height="122" Margin="10,10,0,0" VerticalAlignment="Top" Width="314">
+            <ListView.View>
+                <GridView>
+                    <GridViewColumn Header="渠道编号" Width="auto" DisplayMemberBinding="{Binding Path=ID}" ></GridViewColumn>
+                    <GridViewColumn Header="渠道简称" Width="100" DisplayMemberBinding="{Binding Path=Name}"></GridViewColumn>
+                    <GridViewColumn Header="子渠道编号" Width="auto" DisplayMemberBinding="{Binding Path=ID}" ></GridViewColumn>
+                    <GridViewColumn Header="子渠道简称" Width="100" DisplayMemberBinding="{Binding Path=Name}"></GridViewColumn>
+                </GridView>
+            </ListView.View>
+        </ListView>
+        <Label Content="渠道编号" HorizontalAlignment="Left" Margin="10,150,0,0" VerticalAlignment="Top"/>
+        <Label Content="渠道简称" HorizontalAlignment="Left" Margin="10,181,0,0" VerticalAlignment="Top"/>
+        <TextBox HorizontalAlignment="Left" Height="23" Margin="73,150,0,0" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="91"/>
+        <TextBox HorizontalAlignment="Left" Height="23" Margin="73,184,0,0" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="91"/>
+        <Button Content="修改并保存" HorizontalAlignment="Left" Margin="128,227,0,0" VerticalAlignment="Top" Width="75"/>
+        <Label Content="子渠道编号" HorizontalAlignment="Left" Margin="163,150,0,0" VerticalAlignment="Top"/>
+        <Label Content="子渠道简称" HorizontalAlignment="Left" Margin="163,184,0,0" VerticalAlignment="Top"/>
+        <TextBox HorizontalAlignment="Left" Height="23" Margin="233,150,0,0" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="91"/>
+        <TextBox HorizontalAlignment="Left" Height="23" Margin="233,184,0,0" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="91"/>
+
+    </Grid>
+</Window>

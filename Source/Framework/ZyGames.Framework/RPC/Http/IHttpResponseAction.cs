@@ -36,6 +36,11 @@ namespace ZyGames.Framework.RPC.Http
         string Identity { get;}
 
         /// <summary>
+        /// 
+        /// </summary>
+        string RequestParams { get; }
+
+        /// <summary>
         /// Execute the intended response action against the Response.
         /// </summary>
         /// <param name="context">The current connection's request/response context.</param>

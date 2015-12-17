@@ -45,6 +45,7 @@ namespace ContractTools.WebApp.Base
         static DbDataLoader()
         {
             _dbBaseProvider = DbConnectionProvider.CreateDbProvider("Contract");
+            _dbBaseProvider.CheckConnect();
         }
 
         #region SolutionModel

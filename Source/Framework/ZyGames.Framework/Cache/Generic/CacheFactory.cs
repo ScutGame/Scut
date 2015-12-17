@@ -32,6 +32,7 @@ using ZyGames.Framework.Common.Timing;
 using ZyGames.Framework.Event;
 using ZyGames.Framework.Model;
 using ZyGames.Framework.Net;
+using ZyGames.Framework.Profile;
 using ZyGames.Framework.Redis;
 using ZyGames.Framework.Script;
 
@@ -81,6 +82,7 @@ namespace ZyGames.Framework.Cache.Generic
 
             EntitySchemaSet.InitSchema(typeof(EntityHistory));
             DataSyncQueueManager.Start(setting, serializer);
+            ProfileManager.Start();
             InitListener("__CachePoolListener", setting.ExpiredInterval, "__CachePoolUpdateListener", setting.UpdateInterval);
             if (setting.AutoRunEvent)
             {
@@ -609,22 +611,22 @@ namespace ZyGames.Framework.Cache.Generic
         }
 
         //todo test
-        /// <summary>
-        /// 
-        /// </summary>
-        public static void TestDisposeCache()
-        {
-            try
-            {
-                _readonlyPools.DisposeCache();
-                _writePools.DisposeCache();
-                TraceLog.WriteLine("{0} Clear expired cache end.", DateTime.Now.ToString("HH:mm:ss"));
-            }
-            catch (Exception ex)
-            {
-                TraceLog.WriteError("Cache manager timing error:{0}", ex);
-            }
-        }
+        ///// <summary>
+        ///// 
+        ///// </summary>
+        //public static void TestDisposeCache()
+        //{
+        //    try
+        //    {
+        //        _readonlyPools.DisposeCache();
+        //        _writePools.DisposeCache();
+        //        TraceLog.WriteLine("{0} Clear expired cache end.", DateTime.Now.ToString("HH:mm:ss"));
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        TraceLog.WriteError("Cache manager timing error:{0}", ex);
+        //    }
+        //}
 
         /// <summary>
         /// 启动缓存写库监听

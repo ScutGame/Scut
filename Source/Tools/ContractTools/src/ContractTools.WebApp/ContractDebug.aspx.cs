@@ -68,6 +68,12 @@ namespace ContractTools.WebApp
                         ddlContract.DataValueField = "ID";
                         ddlContract.DataBind();
                         ddlContract.SelectedValue = ContractID.ToString();
+
+                        ddHeadProperty.DataSource = list;
+                        ddHeadProperty.DataTextField = "uname";
+                        ddHeadProperty.DataValueField = "ID";
+                        ddHeadProperty.DataBind();
+
                     }
 
                     Bind();
@@ -93,7 +99,7 @@ namespace ContractTools.WebApp
                     this.txtServerUrl.Text = solutionMode.Url;
                 }
                 int msgId = txtMsgId.Text.ToInt();
-                txtParams.Text = BuildRequestParam(msgId, txtSid.Text, txtUid.Text, txtSt.Text, contractId, slnId, verId, solutionMode.GameID);
+                txtParams.Text = BuildRequestParam(msgId, txtSid.Text, txtUid.Text, txtSt.Text, txtPrtl.Text, contractId, slnId, verId, solutionMode.GameID);
             }
         }
 
@@ -120,9 +126,13 @@ namespace ContractTools.WebApp
                 int msgId = txtMsgId.Text.ToInt() + 1;
                 txtMsgId.Text = msgId.ToString();
                 int contractId = ddlContract.Text.ToInt();
+                int headPropertyId = ddHeadProperty.Text.ToInt();
                 string pid = Session["pid"] == null ? Session.SessionID : Session["pid"].ToString();
                 Session["pid"] = pid;
                 var paramRecords = DbDataLoader.GetParamInfo(SlnID, contractId, VerID);
+                var headPropertyList = headPropertyId == 0 || headPropertyId == contractId
+                    ? new List<ParamInfoModel>()
+                    : DbDataLoader.GetParamInfo(SlnID, headPropertyId, VerID).Where(t => t.ParamType == 2).ToList();
                 string postParam = FormatPostParam(contractId, paramRecords.Where(t => t.ParamType == 1).ToList(), txtParams.Text);
                 bool includeParam = slnModel.IsDParam;
                 string query = NetHelper.GetSign(postParam, includeParam);
@@ -133,7 +143,7 @@ namespace ContractTools.WebApp
                 string st;
                 var cookies = Session["cookies"] as CookieContainer ?? new CookieContainer();
 
-                dvResult.InnerHtml = PostGameServer(paramRecords.Where(t => t.ParamType == 2).ToList(),
+                dvResult.InnerHtml = PostGameServer(headPropertyList, paramRecords.Where(t => t.ParamType == 2).ToList(),
                     contractId, txtServerUrl.Text, postParam, pid, includeParam, slnModel.RespContentType, ddResponseShowType.Text.ToInt(), cookies,
                     out sid, out uid, out st);
                 Session["cookies"] = cookies;
@@ -184,7 +194,7 @@ namespace ContractTools.WebApp
             return requestParams.ToString().TrimEnd('&');
         }
 
-        private string BuildRequestParam(int msgId, string sid, string uid, string st, int contractId, int slnId, int versionId, int gameId, int serverId = 0)
+        private string BuildRequestParam(int msgId, string sid, string uid, string st, string prtcl, int contractId, int slnId, int versionId, int gameId, int serverId = 0)
         {
             StringBuilder requestParams = new StringBuilder();
             requestParams.AppendLine("MsgId=" + msgId);
@@ -192,6 +202,7 @@ namespace ContractTools.WebApp
             requestParams.AppendLine("Uid=" + uid);
             requestParams.AppendLine("ActionID=" + contractId);
             requestParams.AppendLine("St=" + st);
+            requestParams.AppendLine("Ptcl=" + prtcl);
             if (serverId > 0)
             {
                 requestParams.AppendLine("GameType=" + gameId);
@@ -222,7 +233,7 @@ namespace ContractTools.WebApp
         }
 
 
-        private static string PostGameServer(List<ParamInfoModel> paramList, int contractId, string serverUrl, string requestParams, string pid, bool includeParam, int contentType, int showType, CookieContainer cookies, out string sid, out string uid, out string st)
+        private static string PostGameServer(List<ParamInfoModel> headPropertyList, List<ParamInfoModel> paramList, int contractId, string serverUrl, string requestParams, string pid, bool includeParam, int contentType, int showType, CookieContainer cookies, out string sid, out string uid, out string st)
         {
             bool isSocket = !serverUrl.StartsWith("http://");
             sid = "";
@@ -241,7 +252,7 @@ namespace ContractTools.WebApp
                         header = msgReader.ReadHeadGzip();
                         if (showType == 1) //table
                         {
-                            ProcessResult(paramList, contractId, respContent, header, msgReader, out sid, out uid, out st);
+                            ProcessResult(headPropertyList, paramList, contractId, respContent, header, msgReader, out sid, out uid, out st);
                         }
                         else if (showType == 2) //json
                         {
@@ -265,12 +276,23 @@ namespace ContractTools.WebApp
             return respContent.ToString();
         }
 
-        private static void ProcessResult(List<ParamInfoModel> paramList, int contractId, StringBuilder respContent, MessageHead msg, MessageStructure msgReader, out string sid, out string uid, out string st)
+        private static void ProcessResult(List<ParamInfoModel> headPropertyList, List<ParamInfoModel> paramList, int contractId, StringBuilder respContent, MessageHead msg, MessageStructure msgReader, out string sid, out string uid, out string st)
         {
             sid = "";
             uid = "";
             st = msg.St;
             ResponseHead(contractId, respContent, msg.ErrorCode, msg.ErrorInfo, msg.St);
+            if (headPropertyList.Count > 0)
+            {
+                respContent.AppendFormat("<h3>{0}-{1}</h3>", contractId, "扩展头属性");
+                respContent.Append("<table style=\"width:99%; border-color:#f0f0f0\" border=\"1\" cellpadding=\"3\" cellspacing=\"0\">");
+                respContent.Append("<tr><td style=\"width:15%;\"><strong>参数</strong></td><td style=\"width:10%;\"><strong>类型</strong></td>");
+                respContent.Append("<td style=\"width:75%;\"><strong>参数值</strong></td></tr>");
+                ProcessLoopRocord(respContent, headPropertyList, msgReader);
+
+                respContent.Append("</table>");
+            }
+
 
             //AccountServer Error
             if (msg.ErrorCode < ErrorCode && msg.ErrorCode != 105 && msg.ErrorCode != 106)

@@ -320,7 +320,10 @@ namespace ZyGames.Framework.Game.Contract
         /// <summary>
         /// Raises the service stop event.
         /// </summary>
-        protected abstract void OnServiceStop();
+        protected override void OnServiceStop()
+        {
+            
+        }
 
         /// <summary>
         /// 

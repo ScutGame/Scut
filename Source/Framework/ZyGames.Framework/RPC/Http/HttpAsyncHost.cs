@@ -245,8 +245,13 @@ namespace ZyGames.Framework.RPC.Http
                 var requestContext = new HttpRequestContext(host._hostContext, listenerContext.Request, listenerContext.User, userHostAddress);
                 var action = await host._handler.Execute(requestContext);
                 actionTime = sw.ElapsedMilliseconds;
+
                 if (action != null)
                 {
+                    if (listenerContext.Request.HttpMethod == "POST")
+                    {
+                        rawUrl += action.RequestParams;
+                    }
                     identity = action.Identity;
                     // Take the action and await its completion:
                     var responseContext = new HttpRequestResponseContext(requestContext, listenerContext.Response);

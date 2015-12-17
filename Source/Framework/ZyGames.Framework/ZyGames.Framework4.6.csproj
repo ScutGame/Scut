@@ -114,6 +114,7 @@
     <Compile Include="Config\CacheSection.cs" />
     <Compile Include="Config\EntitySection.cs" />
     <Compile Include="Config\MessageQueueSection.cs" />
+    <Compile Include="Config\ProfileSection.cs" />
     <Compile Include="Config\RedisSection.cs" />
     <Compile Include="Config\ScriptSection.cs" />
     <Compile Include="Data\CommandFilter.cs" />
@@ -178,6 +179,12 @@
     <Compile Include="Plugin\Test\BaseCase.cs" />
     <Compile Include="Plugin\Test\CaseEventArgs.cs" />
     <Compile Include="Plugin\Test\CaseManager.cs" />
+    <Compile Include="Profile\CollectTime.cs" />
+    <Compile Include="Profile\EntityProfileCollection.cs" />
+    <Compile Include="Profile\ProfileLog.cs" />
+    <Compile Include="Profile\ProfileManager.cs" />
+    <Compile Include="Profile\ProfileSummary.cs" />
+    <Compile Include="Profile\SqlProfileCollection.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Redis\RedisConnectionPool.cs" />
     <Compile Include="Redis\RedisInfo.cs" />

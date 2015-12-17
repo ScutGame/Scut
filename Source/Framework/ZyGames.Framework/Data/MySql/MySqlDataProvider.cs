@@ -77,47 +77,174 @@ namespace ZyGames.Framework.Data.MySql
         /// 
         /// </summary>
         /// <param name="commandType"></param>
+        /// <param name="commandTimeout"></param>
         /// <param name="commandText"></param>
         /// <param name="parameters"></param>
         /// <returns></returns>
-        public override IDataReader ExecuteReader(CommandType commandType, string commandText, params IDataParameter[] parameters)
+        public override IDataReader ExecuteReader(CommandType commandType, int? commandTimeout, string commandText, params IDataParameter[] parameters)
         {
-            return MySqlHelper.ExecuteReader(ConnectionString, commandText, ConvertParam<MySqlParameter>(parameters));
+            MySqlConnection conn = new MySqlConnection(ConnectionString);
+            try
+            {
+                conn.Open();
+            }
+            catch (Exception ex)
+            {
+                throw new DbConnectionException(ex.Message, ex);
+            }
+            //internal close connection
+            return DoExecuteReader(conn, null, commandTimeout, commandText, false, ConvertParam<MySqlParameter>(parameters));
         }
+
+
         /// <summary>
         /// 
         /// </summary>
         /// <param name="commandType"></param>
+        /// <param name="commandTimeout"></param>
         /// <param name="commandText"></param>
         /// <param name="parameters"></param>
         /// <returns></returns>
-        public override object ExecuteScalar(CommandType commandType, string commandText, params IDataParameter[] parameters)
+        public override object ExecuteScalar(CommandType commandType, int? commandTimeout, string commandText, params IDataParameter[] parameters)
         {
-            return MySqlHelper.ExecuteScalar(ConnectionString, commandText, ConvertParam<MySqlParameter>(parameters));
+            object result = null;
+            OpenConnection(conn =>
+            {
+                if (!commandTimeout.HasValue)
+                {
+                    result = MySqlHelper.ExecuteScalar(conn, commandText, ConvertParam<MySqlParameter>(parameters));
+                    return;
+                }
+                using (var mySqlCommand = CreateMySqlCommand(conn, null, commandTimeout, commandText))
+                {
+                    result = mySqlCommand.ExecuteScalar();
+                }
+            });
+            return result;
         }
+
         /// <summary>
         /// 
         /// </summary>
         /// <param name="commandType"></param>
+        /// <param name="commandTimeout"></param>
         /// <param name="commandText"></param>
         /// <param name="parameters"></param>
+        /// <exception cref="DbConnectionException"></exception>
         /// <returns></returns>
-        public override int ExecuteQuery(CommandType commandType, string commandText, params IDataParameter[] parameters)
+        public override int ExecuteQuery(CommandType commandType, int? commandTimeout, string commandText, params IDataParameter[] parameters)
         {
-            return MySqlHelper.ExecuteNonQuery(ConnectionString, commandText, ConvertParam<MySqlParameter>(parameters));
+            int result = 0;
+            OpenConnection(conn =>
+            {
+                if (!commandTimeout.HasValue)
+                {
+                    result = MySqlHelper.ExecuteNonQuery(conn, commandText, ConvertParam<MySqlParameter>(parameters));
+                    return;
+                }
+                using (var mySqlCommand = CreateMySqlCommand(conn, null, commandTimeout, commandText))
+                {
+                    result = mySqlCommand.ExecuteNonQuery();
+                }
+            });
+            return result;
         }
+
+        private IDataReader DoExecuteReader(MySqlConnection connection, MySqlTransaction transaction, int? commandTimeout, string commandText, bool externalConn, params MySqlParameter[] commandParameters)
+        {
+            MySqlDataReader result;
+            using (var mySqlCommand = CreateMySqlCommand(connection, null, commandTimeout, commandText))
+            {
+                if (commandParameters != null)
+                {
+                    for (int i = 0; i < commandParameters.Length; i++)
+                    {
+                        MySqlParameter value = commandParameters[i];
+                        mySqlCommand.Parameters.Add(value);
+                    }
+                }
+                if (externalConn)
+                {
+                    result = mySqlCommand.ExecuteReader();
+                }
+                else
+                {
+                    //it has closed while used end.
+                    result = mySqlCommand.ExecuteReader(CommandBehavior.CloseConnection);
+                }
+            }
+            return result;
+        }
+
+        private static MySqlCommand CreateMySqlCommand(MySqlConnection connection, MySqlTransaction transaction, int? commandTimeout, string commandText)
+        {
+            MySqlCommand cmd = new MySqlCommand();
+            cmd.Connection = connection;
+            cmd.Transaction = transaction;
+            cmd.CommandText = commandText;
+            cmd.CommandType = CommandType.Text;
+            if (commandTimeout != null)
+            {
+                cmd.CommandTimeout = commandTimeout.Value;
+            }
+            return cmd;
+        }
+
+
+        private void OpenConnection(Action<MySqlConnection> action)
+        {
+            using (MySqlConnection conn = new MySqlConnection(ConnectionString))
+            {
+                try
+                {
+                    conn.Open();
+                }
+                catch (Exception ex)
+                {
+                    throw new DbConnectionException(ex.Message, ex);
+                }
+                action(conn);
+            }
+        }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="commands"></param>
+        /// <returns></returns>
+        public override IEnumerable<int> ExecuteQuery(IEnumerable<CommandStruct> commands)
+        {
+            using (MySqlConnection conn = new MySqlConnection(ConnectionString))
+            {
+                try
+                {
+                    conn.Open();
+                }
+                catch (Exception ex)
+                {
+                    throw new DbConnectionException(ex.Message, ex);
+                }
+                foreach (var command in commands)
+                {
+                    command.Parser();
+                    yield return MySqlHelper.ExecuteNonQuery(conn, command.Sql, ConvertParam<MySqlParameter>(command.Parameters));
+                }
+            }
+        }
+
         /// <summary>
         /// 
         /// </summary>
         /// <param name="identityId"></param>
         /// <param name="commandType"></param>
+        /// <param name="tableName"></param>
         /// <param name="commandText"></param>
         /// <param name="parameters"></param>
         /// <returns></returns>
-        public override int ExecuteNonQuery(int identityId, CommandType commandType, string commandText, params IDataParameter[] parameters)
+        public override int ExecuteNonQuery(int identityId, CommandType commandType, string tableName, string commandText, params IDataParameter[] parameters)
         {
             SqlStatement statement = new SqlStatement();
             statement.IdentityID = identityId;
+            statement.Table = tableName;
             statement.ConnectionString = ConnectionString;
             statement.ProviderType = "MySqlDataProvider";
             statement.CommandType = commandType;
@@ -136,6 +263,7 @@ namespace ZyGames.Framework.Data.MySql
             command.Parser();
             SqlStatement statement = new SqlStatement();
             statement.IdentityID = identityId;
+            statement.Table = command.TableName;
             statement.ConnectionString = ConnectionString;
             statement.ProviderType = "MySqlDataProvider";
             statement.CommandType = command.CommandType;
@@ -152,15 +280,24 @@ namespace ZyGames.Framework.Data.MySql
         /// <returns></returns>
         public override bool CheckTable(string tableName, out DbColumn[] columns)
         {
-            columns = null;
             string commandText = string.Format("SELECT TABLE_NAME FROM `INFORMATION_SCHEMA`.`TABLES` WHERE `TABLE_SCHEMA`='{0}' AND `TABLE_NAME`='{1}'", ConnectionSetting.DatabaseName, tableName);
-            var dr = MySqlHelper.ExecuteDataRow(ConnectionString, commandText);
-            if (dr != null && !dr[0].Equals(DBNull.Value))
+            bool result = false;
+            var list = new List<DbColumn>();
+            OpenConnection(conn =>
             {
-                var list = new List<DbColumn>();
+                bool flag = false;
+                using (var dr = MySqlHelper.ExecuteReader(conn, commandText))
+                {
+                    if (dr.Read() && !dr[0].Equals(DBNull.Value))
+                    {
+                        flag = true;
+                    }
+                }
+                if (!flag) return;
+
                 commandText = string.Format("SELECT Column_Name AS ColumnName,Data_Type AS ColumnType, NUMERIC_SCALE AS scale, CHARACTER_MAXIMUM_LENGTH AS Length, IS_NULLABLE, COLUMN_KEY, COLUMN_DEFAULT, EXTRA FROM information_schema.`columns` WHERE `TABLE_SCHEMA`='{0}' AND `TABLE_NAME`='{1}'", ConnectionSetting.DatabaseName, tableName);
 
-                using (var dataReader = MySqlHelper.ExecuteReader(ConnectionString, commandText))
+                using (var dataReader = MySqlHelper.ExecuteReader(conn, commandText))
                 {
                     while (dataReader.Read())
                     {
@@ -176,10 +313,10 @@ namespace ZyGames.Framework.Data.MySql
                         list.Add(column);
                     }
                 }
-                columns = list.ToArray();
-                return true;
-            }
-            return false;
+                result = true;
+            });
+            columns = list.ToArray();
+            return result;
         }
 
         private Type ConvertToObjectType(MySqlDbType toEnum)
@@ -210,7 +347,7 @@ namespace ZyGames.Framework.Data.MySql
                 case MySqlDbType.Double:
                     return typeof(Double);
                 case MySqlDbType.Float:
-                    return typeof(Single);
+                    return typeof(float);
                 case MySqlDbType.LongBlob:
                     return typeof(Object);
                 case MySqlDbType.Int32:
@@ -349,7 +486,7 @@ namespace ZyGames.Framework.Data.MySql
             {
                 return "Int";
             }
-            if (type.Equals(typeof(Single)))
+            if (type.Equals(typeof(Single)) || type.Equals(typeof(float)))
             {
                 return "Float";
             }
@@ -421,7 +558,7 @@ namespace ZyGames.Framework.Data.MySql
                 command.AppendFormat("){0} ENGINE=InnoDB{1};", autoincrement, charSet);
                 if (hasColumn)
                 {
-                    MySqlHelper.ExecuteNonQuery(ConnectionString, command.ToString());
+                    ExecuteQuery(CommandType.Text, command.ToString());
                 }
             }
             catch (Exception ex)
@@ -452,7 +589,7 @@ namespace ZyGames.Framework.Data.MySql
                         FormatQueryColumn(",", columns)
                         );
                 }
-                MySqlHelper.ExecuteNonQuery(ConnectionString, command.ToString());
+                ExecuteQuery(CommandType.Text, command.ToString());
 
             }
             catch (Exception ex)
@@ -507,84 +644,88 @@ namespace ZyGames.Framework.Data.MySql
         public override void CreateColumn(string tableName, DbColumn[] columns)
         {
             StringBuilder command = new StringBuilder();
-            try
+            OpenConnection(conn =>
             {
-                string dbTableName = FormatName(tableName);
-                command.AppendFormat("ALTER TABLE {0}", dbTableName);
-                command.AppendLine(" ADD COLUMN (");
-                List<string> keys;
-                List<string> uniques;
-                int identityNo;
-                bool hasColumn = CheckProcessColumns(command, columns, out keys, out uniques, out identityNo);
-                command.Append(");");
-                if (hasColumn)
+                try
                 {
-                    MySqlHelper.ExecuteNonQuery(ConnectionString, command.ToString());
-                    if (identityNo > 0)
+                    string dbTableName = FormatName(tableName);
+                    command.AppendFormat("ALTER TABLE {0}", dbTableName);
+                    command.AppendLine(" ADD COLUMN (");
+                    List<string> keys;
+                    List<string> uniques;
+                    int identityNo;
+                    bool hasColumn = CheckProcessColumns(command, columns, out keys, out uniques, out identityNo);
+                    command.Append(");");
+                    if (hasColumn)
                     {
-                        MySqlHelper.ExecuteNonQuery(ConnectionString, string.Format("ALTER TABLE {0} AUTO_INCREMENT={1};", dbTableName, identityNo));
+                        MySqlHelper.ExecuteNonQuery(conn, command.ToString());
+                        if (identityNo > 0)
+                        {
+                            MySqlHelper.ExecuteNonQuery(conn, string.Format("ALTER TABLE {0} AUTO_INCREMENT={1};", dbTableName, identityNo));
+                        }
                     }
-                }
 
-                command.Clear();
-                List<DbColumn> keyColumns = new List<DbColumn>();
-                int index = 0;
-                foreach (var dbColumn in columns)
-                {
-                    if (!dbColumn.IsModify)
+                    command.Clear();
+                    List<DbColumn> keyColumns = new List<DbColumn>();
+                    int index = 0;
+                    foreach (var dbColumn in columns)
                     {
-                        continue;
+                        if (!dbColumn.IsModify)
+                        {
+                            continue;
+                        }
+                        if (dbColumn.IsKey)
+                        {
+                            keyColumns.Add(dbColumn);
+                            continue;
+                        }
+                        if (index > 0)
+                        {
+                            command.AppendLine("");
+                        }
+                        //ALTER TABLE `test`.`tb1`     CHANGE `Id4` `Id4t` BIGINT(20) NULL ;
+                        command.AppendFormat("ALTER TABLE {0} CHANGE {1} {1} {2} {3};",
+                                             dbTableName,
+                                             FormatName(dbColumn.Name),
+                                             ConvertToDbType(dbColumn.Type, dbColumn.DbType, dbColumn.Length, dbColumn.Scale, dbColumn.IsKey, dbColumn.Name),
+                                             dbColumn.Isnullable ? "" : " NOT NULL");
+                        index++;
                     }
-                    if (dbColumn.IsKey)
+                    //此处MySQL的处理主键方式不太一样
+                    if (keyColumns.Count > 0)
                     {
-                        keyColumns.Add(dbColumn);
-                        continue;
+                        string[] keyArray = new string[keyColumns.Count];
+                        if (keyColumns.Any(t => t.KeyNo > 0))
+                        {
+                            //check haved key in db table
+                            command.AppendFormat("ALTER TABLE {0} DROP PRIMARY KEY;", dbTableName);
+                            command.AppendLine();
+                        }
+                        int i = 0;
+                        foreach (var keyColumn in keyColumns)
+                        {
+                            keyArray[i] = FormatName(keyColumn.Name);
+                            command.AppendFormat("ALTER TABLE {0} CHANGE {1} {1} {2} not null;",
+                                                 dbTableName,
+                                                 FormatName(keyColumn.Name),
+                                                 ConvertToDbType(keyColumn.Type, keyColumn.DbType, keyColumn.Length, keyColumn.Scale, keyColumn.IsKey, keyColumn.Name));
+                            command.AppendLine();
+                            i++;
+                            index++;
+                        }
+                        command.AppendFormat("ALTER TABLE {0} ADD PRIMARY KEY ({1});", dbTableName, FormatQueryColumn(",", keyArray));
                     }
                     if (index > 0)
                     {
-                        command.AppendLine("");
+                        MySqlHelper.ExecuteNonQuery(conn, command.ToString());
                     }
-                    //ALTER TABLE `test`.`tb1`     CHANGE `Id4` `Id4t` BIGINT(20) NULL ;
-                    command.AppendFormat("ALTER TABLE {0} CHANGE {1} {1} {2} {3};",
-                                         dbTableName,
-                                         FormatName(dbColumn.Name),
-                                         ConvertToDbType(dbColumn.Type, dbColumn.DbType, dbColumn.Length, dbColumn.Scale, dbColumn.IsKey, dbColumn.Name),
-                                         dbColumn.Isnullable ? "" : " NOT NULL");
-                    index++;
                 }
-                //此处MySQL的处理主键方式不太一样
-                if (keyColumns.Count > 0)
+                catch (Exception ex)
                 {
-                    string[] keyArray = new string[keyColumns.Count];
-                    if (keyColumns.Any(t => t.KeyNo > 0))
-                    {
-                        //check haved key in db table
-                        command.AppendFormat("ALTER TABLE {0} DROP PRIMARY KEY;", dbTableName);
-                        command.AppendLine();
-                    }
-                    int i = 0;
-                    foreach (var keyColumn in keyColumns)
-                    {
-                        keyArray[i] = FormatName(keyColumn.Name);
-                        command.AppendFormat("ALTER TABLE {0} CHANGE {1} {1} {2} not null;",
-                                             dbTableName,
-                                             FormatName(keyColumn.Name),
-                                             ConvertToDbType(keyColumn.Type, keyColumn.DbType, keyColumn.Length, keyColumn.Scale, keyColumn.IsKey, keyColumn.Name));
-                        command.AppendLine();
-                        i++;
-                        index++;
-                    }
-                    command.AppendFormat("ALTER TABLE {0} ADD PRIMARY KEY ({1});", dbTableName, FormatQueryColumn(",", keyArray));
+                    throw new Exception(string.Format("Execute sql error:{0}", command), ex);
                 }
-                if (index > 0)
-                {
-                    MySqlHelper.ExecuteNonQuery(ConnectionString, command.ToString());
-                }
-            }
-            catch (Exception ex)
-            {
-                throw new Exception(string.Format("Execute sql error:{0}", command), ex);
-            }
+
+            });
         }
 
         /// <summary>

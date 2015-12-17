@@ -97,7 +97,7 @@ namespace ZyGames.Framework.Game.Sns
                 if (isNew || !imeiMap.TryGetValue(imei, out passportExpired))
                 {
                     passportId = new SnsPassport().GetRegPassport();
-                    if(!string.IsNullOrEmpty(imei))
+                    if (!string.IsNullOrEmpty(imei))
                         imeiMap[imei] = new PassportExpired(passportId);
                 }
                 else
@@ -179,7 +179,22 @@ namespace ZyGames.Framework.Game.Sns
         /// <returns>userid</returns>
         public static int QuickRegisterPassport(string passportId, string password, string imei, bool isCustom = false)
         {
-            return DoRegisterPassport(passportId, password, imei, null, null, isCustom);
+            int userType;
+            return QuickRegisterPassport(passportId, password, imei, out userType, isCustom);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="passportId"></param>
+        /// <param name="password"></param>
+        /// <param name="imei"></param>
+        /// <param name="userType"></param>
+        /// <param name="isCustom"></param>
+        /// <returns></returns>
+        public static int QuickRegisterPassport(string passportId, string password, string imei, out int userType, bool isCustom = false)
+        {
+            return DoRegisterPassport(passportId, password, imei, null, null, out userType, isCustom);
         }
 
         /// <summary>
@@ -192,15 +207,17 @@ namespace ZyGames.Framework.Game.Sns
         /// <returns>pid</returns>
         public static string RegisterPassport(string password, string imei, string[] paramNames = null, string[] paramValues = null)
         {
+            int userType;
             string pid = new SnsPassport().GetRegPassport();
-            DoRegisterPassport(pid, password, imei, paramNames, paramValues, false);
+            DoRegisterPassport(pid, password, imei, paramNames, paramValues, out userType, false);
             return pid;
         }
 
-        private static int DoRegisterPassport(string passportId, string password, string imei, string[] paramNames, string[] paramValues, bool isCustom)
+        private static int DoRegisterPassport(string passportId, string password, string imei, string[] paramNames, string[] paramValues, out int userType, bool isCustom)
         {
             SnsCenterUser snsCenterUser = new SnsCenterUser(passportId, password, imei);
             var snsuser = snsCenterUser.GetUserInfo(passportId);
+            userType = (int)snsCenterUser.RegType;
             if (snsuser.UserId > 0)
             {
                 return 0;

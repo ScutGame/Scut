@@ -66,6 +66,27 @@ namespace ZyGames.Framework.Data
         /// <summary>
         /// 
         /// </summary>
+        /// <param name="fieldName"></param>
+        /// <param name="values"></param>
+        public virtual string FormatExpressionByIn(string fieldName, params object[] values)
+        {
+            if (values.Length == 0)
+            {
+                throw new ArgumentException("values len:0");
+            }
+            var paramNames = new string[values.Length];
+            for (int i = 0; i < paramNames.Length; i++)
+            {
+                var paramName = SqlParamHelper.FormatParamName(fieldName + (i + 1));
+                paramNames[i] = paramName;
+                AddParam(SqlParamHelper.MakeInParam(paramName, values[i]));
+            }
+            return string.Format("{0} IN ({1})", SqlParamHelper.FormatName(fieldName), string.Join(",", paramNames));
+
+        }
+        /// <summary>
+        /// 
+        /// </summary>
         public IDataParameter[] Parameters
         {
             get

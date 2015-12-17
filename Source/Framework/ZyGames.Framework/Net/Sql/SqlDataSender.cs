@@ -30,6 +30,7 @@ using ZyGames.Framework.Common.Log;
 using ZyGames.Framework.Common.Serialization;
 using ZyGames.Framework.Data;
 using ZyGames.Framework.Model;
+using ZyGames.Framework.Profile;
 
 namespace ZyGames.Framework.Net.Sql
 {
@@ -163,11 +164,21 @@ namespace ZyGames.Framework.Net.Sql
             CommandStruct command = GenerateCommand(dbProvider, data, schemaTable, getFunc, postColumnFunc);
             if (command != null)
             {
-                bool result = (synchronous
-                    ? dbProvider.ExecuteQuery(CommandType.Text, command.Sql, command.Parameters)
-                    : dbProvider.ExecuteNonQuery(data.GetMessageQueueId(), CommandType.Text, command.Sql, command.Parameters)) > 0;
+                int result;
+                if (synchronous)
+                {
+                    //同时采集
+                    ProfileManager.PostSqlOfMessageQueueTimes(command.TableName, 1);
+                    ProfileManager.ProcessSqlOfMessageQueueTimes(command.TableName);
+                    result = dbProvider.ExecuteQuery(CommandType.Text, command.Sql, command.Parameters);
+                }
+                else
+                {
+                    //put into pool
+                    result = dbProvider.ExecuteNonQuery(data.GetMessageQueueId(), CommandType.Text, command.TableName, command.Sql, command.Parameters);
+                }
                 data.ResetState();
-                return result;
+                return result > 0;
             }
             return false;
         }
@@ -254,10 +265,8 @@ namespace ZyGames.Framework.Net.Sql
                         object value = getFunc(data, schemaColumn);
                         IDataParameter parameter = CreateParameter(dbProvider, paramName, schemaColumn.DbType, value);
                         command.Filter.AddParam(parameter);
-                        if (!schemaColumn.IsIdentity)
-                        {
-                            command.AddKey(CreateParameter(dbProvider, keyName, schemaColumn.DbType, value));
-                        }
+                        //主键且自增列更新时，MSSQL与MySql处理不同，MySql需要有主键列
+                        command.AddKey(CreateParameter(dbProvider, keyName, schemaColumn.DbType, value), schemaColumn.IsIdentity);
                     }
                 }
                 catch (Exception ex)

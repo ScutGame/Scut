@@ -78,12 +78,13 @@ namespace ZyGames.Framework.RPC.Service
         public void Connect()
         {
             _client.Connect();
+            LocalAddress = _client.LocalEndPoint.ToString();
             Connected = true;
         }
         /// <summary>
         /// Close
         /// </summary>
-        public void Close()
+        public override void Close()
         {
             _client.Close();
             Connected = false;
@@ -157,10 +158,6 @@ namespace ZyGames.Framework.RPC.Service
         {
             try
             {
-                if (!Connected)
-                {
-                    return;
-                }
                 if (HeartPacket != null && HeartPacket.Length > 0)
                 {
                     Send(HeartPacket);

@@ -193,6 +193,14 @@ namespace ZyGames.Framework.Data.Sql
             SqlHelper.OperatingLog(commandText);
             return result;
         }
+        public static SqlDataReader ExecuteReader(SqlConnection connection, CommandType commandType, string commandText, bool externalConn, params SqlParameter[] commandParameters)
+        {
+            SqlDataReader result = SqlHelper.ExecuteReader(connection, null, commandType, commandText, commandParameters,
+                externalConn ? SqlConnectionOwnership.External : SqlConnectionOwnership.Internal);
+            SqlHelper.OperatingLog(commandText);
+            return result;
+        }
+
         /// <summary>
         /// 
         /// </summary>

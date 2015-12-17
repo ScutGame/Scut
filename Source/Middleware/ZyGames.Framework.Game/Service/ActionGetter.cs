@@ -125,6 +125,16 @@ namespace ZyGames.Framework.Game.Service
         {
             return SessionId;
         }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        public virtual ProtocolVersion GetPtcl()
+        {
+            return ReqPackage.Ptcl;
+        }
+
         /// <summary>
         /// get current sessionid.
         /// </summary>

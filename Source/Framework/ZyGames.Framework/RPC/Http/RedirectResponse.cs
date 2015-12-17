@@ -38,6 +38,10 @@ namespace ZyGames.Framework.RPC.Http
         /// 
         /// </summary>
         public string Identity { get; private set; }
+        /// <summary>
+        /// 
+        /// </summary>
+        public string RequestParams { get; private set; }
 
         /// <summary>
         /// 

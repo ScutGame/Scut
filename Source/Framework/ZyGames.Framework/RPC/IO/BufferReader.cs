@@ -54,7 +54,7 @@ namespace ZyGames.Framework.RPC.IO
                     {
                         count = stream.Read(buffer, 0, buffer.Length);
                     }
-                    catch (Exception ex)
+                    catch (Exception)
                     {
                         break;
                     }

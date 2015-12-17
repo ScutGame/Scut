@@ -52,6 +52,7 @@
   <ItemGroup>
     <Compile Include="CaseContext.cs" />
     <Compile Include="CaseStep.cs" />
+    <Compile Include="LoadTest.cs" />
     <Compile Include="Net\HttpNetProxy.cs" />
     <Compile Include="Net\NetProxy.cs" />
     <Compile Include="Net\SocketNetProxy.cs" />

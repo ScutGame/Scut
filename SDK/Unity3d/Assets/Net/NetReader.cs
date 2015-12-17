@@ -412,7 +412,7 @@ public class NetReader
     }
     public Int64 readInt64()
     {
-        int nLen = sizeof(Int64);
+        int nLen = sizeof(long);
         if (streamPos + nLen > this._bytes.Length)
         {
             Debug.Log(" Failed: 长度越界 NetReader: readInt64");

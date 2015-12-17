@@ -74,13 +74,43 @@ namespace ZyGames.Framework.Common.Serialization
         /// <summary>
         /// 
         /// </summary>
+        public bool IsValueType
+        {
+            get
+            {
+                return _isnullValue.HasValue ||
+                    _byteValue.HasValue ||
+                    _boolValue.HasValue ||
+                    _shortValue.HasValue ||
+                    _intValue.HasValue ||
+                    _longValue.HasValue ||
+                    _floatValue.HasValue ||
+                    _decimalValue.HasValue ||
+                    _doubleValue.HasValue ||
+                    _charValue.HasValue ||
+                    _dateTimeValue.HasValue ||
+                    _ushortValue.HasValue ||
+                    _uintValue.HasValue ||
+                    _ulongValue.HasValue ||
+                    _guidValue.HasValue;
+
+            }
+        }
+        /// <summary>
+        /// 
+        /// </summary>
+        public bool HasStringValue { get { return !string.IsNullOrEmpty(_stringValue); } }
+
+        /// <summary>
+        /// 
+        /// </summary>
         [ProtoIgnore]
         public object Value
         {
             get
             {
                 if (_isnullValue.HasValue)
-                    return _isnullValue.Value;
+                    return null;
                 if (_byteValue.HasValue)
                     return _byteValue.Value;
                 if (_boolValue.HasValue)

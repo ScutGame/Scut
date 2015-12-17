@@ -41,5 +41,10 @@ namespace ZyGames.Framework.Common.Configuration
         protected override void LoadConfigData()
         {
         }
+
+        internal void Add(ConfigSection nodeData)
+        {
+            AddNodeData(nodeData);
+        }
     }
 }

@@ -59,6 +59,11 @@ namespace ZyGames.Framework.Game.Contract
         /// 
         /// </summary>
         public const string ParamSt = "St";
+        /// <summary>
+        /// 
+        /// </summary>
+        public const string ParamPtcl = "Ptcl";
+
         private string _originalParam = string.Empty;
         private StringBuilder _error = new StringBuilder();
         private Dictionary<string, string> _param = new Dictionary<string, string>(StringComparer.InvariantCultureIgnoreCase);
@@ -148,6 +153,7 @@ namespace ZyGames.Framework.Game.Contract
         public int MsgId { get; private set; }
 
         private int _actionId;
+        private ProtocolVersion _ptcl = ProtocolVersion.Default;
 
         /// <summary>
         /// Action编号
@@ -156,9 +162,7 @@ namespace ZyGames.Framework.Game.Contract
         {
             get { return _actionId; }
         }
-
-
-
+        
         private string _paramString;
 
         /// <summary>
@@ -176,6 +180,11 @@ namespace ZyGames.Framework.Game.Contract
         public override string GetSt()
         {
             return _param.ContainsKey(ParamSt) ? _param[ParamSt] : string.Empty;
+        }
+
+        public override ProtocolVersion GetPtcl()
+        {
+            return _ptcl;
         }
 
         /// <summary>
@@ -206,6 +215,7 @@ namespace ZyGames.Framework.Game.Contract
         {
             MsgId = (_param.ContainsKey(ParamMsgId) ? _param[ParamMsgId] : "0").ToInt();
             _actionId = (_param.ContainsKey(ParamActionId) ? _param[ParamActionId] : "0").ToInt();
+            _ptcl = (_param.ContainsKey(ParamPtcl) ? _param[ParamPtcl] : "0").ToEnum<ProtocolVersion>();
         }
 
         private void RemoveSignKey(string d)

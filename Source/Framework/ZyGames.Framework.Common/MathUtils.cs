@@ -499,6 +499,8 @@ namespace ZyGames.Framework.Common
         public static bool TrySub(uint a, uint b, Action<uint> success, out uint decrement)
         {
             decrement = 0;
+            if (a < b) return false;
+
             uint r = a - b;
             if (r <= a)
             {
@@ -532,6 +534,8 @@ namespace ZyGames.Framework.Common
         public static bool TrySub(ushort a, ushort b, Action<uint> success, out ushort decrement)
         {
             decrement = 0;
+            if (a < b) return false;
+
             int r = a - b;
             if (r >= 0 && r <= a)
             {

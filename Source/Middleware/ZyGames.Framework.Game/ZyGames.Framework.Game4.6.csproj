@@ -205,6 +205,7 @@
     <Compile Include="Service\JsonAction.cs" />
     <Compile Include="Service\LoginStatus.cs" />
     <Compile Include="Service\MobileType.cs" />
+    <Compile Include="Service\ProtocolVersion.cs" />
     <Compile Include="Service\RemoteStruct.cs" />
     <Compile Include="Service\SocketGameResponse.cs" />
     <Compile Include="Sns\91sdk\HttpPostManager.cs" />

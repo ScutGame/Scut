@@ -23,6 +23,7 @@ THE SOFTWARE.
 ****************************************************************************/
 using System;
 using System.Diagnostics;
+using ZyGames.Framework.Common.Log;
 
 namespace ZyGames.Framework.Common.Timing
 {
@@ -159,6 +160,13 @@ namespace ZyGames.Framework.Common.Timing
 
         class PlanState
         {
+            private readonly PlanConfig _config;
+
+            public PlanState(PlanConfig config)
+            {
+                _config = config;
+            }
+
             public DateTime StartDate { get; set; }
             public DateTime StopDate { get; set; }
             public DateTime PreExcuteDate { get; private set; }
@@ -172,11 +180,11 @@ namespace ZyGames.Framework.Common.Timing
             /// </summary>
             public bool IsEnd { get; private set; }
 
-            public void Reset(PlanConfig config)
+            public void Reset()
             {
                 PreExcuteDate = DateTime.MinValue;
-                StartDate = (string.IsNullOrEmpty(config.BeginTime) ? "00:00:00" : config.BeginTime).ToDateTime();
-                StopDate = string.IsNullOrEmpty(config.EndTime) || "00:00:00".Equals(config.EndTime) ? DateTime.Now.Date.AddDays(1) : config.EndTime.ToDateTime(DateTime.MinValue);
+                StartDate = (string.IsNullOrEmpty(_config.BeginTime) ? "00:00:00" : _config.BeginTime).ToDateTime();
+                StopDate = string.IsNullOrEmpty(_config.EndTime) || "00:00:00".Equals(_config.EndTime) ? DateTime.Now.Date.AddDays(1) : _config.EndTime.ToDateTime(DateTime.MinValue);
                 IsEnd = false;
             }
 
@@ -211,6 +219,7 @@ namespace ZyGames.Framework.Common.Timing
                 bool result = false;
                 var excuteDate = PreExcuteDate == DateTime.MinValue ? StartDate : PreExcuteDate.AddSeconds(secondInterval);
                 var nextExcuteDate = excuteDate.AddSeconds(secondInterval);
+                //string info = string.Empty;
                 if (currDate < PreExcuteDate || currDate >= nextExcuteDate)
                 {
                     //修正当前时间位置
@@ -218,16 +227,19 @@ namespace ZyGames.Framework.Common.Timing
                     var numberTimes = (int)ts.TotalSeconds / secondInterval;
                     int times = FindIntervalTimes(currDate, 0, numberTimes, secondInterval);
                     PreExcuteDate = StartDate.AddSeconds(secondInterval * (times - 1));
-
                     excuteDate = PreExcuteDate.AddSeconds(secondInterval);
                     nextExcuteDate = excuteDate.AddSeconds(secondInterval);
                 }
-                //Trace.WriteLine(string.Format("timing pre:{0}, cur:{1}, next:{2}", PreDate, currDate, excuteDate));
+                //info = string.Format("{0}>>timing pre:{1}, cur:{2}, next:{3}", _config.Name, PreExcuteDate, excuteDate, nextExcuteDate);
                 if (excuteDate <= currDate && currDate < nextExcuteDate)
                 {
                     PreExcuteDate = excuteDate;
                     result = currDate < excuteDate.AddMilliseconds(TimeListener.OffsetMillisecond);//整点处理
                 }
+                //if (result)
+                //{
+                //    TraceLog.WriteInfo(info);
+                //}
                 return result;
             }
 
@@ -261,13 +273,13 @@ namespace ZyGames.Framework.Common.Timing
             }
         }
 
-        private PlanState _planState = new PlanState();
+        private PlanState _planState;
         internal int _isExcuting;
 
 
         private PlanConfig()
         {
-
+            _planState = new PlanState(this);
         }
 
         /// <summary>
@@ -357,7 +369,7 @@ namespace ZyGames.Framework.Common.Timing
         {
             if (!DateTime.Now.Date.Equals(_planState.StartDate.Date))
             {
-                _planState.Reset(this);
+                _planState.Reset();
             }
             if (_planState.IsExpired || _planState.IsEnd)
             {

@@ -104,6 +104,10 @@ namespace ZyGames.Framework.RPC.Http
         /// </summary>
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
         public string Identity { get; set; }
+        /// <summary>
+        /// 
+        /// </summary>
+        public string RequestParams { get; private set; }
 
         /// <summary>
         /// 

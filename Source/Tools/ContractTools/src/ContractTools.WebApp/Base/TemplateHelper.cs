@@ -365,6 +365,7 @@ namespace ContractTools.WebApp.Base
 
         protected static string ReplaceClientLuaCallback(string content, List<ParamInfoModel> paramList, bool isQuick = false)
         {
+
             string field = "##Judge##";
             int depth = 0;
             int preIndent = 2;
@@ -446,7 +447,7 @@ namespace ContractTools.WebApp.Base
                     strTemp.AppendLine();
 
                     string tempTableVar = subTableVar;
-                    
+
                     indexList[depth] = 0;//子层级编号重置
                     depth--;
                     if (depth > 0)
@@ -528,7 +529,7 @@ namespace ContractTools.WebApp.Base
             StringBuilder strTemp = new StringBuilder();
             int[] indexList = new int[forVarChars.Length];
             char enumVar = forVarChars[depth];
-
+            //ArrayList RecordFieldList = new ArrayList(); 
             foreach (var paramInfo in paramList)
             {
                 FieldType fieldType = paramInfo.FieldType;
@@ -566,6 +567,7 @@ namespace ContractTools.WebApp.Base
                     strTemp.AppendLine();
 
                     currTableVar = subRecordVar;
+                    //RecordFieldList.Add(paramInfo.Field.Length > 0 ? paramInfo.Field : string.Format("Children_{0}", recordIndex));
                     depth++;
                 }
                 else if (fieldType.Equals(FieldType.End))
@@ -578,6 +580,7 @@ namespace ContractTools.WebApp.Base
                     strTemp.AppendLine();
 
                     depth--;
+                    //string RecordField = RecordFieldList[depth] as string;
                     currIndent = GetSpaceIndent(depth + indent, preIndent);
                     strTemp.AppendFormat("{0}", currIndent);
                     strTemp.AppendLine("}");
@@ -592,10 +595,10 @@ namespace ContractTools.WebApp.Base
                     }
                     currTableVar = depth > 0 ? subTableVar : "actionResult";
                     strTemp.AppendFormat("{0}{1}[\"Children{2}\"] = {3};",
-                        currIndent,
-                        currTableVar,
-                        "_" + recordIndex,
-                        tempTableVar);
+                         currIndent,
+                         currTableVar,
+                         "_" + recordIndex,
+                         tempTableVar);
                     strTemp.AppendLine();
                 }
                 else if (fieldType.Equals(FieldType.Void))
@@ -615,7 +618,7 @@ namespace ContractTools.WebApp.Base
                             strTemp.Append(" = reader.getInt();");
                             break;
                         case FieldType.Short:
-                            strTemp.Append(" = reader.getWORD();");
+                            strTemp.Append(" = reader.getShort();");
                             break;
                         case FieldType.Password:
                         case FieldType.String:
@@ -774,7 +777,7 @@ namespace ContractTools.WebApp.Base
                     listVar = listVar + "_" + recordIndex;
                     depth++;
                     builder.Append(currIndent);
-                    builder.AppendFormat("{0}.{1} = {2}", currentVar, listVar, "None");
+                    builder.AppendFormat("{0}.{1} = {2}", currentVar, (fieldValue.Length > 0 ? paramInfo.Field : listVar), "None");
                     builder.Append(Environment.NewLine);
                 }
                 else if (fieldType.Equals(FieldType.End))
@@ -961,14 +964,16 @@ namespace ContractTools.WebApp.Base
                         itemVar = itemVar + recordIndex;
                         enumVar = enumVar + "_" + recordIndex;
                     }
+                    //RecordFieldList.Add(fieldValue.Length > 0 ? paramInfo.Field : string.Format("Children_{0}", recordIndex));
                     listVar = listVar + "_" + recordIndex;
+                    string varString = (fieldValue.Length > 0 ? paramInfo.Field : listVar);
                     depth++;
                     string currIndent = GetSpaceIndent(depth, 0);
                     strTemp.Append(currIndent);
-                    strTemp.AppendFormat("{0}.PushIntoStack(len(actionResult.{1}))", preItemVar, listVar);
+                    strTemp.AppendFormat("{0}.PushIntoStack(len(actionResult.{1}))", preItemVar, varString);
                     strTemp.AppendLine();
                     strTemp.Append(currIndent);
-                    strTemp.AppendFormat("for {0} in actionResult.{1}:", enumVar, listVar);
+                    strTemp.AppendFormat("for {0} in actionResult.{1}:", enumVar, varString);
                     strTemp.AppendLine();
                     strTemp.Append(GetSpaceIndent(depth + 1, 0));
                     strTemp.AppendFormat("{0} = DataStruct()", itemVar);
@@ -1168,14 +1173,15 @@ namespace ContractTools.WebApp.Base
                         enumVar = enumVar + "_" + recordIndex;
                     }
                     listVar = listVar + "_" + recordIndex;
+                    string varString = (fieldValue.Length > 0 ? paramInfo.Field : listVar);
                     depth++;
                     string currIndent = GetSpaceIndent(depth, 0);
                     strTemp.AppendLine();
                     strTemp.Append(currIndent);
-                    strTemp.AppendFormat("PushLenIntoStack({0}, actionResult.{1})", preItemVar, listVar);
+                    strTemp.AppendFormat("PushLenIntoStack({0}, actionResult.{1})", preItemVar, varString);
                     strTemp.AppendLine();
                     strTemp.Append(currIndent);
-                    strTemp.AppendFormat("local len = {0}.{1}.Count", preItemVar, listVar);
+                    strTemp.AppendFormat("local len = {0}.{1}.Count", preItemVar, varString);
                     strTemp.AppendLine();
                     strTemp.Append(currIndent);
                     strTemp.AppendFormat("for {0}=1, len, 1 do", enumVar);
@@ -1497,6 +1503,8 @@ namespace ContractTools.WebApp.Base
                     {
                         case FieldType.ULong:
                         case FieldType.Long:
+                            strTemp.Append("httpGet.GetLong(\"");
+                            break;
                         case FieldType.UInt:
                         case FieldType.Int:
                             strTemp.Append("httpGet.GetInt(\"");

@@ -133,6 +133,7 @@ namespace ZyGames.Framework.Game.Runtime
             ProductCode = appServer.ProductCode;
             ProductName = appServer.ProductName;
             ProductServerId = appServer.ProductServerId;
+            ClientVersion = appServer.ClientVersion;
             ClientDesDeKey = appServer.UserLoginDecodeKey;
             ActionTypeName = appServer.ActionTypeName;
             ScriptTypeName = appServer.ScriptTypeName;
@@ -256,6 +257,10 @@ namespace ZyGames.Framework.Game.Runtime
         /// </summary>
         public int ProductServerId { get; set; }
 
+        /// <summary>
+        /// Client ver
+        /// </summary>
+        public Version ClientVersion { get; set; }
         /// <summary>
         /// The entity assembly.
         /// </summary>

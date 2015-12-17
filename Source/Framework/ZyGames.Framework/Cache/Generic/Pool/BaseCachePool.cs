@@ -220,7 +220,6 @@ namespace ZyGames.Framework.Cache.Generic.Pool
         /// <returns>return null is load error</returns>
         public bool TryReceiveData<T>(TransReceiveParam receiveParam, out List<T> dataList) where T : AbstractEntity, new()
         {
-            //todo:Trace
             //var watch = RunTimeWatch.StartNew("Cache load " + receiveParam.RedisKey);
             dataList = null;
             bool hasDbConnect = DbConnectionProvider.CreateDbProvider(receiveParam.Schema) != null;

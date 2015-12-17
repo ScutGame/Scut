@@ -23,6 +23,7 @@ THE SOFTWARE.
 ****************************************************************************/
 using System;
 using System.Threading;
+using ZyGames.Framework.Common.Log;
 
 namespace ZyGames.Framework.Common.Timing
 {
@@ -96,8 +97,9 @@ namespace ZyGames.Framework.Common.Timing
                     isInTimer = 0;
                 }
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                TraceLog.WriteError("SyncTimer execute timeout error:{0}", ex);
             }
         }
         private void InternalDoWork(object state)
@@ -112,8 +114,9 @@ namespace ZyGames.Framework.Common.Timing
                 _executeTimer.Change(ExecuteTimeout, Timeout.Infinite);
                 _callback(state);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                TraceLog.WriteError("SyncTimer execute error:{0}", ex);
             }
             finally
             {

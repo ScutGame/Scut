@@ -31,6 +31,7 @@ using ZyGames.Framework.Common;
 using ZyGames.Framework.Common.Log;
 using ZyGames.Framework.Common.Reflect;
 using ZyGames.Framework.Event;
+using ZyGames.Framework.Profile;
 
 namespace ZyGames.Framework.Model
 {
@@ -387,6 +388,8 @@ namespace ZyGames.Framework.Model
         {
             if (!IsModifying)
             {
+                //Auto trigger modify event
+                ProfileManager.ChangeEntityByAutoOfMessageQueueTimes(entity.GetType().FullName, entity.GetKeyCode());
                 DataSyncQueueManager.Send(entity);
             }
         }

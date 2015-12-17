@@ -126,27 +126,31 @@ namespace ZyGames.Framework.Data.Sql
             {
                 return SqlDbType.Image;
             }
-            else if (value is long)
+            else if (value is long || value is ulong)
             {
                 return SqlDbType.BigInt;
             }
-            else if (value is Decimal)
+            else if (value is decimal)
             {
                 return SqlDbType.Decimal;
             }
-            else if (value is Double)
+            else if (value is double)
             {
-                return SqlDbType.Float;
+                return SqlDbType.Float;//is double
             }
-            else if (value is Int32)
+            else if (value is float)
+            {
+                return SqlDbType.Real;
+            }
+            else if (value is int || value is uint)
             {
                 return SqlDbType.Int;
             }
-            else if (value is short)
+            else if (value is short || value is ushort)
             {
                 return SqlDbType.SmallInt;
             }
-            else if (value is Byte)
+            else if (value is byte)
             {
                 return SqlDbType.TinyInt;
             }
