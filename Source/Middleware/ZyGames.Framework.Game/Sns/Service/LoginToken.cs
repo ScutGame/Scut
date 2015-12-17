@@ -39,7 +39,7 @@ namespace ZyGames.Framework.Game.Sns.Service
         /// <summary>
         /// 
         /// </summary>
-        public int UserId { get; set; }
+        public long UserId { get; set; }
 
         /// <summary>
         /// 
@@ -51,6 +51,6 @@ namespace ZyGames.Framework.Game.Sns.Service
         public bool IsGuest
         {
             get { return UserType == (int) RegType.Guest; }
-    }
+        }
     }
 }

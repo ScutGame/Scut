@@ -35,7 +35,7 @@ namespace ZyGames.Framework.Game.Message
     /// </summary>
     public abstract class ChatService
     {
-        private readonly int _userId;
+        private readonly long _userId;
         private readonly ChatCacheSet _chatCacheSet;
         private readonly WhisperCacheSet _whisperCacheSet;
         private static readonly VersionConfig VersionSet = new VersionConfig();
@@ -54,7 +54,7 @@ namespace ZyGames.Framework.Game.Message
 		/// Initializes a new instance of the <see cref="ZyGames.Framework.Game.Message.ChatService"/> class.
 		/// </summary>
 		/// <param name="userId">User identifier.</param>
-        protected ChatService(int userId)
+        protected ChatService(long userId)
         {
             _userId = userId;
             _chatCacheSet = new ChatCacheSet();
@@ -154,7 +154,7 @@ namespace ZyGames.Framework.Game.Message
 		/// </summary>
 		/// <returns>The receive.</returns>
 		/// <param name="userId">User identifier.</param>
-        public List<ChatMessage> UserReceive(int userId)
+        public List<ChatMessage> UserReceive(long userId)
         {
             List<ChatMessage> list = new List<ChatMessage>();
             var whisperMessages = _whisperCacheSet.GetMessage(userId);

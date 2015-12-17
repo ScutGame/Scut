@@ -41,7 +41,7 @@ namespace AccountServer.Handler
             }
             data.Pwd = DecodePassword(data.Pwd);
             int userType;
-            int userId = SnsManager.QuickRegisterPassport(data.Pid, data.Pwd, data.DeviceID, out userType, data.IsCustom);
+            var userId = SnsManager.QuickRegisterPassport(data.Pid, data.Pwd, data.DeviceID, out userType, data.IsCustom);
             if (userId <= 0)
             {
                 throw new HandlerException(StateCode.Error, StateDescription.RegistError);

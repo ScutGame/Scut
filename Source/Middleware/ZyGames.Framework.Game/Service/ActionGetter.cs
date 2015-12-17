@@ -113,7 +113,7 @@ namespace ZyGames.Framework.Game.Service
         /// <summary>
         /// get current UserId.
         /// </summary>
-        public virtual int GetUserId()
+        public virtual long GetUserId()
         {
             return ReqPackage.UserId;
         }

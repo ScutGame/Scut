@@ -37,13 +37,13 @@ namespace ZyGames.Framework.Game.Com.Exam
 		/// <summary>
 		/// The user identifier.
 		/// </summary>
-        protected readonly int UserId;
+        protected readonly long UserId;
         
         /// <summary>
         /// 
         /// </summary>
         /// <param name="userId"></param>
-        protected AbstractExam(int userId)
+        protected AbstractExam(long userId)
         {
             UserId = userId;
         }

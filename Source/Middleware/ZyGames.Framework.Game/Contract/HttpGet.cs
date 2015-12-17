@@ -854,7 +854,7 @@ namespace ZyGames.Framework.Game.Contract
         /// 
         /// </summary>
         /// <returns></returns>
-        public override int GetUserId()
+        public override long GetUserId()
         {
             return Session != null ? Session.UserId : 0;
         }

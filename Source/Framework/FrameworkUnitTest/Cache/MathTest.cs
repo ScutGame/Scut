@@ -31,6 +31,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using FrameworkUnitTest.Cache.Model;
+using IronPython.Modules;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ProtoBuf;
 using ZyGames.Framework.Cache.Generic;
@@ -39,6 +40,7 @@ using ZyGames.Framework.Common.Event;
 using ZyGames.Framework.Common.Serialization;
 using ZyGames.Framework.Common.Threading;
 using ZyGames.Framework.Common.Timing;
+using ZyGames.Framework.Redis;
 
 namespace FrameworkUnitTest.Cache
 {

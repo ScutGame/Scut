@@ -88,12 +88,12 @@ namespace ZyGames.Framework.Game.Sns
         /// 官网渠道ID
         /// </summary>
         private const string SysetmRetailID = "0000";
-        private int _userid;
+        private long _userid;
         /// <summary>
         /// 获得用户ID
         /// </summary>
         /// 
-        public int UserId { get { return _userid; } }
+        public long UserId { get { return _userid; } }
         private string _PassportId = String.Empty;
         private string _PassportPwd = String.Empty;
         private string _imei = String.Empty;
@@ -232,7 +232,7 @@ namespace ZyGames.Framework.Game.Sns
         /// <param name="paramNames">Parameter names.</param>
         /// <param name="paramValues">Parameter values.</param>
         /// <param name="isCustom"></param>
-        public int InsertSnsUser(string[] paramNames, string[] paramValues, bool isCustom)
+        public long InsertSnsUser(string[] paramNames, string[] paramValues, bool isCustom)
         {
             SnsPassport oSnsPassportLog = new SnsPassport();
             if (!isCustom && !oSnsPassportLog.VerifyRegPassportId(_PassportId))
@@ -272,7 +272,7 @@ namespace ZyGames.Framework.Game.Sns
                 {
                     if (aReader.Read())
                     {
-                        _userid = Convert.ToInt32(aReader[0]);
+                        _userid = Convert.ToInt64(aReader[0]);
                     }
                 }
                 return _userid;
@@ -287,7 +287,7 @@ namespace ZyGames.Framework.Game.Sns
         /// 向社区中心添加用户
         /// </summary>
         /// <returns></returns>
-        public int InsertSnsUser(bool isCustom)
+        public long InsertSnsUser(bool isCustom)
         {
             return InsertSnsUser(new string[0], new string[0], isCustom);
         }
@@ -471,7 +471,7 @@ namespace ZyGames.Framework.Game.Sns
             {
                 if (aReader.Read())
                 {
-                    snsUser.UserId = Convert.ToInt32(aReader["UserId"]);
+                    snsUser.UserId = Convert.ToInt64(aReader["UserId"]);
                     snsUser.IMEI = Convert.ToString(aReader["DeviceID"]);
                     snsUser.PassportId = Convert.ToString(aReader["PassportID"]);
                     snsUser.Password = Convert.ToString(aReader["PassportPwd"]);

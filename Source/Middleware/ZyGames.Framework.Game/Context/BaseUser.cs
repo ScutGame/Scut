@@ -81,7 +81,7 @@ namespace ZyGames.Framework.Game.Context
         /// 
         /// </summary>
         /// <returns></returns>
-        public abstract int GetUserId();
+        public abstract long GetUserId();
         /// <summary>
         /// 
         /// </summary>

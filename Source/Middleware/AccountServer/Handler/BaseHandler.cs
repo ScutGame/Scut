@@ -80,7 +80,7 @@ namespace AccountServer.Handler
         /// <param name="passportId"></param>
         /// <param name="userType"></param>
         /// <returns></returns>
-        protected ResponseData AuthorizeLogin(int userId, string passportId, int userType)
+        protected ResponseData AuthorizeLogin(long userId, string passportId, int userType)
         {
             UserToken userToken = new UserToken()
             {

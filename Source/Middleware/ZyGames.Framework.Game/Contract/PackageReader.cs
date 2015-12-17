@@ -150,6 +150,23 @@ namespace ZyGames.Framework.Game.Contract
             }
             return false;
         }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="name"></param>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        public bool TryGetParam(string name, out long value)
+        {
+            value = 0;
+            string str;
+            if (TryGetParam(name, out str))
+            {
+                value = str.ToLong();
+                return true;
+            }
+            return false;
+        }
 
         /// <summary>
         /// 

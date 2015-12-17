@@ -49,7 +49,7 @@ namespace ZyGames.Framework.Model
         /// <summary>
         /// 
         /// </summary>
-        protected const int DefIdentityId = 10000;
+        protected const long DefIdentityId = 10000;
         /// <summary>
         /// 存储改变的属性集合
         /// </summary>
@@ -302,7 +302,7 @@ namespace ZyGames.Framework.Model
         {
             get
             {
-                int id = GetIdentityId();
+                var id = GetIdentityId();
                 if (id == 0)
                 {
                     TraceLog.WriteError("The {0} property \"PersonalId\" is empty.", _schema.EntityType.FullName);
@@ -328,7 +328,7 @@ namespace ZyGames.Framework.Model
         /// 
         /// </summary>
         /// <returns></returns>
-        public int GetMessageQueueId()
+        public long GetMessageQueueId()
         {
             return GetIdentityId();
         }
@@ -336,7 +336,7 @@ namespace ZyGames.Framework.Model
         /// <summary>
         /// 标识ID，消息队列分发
         /// </summary>
-        internal protected abstract int GetIdentityId();
+        internal protected abstract long GetIdentityId();
 
         /// <summary>
         /// 当前对象(包括继承)的属性触发通知事件

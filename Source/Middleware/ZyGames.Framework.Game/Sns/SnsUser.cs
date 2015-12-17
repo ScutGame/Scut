@@ -48,7 +48,7 @@ namespace ZyGames.Framework.Game.Sns
         /// <summary>
         /// 
         /// </summary>
-        public int UserId
+        public long UserId
         {
             get;
             set;

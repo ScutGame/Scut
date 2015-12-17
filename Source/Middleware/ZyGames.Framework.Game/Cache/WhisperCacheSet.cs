@@ -82,7 +82,7 @@ namespace ZyGames.Framework.Game.Cache
         /// </summary>
         /// <param name="userId"></param>
         /// <param name="message"></param>
-        public void Add(int userId, ChatMessage message)
+        public void Add(long userId, ChatMessage message)
         {
             string groupKey = userId.ToString();
             DataContainer.TryAddQueue(groupKey, message, 0, OnExpired);
@@ -92,7 +92,7 @@ namespace ZyGames.Framework.Game.Cache
         /// </summary>
         /// <param name="userId"></param>
         /// <returns></returns>
-        public bool HasMessage(int userId)
+        public bool HasMessage(long userId)
         {
             string groupKey = userId.ToString();
             CacheQueue<ChatMessage> chatQueue;
@@ -106,7 +106,7 @@ namespace ZyGames.Framework.Game.Cache
         /// 
         /// </summary>
         /// <returns></returns>
-        public ChatMessage[] GetMessage(int userId)
+        public ChatMessage[] GetMessage(long userId)
         {
             string groupKey = userId.ToString();
             CacheQueue<ChatMessage> chatQueue;

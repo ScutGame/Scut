@@ -1,6 +1,6 @@
 # README
 
-[![Build Status](http://scutgame.com/images/passing.png?branch=6.7.9.11)](http://scutgame.com/download/)
+[![Build Status](http://scutgame.com/images/passing.png?branch=6.7.10.0)](http://scutgame.com/download/)
 
 
 ## What's Scut?
@@ -111,12 +111,9 @@ Language:
 
 ## Update Log
 
-### Version: 6.7.9.11 (2015-12-17) Beta
+### Version: 6.7.10.0 (2015-12-17) alpha
 
-* Add Redis & DB sync queue profile log.
-* Fixed Sql command bug.
-* Fixed socket send bug.
-
+* Fixed use long type of userId.
 
 
 old version [more](http://scutgame.com/log).

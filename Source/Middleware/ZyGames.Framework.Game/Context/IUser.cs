@@ -55,7 +55,7 @@ namespace ZyGames.Framework.Game.Context
         /// get userid
         /// </summary>
         /// <returns></returns>
-        int GetUserId();
+        long GetUserId();
         /// <summary>
         /// get passport
         /// </summary>

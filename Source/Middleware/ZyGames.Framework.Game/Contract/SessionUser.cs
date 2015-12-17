@@ -70,7 +70,7 @@ namespace ZyGames.Framework.Game.Contract
         /// 
         /// </summary>
         [ProtoMember(3)]
-        public int UserId { get; set; }
+        public long UserId { get; set; }
 
         /// <summary>
         /// 
@@ -100,7 +100,7 @@ namespace ZyGames.Framework.Game.Contract
         /// 
         /// </summary>
         /// <returns></returns>
-        public int GetUserId()
+        public long GetUserId()
         {
             return UserId;
         }

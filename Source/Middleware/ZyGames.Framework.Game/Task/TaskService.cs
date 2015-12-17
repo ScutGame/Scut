@@ -52,14 +52,14 @@ namespace ZyGames.Framework.Game.Task
         /// <summary>
         /// The user identifier.
         /// </summary>
-        protected readonly int UserId;
+        protected readonly long UserId;
         private dynamic _taskScope;
         private bool _isUsedPy;
         /// <summary>
         /// 
         /// </summary>
         /// <param name="userId"></param>
-        public TaskService(int userId)
+        public TaskService(long userId)
         {
             UserId = userId;
             _isUsedPy = InitTask();

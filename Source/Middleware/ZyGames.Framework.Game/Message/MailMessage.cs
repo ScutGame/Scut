@@ -78,13 +78,13 @@ namespace ZyGames.Framework.Game.Message
 		/// <summary>
 		/// The _ user identifier.
 		/// </summary>
-        protected Int32 _UserId;
+        protected long _UserId;
         /// <summary>
         /// </summary>        
         [ProtoMember(2)]
         [EntityFieldExtend]
         [EntityField(true)]
-        public virtual Int32 UserId
+        public virtual long UserId
         {
             get
             {
@@ -118,13 +118,13 @@ namespace ZyGames.Framework.Game.Message
 		/// <summary>
 		/// The _ from user identifier.
 		/// </summary>
-        protected Int32 _FromUserId;
+        protected long _FromUserId;
         /// <summary>
         /// </summary>        
         [ProtoMember(4)]
         [EntityFieldExtend]
         [EntityField]
-        public virtual Int32 FromUserId
+        public virtual long FromUserId
         {
             get
             {
@@ -158,13 +158,13 @@ namespace ZyGames.Framework.Game.Message
 		/// <summary>
 		/// The _ to user I.
 		/// </summary>
-        protected Int32 _ToUserID;
+        protected long _ToUserID;
         /// <summary>
         /// </summary>        
         [ProtoMember(6)]
         [EntityFieldExtend]
         [EntityField]
-        public virtual Int32 ToUserID
+        public virtual long ToUserID
         {
             get
             {
@@ -399,7 +399,7 @@ namespace ZyGames.Framework.Game.Message
 		/// Gets the identity identifier.
 		/// </summary>
 		/// <returns>The identity identifier.</returns>
-        protected override int GetIdentityId()
+        protected override long GetIdentityId()
         {
             return UserId;
         }

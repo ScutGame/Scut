@@ -44,7 +44,7 @@ namespace ZyGames.Framework.Game.Com.Exam
         /// 
         /// </summary>
         /// <param name="userId"></param>
-        protected ExamQuestion(int userId)
+        protected ExamQuestion(long userId)
             : base(userId)
         {
             CacheSet = new ConfigCacheSet<T>();

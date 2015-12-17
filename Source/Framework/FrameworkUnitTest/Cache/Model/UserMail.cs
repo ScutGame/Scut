@@ -25,7 +25,7 @@ namespace FrameworkUnitTest.Cache.Model
         [EntityField]
         public bool Enable { get; set; }
 
-        protected override int GetIdentityId()
+        protected override long GetIdentityId()
         {
             return (int) UserId;
         }

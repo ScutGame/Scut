@@ -67,7 +67,7 @@ namespace ZyGames.Framework.Game.Task
 		/// Gets or sets the user I.
 		/// </summary>
 		/// <value>The user I.</value>
-        int UserID { get; set; }
+        long UserID { get; set; }
 		/// <summary>
 		/// Gets or sets the task I.
 		/// </summary>

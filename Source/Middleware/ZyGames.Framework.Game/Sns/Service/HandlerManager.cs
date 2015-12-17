@@ -60,7 +60,7 @@ namespace ZyGames.Framework.Game.Sns.Service
         public static int RedisDb;
         private static Dictionary<string, Type> handlerTypes;
         private static ConcurrentDictionary<string, UserToken> userTokenCache = new ConcurrentDictionary<string, UserToken>();
-        private static ConcurrentDictionary<int, string> userHashCache = new ConcurrentDictionary<int, string>();
+        private static ConcurrentDictionary<long, string> userHashCache = new ConcurrentDictionary<long, string>();
         private static bool RedisConnected;
 
         static HandlerManager()
