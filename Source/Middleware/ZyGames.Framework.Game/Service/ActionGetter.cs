@@ -200,6 +200,19 @@ namespace ZyGames.Framework.Game.Service
             get { throw new NotImplementedException(); }
             set { throw new NotImplementedException(); }
         }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="param"></param>
+        /// <param name="min"></param>
+        /// <param name="max"></param>
+        /// <param name="isRequired"></param>
+        /// <returns></returns>
+        public virtual ulong GetLongValue(string param, ulong min, ulong max, bool isRequired = true)
+        {
+            throw new NotImplementedException();
+        }
         /// <summary>
         /// 
         /// </summary>
@@ -335,7 +348,19 @@ namespace ZyGames.Framework.Game.Service
         /// <summary>
         /// 
         /// </summary>
-        public virtual bool GetInt(string aName, ref Int32 rValue)
+        /// <param name="aName"></param>
+        /// <param name="rValue"></param>
+        /// <param name="minValue"></param>
+        /// <param name="maxValue"></param>
+        /// <returns></returns>
+        public virtual bool GetLong(string aName, ref ulong rValue, ulong minValue = 0, ulong maxValue = ulong.MaxValue)
+        {
+            throw new NotImplementedException();
+        }
+        /// <summary>
+        /// 
+        /// </summary>
+        public virtual bool GetLong(string aName, ref long rValue, long minValue = 0, long maxValue = long.MaxValue)
         {
             throw new NotImplementedException();
         }
@@ -343,7 +368,7 @@ namespace ZyGames.Framework.Game.Service
         /// <summary>
         /// 
         /// </summary>
-        public virtual bool GetLong(string aName, ref long rValue, long minValue = 0, long maxValue = long.MaxValue)
+        public virtual bool GetInt(string aName, ref Int32 rValue)
         {
             throw new NotImplementedException();
         }

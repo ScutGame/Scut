@@ -162,7 +162,7 @@ namespace ZyGames.Framework.Game.Contract
         {
             get { return _actionId; }
         }
-        
+
         private string _paramString;
 
         /// <summary>
@@ -258,6 +258,24 @@ namespace ZyGames.Framework.Game.Contract
         {
             return ParamString;
         }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="param"></param>
+        /// <param name="min"></param>
+        /// <param name="max"></param>
+        /// <param name="isRequired"></param>
+        /// <returns></returns>
+        public override ulong GetLongValue(string param, ulong min, ulong max, bool isRequired = true)
+        {
+            ulong value = 0;
+            if (!GetLong(param, ref value, min, max) && isRequired)
+            {
+                throw new ArgumentOutOfRangeException("param", string.Format("{0} value out of range[{1}-{2}]", param, min, max));
+            }
+            return value;
+        }
+
         /// <summary>
         /// 
         /// </summary>
@@ -468,6 +486,29 @@ namespace ZyGames.Framework.Game.Contract
             WriteContainsError(param);
             return false;
         }
+
+        public override bool GetLong(string aName, ref ulong rValue, ulong minValue = 0, ulong maxValue = ulong.MaxValue)
+        {
+            bool result = false;
+            if (_param.ContainsKey(aName))
+            {
+                result = ulong.TryParse(_param[aName], out rValue);
+                if (result)
+                {
+                    result = rValue >= minValue && rValue <= maxValue;
+                }
+                if (!result)
+                {
+                    WriteRangOutError(aName, minValue, maxValue);
+                }
+            }
+            else
+            {
+                WriteContainsError(aName);
+            }
+            return result;
+        }
+
         /// <summary>
         /// 
         /// </summary>
@@ -819,6 +860,14 @@ namespace ZyGames.Framework.Game.Contract
             _error.AppendFormat(Language.Instance.UrlNoParam, param);
         }
 
+        private void WriteRangOutError(string param, ulong min, ulong max)
+        {
+            if (_error.Length > 0)
+            {
+                _error.Append(",");
+            }
+            _error.AppendFormat(Language.Instance.UrlParamOutRange, param, min, max);
+        }
         private void WriteRangOutError(string param, long min, long max)
         {
             if (_error.Length > 0)
