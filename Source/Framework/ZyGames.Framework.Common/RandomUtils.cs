@@ -449,7 +449,7 @@ namespace ZyGames.Framework.Common
         /// <returns></returns>
         public static T[] RandomTake<T>(T[] source, int count)
         {
-            return RandomSort(source, count).Take(count).ToArray();
+            return RandomSort(source).Take(count).ToArray();
         }
 
         /// <summary>
@@ -457,13 +457,11 @@ namespace ZyGames.Framework.Common
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <returns></returns>
-        public static T[] RandomSort<T>(T[] source, int count = 0)
+        public static T[] RandomSort<T>(T[] source)
         {
             int pos;
             T temp;
-            count = count > 0
-                ? count > source.Length ? source.Length : count
-                : source.Length / 2 + 1;
+            var count = source.Length / 2 + 1;
             for (int i = 0; i < count; i++)
             {
                 temp = source[i];
@@ -483,20 +481,18 @@ namespace ZyGames.Framework.Common
         /// <returns></returns>
         public static List<T> RandomTake<T>(List<T> source, int count)
         {
-            return RandomSort(source, count).Take(count).ToList();
+            return RandomSort(source).Take(count).ToList();
         }
         /// <summary>
         /// 
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <returns></returns>
-        public static List<T> RandomSort<T>(List<T> source, int count = 0)
+        public static List<T> RandomSort<T>(List<T> source)
         {
             int pos;
             T temp;
-            count = count > 0
-                ? count > source.Count ? source.Count : count
-                : source.Count / 2 + 1;
+            var count = source.Count / 2 + 1;
             for (int i = 0; i < count; i++)
             {
                 temp = source[i];
