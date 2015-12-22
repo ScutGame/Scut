@@ -214,6 +214,11 @@ namespace ZyGames.Framework.Cache.Generic
         /// <returns></returns>
         public static T GetOrAdd<T>(string personalId, Lazy<T> createFactory, params object[] keys) where T : BaseEntity, new()
         {
+            var primaryKeys = EntitySchemaSet.Get<T>().Keys;
+            if (primaryKeys.Length > 1 && keys.Length != primaryKeys.Length)
+            {
+                throw new ArgumentNullException("keys", string.Format("Set args:\"{0}\" value error.", string.Join(",", primaryKeys)));
+            }
             var cache = new PersonalCacheStruct<T>();
             T result;
             LoadingStatus status;
