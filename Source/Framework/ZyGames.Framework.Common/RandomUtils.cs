@@ -461,7 +461,7 @@ namespace ZyGames.Framework.Common
         {
             int pos;
             T temp;
-            var count = source.Length / 2 + 1;
+            var count = source.Length / 2;
             for (int i = 0; i < count; i++)
             {
                 temp = source[i];
@@ -492,7 +492,7 @@ namespace ZyGames.Framework.Common
         {
             int pos;
             T temp;
-            var count = source.Count / 2 + 1;
+            var count = source.Count / 2;
             for (int i = 0; i < count; i++)
             {
                 temp = source[i];
