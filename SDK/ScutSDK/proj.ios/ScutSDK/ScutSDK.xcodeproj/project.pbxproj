@@ -56,7 +56,6 @@
 		1C4E24F31868310000375E56 /* ScutLuaLan.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1C4E249A1868310000375E56 /* ScutLuaLan.cpp */; };
 		1C4E24F41868310000375E56 /* ScutUtils.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1C4E249C1868310000375E56 /* ScutUtils.cpp */; };
 		1C4E24F718683BBB00375E56 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1C4E24F618683BBB00375E56 /* QuartzCore.framework */; };
-		1C4E24F918683C9C00375E56 /* libstdc++.6.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 1C4E24F818683C9C00375E56 /* libstdc++.6.dylib */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -172,7 +171,6 @@
 		1C4E249C1868310000375E56 /* ScutUtils.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ScutUtils.cpp; sourceTree = "<group>"; };
 		1C4E249D1868310000375E56 /* ScutUtils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ScutUtils.h; sourceTree = "<group>"; };
 		1C4E24F618683BBB00375E56 /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
-		1C4E24F818683C9C00375E56 /* libstdc++.6.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libstdc++.6.dylib"; path = "usr/lib/libstdc++.6.dylib"; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -180,7 +178,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				1C4E24F918683C9C00375E56 /* libstdc++.6.dylib in Frameworks */,
 				1C4E24F718683BBB00375E56 /* QuartzCore.framework in Frameworks */,
 				1C4E23E918682F9700375E56 /* Foundation.framework in Frameworks */,
 			);
@@ -209,7 +206,6 @@
 		1C4E23E718682F9700375E56 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				1C4E24F818683C9C00375E56 /* libstdc++.6.dylib */,
 				1C4E24F618683BBB00375E56 /* QuartzCore.framework */,
 				1C4E23E818682F9700375E56 /* Foundation.framework */,
 			);
@@ -485,7 +481,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LANGUAGE_STANDARD = "c++0x";
 				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_WARN_CONSTANT_CONVERSION = YES;
 				CLANG_WARN_EMPTY_BODY = YES;
@@ -493,7 +489,7 @@
 				CLANG_WARN_INT_CONVERSION = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
-				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_C_LANGUAGE_STANDARD = gnu89;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_PREPROCESSOR_DEFINITIONS = (
@@ -504,7 +500,7 @@
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNINITIALIZED_AUTOS = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 6.1;
+				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
 			};
@@ -514,7 +510,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LANGUAGE_STANDARD = "c++0x";
 				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_WARN_CONSTANT_CONVERSION = YES;
 				CLANG_WARN_EMPTY_BODY = YES;
@@ -522,11 +518,11 @@
 				CLANG_WARN_INT_CONVERSION = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = YES;
-				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_C_LANGUAGE_STANDARD = gnu89;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNINITIALIZED_AUTOS = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 6.1;
+				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
 				SDKROOT = iphoneos;
 				VALIDATE_PRODUCT = YES;
 			};
@@ -535,8 +531,8 @@
 		1C4E23F418682F9700375E56 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				CLANG_CXX_LANGUAGE_STANDARD = "compiler-default";
-				CLANG_CXX_LIBRARY = "compiler-default";
+				CLANG_CXX_LANGUAGE_STANDARD = "c++0x";
+				CLANG_CXX_LIBRARY = "libc++";
 				DSTROOT = /tmp/ScutSDK.dst;
 				GCC_C_LANGUAGE_STANDARD = c99;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
@@ -546,23 +542,25 @@
 					CC_TARGET_OS_IPHONE,
 				);
 				HEADER_SEARCH_PATHS = (
-					"\"$(SRCROOT)/../../../../cocos2d-x/cocos2dx/platform/third_party/ios/curl\"",
-					"\"$(SRCROOT)/../../../../cocos2d-x/cocos2dx/include\"",
-					"\"$(SRCROOT)/../../../../cocos2d-x/scripting/lua/tolua\"",
-					"\"$(SRCROOT)/../../../../cocos2d-x/scripting/lua/lua\"",
-					"\"$(SRCROOT)/../../../../cocos2d-x/cocos2dx/platform\"",
-					"\"$(SRCROOT)/../../../../cocos2d-x/scripting/lua/cocos2dx_support\"",
-					"\"$(SRCROOT)/../../../../cocos2d-x/cocos2dx\"",
-					"\"$(SRCROOT)/../../../../cocos2d-x/cocos2dx/platform/ios\"",
-					"\"$(SRCROOT)/../../../../cocos2d-x/cocos2dx/kazmath/include\"",
-					"\"$(SRCROOT)/../../../../cocos2d-x/cocos2dx/layers_scenes_transitions_nodes\"",
-					"\"$(SRCROOT)/../../../../cocos2d-x/cocos2dx/platform/third_party/ios\"",
-					"\"$(SRCROOT)/../../../../cocos2d-x/cocos2dx/script_support\"",
+					"\"$(SRCROOT)/../../../cocos2d-x/external/curl/include/ios/curl\"",
+					"$(SRCROOT)/../../../cocos2d-x/external/curl/include/ios",
+					"\"$(SRCROOT)/../../../cocos2d-x/external/glfw3/include/mac\"",
+					"\"$(SRCROOT)/../../../cocos2d-x/external/lua/tolua\"",
+					"\"$(SRCROOT)/../../../cocos2d-x/external/lua/lua\"",
+					"\"$(SRCROOT)/../../../cocos2d-x/cocos/platform\"",
+					"\"$(SRCROOT)/../../../cocos2d-x/scripting/lua/cocos2dx_support\"",
+					"\"$(SRCROOT)/../../../cocos2d-x/cocos\"",
+					"\"$(SRCROOT)/../../../cocos2d-x/cocos/platform/ios\"",
+					"\"$(SRCROOT)/../../../cocos2d-x/cocos/math\"",
+					"\"$(SRCROOT)/../../../cocos2d-x/cocos/scripting/lua-bindings/manual\"",
+					"\"$(SRCROOT)/../../../cocos2d-x/cocos/base\"",
+					"\"$(SRCROOT)/../../../cocos2d-x/cocos/2d\"",
 				);
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"\"$(SRCROOT)/../../ScutSystem/re_lib\"",
 				);
+				OTHER_CFLAGS = "";
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
@@ -572,8 +570,8 @@
 		1C4E23F518682F9700375E56 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				CLANG_CXX_LANGUAGE_STANDARD = "compiler-default";
-				CLANG_CXX_LIBRARY = "compiler-default";
+				CLANG_CXX_LANGUAGE_STANDARD = "c++0x";
+				CLANG_CXX_LIBRARY = "libc++";
 				DSTROOT = /tmp/ScutSDK.dst;
 				GCC_C_LANGUAGE_STANDARD = c99;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
@@ -583,23 +581,25 @@
 					CC_TARGET_OS_IPHONE,
 				);
 				HEADER_SEARCH_PATHS = (
-					"\"$(SRCROOT)/../../../../cocos2d-x/cocos2dx/platform/third_party/ios/curl\"",
-					"\"$(SRCROOT)/../../../../cocos2d-x/cocos2dx/include\"",
-					"\"$(SRCROOT)/../../../../cocos2d-x/scripting/lua/tolua\"",
-					"\"$(SRCROOT)/../../../../cocos2d-x/scripting/lua/lua\"",
-					"\"$(SRCROOT)/../../../../cocos2d-x/cocos2dx/platform\"",
-					"\"$(SRCROOT)/../../../../cocos2d-x/scripting/lua/cocos2dx_support\"",
-					"\"$(SRCROOT)/../../../../cocos2d-x/cocos2dx\"",
-					"\"$(SRCROOT)/../../../../cocos2d-x/cocos2dx/platform/ios\"",
-					"\"$(SRCROOT)/../../../../cocos2d-x/cocos2dx/kazmath/include\"",
-					"\"$(SRCROOT)/../../../../cocos2d-x/cocos2dx/layers_scenes_transitions_nodes\"",
-					"\"$(SRCROOT)/../../../../cocos2d-x/cocos2dx/platform/third_party/ios\"",
-					"\"$(SRCROOT)/../../../../cocos2d-x/cocos2dx/script_support\"",
+					"\"$(SRCROOT)/../../../cocos2d-x/external/curl/include/ios/curl\"",
+					"$(SRCROOT)/../../../cocos2d-x/external/curl/include/ios",
+					"\"$(SRCROOT)/../../../cocos2d-x/external/glfw3/include/mac\"",
+					"\"$(SRCROOT)/../../../cocos2d-x/external/lua/tolua\"",
+					"\"$(SRCROOT)/../../../cocos2d-x/external/lua/lua\"",
+					"\"$(SRCROOT)/../../../cocos2d-x/cocos/platform\"",
+					"\"$(SRCROOT)/../../../cocos2d-x/scripting/lua/cocos2dx_support\"",
+					"\"$(SRCROOT)/../../../cocos2d-x/cocos\"",
+					"\"$(SRCROOT)/../../../cocos2d-x/cocos/platform/ios\"",
+					"\"$(SRCROOT)/../../../cocos2d-x/cocos/math\"",
+					"\"$(SRCROOT)/../../../cocos2d-x/cocos/scripting/lua-bindings/manual\"",
+					"\"$(SRCROOT)/../../../cocos2d-x/cocos/base\"",
+					"\"$(SRCROOT)/../../../cocos2d-x/cocos/2d\"",
 				);
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"\"$(SRCROOT)/../../ScutSystem/re_lib\"",
 				);
+				OTHER_CFLAGS = "";
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
@@ -625,6 +625,7 @@
 				1C4E23F518682F9700375E56 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};

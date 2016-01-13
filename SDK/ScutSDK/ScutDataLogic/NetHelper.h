@@ -51,7 +51,7 @@ namespace ScutDataLogic
 		static void setSessionID(const char* pszSessionID);
 		static void setUserID(CInt64 value);
 		static void setStime(const char* pszTime);
-		static int  getTag();
+		int  getTag();
 	private:
 		static CNetWriter* instance;
 		CNetWriter(void);

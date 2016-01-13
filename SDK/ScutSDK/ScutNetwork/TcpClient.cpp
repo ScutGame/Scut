@@ -61,6 +61,7 @@ using namespace ScutDataLogic;
 using namespace std;
 
 static int	s_nSocket = 0;
+static std::string s_Url = "";
 CThreadMutex m_sSendThreadMutex;
 class TcpCurlHandlePool
 {
@@ -92,7 +93,7 @@ public:
 		if (handle)
 		{
 			curl_easy_cleanup(handle);
-			if ((unsigned int)this->GetHandle() == (unsigned int)handle)
+			if ((unsigned long)this->GetHandle() == (unsigned long)handle)
 			{
 				ret = NULL;
 			}
@@ -123,7 +124,7 @@ CTcpClient::CTcpClient()
 	m_bIsBusy = false;
 	m_bUseProgressReport = false;
 	m_bAsyncProcessing = false;
-	m_nTimeOut = 30;		//默认30s超时
+	m_nTimeOut = 10;		//默认30s超时
 	m_pNetNotify = NULL;
 	m_nSocket = 0;
 }
@@ -231,6 +232,16 @@ int CTcpClient::DoGetInternal(const char *url, CHttpClientResponse &resp)
 	size_t	ret_len;
 	size_t	new_size;
 
+	if (strcmp(s_Url.c_str(),url)!=0 && s_nSocket != 0)
+	{
+		printf("create new connect%s\n",url);
+		/*if (curl_handle != NULL)
+		{
+			ScutNetwork::CTcpClient::FreeCurlHandler(curl_handle);
+		}*/
+		ScutNetwork::CTcpClient::FreeCurlHandler(curl_handle);
+		CTcpSceneManager::getInstance()->release();
+	}
 	//与上次的连接不同
 	if (s_nSocket == 0)
 	{
@@ -260,10 +271,13 @@ int CTcpClient::DoGetInternal(const char *url, CHttpClientResponse &resp)
 			curl_easy_setopt(curl_handle, CURLOPT_PROGRESSDATA, this);
 		}*/	
 
+		//printf("curl_easy_perform %d\n",GetTickCount());
 		res = curl_easy_perform(curl_handle);
+		//printf("curl_easy_perform %d消耗时间%d\n",res,GetTickCount());
 		if(res != CURLE_OK){ 
 			return ScutNetwork::aisFailed; 
 		} 
+		s_Url = url;
 	}
 	else
 	{
@@ -480,6 +494,9 @@ int ScutNetwork::CTcpClient::TcpGet(const char* url, CHttpClientResponse &resp)
 	{
 		if ((nRet = DoGetInternal(url, resp)) == 0)
 		{
+		}else
+		{
+			printf("tcp连接错误\n");
 		}
 		//FullReset();
 /*#ifdef SCUT_WIN32
@@ -654,8 +671,10 @@ void ScutNetwork::CTcpClient::FreeCurlHandler(CURL* curl_handle)
 {
 	AUTO_GUARD(m_sSendThreadMutex);
 	s_nSocket = 0;
+	s_Url = "";
 	if (curl_handle)
 	{
 		TcpCurlHandlePool::Instance()->FreeHandle(curl_handle);
+		curl_handle = NULL;
 	}
 }

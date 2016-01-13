@@ -114,6 +114,9 @@ namespace ScutDataLogic
 		bool GetUseKeepAliveMode();
 
 		virtual void OnNotify(PAsyncInfo pAi);
+
+		//wangsheng
+		void disconnect();
 	private:
 		void ProcAsyncInfo(PAsyncInfo pAi);
 		void FreeRequestInfo(PRequestInfo pRi);

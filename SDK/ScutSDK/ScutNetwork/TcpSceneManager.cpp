@@ -195,6 +195,7 @@ namespace ScutNetwork
 			if (s_ThreadExit)
 			{
 				ScutNetwork::CTcpClient::FreeCurlHandler(pTcpSceneManager->curl_handle);
+				pTcpSceneManager->release();
 				break;
 			}			
 
@@ -220,8 +221,10 @@ namespace ScutNetwork
 				}
 				//通知业务层接收失败
 				ScutNetwork::CTcpClient::FreeCurlHandler(pTcpSceneManager->curl_handle);
-				delete pTcpSceneManager;
-				instance = NULL;
+				pTcpSceneManager->release();
+				//wangsheng
+				/*delete pTcpSceneManager;
+				instance = NULL;*/
 				break;
 			}
 			
@@ -269,6 +272,19 @@ namespace ScutNetwork
 						asyncInfo.Response = NULL;
 					}
 				}
+			}else if (res == CURLE_RECV_ERROR)
+			{
+				if (pTcpSceneManager->m_pNetNotify)
+				{
+					AsyncInfo asyncInfo;
+					asyncInfo.ProtocalType = 1;
+					asyncInfo.Status = aisFailed;
+					asyncInfo.Data1 = -1;
+					pTcpSceneManager->m_pNetNotify->OnNotify(&asyncInfo);
+				}
+				//通知业务层接收失败
+				ScutNetwork::CTcpClient::FreeCurlHandler(pTcpSceneManager->curl_handle);
+				pTcpSceneManager->release();
 			}
 			memset(temp, 0, RECV_BUF_SIZE);
 			nTotalLen = 0;
@@ -348,7 +364,12 @@ namespace ScutNetwork
 
 		return dw;
 	}
-
+	void CTcpSceneManager::disconnect()
+	{
+		//printf("disconnect");
+		ScutNetwork::CTcpClient::FreeCurlHandler(curl_handle);
+		release();
+	}
 	void CTcpSceneManager::release()
 	{
 		curl_handle = NULL;

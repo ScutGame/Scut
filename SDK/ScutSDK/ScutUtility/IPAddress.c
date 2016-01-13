@@ -188,7 +188,7 @@ void GetHWAddresses()
 		 int a,b,c,d,e,f;
 		 int i;
 
-		 strcpy(temp, (char *)ether_ntoa(LLADDR(sdl)));
+//		 strcpy(temp, (char *)ether_ntoa(LLADDR(sdl)));
 		 sscanf(temp, "%x:%x:%x:%x:%x:%x", &a, &b, &c, &d, &e, &f);
          sprintf(temp, "%02X:%02X:%02X:%02X:%02X:%02X",a,b,c,d,e,f);
 

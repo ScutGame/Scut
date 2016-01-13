@@ -64,6 +64,7 @@ namespace ScutNetwork
 		void setNotify(INetStatusNotify* pNetNotify);
 		void setUrlHandle(CURL*   handle);
 		void release();
+		void disconnect();
 	protected:
 		int getRmID(char* pdataStream, int wSize);
 		int getNumberValue(char* pdataStream, int wSize, int& nStart, int nLength);

@@ -23,6 +23,7 @@ THE SOFTWARE.
 ****************************************************************************/
 #pragma once
 #include <string>
+#include <stdlib.h>
 
 namespace ScutUtility
 {

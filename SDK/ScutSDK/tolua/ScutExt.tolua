@@ -3,6 +3,7 @@ class ScutExt
 	static void Init(const std::string& resRootDir);
 	static ScutExt* getInstance();
 	
+	
 	/** Pauses the running scene for lua
 	 */
 	void RegisterPauseHandler(const char* pszFuncName);

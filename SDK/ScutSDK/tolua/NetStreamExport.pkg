@@ -8,7 +8,7 @@ namespace ScutDataLogic
 		bool recordBegin();
 		void recordEnd();
 
-	
+		bool pushNetStream(char* pdataStream,int wSize);
 		unsigned char		getBYTE(void);
 		unsigned short		getWORD(void);
 		unsigned int		getDWORD(void);
