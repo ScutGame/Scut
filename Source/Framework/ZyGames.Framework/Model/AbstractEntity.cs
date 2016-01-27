@@ -786,8 +786,9 @@ namespace ZyGames.Framework.Model
                     }
                     else if (x is long || x is ulong)
                     {
-                        var diff = (long)x - (long)y;
-                        result = diff > 0 ? 1 : diff < 0 ? -1 : 0;
+                        //var diff = (long)x - (long)y;
+                        result = (x.ToLong()).CompareTo(y.ToLong());
+
                     }
                     else if (x is float)
                     {
