@@ -213,7 +213,7 @@ namespace ZyGames.Framework.Game.Contract
         /// <returns></returns>
         public static RequestPackage GetResponsePackage(int actionId, GameSession session, Parameters parameters, sbyte opCode, object message)
         {
-            int userId = session != null ? session.UserId : 0;
+            var userId = session != null ? session.UserId : 0;
             string sessionId = session != null ? session.SessionId : "";
 
             var paramList = new Dictionary<string, string>(StringComparer.InvariantCultureIgnoreCase);

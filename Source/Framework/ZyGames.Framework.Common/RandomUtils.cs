@@ -23,6 +23,7 @@ THE SOFTWARE.
 ****************************************************************************/
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace ZyGames.Framework.Common
 {
@@ -34,7 +35,7 @@ namespace ZyGames.Framework.Common
     {
         private static int MinPercent = 1;
         private static int MaxPercent = 100;
-        private static Random random = new Random();
+        private static Random random = new Random(Environment.TickCount);
 
         /// <summary>
         /// 随机取名字
@@ -176,7 +177,7 @@ namespace ZyGames.Framework.Common
         {
             return NextBool((double)percent);
         }
-  
+
         /// <summary>
         /// 
         /// </summary>
@@ -443,20 +444,30 @@ namespace ZyGames.Framework.Common
         /// 
         /// </summary>
         /// <typeparam name="T"></typeparam>
+        /// <param name="source"></param>
+        /// <param name="count"></param>
+        /// <returns></returns>
+        public static T[] RandomTake<T>(T[] source, int count)
+        {
+            return RandomSort(source).Take(count).ToArray();
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
         /// <returns></returns>
         public static T[] RandomSort<T>(T[] source)
         {
-            int num = source.Length / 2;
-            for (int i = 0; i < num; i++)
+            int pos;
+            T temp;
+            var count = source.Length / 2;
+            for (int i = 0; i < count; i++)
             {
-                int num2 = GetRandom(0, source.Length);
-                int num3 = GetRandom(0, source.Length);
-                if (num2 != num3)
-                {
-                    T t = source[num3];
-                    source[num3] = source[num2];
-                    source[num2] = t;
-                }
+                temp = source[i];
+                pos = GetRandom(i + 1, source.Length);
+                source[i] = source[pos];
+                source[pos] = temp;
             }
             return source;
         }
@@ -465,20 +476,29 @@ namespace ZyGames.Framework.Common
         /// 
         /// </summary>
         /// <typeparam name="T"></typeparam>
+        /// <param name="source"></param>
+        /// <param name="count"></param>
+        /// <returns></returns>
+        public static List<T> RandomTake<T>(List<T> source, int count)
+        {
+            return RandomSort(source).Take(count).ToList();
+        }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
         /// <returns></returns>
         public static List<T> RandomSort<T>(List<T> source)
         {
-            int num = source.Count / 2;
-            for (int i = 0; i < num; i++)
+            int pos;
+            T temp;
+            var count = source.Count / 2;
+            for (int i = 0; i < count; i++)
             {
-                int num2 = GetRandom(0, source.Count);
-                int num3 = GetRandom(0, source.Count);
-                if (num2 != num3)
-                {
-                    T t = source[num3];
-                    source[num3] = source[num2];
-                    source[num2] = t;
-                }
+                temp = source[i];
+                pos = GetRandom(i + 1, source.Count);
+                source[i] = source[pos];
+                source[pos] = temp;
             }
             return source;
         }

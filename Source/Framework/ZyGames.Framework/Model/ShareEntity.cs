@@ -61,7 +61,7 @@ namespace ZyGames.Framework.Model
         /// 
         /// </summary>
         /// <returns></returns>
-        protected internal override int GetIdentityId()
+        protected internal override long GetIdentityId()
         {
             return DefIdentityId;
         }

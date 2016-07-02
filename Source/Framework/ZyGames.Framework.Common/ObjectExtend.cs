@@ -212,6 +212,17 @@ namespace ZyGames.Framework.Common
         {
             return MathUtils.IndexOf(bytes, offset, length, pattern);
         }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="source"></param>
+        /// <param name="count"></param>
+        /// <returns></returns>
+        public static T[] RandomTake<T>(this T[] source, int count)
+        {
+            return RandomUtils.RandomTake(source, count);
+        }
 
         /// <summary>
         /// 
@@ -223,7 +234,17 @@ namespace ZyGames.Framework.Common
         {
             return RandomUtils.RandomSort(array);
         }
-
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="source"></param>
+        /// <param name="count"></param>
+        /// <returns></returns>
+        public static List<T> RandomTake<T>(this List<T> source, int count)
+        {
+            return RandomUtils.RandomTake(source, count);
+        }
         /// <summary>
         /// 
         /// </summary>

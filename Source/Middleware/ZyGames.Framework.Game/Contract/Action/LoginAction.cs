@@ -189,18 +189,13 @@ namespace ZyGames.Framework.Game.Contract.Action
                     PassportId = login.PassportID;
                     UserType = login.UserType;
                     SetParameter(login);
-                    int userId = login.UserID.ToInt();
+                    var accountId = login.UserID.ToLong();
                     IUser user;
-                    if (!GetError() && DoSuccess(userId, out user))
+                    if (!GetError() && DoSuccess(accountId, out user))
                     {
                         watch.Check("DoSuccess");
-                        var session = GameSession.Get(Sid);
-                        if (session != null)
-                        {
-                            //user is null in create role.
-                            session.Bind(user ?? new SessionUser() { PassportId = PassportId, UserId = userId });
-                            return true;
-                        }
+                        OnAuthorized(Sid, user);
+                        return true;
                     }
                 }
                 else
@@ -218,6 +213,22 @@ namespace ZyGames.Framework.Game.Contract.Action
                 watch.Flush(true, 100);
             }
             return false;
+        }
+
+        /// <summary>
+        /// 授权用户
+        /// </summary>
+        /// <param name="sid"></param>
+        /// <param name="user"></param>
+        /// <returns></returns>
+        protected void OnAuthorized(string sid, IUser user)
+        {
+            var session = GameSession.Get(sid);
+            if (session != null && user != null)
+            {
+                //user is null in create role.
+                session.Bind(user);
+            }
         }
 
         /// <summary>
@@ -251,8 +262,8 @@ namespace ZyGames.Framework.Game.Contract.Action
         /// Dos the success.
         /// </summary>
         /// <returns><c>true</c>, if success was done, <c>false</c> otherwise.</returns>
-        /// <param name="userId">User identifier.</param>
+        /// <param name="accountId">User identifier.</param>
         /// <param name="user"></param>
-        protected abstract bool DoSuccess(int userId, out IUser user);
+        protected abstract bool DoSuccess(long accountId, out IUser user);
     }
 }

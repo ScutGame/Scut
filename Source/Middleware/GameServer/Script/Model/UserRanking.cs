@@ -45,7 +45,7 @@ namespace GameServer.Model
 
         [ProtoMember(1)]
         [EntityField(true)]
-        public int UserID
+        public long UserID
         {
             get;
             set;
@@ -79,7 +79,7 @@ namespace GameServer.Model
         [EntityField]
         public CacheList<EquiAttrInfo> Items { get; set; }
 
-        protected override int GetIdentityId()
+        protected override long GetIdentityId()
         {
             return UserID;
         }

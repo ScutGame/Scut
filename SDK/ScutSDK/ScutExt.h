@@ -22,6 +22,8 @@ public:
     static const std::string& getResRootDir();
 	static ScutExt* getInstance();
 	
+
+
 	/** Pauses the running scene for lua
 	 */
 	void RegisterPauseHandler(const char* pszFuncName);

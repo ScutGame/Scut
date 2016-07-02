@@ -89,3 +89,5 @@ $(LOCAL_PATH)/../../cocos2d-x/external/curl/include/android \
 LOCAL_LDLIBS := -llog
 
 include $(BUILD_STATIC_LIBRARY)
+
+$(call import-module,curl/prebuilt/android)

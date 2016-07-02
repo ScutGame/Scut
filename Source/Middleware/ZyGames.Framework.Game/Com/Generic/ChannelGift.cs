@@ -182,7 +182,7 @@ namespace ZyGames.Framework.Game.Com.Generic
         /// </summary>
         /// <param name="userId"></param>
         /// <param name="cardNo"></param>
-        public bool Activate(int userId, string cardNo)
+        public bool Activate(long userId, string cardNo)
         {
             string giftType;
             if (!TryGetGiftType(cardNo, out giftType))
@@ -202,7 +202,7 @@ namespace ZyGames.Framework.Game.Com.Generic
 		/// <param name="userId">User identifier.</param>
 		/// <param name="cardNo">Card no.</param>
 		/// <param name="giftType">Gift type.</param>
-        protected abstract void DoActivate(int userId, string cardNo, string giftType);
+        protected abstract void DoActivate(long userId, string cardNo, string giftType);
 
         /// <summary>
         /// 是否已激活
@@ -211,7 +211,7 @@ namespace ZyGames.Framework.Game.Com.Generic
         /// <param name="cardNo"></param>
         /// <param name="giftType"></param>
         /// <returns></returns>
-        protected abstract bool HasActivated(int userId, string cardNo, string giftType);
+        protected abstract bool HasActivated(long userId, string cardNo, string giftType);
 
         private bool TryGetGiftType(string cardNo, out string giftType)
         {

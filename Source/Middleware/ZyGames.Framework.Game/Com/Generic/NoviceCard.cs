@@ -36,7 +36,7 @@ namespace ZyGames.Framework.Game.Com.Generic
 		/// <summary>
 		/// The curr user identifier.
 		/// </summary>
-        protected int CurrUserId;
+        protected long CurrUserId;
 		/// <summary>
 		/// The length of the card.
 		/// </summary>
@@ -45,7 +45,7 @@ namespace ZyGames.Framework.Game.Com.Generic
 		/// Initializes a new instance of the <see cref="ZyGames.Framework.Game.Com.Generic.NoviceCard"/> class.
 		/// </summary>
 		/// <param name="userId">User identifier.</param>
-        protected NoviceCard(int userId)
+        protected NoviceCard(long userId)
         {
             CurrUserId = userId;
         }
@@ -87,19 +87,19 @@ namespace ZyGames.Framework.Game.Com.Generic
         /// <returns></returns>
         public bool Activate(string cardId)
         {
-            int cardUserId;
+            long cardUserId;
             if (!TryGetCardUserId(ref cardId, out cardUserId)) return false;
             return DoActivateCard(cardId, cardUserId);
         }
 
-        private bool TryGetCardUserId(ref string cardId, out int cardUserId)
+        private bool TryGetCardUserId(ref string cardId, out long cardUserId)
         {
             cardUserId = 0;
             cardId = cardId ?? "";
             cardId = cardId.Trim().Replace('c', 'C');
             if (string.IsNullOrEmpty(cardId) ||
                 !cardId.StartsWith("C") ||
-                !int.TryParse(cardId.Substring(1), out cardUserId))
+                !long.TryParse(cardId.Substring(1), out cardUserId))
             {
                 return false;
             }
@@ -111,14 +111,14 @@ namespace ZyGames.Framework.Game.Com.Generic
 		/// <returns><c>true</c>, if activate card was done, <c>false</c> otherwise.</returns>
 		/// <param name="cardId">Card identifier.</param>
 		/// <param name="cardUserId">Card user identifier.</param>
-        protected abstract bool DoActivateCard(string cardId, int cardUserId);
+        protected abstract bool DoActivateCard(string cardId, long cardUserId);
 
         /// <summary>
         /// 领取奖励
         /// </summary>
         public bool CheckLvPrize(short userLv, string cardId)
         {
-            int cardUserId;
+            long cardUserId;
             if (!TryGetCardUserId(ref cardId, out cardUserId)) return false;
 
             var prizeLvs = PackagePrizeLv;
@@ -138,7 +138,7 @@ namespace ZyGames.Framework.Game.Com.Generic
 		/// <param name="cardId">Card identifier.</param>
 		/// <param name="cardUserId">Card user identifier.</param>
 		/// <param name="lv">Lv.</param>
-        protected abstract void DoPrize(string cardId, int cardUserId, short lv);
+        protected abstract void DoPrize(string cardId, long cardUserId, short lv);
 		/// <summary>
 		/// Determines whether this instance has prize the specified userLv prizeLv.
 		/// </summary>

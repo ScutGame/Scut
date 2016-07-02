@@ -121,7 +121,7 @@ namespace ZyGames.Framework.Game.Com.Model
         /// <summary>
         /// </summary>        
         [ProtoMember(1)]
-        public abstract Int32 UserId { get; set; }
+        public abstract long UserId { get; set; }
 
         /// <summary>
         /// 是否结束引导

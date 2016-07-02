@@ -79,7 +79,7 @@ namespace ZyGames.Framework.Game.Contract
         #region static member
 
         private static ConcurrentDictionary<Guid, GameSession> _globalSession;
-        private static ConcurrentDictionary<int, Guid> _userHash;
+        private static ConcurrentDictionary<long, Guid> _userHash;
         private static ConcurrentDictionary<string, Guid> _remoteHash;
         private static SyncTimer clearTime;
         private static string sessionRedisKey = "__GLOBAL_SESSIONS";
@@ -92,7 +92,7 @@ namespace ZyGames.Framework.Game.Contract
             clearTime = new SyncTimer(OnClearSession, 6000, 60000);
             clearTime.Start();
             _globalSession = new ConcurrentDictionary<Guid, GameSession>();
-            _userHash = new ConcurrentDictionary<int, Guid>();
+            _userHash = new ConcurrentDictionary<long, Guid>();
             _remoteHash = new ConcurrentDictionary<string, Guid>();
             LoadUnLineData();
         }
@@ -122,7 +122,7 @@ namespace ZyGames.Framework.Game.Contract
                         var session = new GameSession(sessionId, null) { LastActivityTime = user.OnlineDate };
                         _globalSession[sessionId] = session;
 
-                        int userId = user.GetUserId();
+                        var userId = user.GetUserId();
                         GameSession oldsession;
                         Guid sid;
                         if (_userHash.TryGetValue(userId, out sid) &&
@@ -390,13 +390,13 @@ namespace ZyGames.Framework.Game.Contract
         /// </summary>
         /// <param name="userId"></param>
         /// <returns></returns>
-        public static GameSession Get(int userId)
+        public static GameSession Get(long userId)
         {
             Guid val;
             return _userHash.TryGetValue(userId, out val) ? Get(val) : null;
         }
 
-        internal static Guid GetUserBindSid(int userId)
+        internal static Guid GetUserBindSid(long userId)
         {
             Guid val;
             if (_userHash.TryGetValue(userId, out val))
@@ -660,7 +660,7 @@ namespace ZyGames.Framework.Game.Contract
         /// login UserId
         /// </summary>
         [JsonIgnore]
-        public int UserId { get { return User != null ? User.GetUserId() : 0; } }
+        public long UserId { get { return User != null ? User.GetUserId() : 0; } }
 
         /// <summary>
         /// User
@@ -820,7 +820,7 @@ namespace ZyGames.Framework.Game.Contract
         public void Bind(IUser user)
         {
             if (user == null) return;
-            int userId = user.GetUserId();
+            var userId = user.GetUserId();
             if (userId > 0)
             {
                 //解除UserId与前一次的Session连接对象绑定

@@ -173,7 +173,7 @@ namespace ZyGames.Framework.Game.Contract
         private readonly RemoteClient _client;
         private int _msgId;
         private string _sessionId = "";
-        private int _userId = 0;
+        private long _userId = 0;
         private string _proxySessionId = "";
         private DictionaryExtend<int, RemotePackage> _packagePools;
         /// <summary>

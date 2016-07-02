@@ -157,7 +157,7 @@ namespace ZyGames.Framework.Game.Message
 		/// Gets the identity identifier.
 		/// </summary>
 		/// <returns>The identity identifier.</returns>
-        protected override int GetIdentityId()
+        protected override long GetIdentityId()
         {
             return DefIdentityId;
         }

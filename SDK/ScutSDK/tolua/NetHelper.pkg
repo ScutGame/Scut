@@ -23,7 +23,7 @@ namespace ScutDataLogic
 		static void setSessionID(const char* pszSessionID);
 		static void setUserID(CInt64 value);
 		static void setStime(const char* pszTime);
-
+		int getTag();
 
 	};
 
@@ -36,8 +36,8 @@ namespace ScutDataLogic
 		/*∏∏¿‡∑Ω∑® 
 
 		bool recordBegin();
-		void recordEnd()
-
+		void recordEnd();
+		bool pushNetStream(char* pdataStream,int wSize);
 		unsigned char	getBYTE(void);
 		unsigned short	getWORD(void);
 		unsigned int	getDWORD(void);
@@ -51,7 +51,7 @@ namespace ScutDataLogic
 		void getString(CLuaString* pOutString, int nLength);
 		unsigned char	getByte(void);
 		unsigned short	getWord(void);
-
+		
 
 		static CNetReader* getInstance();
 

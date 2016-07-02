@@ -99,7 +99,7 @@ namespace ZyGames.Framework.Game.Service
         /// <summary>
         /// 
         /// </summary>
-        public int UserId
+        public long UserId
         {
             get
             {

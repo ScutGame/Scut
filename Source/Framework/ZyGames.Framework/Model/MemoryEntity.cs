@@ -79,7 +79,7 @@ namespace ZyGames.Framework.Model
         /// 
         /// </summary>
         /// <returns></returns>
-        public virtual int GetMessageQueueId()
+        public virtual long GetMessageQueueId()
         {
             return 0;
         }

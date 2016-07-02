@@ -23,6 +23,7 @@ THE SOFTWARE.
 ****************************************************************************/
 
 using System;
+using ZyGames.Framework.Common.Log;
 using ZyGames.Framework.Game.Runtime;
 
 namespace GameServer
@@ -31,8 +32,16 @@ namespace GameServer
     {
         static void Main(string[] args)
         {
-            new ConsoleRuntimeHost().Start();
-            Console.WriteLine("exited.");
+            try
+            {
+                new ConsoleRuntimeHost().Start();
+                Console.WriteLine("exited.");
+            }
+            catch (Exception ex)
+            {
+                TraceLog.WriteError("Main error:{0}", ex);
+                Console.Read();
+            }
         }
     }
 }

@@ -43,7 +43,7 @@ namespace ZyGames.Framework.Game.Com.Generic
 		/// <summary>
 		/// The user identifier.
 		/// </summary>
-        protected readonly int UserId;
+        protected readonly long UserId;
         private ShareCacheStruct<V> _guideSet;
         private T _userGuide;
 
@@ -51,7 +51,7 @@ namespace ZyGames.Framework.Game.Com.Generic
         /// 
         /// </summary>
         /// <param name="userId"></param>
-        protected NoviceGuide(int userId)
+        protected NoviceGuide(long userId)
         {
             UserId = userId;
             _guideSet = new ShareCacheStruct<V>();

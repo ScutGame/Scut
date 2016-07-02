@@ -1,5 +1,5 @@
 #import "IphoneInterface.h"
-#import "EAGLView.h"
+#import "CCEAGLView-ios.h"
 #import <Foundation/Foundation.h>
 #include <stdio.h>
 #include <sys/sysctl.h>
@@ -57,13 +57,14 @@ extern "C" {
 	//return "460000424548924";
 	
 #ifndef ND_IPHONE_APPSTORE
-	NSString *strImsi = (NSString*) CTSIMSupportCopyMobileSubscriberIdentity(nil);
-    if (strImsi == nil || strImsi == @"") {
-        return getImei();
-    }
-	return [strImsi UTF8String]; 
-#else
-	return getImei();
+//	NSString *strImsi = (NSString*) CTSIMSupportCopyMobileSubscriberIdentity(nil);
+//    if (strImsi == nil || strImsi == @"") {
+//        return getImei();
+//    }
+//	return [strImsi UTF8String]; 
+//#else
+//	return getImei();
+        return "460000424548924";
 #endif
 	}
 	

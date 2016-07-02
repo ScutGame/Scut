@@ -41,7 +41,7 @@ namespace ZyGames.Framework.Model
         /// Message queue group id.
         /// </summary>
         /// <returns></returns>
-        int GetMessageQueueId();
+        long GetMessageQueueId();
 
         /// <summary>
         /// 

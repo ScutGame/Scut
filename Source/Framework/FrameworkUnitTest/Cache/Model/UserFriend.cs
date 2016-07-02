@@ -36,6 +36,29 @@ namespace FrameworkUnitTest.Cache.Model
     [Serializable]
     [ProtoContract]
     [EntityTable(CacheType.Dictionary, MyDataConfigger.DbKey)]
+    public class UserPackage : BaseEntity
+    {
+        public UserPackage()
+        {
+            Items = new CacheDictionary<uint, uint>();
+        }
+        [ProtoMember(1)]
+        [EntityField(true)]
+        public long UserId { get; set; }
+
+        [ProtoMember(2)]
+        [EntityField(true, ColumnDbType.LongText)]
+        public CacheDictionary<uint, uint> Items { get; set; }
+
+        protected override long GetIdentityId()
+        {
+            return UserId;
+        }
+    }
+
+    [Serializable]
+    [ProtoContract]
+    [EntityTable(CacheType.Dictionary, MyDataConfigger.DbKey)]
     public class UserFriendState : BaseEntity
     {
         [ProtoMember(1)]
@@ -46,9 +69,9 @@ namespace FrameworkUnitTest.Cache.Model
         [EntityField]
         public bool Enable { get; set; }
 
-        protected override int GetIdentityId()
+        protected override long GetIdentityId()
         {
-            return (int) UserId;
+            return  UserId;
         }
     }
 
@@ -178,9 +201,9 @@ namespace FrameworkUnitTest.Cache.Model
         public Dictionary<int, FriendsData> Dicts { get; set; }
 
 
-        protected override int GetIdentityId()
+        protected override long GetIdentityId()
         {
-            return (int)UserId;
+            return UserId;
         }
     }
 }

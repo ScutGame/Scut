@@ -22,6 +22,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ****************************************************************************/
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -32,13 +33,19 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using FrameworkUnitTest.Cache.Model;
+using IronPython.Modules;
+using IronPython.Runtime;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using ServiceStack.Redis;
 using ZyGames.Framework.Cache.Generic;
 using ZyGames.Framework.Common;
+using ZyGames.Framework.Common.Build;
 using ZyGames.Framework.Common.Configuration;
 using ZyGames.Framework.Common.Serialization;
+using ZyGames.Framework.Config;
 using ZyGames.Framework.Data;
 using ZyGames.Framework.Model;
+using ZyGames.Framework.Net;
 using ZyGames.Framework.Redis;
 
 namespace FrameworkUnitTest.Cache
@@ -175,6 +182,23 @@ return result
         #endregion
 
         #region cache
+
+        [TestMethod]
+        public void ModifyPackage()
+        {
+            var watch = Stopwatch.StartNew();
+            UserPackage package = PersonalCacheStruct.GetOrAdd("10000", new Lazy<UserPackage>(() =>
+            {
+                return new UserPackage() {UserId = 10000};
+            }));
+
+            package.ModifyLocked(() =>
+            {
+                package.Items[100] = 1;
+            });
+            WaitEnd(watch);
+        }
+
         [TestMethod]
         public void AddFieldAll()
         {

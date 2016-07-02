@@ -13,6 +13,8 @@ namespace ScutDataLogic
 	{	 
 	public:
 		static CDataRequest* Instance();	 
+		
+		void disconnect();
 		//同步执行请求
 		bool ExecRequest(void* pScene);
 		//添加数据的处理者 目前默认是NdScene

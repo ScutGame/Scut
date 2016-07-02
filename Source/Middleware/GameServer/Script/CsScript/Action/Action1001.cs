@@ -53,7 +53,7 @@ namespace GameServer.CsScript.Action
             {
                 DataStruct dsItem = new DataStruct();
                 dsItem.PushIntoStack(item.UserName);
-                dsItem.PushIntoStack(item.Score); 
+                dsItem.PushIntoStack(item.Score);
                 //Console.WriteLine("Num count:{0}", item.Items.Count);
                 this.PushIntoStack(dsItem);
             }
@@ -84,7 +84,7 @@ namespace GameServer.CsScript.Action
             int result = y.Score - x.Score;
             if (result == 0)
             {
-                result = y.UserID - x.UserID;
+                result = y.UserID.CompareTo(x.UserID);
             }
             return result;
         }

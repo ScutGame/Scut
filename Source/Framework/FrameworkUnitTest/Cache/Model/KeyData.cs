@@ -22,6 +22,11 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ****************************************************************************/
 using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using IronPython.Modules;
 using ProtoBuf;
 using ZyGames.Framework.Model;
 
@@ -53,7 +58,7 @@ namespace FrameworkUnitTest.Cache.Model
 
         [ProtoMember(1)]
         [EntityField(true)]
-        public int UserId { get; set; }
+        public long UserId { get; set; }
 
         [ProtoMember(2)]
         [EntityField(true)]
@@ -63,7 +68,7 @@ namespace FrameworkUnitTest.Cache.Model
         [EntityField]
         public string Value { get; set; }
 
-        protected override int GetIdentityId()
+        protected override long GetIdentityId()
         {
             return UserId;
         }

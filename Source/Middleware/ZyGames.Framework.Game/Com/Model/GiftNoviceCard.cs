@@ -58,7 +58,7 @@ namespace ZyGames.Framework.Game.Com.Model
 		/// Gets or sets the user identifier.
 		/// </summary>
 		/// <value>The user identifier.</value>
-        public abstract int UserId
+        public abstract long UserId
         {
             get;
             set;

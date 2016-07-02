@@ -36,7 +36,7 @@ namespace AccountServer.Handler
     {
         public ResponseData Excute(LoginInfo data)
         {
-            int userId;
+            long userId;
             int userType;
             string passportId;
             if (!string.IsNullOrEmpty(data.RetailUser) && !string.IsNullOrEmpty(data.RetailToken))
@@ -49,7 +49,7 @@ namespace AccountServer.Handler
                     if (login.CheckLogin())
                     {
                         watch.Check("GetResponse");
-                        userId = int.Parse(login.UserID);
+                        userId = long.Parse(login.UserID);
                         passportId = login.PassportID;
                         userType = login.UserType;
                     }

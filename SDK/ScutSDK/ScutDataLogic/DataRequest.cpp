@@ -294,13 +294,17 @@ DWORD ScutDataLogic::CDataRequest::AsyncExecTcpRequest(CDataHandler* pHandler, i
 		HttpResponse->SetTarget(new CMemoryStream());
 		HttpResponse->SetSendData(lpSendData, nDataLen + 4);
 		
-		int nMsgid = CNetWriter::getTag();
+		int nMsgid = CNetWriter::getInstance()->getTag();
 		//执行异步网络请求
 		//if (pTcpClient->AsyncNetGet(lpszUrl, HttpResponse) == 0)
 		//{
 		//	dwRet = (DWORD)0;
 		//}
 		int nResult = pTcpClient->TcpGet(lpszUrl, *HttpResponse);
+		/*printf("AsyncTcpGet %d\n",GetTickCount());
+		int nResult = pTcpClient->AsyncTcpGet(lpszUrl, HttpResponse);
+		printf("tcpget result%d消耗时间%d\n",nResult,GetTickCount());*/
+		
 		if (nResult == 0)
 		{
 			CTcpSceneManager::getInstance()->push(nMsgid, nTag, pScene);
@@ -450,6 +454,12 @@ void ScutDataLogic::CDataRequest::OnNotify( PAsyncInfo pAi )
 	}
 }
 
+//wangsheng
+void ScutDataLogic::CDataRequest::disconnect()
+{
+	ScutNetwork::CTcpSceneManager::getInstance()->disconnect();
+}
+
 void ScutDataLogic::CDataRequest::LuaHandleData(void* pScene, int nTag, int nNetRet, CStream* lpData, LPVOID lpExternal )
 {
 	//ScutLog("LuaHandleData nTag:%d", nTag);
@@ -458,35 +468,37 @@ void ScutDataLogic::CDataRequest::LuaHandleData(void* pScene, int nTag, int nNet
 		(*m_pLuaDataHandleCallBack)(pScene, nTag, nNetRet, lpData, lpExternal);
 	}
 
-	lua_State* pState = LuaHost::Instance()->GetLuaState();
-	lua_getglobal(pState, "OnHandleData");
-	CC_ASSERT( lua_isfunction(pState, -1) && "OnHandleData is not a function");
+	LuaHandlePushData(lpData);
 
-	lua_pushlightuserdata(pState, pScene);
-	lua_pushnumber(pState, nTag);
-	lua_pushnumber(pState, nNetRet);
-	lua_pushnumber(pState, int(lpData));
-	lua_pushnumber(pState, int(lpExternal));
+	//lua_State* pState = LuaHost::Instance()->GetLuaState();
+	//lua_getglobal(pState, "OnHandleData");
+	//CC_ASSERT( lua_isfunction(pState, -1) && "OnHandleData is not a function");
 
-	int nargs = 5;
-	int traceback = 0;
-	lua_getglobal(pState, "__G__TRACKBACK__");                         /* L: ... func arg1 arg2 ... G */
-	if (!lua_isfunction(pState, -1))
-	{
-		lua_pop(pState, 1);                                            /* L: ... func arg1 arg2 ... */
-	}
-	else
-	{
-		traceback = -nargs-2;
-		lua_insert(pState, traceback);                                 /* L: ... G func arg1 arg2 ... */
-	}
+	//lua_pushlightuserdata(pState, pScene);
+	//lua_pushnumber(pState, nTag);
+	//lua_pushnumber(pState, nNetRet);
+	//lua_pushnumber(pState, int(lpData));
+	//lua_pushnumber(pState, int(lpExternal));
 
-	if (lua_pcall(pState, nargs, 0, traceback) != 0)
-	{
-		l_error(pState, "Call lua OnHandlerData failed: %s", lua_tostring(pState, -1));
-	}
+	//int nargs = 5;
+	//int traceback = 0;
+	//lua_getglobal(pState, "__G__TRACKBACK__");                         /* L: ... func arg1 arg2 ... G */
+	//if (!lua_isfunction(pState, -1))
+	//{
+	//	lua_pop(pState, 1);                                            /* L: ... func arg1 arg2 ... */
+	//}
+	//else
+	//{
+	//	traceback = -nargs-2;
+	//	lua_insert(pState, traceback);                                 /* L: ... G func arg1 arg2 ... */
+	//}
 
-	lua_pop(pState, (traceback != 0) ? 2 : 1);
+	//if (lua_pcall(pState, nargs, 0, traceback) != 0)
+	//{
+	//	l_error(pState, "Call lua OnHandlerData failed: %s", lua_tostring(pState, -1));
+	//}
+
+	//lua_pop(pState, (traceback != 0) ? 2 : 1);
 }
 
 bool ScutDataLogic::CDataRequest::LuaHandlePushData( CStream* lpData )

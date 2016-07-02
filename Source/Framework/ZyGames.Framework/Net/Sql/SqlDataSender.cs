@@ -100,7 +100,7 @@ namespace ZyGames.Framework.Net.Sql
                 CommandStruct command = GenerateCommand(dbProvider, data, schemaTable, getFunc, postColumnFunc);
                 if (command != null)
                 {
-                    int identityId = data.GetMessageQueueId();
+                    var identityId = data.GetMessageQueueId();
                     return dbProvider.GenerateSql(identityId, command);
                 }
             }

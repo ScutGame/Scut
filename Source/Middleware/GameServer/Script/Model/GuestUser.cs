@@ -35,7 +35,7 @@ namespace GameServer.Model
     {
         [ProtoMember(1)]
         [EntityField(true)]
-        public int UserId { get; set; }
+        public long UserId { get; set; }
 
         [ProtoMember(2)]
         [EntityField]
@@ -63,12 +63,12 @@ namespace GameServer.Model
 
         public string SId { get; set; }
 
-        protected override int GetIdentityId()
+        protected override long GetIdentityId()
         {
             return UserId;
         }
-        
-        public override int GetUserId()
+
+        public override long GetUserId()
         {
             return UserId;
         }

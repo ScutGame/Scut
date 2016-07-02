@@ -1,6 +1,6 @@
 /*
 ** Lua binding: Scut
-** Generated automatically by tolua++-1.0.92 on 12/18/13 22:27:25.
+** Generated automatically by tolua++-1.0.92 on 11/23/15 12:52:16.
 */
 
 #ifndef __cplusplus
@@ -32,9 +32,6 @@ TOLUA_API int  tolua_Scut_open (lua_State* tolua_S);
 #include "ScutDataLogic/NetHelper.h"
 #include "ScutDataLogic/LuaString.h"
 #include "ScutDataLogic/Int64.h"
-//#include"../FileHelper.h"
-//#include"../LuaIni.h"
-//#include"../LuaString.h"
 #include"DataRequest.h"
 #include "NetStreamExport.h"
 #include "ScutSystem/Defines.h"
@@ -1073,6 +1070,38 @@ static int tolua_Scut_ScutDataLogic_CNetWriter_setStime00(lua_State* tolua_S)
 #ifndef TOLUA_RELEASE
  tolua_lerror:
  tolua_error(tolua_S,"#ferror in function 'setStime'.",&tolua_err);
+ return 0;
+#endif
+}
+#endif //#ifndef TOLUA_DISABLE
+
+/* method: getTag of class  ScutDataLogic::CNetWriter */
+#ifndef TOLUA_DISABLE_tolua_Scut_ScutDataLogic_CNetWriter_getTag00
+static int tolua_Scut_ScutDataLogic_CNetWriter_getTag00(lua_State* tolua_S)
+{
+#ifndef TOLUA_RELEASE
+ tolua_Error tolua_err;
+ if (
+     !tolua_isusertype(tolua_S,1,"ScutDataLogic::CNetWriter",0,&tolua_err) ||
+     !tolua_isnoobj(tolua_S,2,&tolua_err)
+ )
+  goto tolua_lerror;
+ else
+#endif
+ {
+  ScutDataLogic::CNetWriter* self = (ScutDataLogic::CNetWriter*)  tolua_tousertype(tolua_S,1,0);
+#ifndef TOLUA_RELEASE
+  if (!self) tolua_error(tolua_S,"invalid 'self' in function 'getTag'", NULL);
+#endif
+  {
+   int tolua_ret = (int)  self->getTag();
+   tolua_pushnumber(tolua_S,(lua_Number)tolua_ret);
+  }
+ }
+ return 1;
+#ifndef TOLUA_RELEASE
+ tolua_lerror:
+ tolua_error(tolua_S,"#ferror in function 'getTag'.",&tolua_err);
  return 0;
 #endif
 }
@@ -2237,6 +2266,37 @@ static int tolua_Scut_ScutDataLogic_CDataRequest_Instance00(lua_State* tolua_S)
 }
 #endif //#ifndef TOLUA_DISABLE
 
+/* method: disconnect of class  ScutDataLogic::CDataRequest */
+#ifndef TOLUA_DISABLE_tolua_Scut_ScutDataLogic_CDataRequest_disconnect00
+static int tolua_Scut_ScutDataLogic_CDataRequest_disconnect00(lua_State* tolua_S)
+{
+#ifndef TOLUA_RELEASE
+ tolua_Error tolua_err;
+ if (
+     !tolua_isusertype(tolua_S,1,"ScutDataLogic::CDataRequest",0,&tolua_err) ||
+     !tolua_isnoobj(tolua_S,2,&tolua_err)
+ )
+  goto tolua_lerror;
+ else
+#endif
+ {
+  ScutDataLogic::CDataRequest* self = (ScutDataLogic::CDataRequest*)  tolua_tousertype(tolua_S,1,0);
+#ifndef TOLUA_RELEASE
+  if (!self) tolua_error(tolua_S,"invalid 'self' in function 'disconnect'", NULL);
+#endif
+  {
+   self->disconnect();
+  }
+ }
+ return 0;
+#ifndef TOLUA_RELEASE
+ tolua_lerror:
+ tolua_error(tolua_S,"#ferror in function 'disconnect'.",&tolua_err);
+ return 0;
+#endif
+}
+#endif //#ifndef TOLUA_DISABLE
+
 /* method: ExecRequest of class  ScutDataLogic::CDataRequest */
 #ifndef TOLUA_DISABLE_tolua_Scut_ScutDataLogic_CDataRequest_ExecRequest00
 static int tolua_Scut_ScutDataLogic_CDataRequest_ExecRequest00(lua_State* tolua_S)
@@ -2498,6 +2558,42 @@ static int tolua_Scut_ScutDataLogic_CNetStreamExport_recordEnd00(lua_State* tolu
 #ifndef TOLUA_RELEASE
  tolua_lerror:
  tolua_error(tolua_S,"#ferror in function 'recordEnd'.",&tolua_err);
+ return 0;
+#endif
+}
+#endif //#ifndef TOLUA_DISABLE
+
+/* method: pushNetStream of class  ScutDataLogic::CNetStreamExport */
+#ifndef TOLUA_DISABLE_tolua_Scut_ScutDataLogic_CNetStreamExport_pushNetStream00
+static int tolua_Scut_ScutDataLogic_CNetStreamExport_pushNetStream00(lua_State* tolua_S)
+{
+#ifndef TOLUA_RELEASE
+ tolua_Error tolua_err;
+ if (
+     !tolua_isusertype(tolua_S,1,"ScutDataLogic::CNetStreamExport",0,&tolua_err) ||
+     !tolua_isstring(tolua_S,2,0,&tolua_err) ||
+     !tolua_isnumber(tolua_S,3,0,&tolua_err) ||
+     !tolua_isnoobj(tolua_S,4,&tolua_err)
+ )
+  goto tolua_lerror;
+ else
+#endif
+ {
+  ScutDataLogic::CNetStreamExport* self = (ScutDataLogic::CNetStreamExport*)  tolua_tousertype(tolua_S,1,0);
+  char* pdataStream = ((char*)  tolua_tostring(tolua_S,2,0));
+  int wSize = ((int)  tolua_tonumber(tolua_S,3,0));
+#ifndef TOLUA_RELEASE
+  if (!self) tolua_error(tolua_S,"invalid 'self' in function 'pushNetStream'", NULL);
+#endif
+  {
+   bool tolua_ret = (bool)  self->pushNetStream(pdataStream,wSize);
+   tolua_pushboolean(tolua_S,(bool)tolua_ret);
+  }
+ }
+ return 1;
+#ifndef TOLUA_RELEASE
+ tolua_lerror:
+ tolua_error(tolua_S,"#ferror in function 'pushNetStream'.",&tolua_err);
  return 0;
 #endif
 }
@@ -10301,6 +10397,7 @@ TOLUA_API int tolua_Scut_open (lua_State* tolua_S)
     tolua_function(tolua_S,"setSessionID",tolua_Scut_ScutDataLogic_CNetWriter_setSessionID00);
     tolua_function(tolua_S,"setUserID",tolua_Scut_ScutDataLogic_CNetWriter_setUserID00);
     tolua_function(tolua_S,"setStime",tolua_Scut_ScutDataLogic_CNetWriter_setStime00);
+    tolua_function(tolua_S,"getTag",tolua_Scut_ScutDataLogic_CNetWriter_getTag00);
    tolua_endmodule(tolua_S);
    #ifdef __cplusplus
    tolua_cclass(tolua_S,"CNetReader","ScutDataLogic::CNetReader","ScutDataLogic::CNetStreamExport",tolua_collect_ScutDataLogic__CNetReader);
@@ -10369,6 +10466,7 @@ TOLUA_API int tolua_Scut_open (lua_State* tolua_S)
    tolua_cclass(tolua_S,"CDataRequest","ScutDataLogic::CDataRequest","INetStatusNotify",NULL);
    tolua_beginmodule(tolua_S,"CDataRequest");
     tolua_function(tolua_S,"Instance",tolua_Scut_ScutDataLogic_CDataRequest_Instance00);
+    tolua_function(tolua_S,"disconnect",tolua_Scut_ScutDataLogic_CDataRequest_disconnect00);
     tolua_function(tolua_S,"ExecRequest",tolua_Scut_ScutDataLogic_CDataRequest_ExecRequest00);
     tolua_function(tolua_S,"AsyncExecRequest",tolua_Scut_ScutDataLogic_CDataRequest_AsyncExecRequest00);
     tolua_function(tolua_S,"AsyncExecTcpRequest",tolua_Scut_ScutDataLogic_CDataRequest_AsyncExecTcpRequest00);
@@ -10382,6 +10480,7 @@ TOLUA_API int tolua_Scut_open (lua_State* tolua_S)
    tolua_beginmodule(tolua_S,"CNetStreamExport");
     tolua_function(tolua_S,"recordBegin",tolua_Scut_ScutDataLogic_CNetStreamExport_recordBegin00);
     tolua_function(tolua_S,"recordEnd",tolua_Scut_ScutDataLogic_CNetStreamExport_recordEnd00);
+    tolua_function(tolua_S,"pushNetStream",tolua_Scut_ScutDataLogic_CNetStreamExport_pushNetStream00);
     tolua_function(tolua_S,"getBYTE",tolua_Scut_ScutDataLogic_CNetStreamExport_getBYTE00);
     tolua_function(tolua_S,"getWORD",tolua_Scut_ScutDataLogic_CNetStreamExport_getWORD00);
     tolua_function(tolua_S,"getDWORD",tolua_Scut_ScutDataLogic_CNetStreamExport_getDWORD00);

@@ -239,7 +239,7 @@ namespace ZyGames.Framework.Game.Contract
             {
                 return false;
             }
-            int userId;
+            long userId;
             packageReader.TryGetParam("uid", out userId);
             string sessionId;
             string proxyId;

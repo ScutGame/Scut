@@ -45,7 +45,7 @@ namespace ZyGames.Framework.Game.Contract
         /// <summary>
         /// init
         /// </summary>
-        public RequestPackage(int msgId, string sessionId, int actionId, int userId, ProtocolVersion ptcl = ProtocolVersion.Default)
+        public RequestPackage(int msgId, string sessionId, int actionId, long userId, ProtocolVersion ptcl = ProtocolVersion.Default)
         {
             MsgId = msgId;
             SessionId = sessionId;
@@ -86,7 +86,7 @@ namespace ZyGames.Framework.Game.Contract
         /// session id of client
         /// </summary>
         [ProtoMember(5)]
-        public int UserId { get; protected set; }
+        public long UserId { get; protected set; }
 
         /// <summary>
         /// is proxy server connect

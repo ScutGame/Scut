@@ -46,7 +46,7 @@ namespace ZyGames.Framework.Data
         /// 标识ID
         /// </summary>
         [ProtoMember(1)]
-        public int IdentityID { get; set; }
+        public long IdentityID { get; set; }
 
         /// <summary>
         /// 数据库连接串设置

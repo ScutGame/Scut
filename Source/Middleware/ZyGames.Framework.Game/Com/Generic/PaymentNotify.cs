@@ -44,7 +44,7 @@ namespace ZyGames.Framework.Game.Com.Generic
         {
             int gameId = GameEnvironment.ProductCode;
             int serverId = GameEnvironment.ProductServerId;
-            int userId = user.GetUserId();
+            var userId = user.GetUserId();
             string pid = user.GetPassportId();
             OrderInfo[] orderList = PayManager.getPayment(gameId, serverId, pid);
             foreach (var orderInfo in orderList)
@@ -66,6 +66,6 @@ namespace ZyGames.Framework.Game.Com.Generic
         /// <param name="userId"></param>
         /// <param name="orderInfo"></param>
         /// <returns></returns>
-        protected abstract bool DoNotify(int userId, OrderInfo orderInfo);
+        protected abstract bool DoNotify(long userId, OrderInfo orderInfo);
     }
 }

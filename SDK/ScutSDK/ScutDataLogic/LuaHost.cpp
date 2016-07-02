@@ -191,7 +191,7 @@ bool ScutDataLogic::LuaHost::execFunc(const std::string & strFunc, void* pScene,
 	
 	if (lpData)
 	{
-		int nTemp = (int)(int*)lpData;
+		int nTemp = (uintptr_t)(int*)lpData;
 		tolua_pushnumber(m_pLuaState, nTemp);
 		error = Scutlua_pcall(m_pLuaState,3,0);
 	}

@@ -24,6 +24,8 @@ THE SOFTWARE.
 #ifndef _SCUTSYSTEMUTILITY_H_
 #define _SCUTSYSTEMUTILITY_H_
 #include<string>
+#include <cstdlib>
+#include <cstring>
 namespace ScutSystem
 {
 	class CScutUtility

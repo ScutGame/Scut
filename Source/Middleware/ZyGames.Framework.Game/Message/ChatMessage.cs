@@ -60,19 +60,19 @@ namespace ZyGames.Framework.Game.Model
         /// 发送人
         /// </summary>
         [ProtoMember(1004)]
-        public virtual int FromUserID { get; set; }
+        public virtual long FromUserID { get; set; }
 
         /// <summary>
         /// 接收人
         /// </summary>
         [ProtoMember(1005)]
-        public virtual int ToUserID { get; set; }
+        public virtual long ToUserID { get; set; }
 
 		/// <summary>
 		/// Gets the identity identifier.
 		/// </summary>
 		/// <returns>The identity identifier.</returns>
-        protected override int GetIdentityId()
+        protected override long GetIdentityId()
         {
             return DefIdentityId;
         }
