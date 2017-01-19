@@ -328,7 +328,7 @@ namespace ContractTools.WebApp.Base
                                     break;
                                 case FieldType.Bool:
                                 case FieldType.Byte:
-                                    fieldBuilder.Append("writer.getByte(\"");
+                                    fieldBuilder.Append("writer.writeByte(\"");
                                     break;
                                 case FieldType.Float:
                                     fieldBuilder.Append("writer.writeFloat(\"");
